@@ -142,7 +142,16 @@ export default {
       pathRewrite:{
         '^/gapi':'',
       }
-    }
+    },
+    //設定代理
+    "/idapi": {
+      target: "http://61.56.172.10/", // 介面的域名
+      changeOrigin: true,
+      ws: true,
+      pathRewrite: {
+        "^/idapi": "", //萬用字元
+      },
+    },
   },
   router:{
     //middleware: ['auth']

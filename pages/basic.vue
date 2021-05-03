@@ -10,12 +10,23 @@
             <v-row no-gutters>
               <v-col cols="3">
                 <v-card class="pa-2" outlined tile>
-                  <v-select :items="items" label="選擇廠"></v-select>
-                  <v-select :items="items" label="選擇區域"></v-select>
                   <v-select
-                    :items="items"
-                    label="選擇項目(溶氧,PH,...)"
+                    :items="maindata"
+                    item-value="id"
+                    item-text="name"
+                    label="選擇廠"
+                    clearable
+                    v-model="sel_main"
                   ></v-select>
+                  <v-select
+                    v-model="sel_area"
+                    :items="areadata"
+                    item-value="name"
+                    item-text="name"
+                    clearable
+                    label="選擇區域"
+                  ></v-select>
+                  <!-- 可能同池名，在不同廠，所以value= name -->
                   <v-btn tile color="blue" dark @click="closepanel">確認</v-btn>
                 </v-card>
               </v-col>
@@ -26,7 +37,7 @@
                     v-model="tree"
                     :open="initiallyOpen"
                     open-all
-                    :items="items2"
+                    :items="pooldata"
                     item-children="pond_area"
                     activatable
                     item-key="name"
@@ -104,7 +115,9 @@ export default {
   data() {
     return {
       mypanel: [],
-      items: ["A1", "A2"],
+      sel_main: "",
+      sel_area: "",
+      //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
         { name: "投餵/池體數據" },
@@ -164,12 +177,65 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      maindata: []
     };
   },
   methods: {
     closepanel: function() {
       this.mypanel = [];
+    }
+  },
+  created() {
+    this.$axios.get("idapi/architecture/").then(res => {
+      //maindata
+      this.maindata = res.data;
+    });
+    console.log("maindata:", this.maindata);
+  },
+  computed: {
+    areadata: function() {
+      var filtermain=this.maindata;
+      if (
+        this.sel_main != undefined &&
+        this.sel_main > 0 &&
+        this.maindata.length > 0
+      ) {
+        filtermain = this.maindata.filter(main => main.id == this.sel_main);
+      }
+      var area=[];
+      filtermain.forEach(function(x) {
+          x.pond_area.forEach(function(y) {
+            var yitem = {id:y.id,name:y.name};
+            if (area.indexOf(yitem)==-1) {//沒找到
+              area.push({id:y.id, name:y.name});
+            }
+          });
+        });
+        return area;
+    },
+    pooldata:function(){
+      var filtermain=this.maindata;
+      //先篩廠
+      if (
+        this.sel_main != undefined &&//非空
+        this.sel_main > 0 &&//有選到
+        this.maindata.length > 0//有資料
+      ) {
+        filtermain = this.maindata.filter(main => main.id == this.sel_main);
+        
+      }
+      //再篩區
+       if (
+        this.sel_area != undefined &&
+        this.sel_area.length > 0 &&
+        filtermain.length > 0
+      ) {
+          for (let i = 0; i < filtermain.length; i++) {
+            filtermain[i].pond_area = filtermain[i].pond_area.filter(x=>x.name == this.sel_area);
+          }
+        }
+      return filtermain;
     }
   }
 };
