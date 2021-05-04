@@ -36,18 +36,22 @@
                   <v-treeview
                     v-model="tree"
                     :open="initiallyOpen"
-                    open-all
                     :items="pooldata"
-                    item-children="pond_area"
+                    item-children="node"
                     activatable
                     item-key="name"
                     open-on-click
                     :selection-type="'leaf'"
                   >
                     <template v-slot:prepend="{ item, open }">
-                      <v-icon v-if="!item.type">
-                        <!-- {{ open ? "mdi-folder-open" : "mdi-folder" }} -->
+                        
+                      <v-icon v-if="!item.type && item.node">
+                        <!-- {{ open ? "mdi-folder-open" : "mdi-folder" }} 有NODE絕對不是最後一層-->
                         {{ open ? "mdi-select-group" : "mdi-select-inverse" }}
+                      </v-icon>
+                      <v-icon v-else-if="!item.node">
+                        <!-- 沒Node當作已最後一層 -->
+                        {{ files["pool"] }}
                       </v-icon>
                       <v-icon v-else>
                         {{ files[item.type] }}
@@ -106,6 +110,7 @@
 <script>
 import treelst from "~/components/treeList.vue";
 import Ind1 from "./Indicator/ind1";
+import _ from "lodash";
 export default {
   layout: "emptynologin",
   components: {
@@ -125,7 +130,7 @@ export default {
       ],
       currenttab: "水質監測",
       tree: [],
-      initiallyOpen: ["public"],
+      initiallyOpen: ["研發一廠"],
       files: {
         html: "mdi-language-html5",
         js: "mdi-nodejs",
@@ -156,22 +161,6 @@ export default {
                 {
                   name: "A2",
                   type: "pool"
-                },
-                {
-                  name: "A3",
-                  type: "pool"
-                },
-                {
-                  name: "A4",
-                  type: "pool"
-                },
-                {
-                  name: "A5",
-                  type: "pool"
-                },
-                {
-                  name: "A6",
-                  type: "pool"
                 }
               ]
             }
@@ -187,55 +176,78 @@ export default {
     }
   },
   created() {
-    this.$axios.get("idapi/architecture/").then(res => {
-      //maindata
+    // this.$axios.get("/idapi/architecture/").then(res => {
+    //   //maindata
+    //   this.maindata = res.data;
+    // });
+    this.$axios.get("http://61.56.172.10/architecture/").then(res => {
       this.maindata = res.data;
     });
-    console.log("maindata:", this.maindata);
   },
   computed: {
     areadata: function() {
-      var filtermain=this.maindata;
+      let filtermain = [];
+      filtermain = this.maindata;
+      // console.log("maindata node count:",this.maindata[0].node.length);
+
       if (
+        //看有沒有選廠
         this.sel_main != undefined &&
         this.sel_main > 0 &&
         this.maindata.length > 0
       ) {
-        filtermain = this.maindata.filter(main => main.id == this.sel_main);
+        filtermain = filtermain.filter(main => main.id == this.sel_main);
       }
-      var area=[];
+      var area = [];
+
       filtermain.forEach(function(x) {
-          x.pond_area.forEach(function(y) {
-            var yitem = {id:y.id,name:y.name};
-            if (area.indexOf(yitem)==-1) {//沒找到
-              area.push({id:y.id, name:y.name});
-            }
-          });
+        x.node.forEach(function(y) {
+          var yitem = { id: y.id, name: y.name };
+          if (area.indexOf(yitem) == -1) {
+            //沒找到
+            area.push(yitem);
+          }
         });
-        return area;
+      });
+      return area;
     },
-    pooldata:function(){
-      var filtermain=this.maindata;
+    pooldata: function() {
+      let filterarea = _.cloneDeep(this.maindata);
+      //filterarea = this.maindata;
+
       //先篩廠
       if (
-        this.sel_main != undefined &&//非空
-        this.sel_main > 0 &&//有選到
-        this.maindata.length > 0//有資料
+        this.sel_main != undefined && //非空
+        this.sel_main > 0 && //有選到
+        this.maindata.length > 0 //有資料
       ) {
-        filtermain = this.maindata.filter(main => main.id == this.sel_main);
-        
+        filterarea = filterarea.filter(main => main.id == this.sel_main);
       }
+      let obj = [];
       //再篩區
-       if (
+      if (
+        //如果有選區
         this.sel_area != undefined &&
         this.sel_area.length > 0 &&
-        filtermain.length > 0
+        filterarea.length > 0
       ) {
-          for (let i = 0; i < filtermain.length; i++) {
-            filtermain[i].pond_area = filtermain[i].pond_area.filter(x=>x.name == this.sel_area);
-          }
-        }
-      return filtermain;
+        let astr = this.sel_area;
+        filterarea.forEach(function(item, index) {
+          obj.push(item);
+          console.log("item", item);
+          obj[index].node = item.node.filter(x => x.name == astr);
+        });
+        /*for (let i = 0; i < obj.length; i++) {
+          console.log("filterarea node:",obj[i].node.length);
+          filterarea[i].node = obj[i].node.filter(
+            x => x.name == this.sel_area
+          );
+        }*/
+      }
+      //return this.maindata;
+      return filterarea;
+
+      //return obj;
     }
   }
 };

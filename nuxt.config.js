@@ -129,18 +129,18 @@ export default {
     }
   },
   proxy:{
-    '/mapi':{//表示 api url 當中的 path 部分，將會以 ‘api’ 開頭，例如：http://localhost:3000/api/
-      target:'http://localhost:3031/',//表示要被代理請求的 api url ( server 地址）當請求/api/users時，從請求 http://localhost:3000/api/users 代理到 https://example.com/api/users
+    "/mapi":{//表示 api url 當中的 path 部分，將會以 ‘api’ 開頭，例如：http://localhost:3000/api/
+      target:"http://localhost:3031/",//表示要被代理請求的 api url ( server 地址）當請求/api/users時，從請求 http://localhost:3000/api/users 代理到 https://example.com/api/users
       changeOrigin:true,
       pathRewrite:{//定義 url 中 path 的重寫規則。當請求/api/users時，其實是想對 https://example.com/api/users 發出請求，這時就必須把前綴 path api刪除（如果 api url當中有api就刪除，沒有api就讓它為空）
-        '^/mapi':'',
+        "^/mapi":"",
       }
     },
-    '/gapi':{
-      target:'https://oauth2.googleapis.com/',
+    "/gapi":{
+      target:"https://oauth2.googleapis.com/",
       changeOrigin:true,
       pathRewrite:{
-        '^/gapi':'',
+        "^/gapi":"",
       }
     },
     //設定代理

@@ -16,6 +16,7 @@
     "chart.js": "^2.9.4",
     "core-js": "^3.8.3",
     "echarts": "^4.9.0",
+    "lodash": "^4.17.21",
     "nuxt": "^2.14.12",
     "v-charts-v2": "^2.0.9",
     "vue-chartjs": "^3.5.1"

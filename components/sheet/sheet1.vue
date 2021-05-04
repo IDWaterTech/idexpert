@@ -5,7 +5,7 @@
       水質
       <v-tooltip v-model="show" right>
         <template v-slot:activator="{ on, attrs }">
-          <a href="/indicator/ind1" v-bind="attrs" v-on="on" target="_blank"
+          <a href="Indicator/ind1" v-bind="attrs" v-on="on" target="_blank"
             ><v-btn color="grey" fab x-small dark
               ><v-icon>mdi-open-in-new</v-icon></v-btn
             ></a
