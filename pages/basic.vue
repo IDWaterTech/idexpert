@@ -8,7 +8,7 @@
         <v-expansion-panel-content>
           <v-container class="grey lighten-5">
             <v-row no-gutters>
-              <v-col cols="3">
+              <v-col cols="12" md="3">
                 <v-card class="pa-2" outlined tile>
                   <v-select
                     :items="maindata"
@@ -43,8 +43,8 @@
                     open-on-click
                     :selection-type="'leaf'"
                   >
+                    <!-- item顯示，前面的預掛圖示 -->
                     <template v-slot:prepend="{ item, open }">
-                        
                       <v-icon v-if="!item.type && item.node">
                         <!-- {{ open ? "mdi-folder-open" : "mdi-folder" }} 有NODE絕對不是最後一層-->
                         {{ open ? "mdi-select-group" : "mdi-select-inverse" }}
@@ -57,8 +57,14 @@
                         {{ files[item.type] }}
                       </v-icon>
                     </template>
+                    <!-- item內容 -->
+                    <template slot="label" slot-scope="{ item }">
+                      <div @click="openDialog(item)" v-if="!item.node">{{ item.name }}</div>
+                      <div v-else @click="openDialog()">{{item.name}}</div>
+                    </template>
                   </v-treeview>
                 </v-card>
+                {{clickeditem}}
               </v-col>
             </v-row>
           </v-container>
@@ -122,6 +128,7 @@ export default {
       mypanel: [],
       sel_main: "",
       sel_area: "",
+      clickeditem:'',
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
@@ -171,6 +178,7 @@ export default {
     };
   },
   methods: {
+    openDialog:function(item){this.clickeditem =(item)?"您選到了："+item.name:'';},//選到子項目才出現資料
     closepanel: function() {
       this.mypanel = [];
     }
