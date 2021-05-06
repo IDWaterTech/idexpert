@@ -8,8 +8,9 @@
         <v-expansion-panel-content>
           <v-container class="grey lighten-5">
             <v-row no-gutters>
+              
               <v-col cols="12" md="3">
-                <v-card class="pa-2" outlined tile>
+                <v-card class="pa-2" outlined tile min-height="300px">
                   <v-select
                     :items="maindata"
                     item-value="id"
@@ -21,9 +22,10 @@
                   <v-select
                     v-model="sel_area"
                     :items="areadata"
-                    item-value="name"
+                    item-value="id"
                     item-text="name"
                     clearable
+                    @change="areachange"
                     label="選擇區域"
                   ></v-select>
                   <!-- 可能同池名，在不同廠，所以value= name -->
@@ -31,8 +33,21 @@
                 </v-card>
               </v-col>
               <v-divider vertical></v-divider>
-              <v-col>
-                <v-card class="pa-2" outlined tile>
+              <v-col cols="12" md="9">
+                <v-data-table
+                  :headers="headers"
+                  :items="mainpool.items"
+                  item-key="unit"
+                  :footer-props="footerProps"
+                  no-data-text="查無資料"
+                  disable-sort
+                  :loading="tableloading"
+                  height="300px"
+                >
+                </v-data-table>
+              </v-col>
+              <v-col cols="12" md="5" v-if="false">
+                <v-card class="pa-2" outlined tile min-height="300px">
                   <v-treeview
                     v-model="tree"
                     :open="initiallyOpen"
@@ -59,12 +74,45 @@
                     </template>
                     <!-- item內容 -->
                     <template slot="label" slot-scope="{ item }">
-                      <div @click="openDialog(item)" v-if="!item.node">{{ item.name }}</div>
-                      <div v-else @click="openDialog()">{{item.name}}</div>
+                      <div @click="openDialog(item)" v-if="!item.node">
+                        {{ item.name }}
+                      </div>
+                      <div v-else @click="openDialog()">{{ item.name }}</div>
                     </template>
                   </v-treeview>
                 </v-card>
-                {{clickeditem}}
+              </v-col>
+              <v-divider vertical></v-divider>
+              <v-col cols="12" md="4" v-if="false">
+                <v-card class="pa-2" outlined tile min-height="300px">
+                  <div v-if="clickeditem.length > 0">
+                    水池:{{ clickeditem }}
+                    <v-list dense>
+                      <v-list-item-group color="primary">
+                        <v-list-item
+                          v-for="(item, i) in mainpool.items"
+                          :key="i"
+                        >
+                          <v-list-item-icon>
+                            <!-- <v-icon v-text="item.icon"></v-icon> -->
+                            <v-icon>mdi-source-commit-start</v-icon>
+                          </v-list-item-icon>
+
+                          <v-list-item-content>
+                            <!-- <v-list-item-title
+                            v-text="item.text"
+                          ></v-list-item-title> -->
+                            <v-list-item-title
+                              >{{ item.name }}({{ item.unit }})：{{
+                                item.value
+                              }}</v-list-item-title
+                            >
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list-item-group>
+                    </v-list>
+                  </div>
+                </v-card>
               </v-col>
             </v-row>
           </v-container>
@@ -75,41 +123,41 @@
       <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="'#tab-' + tab.name">
         {{ tab.name }}
       </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="currenttab">
-      <v-tab-item
-        v-for="(tab, idx) in tabs"
-        :key="idx"
-        :value="'tab-' + tab.name"
-      >
-        <v-card flat>
-          <v-card-text>
-            <h2>{{ tab.name }}</h2>
 
-            <v-row>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
-    </v-tabs-items>
+      <v-tabs-items v-model="currenttab">
+        <v-tab-item
+          v-for="(tab, idx) in tabs"
+          :key="idx"
+          :value="'tab-' + tab.name"
+        >
+          <v-card flat>
+            <v-card-text>
+              <h2>{{ tab.name }}</h2>
+
+              <v-row>
+                <v-col cols="12" md="4">
+                  <water-quality defaultitem="density"></water-quality>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <Ind1></Ind1>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <Ind1></Ind1>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <Ind1></Ind1>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <Ind1></Ind1>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <Ind1></Ind1>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-tab-item> </v-tabs-items
+    ></v-tabs>
   </div>
 </template>
 
@@ -117,18 +165,20 @@
 import treelst from "~/components/treeList.vue";
 import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
+import WaterQuality from "@/components/sheet/waterQuality";
 export default {
   layout: "emptynologin",
   components: {
     treelst,
-    Ind1
+    Ind1,
+    WaterQuality
   },
   data() {
     return {
       mypanel: [],
       sel_main: "",
       sel_area: "",
-      clickeditem:'',
+      clickeditem: "",
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
@@ -174,13 +224,54 @@ export default {
           ]
         }
       ],
-      maindata: []
+      maindata: [],
+      mainpool: {
+        id: 1,
+        name: "A1",
+        items: [
+         // { name: "體積", item: "volume", value: 140.0, unit: "噸" },
+        ]
+      },
+      footerProps: {
+        "items-per-page-text": "每頁",
+        "items-per-page-options": [25, 50, 75, 100]
+      },
+      headers: [
+        //  { text: "id", value: "id", groupable: false },
+        { text: "name", value: "name", groupable: false },
+        { text: "volume", value: "volume", groupable: false },
+        { text: "density", value: "density", groupable: false },
+      ],
+      tableloading:false
     };
   },
   methods: {
-    openDialog:function(item){this.clickeditem =(item)?"您選到了："+item.name:'';},//選到子項目才出現資料
+    openDialog: function(item) {
+      this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
+      this.$axios.get("http://61.56.172.10/pond-data/").then(res => {
+        console.log(res.data);
+      });
+    },
     closepanel: function() {
       this.mypanel = [];
+    },
+    areachange:async function() {
+      var para = {
+        id: this.sel_area
+      };
+
+      if (this.sel_area) {
+        this.tableloading = true;
+        await this.$axios.get("http://61.56.172.10/ponds-data/",{ params: para })
+        .then(res => {
+          this.mainpool.items=res.data;
+        })
+        .finally(() => { /* 不論失敗成功皆會執行 */this.tableloading = false; })
+        ;
+      }else{
+        this.mainpool.items=[];
+      }
+
     }
   },
   created() {
