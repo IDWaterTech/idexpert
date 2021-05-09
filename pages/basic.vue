@@ -136,10 +136,10 @@
 
               <v-row>
                 <v-col cols="12" md="4">
-                  <water-quality defaultitem="density"></water-quality>
+                  <water-quality defaultitem="density" chartId="mmm"></water-quality>
                 </v-col>
                 <v-col cols="12" md="4">
-                  <Ind1></Ind1>
+                  <WaterQuality_Vcharts></WaterQuality_Vcharts>
                 </v-col>
                 <v-col cols="12" md="4">
                   <Ind1></Ind1>
@@ -166,12 +166,13 @@ import treelst from "~/components/treeList.vue";
 import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
 import WaterQuality from "@/components/sheet/waterQuality";
+import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 export default {
   layout: "emptynologin",
   components: {
     treelst,
     Ind1,
-    WaterQuality
+    WaterQuality,WaterQuality_Vcharts
   },
   data() {
     return {

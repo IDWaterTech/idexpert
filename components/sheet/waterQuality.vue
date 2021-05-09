@@ -1,108 +1,104 @@
 <template>
-  <div>
-    <!-- <h3>水質 <a href="/indicator/ind1" target="_blank"><v-btn color="grey" fab x-small dark><v-icon>mdi-open-in-new</v-icon></v-btn></a></h3> -->
-    <v-row>
-      <v-col cols="12"
-        ><h3>WaterQuality-{{ defaultitem }}</h3></v-col
-      >
-      <v-col cols="12" md="6"><v-select placeholder="起日"></v-select></v-col>
-      <v-col cols="12" md="6"><v-select placeholder="訖日"></v-select></v-col>
-    </v-row>
-    <v-select
-      v-model="slt_1"
-      :items="slt_1_items"
-      label="Select"
-      v-on:change="slt1_chg"
-      clearable
-      single-line
-    ></v-select>
-    <ve-line :data="chtData_new_1" :settings="set"></ve-line>
+  <div id="echarts">
+    <h2>{{ chartId }}</h2>
+    <div id="chartId"></div>
   </div>
 </template>
-<style>
-h3 {
-  font-family: "Microsoft JhengHei UI" !important;
-}
-a {
-  text-decoration: none;
-}
-</style>
-<script>
+<script type="text/javascript">
 export default {
+  name: "Echarts",
+  props: ["chartId"],
   data() {
-    return {
-      //水質---------------------------------------------------------------------------------------
-      set: {
-        legendAlias: {
-          鹽度: "鹽度(ppt)",
-          溶氧: "溶氧(ppm)",
-          氨氮: "氨氮(ppm)",
-          亞硝酸: "亞硝酸(ppm)",
-          溫度: "溫度(°C)",
-          酸鹼度: "酸鹼度(ph)"
-        }
-      },
-      slt_1_items: ["checked_date", "nitrite", "nh3n", "ph"], //下拉所有項目
-      slt_1: "", //下拉的項目-選到的
-      chtData_Ora_1: {
-        columns: [
-          "checked_date",
-          "nitrite",
-          "nh3n",
-          "ph",
-        ],
-        rows: [
+    return { linedata: [] };
+  },
+  created() {
+    // this.$axios
+    //   .get(
+    //     "http://61.56.172.10/water-quality-data/?started_date=2021-01-01&ended_date=2021-01-10&factory_id=1&pond_area_id=2&pond_id=1"
+    //   )
+    //   .then(res => {
+    //     this.linedata = res.data;
+    //   });
+  },
+  methods: {
+    echartsInit() {
+      // 找到容器
+      let myChart = this.$echarts.init(document.getElementById("chartId"));
+      var option = {
+        title: {
+          text: "水質"
+        },
+        tooltip: {
+          trigger: "axis"
+        },
+        legend: {
+          data: ["nitrite", "ph"],
+          formatter:function(name){
+            if(name == "nitrite"){return "亞硝酸鹽"}
+            if(name == "ph"){return "PH值"}
+            return name;
+          }
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false
+          //data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+        },
+        yAxis: {
+          type: "value"
+        },
+        series: [
           {
-            id: "A1",
+            name: "nitrite",
+            type: "line",
+            stack: "tiled",//tiled stack
             data: [
-              {
-                inspected_date: "2021-05-01",
-                nitrite: 1.0,
-                nh3n: 2.0,
-                ph: 3.0,
-              }
+              ["2019-10-10 12:00", 200],
+              ["2019-10-11 12:01", 560],
+              ["2019-10-11 12:02",],
+              ["2019-10-11 12:03", 560],
+              ["2019-10-11 12:04", 460]
+            ]
+          },
+          {
+            name: "ph",
+            type: "line",
+            stack: "stack",
+            data: [
+              ["2019-10-10 12:00", 211],
+              ["2019-10-11 12:01", 560],
+              ["2019-10-11 12:02", 560],
+              ["2019-10-11 12:03", 560],
+              ["2019-10-11 12:04", 360]
             ]
           }
         ]
-      },
-      chtData_new_1: { columns: [], rows: [] },
-      show: false
-    };
-  },
-  created() {
-    //水質----------
-    this.chtData_new_1.columns = [...this.chtData_Ora_1.columns];
-    //直接參考，不會動到舊資料
-    let array = [];
-    this.chtData_Ora_1.rows.forEach(element => {
-      array.push(...element.data);
-    });
-    this.chtData_new_1.rows = array;
-    this.chtData_new_1.rows = this.sheetdata;
-  },
-  computed: {
-    sheetdata: function() {
-      let array = [];
-      this.chtData_Ora_1.rows.forEach(element => {
-        if (this.sheetid === element.id) {
-          array.push(...element.data);
-        }
-        if (this.sheetid === undefined || this.sheetid.trim() === "") {
-          array.push(...element.data);
-        }
-      });
-      return array;
+      };
+      myChart.setOption(option);
     }
   },
-  props: ["sheetid", "defaultitem"],
-  methods: {
-    slt1_chg() {
-      if (this.slt_1) {
-        this.chtData_new_1.columns = ["default", this.slt_1];
-      } else {
-        this.chtData_new_1.columns = this.chtData_Ora_1.columns;
-      }
-    }
+  mounted() {
+    this.echartsInit();
   }
 };
 </script>
+<style scoped>
+#chartId {
+  width: 100%;
+  height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  float: left;
+}
+</style>

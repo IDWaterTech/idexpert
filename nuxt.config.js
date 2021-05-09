@@ -24,7 +24,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/axios','~/plugins/v-charts-v2'
+    '~/plugins/axios','~/plugins/v-charts-v2','~/plugins/echarts'
     // { src: "~/plugins/chart", mode: 'client' },
     // { src: "~/plugins/vue-chartjs", mode: 'client' }
   ],
