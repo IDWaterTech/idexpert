@@ -138,8 +138,8 @@
                 <v-col cols="12" md="4">
                   <water-quality defaultitem="density" chartId="mmm"></water-quality>
                 </v-col>
-                <v-col cols="12" md="4">
-                  <WaterQuality_Vcharts></WaterQuality_Vcharts>
+                <v-col cols="12" md="4"  v-if="waterdata.length>0">
+                  <WaterQuality_Vcharts :rowsData="waterdata" :legendAliasOut="waterdatacols" xColName="inspected_date"></WaterQuality_Vcharts>
                 </v-col>
                 <v-col cols="12" md="4">
                   <Ind1></Ind1>
@@ -243,14 +243,15 @@ export default {
         { text: "volume", value: "volume", groupable: false },
         { text: "density", value: "density", groupable: false },
       ],
-      tableloading:false
+      tableloading:false,
+      waterdata:[],
+      waterdatacols:[]
     };
   },
   methods: {
     openDialog: function(item) {
       this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
       this.$axios.get("http://61.56.172.10/pond-data/").then(res => {
-        console.log(res.data);
       });
     },
     closepanel: function() {
@@ -273,16 +274,24 @@ export default {
         this.mainpool.items=[];
       }
 
+    },
+    getwater:async function(){
+      //水質檢測資料
+      await this.$axios.get("http://61.56.172.10/water-quality-data/?started_date=2021-01-01&ended_date=2021-01-10&factory_id=1&pond_area_id=2&pond_id=1").then(res => {
+      this.waterdata = res.data;
+      this.waterdatacols = res.data[0];
+    });
     }
   },
-  created() {
+  async created() {
     // this.$axios.get("/idapi/architecture/").then(res => {
     //   //maindata
     //   this.maindata = res.data;
     // });
-    this.$axios.get("http://61.56.172.10/architecture/").then(res => {
+    await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
       this.maindata = res.data;
     });
+    await this.getwater();
   },
   computed: {
     areadata: function() {
@@ -334,7 +343,6 @@ export default {
         let astr = this.sel_area;
         filterarea.forEach(function(item, index) {
           obj.push(item);
-          console.log("item", item);
           obj[index].node = item.node.filter(x => x.name == astr);
         });
         /*for (let i = 0; i < obj.length; i++) {

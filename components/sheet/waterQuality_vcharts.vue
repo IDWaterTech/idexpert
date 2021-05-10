@@ -67,6 +67,10 @@ export default {
         };
       }
     },
+    xColName:{
+      type:String,
+      default:"default"
+    },
     rowsData: {
       type: Array,
       default: function() {
@@ -106,9 +110,8 @@ export default {
     //--外部參數資料帶入--
     this.legendAlias = this.legendAliasOut;
     this.slt_1_items = Object.keys(this.legendAliasOut);
-    this.chtData_Ora_1.columns = ["default"].concat(this.slt_1_items);
+    this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items);
     this.chtData_Ora_1.rows[0].data = this.rowsData;
-    debugger;
     //水質----------
     this.chtData_new_1.columns = [...this.chtData_Ora_1.columns];
     //直接參考，不會動到舊資料
