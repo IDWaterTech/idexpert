@@ -8,7 +8,6 @@
         <v-expansion-panel-content>
           <v-container class="grey lighten-5">
             <v-row no-gutters>
-              
               <v-col cols="12" md="3">
                 <v-card class="pa-2" outlined tile min-height="300px">
                   <v-select
@@ -28,6 +27,52 @@
                     @change="areachange"
                     label="選擇區域"
                   ></v-select>
+                  <v-menu
+                    v-model="menu_startdate"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="sdate"
+                        label="選擇起日"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="sdate"
+                      @input="menu_startdate = false"
+                    ></v-date-picker>
+                  </v-menu>
+                  <v-menu
+                    v-model="menu_enddate"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="edate"
+                        label="選擇訖日"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="edate"
+                      @input="menu_enddate = false"
+                    ></v-date-picker>
+                  </v-menu>
                   <!-- 可能同池名，在不同廠，所以value= name -->
                   <v-btn tile color="blue" dark @click="closepanel">確認</v-btn>
                 </v-card>
@@ -120,44 +165,47 @@
       </v-expansion-panel>
     </v-expansion-panels>
     <v-tabs v-model="currenttab" background-color="blue lighten-2" dark>
-      <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="'#tab-' + tab.name">
+      <v-tab v-for="(tab, idx) in tabs" :key="idx">
         {{ tab.name }}
       </v-tab>
-
-      <v-tabs-items v-model="currenttab">
-        <v-tab-item
+      <v-tab-item>
+        <!-- <v-tab-item
           v-for="(tab, idx) in tabs"
           :key="idx"
           :value="'tab-' + tab.name"
-        >
-          <v-card flat>
-            <v-card-text>
-              <h2>{{ tab.name }}</h2>
-
-              <v-row>
-                <v-col cols="12" md="4">
+        > -->
+        <v-card flat>
+          <v-card-text>
+            <v-row>
+              <!-- <v-col cols="12" md="4"> 使用echarts
                   <water-quality defaultitem="density" chartId="mmm"></water-quality>
-                </v-col>
-                <v-col cols="12" md="4"  v-if="waterdata.length>0">
-                  <WaterQuality_Vcharts :rowsData="waterdata" :legendAliasOut="waterdatacols" xColName="inspected_date"></WaterQuality_Vcharts>
-                </v-col>
-                <v-col cols="12" md="4">
-                  <Ind1></Ind1>
-                </v-col>
-                <v-col cols="12" md="4">
-                  <Ind1></Ind1>
-                </v-col>
-                <v-col cols="12" md="4">
-                  <Ind1></Ind1>
-                </v-col>
-                <v-col cols="12" md="4">
-                  <Ind1></Ind1>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-tab-item> </v-tabs-items
-    ></v-tabs>
+                </v-col> -->
+              <v-col cols="12" md="4">
+                <WaterQuality_Vcharts
+                  :rowsData="waterdata"
+                  :legendAliasOut="waterdatacols"
+                  xColName="inspected_date"
+                  :defaultitem="defitem"
+                  :loading="waterloading"
+                ></WaterQuality_Vcharts>
+              </v-col>
+              <!-- <v-col cols="12" md="4">
+                <Ind1></Ind1>
+              </v-col>
+              <v-col cols="12" md="4">
+                <Ind1></Ind1>
+              </v-col>
+              <v-col cols="12" md="4">
+                <Ind1></Ind1>
+              </v-col>
+              <v-col cols="12" md="4">
+                <Ind1></Ind1>
+              </v-col> -->
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs>
   </div>
 </template>
 
@@ -167,12 +215,14 @@ import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
 import WaterQuality from "@/components/sheet/waterQuality";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
+import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
   components: {
     treelst,
     Ind1,
-    WaterQuality,WaterQuality_Vcharts
+    WaterQuality,
+    WaterQuality_Vcharts
   },
   data() {
     return {
@@ -180,6 +230,7 @@ export default {
       sel_main: "",
       sel_area: "",
       clickeditem: "",
+      defitem: "DEF",
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
@@ -230,7 +281,7 @@ export default {
         id: 1,
         name: "A1",
         items: [
-         // { name: "體積", item: "volume", value: 140.0, unit: "噸" },
+          // { name: "體積", item: "volume", value: 140.0, unit: "噸" },
         ]
       },
       footerProps: {
@@ -241,58 +292,75 @@ export default {
         //  { text: "id", value: "id", groupable: false },
         { text: "name", value: "name", groupable: false },
         { text: "volume", value: "volume", groupable: false },
-        { text: "density", value: "density", groupable: false },
+        { text: "density", value: "density", groupable: false }
       ],
-      tableloading:false,
-      waterdata:[],
-      waterdatacols:[]
+      tableloading: false,
+      waterdata: [],
+      waterdatacols: {},
+      waterloading: false,
+      //---日曆
+      menu_startdate: false,
+      menu_enddate: false,
+      sdate: dayjs(new Date())
+        .add(-10, "day")
+        .format("YYYY-MM-DD"),
+      edate: new Date().toISOString().substr(0, 10)
     };
   },
   methods: {
     openDialog: function(item) {
       this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
-      this.$axios.get("http://61.56.172.10/pond-data/").then(res => {
-      });
+      this.$axios.get("http://61.56.172.10/pond-data/").then(res => {});
     },
-    closepanel: function() {
+    closepanel: async function() {
       this.mypanel = [];
+      this.waterdata = [];
+      await this.getwater(); //觸發取得水質資料
+      this.defitem = "HIJK" + Math.random();
+      //this.waterdata=[];
     },
-    areachange:async function() {
+    areachange: async function() {
       var para = {
         id: this.sel_area
       };
 
       if (this.sel_area) {
         this.tableloading = true;
-        await this.$axios.get("http://61.56.172.10/ponds-data/",{ params: para })
-        .then(res => {
-          this.mainpool.items=res.data;
-        })
-        .finally(() => { /* 不論失敗成功皆會執行 */this.tableloading = false; })
-        ;
-      }else{
-        this.mainpool.items=[];
+        await this.$axios
+          .get("http://61.56.172.10/ponds-data/", { params: para })
+          .then(res => {
+            this.mainpool.items = res.data;
+          })
+          .finally(() => {
+            /* 不論失敗成功皆會執行 */ this.tableloading = false;
+          });
+      } else {
+        this.mainpool.items = [];
       }
-
     },
-    getwater:async function(){
+    getwater: async function() {
+      this.waterloading = true;
+      //水質檢測欄位
+      await this.$axios
+        .get("http://61.56.172.10/water-quality-col-name/")
+        .then(res => {
+          this.waterdatacols = res.data;
+        });
       //水質檢測資料
-      await this.$axios.get("http://61.56.172.10/water-quality-data/?started_date=2021-01-01&ended_date=2021-01-10&factory_id=1&pond_area_id=2&pond_id=1").then(res => {
-      this.waterdata = res.data;
-      this.waterdatacols = res.data[0];
-    });
+      var apiURL = `http://61.56.172.10/water-quality-data/?started_date=${this.sdate}&ended_date=${this.edate}&factory_id=1&pond_area_id=2&pond_id=1`;
+      await this.$axios.get(apiURL).then(res => {
+        this.waterdata = res.data;
+      });
+      this.waterloading = false;
     }
   },
   async created() {
-    // this.$axios.get("/idapi/architecture/").then(res => {
-    //   //maindata
-    //   this.maindata = res.data;
-    // });
     await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
       this.maindata = res.data;
     });
-    await this.getwater();
+    //await this.getwater();
   },
+  async mounted() {},
   computed: {
     areadata: function() {
       let filtermain = [];
@@ -361,4 +429,6 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+@import "https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css";
+</style>

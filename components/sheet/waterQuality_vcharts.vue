@@ -2,11 +2,11 @@
   <div>
     <!-- <h3>水質 <a href="/indicator/ind1" target="_blank"><v-btn color="grey" fab x-small dark><v-icon>mdi-open-in-new</v-icon></v-btn></a></h3> -->
     <v-row>
-      <v-col cols="12"
-        ><h3>WaterQuality-{{ defaultitem }}</h3></v-col
-      >
-      <v-col cols="12" md="6"><v-select placeholder="起日"></v-select></v-col>
-      <v-col cols="12" md="6"><v-select placeholder="訖日"></v-select></v-col>
+      <v-col cols="12"><h2>水質檢測</h2>
+      <!-- <v-col cols="12"><h2>水質檢測 -{{ defaultitem }}</h2> -->
+      </v-col>
+      <!-- <v-col cols="12" md="6"><v-select placeholder="起日"></v-select></v-col>
+      <v-col cols="12" md="6"><v-select placeholder="訖日"></v-select></v-col> -->
     </v-row>
     <v-select
       v-model="slt_1"
@@ -14,12 +14,13 @@
       label="Select"
       v-on:change="slt1_chg"
       clearable
-      single-line
+      single-line v-if="false"
     ></v-select>
-    <ve-line :data="chtData_new_1" :settings="set"></ve-line>
+    <ve-line :data="chtData_new_1" :settings="set" :loading="loading"></ve-line>
   </div>
 </template>
 <style>
+
 h3 {
   font-family: "Microsoft JhengHei UI" !important;
 }
@@ -54,6 +55,10 @@ export default {
   props: {
     sheetid: String,
     defaultitem: String,
+    loading:{
+      type:Boolean,
+      default:false
+    },
     legendAliasOut: {
       type: Object,
       default: function() {
@@ -67,9 +72,9 @@ export default {
         };
       }
     },
-    xColName:{
-      type:String,
-      default:"default"
+    xColName: {
+      type: String,
+      default: "default"
     },
     rowsData: {
       type: Array,
@@ -107,9 +112,25 @@ export default {
     }
   },
   created() {
+    // //--外部參數資料帶入--
+    // this.set.legendAlias = this.legendAliasOut;
+    // this.slt_1_items = Object.keys(this.legendAliasOut);//取得主要欄位
+    // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items);
+    // this.chtData_Ora_1.rows[0].data = this.rowsData;
+    // //水質----------
+    // this.chtData_new_1.columns = [...this.chtData_Ora_1.columns];
+    // //直接參考，不會動到舊資料
+    // let array = [];
+    // this.chtData_Ora_1.rows.forEach(element => {
+    //   array.push(...element.data);
+    // });
+    // this.chtData_new_1.rows = array;
+    // this.chtData_new_1.rows = this.sheetdata;
+  },
+  updated() {
     //--外部參數資料帶入--
-    this.legendAlias = this.legendAliasOut;
-    this.slt_1_items = Object.keys(this.legendAliasOut);
+    this.set.legendAlias = this.legendAliasOut;
+    this.slt_1_items = Object.keys(this.legendAliasOut);//取得主要欄位
     this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items);
     this.chtData_Ora_1.rows[0].data = this.rowsData;
     //水質----------
@@ -136,7 +157,6 @@ export default {
       return array;
     }
   },
-
   methods: {
     slt1_chg() {
       if (this.slt_1) {
