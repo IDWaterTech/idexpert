@@ -14,12 +14,14 @@
       single-line
       v-if="false"
     ></v-select>
-    <div v-show="false">{{defaultitem}}</div> <!-- 外部更新資料必須顯示在DOM裡面才會更新資料，不得已只好放著，但不顯示 -->
+    <div v-show="false">{{ defaultitem }}</div>
+    <!-- 外部更新資料必須顯示在DOM裡面才會更新資料，不得已只好放著，但不顯示 -->
     <ve-line
       :data="chtData_new_1"
       :settings="set"
       :extend="chartExtend"
       :loading="loading"
+      :events="chartEvent"
     ></ve-line>
   </div>
 </template>
@@ -55,7 +57,12 @@ export default {
       show: false,
       chartExtend: {
         legend: {
-          selected:this.defaultitem
+          selected: this.defaultitem
+        }
+      },
+      chartEvent: {
+        click: function(e) {
+          alert("Item:" + e.seriesName + "\r\nValue:" + e.value);
         }
       }
     };
@@ -64,7 +71,7 @@ export default {
   props: {
     sheetid: String,
     title: String,
-    defaultitem: {type:Object,default:{}},
+    defaultitem: { type: Object, default: {} },
     loading: {
       type: Boolean,
       default: false
@@ -121,29 +128,13 @@ export default {
       }
     }
   },
-  created() {
-    // //--外部參數資料帶入--
-    // this.set.legendAlias = this.legendAliasOut;
-    // this.slt_1_items = Object.keys(this.legendAliasOut);//取得主要欄位
-    // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items);
-    // this.chtData_Ora_1.rows[0].data = this.rowsData;
-    // //水質----------
-    // this.chtData_new_1.columns = [...this.chtData_Ora_1.columns];
-    // //直接參考，不會動到舊資料
-    // let array = [];
-    // this.chtData_Ora_1.rows.forEach(element => {
-    //   array.push(...element.data);
-    // });
-    // this.chtData_new_1.rows = array;
-    // this.chtData_new_1.rows = this.sheetdata;
-  },
   updated() {
     //--外部參數資料帶入--
     this.set.legendAlias = this.legendAliasOut;
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items);
     this.chtData_Ora_1.rows[0].data = this.rowsData;
-    this.chartExtend.legend.selected = this.defaultitem;//選到什麼欄位
+    this.chartExtend.legend.selected = this.defaultitem; //選到什麼欄位
     //水質----------
     this.chtData_new_1.columns = [...this.chtData_Ora_1.columns];
     //直接參考，不會動到舊資料
