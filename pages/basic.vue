@@ -169,38 +169,47 @@
         {{ tab.name }}
       </v-tab>
       <v-tab-item>
+        <v-overlay :value="waterloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
         <!-- <v-tab-item
           v-for="(tab, idx) in tabs"
           :key="idx"
           :value="'tab-' + tab.name"
         > -->
-        <v-card flat>
+        <v-card flat min-height="900px">
           <v-card-text>
+            <v-row v-if="Object.keys(waterdatacols).length > 0 && waterloading == false">
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem"
+                  clearable
+                  placeholder="指定項目"
+                  :items="Object.keys(waterdatacols)"
+                  v-if="waterdatacols"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
             <v-row>
               <!-- <v-col cols="12" md="4"> 使用echarts
                   <water-quality defaultitem="density" chartId="mmm"></water-quality>
                 </v-col> -->
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="4" v-for="item in waterdata" :key="item.id">
                 <WaterQuality_Vcharts
-                  :rowsData="waterdata"
+                  :rowsData="item.items"
                   :legendAliasOut="waterdatacols"
                   xColName="inspected_date"
-                  :defaultitem="defitem"
+                  :defaultitem="defalutItemList"
                   :loading="waterloading"
+                  :title="item.name"
                 ></WaterQuality_Vcharts>
               </v-col>
-              <!-- <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col>
-              <v-col cols="12" md="4">
-                <Ind1></Ind1>
-              </v-col> -->
+            </v-row>
+            <v-row v-if="waterdata.length < 1 && waterloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
         </v-card>
@@ -226,11 +235,11 @@ export default {
   },
   data() {
     return {
-      mypanel: [],
+      mypanel: 0,
       sel_main: "",
       sel_area: "",
       clickeditem: "",
-      defitem: "DEF",
+      defitem: "",
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
@@ -301,10 +310,10 @@ export default {
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
-      sdate: dayjs(new Date())
+      sdate: dayjs(new Date(2021, 0, 11))
         .add(-10, "day")
         .format("YYYY-MM-DD"),
-      edate: new Date().toISOString().substr(0, 10)
+      edate: new Date(2021, 0, 5).toISOString().substr(0, 10)
     };
   },
   methods: {
@@ -315,9 +324,16 @@ export default {
     closepanel: async function() {
       this.mypanel = [];
       this.waterdata = [];
-      await this.getwater(); //觸發取得水質資料
-      this.defitem = "HIJK" + Math.random();
+      //觸發取得水質資料
       //this.waterdata=[];
+      if (this.sel_main && this.sel_area) {
+        await this.getwater(
+          this.sdate,
+          this.edate,
+          this.sel_main,
+          this.sel_area
+        );
+      }
     },
     areachange: async function() {
       var para = {
@@ -338,7 +354,7 @@ export default {
         this.mainpool.items = [];
       }
     },
-    getwater: async function() {
+    getwater: async function(start_date, end_date, sel_main, sel_area) {
       this.waterloading = true;
       //水質檢測欄位
       await this.$axios
@@ -347,7 +363,7 @@ export default {
           this.waterdatacols = res.data;
         });
       //水質檢測資料
-      var apiURL = `http://61.56.172.10/water-quality-data/?started_date=${this.sdate}&ended_date=${this.edate}&factory_id=1&pond_area_id=2&pond_id=1`;
+      var apiURL = `http://61.56.172.10/water-quality-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
       await this.$axios.get(apiURL).then(res => {
         this.waterdata = res.data;
       });
@@ -424,6 +440,18 @@ export default {
       return filterarea;
 
       //return obj;
+    },
+    defalutItemList: function() {
+      var item = _.cloneDeep(this.waterdatacols);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem) {
+          item[key] = this.defitem == key ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
+      console.log(item);
+      return item;
     }
   }
 };
