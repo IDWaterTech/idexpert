@@ -183,7 +183,7 @@
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem"
-                  clearable
+                  clearable multiple chips
                   placeholder="指定項目"
                   :items="Object.keys(waterdatacols)"
                   v-if="waterdatacols"
@@ -444,8 +444,10 @@ export default {
     defalutItemList: function() {
       var item = _.cloneDeep(this.waterdatacols);
       for (const [key, value] of Object.entries(item)) {
+
         if (this.defitem) {
-          item[key] = this.defitem == key ? true : false;
+          // item[key] = this.defitem == key ? true : false;
+          item[key] = this.defitem.includes(key) ? true : false;
         } else {
           item[key] = true;
         }
