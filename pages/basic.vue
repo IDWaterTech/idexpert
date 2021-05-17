@@ -7,17 +7,41 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container class="grey lighten-5">
+            <v-row>
+              <v-col cols="12">
+                <v-img
+                  :src="mpurl"
+                  class="grey lighten-2"
+                  v-if="showmp && sel_main"
+                ></v-img>
+                <!-- <img src="~/static/test.jpg"/> -->
+              </v-col>
+            </v-row>
             <v-row no-gutters>
               <v-col cols="12" md="3">
                 <v-card class="pa-2" outlined tile min-height="300px">
                   <v-select
+                    v-model="sel_main"
                     :items="maindata"
                     item-value="id"
                     item-text="name"
                     label="選擇廠"
+                    @change="(sel_main>0)?'':showmp=false"
                     clearable
-                    v-model="sel_main"
-                  ></v-select>
+                  >
+                    <!-- :prepend-icon="(sel_main>0)?'mdi-image':undefined" 
+                  @click:prepend="showmpFun"
+                  -->
+                    <v-btn
+                      icon
+                      color="teal lighten-2"
+                      @click="showmpFun"
+                      v-if="sel_main"
+                      slot="prepend"
+                    >
+                      <v-icon>mdi-image</v-icon>
+                    </v-btn>
+                  </v-select>
                   <v-select
                     v-model="sel_area"
                     :items="areadata"
@@ -172,18 +196,19 @@
         <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <!-- <v-tab-item
-          v-for="(tab, idx) in tabs"
-          :key="idx"
-          :value="'tab-' + tab.name"
-        > -->
         <v-card flat min-height="900px">
           <v-card-text>
-            <v-row v-if="Object.keys(waterdatacols).length > 0 && waterloading == false">
+            <v-row
+              v-if="
+                Object.keys(waterdatacols).length > 0 && waterloading == false
+              "
+            >
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem"
-                  clearable multiple chips
+                  clearable
+                  multiple
+                  chips
                   placeholder="指定項目"
                   :items="Object.keys(waterdatacols)"
                   v-if="waterdatacols"
@@ -313,7 +338,9 @@ export default {
       sdate: dayjs(new Date(2021, 0, 11))
         .add(-10, "day")
         .format("YYYY-MM-DD"),
-      edate: new Date(2021, 0, 5).toISOString().substr(0, 10)
+      edate: new Date(2021, 0, 5).toISOString().substr(0, 10),
+      //---圖片(地圖)
+      showmp: false
     };
   },
   methods: {
@@ -368,6 +395,9 @@ export default {
         this.waterdata = res.data;
       });
       this.waterloading = false;
+    },
+    showmpFun: function() {
+      this.showmp = !this.showmp;
     }
   },
   async created() {
@@ -378,6 +408,11 @@ export default {
   },
   async mounted() {},
   computed: {
+    mpurl: function() {
+      return this.sel_main && this.showmp
+        ? `/factory_${this.sel_main}.jpg?lazy`
+        : "/factory_err.jpg?lazy";
+    },
     areadata: function() {
       let filtermain = [];
       filtermain = this.maindata;
@@ -444,7 +479,6 @@ export default {
     defalutItemList: function() {
       var item = _.cloneDeep(this.waterdatacols);
       for (const [key, value] of Object.entries(item)) {
-
         if (this.defitem) {
           // item[key] = this.defitem == key ? true : false;
           item[key] = this.defitem.includes(key) ? true : false;
