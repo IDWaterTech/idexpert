@@ -63,7 +63,15 @@ export default {
       },
       chartEvent: {
         click: function(e) {
-          alert("Item:" + e.seriesName + "\r\nValue:" + e.value);
+          //   this.sdate = this.req.sdate;
+          //   this.sel_main = this.req.sel_main;
+          //   this.sel_area = this.req.sel_area;
+          //   this.sel_pool = this.req.sel_pool;
+          //   this.defitem = this.req.defitem;
+          // $nuxt.$emit("clickFun");
+          debugger;
+          var para = { sdate: e.value[0], defitem: e.seriesName };
+          console.log(para);
         }
       }
     };
@@ -144,8 +152,8 @@ export default {
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
     var temp = Object.keys(this.rowsData[0]);
-    if (temp.indexOf(this.xColName)>-1) {
-      temp.splice(temp.indexOf(this.xColName),1);//去除default 時間欄位
+    if (temp.indexOf(this.xColName) > -1) {
+      temp.splice(temp.indexOf(this.xColName), 1); //去除default 時間欄位
     }
     this.chtData_Ora_1.columns = [this.xColName].concat(temp); //設定欄位
     this.chtData_Ora_1.rows[0].data = this.rowsData;
