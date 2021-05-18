@@ -71,7 +71,12 @@ export default {
   props: {
     sheetid: String,
     title: String,
-    defaultitem: { type: Object, default: {} },
+    defaultitem: {
+      type: Object,
+      default: function() {
+        return {};
+      }
+    },
     loading: {
       type: Boolean,
       default: false
@@ -127,6 +132,8 @@ export default {
         ];
       }
     }
+  },
+  created() {
   },
   updated() {
     //--外部參數資料帶入--
