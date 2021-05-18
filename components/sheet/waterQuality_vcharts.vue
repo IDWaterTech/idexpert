@@ -22,6 +22,7 @@
       :extend="chartExtend"
       :loading="loading"
       :events="chartEvent"
+      :judge-width="true"
     ></ve-line>
   </div>
 </template>
@@ -134,16 +135,23 @@ export default {
     }
   },
   created() {
+    // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
+    // this.chtData_new_1.columns = [...this.chtData_Ora_1.columns]; //設定欄位
   },
   updated() {
     //--外部參數資料帶入--
     this.set.legendAlias = this.legendAliasOut;
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
-    this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items);
+    // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
+    var temp = Object.keys(this.rowsData[0]);
+    if (temp.indexOf(this.xColName)>-1) {
+      temp.splice(temp.indexOf(this.xColName),1);//去除default 時間欄位
+    }
+    this.chtData_Ora_1.columns = [this.xColName].concat(temp); //設定欄位
     this.chtData_Ora_1.rows[0].data = this.rowsData;
     this.chartExtend.legend.selected = this.defaultitem; //選到什麼欄位
     //水質----------
-    this.chtData_new_1.columns = [...this.chtData_Ora_1.columns];
+    this.chtData_new_1.columns = [...this.chtData_Ora_1.columns]; //設定欄位
     //直接參考，不會動到舊資料
     let array = [];
     this.chtData_Ora_1.rows.forEach(element => {
