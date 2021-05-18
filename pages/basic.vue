@@ -247,7 +247,6 @@
 import treelst from "~/components/treeList.vue";
 import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
-import WaterQuality from "@/components/sheet/waterQuality";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import dayjs from "dayjs";
 export default {
@@ -255,7 +254,6 @@ export default {
   components: {
     treelst,
     Ind1,
-    WaterQuality,
     WaterQuality_Vcharts
   },
   data() {
