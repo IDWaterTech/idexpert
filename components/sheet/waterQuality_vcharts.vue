@@ -21,7 +21,7 @@
       :settings="set"
       :extend="chartExtend"
       :loading="loading"
-      :events="chartEvent"
+      :events="{ click: helo.bind(this, urldata) }"
       :judge-width="true"
     ></ve-line>
   </div>
@@ -70,6 +70,7 @@ export default {
           //   this.defitem = this.req.defitem;
           // $nuxt.$emit("clickFun");
           debugger;
+          console.log(this.show);
           var para = { sdate: e.value[0], defitem: e.seriesName };
           console.log(para);
         }
@@ -140,6 +141,12 @@ export default {
           }
         ];
       }
+    },
+    urldata: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   created() {
@@ -188,6 +195,21 @@ export default {
         this.chtData_new_1.columns = ["default", this.slt_1];
       } else {
         this.chtData_new_1.columns = this.chtData_Ora_1.columns;
+      }
+    },
+    helo(p, e) {
+      
+      // this.$router.push("indicator/?")
+      // let routeData = this.$router.resolve({name: 'Indicator', query: {data: "someData"}});
+      this.urldata.defitem = e.seriesName;
+      this.urldata.sdate = e.value[0];
+      if (Object.keys(this.urldata).length == 5) {
+        let routeData = this.$router.resolve({
+          name: "Indicator",
+          query: this.urldata
+        });
+        console.log(routeData);
+        window.open(routeData.href, "_blank");
       }
     }
   }
