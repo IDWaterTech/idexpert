@@ -96,7 +96,6 @@
             :defaultitem="{}"
             :loading="waterloading"
             :title="item.name"
-            @clickFun="clickWaterFun"
           ></WaterQuality_Vcharts>
         </v-col>
       </v-row>
@@ -151,19 +150,19 @@ export default {
     //   this.defitem = this.req.defitem;
     //    await this.getdata();
     // }
-    console.log("7");
     console.log(Object.keys(this.req));
   },
   async created() {
     //抓廠資料
     await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
       this.maindata = res.data;
+       this.sdate =
+        String(this.req.sdate).length > 0 ? (this.req.sdate) :"";
       this.sel_main =
         Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
       this.sel_area =
         Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
-      this.sel_pool =
-        Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
+      this.sel_pool = Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
       if (Number(this.req.sel_pool) > 0) {
         //await this.areachange();
         this.areachange();
@@ -175,8 +174,16 @@ export default {
       .get("http://61.56.172.10/water-quality-col-name/")
       .then(res => {
         this.waterdatacols = res.data;
-        this.defitem = this.req.defitem.length > 0 ? this.req.defitem : [];
+        this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ? this.req.defitem : [];
       });
+      
+     //抓投餵項目
+    await this.$axios
+      .get("http://61.56.172.10/feed-col-name/")
+      .then(res => {
+        Object.assign(this.waterdatacols,res.data);
+      });
+      console.log(this.waterdatacols);
     // //參數代入
     if (Object.keys(this.req).length > 0) {
       // this.sdate = this.req.sdate;
@@ -242,15 +249,22 @@ export default {
         this.defitem
       );
       //抓折線圖資料囉
-      var apiurl = `http://61.56.172.10/water-quality-data/?started_date=${this.sdate}&ended_date=${this.sdate}&factory_id=${this.sel_main}&pond_area_id=${this.sel_area}&pond_id=${this.sel_pool}&items=${this.defitem}`;
-      console.log("API:" + apiurl);
-      await this.$axios.get(apiurl).then(res => {
+      var para = {
+        started_date:this.sdate,
+        ended_date:this.sdate,
+        factory_id:this.sel_main,
+        pond_area_id:this.sel_area,
+        pond_id:this.sel_pool,
+        items:this.defitem
+      }
+      //var apiurl = `http://61.56.172.10/water-quality-data/?started_date=${this.sdate}&ended_date=${this.sdate}&factory_id=${this.sel_main}&pond_area_id=${this.sel_area}&pond_id=${this.sel_pool}&items=${this.defitem}`;
+     var apiurl = `http://61.56.172.10/water-quality-data/`;//await this.$axios.get(apiurl,{ params: para }).then(res => {
+     
+      await this.$axios.get(apiurl,{ params: para }).then(res => {
         this.item = res.data;
+        console.log("API:" + res.request.responseURL);
       });
     },
-    clickWaterFun: function() {
-      console.log("hi");
-    }
   }
 };
 </script>

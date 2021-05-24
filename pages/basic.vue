@@ -26,7 +26,7 @@
                     item-value="id"
                     item-text="name"
                     label="選擇廠"
-                    @change="(sel_main>0)?'':showmp=false"
+                    @change="sel_main > 0 ? '' : (showmp = false)"
                     clearable
                   >
                     <!-- :prepend-icon="(sel_main>0)?'mdi-image':undefined" 
@@ -186,13 +186,14 @@
             </v-row>
           </v-container>
         </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
+      </v-expansion-panel> </v-expansion-panels
+    >
     <v-tabs v-model="currenttab" background-color="blue lighten-2" dark>
-      <v-tab v-for="(tab, idx) in tabs" :key="idx">
+      <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name">
         {{ tab.name }}
       </v-tab>
-      <v-tab-item>
+      <!-- <v-tab-items v-model="currenttab"> -->
+      <v-tab-item :value="'水質監測'">
         <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
@@ -228,6 +229,11 @@
                   :defaultitem="defalutItemList"
                   :loading="waterloading"
                   :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
                 ></WaterQuality_Vcharts>
               </v-col>
             </v-row>
@@ -239,6 +245,57 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
+      <v-tab-item :value="'投餵/池體數據'">
+        <v-overlay :value="feedloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px">
+          <v-card-text>
+            <v-row
+              v-if="
+                Object.keys(feeddatacols).length > 0 && feedloading == false
+              "
+            >
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem_feed"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(feeddatacols)"
+                  v-if="feeddatacols"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="4" v-for="item in feeddata" :key="item.id">
+                <WaterQuality_Vcharts
+                  :rowsData="item.items"
+                  :legendAliasOut="feeddatacols"
+                  xColName="feed_time"
+                  :defaultitem="defalutItemList_feed"
+                  :loading="feedloading"
+                  :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
+                ></WaterQuality_Vcharts>
+              </v-col>
+            </v-row>
+            <v-row v-if="feeddata.length < 1 && feedloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item :value="'白蝦監測'"></v-tab-item>
+      <!-- </v-tab-items> -->
     </v-tabs>
   </div>
 </template>
@@ -338,7 +395,12 @@ export default {
         .format("YYYY-MM-DD"),
       edate: new Date(2021, 0, 5).toISOString().substr(0, 10),
       //---圖片(地圖)
-      showmp: false
+      showmp: false,
+      //投餵
+      feeddatacols: {}, //欄位
+      feedloading: false, //是否載入中
+      feeddata: [], //資料
+      defitem_feed: "", //預設項目[哪些被勾選]
     };
   },
   methods: {
@@ -352,12 +414,28 @@ export default {
       //觸發取得水質資料
       //this.waterdata=[];
       if (this.sel_main && this.sel_area) {
-        await this.getwater(
-          this.sdate,
-          this.edate,
-          this.sel_main,
-          this.sel_area
-        );
+        switch (this.currenttab) {
+          case "水質監測":
+            await this.getwater(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area
+            );
+            break;
+          case "投餵/池體數據":
+            await this.getfeed(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area
+            );
+            break;
+          case "白蝦監測":
+            break;
+          default:
+            break;
+        }
       }
     },
     areachange: async function() {
@@ -379,6 +457,7 @@ export default {
         this.mainpool.items = [];
       }
     },
+    //水質監測
     getwater: async function(start_date, end_date, sel_main, sel_area) {
       this.waterloading = true;
       //水質檢測欄位
@@ -394,6 +473,22 @@ export default {
       });
       this.waterloading = false;
     },
+    //投餵/池體數據
+    getfeed: async function(start_date, end_date, sel_main, sel_area) {
+      // 載入中
+      this.feedloading = true;
+      //欄位
+      await this.$axios.get("http://61.56.172.10/feed-col-name/").then(res => {
+        this.feeddatacols = res.data;
+      });
+      //資料
+      var apiURL = `http://61.56.172.10/feed-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL).then(res => {
+        this.feeddata = res.data;
+      });
+      this.feedloading = false;
+    },
+    //顯示地圖按鈕
     showmpFun: function() {
       this.showmp = !this.showmp;
     }
@@ -477,14 +572,24 @@ export default {
     defalutItemList: function() {
       var item = _.cloneDeep(this.waterdatacols);
       for (const [key, value] of Object.entries(item)) {
-        if (this.defitem) {
+        if (this.defitem && this.defitem.length > 0) {
           // item[key] = this.defitem == key ? true : false;
           item[key] = this.defitem.includes(key) ? true : false;
         } else {
           item[key] = true;
         }
       }
-      console.log(item);
+      return item;
+    },
+    defalutItemList_feed: function() {//多選欄位，哪些要被預設顯示
+      var item = _.cloneDeep(this.feeddatacols);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem_feed && this.defitem_feed.length > 0) {
+          item[key] = this.defitem_feed.includes(key) ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
       return item;
     }
   }
