@@ -129,6 +129,7 @@ export default {
       },
       defitem: [],
       waterdatacols: {},
+      allcols:{},
       waterloading: false, //折線圖，
       item: [{ name: "", items: [] }],
       //---日曆
@@ -170,20 +171,31 @@ export default {
       }
     });
     //抓水質項目
+    
     await this.$axios
       .get("http://61.56.172.10/water-quality-col-name/")
       .then(res => {
         this.waterdatacols = res.data;
+        this.allcols["water"] = Object.assign({}, res.data);
         this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ? this.req.defitem : [];
       });
-      
+        // var defitem_tmp = this.defitem;//判斷項目是屬於水質還是投餵用
+       
      //抓投餵項目
     await this.$axios
       .get("http://61.56.172.10/feed-col-name/")
       .then(res => {
+        this.allcols["feed"] = Object.assign({}, res.data);;
         Object.assign(this.waterdatacols,res.data);
       });
-      console.log(this.waterdatacols);
+    // //指定的項目是歸屬於哪個類別，水質/投餵
+    //  for (const idx in Object.keys(mycols)) {
+    //    var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
+    //    if(tmp !== undefined && tmp == defitem_tmp){
+    //     itemclass = Object.keys(mycols)[idx];
+    //    }
+    //  }
+      
     // //參數代入
     if (Object.keys(this.req).length > 0) {
       // this.sdate = this.req.sdate;
@@ -241,15 +253,26 @@ export default {
       }
     },
     getdata: async function() {
-      console.log(
+      console.log("api 參數",
         this.sdate,
         this.sel_pool,
         this.sel_area,
         this.sel_main,
         this.defitem
       );
+      
+      //指定的項目是歸屬於哪個類別，水質/投餵
+      var defitem_tmp = this.defitem;//判斷項目是屬於水質還是投餵用
+       let itemclass = ``;
+       let mycols = this.allcols;
+     for (const idx in Object.keys(mycols)) {
+       var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
+       if(tmp !== undefined && tmp == defitem_tmp){
+        itemclass = Object.keys(mycols)[idx];
+       }
+     }
       //抓折線圖資料囉
-      var para = {
+      let para = {
         started_date:this.sdate,
         ended_date:this.sdate,
         factory_id:this.sel_main,
@@ -257,8 +280,17 @@ export default {
         pond_id:this.sel_pool,
         items:this.defitem
       }
-      //var apiurl = `http://61.56.172.10/water-quality-data/?started_date=${this.sdate}&ended_date=${this.sdate}&factory_id=${this.sel_main}&pond_area_id=${this.sel_area}&pond_id=${this.sel_pool}&items=${this.defitem}`;
-     var apiurl = `http://61.56.172.10/water-quality-data/`;//await this.$axios.get(apiurl,{ params: para }).then(res => {
+      let apiurl=``;
+      switch (itemclass) {
+        case "water":
+           apiurl = `http://61.56.172.10/water-quality-data/`;//await this.$axios.get(apiurl,{ params: para }).then(res => {
+          break;
+        case "feed":
+          apiurl = `http://61.56.172.10/feed-data/`;
+        default:
+          break;
+      }
+    
      
       await this.$axios.get(apiurl,{ params: para }).then(res => {
         this.item = res.data;
