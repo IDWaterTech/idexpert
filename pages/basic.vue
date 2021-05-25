@@ -274,7 +274,7 @@
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="feeddatacols"
-                  xColName="feed_time"
+                  xColName="inspected_date"
                   :defaultitem="defalutItemList_feed"
                   :loading="feedloading"
                   :title="item.name"
@@ -410,12 +410,13 @@ export default {
     },
     closepanel: async function() {
       this.mypanel = [];
-      this.waterdata = [];
+      
       //觸發取得水質資料
       //this.waterdata=[];
       if (this.sel_main && this.sel_area) {
         switch (this.currenttab) {
           case "水質監測":
+            this.waterdata = [];
             await this.getwater(
               this.sdate,
               this.edate,
