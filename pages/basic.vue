@@ -9,8 +9,8 @@
           <v-container class="grey lighten-5">
             <v-row  v-show="showmp && sel_main">
              <!-- 因為preview的關係，需要在DOM載入IMG，所以用V-show -->
-              <v-col cols="12" >
-                <img preview="0" preview-text="描述文字"
+              <v-col cols="12" v-if="sel_main">
+                <img preview="0"  :preview-text="maindata[sel_main-1].name"
                   :src="mpurl" width="100%"
                   class="grey lighten-2"
                   
