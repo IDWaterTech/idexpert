@@ -7,14 +7,14 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container class="grey lighten-5">
-            <v-row>
-              <v-col cols="12">
-                <v-img
-                  :src="mpurl"
+            <v-row  v-show="showmp && sel_main">
+             <!-- 因為preview的關係，需要在DOM載入IMG，所以用V-show -->
+              <v-col cols="12" >
+                <img preview="0" preview-text="描述文字"
+                  :src="mpurl" width="100%"
                   class="grey lighten-2"
-                  v-if="showmp && sel_main"
-                ></v-img>
-                <!-- <img src="~/static/test.jpg"/> -->
+                  
+                ></img>
               </v-col>
             </v-row>
             <v-row no-gutters>
