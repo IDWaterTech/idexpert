@@ -7,14 +7,18 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container class="grey lighten-5">
-            <v-row  v-show="showmp && sel_main">
-             <!-- 因為preview的關係，需要在DOM載入IMG，所以用V-show -->
+            <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
-                <img preview="0"  :preview-text="maindata[sel_main-1].name"
+                <v-img
+                  :src="mpurl"
+                  class="grey lighten-2"
+                  v-if="showmp && sel_main"
+                ></v-img>
+                <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name"
                   :src="mpurl" width="100%"
                   class="grey lighten-2"
                   
-                ></img>
+                ></img> -->
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -186,8 +190,8 @@
             </v-row>
           </v-container>
         </v-expansion-panel-content>
-      </v-expansion-panel> </v-expansion-panels
-    >
+      </v-expansion-panel>
+    </v-expansion-panels>
     <v-tabs v-model="currenttab" background-color="blue lighten-2" dark>
       <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name">
         {{ tab.name }}
@@ -294,7 +298,53 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <v-tab-item :value="'白蝦監測'"></v-tab-item>
+      <v-tab-item :value="'環境監測'">
+        <v-overlay :value="envloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px">
+          <v-card-text>
+            <v-row
+              v-if="Object.keys(envdatacols).length > 0 && envloading == false"
+            >
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem_env"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(envdatacols)"
+                  v-if="envdatacols"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="4" v-for="item in envdata" :key="item.id">
+                <WaterQuality_Vcharts
+                  :rowsData="item.items"
+                  :legendAliasOut="envdatacols"
+                  xColName="inspected_date"
+                  :defaultitem="defalutItemList_env"
+                  :loading="envloading"
+                  :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
+                ></WaterQuality_Vcharts>
+              </v-col>
+            </v-row>
+            <v-row v-if="envdata.length < 1 && envloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
       <!-- </v-tab-items> -->
     </v-tabs>
   </div>
@@ -324,7 +374,7 @@ export default {
       tabs: [
         { name: "水質監測" },
         { name: "投餵/池體數據" },
-        { name: "白蝦監測" }
+        { name: "環境監測" }
       ],
       currenttab: "水質監測",
       tree: [],
@@ -401,6 +451,11 @@ export default {
       feedloading: false, //是否載入中
       feeddata: [], //資料
       defitem_feed: "", //預設項目[哪些被勾選]
+      //環境
+      envdatacols: {}, //欄位
+      envloading: false, //是否載入中
+      envdata: [], //資料
+      defitem_env: "" //預設項目[哪些被勾選]
     };
   },
   methods: {
@@ -410,7 +465,7 @@ export default {
     },
     closepanel: async function() {
       this.mypanel = [];
-      
+
       //觸發取得水質資料
       //this.waterdata=[];
       if (this.sel_main && this.sel_area) {
@@ -432,7 +487,13 @@ export default {
               this.sel_area
             );
             break;
-          case "白蝦監測":
+          case "環境監測":
+            await this.getenv(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area
+            );
             break;
           default:
             break;
@@ -488,6 +549,21 @@ export default {
         this.feeddata = res.data;
       });
       this.feedloading = false;
+    },
+    //環境
+    getenv: async function(start_date, end_date, sel_main, sel_area) {
+      // 載入中
+      this.envloading = true;
+      //欄位
+      await this.$axios.get("http://61.56.172.10/drain-col-name/").then(res => {
+        this.envdatacols = res.data;
+      });
+      //資料
+      var apiURL = `http://61.56.172.10/drain-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL).then(res => {
+        this.envdata = res.data;
+      });
+      this.envloading = false;
     },
     //顯示地圖按鈕
     showmpFun: function() {
@@ -582,11 +658,23 @@ export default {
       }
       return item;
     },
-    defalutItemList_feed: function() {//多選欄位，哪些要被預設顯示
+    defalutItemList_feed: function() {
+      //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.feeddatacols);
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem_feed && this.defitem_feed.length > 0) {
           item[key] = this.defitem_feed.includes(key) ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
+      return item;
+    },
+    defalutItemList_env: function() {//多選欄位，哪些要被預設顯示
+      var item = _.cloneDeep(this.envdatacols);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem_env && this.defitem_env.length > 0) {
+          item[key] = this.defitem_env.includes(key) ? true : false;
         } else {
           item[key] = true;
         }

@@ -188,6 +188,13 @@ export default {
         this.allcols["feed"] = Object.assign({}, res.data);;
         Object.assign(this.waterdatacols,res.data);
       });
+       //抓環境項目
+    await this.$axios
+      .get("http://61.56.172.10/drain-col-name/")
+      .then(res => {
+        this.allcols["env"] = Object.assign({}, res.data);;
+        Object.assign(this.waterdatacols,res.data);
+      });
     // //指定的項目是歸屬於哪個類別，水質/投餵
     //  for (const idx in Object.keys(mycols)) {
     //    var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
@@ -287,6 +294,8 @@ export default {
           break;
         case "feed":
           apiurl = `http://61.56.172.10/feed-data/`;
+          case "env":
+            apiurl = `http://61.56.172.10/drain-data/`;
         default:
           break;
       }
