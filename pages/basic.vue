@@ -9,16 +9,17 @@
           <v-container class="grey lighten-5">
             <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
-                <v-img
+                <!-- <v-img v-img
                   :src="mpurl"
                   class="grey lighten-2"
                   v-if="showmp && sel_main"
-                ></v-img>
-                <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name"
+                ></v-img> -->
+                <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name" v-img -->
+                <img v-img
                   :src="mpurl" width="100%"
                   class="grey lighten-2"
                   
-                ></img> -->
+                ></img>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -555,11 +556,11 @@ export default {
       // 載入中
       this.envloading = true;
       //欄位
-      await this.$axios.get("http://61.56.172.10/drain-col-name/").then(res => {
+      await this.$axios.get("http://61.56.172.10/env-col-name/").then(res => {
         this.envdatacols = res.data;
       });
       //資料
-      var apiURL = `http://61.56.172.10/drain-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      var apiURL = `http://61.56.172.10/env-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
       await this.$axios.get(apiURL).then(res => {
         this.envdata = res.data;
       });

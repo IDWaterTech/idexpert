@@ -14,8 +14,9 @@
       single-line
       v-if="false"
     ></v-select>
-    <div v-show="false">{{ defaultitem }}</div>
     <!-- 外部更新資料必須顯示在DOM裡面才會更新資料，不得已只好放著，但不顯示 -->
+    <div v-show="false">{{ defaultitem }}</div>
+    <!-- <span v-if= 'chtData_new_1 != undefined && chtData_new_1.rows.length == 0'>查無資料</span> -->
     <ve-line
       :data="chtData_new_1"
       :settings="set"
@@ -23,7 +24,9 @@
       :loading="loading"
       :events="{ click: helo.bind(this, urldata) }"
       :judge-width="true"
+      v-show="chtData_new_1.rows.length > 0"
     ></ve-line>
+    <div v-show="chtData_new_1.rows.length <= 0">查無資料</div>
   </div>
 </template>
 <style>
@@ -69,7 +72,6 @@ export default {
           //   this.sel_pool = this.req.sel_pool;
           //   this.defitem = this.req.defitem;
           // $nuxt.$emit("clickFun");
-          debugger;
           console.log(this.show);
           var para = { sdate: e.value[0], defitem: e.seriesName };
           console.log(para);
@@ -158,7 +160,7 @@ export default {
     this.set.legendAlias = this.legendAliasOut;
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
-    var temp = Object.keys(this.rowsData[0]);
+    var temp = (this.rowsData.length>0)?Object.keys(this.rowsData[0]):"";
     if (temp.indexOf(this.xColName) > -1) {
       temp.splice(temp.indexOf(this.xColName), 1); //去除default 時間欄位
     }
@@ -169,10 +171,10 @@ export default {
     this.chtData_new_1.columns = [...this.chtData_Ora_1.columns]; //設定欄位
     //直接參考，不會動到舊資料
     let array = [];
-    this.chtData_Ora_1.rows.forEach(element => {
-      array.push(...element.data);
-    });
-    this.chtData_new_1.rows = array;
+    // this.chtData_Ora_1.rows.forEach(element => {
+    //   array.push(...element.data);
+    // });
+    // this.chtData_new_1.rows = array;
     this.chtData_new_1.rows = this.sheetdata;
   },
   computed: {

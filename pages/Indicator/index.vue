@@ -190,7 +190,7 @@ export default {
       });
        //抓環境項目
     await this.$axios
-      .get("http://61.56.172.10/drain-col-name/")
+      .get("http://61.56.172.10/env-col-name/")
       .then(res => {
         this.allcols["env"] = Object.assign({}, res.data);;
         Object.assign(this.waterdatacols,res.data);
@@ -272,12 +272,14 @@ export default {
       var defitem_tmp = this.defitem;//判斷項目是屬於水質還是投餵用
        let itemclass = ``;
        let mycols = this.allcols;
+       
      for (const idx in Object.keys(mycols)) {
        var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
        if(tmp !== undefined && tmp == defitem_tmp){
         itemclass = Object.keys(mycols)[idx];
        }
      }
+     
       //抓折線圖資料囉
       let para = {
         started_date:this.sdate,
@@ -295,7 +297,7 @@ export default {
         case "feed":
           apiurl = `http://61.56.172.10/feed-data/`;
           case "env":
-            apiurl = `http://61.56.172.10/drain-data/`;
+            apiurl = `http://61.56.172.10/env-data/`;
         default:
           break;
       }
