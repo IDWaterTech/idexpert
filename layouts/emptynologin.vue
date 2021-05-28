@@ -31,7 +31,12 @@
 
           <v-divider></v-divider>
 
-          <v-list-item v-for="(item, i) in listitems" :key="i" :to="item.to">
+          <v-list-item
+            v-for="(item, i) in listitems"
+            :key="i"
+            :to="item.to"
+            @click="logoutchk(item.title)"
+          >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -42,8 +47,15 @@
       </v-navigation-drawer>
       <v-container>
         <v-app-bar app color="">
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="$auth.loggedIn" />
-          <v-btn icon @click.stop="miniVariant = !miniVariant" v-if="$auth.loggedIn">
+          <v-app-bar-nav-icon
+            @click.stop="drawer = !drawer"
+            v-if="$auth.loggedIn"
+          />
+          <v-btn
+            icon
+            @click.stop="miniVariant = !miniVariant"
+            v-if="$auth.loggedIn"
+          >
             <v-icon
               >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
             >
@@ -68,14 +80,15 @@
 
 <script>
 export default {
-  beforeCreate() {//登入時判別身份分別導頁
-        if (this.$auth.loggedIn) {
-          if (this.$auth.state.user.email=="109085@w.tmu.edu.tw") {
-                  this.$router.push({ path: 'page1' });
-              }else{
-                 //this.$router.push({ path: 'intro' });
-              }
-        }
+  beforeCreate() {
+    //登入時判別身份分別導頁
+    if (this.$auth.loggedIn) {
+      if (this.$auth.state.user.email == "109085@w.tmu.edu.tw") {
+        this.$router.push({ path: "page1" });
+      } else {
+        //this.$router.push({ path: 'intro' });
+      }
+    }
   },
   data() {
     return {
@@ -97,9 +110,20 @@ export default {
           icon: "mdi-login",
           title: "Login",
           to: "/login"
+        },
+        {
+          icon: "mdi-logout",
+          title: "logout"
         }
       ]
     };
+  },
+  methods: {
+    logoutchk: function(item) {
+      if (item == "logout") {
+        $nuxt.$auth.logout();
+      }
+    }
   }
 };
 </script>
