@@ -16,7 +16,7 @@
                 ></v-img> -->
                 <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name" v-img -->
                 <img v-img
-                  :src="mpurl" width="100%"
+                  :src="mpurl" width="100%" :alt="maindata[sel_main-1].name"
                   class="grey lighten-2"
                   
                 ></img>
