@@ -49,15 +49,15 @@
             >
           </v-btn>
 
-          <v-btn text to="/">Root</v-btn>
+          <v-btn text to="/">艾滴科技</v-btn>
           <v-spacer />
           <div v-if="$auth.loggedIn">
             {{ $auth.user.name }}－{{ $auth.user.email }}
-            <v-btn text @click="$auth.logout()">Logout</v-btn>
+            <v-btn icon @click="$auth.logout()"><v-icon>mdi-logout</v-icon></v-btn>
           </div>
           <div v-else>
-            <v-btn text to="/login">Login</v-btn>
-            <v-btn text to="/register">Register</v-btn>
+            <v-btn icon to="/login"><v-icon>mdi-login</v-icon></v-btn>
+            <!-- <v-btn text to="/register">Register</v-btn> -->
           </div>
         </v-app-bar>
         <nuxt />
@@ -71,6 +71,7 @@ export default {
   beforeCreate() {//登入時判別身份分別導頁
         if (this.$auth.loggedIn) {
           if (this.$auth.state.user.email=="109085@w.tmu.edu.tw") {
+            this.$auth.state.user.role = "admin";
                   this.$router.push({ path: 'page1' });
               }else{
                  //this.$router.push({ path: 'intro' });
