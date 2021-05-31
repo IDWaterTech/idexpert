@@ -441,10 +441,12 @@ export default {
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
-      sdate: dayjs(new Date(2021, 0, 11))
-        .add(-10, "day")
-        .format("YYYY-MM-DD"),
-      edate: new Date(2021, 0, 5).toISOString().substr(0, 10),
+      sdate: dayjs(new Date()).add(-10, "day").format("YYYY-MM-DD"),
+      // sdate: dayjs(new Date(2021, 0, 11))
+      //   .add(-10, "day")
+      //   .format("YYYY-MM-DD"),
+      edate: new Date().toISOString().substr(0, 10),
+      // edate: new Date(2021, 0, 5).toISOString().substr(0, 10),
       //---圖片(地圖)
       showmp: false,
       //投餵
