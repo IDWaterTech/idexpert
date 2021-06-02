@@ -279,6 +279,7 @@ export default {
         itemclass = Object.keys(mycols)[idx];
        }
      }
+     debugger;
      
       //抓折線圖資料囉
       let para = {
@@ -296,8 +297,10 @@ export default {
           break;
         case "feed":
           apiurl = `http://61.56.172.10/feed-data/`;
+          break;
           case "env":
             apiurl = `http://61.56.172.10/env-data/`;
+            break;
         default:
           break;
       }
