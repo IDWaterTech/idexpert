@@ -17,9 +17,7 @@
                 <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name" v-img -->
                 <img v-img
                   :src="mpurl" width="100%" :alt="maindata[sel_main-1].name"
-                  class="grey lighten-2"
-                  
-                ></img>
+                  class="grey lighten-2" />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -250,7 +248,7 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <v-tab-item :value="'投餵/池體數據'">
+      <v-tab-item :value="'投餵飼料'">
         <v-overlay :value="feedloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
@@ -346,7 +344,147 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <!-- </v-tab-items> -->
+      <v-tab-item :value="'飼料觀察網'">
+        <v-overlay :value="envloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px">
+          <v-card-text>
+            <v-row
+              v-if="Object.keys(obsdatacols).length > 0 && obsloading == false"
+            >
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem_obs"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(obsdatacols)"
+                  v-if="obsdatacols"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+             <v-row>
+              <v-col cols="12" md="4" v-for="item in obsdata" :key="item.id">
+                <WaterQuality_Vcharts
+                  :rowsData="item.items"
+                  :legendAliasOut="obsdatacols"
+                  xColName="inspected_date"
+                  :defaultitem="defalutItemList_obs"
+                  :loading="obsloading"
+                  :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
+                ></WaterQuality_Vcharts>
+              </v-col>
+            </v-row>
+            <v-row v-if="obsdata.length < 1 && obsloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item :value="'進階值'">
+        <v-overlay :value="advloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px">
+          <v-card-text>
+            <v-row
+              v-if="Object.keys(advdatacols).length > 0 && advloading == false"
+            >
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem_adv"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(advdatacols)"
+                  v-if="advdatacols"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+             <v-row>
+              <v-col cols="12" md="4" v-for="item in advdata" :key="item.id">
+                <WaterQuality_Vcharts
+                  :rowsData="item.items"
+                  :legendAliasOut="advdatacols"
+                  xColName="inspected_date"
+                  :defaultitem="defalutItemList_adv"
+                  :loading="advloading"
+                  :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
+                ></WaterQuality_Vcharts>
+              </v-col>
+            </v-row>
+            <v-row v-if="advdata.length < 1 && advloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item :value="'投餵益生菌'">
+        <v-overlay :value="pbioloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px">
+          <v-card-text>
+            <v-row
+              v-if="Object.keys(pbiodatacols).length > 0 && pbioloading == false"
+            >
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem_pbio"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(pbiodatacols)"
+                  v-if="pbiodatacols"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+             <v-row>
+              <v-col cols="12" md="4" v-for="item in pbiodata" :key="item.id">
+                <WaterQuality_Vcharts
+                  :rowsData="item.items"
+                  :legendAliasOut="pbiodatacols"
+                  xColName="inspected_date"
+                  :defaultitem="defalutItemList_pbio"
+                  :loading="pbioloading"
+                  :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
+                ></WaterQuality_Vcharts>
+              </v-col>
+            </v-row>
+            <v-row v-if="pbiodata.length < 1 && pbioloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
     </v-tabs>
   </div>
 </template>
@@ -374,8 +512,11 @@ export default {
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
-        { name: "投餵/池體數據" },
-        { name: "環境監測" }
+        { name: "環境監測" },
+        { name: "投餵飼料" },
+        { name: "飼料觀察網" },
+        { name: "進階值" },
+        { name: "投餵益生菌" }
       ],
       currenttab: "水質監測",
       tree: [],
@@ -458,7 +599,22 @@ export default {
       envdatacols: {}, //欄位
       envloading: false, //是否載入中
       envdata: [], //資料
-      defitem_env: "" //預設項目[哪些被勾選]
+      defitem_env: "", //預設項目[哪些被勾選]
+      //飼料觀察網
+      obsdatacols: {}, //欄位
+      obsloading: false, //是否載入中
+      obsdata: [], //資料
+      defitem_obs: "", //預設項目[哪些被勾選]
+      //進階值
+      advdatacols: {}, //欄位
+      advloading: false, //是否載入中
+      advdata: [], //資料
+      defitem_adv: "", //預設項目[哪些被勾選]
+      //益生菌
+      pbiodatacols: {}, //欄位
+      pbioloading: false, //是否載入中
+      pbiodata: [], //資料
+      defitem_pbio: "" //預設項目[哪些被勾選]
     };
   },
   methods: {
@@ -482,7 +638,7 @@ export default {
               this.sel_area
             );
             break;
-          case "投餵/池體數據":
+          case "投餵飼料":
             await this.getfeed(
               this.sdate,
               this.edate,
@@ -492,6 +648,30 @@ export default {
             break;
           case "環境監測":
             await this.getenv(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area
+            );
+            break;
+            case "飼料觀察網":
+            await this.getobs(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area
+            );
+            break;
+            case "進階值":
+            await this.getadv(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area
+            );
+            break;
+            case "投餵益生菌":
+            await this.getpbio(
               this.sdate,
               this.edate,
               this.sel_main,
@@ -567,6 +747,53 @@ export default {
         this.envdata = res.data;
       });
       this.envloading = false;
+    },
+    //飼料觀察網
+    getobs: async function(start_date, end_date, sel_main, sel_area) {
+      // 載入中
+      this.obsloading = true;
+      //欄位
+      await this.$axios.get("http://61.56.172.10/observation-col-name/").then(res => {
+        this.obsdatacols = res.data;
+      });
+      //資料
+      var apiURL = `http://61.56.172.10/observation-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL).then(res => {
+        this.obsdata = res.data;
+      });
+      this.obsloading = false;
+    },
+    //進階值
+    getadv: async function(start_date, end_date, sel_main, sel_area) {
+      // 載入中
+      this.advloading = true;
+      //欄位
+      await this.$axios.get("http://61.56.172.10/advance-col-name/").then(res => {
+        this.advdatacols = res.data;
+      });
+      //資料
+      var apiURL = `http://61.56.172.10/advance-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL).then(res => {
+        this.advdata = res.data;
+        console.log(this.advdata)
+      });
+      this.advloading = false;
+    },
+    //投餵益生菌
+    getpbio: async function(start_date, end_date, sel_main, sel_area) {
+      // 載入中
+      this.advloading = true;
+      //欄位
+      await this.$axios.get("http://61.56.172.10/probiotics-col-name/").then(res => {
+        this.pbiodatacols = res.data;
+      });
+      //資料
+      var apiURL = `http://61.56.172.10/probiotics-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL).then(res => {
+        this.pbiodata = res.data;
+        console.log(this.pbiodata)
+      });
+      this.pbioloading = false;
     },
     //顯示地圖按鈕
     showmpFun: function() {
@@ -678,6 +905,39 @@ export default {
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem_env && this.defitem_env.length > 0) {
           item[key] = this.defitem_env.includes(key) ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
+      return item;
+    },
+    defalutItemList_obs: function() {//多選欄位，哪些要被預設顯示
+      var item = _.cloneDeep(this.obsdatacols);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem_obs && this.defitem_obs.length > 0) {
+          item[key] = this.defitem_obs.includes(key) ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
+      return item;
+    },
+    defalutItemList_adv: function() {//多選欄位，哪些要被預設顯示
+      var item = _.cloneDeep(this.advdatacols);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem_adv && this.defitem_adv.length > 0) {
+          item[key] = this.defitem_adv.includes(key) ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
+      return item;
+    },
+    defalutItemList_pbio: function() {//多選欄位，哪些要被預設顯示
+      var item = _.cloneDeep(this.pbiodatacols);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem_pbio && this.defitem_pbio.length > 0) {
+          item[key] = this.defitem_pbio.includes(key) ? true : false;
         } else {
           item[key] = true;
         }
