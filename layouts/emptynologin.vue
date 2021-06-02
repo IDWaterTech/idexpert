@@ -45,7 +45,7 @@
         </v-list>
         <!--  -->
       </v-navigation-drawer>
-      <v-container>
+      <v-container fluid>
         <v-app-bar app color="">
           <v-app-bar-nav-icon
             @click.stop="drawer = !drawer"
@@ -62,7 +62,9 @@
           </v-btn>
 
           <v-btn text to="/">艾滴科技</v-btn>
+          <v-btn icon to="/calendar"><v-icon>mdi-calendar-star</v-icon></v-btn>
           <v-spacer />
+          
           <!-- <div v-if="$auth.loggedIn">
             {{ $auth.user.name }}－{{ $auth.user.email }}
             <v-btn text @click="$auth.logout()">Logout</v-btn>
