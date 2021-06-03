@@ -15,9 +15,13 @@
                   v-if="showmp && sel_main"
                 ></v-img> -->
                 <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name" v-img -->
-                <img v-img
-                  :src="mpurl" width="100%" :alt="maindata[sel_main-1].name"
-                  class="grey lighten-2" />
+                <img
+                  v-img
+                  :src="mpurl"
+                  width="100%"
+                  :alt="maindata[sel_main - 1].name"
+                  class="grey lighten-2"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -116,6 +120,11 @@
                   :loading="tableloading"
                   height="300px"
                 >
+                  <template v-slot:item.actions="{ item }">
+                    <v-icon small class="mr-2" @click="showpool(item)">
+                      mdi-format-list-bulleted
+                    </v-icon>
+                  </template>
                 </v-data-table>
               </v-col>
               <v-col cols="12" md="5" v-if="false">
@@ -366,7 +375,7 @@
                 </v-select>
               </v-col>
             </v-row>
-             <v-row>
+            <v-row>
               <v-col cols="12" md="4" v-for="item in obsdata" :key="item.id">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
@@ -413,7 +422,7 @@
                 </v-select>
               </v-col>
             </v-row>
-             <v-row>
+            <v-row>
               <v-col cols="12" md="4" v-for="item in advdata" :key="item.id">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
@@ -445,7 +454,9 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row
-              v-if="Object.keys(pbiodatacols).length > 0 && pbioloading == false"
+              v-if="
+                Object.keys(pbiodatacols).length > 0 && pbioloading == false
+              "
             >
               <v-col cols="12" md="3">
                 <v-select
@@ -460,7 +471,7 @@
                 </v-select>
               </v-col>
             </v-row>
-             <v-row>
+            <v-row>
               <v-col cols="12" md="4" v-for="item in pbiodata" :key="item.id">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
@@ -573,7 +584,8 @@ export default {
         //  { text: "id", value: "id", groupable: false },
         { text: "name", value: "name", groupable: false },
         { text: "volume", value: "volume", groupable: false },
-        { text: "density", value: "density", groupable: false }
+        { text: "density", value: "density", groupable: false },
+        { text: "Actions", value: "actions", groupable: false, sortable: false }
       ],
       tableloading: false,
       waterdata: [],
@@ -582,7 +594,9 @@ export default {
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
-      sdate: dayjs(new Date()).add(-10, "day").format("YYYY-MM-DD"),
+      sdate: dayjs(new Date())
+        .add(-10, "day")
+        .format("YYYY-MM-DD"),
       // sdate: dayjs(new Date(2021, 0, 11))
       //   .add(-10, "day")
       //   .format("YYYY-MM-DD"),
@@ -654,7 +668,7 @@ export default {
               this.sel_area
             );
             break;
-            case "飼料觀察網":
+          case "飼料觀察網":
             await this.getobs(
               this.sdate,
               this.edate,
@@ -662,7 +676,7 @@ export default {
               this.sel_area
             );
             break;
-            case "進階值":
+          case "進階值":
             await this.getadv(
               this.sdate,
               this.edate,
@@ -670,7 +684,7 @@ export default {
               this.sel_area
             );
             break;
-            case "投餵益生菌":
+          case "投餵益生菌":
             await this.getpbio(
               this.sdate,
               this.edate,
@@ -753,9 +767,11 @@ export default {
       // 載入中
       this.obsloading = true;
       //欄位
-      await this.$axios.get("http://61.56.172.10/observation-col-name/").then(res => {
-        this.obsdatacols = res.data;
-      });
+      await this.$axios
+        .get("http://61.56.172.10/observation-col-name/")
+        .then(res => {
+          this.obsdatacols = res.data;
+        });
       //資料
       var apiURL = `http://61.56.172.10/observation-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
       await this.$axios.get(apiURL).then(res => {
@@ -768,14 +784,16 @@ export default {
       // 載入中
       this.advloading = true;
       //欄位
-      await this.$axios.get("http://61.56.172.10/advance-col-name/").then(res => {
-        this.advdatacols = res.data;
-      });
+      await this.$axios
+        .get("http://61.56.172.10/advance-col-name/")
+        .then(res => {
+          this.advdatacols = res.data;
+        });
       //資料
       var apiURL = `http://61.56.172.10/advance-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
       await this.$axios.get(apiURL).then(res => {
         this.advdata = res.data;
-        console.log(this.advdata)
+        console.log(this.advdata);
       });
       this.advloading = false;
     },
@@ -784,20 +802,25 @@ export default {
       // 載入中
       this.advloading = true;
       //欄位
-      await this.$axios.get("http://61.56.172.10/probiotics-col-name/").then(res => {
-        this.pbiodatacols = res.data;
-      });
+      await this.$axios
+        .get("http://61.56.172.10/probiotics-col-name/")
+        .then(res => {
+          this.pbiodatacols = res.data;
+        });
       //資料
       var apiURL = `http://61.56.172.10/probiotics-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
       await this.$axios.get(apiURL).then(res => {
         this.pbiodata = res.data;
-        console.log(this.pbiodata)
+        console.log(this.pbiodata);
       });
       this.pbioloading = false;
     },
     //顯示地圖按鈕
     showmpFun: function() {
       this.showmp = !this.showmp;
+    },
+    showpool:function(data){
+      console.log(data.name);
     }
   },
   async created() {
@@ -900,7 +923,8 @@ export default {
       }
       return item;
     },
-    defalutItemList_env: function() {//多選欄位，哪些要被預設顯示
+    defalutItemList_env: function() {
+      //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.envdatacols);
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem_env && this.defitem_env.length > 0) {
@@ -911,7 +935,8 @@ export default {
       }
       return item;
     },
-    defalutItemList_obs: function() {//多選欄位，哪些要被預設顯示
+    defalutItemList_obs: function() {
+      //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.obsdatacols);
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem_obs && this.defitem_obs.length > 0) {
@@ -922,7 +947,8 @@ export default {
       }
       return item;
     },
-    defalutItemList_adv: function() {//多選欄位，哪些要被預設顯示
+    defalutItemList_adv: function() {
+      //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.advdatacols);
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem_adv && this.defitem_adv.length > 0) {
@@ -933,7 +959,8 @@ export default {
       }
       return item;
     },
-    defalutItemList_pbio: function() {//多選欄位，哪些要被預設顯示
+    defalutItemList_pbio: function() {
+      //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.pbiodatacols);
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem_pbio && this.defitem_pbio.length > 0) {

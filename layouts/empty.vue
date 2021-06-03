@@ -42,8 +42,15 @@
       </v-navigation-drawer>
       <v-container>
         <v-app-bar app color="">
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="$auth.loggedIn" />
-          <v-btn icon @click.stop="miniVariant = !miniVariant" v-if="$auth.loggedIn">
+          <v-app-bar-nav-icon
+            @click.stop="drawer = !drawer"
+            v-if="$auth.loggedIn"
+          />
+          <v-btn
+            icon
+            @click.stop="miniVariant = !miniVariant"
+            v-if="$auth.loggedIn"
+          >
             <v-icon
               >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
             >
@@ -53,7 +60,9 @@
           <v-spacer />
           <div v-if="$auth.loggedIn">
             {{ $auth.user.name }}－{{ $auth.user.email }}
-            <v-btn icon @click="$auth.logout()"><v-icon>mdi-logout</v-icon></v-btn>
+            <v-btn icon @click="$auth.logout()"
+              ><v-icon>mdi-logout</v-icon></v-btn
+            >
           </div>
           <div v-else>
             <v-btn icon to="/login"><v-icon>mdi-login</v-icon></v-btn>
@@ -68,15 +77,21 @@
 
 <script>
 export default {
-  beforeCreate() {//登入時判別身份分別導頁
-        if (this.$auth.loggedIn) {
-          if (this.$auth.state.user.email=="109085@w.tmu.edu.tw") {
-            this.$auth.state.user.role = "admin";
-                  this.$router.push({ path: 'page1' });
-              }else{
-                 //this.$router.push({ path: 'intro' });
-              }
-        }
+  beforeCreate() {
+    //登入時判別身份分別導頁
+    if (this.$auth.loggedIn) {
+      if (this.$auth.state.user.email == "techadmin@idwater.com.tw") {
+        const updatedUser = { ...this.$auth.user };//增加身份判別
+        updatedUser.role = "admin";
+        this.$auth.setUser(updatedUser);
+        this.$router.push({ path: "page1" });
+      } else {
+        //this.$router.push({ path: 'intro' });
+        const updatedUser = { ...this.$auth.user };
+        updatedUser.role = "other";
+        this.$auth.setUser(updatedUser);
+      }
+    }
   },
   data() {
     return {

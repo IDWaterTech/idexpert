@@ -86,7 +86,7 @@ export default {
     },
     async loginGoogle() {
       try {
-        var a = await this.$auth.loginWith("google").catch(errors => {
+        await this.$auth.loginWith("google").catch(errors => {
           //errors.response.data;//可抓到錯誤
           this.$toast.error("登入發生錯誤!:", { duration: 3000 });
           console.log("error:" + errors.response.data);
