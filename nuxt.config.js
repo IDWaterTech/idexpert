@@ -25,6 +25,7 @@ export default {
     "~/plugins/v-charts-v2",
     "~/plugins/echarts",
     "~/plugins/vimg",
+    "~/plugins/elementui"
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
     // { src: "~/plugins/vue-chartjs", mode: 'client' }

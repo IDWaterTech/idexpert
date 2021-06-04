@@ -25,7 +25,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12" md="3">
+              <v-col cols="12" >
                 <v-card class="pa-2" outlined tile min-height="300px">
                   <v-select
                     v-model="sel_main"
@@ -108,8 +108,32 @@
                   <v-btn tile color="blue" dark @click="closepanel">確認</v-btn>
                 </v-card>
               </v-col>
-              <v-divider vertical></v-divider>
-              <v-col cols="12" md="9">
+              <!-- <v-divider vertical></v-divider> -->
+              <v-col cols="12">
+                <!-- <wj-flex-grid
+                  id="sample-grid"
+                  :frozenRows="2"
+                  :frozenColumns="1"
+                  :itemsSource="mainpool.items"
+                >
+                </wj-flex-grid> -->
+                <el-table
+                  :data="mainpool.items"
+                  style="width: 100%"
+                  max-height="300"
+                >
+                  <!-- headers{ text: "name", value: "name", groupable: false }, -->
+                  <el-table-column
+                    v-for="(item, key) in headers"
+                    :fixed="item.text == 'name'"
+                    :prop="item.text"
+                    :label="item.text"
+                    :key="key"
+                    align="center"
+                    :width="(item.text == 'name')?70:150"
+                  >
+                  </el-table-column>
+                </el-table>
                 <v-data-table
                   :headers="headers"
                   :items="mainpool.items"
@@ -119,12 +143,8 @@
                   disable-sort
                   :loading="tableloading"
                   height="300px"
+                  v-if="false"
                 >
-                  <template v-slot:item.actions="{ item }">
-                    <v-icon small class="mr-2" @click="showpool(item)">
-                      mdi-format-list-bulleted
-                    </v-icon>
-                  </template>
                 </v-data-table>
               </v-col>
               <v-col cols="12" md="5" v-if="false">
@@ -506,6 +526,8 @@ import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import dayjs from "dayjs";
+//-----
+import "element-ui/lib/theme-chalk/index.css";
 export default {
   layout: "emptynologin",
   components: {
@@ -584,8 +606,7 @@ export default {
         //  { text: "id", value: "id", groupable: false },
         { text: "name", value: "name", groupable: false },
         { text: "volume", value: "volume", groupable: false },
-        { text: "density", value: "density", groupable: false },
-        { text: "Actions", value: "actions", groupable: false, sortable: false }
+        { text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },
       ],
       tableloading: false,
       waterdata: [],
@@ -819,7 +840,7 @@ export default {
     showmpFun: function() {
       this.showmp = !this.showmp;
     },
-    showpool:function(data){
+    showpool: function(data) {
       console.log(data.name);
     }
   },
