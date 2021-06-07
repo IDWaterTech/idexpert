@@ -63,6 +63,7 @@
 
           <v-btn text to="/">艾滴科技</v-btn>
           <v-btn icon to="/calendar"><v-icon>mdi-calendar-star</v-icon></v-btn>
+          <v-btn icon to="/Indicator/edit"><v-icon>mdi-file-edit</v-icon></v-btn>
           <v-spacer />
           
           <!-- <div v-if="$auth.loggedIn">
