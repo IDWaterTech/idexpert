@@ -126,7 +126,7 @@
                   <el-table-column
                     v-for="(item, key) in headers"
                     :fixed="item.text == 'name'"
-                    :prop="item.text"
+                    :prop="item.value"
                     :label="item.text"
                     :key="key"
                     align="center"
@@ -605,8 +605,15 @@ export default {
       headers: [
         //  { text: "id", value: "id", groupable: false },
         { text: "name", value: "name", groupable: false },
-        { text: "volume", value: "volume", groupable: false },
-        { text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },{ text: "density", value: "density", groupable: false },
+        { text: "體積", value: "volume", groupable: false },
+        { text: "密度", value: "density", groupable: false },
+        { text: "深度", value: "depth", groupable: false },
+        { text: "小池數", value: "num", groupable: false },
+        { text: "狀態", value: "state", groupable: false },
+        { text: "放養日期", value: "started_date", groupable: false },
+        { text: "預估收成日期", value: "eliminated_ended_date", groupable: false },
+        { text: "初始放養隻數", value: "init_num", groupable: false },
+        { text: "累積飼料量", value: "feed_accumulation", groupable: false },
       ],
       tableloading: false,
       waterdata: [],

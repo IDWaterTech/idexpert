@@ -14,7 +14,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="sdate"
-                label="選擇日期"
+                label="選擇起日"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
@@ -28,6 +28,31 @@
           </v-menu>
         </v-col>
         <v-col cols="12" md="2">
+          <v-menu
+            v-model="menu_enddate"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="edate"
+                label="選擇訖日"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="edate"
+              @input="menu_enddate = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" md="2">
           <v-select
             v-model="sel_main"
             :items="maindata"
@@ -35,6 +60,7 @@
             item-text="name"
             label="選擇廠"
             clearable
+            background-color="light-green lighten-4"
           >
           </v-select>
         </v-col>
@@ -47,16 +73,17 @@
             clearable
             @change="areachange"
             label="選擇區域"
+            background-color="light-green lighten-4"
           ></v-select>
         </v-col>
-        <v-col cols="12" md="2">
+        <v-col cols="12" md="1">
           <v-autocomplete
             v-model="sel_pool"
             :items="this.mainpool.items"
             item-text="name"
             item-value="id"
             no-data-text="查無資料"
-            placeholder="選擇水池"
+            placeholder="水池"
           ></v-autocomplete>
         </v-col>
         <v-col cols="12" md="2">
@@ -67,6 +94,7 @@
             :items="Object.keys(waterdatacols)"
             v-if="waterdatacols"
             no-data-text="查無資料"
+            background-color="light-green lighten-4"
           >
           </v-select>
         </v-col>
@@ -76,6 +104,8 @@
             color="primary"
             @click="getdata"
             :disabled="
+              sdate &&
+              edate &&
               sel_pool &&
               sel_area &&
               sel_main &&
@@ -94,9 +124,9 @@
             color="primary"
             @click="addDialog = true"
             :disabled="
-              sel_pool &&
-              sel_area &&
+              
               sel_main &&
+              sel_area &&
               defitem != undefined &&
               defitem.length > 0
                 ? false
@@ -105,12 +135,59 @@
             ><v-icon>mdi-text-box-plus-outline</v-icon></v-btn
           >
           <v-dialog v-model="addDialog" max-width="500px"
-            ><v-card><v-card-title>新增項目</v-card-title>
-            <v-card-text>test</v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="addDialog=false" color="blue darken-1" text>確定</v-btn>
-            </v-card-actions>
+            ><v-card v-if="addDialog"
+              ><v-card-title>新增</v-card-title>
+              <v-card-subtitle class="title"  >{{maindata[sel_main-1].name}}-{{maindata[sel_main-1].node[sel_area-1].name}}-<span class="font-weight-black" style="color:red;">{{defitem}}</span></v-card-subtitle>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-menu
+                      v-model="menu_adate"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="adate"
+                          label="選擇日期"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        v-model="adate"
+                        @input="menu_adate = false"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="時間"
+                      value=""
+                      type="time"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-text>
+                  <v-row>
+                  <v-col cols="12" md="6" v-for="item in mainpool.items" :key="item.name"><v-text-field class="addinput" :id="item.name"><p slot="prepend">{{item.name}}</p></v-text-field></v-col>
+                </v-row>
+              </v-card-text>
+              
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn @click="addDialog = false" color="blue darken-1" text
+                  >確定</v-btn
+                >
+              </v-card-actions>
             </v-card></v-dialog
           >
         </v-col>
@@ -241,9 +318,11 @@ export default {
       item: [{ name: "", items: [] }],
       //---日曆
       menu_startdate: false,
-      sdate: dayjs(new Date(2021, 0, 11))
-        .add(-10, "day")
-        .format("YYYY-MM-DD"),
+      menu_enddate: false,
+      menu_adate: false, //新增
+      sdate: "",
+      edate: "",
+      adate: "",
       //編輯視窗
       editDialog: false,
       editedItem: {}, //已編輯項目暫存這邊
@@ -347,6 +426,7 @@ export default {
       console.log(
         "api 參數",
         this.sdate,
+        this.edate,
         this.sel_pool,
         this.sel_area,
         this.sel_main,
@@ -370,7 +450,7 @@ export default {
       //抓折線圖資料囉
       let para = {
         started_date: this.sdate,
-        ended_date: this.sdate,
+        ended_date: this.edate,
         factory_id: this.sel_main,
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
@@ -401,6 +481,7 @@ export default {
           this.headers.push({
             text: cols[key],
             value: cols[key],
+            align: "center",
             groupable: false
           });
         }
