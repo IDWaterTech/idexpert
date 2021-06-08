@@ -119,16 +119,11 @@
         </v-col>
         <v-col cols="12" md="1">
           <v-btn
-            block
             icon
-            color="primary"
+            color="success"
             @click="addDialog = true"
             :disabled="
-              
-              sel_main &&
-              sel_area &&
-              defitem != undefined &&
-              defitem.length > 0
+              sel_main && sel_area && defitem != undefined && defitem.length > 0
                 ? false
                 : true
             "
@@ -137,7 +132,13 @@
           <v-dialog v-model="addDialog" max-width="500px"
             ><v-card v-if="addDialog"
               ><v-card-title>新增</v-card-title>
-              <v-card-subtitle class="title"  >{{maindata[sel_main-1].name}}-{{maindata[sel_main-1].node[sel_area-1].name}}-<span class="font-weight-black" style="color:red;">{{defitem}}</span></v-card-subtitle>
+              <v-card-subtitle class="title"
+                >{{ maindata[sel_main - 1].name }}-{{
+                  maindata[sel_main - 1].node[sel_area - 1].name
+                }}-<span class="font-weight-black" style="color:red;">{{
+                  defitem
+                }}</span></v-card-subtitle
+              >
               <v-card-text>
                 <v-row>
                   <v-col cols="12" md="6">
@@ -173,14 +174,36 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-text>
-                  <v-row>
-                  <v-col cols="12" md="6" v-for="item in mainpool.items" :key="item.name"><v-text-field class="addinput" :id="item.name"><p slot="prepend">{{item.name}}</p></v-text-field></v-col>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="6"
+                    v-for="item in mainpool.items"
+                    :key="item.name"
+                    ><v-text-field
+                      class="addinput"
+                      type="number"
+                      :id="item.name"
+                      @keyup.enter="gofocusNxt(item.name)"
+                      @keyup="getAddData"
+                      ><p slot="prepend">{{ item.name }}</p></v-text-field
+                    ></v-col
+                  >
                 </v-row>
               </v-card-text>
-              
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-chip class="ma-2" color="indigo darken-3" outlined v-for="item in addData" :key="item.name">
+                  <v-icon left>
+                    mdi-new-box
+                  </v-icon>
+                  {{ item.name }} [{{ item.value }}]
+                </v-chip>
+              </v-card-text>
+              <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
 
@@ -329,7 +352,8 @@ export default {
       //刪除視窗
       delDialog: false,
       //新增視窗
-      addDialog: false
+      addDialog: false,
+      addData: []
     };
   },
   mounted() {
@@ -502,7 +526,31 @@ export default {
       this.editedItem.value = item[Object.keys(item)[1]];
       this.delDialog = true;
     },
-    addItem: async function() {}
+    addItem: async function() {},
+    gofocusNxt: async function(id) {
+      //document.getElementById(id).focus();
+      var findeditem = this.mainpool.items.find(x => x.name == id);
+      var idxitem = this.mainpool.items.indexOf(findeditem);
+      if (idxitem + 1 == this.mainpool.items.length) {
+        //最後一項，鎖定原位
+        document.getElementById(id).focus();
+      } else {
+        //鎖定下一項
+        let nxtItem = this.mainpool.items[idxitem + 1];
+        document.getElementById(nxtItem.name).focus();
+      }
+    },
+    getAddData: function() {
+      let adddatatmp = [];
+      for (const key in this.mainpool.items) {
+        let item = this.mainpool.items[key];
+        let myValue = document.getElementById(item.name).value.trim();
+        if (myValue.length > 0) {
+          adddatatmp.push({ name: item.name, value: myValue });
+        }
+      }
+      this.addData = adddatatmp;
+    }
   }
 };
 </script>
