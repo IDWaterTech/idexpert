@@ -19,6 +19,7 @@
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                @click:prepend="() => (sdate = getNowDate())"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -44,6 +45,7 @@
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                @click:prepend="() => (edate = getNowDate())"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -117,7 +119,7 @@
             >確認</v-btn
           >
         </v-col>
-        <v-col cols="12" md="1">
+        <v-col cols="12" md="12">
           <v-btn
             icon
             color="success"
@@ -127,92 +129,129 @@
                 ? false
                 : true
             "
+            height=""
             ><v-icon>mdi-text-box-plus-outline</v-icon></v-btn
           >
-          <v-dialog v-model="addDialog" max-width="500px"
-            ><v-card v-if="addDialog"
-              ><v-card-title>新增</v-card-title>
-              <v-card-subtitle class="title"
-                >{{ maindata[sel_main - 1].name }}-{{
-                  maindata[sel_main - 1].node[sel_area - 1].name
-                }}-<span class="font-weight-black" style="color:red;">{{
-                  defitem
-                }}</span></v-card-subtitle
-              >
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-menu
-                      v-model="menu_adate"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          v-model="adate"
-                          label="選擇日期"
-                          prepend-icon="mdi-calendar"
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        v-model="adate"
-                        @input="menu_adate = false"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      label="時間"
-                      value=""
-                      type="time"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-row>
-                  <v-col
-                    cols="12"
-                    md="6"
-                    v-for="item in mainpool.items"
-                    :key="item.name"
-                    ><v-text-field
-                      class="addinput"
-                      type="number"
-                      :id="item.name"
-                      @keyup.enter="gofocusNxt(item.name)"
-                      @keyup="getAddData"
-                      ><p slot="prepend">{{ item.name }}</p></v-text-field
-                    ></v-col
-                  >
-                </v-row>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-chip class="ma-2" color="indigo darken-3" outlined v-for="item in addData" :key="item.name">
-                  <v-icon left>
-                    mdi-new-box
-                  </v-icon>
-                  {{ item.name }} [{{ item.value }}]
-                </v-chip>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-
-                <v-btn @click="addDialog = false" color="blue darken-1" text
-                  >確定</v-btn
+          <v-dialog v-model="addDialog" max-width="500px">
+            <v-form ref="form" v-model="valid" lazy-validation>
+              <v-card v-if="addDialog"
+                ><v-card-title>新增</v-card-title>
+                <v-card-subtitle class="title"
+                  >{{ maindata[sel_main - 1].name }}-{{
+                    maindata[sel_main - 1].node[sel_area - 1].name
+                  }}-<span class="font-weight-black" style="color:red;">{{
+                    defitem
+                  }}</span></v-card-subtitle
                 >
-              </v-card-actions>
-            </v-card></v-dialog
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-menu
+                        v-model="menu_adate"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field
+                            v-model="adate"
+                            label="選擇日期"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                            :rules="rules.require"
+                            @click:prepend="() => (adate = getNowDate())"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="adate"
+                          @input="menu_adate = false"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        label="時間"
+                        v-model="atime"
+                        value=""
+                        type="time"
+                        prepend-icon="mdi-timeline-clock-outline"
+                        @click:prepend="() => (atime = getNowTime())"
+                        :rules="rules.require"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <v-row>
+                    <v-col
+                      cols="12"
+                      md="6"
+                      v-for="item in mainpool.items"
+                      :key="item.name"
+                      ><v-text-field
+                        class="addinput"
+                        type="number"
+                        :id="item.name"
+                        @keyup.enter="gofocusNxt(item.name)"
+                        @keyup="getAddData"
+                        ><p slot="prepend">{{ item.name }}</p></v-text-field
+                      ></v-col
+                    >
+                  </v-row>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-text>
+                  <v-chip
+                    class="ma-2"
+                    color="indigo darken-3"
+                    outlined
+                    v-for="item in addData"
+                    :key="item.name"
+                  >
+                    <v-icon left>
+                      mdi-new-box
+                    </v-icon>
+                    {{ item.name }} [{{ item.value }}]
+                  </v-chip>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn @click="addsubmit" color="blue darken-1" text
+                    >確定</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </v-form>
+          </v-dialog>
+          <v-btn
+            icon
+            color="success"
+            :disabled="item.items == undefined || item.items.length == 0"
           >
+            <div v-if="sel_pool && sel_area">
+              <!-- 有水池才有功能，沒有的話就圖而已 -->
+              <download-excel
+                :data="item.items"
+                :name="
+                  `${sdate}_${edate}_${maindata[sel_main - 1].name}_${
+                    maindata[sel_main - 1].node[sel_area - 1].name
+                  }_${mainpool.items[sel_pool].name}_${defitem}`
+                "
+              >
+                <v-icon>mdi-export-variant</v-icon>
+              </download-excel>
+            </div>
+            <div v-else>
+              <v-icon>mdi-export-variant</v-icon>
+            </div>
+          </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -224,6 +263,7 @@
             class="elevation-1"
             v-if="headers.length > 0 || loading == true"
             :loading="loading"
+            no-data-text="查無資料"
           >
             <template v-slot:item.actions="{ item }">
               <v-icon small class="mr-2" @click="editItem(item)">
@@ -342,10 +382,12 @@ export default {
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
-      menu_adate: false, //新增
+      menu_adate: false,
+      //新增
       sdate: "",
       edate: "",
       adate: "",
+      atime: "",
       //編輯視窗
       editDialog: false,
       editedItem: {}, //已編輯項目暫存這邊
@@ -353,7 +395,10 @@ export default {
       delDialog: false,
       //新增視窗
       addDialog: false,
-      addData: []
+      addData: [],
+      //form
+      valid: true,
+      rules: { require: [v => !!v || "*必要項目"] }
     };
   },
   mounted() {
@@ -500,15 +545,18 @@ export default {
       //抓資料
       await this.$axios.get(apiurl, { params: para }).then(res => {
         this.item = res.data;
-        let cols = Object.keys(res.data.items[0]);
-        for (const key in cols) {
-          this.headers.push({
-            text: cols[key],
-            value: cols[key],
-            align: "center",
-            groupable: false
-          });
+        if (res.data.items.length > 0) {
+          let cols = Object.keys(res.data.items[0]);
+          for (const key in cols) {
+            this.headers.push({
+              text: cols[key],
+              value: cols[key],
+              align: "center",
+              groupable: false
+            });
+          }
         }
+
         this.headers.push({ text: "動作", value: "actions", sortable: false });
         console.log("API:" + res.request.responseURL);
       });
@@ -550,6 +598,20 @@ export default {
         }
       }
       this.addData = adddatatmp;
+    },
+    getNowDate: function() {
+      let mydate = dayjs().format("YYYY-MM-DD");
+      return mydate;
+    },
+    getNowTime:function(){
+      let mytime = dayjs().format("HH:mm");
+      return mytime;
+    },
+    addsubmit: async function() {
+      let valid = this.$refs.form.validate();
+      if (valid) {
+        this.addDialog = false;
+      }
     }
   }
 };
