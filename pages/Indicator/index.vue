@@ -19,6 +19,7 @@
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                @click:prepend="() => (sdate = getNowDate())"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -129,7 +130,7 @@ export default {
       },
       defitem: [],
       waterdatacols: {},
-      allcols:{},
+      allcols: {},
       waterloading: false, //折線圖，
       item: [{ name: "", items: [] }],
       //---日曆
@@ -154,47 +155,91 @@ export default {
     console.log(Object.keys(this.req));
   },
   async created() {
-    //抓廠資料
-    await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
+    let myurl = [
+      "http://61.56.172.10/architecture/",
+      "http://61.56.172.10/water-quality-col-name/",
+      "http://61.56.172.10/feed-col-name/",
+      "http://61.56.172.10/env-col-name/"
+    ];
+    const fetchURL = url => this.$axios.get(url);
+    const promiseArray = myurl.map(fetchURL);
+    console.log("req", this.req);
+    //
+    this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
+    this.sel_main =
+      Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
+    this.sel_area =
+      Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
+    this.sel_pool =
+      Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
+    if (Number(this.req.sel_pool) > 0) {
+      //await this.areachange();
+      this.areachange();
+      this.sel_pool = Number(this.req.sel_pool);
+    }
+    //---
+    // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
+    await Promise.all(promiseArray).then(([...data]) => {
+      console.log("廠");
+      let res = data[0]; // first promise resolved
       this.maindata = res.data;
-       this.sdate =
-        String(this.req.sdate).length > 0 ? (this.req.sdate) :"";
-      this.sel_main =
-        Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
-      this.sel_area =
-        Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
-      this.sel_pool = Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
-      if (Number(this.req.sel_pool) > 0) {
-        //await this.areachange();
-        this.areachange();
-        this.sel_pool = Number(this.req.sel_pool);
-      }
+
+      console.log("水質");
+      res = data[1]; // second promise resolved
+      this.waterdatacols = res.data;
+      this.allcols["water"] = Object.assign({}, res.data);
+      this.defitem =
+        this.req.defitem != undefined && this.req.defitem.length > 0
+          ? this.req.defitem
+          : [];
+      console.log("投餵");
+      res = data[2];
+      this.allcols["feed"] = Object.assign({}, res.data);
+      Object.assign(this.waterdatacols, res.data);
+      console.log("環境");
+      res = data[3];
+      this.allcols["env"] = Object.assign({}, res.data);
+      Object.assign(this.waterdatacols, res.data);
     });
+    //抓廠資料
+    // await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
+    //   this.maindata = res.data;
+    //   this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
+    //   this.sel_main =
+    //     Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
+    //   this.sel_area =
+    //     Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
+    //   this.sel_pool =
+    //     Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
+    //   if (Number(this.req.sel_pool) > 0) {
+    //     //await this.areachange();
+    //     this.areachange();
+    //     this.sel_pool = Number(this.req.sel_pool);
+    //   }
+    // });
     //抓水質項目
-    
-    await this.$axios
-      .get("http://61.56.172.10/water-quality-col-name/")
-      .then(res => {
-        this.waterdatacols = res.data;
-        this.allcols["water"] = Object.assign({}, res.data);
-        this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ? this.req.defitem : [];
-      });
-        // var defitem_tmp = this.defitem;//判斷項目是屬於水質還是投餵用
-       
-     //抓投餵項目
-    await this.$axios
-      .get("http://61.56.172.10/feed-col-name/")
-      .then(res => {
-        this.allcols["feed"] = Object.assign({}, res.data);;
-        Object.assign(this.waterdatacols,res.data);
-      });
-       //抓環境項目
-    await this.$axios
-      .get("http://61.56.172.10/env-col-name/")
-      .then(res => {
-        this.allcols["env"] = Object.assign({}, res.data);;
-        Object.assign(this.waterdatacols,res.data);
-      });
+
+    // await this.$axios
+    //   .get("http://61.56.172.10/water-quality-col-name/")
+    //   .then(res => {
+    //     this.waterdatacols = res.data;
+    //     this.allcols["water"] = Object.assign({}, res.data);
+    //     this.defitem =
+    //       this.req.defitem != undefined && this.req.defitem.length > 0
+    //         ? this.req.defitem
+    //         : [];
+    //   });
+
+    //抓投餵項目
+    // await this.$axios.get("http://61.56.172.10/feed-col-name/").then(res => {
+    //   this.allcols["feed"] = Object.assign({}, res.data);
+    //   Object.assign(this.waterdatacols, res.data);
+    // });
+    //抓環境項目
+    // await this.$axios.get("http://61.56.172.10/env-col-name/").then(res => {
+    //   this.allcols["env"] = Object.assign({}, res.data);
+    //   Object.assign(this.waterdatacols, res.data);
+    // });
     // //指定的項目是歸屬於哪個類別，水質/投餵
     //  for (const idx in Object.keys(mycols)) {
     //    var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
@@ -202,7 +247,7 @@ export default {
     //     itemclass = Object.keys(mycols)[idx];
     //    }
     //  }
-      
+
     // //參數代入
     if (Object.keys(this.req).length > 0) {
       // this.sdate = this.req.sdate;
@@ -260,57 +305,65 @@ export default {
       }
     },
     getdata: async function() {
-      console.log("api 參數",
+      console.log(
+        "api 參數",
         this.sdate,
         this.sel_pool,
         this.sel_area,
         this.sel_main,
         this.defitem
       );
-      
+
       //指定的項目是歸屬於哪個類別，水質/投餵
-      var defitem_tmp = this.defitem;//判斷項目是屬於水質還是投餵用
-       let itemclass = ``;
-       let mycols = this.allcols;
-       
-     for (const idx in Object.keys(mycols)) {
-       var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
-       if(tmp !== undefined && tmp == defitem_tmp){
-        itemclass = Object.keys(mycols)[idx];
-       }
-     }
-     debugger;
-     
+      var defitem_tmp = this.defitem; //判斷項目是屬於水質還是投餵用
+      let itemclass = ``;
+      let mycols = this.allcols;
+      for (const idx in Object.keys(mycols)) {
+        var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(
+          keys => keys == defitem_tmp
+        );
+        if (tmp !== undefined && tmp == defitem_tmp) {
+          itemclass = Object.keys(mycols)[idx];
+        }
+      }
+
       //抓折線圖資料囉
       let para = {
-        started_date:this.sdate,
-        ended_date:this.sdate,
-        factory_id:this.sel_main,
-        pond_area_id:this.sel_area,
-        pond_id:this.sel_pool,
-        items:this.defitem
-      }
-      let apiurl=``;
+        started_date: this.sdate,
+        ended_date: this.sdate,
+        factory_id: this.sel_main,
+        pond_area_id: this.sel_area,
+        pond_id: this.sel_pool,
+        items: this.defitem
+      };
+      let apiurl = ``;
       switch (itemclass) {
         case "water":
-           apiurl = `http://61.56.172.10/water-quality-data/`;//await this.$axios.get(apiurl,{ params: para }).then(res => {
+          apiurl = `http://61.56.172.10/water-quality-data/`; //await this.$axios.get(apiurl,{ params: para }).then(res => {
           break;
         case "feed":
           apiurl = `http://61.56.172.10/feed-data/`;
           break;
-          case "env":
-            apiurl = `http://61.56.172.10/env-data/`;
-            break;
+        case "env":
+          apiurl = `http://61.56.172.10/env-data/`;
+          break;
         default:
           break;
       }
-    
-     
-      await this.$axios.get(apiurl,{ params: para }).then(res => {
+      console.log(this.sdate, this.sel_main, this.sel_area, this.sel_pool);
+      await this.$axios.get(apiurl, { params: para }).then(res => {
+        this.item = res.data;
+        res.data.items.forEach(function(x) {
+          delete x.id;
+        });
         this.item = res.data;
         console.log("API:" + res.request.responseURL);
       });
     },
+    getNowDate: function() {
+      let mydate = dayjs().format("YYYY-MM-DD");
+      return mydate;
+    }
   }
 };
 </script>
