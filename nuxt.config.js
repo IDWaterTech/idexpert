@@ -162,6 +162,7 @@ export default {
     }
   },
   router: {
+    base:'/'
     //middleware: ['auth']
   },
   toast: {
