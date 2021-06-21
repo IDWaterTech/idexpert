@@ -125,12 +125,12 @@
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
                   <el-table-column
                     v-for="(item, key) in headers"
-                    :fixed="item.text == 'name'"
+                    :fixed="item.text == fixedname"
                     :prop="item.value"
                     :label="item.text"
                     :key="key"
                     align="center"
-                    :width="(item.text == 'name')?70:150"
+                    :width="(item.text == fixedname)?70:150"
                   >
                   </el-table-column>
                 </el-table>
@@ -602,9 +602,10 @@ export default {
         "items-per-page-text": "每頁",
         "items-per-page-options": [25, 50, 75, 100]
       },
+      fixedname:"養殖池",
       headers: [
         //  { text: "id", value: "id", groupable: false },
-        { text: "name", value: "name", groupable: false },
+        { text: "養殖池", value: "name", groupable: false },
         { text: "體積", value: "volume", groupable: false },
         { text: "密度", value: "density", groupable: false },
         { text: "深度", value: "depth", groupable: false },
