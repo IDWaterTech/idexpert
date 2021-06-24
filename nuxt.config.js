@@ -11,7 +11,11 @@ export default {
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "" }
+      { hid: "description", name: "description", content: "" },
+      // {
+      //   "http-equiv": "Content-Security-Policy",
+      //   content: "upgrade-insecure-requests"
+      // }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
@@ -26,7 +30,7 @@ export default {
     "~/plugins/echarts",
     "~/plugins/vimg",
     "~/plugins/elementui",
-    "~/plugins/json2excel",
+    "~/plugins/json2excel"
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
     // { src: "~/plugins/vue-chartjs", mode: 'client' }
@@ -59,7 +63,7 @@ export default {
     redirect: {
       login: "/login", //需要登入時會導到此路徑
       logout: "/", //登出後，會導到此路徑
-      home: "/intro" //登入後，會導到此路徑
+      home: "/" //登入後，會導到此路徑
     },
     strategies: {
       local: {
@@ -153,16 +157,16 @@ export default {
     },
     //設定代理
     "/idapi": {
-      target: "http://61.56.172.10/", // 介面的域名
+      target: "http://61.56.172.10", // 介面的域名
       changeOrigin: true,
       ws: true,
       pathRewrite: {
-        "^/idapi": "" //萬用字元
+        "^/idapi/": "" //萬用字元
       }
     }
   },
   router: {
-    base:'/'
+    base: "/"
     //middleware: ['auth']
   },
   toast: {

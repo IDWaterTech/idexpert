@@ -58,7 +58,7 @@
 
 <script>
 export default {
-  layout: "emptynologin"
+  layout: "emptynologin",
 };
 </script>
 

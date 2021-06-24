@@ -2,8 +2,25 @@
   <v-container>
     <h1>Login</h1>
     <strong>{{ $auth.$state.redirect }}</strong>
-    <v-tabs v-model="tabs" fixed-tabs icons-and-text>
-      <v-tab class="primary--text" :href="'#tab-1'">
+    <v-tabs  centered grow icons-and-text>
+      <v-tab class="primary--text" :href="'#tab-2'">
+        第三方登入<v-icon>mdi-google</v-icon>
+      </v-tab>
+    </v-tabs>
+    <v-tabs-items v-model="tabs">
+      <v-tab-item :value="'tab-2'"  class="text-center mt-5">
+        <br />
+        <v-btn
+          dark
+          style="border:0px;"
+          @click="loginGoogle"
+          :style="{ background: '#4284f4' }"
+          >以Google登入</v-btn
+        >
+      </v-tab-item>
+    </v-tabs-items>
+    <!-- <v-tabs v-model="tabs" centered grow icons-and-text>
+      <v-tab class="primary--text" :href="'#tab-1'" v-if="false">
         本地登入<v-icon>mdi-home-circle-outline</v-icon>
       </v-tab>
       <v-tab class="primary--text" :href="'#tab-2'">
@@ -11,31 +28,30 @@
       </v-tab>
     </v-tabs>
     <v-tabs-items v-model="tabs">
-      <v-tab-item :value="'tab-1'">
+      <v-tab-item :value="'tab-1'"  v-if="false">
         <UserAuthForm buttonText="Login" :submitForm="loginUser" />
       </v-tab-item>
-      <v-tab-item :value="'tab-2'">
+      <v-tab-item :value="'tab-2'"  class="text-center mt-5">
         <br />
         <v-btn
           dark
-          block
           style="border:0px;"
           @click="loginGoogle"
           :style="{ background: '#4284f4' }"
-          >Login with Google</v-btn
+          >以Google登入</v-btn
         >
       </v-tab-item>
-    </v-tabs-items>
+    </v-tabs-items> -->
   </v-container>
 </template>
 <script>
 import UserAuthForm from "@/components/UserAuthForm";
 
 export default {
-  layout: "empty",
+  layout: "emptynologin",
   data() {
     return {
-      tabs: null
+      tabs: 'tab-2'
     };
   },
   components: {
