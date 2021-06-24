@@ -6,12 +6,11 @@
         <nuxt-link to="/page1">
           go page1
         </nuxt-link>
-        <table border="1">
-          <tr><td>user</td><td>{{$auth.user}}</td></tr>
-          <tr><td>email</td><td>{{$auth.user.email}}</td></tr>
-          <tr><td>name</td><td>{{$auth.user.name}}</td></tr>
-
-        </table>
+        <ul>
+          <li>user---{{$auth.$state.user}}</li>
+           <li>email---{{$auth.$state.user.email}}</li>
+            <li>name---{{$auth.$state.user.name}}</li>
+        </ul>
       </div>
     </v-col>
   </v-row>
@@ -19,12 +18,11 @@
 
 <script>
 export default {
-  layout: "empty",
+  layout: "emptynologin",
   middleware: 'auth',
-  components: {},
   created() {
     
-    console.log(this.$auth.user);
+    // console.log(this.$auth.$state.user);
   },
 };
 </script>
