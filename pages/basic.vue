@@ -25,7 +25,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12" >
+              <v-col cols="12">
                 <v-card class="pa-2" outlined tile min-height="300px">
                   <v-select
                     v-model="sel_main"
@@ -74,6 +74,7 @@
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        @click:prepend="() => (sdate = getNowDate())"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -97,6 +98,7 @@
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        @click:prepend="() => (edate = getNowDate())"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -130,7 +132,7 @@
                     :label="item.text"
                     :key="key"
                     align="center"
-                    :width="(item.text == fixedname)?70:150"
+                    :width="item.text == fixedname ? 70 : 150"
                   >
                   </el-table-column>
                 </el-table>
@@ -526,6 +528,7 @@ import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import dayjs from "dayjs";
+import https from "https";
 //-----
 import "element-ui/lib/theme-chalk/index.css";
 export default {
@@ -602,7 +605,7 @@ export default {
         "items-per-page-text": "每頁",
         "items-per-page-options": [25, 50, 75, 100]
       },
-      fixedname:"養殖池",
+      fixedname: "養殖池",
       headers: [
         //  { text: "id", value: "id", groupable: false },
         { text: "養殖池", value: "name", groupable: false },
@@ -612,9 +615,13 @@ export default {
         { text: "小池數", value: "num", groupable: false },
         { text: "狀態", value: "state", groupable: false },
         { text: "放養日期", value: "started_date", groupable: false },
-        { text: "預估收成日期", value: "eliminated_ended_date", groupable: false },
+        {
+          text: "預估收成日期",
+          value: "eliminated_ended_date",
+          groupable: false
+        },
         { text: "初始放養隻數", value: "init_num", groupable: false },
-        { text: "累積飼料量", value: "feed_accumulation", groupable: false },
+        { text: "累積飼料量", value: "feed_accumulation", groupable: false }
       ],
       tableloading: false,
       waterdata: [],
@@ -662,8 +669,13 @@ export default {
   },
   methods: {
     openDialog: function(item) {
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
-      this.$axios.get("http://61.56.172.10/pond-data/").then(res => {});
+      this.$axios
+        .get("https://61.56.172.10/pond-data/", { httpsAgent: agent })
+        .then(res => {});
     },
     closepanel: async function() {
       this.mypanel = [];
@@ -730,11 +742,17 @@ export default {
       var para = {
         id: this.sel_area
       };
-
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       if (this.sel_area) {
         this.tableloading = true;
         await this.$axios
-          .get("http://61.56.172.10/ponds-data/", { params: para })
+          .get(
+            "https://61.56.172.10/ponds-data/",
+            { params: para },
+            { httpsAgent: agent }
+          )
           .then(res => {
             this.mainpool.items = res.data;
           })
@@ -748,15 +766,20 @@ export default {
     //水質監測
     getwater: async function(start_date, end_date, sel_main, sel_area) {
       this.waterloading = true;
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       //水質檢測欄位
       await this.$axios
-        .get("http://61.56.172.10/water-quality-col-name/")
+        .get("https://61.56.172.10/water-quality-col-name/", {
+          httpsAgent: agent
+        })
         .then(res => {
           this.waterdatacols = res.data;
         });
       //水質檢測資料
-      var apiURL = `http://61.56.172.10/water-quality-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-      await this.$axios.get(apiURL).then(res => {
+      var apiURL = `https://61.56.172.10/water-quality-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
         this.waterdata = res.data;
       });
       this.waterloading = false;
@@ -766,12 +789,17 @@ export default {
       // 載入中
       this.feedloading = true;
       //欄位
-      await this.$axios.get("http://61.56.172.10/feed-col-name/").then(res => {
-        this.feeddatacols = res.data;
+      const agent = new https.Agent({
+        rejectUnauthorized: false
       });
+      await this.$axios
+        .get("https://61.56.172.10/feed-col-name/", { httpsAgent: agent })
+        .then(res => {
+          this.feeddatacols = res.data;
+        });
       //資料
-      var apiURL = `http://61.56.172.10/feed-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-      await this.$axios.get(apiURL).then(res => {
+      var apiURL = `https://61.56.172.10/feed-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
         this.feeddata = res.data;
       });
       this.feedloading = false;
@@ -781,12 +809,17 @@ export default {
       // 載入中
       this.envloading = true;
       //欄位
-      await this.$axios.get("http://61.56.172.10/env-col-name/").then(res => {
-        this.envdatacols = res.data;
+      const agent = new https.Agent({
+        rejectUnauthorized: false
       });
+      await this.$axios
+        .get("https://61.56.172.10/env-col-name/", { httpsAgent: agent })
+        .then(res => {
+          this.envdatacols = res.data;
+        });
       //資料
-      var apiURL = `http://61.56.172.10/env-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-      await this.$axios.get(apiURL).then(res => {
+      var apiURL = `https://61.56.172.10/env-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
         this.envdata = res.data;
       });
       this.envloading = false;
@@ -796,14 +829,19 @@ export default {
       // 載入中
       this.obsloading = true;
       //欄位
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       await this.$axios
-        .get("http://61.56.172.10/observation-col-name/")
+        .get("https://61.56.172.10/observation-col-name/", {
+          httpsAgent: agent
+        })
         .then(res => {
           this.obsdatacols = res.data;
         });
       //資料
-      var apiURL = `http://61.56.172.10/observation-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-      await this.$axios.get(apiURL).then(res => {
+      var apiURL = `https://61.56.172.10/observation-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
         this.obsdata = res.data;
       });
       this.obsloading = false;
@@ -813,14 +851,17 @@ export default {
       // 載入中
       this.advloading = true;
       //欄位
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       await this.$axios
-        .get("http://61.56.172.10/advance-col-name/")
+        .get("https://61.56.172.10/advance-col-name/", { httpsAgent: agent })
         .then(res => {
           this.advdatacols = res.data;
         });
       //資料
-      var apiURL = `http://61.56.172.10/advance-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-      await this.$axios.get(apiURL).then(res => {
+      var apiURL = `https://61.56.172.10/advance-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
         this.advdata = res.data;
         console.log(this.advdata);
       });
@@ -831,14 +872,17 @@ export default {
       // 載入中
       this.advloading = true;
       //欄位
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       await this.$axios
-        .get("http://61.56.172.10/probiotics-col-name/")
+        .get("https://61.56.172.10/probiotics-col-name/", { httpsAgent: agent })
         .then(res => {
           this.pbiodatacols = res.data;
         });
       //資料
-      var apiURL = `http://61.56.172.10/probiotics-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-      await this.$axios.get(apiURL).then(res => {
+      var apiURL = `https://61.56.172.10/probiotics-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
+      await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
         this.pbiodata = res.data;
         console.log(this.pbiodata);
       });
@@ -850,12 +894,21 @@ export default {
     },
     showpool: function(data) {
       console.log(data.name);
-    }
+    },
+    getNowDate: function() {
+      let mydate = dayjs().format("YYYY-MM-DD");
+      return mydate;
+    },
   },
   async created() {
-    await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
-      this.maindata = res.data;
+    const agent = new https.Agent({
+      rejectUnauthorized: false
     });
+    await this.$axios
+      .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
+      .then(res => {
+        this.maindata = res.data;
+      });
     //await this.getwater();
   },
   async mounted() {},
