@@ -357,6 +357,7 @@ import https from "https";
 // import { number } from "~/node_modules/echarts/lib/export";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   // components: {
   //   WaterQuality_Vcharts
   // },
@@ -410,14 +411,37 @@ export default {
       rules: { require: [v => !!v || "*必要項目"] }
     };
   },
-  head() {
-    meta: [
-      // hid is used as unique identifier. Do not use `vmid` for it as it will not work
-      {
-        "http-equiv": "Content-Security-Policy",
-        content: "upgrade-insecure-requests"
+  async beforeCreate() {
+    if (this.$auth.$state.loggedIn) {
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+      let acclist = [];
+      await this.$axios
+        .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
+        .then(res => {
+          acclist = res.data;
+        });
+      var acc = acclist.filter(
+        x => x.帳號 == this.$auth.$state.user.email && x.狀態 == true
+      );
+      //登入成功
+      if (acc.length == 1) {
+        //增加身份判別---
+        const updatedUser = { ...this.$auth.user };
+        updatedUser.role = "user"; //允許登入的
+        updatedUser.authcheck = true; //授權可登入
+        this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+        //--------------
+      } else {
+        //登入失敗
+        const updatedUser = { ...this.$auth.user };
+        updatedUser.role = "guest";
+        updatedUser.authcheck = false;
+        this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+        this.$router.push({ name: "loginfail" });
       }
-    ];
+    }
   },
   async created() {
     // let myurl = [
@@ -629,7 +653,7 @@ export default {
       });
       //抓資料
       await this.$axios
-        .get(apiurl, { params: para}, {httpsAgent: agent })
+        .get(apiurl, { params: para }, { httpsAgent: agent })
         .then(res => {
           this.item = res.data;
           if (res.data.items.length > 0) {
@@ -703,7 +727,7 @@ export default {
     openadd: function() {
       this.adate = "";
       this.atime = "";
-      this.addData=[];
+      this.addData = [];
       this.addDialog = true;
     },
     addsetnow: function() {
@@ -716,11 +740,13 @@ export default {
       });
       if (valid) {
         let url = `https://61.56.172.10/water-quality-data/`;
+        const updUser = this.$auth.$state.user.email;
+        console.log("updUser:" + updUser);
         let parms = {
           items: this.defitem,
           inspected_time: `${this.adate} ${this.atime}:00`, //無秒數，直接補0
           data: [],
-          created_user: "web"
+          created_user: updUser
         };
         let submitData = [];
         this.addData.forEach(el => {
@@ -752,7 +778,9 @@ export default {
         });
         // await this.$axios.get("https://61.56.172.10/architecture/").then(res => {});
         let url = `https://61.56.172.10/water-quality-data/${this.editedItem.id}/`;
-        let data = { val: this.editedItem.value, updated_user: "web" };
+        const updUser = this.$auth.$state.user.email;
+        console.log("updUser:" + updUser);
+        let data = { val: this.editedItem.value, updated_user: updUser };
         await this.$axios
           .patch(url, data, { httpsAgent: agent })
           .then(res => {
@@ -765,9 +793,7 @@ export default {
           .catch(error => {
             alert("修改失敗!：" + error.message);
           })
-          .finally(() => {
-            
-          });
+          .finally(() => {});
       } else {
       }
     },
@@ -790,9 +816,7 @@ export default {
         .catch(error => {
           alert("刪除失敗!：" + error.message);
         })
-        .finally(() => {
-          
-        });
+        .finally(() => {});
     }
   }
 };

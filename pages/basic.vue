@@ -533,6 +533,7 @@ import https from "https";
 import "element-ui/lib/theme-chalk/index.css";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   components: {
     treelst,
     Ind1,
@@ -898,7 +899,7 @@ export default {
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
-    },
+    }
   },
   async created() {
     const agent = new https.Agent({
@@ -909,9 +910,7 @@ export default {
       .then(res => {
         this.maindata = res.data;
       });
-    //await this.getwater();
   },
-  async mounted() {},
   computed: {
     mpurl: function() {
       return this.sel_main && this.showmp
@@ -1052,6 +1051,36 @@ export default {
         }
       }
       return item;
+    }
+  },
+  async beforeCreate() {
+    if (this.$auth.$state.loggedIn) {
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+      let acclist = [];
+      await this.$axios
+        .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
+        .then(res => {
+          acclist = res.data;
+        });
+      var acc = acclist.filter(x => x.帳號 == this.$auth.$state.user.email && x.狀態 == true);
+      //登入成功
+      if (acc.length == 1) {
+        //增加身份判別---
+        const updatedUser = { ...this.$auth.user };
+        updatedUser.role = "user"; //允許登入的
+        updatedUser.authcheck = true; //授權可登入
+        this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+        //--------------
+      } else {
+        //登入失敗
+        const updatedUser = { ...this.$auth.user };
+        updatedUser.role = "guest";
+        updatedUser.authcheck = false;
+        this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+        this.$router.push({ name: "loginfail" });
+      }
     }
   }
 };

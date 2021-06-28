@@ -99,17 +99,33 @@
             :title="item.name"
           ></WaterQuality_Vcharts>
         </v-col>
+        <v-col cols="12" v-if="item.items">
+          <el-table :data="item.items" style="width: 100%" max-height="500" row-key="id" v-if="item.items && item.items.length > 0">
+            <el-table-column
+            v-for="(item, key) in Object.keys(item.items[0]).filter(x=>!['hide_col_name_put_here'].includes(x))"
+            :prop="item"
+            :label="item"
+            :key="key"
+            align="center"
+            
+          >
+          </el-table-column>
+          </el-table>
+        </v-col>
       </v-row>
     </v-container>
   </div>
 </template>
 
 <script>
+import https from "https";
 import dayjs from "dayjs";
+import "element-ui/lib/theme-chalk/index.css";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import { number } from "~/node_modules/echarts/lib/export";
 export default {
   layout: "emptynologin",
+  middleware: 'auth',
   components: {
     WaterQuality_Vcharts
   },
@@ -156,12 +172,15 @@ export default {
   },
   async created() {
     let myurl = [
-      "http://61.56.172.10/architecture/",
-      "http://61.56.172.10/water-quality-col-name/",
-      "http://61.56.172.10/feed-col-name/",
-      "http://61.56.172.10/env-col-name/"
+      "https://61.56.172.10/architecture/",
+      "https://61.56.172.10/water-quality-col-name/",
+      "https://61.56.172.10/feed-col-name/",
+      "https://61.56.172.10/env-col-name/"
     ];
-    const fetchURL = url => this.$axios.get(url);
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+    const fetchURL = url => this.$axios.get(url, { httpsAgent: agent });
     const promiseArray = myurl.map(fetchURL);
     console.log("req", this.req);
     //
@@ -202,7 +221,7 @@ export default {
       Object.assign(this.waterdatacols, res.data);
     });
     //抓廠資料
-    // await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
+    // await this.$axios.get("https://61.56.172.10/architecture/").then(res => {
     //   this.maindata = res.data;
     //   this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
     //   this.sel_main =
@@ -220,7 +239,7 @@ export default {
     //抓水質項目
 
     // await this.$axios
-    //   .get("http://61.56.172.10/water-quality-col-name/")
+    //   .get("https://61.56.172.10/water-quality-col-name/")
     //   .then(res => {
     //     this.waterdatacols = res.data;
     //     this.allcols["water"] = Object.assign({}, res.data);
@@ -231,12 +250,12 @@ export default {
     //   });
 
     //抓投餵項目
-    // await this.$axios.get("http://61.56.172.10/feed-col-name/").then(res => {
+    // await this.$axios.get("https://61.56.172.10/feed-col-name/").then(res => {
     //   this.allcols["feed"] = Object.assign({}, res.data);
     //   Object.assign(this.waterdatacols, res.data);
     // });
     //抓環境項目
-    // await this.$axios.get("http://61.56.172.10/env-col-name/").then(res => {
+    // await this.$axios.get("https://61.56.172.10/env-col-name/").then(res => {
     //   this.allcols["env"] = Object.assign({}, res.data);
     //   Object.assign(this.waterdatacols, res.data);
     // });
@@ -289,16 +308,19 @@ export default {
       var para = {
         id: this.sel_area
       };
-
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       if (this.sel_area) {
         //水池基本資料
         await this.$axios
-          .get("http://61.56.172.10/ponds-data/", { params: para })
+          .get(
+            "https://61.56.172.10/ponds-data/",
+            { params: para },
+            { httpsAgent: agent }
+          )
           .then(res => {
             this.mainpool.items = res.data;
-          })
-          .finally(() => {
-            /* 不論失敗成功皆會執行 */
           });
       } else {
         this.mainpool.items = [];
@@ -339,26 +361,31 @@ export default {
       let apiurl = ``;
       switch (itemclass) {
         case "water":
-          apiurl = `http://61.56.172.10/water-quality-data/`; //await this.$axios.get(apiurl,{ params: para }).then(res => {
+          apiurl = `https://61.56.172.10/water-quality-data/`; //await this.$axios.get(apiurl,{ params: para }).then(res => {
           break;
         case "feed":
-          apiurl = `http://61.56.172.10/feed-data/`;
+          apiurl = `https://61.56.172.10/feed-data/`;
           break;
         case "env":
-          apiurl = `http://61.56.172.10/env-data/`;
+          apiurl = `https://61.56.172.10/env-data/`;
           break;
         default:
           break;
       }
       console.log(this.sdate, this.sel_main, this.sel_area, this.sel_pool);
-      await this.$axios.get(apiurl, { params: para }).then(res => {
-        this.item = res.data;
-        res.data.items.forEach(function(x) {
-          delete x.id;
-        });
-        this.item = res.data;
-        console.log("API:" + res.request.responseURL);
+      const agent = new https.Agent({
+        rejectUnauthorized: false
       });
+      await this.$axios
+        .get(apiurl, { params: para }, { httpsAgent: agent })
+        .then(res => {
+          this.item = res.data;
+          res.data.items.forEach(function(x) {
+            delete x.id;//"刪掉id欄位"
+          });
+          this.item = res.data;
+          console.log("API:" + res.request.responseURL);
+        });
     },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
