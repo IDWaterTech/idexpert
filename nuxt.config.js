@@ -30,7 +30,8 @@ export default {
     "~/plugins/echarts",
     "~/plugins/vimg",
     "~/plugins/elementui",
-    "~/plugins/json2excel"
+    "~/plugins/json2excel",
+    { src: '~/plugins/vue-tree-select.js', ssr: false }
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
     // { src: "~/plugins/vue-chartjs", mode: 'client' }

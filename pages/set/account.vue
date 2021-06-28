@@ -110,12 +110,21 @@
         <v-dialog v-model="addDialog" max-width="500px">
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card>
-              <v-card-title>
+              <v-toolbar flat>
+                <v-toolbar-title>
+                  <span class="text-h5"
+                    >新增使用者帳號
+                    <v-icon>mdi-account-plus-outline</v-icon></span
+                  ></v-toolbar-title
+                >
+              </v-toolbar>
+              <v-divider></v-divider>
+              <!-- <v-card-title>
                 <span class="text-h5"
                   >新增使用者帳號
                   <v-icon>mdi-account-plus-outline</v-icon></span
                 >
-              </v-card-title>
+              </v-card-title> -->
               <v-card-text>
                 <v-row>
                   <v-col cols="12"
@@ -128,13 +137,21 @@
                   ></v-col>
                   <v-col cols="12"
                     ><v-text-field
+                      v-model="addform.account_name"
+                      :rules="rules.require"
+                      label="使用者名稱"
+                      placeholder="王小明"
+                    ></v-text-field
+                  ></v-col>
+                  <v-col cols="12" md="6"
+                    ><v-text-field
                       v-model="addform.password"
                       :rules="rules.require"
                       label="設定密碼"
                       type="password"
                     ></v-text-field
                   ></v-col>
-                  <v-col cols="12"
+                  <v-col cols="12" md="6"
                     ><v-text-field
                       v-model="addform.password2"
                       :rules="rules.require.concat(rules.eqpwd)"
@@ -142,15 +159,8 @@
                       type="password"
                     ></v-text-field
                   ></v-col>
-                  <v-col cols="12"
-                    ><v-text-field
-                      v-model="addform.account_name"
-                      :rules="rules.require"
-                      label="使用者名稱"
-                      placeholder="王小明"
-                    ></v-text-field
-                  ></v-col>
-                  <v-col cols="12">
+
+                  <v-col cols="12" md="6">
                     帳號預設狀態：
                     <el-tag
                       :type="addform.is_active ? 'success' : 'danger'"
@@ -163,10 +173,22 @@
                       inactive-color="#ff4949"
                     ></el-switch>
                   </v-col>
+                  <v-col cols="12">
+                    職位
+                    <treeselect
+                      v-model="addform.position_id"
+                      :multiple="true"
+                      :options="options"
+                      :flat="true"
+                      :default-expand-level="3"
+                      placeholder="請選擇職位"
+                      :disable-branch-nodes="true"
+                    />
+                  </v-col>
                 </v-row>
               </v-card-text>
-
-              <v-card-actions>
+              <v-divider></v-divider>
+              <v-footer color="white">
                 <v-spacer></v-spacer>
                 <!-- <v-btn color="blue darken-1" text @click="editDialog = false">
                 Cancel
@@ -174,7 +196,7 @@
                 <v-btn color="blue darken-1" text @click="addsubmit">
                   確認
                 </v-btn>
-              </v-card-actions>
+              </v-footer>
             </v-card>
           </v-form>
         </v-dialog>
@@ -258,14 +280,73 @@ export default {
         password2: "",
         account_name: "",
         created_user: "web",
-        is_active: true
+        is_active: true,
+        position_id:[]
       },
       //單位顏色、ICON設定
       unit: [
         { name: "default", icon: "mdi-help", color: "lightgrey" },
         { name: "技術組", icon: "mdi-hammer-wrench", color: "primary" },
         { name: "養殖組", icon: "mdi-shaker-outline", color: "orange" }
-      ]
+      ],
+      options: [
+        {
+          id: 0,
+          label: "艾滴科技",
+          is_leaf: false,
+          children: [
+            {
+              id: 1,
+              label: "董事長",
+              is_leaf: true
+            },
+            {
+              id: 2,
+              label: "技術組",
+              is_leaf: false,
+              children: [
+                {
+                  id: 9,
+                  label: "組長",
+                  is_leaf: true
+                },
+                {
+                  id: 10,
+                  label: "副組長",
+                  is_leaf: true
+                },
+                {
+                  id: 11,
+                  label: "組員",
+                  is_leaf: true
+                }
+              ]
+            },
+            {
+              id: 3,
+              label: "養殖組",
+              is_leaf: false,
+              children: [
+                {
+                  id: 12,
+                  label: "組長",
+                  is_leaf: true
+                },
+                {
+                  id: 13,
+                  label: "副組長",
+                  is_leaf: true
+                },
+                {
+                  id: 14,
+                  label: "組員",
+                  is_leaf: true
+                }
+              ]
+            }
+          ]
+        }
+      ],
     };
   },
   methods: {
