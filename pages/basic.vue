@@ -250,12 +250,25 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defPool.水質"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="waterdata.map(x=>x['name'])"
+                  v-if="waterdatacols"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
             </v-row>
             <v-row>
               <!-- <v-col cols="12" md="4"> 使用echarts
                   <water-quality defaultitem="density" chartId="mmm"></water-quality>
                 </v-col> -->
-              <v-col cols="12" md="4" v-for="item in waterdata" :key="item.id">
+              <v-col cols="12" md="4" v-for="item in waterdata" :key="item.id" v-show="(defPool.水質.includes(item.name) || (defPool.水質.length==0) )">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="waterdatacols"
@@ -302,9 +315,22 @@
                 >
                 </v-select>
               </v-col>
+               <v-col cols="12" md="3">
+                <v-select
+                  v-model="defPool.飼料"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="feeddata.map(x=>x['name'])"
+                  v-if="feeddatacols"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="4" v-for="item in feeddata" :key="item.id">
+              <v-col cols="12" md="4" v-for="item in feeddata" :key="item.id" v-show="(defPool.飼料.includes(item.name) || (defPool.飼料.length==0) )">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="feeddatacols"
@@ -349,9 +375,22 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defPool.環境"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="envdata.map(x=>x['name'])"
+                  v-if="envdatacols"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="4" v-for="item in envdata" :key="item.id">
+              <v-col cols="12" md="4" v-for="item in envdata" :key="item.id" v-show="(defPool.環境.includes(item.name) || (defPool.環境.length==0) )">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="envdatacols"
@@ -396,9 +435,22 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defPool.觀察"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="obsdata.map(x=>x['name'])"
+                  v-if="obsdatacols"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="4" v-for="item in obsdata" :key="item.id">
+              <v-col cols="12" md="4" v-for="item in obsdata" :key="item.id" v-show="(defPool.觀察.includes(item.name) || (defPool.觀察.length==0) )">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="obsdatacols"
@@ -443,9 +495,22 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defPool.進階"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="advdata.map(x=>x['name'])"
+                  v-if="advdatacols"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="4" v-for="item in advdata" :key="item.id">
+              <v-col cols="12" md="4" v-for="item in advdata" :key="item.id" v-show="(defPool.進階.includes(item.name) || (defPool.進階.length==0) )">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="advdatacols"
@@ -492,9 +557,22 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defPool.益生菌"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="pbiodata.map(x=>x['name'])"
+                  v-if="pbiodatacols"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" md="4" v-for="item in pbiodata" :key="item.id">
+              <v-col cols="12" md="4" v-for="item in pbiodata" :key="item.id" v-show="(defPool.益生菌.includes(item.name) || (defPool.益生菌.length==0) )">
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="pbiodatacols"
@@ -546,6 +624,7 @@ export default {
       sel_area: "",
       clickeditem: "",
       defitem: "",
+      defPool: {水質:[],環境:[],飼料:[],觀察:[],進階:[],益生菌:[]},
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
