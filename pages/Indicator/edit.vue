@@ -444,51 +444,6 @@ export default {
     }
   },
   async created() {
-    // let myurl = [
-    //   "https://61.56.172.10/architecture/",
-    //   "https://61.56.172.10/water-quality-col-name/",
-    //   "https://61.56.172.10/feed-col-name/",
-    //   "https://61.56.172.10/env-col-name/"
-    // ];
-    // const fetchURL = url => this.$axios.get(url);
-    // const promiseArray = [myurl[0], myurl[1], myurl[2], myurl[3]].map(fetchURL);
-    // const promiseArray = myurl.map(fetchURL);
-    // await Promise.all(promiseArray)
-    //   .then(([...data]) => {
-    //     // console.log("廠");
-    //     let res = data[0]; // first promise resolved
-    //     this.maindata = res.data;
-    //     this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
-    //     this.sel_main =
-    //       Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
-    //     this.sel_area =
-    //       Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
-    //     this.sel_pool =
-    //       Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
-    //     if (Number(this.req.sel_pool) > 0) {
-    //       //await this.areachange();
-    //       this.areachange();
-    //       this.sel_pool = Number(this.req.sel_pool);
-    //     }
-    //     // console.log("水質");
-    //     res = data[1]; // second promise resolved
-    //     this.waterdatacols = res.data;
-    //     this.allcols["water"] = Object.assign({}, res.data);
-    //     this.defitem =
-    //       this.req.defitem != undefined && this.req.defitem.length > 0
-    //         ? this.req.defitem
-    //         : [];
-    //     // console.log("投餵");
-    //     res = data[2];
-    //     this.allcols["feed"] = Object.assign({}, res.data);
-    //     Object.assign(this.waterdatacols, res.data);
-    //     // console.log("環境");
-    //     res = data[3];
-    //     this.allcols["env"] = Object.assign({}, res.data);
-    //     Object.assign(this.waterdatacols, res.data);
-    //   })
-    //   .catch(err => {console.log(err)});
-
     //抓廠資料
     const agent = new https.Agent({
       rejectUnauthorized: false
@@ -496,6 +451,7 @@ export default {
     await this.$axios
       .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
       .then(res => {
+        console.log("廠");
         this.maindata = res.data;
         this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
         this.sel_main =
@@ -509,35 +465,23 @@ export default {
           this.areachange();
           this.sel_pool = Number(this.req.sel_pool);
         }
-      });
-    // //抓水質項目
-    await this.$axios
-      .get("https://61.56.172.10/water-quality-col-name/", {
-        httpsAgent: agent
-      })
-      .then(res => {
-        this.waterdatacols = res.data;
-        this.allcols["water"] = Object.assign({}, res.data);
         this.defitem =
           this.req.defitem != undefined && this.req.defitem.length > 0
             ? this.req.defitem
             : [];
       });
-    // var defitem_tmp = this.defitem;//判斷項目是屬於水質還是投餵用
-
-    // //抓投餵項目
+    //抓all項目
     await this.$axios
-      .get("https://61.56.172.10/feed-col-name/", { httpsAgent: agent })
+      .get("https://61.56.172.10/all-col-name/", {
+        httpsAgent: agent
+      })
       .then(res => {
-        this.allcols["feed"] = Object.assign({}, res.data);
-        Object.assign(this.waterdatacols, res.data);
-      });
-    // //抓環境項目
-    await this.$axios
-      .get("https://61.56.172.10/env-col-name/", { httpsAgent: agent })
-      .then(res => {
-        this.allcols["env"] = Object.assign({}, res.data);
-        Object.assign(this.waterdatacols, res.data);
+        console.log("all項目");
+        for (let i = 0; i < Object.keys(res.data).length; i++) {
+          let colsclass = Object.keys(res.data)[i]; //water;
+          Object.assign(this.waterdatacols, res.data[colsclass]);
+        }
+        this.allcols = Object.assign({}, res.data);
       });
   },
   computed: {
@@ -597,6 +541,17 @@ export default {
         this.mainpool.items = [];
       }
     },
+    getItemClass: function(item) {
+      let colclass = "";
+      for (let i = 0; i < Object.keys(this.allcols).length; i++) {
+        let inclass = Object.keys(this.allcols)[i]; //water;
+        let checkclass = Object.keys(this.allcols[inclass]).includes(item);
+        if (checkclass == true) {
+          colclass = inclass;
+          return colclass;
+        }
+      }
+    },
     getdata: async function() {
       console.log(
         "api 參數",
@@ -629,22 +584,33 @@ export default {
         factory_id: this.sel_main,
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
-        items: this.defitem
+        items: this.defitem,
+        data_group:itemclass
       };
-      let apiurl = ``;
-      switch (itemclass) {
-        case "water":
-          apiurl = `https://61.56.172.10/water-quality-data/`; //await this.$axios.get(apiurl,{ params: para }).then(res => {
-          break;
-        case "feed":
-          apiurl = `https://61.56.172.10/feed-data/`;
-          break;
-        case "env":
-          apiurl = `https://61.56.172.10/env-data/`;
-          break;
-        default:
-          break;
-      }
+      let apiurl = `https://61.56.172.10/all-data/`;
+      // switch (itemclass) {
+      //   case "water":
+      //     apiurl = `https://61.56.172.10/water-quality-data/`; 
+      //     break;
+      //   case "feed":
+      //     apiurl = `https://61.56.172.10/feed-data/`;
+      //     break;
+      //   case "env":
+      //     apiurl = `https://61.56.172.10/env-data/`;
+      //     break;
+      //   case "obs": //觀察網
+      //     apiurl = `https://61.56.172.10/observation-data/`;
+      //     break;
+      //   case "adv": //進階值
+      //     apiurl = `https://61.56.172.10/advance-data/`;
+      //     break;
+      //   case "pbio": //益生菌
+      //     apiurl = `https://61.56.172.10/probiotics-data/`;
+      //     break;
+      //     break;
+      //   default:
+      //     break;
+      // }
       //歸零
       this.item = "";
       this.headers = [];
@@ -682,6 +648,7 @@ export default {
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.id = item.id;
       this.editedItem.value = item[Object.keys(item)[2]];
+      this.editedItem.class = this.getItemClass(Object.keys(item)[2]);//water,adv...
       this.editDialog = true;
     },
     delItem: async function(item) {
@@ -689,6 +656,7 @@ export default {
       this.editedItem.id = item.id;
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.value = item[Object.keys(item)[2]];
+      this.editedItem.class = this.getItemClass(Object.keys(item)[2]);//water,adv...
       this.delDialog = true;
     },
     addItem: async function() {},
@@ -739,21 +707,24 @@ export default {
         rejectUnauthorized: false
       });
       if (valid) {
-        let url = `https://61.56.172.10/water-quality-data/`;
+        let colclass = this.getItemClass(this.defitem);
+        let apiurl = "https://61.56.172.10/all-data/";
+       
+        let url = apiurl;
         const updUser = this.$auth.$state.user.email;
-        console.log("updUser:" + updUser);
         let parms = {
-          items: this.defitem,
+          items: this.defitem,//亞硝酸鹽濃度
           inspected_time: `${this.adate} ${this.atime}:00`, //無秒數，直接補0
           data: [],
-          created_user: updUser
+          created_user: updUser,//建立者名稱
+          data_group:colclass//water,adv,...
         };
         let submitData = [];
         this.addData.forEach(el => {
           submitData.push({ id: el.id, val: el.value });
         });
         parms.data = submitData;
-        console.log("adddat aparms", parms);
+        console.log("adddata aparms", parms);
         await this.$axios
           .post(url, parms, { httpsAgent: agent })
           .then(res => {
@@ -761,6 +732,8 @@ export default {
               alert("新增成功!");
               //this.getdata();新增未必有選到所有選項
               this.addDialog = false; //close dialog
+            } else {
+              alert("新增失敗!：" + res.data);
             }
           })
           .catch(error => {
@@ -777,10 +750,10 @@ export default {
           rejectUnauthorized: false
         });
         // await this.$axios.get("https://61.56.172.10/architecture/").then(res => {});
-        let url = `https://61.56.172.10/water-quality-data/${this.editedItem.id}/`;
+        let url = `https://61.56.172.10/all-data/${this.editedItem.id}/`;
         const updUser = this.$auth.$state.user.email;
-        console.log("updUser:" + updUser);
-        let data = { val: this.editedItem.value, updated_user: updUser };
+        let data = { val: this.editedItem.value, updated_user: updUser,data_group:this.editedItem.class };
+        console.log("edit data:",data);
         await this.$axios
           .patch(url, data, { httpsAgent: agent })
           .then(res => {
@@ -788,6 +761,8 @@ export default {
               alert("修改成功!");
               this.getdata();
               this.editDialog = false; //close dialog
+            } else {
+              alert("修改失敗!：" + res.data);
             }
           })
           .catch(error => {
@@ -801,22 +776,24 @@ export default {
       const agent = new https.Agent({
         rejectUnauthorized: false
       });
-      let url = `https://61.56.172.10/water-quality-data/${this.editedItem.id}/`;
-      // let data = { val: this.editedItem.value, updated_user: "web" };
+      let url = `https://61.56.172.10/all-data/${this.editedItem.id}/`;
+      let deldata = { data_group: this.editedItem.class};
+      console.log("DEL data:",deldata);
       console.log("DEL:" + url);
       await this.$axios
-        .delete(url, { httpsAgent: agent })
+        .delete(url,{data:deldata}, { httpsAgent: agent })
         .then(res => {
           if (res.data == "刪除成功") {
             alert("刪除成功!");
             this.getdata();
             this.delDialog = false; //close dialog
-          }
+          }else {
+              alert("刪除失敗!：" + res.data);
+            }
         })
         .catch(error => {
           alert("刪除失敗!：" + error.message);
-        })
-        .finally(() => {});
+        });
     }
   }
 };
