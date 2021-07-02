@@ -100,16 +100,23 @@
           ></WaterQuality_Vcharts>
         </v-col>
         <v-col cols="12" v-if="item.items">
-          <el-table :data="item.items" style="width: 100%" max-height="500" row-key="id" v-if="item.items && item.items.length > 0">
-            <el-table-column
-            v-for="(item, key) in Object.keys(item.items[0]).filter(x=>!['hide_col_name_put_here'].includes(x))"
-            :prop="item"
-            :label="item"
-            :key="key"
-            align="center"
-            
+          <el-table
+            :data="item.items"
+            style="width: 100%"
+            max-height="500"
+            row-key="id"
+            v-if="item.items && item.items.length > 0"
           >
-          </el-table-column>
+            <el-table-column
+              v-for="(item, key) in Object.keys(item.items[0]).filter(
+                x => !['hide_col_name_put_here'].includes(x)
+              )"
+              :prop="item"
+              :label="item"
+              :key="key"
+              align="center"
+            >
+            </el-table-column>
           </el-table>
         </v-col>
       </v-row>
@@ -125,7 +132,7 @@ import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import { number } from "~/node_modules/echarts/lib/export";
 export default {
   layout: "emptynologin",
-  middleware: 'auth',
+  middleware: "auth",
   components: {
     WaterQuality_Vcharts
   },
@@ -173,14 +180,18 @@ export default {
   async created() {
     let myurl = [
       "https://61.56.172.10/architecture/",
-      "https://61.56.172.10/water-quality-col-name/",
-      "https://61.56.172.10/feed-col-name/",
-      "https://61.56.172.10/env-col-name/"
+      "https://61.56.172.10/all-col-name/"
+      // "https://61.56.172.10/water-quality-col-name/",
+      // "https://61.56.172.10/feed-col-name/",
+      // "https://61.56.172.10/env-col-name/"
     ];
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
-    const fetchURL = url => this.$axios.get(url, { httpsAgent: agent });
+    const fetchURL = url =>
+      this.$axios.get(url, { httpsAgent: agent }).catch(err => {
+        alert("失敗：" + err.message);
+      });
     const promiseArray = myurl.map(fetchURL);
     console.log("req", this.req);
     //
@@ -196,84 +207,46 @@ export default {
       this.areachange();
       this.sel_pool = Number(this.req.sel_pool);
     }
+    this.defitem =
+      this.req.defitem != undefined && this.req.defitem.length > 0
+        ? this.req.defitem
+        : [];
     //---
     // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
     await Promise.all(promiseArray).then(([...data]) => {
       console.log("廠");
       let res = data[0]; // first promise resolved
       this.maindata = res.data;
+      //抓all項目
 
-      console.log("水質");
-      res = data[1]; // second promise resolved
-      this.waterdatacols = res.data;
-      this.allcols["water"] = Object.assign({}, res.data);
-      this.defitem =
-        this.req.defitem != undefined && this.req.defitem.length > 0
-          ? this.req.defitem
-          : [];
-      console.log("投餵");
-      res = data[2];
-      this.allcols["feed"] = Object.assign({}, res.data);
-      Object.assign(this.waterdatacols, res.data);
-      console.log("環境");
-      res = data[3];
-      this.allcols["env"] = Object.assign({}, res.data);
-      Object.assign(this.waterdatacols, res.data);
+      console.log("all項目");
+      res = data[1];
+      for (let i = 0; i < Object.keys(res.data).length; i++) {
+        let colsclass = Object.keys(res.data)[i]; //water;
+        Object.assign(this.waterdatacols, res.data[colsclass]);
+      }
+      this.allcols = Object.assign({}, res.data);
+
+      // console.log("水質");
+      // res = data[1]; // second promise resolved
+      // this.waterdatacols = res.data;
+      // this.allcols["water"] = Object.assign({}, res.data);
+      // this.defitem =
+      //   this.req.defitem != undefined && this.req.defitem.length > 0
+      //     ? this.req.defitem
+      //     : [];
+      // console.log("投餵");
+      // res = data[2];
+      // this.allcols["feed"] = Object.assign({}, res.data);
+      // Object.assign(this.waterdatacols, res.data);
+      // console.log("環境");
+      // res = data[3];
+      // this.allcols["env"] = Object.assign({}, res.data);
+      // Object.assign(this.waterdatacols, res.data);
     });
-    //抓廠資料
-    // await this.$axios.get("https://61.56.172.10/architecture/").then(res => {
-    //   this.maindata = res.data;
-    //   this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
-    //   this.sel_main =
-    //     Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
-    //   this.sel_area =
-    //     Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
-    //   this.sel_pool =
-    //     Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
-    //   if (Number(this.req.sel_pool) > 0) {
-    //     //await this.areachange();
-    //     this.areachange();
-    //     this.sel_pool = Number(this.req.sel_pool);
-    //   }
-    // });
-    //抓水質項目
-
-    // await this.$axios
-    //   .get("https://61.56.172.10/water-quality-col-name/")
-    //   .then(res => {
-    //     this.waterdatacols = res.data;
-    //     this.allcols["water"] = Object.assign({}, res.data);
-    //     this.defitem =
-    //       this.req.defitem != undefined && this.req.defitem.length > 0
-    //         ? this.req.defitem
-    //         : [];
-    //   });
-
-    //抓投餵項目
-    // await this.$axios.get("https://61.56.172.10/feed-col-name/").then(res => {
-    //   this.allcols["feed"] = Object.assign({}, res.data);
-    //   Object.assign(this.waterdatacols, res.data);
-    // });
-    //抓環境項目
-    // await this.$axios.get("https://61.56.172.10/env-col-name/").then(res => {
-    //   this.allcols["env"] = Object.assign({}, res.data);
-    //   Object.assign(this.waterdatacols, res.data);
-    // });
-    // //指定的項目是歸屬於哪個類別，水質/投餵
-    //  for (const idx in Object.keys(mycols)) {
-    //    var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(keys => keys == defitem_tmp);
-    //    if(tmp !== undefined && tmp == defitem_tmp){
-    //     itemclass = Object.keys(mycols)[idx];
-    //    }
-    //  }
 
     // //參數代入
     if (Object.keys(this.req).length > 0) {
-      // this.sdate = this.req.sdate;
-      // this.sel_main = this.req.sel_main;
-      // this.sel_area = this.req.sel_area;
-      // this.sel_pool = this.req.sel_pool;
-      // this.defitem = this.req.defitem;
       await this.getdata();
     }
   },
@@ -321,6 +294,9 @@ export default {
           )
           .then(res => {
             this.mainpool.items = res.data;
+          })
+          .catch(err => {
+            alert("失敗：" + err.message);
           });
       } else {
         this.mainpool.items = [];
@@ -350,41 +326,31 @@ export default {
       }
 
       //抓折線圖資料囉
-      let para = {
+      let parm = {
         started_date: this.sdate,
         ended_date: this.sdate,
         factory_id: this.sel_main,
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
-        items: this.defitem
+        items: this.defitem,
+        data_group: itemclass
       };
-      let apiurl = ``;
-      switch (itemclass) {
-        case "water":
-          apiurl = `https://61.56.172.10/water-quality-data/`; //await this.$axios.get(apiurl,{ params: para }).then(res => {
-          break;
-        case "feed":
-          apiurl = `https://61.56.172.10/feed-data/`;
-          break;
-        case "env":
-          apiurl = `https://61.56.172.10/env-data/`;
-          break;
-        default:
-          break;
-      }
-      console.log(this.sdate, this.sel_main, this.sel_area, this.sel_pool);
+      let apiURL = `https://61.56.172.10/all-data/`;
       const agent = new https.Agent({
         rejectUnauthorized: false
       });
       await this.$axios
-        .get(apiurl, { params: para }, { httpsAgent: agent })
+        .get(apiURL, { params: parm }, { httpsAgent: agent })
         .then(res => {
-          this.item = res.data;
+          debugger
+          console.log("select:", res.request.responseURL);
           res.data.items.forEach(function(x) {
-            delete x.id;//"刪掉id欄位"
+            delete x.id; //"刪掉id欄位"
           });
           this.item = res.data;
-          console.log("API:" + res.request.responseURL);
+        })
+        .catch(err => {
+          alert("失敗：" + err.message);
         });
     },
     getNowDate: function() {
