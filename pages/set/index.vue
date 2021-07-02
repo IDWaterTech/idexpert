@@ -46,6 +46,12 @@ export default {
           to: "/set/authorization",
           color: "#FF80AB"
         },
+        {
+          icon: "mdi-monitor-dashboard",
+          title: "監測設定",
+          to: "/set/mointor",
+          color: "#EA80FC"
+        }
       ]
     };
   }
