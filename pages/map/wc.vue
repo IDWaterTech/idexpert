@@ -16,16 +16,10 @@
           <span v-else></span>
         </td>
       </tr>
+      <tr>
+        <td class="grey lighten-2" :colspan="pools[Object.keys(pools)[0]].length">中央走道</td>
+      </tr>
     </table>
-
-    <v-row class="mt-3">
-      <v-col
-        align-self="center"
-        class="grey lighten-2 justify-center align-center  d-flex "
-        style="font-size:2em;"
-        >中央走道</v-col
-      >
-    </v-row>
   </div>
 </template>
 
