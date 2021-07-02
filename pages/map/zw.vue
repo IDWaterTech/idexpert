@@ -1,0 +1,139 @@
+<template>
+  <div>
+    <h1>紫微廠圖</h1>
+    <table style="border:0px solid; width:100%;" CellSpacing="15">
+      <tr v-for="item in Object.keys(pools.area1)" :key="item">
+        <td
+          v-for="(itm, idx) in pools.area1[item]"
+          :key="idx"
+          :bgcolor="getItemColor(itm.state)"
+          :style="itm.state.length > 0 ? 'border:2px solid;' : ''"
+        >
+          <span v-if="itm.state.length > 0"
+            >{{ itm.name }}-{{ itm.state }}</span
+          >
+          <span v-else></span>
+        </td>
+      </tr>
+      <tr>
+        <td class="grey lighten-2" :colspan="pools.area1[Object.keys(pools.area1)[0]].length">中央走道</td>
+      </tr>
+      <tr v-for="item in Object.keys(pools.area2)" :key="item">
+        <td
+          v-for="(itm, idx) in pools.area2[item]"
+          :key="idx"
+          :bgcolor="getItemColor(itm.state)"
+          :style="itm.state == '無'? '': itm.state.length > 0? 'border:2px solid;': 'width:50px;'"
+        >
+          <span
+            v-if="itm.state.length > 0"
+            :style="itm.state == '無' ? 'color:white;' : ''"
+            >{{ itm.name }}-{{ itm.state }}</span
+          >
+          <span v-else></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</template>
+
+<script>
+export default {
+  layout: "emptynologin",
+  data() {
+    return {
+      pools: {
+        area1: {
+          c: [
+            { name: "", state: "" },
+            { name: "", state: "" },
+            { name: "", state: "" },
+            { name: "c^", state: "" },
+            { name: "3-5", state: "放養中" },
+            { name: "3-6", state: "放養中" }
+          ],
+          b: [
+            { name: "2^", state: "" },
+            { name: "1-5", state: "集中暫養中" },
+            { name: "1-6", state: "尚未洗池" },
+            { name: "b^", state: "" },
+            { name: "3-3", state: "蓄水中" },
+            { name: "3-4", state: "蓄水中" }
+          ],
+          a: [
+            { name: "1-1", state: "蓄水完畢" },
+            { name: "1-2", state: "消毒中" },
+            { name: "1-3", state: "做水中" },
+            { name: "a^", state: "" },
+            { name: "3-1", state: "空池" },
+            { name: "3-2", state: "空池" }
+          ]
+        },
+        area2: {
+          f: [
+            { name: "", state: "無" },
+            { name: "", state: "無" },
+            { name: "", state: "無" },
+            { name: "", state: "" },
+            { name: "C4", state: "放養中" },
+            { name: "C5", state: "放養中" }
+          ],
+          e: [
+            { name: "", state: "無" },
+            { name: "2-3", state: "放養中" },
+            { name: "2-4", state: "放養中" },
+            { name: "b^", state: "" },
+            { name: "4-3", state: "放養中" },
+            { name: "4-4", state: "放養中" }
+          ],
+          d: [
+            { name: "", state: "無" },
+            { name: "2-1", state: "消毒中" },
+            { name: "2-2", state: "做水中" },
+            { name: "a^", state: "" },
+            { name: "4-1", state: "預備放苗" },
+            { name: "4-2", state: "空池" }
+          ]
+        }
+      },
+      statcolor: [
+        { name: "default", color: "grey" },
+        { name: "放養中", color: "yellow" },
+        { name: "集中暫養中", color: "#0070C0" },
+        { name: "尚未洗池", color: "purple" },
+        { name: "已清洗", color: "red" },
+        { name: "蓄水中", color: "orange" },
+        { name: "蓄水完畢", color: "lightgreen" },
+        { name: "消毒中", color: "green" },
+        { name: "做水中", color: "#F8CBAD" },
+        { name: "預備放苗", color: "#00B0F0" },
+        { name: "空池", color: "grey" },
+        { name: "無", color: "white" }
+      ]
+    };
+  },
+  methods: {
+    getItemColor: function(data) {
+      let data2 = this.statcolor.filter(x => x.name == data);
+      if (data2.length == 1) {
+        return data2[0].color;
+      } else {
+        return this.statcolor.filter(x => x.name == "default").color;
+      }
+    }
+  }
+};
+</script>
+
+<style scoped>
+td {
+  font-size: 1.5em;
+  text-align: center;
+  vertical-align: middle;
+  min-width: 50px;
+}
+tr {
+  height: 80px;
+  max-height: 80px;
+}
+</style>
