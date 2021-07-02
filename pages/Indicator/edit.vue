@@ -59,7 +59,7 @@
           :items="maindata"
           item-value="id"
           item-text="name"
-          label="選擇廠"
+          label="選擇廠(必選)"
           clearable
           background-color="light-green lighten-4"
         >
@@ -73,7 +73,7 @@
           item-text="name"
           clearable
           @change="areachange"
-          label="選擇區域"
+          label="選擇區域(必選)"
           background-color="light-green lighten-4"
         ></v-select>
       </v-col>
@@ -91,7 +91,7 @@
         <v-select
           v-model="defitem"
           clearable
-          placeholder="指定項目"
+          placeholder="指定項目(必選)"
           :items="Object.keys(waterdatacols)"
           v-if="waterdatacols"
           no-data-text="查無資料"
@@ -115,7 +115,7 @@
               ? false
               : true
           "
-          >確認</v-btn
+          >查詢</v-btn
         >
       </v-col>
       <v-col cols="12" md="12">
@@ -197,10 +197,11 @@
                       type="number"
                       :id="item.name"
                       @keyup.enter="gofocusNxt(item.name)"
-                      @keyup="getAddData"
+                      @change="getAddData"
                       ><p slot="prepend">{{ item.name }}</p></v-text-field
                     ></v-col
                   >
+                  <!-- @keyup="getAddData" -->
                 </v-row>
               </v-card-text>
               <v-divider></v-divider>
@@ -421,6 +422,9 @@ export default {
         .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
         .then(res => {
           acclist = res.data;
+        })
+        .catch(err => {
+          alert("失敗：" + err.message);
         });
       var acc = acclist.filter(
         x => x.帳號 == this.$auth.$state.user.email && x.狀態 == true
@@ -469,6 +473,9 @@ export default {
           this.req.defitem != undefined && this.req.defitem.length > 0
             ? this.req.defitem
             : [];
+      })
+      .catch(err => {
+        alert("失敗：" + err.message);
       });
     //抓all項目
     await this.$axios
@@ -482,6 +489,9 @@ export default {
           Object.assign(this.waterdatacols, res.data[colsclass]);
         }
         this.allcols = Object.assign({}, res.data);
+      })
+      .catch(err => {
+        alert("失敗：" + err.message);
       });
   },
   computed: {
@@ -534,6 +544,9 @@ export default {
           .then(res => {
             this.mainpool.items = res.data;
           })
+          .catch(err => {
+            alert("失敗：" + err.message);
+          })
           .finally(() => {
             /* 不論失敗成功皆會執行 */
           });
@@ -585,12 +598,12 @@ export default {
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
         items: this.defitem,
-        data_group:itemclass
+        data_group: itemclass
       };
       let apiurl = `https://61.56.172.10/all-data/`;
       // switch (itemclass) {
       //   case "water":
-      //     apiurl = `https://61.56.172.10/water-quality-data/`; 
+      //     apiurl = `https://61.56.172.10/water-quality-data/`;
       //     break;
       //   case "feed":
       //     apiurl = `https://61.56.172.10/feed-data/`;
@@ -640,6 +653,9 @@ export default {
             sortable: false
           });
           console.log("API:" + res.request.responseURL);
+        })
+        .catch(err => {
+          alert("查詢失敗：" + err.message);
         });
       this.loading = false;
     },
@@ -648,7 +664,7 @@ export default {
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.id = item.id;
       this.editedItem.value = item[Object.keys(item)[2]];
-      this.editedItem.class = this.getItemClass(Object.keys(item)[2]);//water,adv...
+      this.editedItem.class = this.getItemClass(Object.keys(item)[2]); //water,adv...
       this.editDialog = true;
     },
     delItem: async function(item) {
@@ -656,7 +672,7 @@ export default {
       this.editedItem.id = item.id;
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.value = item[Object.keys(item)[2]];
-      this.editedItem.class = this.getItemClass(Object.keys(item)[2]);//water,adv...
+      this.editedItem.class = this.getItemClass(Object.keys(item)[2]); //water,adv...
       this.delDialog = true;
     },
     addItem: async function() {},
@@ -709,15 +725,15 @@ export default {
       if (valid) {
         let colclass = this.getItemClass(this.defitem);
         let apiurl = "https://61.56.172.10/all-data/";
-       
+
         let url = apiurl;
         const updUser = this.$auth.$state.user.email;
         let parms = {
-          items: this.defitem,//亞硝酸鹽濃度
+          items: this.defitem, //亞硝酸鹽濃度
           inspected_time: `${this.adate} ${this.atime}:00`, //無秒數，直接補0
           data: [],
-          created_user: updUser,//建立者名稱
-          data_group:colclass//water,adv,...
+          created_user: updUser, //建立者名稱
+          data_group: colclass //water,adv,...
         };
         let submitData = [];
         this.addData.forEach(el => {
@@ -752,8 +768,12 @@ export default {
         // await this.$axios.get("https://61.56.172.10/architecture/").then(res => {});
         let url = `https://61.56.172.10/all-data/${this.editedItem.id}/`;
         const updUser = this.$auth.$state.user.email;
-        let data = { val: this.editedItem.value, updated_user: updUser,data_group:this.editedItem.class };
-        console.log("edit data:",data);
+        let data = {
+          val: this.editedItem.value,
+          updated_user: updUser,
+          data_group: this.editedItem.class
+        };
+        console.log("edit data:", data);
         await this.$axios
           .patch(url, data, { httpsAgent: agent })
           .then(res => {
@@ -777,19 +797,19 @@ export default {
         rejectUnauthorized: false
       });
       let url = `https://61.56.172.10/all-data/${this.editedItem.id}/`;
-      let deldata = { data_group: this.editedItem.class};
-      console.log("DEL data:",deldata);
+      let deldata = { data_group: this.editedItem.class };
+      console.log("DEL data:", deldata);
       console.log("DEL:" + url);
       await this.$axios
-        .delete(url,{data:deldata}, { httpsAgent: agent })
+        .delete(url, { data: deldata }, { httpsAgent: agent })
         .then(res => {
           if (res.data == "刪除成功") {
             alert("刪除成功!");
             this.getdata();
             this.delDialog = false; //close dialog
-          }else {
-              alert("刪除失敗!：" + res.data);
-            }
+          } else {
+            alert("刪除失敗!：" + res.data);
+          }
         })
         .catch(error => {
           alert("刪除失敗!：" + error.message);

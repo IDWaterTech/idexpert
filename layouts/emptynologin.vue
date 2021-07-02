@@ -116,6 +116,10 @@
 import https from "https";
 export default {
   async beforeCreate() {
+    // if (window.location.protocol != "https:") {
+    //   window.location.protocol = "https:";
+    //   window.location.reload();
+    // }
     //登入時判別身份分別導頁
     if (this.$auth.$state.loggedIn) {
       const agent = new https.Agent({
@@ -169,6 +173,11 @@ export default {
           icon: "mdi-file-edit",
           title: "指標資料修改",
           to: "/Indicator/edit"
+        },
+        {
+          icon: "mdi-map-outline",
+          title: "養殖池況",
+          to: "/map/"
         }
         // {
         //   icon: "mdi-information-outline",

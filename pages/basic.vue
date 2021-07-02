@@ -990,6 +990,9 @@ export default {
             .then(res => {
               console.log("select:", res.request.responseURL);
               this.waterdata = res.data;
+            })
+            .catch(err => {
+              alert("失敗：" + err.message);
             });
           this.waterloading = false;
           break;
@@ -1000,6 +1003,9 @@ export default {
             .then(res => {
               console.log("select:", res.request.responseURL);
               this.feeddata = res.data;
+            })
+            .catch(err => {
+              alert("失敗：" + err.message);
             });
           this.feedloading = false;
           break;
@@ -1010,6 +1016,9 @@ export default {
             .then(res => {
               console.log("select:", res.request.responseURL);
               this.envdata = res.data;
+            })
+            .catch(err => {
+              alert("失敗：" + err.message);
             });
           this.envloading = false;
           break;
@@ -1020,6 +1029,9 @@ export default {
             .then(res => {
               console.log("select:", res.request.responseURL);
               this.obsdata = res.data;
+            })
+            .catch(err => {
+              alert("失敗：" + err.message);
             });
           this.obsloading = false;
           break;
@@ -1030,6 +1042,9 @@ export default {
             .then(res => {
               console.log("select:", res.request.responseURL);
               this.advdata = res.data;
+            })
+            .catch(err => {
+              alert("失敗：" + err.message);
             });
           this.advloading = false;
           break;

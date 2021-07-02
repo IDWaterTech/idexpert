@@ -6,7 +6,12 @@
 
 <script>
     export default {
-        
+        layout: "emptynologin",
+        data() {
+            return {
+                
+            }
+        },
     }
 </script>
 

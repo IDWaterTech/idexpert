@@ -69,7 +69,7 @@
                 text-color="white"
                 v-for="(item, key) in scope.row.職位"
                 :key="key"
-                >{{ item.單位 }}-{{ item.名稱 }}</v-chip
+                >{{ (item.單位=="艾滴科技股份有限公司")?"":item.單位+"-" }}{{ item.名稱 }}</v-chip
               >
             </template>
           </el-table-column>
@@ -182,8 +182,9 @@
                       :flat="true"
                       :default-expand-level="3"
                       placeholder="請選擇職位"
-                      :disable-branch-nodes="true"
-                    />
+                      :disable-branch-nodes="true">
+                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
+                    </treeselect>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -232,6 +233,7 @@ import "element-ui/lib/theme-chalk/index.css";
 import https from "https";
 export default {
   layout: "emptynologin",
+
   data() {
     return {
       accdata: [
@@ -253,7 +255,7 @@ export default {
         }
       ],
       accCols: [
-        { text: "帳號", value: "帳號", width: 150 },
+        { text: "帳號", value: "帳號", width: 300 },
         { text: "姓名", value: "姓名", width: 150 },
         { text: "單位", value: "單位", width: 150 },
         { text: "職位", value: "職位", width: 150 },
@@ -286,8 +288,9 @@ export default {
       //單位顏色、ICON設定
       unit: [
         { name: "default", icon: "mdi-help", color: "lightgrey" },
-        { name: "技術組", icon: "mdi-hammer-wrench", color: "primary" },
-        { name: "養殖組", icon: "mdi-shaker-outline", color: "orange" }
+        { name: "技術部", icon: "mdi-hammer-wrench", color: "primary" },
+        { name: "養殖部", icon: "mdi-shaker-outline", color: "orange" },
+        { name: "艾滴科技股份有限公司", icon: "mdi-account-tie", color: "#ff0000" }
       ],
       options: [
         {
@@ -308,6 +311,7 @@ export default {
                 {
                   id: 9,
                   label: "組長",
+                  unit:"技術組",
                   is_leaf: true
                 },
                 {
@@ -407,12 +411,13 @@ export default {
       console.log("expand row:", row);
     },
     showaddDialog: function() {
+      const updUser = this.$auth.$state.user.email;
       this.addform.username = "";
       this.addform.email = "";
       this.addform.password = "";
       this.addform.password2 = "";
       this.addform.account_name = "";
-      this.addform.created_user = "web";
+      this.addform.created_user = updUser;
       this.addform.is_active = true;
       this.addDialog = true;
     },
