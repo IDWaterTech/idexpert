@@ -168,7 +168,7 @@ export default {
             this.selectedItem = -1;//設定不選任何項目
             this.$toast.success(`修改成功`, { duration: 2000 });
           } else {
-            alert(res.data);
+            this.$toast.success(`修改失敗：${res.data}`, { duration: 2000 });
           }
         })
         .catch(error => {
@@ -205,7 +205,7 @@ export default {
             this.selectedItem = -1;//設定不選任何項目
             this.$toast.success("刪除成功", { duration: 2000 });
           } else {
-            alert(res.data);
+            this.$toast.success(`刪除失敗：${res.data}`, { duration: 2000 });
           }
         })
         .catch(error => {
@@ -244,7 +244,7 @@ export default {
               this.selectedItem = -1;//設定不選任何項目
               this.$toast.success(`新增成功`, { duration: 2000 });
             } else {
-              alert(res.data);
+              this.$toast.success(`新增失敗：${res.data}`, { duration: 2000 });
             }
           })
           .catch(error => {

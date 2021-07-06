@@ -234,7 +234,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
               <v-col cols="12" md="3">
                
                 <v-select
@@ -303,88 +303,6 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <v-tab-item :value="'投餵飼料'">
-        <v-overlay :value="feedloading" :absolute="true">
-          <v-progress-circular indeterminate size="64"></v-progress-circular>
-        </v-overlay>
-        <v-card flat min-height="900px">
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
-              <v-col cols="12" md="3">
-                <v-select
-                  v-model="defitem_feed"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.feed)"
-                  v-if="allcols.feed"
-                  :disabled="feedloading == true"
-                >
-                </v-select>
-                <!-- <v-select
-                  v-model="defitem_feed"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(feeddatacols)"
-                  v-if="feeddatacols"
-                >
-                </v-select> -->
-              </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                v-if="Object.keys(allcols).length > 0 && feedloading == false"
-              >
-                <v-select
-                  v-model="defPool.飼料"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="feeddata.map(x => x['name'])"
-                  v-if="allcols.feed"
-                  no-data-text="查無資料"
-                >
-                </v-select>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                cols="12"
-                md="4"
-                v-for="item in feeddata"
-                :key="item.id"
-                v-show="
-                  defPool.飼料.includes(item.name) || defPool.飼料.length == 0
-                "
-              >
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.feed"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList_feed"
-                  :loading="feedloading"
-                  :title="item.name"
-                  :urldata="{
-                    sel_main: sel_main,
-                    sel_area: sel_area,
-                    sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
-              </v-col>
-            </v-row>
-            <v-row v-if="feeddata.length < 1 && feedloading == false">
-              <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
-              <v-spacer></v-spacer>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-tab-item>
       <v-tab-item :value="'環境監測'">
         <v-overlay :value="envloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -392,7 +310,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_env"
@@ -467,6 +385,88 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
+      <v-tab-item :value="'投餵飼料'">
+        <v-overlay :value="feedloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px">
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="defitem_feed"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(allcols.feed)"
+                  v-if="allcols.feed"
+                  :disabled="feedloading == true"
+                >
+                </v-select>
+                <!-- <v-select
+                  v-model="defitem_feed"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="指定項目"
+                  :items="Object.keys(feeddatacols)"
+                  v-if="feeddatacols"
+                >
+                </v-select> -->
+              </v-col>
+              <v-col
+                cols="12"
+                md="3"
+                v-if="Object.keys(allcols).length > 0 && feedloading == false"
+              >
+                <v-select
+                  v-model="defPool.飼料"
+                  clearable
+                  multiple
+                  chips
+                  placeholder="顯示養殖池"
+                  :items="feeddata.map(x => x['name'])"
+                  v-if="allcols.feed"
+                  no-data-text="查無資料"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+                md="4"
+                v-for="item in feeddata"
+                :key="item.id"
+                v-show="
+                  defPool.飼料.includes(item.name) || defPool.飼料.length == 0
+                "
+              >
+                <WaterQuality_Vcharts
+                  :rowsData="item.items"
+                  :legendAliasOut="allcols.feed"
+                  xColName="inspected_date"
+                  :defaultitem="defalutItemList_feed"
+                  :loading="feedloading"
+                  :title="item.name"
+                  :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"
+                ></WaterQuality_Vcharts>
+              </v-col>
+            </v-row>
+            <v-row v-if="feeddata.length < 1 && feedloading == false">
+              <v-spacer></v-spacer>
+              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
       <v-tab-item :value="'飼料觀察網'">
         <v-overlay :value="envloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -474,7 +474,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_obs"
@@ -556,7 +556,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_adv"
@@ -638,7 +638,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_pbio"
