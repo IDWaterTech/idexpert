@@ -131,7 +131,7 @@ export default {
         .then(res => {
           acclist = res.data;
         });
-      var acc = acclist.filter(x => x.帳號 == this.$auth.$state.user.email);
+      var acc = acclist.filter(x => x.帳號.toLowerCase() == this.$auth.$state.user.email);
       //登入成功
       if (acc.length == 1) {
         //增加身份判別---
