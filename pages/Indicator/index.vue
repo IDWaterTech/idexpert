@@ -181,9 +181,6 @@ export default {
     let myurl = [
       "https://61.56.172.10/architecture/",
       "https://61.56.172.10/all-col-name/"
-      // "https://61.56.172.10/water-quality-col-name/",
-      // "https://61.56.172.10/feed-col-name/",
-      // "https://61.56.172.10/env-col-name/"
     ];
     const agent = new https.Agent({
       rejectUnauthorized: false

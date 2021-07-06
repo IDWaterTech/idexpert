@@ -216,7 +216,7 @@ export default {
       if (this.nochangecolor.includes(this.addItem)) {
         this.$toast.error(
           `新增失敗-[ ${
-            this.statLst[this.selectedItem].name
+            this.addItem
           } ]該項目系統禁止新增`,
           { duration: 2000 }
         );

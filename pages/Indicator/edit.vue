@@ -601,29 +601,6 @@ export default {
         data_group: itemclass
       };
       let apiurl = `https://61.56.172.10/all-data/`;
-      // switch (itemclass) {
-      //   case "water":
-      //     apiurl = `https://61.56.172.10/water-quality-data/`;
-      //     break;
-      //   case "feed":
-      //     apiurl = `https://61.56.172.10/feed-data/`;
-      //     break;
-      //   case "env":
-      //     apiurl = `https://61.56.172.10/env-data/`;
-      //     break;
-      //   case "obs": //觀察網
-      //     apiurl = `https://61.56.172.10/observation-data/`;
-      //     break;
-      //   case "adv": //進階值
-      //     apiurl = `https://61.56.172.10/advance-data/`;
-      //     break;
-      //   case "pbio": //益生菌
-      //     apiurl = `https://61.56.172.10/probiotics-data/`;
-      //     break;
-      //     break;
-      //   default:
-      //     break;
-      // }
       //歸零
       this.item = "";
       this.headers = [];
