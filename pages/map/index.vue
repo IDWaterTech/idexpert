@@ -39,6 +39,12 @@ export default {
     return {
       link: [
         {
+          icon: "mdi-cog-box",
+          title: "狀態設定",
+          to: "/map/setting",
+          color: "grey"
+        },
+        {
           icon: "mdi-flare",
           title: "武曲",
           to: "/map/wc",

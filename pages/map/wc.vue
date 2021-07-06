@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>武曲廠圖</h1>
+    <v-icon @click="editState = !editState">mdi-pencil</v-icon>
     <table style="border:0px solid; width:100%;" CellSpacing="15">
       <tr v-for="(item, index) in Object.keys(pools)" :key="index">
         <!-- <td>{{pools[Object.keys(pools)[item-1]]}}</td> -->
@@ -8,63 +9,118 @@
           v-for="(itm, idx) in pools[item]"
           :key="idx"
           :bgcolor="getItemColor(itm.state)"
-          :style="itm.state == '無'? '': itm.state.length > 0? 'border:2px solid;': 'width:50px;'"
+          :style="
+            itm.state == '無'
+              ? ''
+              : itm.state.length > 0
+              ? 'border:2px solid;'
+              : 'width:50px;'
+          "
         >
-          <span v-if="itm.state.length > 0" :style="itm.state == '無' ? 'color:white;' : ''"
-            >{{ itm.name }}-{{ itm.state }}</span
-          >
-          <span v-else></span>
+          <mappoolelement
+            :item="itm"
+            :selitem="statcolor.filter(x => x.name != 'default')"
+            :showSelect="editState"
+          ></mappoolelement>
+          <!-- <span
+            v-if="itm.state.length > 0"
+            :style="itm.state == '無' ? 'color:white;' : ''"
+            >{{ itm.name }}-{{ itm.state
+            }}
+            <v-select
+              :items="statcolor.filter(x => x.name != 'default')"
+              item-text="name"
+              label="池況"
+              v-show="editState"
+              @click="showvalue(`state_${itm.name}`)"
+            ></v-select
+          ></span>
+          <span v-else></span> -->
         </td>
       </tr>
       <tr>
-        <td class="grey lighten-2" :colspan="pools[Object.keys(pools)[0]].length">中央走道</td>
+        <td
+          class="grey lighten-2"
+          :colspan="pools[Object.keys(pools)[0]].length"
+        >
+          中央走道
+        </td>
       </tr>
     </table>
   </div>
 </template>
 
 <script>
+import mappoolelement from "@/components/mapPoolElement.vue";
+import https from "https";
 export default {
   layout: "emptynologin",
+  components: {
+    mappoolelement
+  },
   data() {
     return {
       pools: {
         C: [
-          { name: "C1", state: "放養中" },
-          { name: "C2", state: "放養中" },
-          { name: "C3", state: "放養中" },
-          { name: "C4", state: "放養中" },
-          { name: "C5", state: "放養中" }
+          { id: "C1", name: "C1", state: "放養中" },
+          { id: "C2", name: "C2", state: "放養中" },
+          { id: "C3", name: "C3", state: "放養中" },
+          { id: "C4", name: "C4", state: "放養中" },
+          { id: "C5", name: "C5", state: "放養中" }
         ],
         B: [
-          { name: "B1", state: "放養中" },
-          { name: "B2", state: "集中暫養中" },
-          { name: "B3", state: "尚未洗池" },
-          { name: "B4", state: "已清洗" },
-          { name: "B5", state: "蓄水中" }
+          { id: "B1", name: "B1", state: "放養中" },
+          { id: "B2", name: "B2", state: "集中暫養中" },
+          { id: "B3", name: "B3", state: "尚未洗池" },
+          { id: "B4", name: "B4", state: "已清洗" },
+          { id: "B5", name: "B5", state: "蓄水中" }
         ],
         A: [
-          { name: "A1", state: "蓄水完畢" },
-          { name: "A2", state: "消毒中" },
-          { name: "A3", state: "做水中" },
-          { name: "A4", state: "預備放苗" },
-          { name: "A5", state: "空池" }
+          { id: "A1", name: "A1", state: "蓄水完畢" },
+          { id: "A2", name: "A2", state: "消毒中" },
+          { id: "A3", name: "A3", state: "做水中" },
+          { id: "A4", name: "A4", state: "預備放苗" },
+          { id: "A5", name: "A5", state: "空池" }
         ]
       },
       statcolor: [
         { name: "default", color: "grey" },
-        { name: "放養中", color: "yellow" },
-        { name: "集中暫養中", color: "#0070C0" },
-        { name: "尚未洗池", color: "purple" },
-        { name: "已清洗", color: "red" },
-        { name: "蓄水中", color: "orange" },
-        { name: "蓄水完畢", color: "lightgreen" },
-        { name: "消毒中", color: "green" },
-        { name: "做水中", color: "#F8CBAD" },
-        { name: "預備放苗", color: "#00B0F0" },
-        { name: "空池", color: "grey" }
-      ]
+        // { name: "放養中", color: "yellow" },
+        // { name: "集中暫養中", color: "#0070C0" },
+        // { name: "尚未洗池", color: "purple" },
+        // { name: "已清洗", color: "red" },
+        // { name: "蓄水中", color: "orange" },
+        // { name: "蓄水完畢", color: "lightgreen" },
+        // { name: "消毒中", color: "green" },
+        // { name: "做水中", color: "#F8CBAD" },
+        // { name: "預備放苗", color: "#00B0F0" },
+        // { name: "空池", color: "grey" }
+      ],
+      editState: false //編輯池況
     };
+  },
+  async mounted() {
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+    //取得水池狀態
+    await this.$axios
+      .get("https://61.56.172.10/wc-state/", { httpsAgent: agent })
+      .then(res => {
+        this.pools = res.data;
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
+    //取得池況顏色設定
+    await this.$axios
+      .get("https://61.56.172.10/pond-state/", { httpsAgent: agent })
+      .then(res => {
+        this.statcolor = res.data;
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
   },
   methods: {
     getItemColor: function(data) {
@@ -74,6 +130,16 @@ export default {
       } else {
         return this.statcolor.filter(x => x.name == "default").color;
       }
+    },
+    editStateFun: function(data) {
+      this.editState[data] = this.editState[data]
+        ? !this.editState[data]
+        : true;
+      console.log(this.editState);
+    },
+    showvalue: function(data) {
+      console.log(data);
+      document.getElementById(data);
     }
   }
 };
