@@ -107,7 +107,7 @@
                     ></v-date-picker>
                   </v-menu>
                   <!-- 可能同池名，在不同廠，所以value= name -->
-                  <v-btn tile color="blue" dark @click="closepanel">確認</v-btn>
+                  <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">確認</v-btn>
                 </v-card>
               </v-col>
               <!-- <v-divider vertical></v-divider> -->
@@ -234,7 +234,9 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
               <v-col cols="12" md="3">
+               
                 <v-select
                   v-model="defitem"
                   clearable
@@ -308,6 +310,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_feed"
@@ -389,6 +392,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_env"
@@ -470,6 +474,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_obs"
@@ -551,6 +556,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_adv"
@@ -632,6 +638,7 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
+              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel"><v-icon>mdi-reload</v-icon></v-btn></v-col>
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_pbio"
@@ -1062,132 +1069,6 @@ export default {
           break;
       }
     },
-    //水質監測
-    // getwater: async function(start_date, end_date, sel_main, sel_area) {
-    //   this.waterloading = true;
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   // //水質檢測欄位
-    //   // await this.$axios
-    //   //   .get("https://61.56.172.10/water-quality-col-name/", {
-    //   //     httpsAgent: agent
-    //   //   })
-    //   //   .then(res => {
-    //   //     this.waterdatacols = res.data;
-    //   //   });
-    //   //水質檢測資料
-    //   var apiURL = `https://61.56.172.10/water-quality-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-    //   await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
-    //     this.waterdata = res.data;
-    //   });
-    //   this.waterloading = false;
-    // },
-    //投餵飼料
-    // getfeed: async function(start_date, end_date, sel_main, sel_area) {
-    //   // 載入中
-    //   this.feedloading = true;
-    //   //欄位
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   // await this.$axios
-    //   //   .get("https://61.56.172.10/feed-col-name/", { httpsAgent: agent })
-    //   //   .then(res => {
-    //   //     this.feeddatacols = res.data;
-    //   //   });
-    //   //資料
-    //   var apiURL = `https://61.56.172.10/feed-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-    //   await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
-    //     this.feeddata = res.data;
-    //   });
-    //   this.feedloading = false;
-    // },
-    //環境
-    // getenv: async function(start_date, end_date, sel_main, sel_area) {
-    //   // 載入中
-    //   this.envloading = true;
-    //   //欄位
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   // await this.$axios
-    //   //   .get("https://61.56.172.10/env-col-name/", { httpsAgent: agent })
-    //   //   .then(res => {
-    //   //     this.envdatacols = res.data;
-    //   //   });
-    //   //資料
-    //   var apiURL = `https://61.56.172.10/env-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-    //   await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
-    //     this.envdata = res.data;
-    //   });
-    //   this.envloading = false;
-    // },
-    //飼料觀察網
-    // getobs: async function(start_date, end_date, sel_main, sel_area) {
-    //   // 載入中
-    //   this.obsloading = true;
-    //   //欄位
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   // await this.$axios
-    //   //   .get("https://61.56.172.10/observation-col-name/", {
-    //   //     httpsAgent: agent
-    //   //   })
-    //   //   .then(res => {
-    //   //     this.obsdatacols = res.data;
-    //   //   });
-    //   //資料
-    //   var apiURL = `https://61.56.172.10/observation-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-    //   await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
-    //     this.obsdata = res.data;
-    //   });
-    //   this.obsloading = false;
-    // },
-    //進階值
-    // getadv: async function(start_date, end_date, sel_main, sel_area) {
-    //   // 載入中
-    //   this.advloading = true;
-    //   //欄位
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   // await this.$axios
-    //   //   .get("https://61.56.172.10/advance-col-name/", { httpsAgent: agent })
-    //   //   .then(res => {
-    //   //     this.advdatacols = res.data;
-    //   //   });
-    //   //資料
-    //   var apiURL = `https://61.56.172.10/advance-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-    //   await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
-    //     this.advdata = res.data;
-    //     console.log(this.advdata);
-    //   });
-    //   this.advloading = false;
-    // },
-    //投餵益生菌
-    // getpbio: async function(start_date, end_date, sel_main, sel_area) {
-    //   // 載入中
-    //   this.advloading = true;
-    //   //欄位
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   // await this.$axios
-    //   //   .get("https://61.56.172.10/probiotics-col-name/", { httpsAgent: agent })
-    //   //   .then(res => {
-    //   //     this.pbiodatacols = res.data;
-    //   //   });
-    //   //資料
-    //   var apiURL = `https://61.56.172.10/probiotics-data/?started_date=${start_date}&ended_date=${end_date}&factory_id=${sel_main}&pond_area_id=${sel_area}`;
-    //   await this.$axios.get(apiURL, { httpsAgent: agent }).then(res => {
-    //     this.pbiodata = res.data;
-    //     console.log(this.pbiodata);
-    //   });
-    //   this.pbioloading = false;
-    // },
-    //顯示地圖按鈕
     showmpFun: function() {
       this.showmp = !this.showmp;
     },
