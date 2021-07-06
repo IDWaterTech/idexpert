@@ -21,6 +21,7 @@
             :item="itm"
             :selitem="statcolor.filter(x => x.name != 'default')"
             :showSelect="editState"
+            :myuser="$auth.$state.user.email"
           ></mappoolelement>
           <!-- <span
             v-if="itm.state.length > 0"
@@ -32,7 +33,7 @@
               item-text="name"
               label="池況"
               v-show="editState"
-              @click="showvalue(`state_${itm.name}`)"
+              @click=""
             ></v-select
           ></span>
           <span v-else></span> -->
@@ -55,6 +56,7 @@ import mappoolelement from "@/components/mapPoolElement.vue";
 import https from "https";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   components: {
     mappoolelement
   },
@@ -128,7 +130,7 @@ export default {
       if (data2.length == 1) {
         return data2[0].color;
       } else {
-        return this.statcolor.filter(x => x.name == "default").color;
+        return this.statcolor.filter(x => x.name == "default")[0].color;
       }
     },
     editStateFun: function(data) {
@@ -137,10 +139,6 @@ export default {
         : true;
       console.log(this.editState);
     },
-    showvalue: function(data) {
-      console.log(data);
-      document.getElementById(data);
-    }
   }
 };
 </script>
