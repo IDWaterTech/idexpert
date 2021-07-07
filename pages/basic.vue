@@ -27,98 +27,105 @@
             <v-row no-gutters>
               <v-col cols="12">
                 <v-card class="pa-2" outlined tile min-height="300px">
-                  <v-select
-                    v-model="sel_main"
-                    :items="maindata"
-                    item-value="id"
-                    item-text="name"
-                    label="選擇廠"
-                    @change="sel_main > 0 ? '' : (showmp = false)"
-                    clearable
-                  >
-                    <!-- :prepend-icon="(sel_main>0)?'mdi-image':undefined" 
-                  @click:prepend="showmpFun"
-                  -->
-                    <v-btn
-                      icon
-                      color="teal lighten-2"
-                      @click="showmpFun"
-                      v-if="sel_main"
-                      slot="prepend"
-                    >
-                      <v-icon>mdi-image</v-icon>
-                    </v-btn>
-                  </v-select>
-                  <v-select
-                    v-model="sel_area"
-                    :items="areadata"
-                    item-value="id"
-                    item-text="name"
-                    clearable
-                    @change="areachange"
-                    label="選擇區域"
-                  ></v-select>
-                  <v-menu
-                    v-model="menu_startdate"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="sdate"
-                        label="選擇起日"
-                        prepend-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                        @click:prepend="() => (sdate = getNowDate())"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="sdate"
-                      @input="menu_startdate = false"
-                    ></v-date-picker>
-                  </v-menu>
-                  <v-menu
-                    v-model="menu_enddate"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="edate"
-                        label="選擇訖日"
-                        prepend-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                        @click:prepend="() => (edate = getNowDate())"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="edate"
-                      @input="menu_enddate = false"
-                    ></v-date-picker>
-                  </v-menu>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-select
+                        v-model="sel_main"
+                        :items="maindata"
+                        item-value="id"
+                        item-text="name"
+                        label="選擇廠"
+                        @change="sel_main > 0 ? '' : (showmp = false)"
+                        clearable
+                      >
+                        <v-btn
+                          icon
+                          color="teal lighten-2"
+                          @click="showmpFun"
+                          v-if="sel_main"
+                          slot="prepend"
+                        >
+                          <v-icon>mdi-image</v-icon>
+                        </v-btn>
+                      </v-select>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-select
+                        v-model="sel_area"
+                        :items="areadata"
+                        item-value="id"
+                        item-text="name"
+                        clearable
+                        @change="areachange"
+                        label="選擇區域"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <v-menu
+                        v-model="menu_startdate"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field
+                            v-model="sdate"
+                            label="選擇起日"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                            @click:prepend="() => (sdate = getNowDate())"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="sdate"
+                          @input="menu_startdate = false"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <v-menu
+                        v-model="menu_enddate"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field
+                            v-model="edate"
+                            label="選擇訖日"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                            @click:prepend="() => (edate = getNowDate())"
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="edate"
+                          @input="menu_enddate = false"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+
                   <!-- 可能同池名，在不同廠，所以value= name -->
-                  <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">確認</v-btn>
+                  <v-btn
+                    tile
+                    color="primary"
+                    :disabled="!(sel_main && sel_area)"
+                    @click="closepanel"
+                    >確認</v-btn
+                  >
                 </v-card>
               </v-col>
               <!-- <v-divider vertical></v-divider> -->
               <v-col cols="12">
-                <!-- <wj-flex-grid
-                  id="sample-grid"
-                  :frozenRows="2"
-                  :frozenColumns="1"
-                  :itemsSource="mainpool.items"
-                >
-                </wj-flex-grid> -->
                 <el-table
                   :data="mainpool.items"
                   style="width: 100%"
@@ -234,9 +241,16 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn
+                  tile
+                  color="primary"
+                  :disabled="!(sel_main && sel_area)"
+                  @click="closepanel"
+                  >查詢</v-btn
+                ></v-col
+              >
               <v-col cols="12" md="3">
-               
                 <v-select
                   v-model="defitem"
                   clearable
@@ -266,6 +280,14 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                </v-btn-toggle>
+              </v-col>
             </v-row>
             <v-row>
               <!-- <v-col cols="12" md="4"> 使用echarts
@@ -273,7 +295,7 @@
                 </v-col> -->
               <v-col
                 cols="12"
-                md="4"
+                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
                 v-for="item in waterdata"
                 :key="item.id"
                 v-show="
@@ -310,7 +332,15 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn
+                  tile
+                  color="primary"
+                  :disabled="!(sel_main && sel_area)"
+                  @click="closepanel"
+                  >查詢</v-btn
+                ></v-col
+              >
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_env"
@@ -351,11 +381,19 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                </v-btn-toggle>
+              </v-col>
             </v-row>
             <v-row>
               <v-col
                 cols="12"
-                md="4"
+                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
                 v-for="item in envdata"
                 :key="item.id"
                 v-show="
@@ -392,7 +430,15 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn
+                  tile
+                  color="primary"
+                  :disabled="!(sel_main && sel_area)"
+                  @click="closepanel"
+                  >查詢</v-btn
+                ></v-col
+              >
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_feed"
@@ -433,11 +479,19 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                </v-btn-toggle>
+              </v-col>
             </v-row>
             <v-row>
               <v-col
                 cols="12"
-                md="4"
+                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
                 v-for="item in feeddata"
                 :key="item.id"
                 v-show="
@@ -474,7 +528,15 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn
+                  tile
+                  color="primary"
+                  :disabled="!(sel_main && sel_area)"
+                  @click="closepanel"
+                  >查詢</v-btn
+                ></v-col
+              >
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_obs"
@@ -515,11 +577,19 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                </v-btn-toggle>
+              </v-col>
             </v-row>
             <v-row>
               <v-col
                 cols="12"
-                md="4"
+                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
                 v-for="item in obsdata"
                 :key="item.id"
                 v-show="
@@ -556,7 +626,15 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn
+                  tile
+                  color="primary"
+                  :disabled="!(sel_main && sel_area)"
+                  @click="closepanel"
+                  >查詢</v-btn
+                ></v-col
+              >
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_adv"
@@ -597,11 +675,19 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                </v-btn-toggle>
+              </v-col>
             </v-row>
             <v-row>
               <v-col
                 cols="12"
-                md="4"
+                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
                 v-for="item in advdata"
                 :key="item.id"
                 v-show="
@@ -638,7 +724,15 @@
         <v-card flat min-height="900px">
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="1" align-self="center"> <v-btn tile color="primary" :disabled="!(sel_main && sel_area)"  @click="closepanel">查詢</v-btn></v-col>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn
+                  tile
+                  color="primary"
+                  :disabled="!(sel_main && sel_area)"
+                  @click="closepanel"
+                  >查詢</v-btn
+                ></v-col
+              >
               <v-col cols="12" md="3">
                 <v-select
                   v-model="defitem_pbio"
@@ -679,11 +773,19 @@
                 >
                 </v-select>
               </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
+                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                </v-btn-toggle>
+              </v-col>
             </v-row>
             <v-row>
               <v-col
                 cols="12"
-                md="4"
+                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
                 v-for="item in pbiodata"
                 :key="item.id"
                 v-show="
@@ -823,6 +925,7 @@ export default {
       ],
       //---
       allcols: [],
+      colstyle: 2, //0→4 or 1→6 or 2→12
       //---
       tableloading: false,
       waterdata: [],
