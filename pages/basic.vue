@@ -77,12 +77,15 @@
                             readonly
                             v-bind="attrs"
                             v-on="on"
-                            @click:prepend="() => (sdate = getNowDate())"
+                            @click:prepend="() => {sdate = getNowDate();daysSet();}"
                           ></v-text-field>
                         </template>
                         <v-date-picker
                           v-model="sdate"
-                          @input="menu_startdate = false"
+                          @input="
+                            menu_startdate = false;
+                            daysSet();
+                          "
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
@@ -103,14 +106,27 @@
                             readonly
                             v-bind="attrs"
                             v-on="on"
-                            @click:prepend="() => (edate = getNowDate())"
+                            @click:prepend="() => {edate = getNowDate();daysSet();}"
                           ></v-text-field>
                         </template>
                         <v-date-picker
                           v-model="edate"
-                          @input="menu_enddate = false"
+                          @input="
+                            menu_enddate = false;
+                            daysSet();
+                          "
                         ></v-date-picker>
                       </v-menu>
+                    </v-col>
+                    <v-col cols="12" md="1">
+                      <v-text-field
+                        label="天數"
+                        step="1"
+                        min="0"
+                        type="number"
+                        v-model.number="days"
+                        @input="daychange"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
 
@@ -942,6 +958,7 @@ export default {
       //   .format("YYYY-MM-DD"),
       edate: new Date().toISOString().substr(0, 10),
       // edate: new Date(2021, 0, 5).toISOString().substr(0, 10),
+      days: 10, //起訖天數
       //---圖片(地圖)
       showmp: false,
       //投餵
@@ -1181,6 +1198,15 @@ export default {
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
+    },
+    daychange: function() {
+      let nd = dayjs(this.edate)
+        .add(-this.days, "day")
+        .format("YYYY-MM-DD");
+      this.sdate = nd;
+    },
+    daysSet: function() {
+      this.days = dayjs(this.edate).diff(this.sdate, "day");
     }
   },
   async created() {

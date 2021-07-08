@@ -640,16 +640,16 @@ export default {
       //編輯中的物件item
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.id = item.id;
-      this.editedItem.value = item[Object.keys(item)[2]];
-      this.editedItem.class = this.getItemClass(Object.keys(item)[2]); //water,adv...
+      this.editedItem.value = item[Object.keys(item)[3]];
+      this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
       this.editDialog = true;
     },
     delItem: async function(item) {
       //編輯中的物件item
       this.editedItem.id = item.id;
       this.editedItem.inspected_date = item.inspected_date;
-      this.editedItem.value = item[Object.keys(item)[2]];
-      this.editedItem.class = this.getItemClass(Object.keys(item)[2]); //water,adv...
+      this.editedItem.value = item[Object.keys(item)[3]];
+      this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
       this.delDialog = true;
     },
     addItem: async function() {},
@@ -722,9 +722,9 @@ export default {
           .post(url, parms, { httpsAgent: agent })
           .then(res => {
             if (res.data == "新增成功") {
-              alert("新增成功!");
               //this.getdata();新增未必有選到所有選項
               this.addDialog = false; //close dialog
+              this.$toast.success(`新增成功`, { duration: 2000 });
             } else {
               alert("新增失敗!：" + res.data);
             }
@@ -755,9 +755,9 @@ export default {
           .patch(url, data, { httpsAgent: agent })
           .then(res => {
             if (res.data == "修改成功") {
-              alert("修改成功!");
               this.getdata();
               this.editDialog = false; //close dialog
+              this.$toast.success(`修改成功`, { duration: 2000 });
             } else {
               alert("修改失敗!：" + res.data);
             }
@@ -781,9 +781,9 @@ export default {
         .delete(url, { data: deldata }, { httpsAgent: agent })
         .then(res => {
           if (res.data == "刪除成功") {
-            alert("刪除成功!");
             this.getdata();
             this.delDialog = false; //close dialog
+            this.$toast.success(`刪除成功`, { duration: 2000 });
           } else {
             alert("刪除失敗!：" + res.data);
           }

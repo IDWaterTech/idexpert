@@ -101,14 +101,14 @@
         </v-col>
         <v-col cols="12" v-if="item.items">
           <el-table
-            :data="item.items"
+            :data="item2.items"
             style="width: 100%"
             max-height="500"
             row-key="id"
             v-if="item.items && item.items.length > 0"
           >
             <el-table-column
-              v-for="(item, key) in Object.keys(item.items[0]).filter(
+              v-for="(item, key) in Object.keys(item2.items[0]).filter(
                 x => !['hide_col_name_put_here'].includes(x)
               )"
               :prop="item"
@@ -129,7 +129,8 @@ import https from "https";
 import dayjs from "dayjs";
 import "element-ui/lib/theme-chalk/index.css";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
-import { number } from "~/node_modules/echarts/lib/export";
+import _ from "lodash";
+// import { number } from "~/node_modules/echarts/lib/export";
 export default {
   layout: "emptynologin",
   middleware: "auth",
@@ -156,6 +157,7 @@ export default {
       allcols: {},
       waterloading: false, //折線圖，
       item: [{ name: "", items: [] }],
+      item2: [{ name: "", items: [] }],
       //---日曆
       menu_startdate: false,
       sdate: dayjs(new Date(2021, 0, 11))
@@ -223,23 +225,6 @@ export default {
         Object.assign(this.waterdatacols, res.data[colsclass]);
       }
       this.allcols = Object.assign({}, res.data);
-
-      // console.log("水質");
-      // res = data[1]; // second promise resolved
-      // this.waterdatacols = res.data;
-      // this.allcols["water"] = Object.assign({}, res.data);
-      // this.defitem =
-      //   this.req.defitem != undefined && this.req.defitem.length > 0
-      //     ? this.req.defitem
-      //     : [];
-      // console.log("投餵");
-      // res = data[2];
-      // this.allcols["feed"] = Object.assign({}, res.data);
-      // Object.assign(this.waterdatacols, res.data);
-      // console.log("環境");
-      // res = data[3];
-      // this.allcols["env"] = Object.assign({}, res.data);
-      // Object.assign(this.waterdatacols, res.data);
     });
 
     // //參數代入
@@ -339,12 +324,17 @@ export default {
       await this.$axios
         .get(apiURL, { params: parm }, { httpsAgent: agent })
         .then(res => {
-          debugger
-          console.log("select:", res.request.responseURL);
-          res.data.items.forEach(function(x) {
+          console.log("AI:", res.request.responseURL);
+          let data2 = _.cloneDeep(res.data);
+          res.data.items.forEach(function(x) {//給折線圖用的資料
             delete x.id; //"刪掉id欄位"
+            delete x.updated_user; //"刪掉updated_user欄位"
           });
+          
+          // data2.items.forEach(function(x) {//給表格用的資料
+          // });
           this.item = res.data;
+          this.item2 = data2;
         })
         .catch(err => {
           alert("失敗：" + err.message);
