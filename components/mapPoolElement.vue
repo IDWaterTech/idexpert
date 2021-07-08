@@ -11,7 +11,7 @@
       :items="selitem.filter(x => x.name != 'default')"
       item-text="name"
       label="池況"
-      v-show="showSelect"
+      v-show="showSelect && item.state != ''"
       append-outer-icon="mdi-check"
       @change="changeEvent"
       @click:append-outer="selectchecked"

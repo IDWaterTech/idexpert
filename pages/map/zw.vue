@@ -1,53 +1,92 @@
 <template>
   <div>
-    <h1>紫微廠圖</h1>
-    <table style="border:0px solid; width:100%;" CellSpacing="15">
-      <tr v-for="item in Object.keys(pools.area1)" :key="item">
-        <td
-          v-for="(itm, idx) in pools.area1[item]"
-          :key="idx"
-          :bgcolor="getItemColor(itm.state)"
-          :style="itm.state.length > 0 ? 'border:2px solid;' : ''"
-        >
-          <span v-if="itm.state.length > 0"
-            >{{ itm.name }}-{{ itm.state }}</span
-          >
-          <span v-else></span>
-        </td>
-      </tr>
-      <tr>
-        <td class="grey lighten-2" :colspan="pools.area1[Object.keys(pools.area1)[0]].length">中央走道</td>
-      </tr>
-      <tr v-for="item in Object.keys(pools.area2)" :key="item">
-        <td
-          v-for="(itm, idx) in pools.area2[item]"
-          :key="idx"
-          :bgcolor="getItemColor(itm.state)"
-          :style="itm.state == '無'? '': itm.state.length > 0? 'border:2px solid;': 'width:50px;'"
-        >
-          <span
-            v-if="itm.state.length > 0"
-            :style="itm.state == '無' ? 'color:white;' : ''"
-            >{{ itm.name }}-{{ itm.state }}</span
-          >
-          <span v-else></span>
-        </td>
-      </tr>
-    </table>
+    <v-row>
+      <v-col cols="12">
+        <v-icon @click="editState = !editState">mdi-pencil</v-icon>
+        <table style="border:0px solid; width:100%;" CellSpacing="15">
+          <tr v-for="item in Object.keys(pools.area1)" :key="item">
+            <td
+              v-for="(itm, idx) in pools.area1[item]"
+              :key="idx"
+              :bgcolor="getItemColor(itm.state)"
+              :style="
+                itm.state == '無'
+                  ? ''
+                  : itm.state.length > 0
+                  ? 'border:2px solid;'
+                  : 'max-width:50px;'
+              "
+            >
+            <mappoolelement
+                :item="itm"
+                :selitem="statcolor.filter(x => x.name != 'default')"
+                :showSelect="editState"
+                :myuser="$auth.$state.user.email"
+              ></mappoolelement>
+              <!-- <span v-if="itm.state.length > 0"
+                >{{ itm.name }}-{{ itm.state }}</span
+              >
+              <span v-else></span> -->
+            </td>
+          </tr>
+          <tr>
+            <td
+              class="grey lighten-2"
+              :colspan="pools.area1[Object.keys(pools.area1)[0]].length"
+            >
+              中央走道
+            </td>
+          </tr>
+          <tr v-for="item in Object.keys(pools.area2)" :key="item">
+            <td
+              v-for="(itm, idx) in pools.area2[item]"
+              :key="idx"
+              :bgcolor="getItemColor(itm.state)"
+              :style="
+                itm.state == '無'
+                  ? ''
+                  : itm.state.length > 0
+                  ? 'border:2px solid;'
+                  : 'max-width:50px;'
+              "
+            >
+            <mappoolelement
+                :item="itm"
+                :selitem="statcolor.filter(x => x.name != 'default')"
+                :showSelect="editState"
+                :myuser="$auth.$state.user.email"
+              ></mappoolelement>
+              <!-- <span
+                v-if="itm.state.length > 0"
+                :style="itm.state == '無' ? 'color:white;' : ''"
+                >{{ itm.name }}-{{ itm.state }}</span
+              >
+              <span v-else></span> -->
+            </td>
+          </tr>
+        </table>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
+import mappoolelement from "@/components/mapPoolElement.vue";
+import https from "https";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
+  components: {
+    mappoolelement
+  },
   data() {
     return {
       pools: {
         area1: {
           c: [
-            { name: "", state: "" },
-            { name: "", state: "" },
-            { name: "", state: "" },
+            { name: "c1", state: "無" },
+            { name: "c2", state: "無" },
+            { name: "c3", state: "無" },
             { name: "c^", state: "" },
             { name: "3-5", state: "放養中" },
             { name: "3-6", state: "放養中" }
@@ -61,7 +100,7 @@ export default {
             { name: "3-4", state: "蓄水中" }
           ],
           a: [
-            { name: "1-1", state: "蓄水完畢" },
+            { name: "1-1", state: "集中暫養中" },
             { name: "1-2", state: "消毒中" },
             { name: "1-3", state: "做水中" },
             { name: "a^", state: "" },
@@ -71,10 +110,10 @@ export default {
         },
         area2: {
           f: [
-            { name: "", state: "無" },
-            { name: "", state: "無" },
-            { name: "", state: "無" },
-            { name: "", state: "" },
+            { name: "C1", state: "無" },
+            { name: "C2", state: "無" },
+            { name: "C3", state: "無" },
+            { name: "C^", state: "" },
             { name: "C4", state: "放養中" },
             { name: "C5", state: "放養中" }
           ],
@@ -97,43 +136,60 @@ export default {
         }
       },
       statcolor: [
+        { name: "無", color: "white" },
         { name: "default", color: "grey" },
-        { name: "放養中", color: "yellow" },
-        { name: "集中暫養中", color: "#0070C0" },
-        { name: "尚未洗池", color: "purple" },
-        { name: "已清洗", color: "red" },
-        { name: "蓄水中", color: "orange" },
-        { name: "蓄水完畢", color: "lightgreen" },
-        { name: "消毒中", color: "green" },
-        { name: "做水中", color: "#F8CBAD" },
-        { name: "預備放苗", color: "#00B0F0" },
-        { name: "空池", color: "grey" },
-        { name: "無", color: "white" }
-      ]
+      ],
+      editState: false //編輯池況
     };
   },
   methods: {
     getItemColor: function(data) {
+      if (data == "") {
+        return "white";
+      }
       let data2 = this.statcolor.filter(x => x.name == data);
       if (data2.length == 1) {
         return data2[0].color;
       } else {
-        return this.statcolor.filter(x => x.name == "default").color;
+        return this.statcolor.filter(x => x.name == "default")[0].color;
       }
     }
+  },
+  async mounted() {
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+    //取得水池狀態
+    await this.$axios
+      .get("https://61.56.172.10/zw-state/", { httpsAgent: agent })
+      .then(res => {
+        this.pools = res.data;
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
+    //取得池況顏色設定
+    await this.$axios
+      .get("https://61.56.172.10/pond-state/", { httpsAgent: agent })
+      .then(res => {
+        this.statcolor = res.data.filter(x=>x.name!="");//不提供保留項
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
   }
 };
 </script>
 
 <style scoped>
 td {
-  font-size: 1.5em;
+  font-size: 1.2em;
   text-align: center;
   vertical-align: middle;
-  min-width: 50px;
+  min-width: 150px;
 }
 tr {
-  height: 80px;
+  height: 50px;
   max-height: 80px;
 }
 </style>

@@ -8,7 +8,15 @@
             <v-subheader
               ><h2>養殖池狀態-清單</h2>
               <v-spacer></v-spacer
-              ><v-icon @click="()=>{adddialog = true;addItem='';}">mdi-plus</v-icon></v-subheader
+              ><v-icon
+                @click="
+                  () => {
+                    adddialog = true;
+                    addItem = '';
+                  }
+                "
+                >mdi-plus</v-icon
+              ></v-subheader
             >
 
             <v-list-item-group v-model="selectedItem">
@@ -60,47 +68,52 @@
         </v-dialog>
       </v-col>
       <v-col cols="6">
-        <table class="mb-3">
-          <tr border="1px solid black;">
-            <td
-              class="title"
-              :style="
-                `background-color:${
-                  selectedItem != undefined && selectedItem > -1
-                    ? color
-                    : 'lightgrey'
-                };width:300px`
-              "
-            >
-              <!-- {{(selectedItem!=undefined && selectedItem  > -1)}}-{{selectedItem}} -->
-              {{
-                selectedItem != undefined && selectedItem > -1
-                  ? `${statLst[selectedItem].name}_${color}`
-                  : "請先選擇左側狀態"
-              }}
-            </td>
-            <td
-              style="width:100px"
-              v-if="selectedItem != undefined && selectedItem > -1"
-            >
-              <v-icon color="green" @click="colorsubmit" size="40"
-                >mdi-checkbox-marked-outline</v-icon
-              >
-              <v-icon color="red" @click="colordelete" size="40"
-                >mdi-trash-can-outline</v-icon
-              >
-            </td>
-          </tr>
-        </table>
-
-        <v-color-picker
-          v-model="color"
-          :disabled="!(selectedItem != undefined && selectedItem > -1)"
-          :hide-canvas="!(selectedItem != undefined && selectedItem > -1)"
-          mode="hexa"
+        <v-card
+          tile
           width="400px"
-          hide-mode-switch
-        ></v-color-picker>
+          :disabled="!(selectedItem != undefined && selectedItem > -1)"
+        >
+          <table class="mb-3">
+            <tr>
+              <td
+                class="title"
+                :style="
+                  `background-color:${
+                    selectedItem != undefined && selectedItem > -1
+                      ? color
+                      : 'lightgrey'
+                  };width:300px;`
+                "
+              >
+                <!-- {{(selectedItem!=undefined && selectedItem  > -1)}}-{{selectedItem}} -->
+                {{
+                  selectedItem != undefined && selectedItem > -1
+                    ? `${statLst[selectedItem].name}_${color}`
+                    : "請先選擇左側狀態"
+                }}
+              </td>
+              <td
+                style="width:100px"
+              >
+                <v-icon color="green" @click="colorsubmit" size="40"
+                  >mdi-checkbox-marked-outline</v-icon
+                >
+                <v-icon color="red" @click="colordelete" size="40"
+                  >mdi-trash-can-outline</v-icon
+                >
+              </td>
+            </tr>
+          </table>
+
+          <v-color-picker
+            v-model="color"
+            :disabled="!(selectedItem != undefined && selectedItem > -1)"
+            :hide-canvas="!(selectedItem != undefined && selectedItem > -1)"
+            mode="hexa"
+            width="400px"
+            hide-mode-switch
+          ></v-color-picker>
+        </v-card>
       </v-col>
     </v-row>
   </div>
@@ -165,8 +178,9 @@ export default {
         .then(res => {
           if (res.data == "修改成功") {
             this.getStatData();
-            this.selectedItem = -1;//設定不選任何項目
+            this.selectedItem = -1; //設定不選任何項目
             this.$toast.success(`修改成功`, { duration: 2000 });
+            this.$emit('update', parm); 
           } else {
             this.$toast.success(`修改失敗：${res.data}`, { duration: 2000 });
           }
@@ -202,7 +216,7 @@ export default {
         .then(res => {
           if (res.data == "刪除成功") {
             this.getStatData();
-            this.selectedItem = -1;//設定不選任何項目
+            this.selectedItem = -1; //設定不選任何項目
             this.$toast.success("刪除成功", { duration: 2000 });
           } else {
             this.$toast.success(`刪除失敗：${res.data}`, { duration: 2000 });
@@ -214,12 +228,9 @@ export default {
     },
     coloradd: async function() {
       if (this.nochangecolor.includes(this.addItem)) {
-        this.$toast.error(
-          `新增失敗-[ ${
-            this.addItem
-          } ]該項目系統禁止新增`,
-          { duration: 2000 }
-        );
+        this.$toast.error(`新增失敗-[ ${this.addItem} ]該項目系統禁止新增`, {
+          duration: 2000
+        });
         return;
       }
       let valid = this.$refs.form.validate();
@@ -241,7 +252,7 @@ export default {
             if (res.data == "新增成功") {
               this.getStatData();
               this.adddialog = false;
-              this.selectedItem = -1;//設定不選任何項目
+              this.selectedItem = -1; //設定不選任何項目
               this.$toast.success(`新增成功`, { duration: 2000 });
             } else {
               this.$toast.success(`新增失敗：${res.data}`, { duration: 2000 });
@@ -250,8 +261,8 @@ export default {
           .catch(error => {
             alert("error:" + error.message);
           });
-      }else{
-          alert(valid)
+      } else {
+        alert(valid);
       }
     },
     getStatData: async function() {
@@ -261,7 +272,7 @@ export default {
       await this.$axios
         .get("https://61.56.172.10/pond-state/", { httpsAgent: agent })
         .then(res => {
-          this.statLst = res.data;
+          this.statLst = res.data.filter(x => x.name != ""); //不提供保留項;
         })
         .catch(error => {
           alert("error:" + error.message);

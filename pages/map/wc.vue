@@ -1,29 +1,30 @@
 <template>
   <div>
-    <h1>武曲廠圖</h1>
-    <v-icon @click="editState = !editState">mdi-pencil</v-icon>
-    <table style="border:0px solid; width:100%;" CellSpacing="15">
-      <tr v-for="(item, index) in Object.keys(pools)" :key="index">
-        <!-- <td>{{pools[Object.keys(pools)[item-1]]}}</td> -->
-        <td
-          v-for="(itm, idx) in pools[item]"
-          :key="idx"
-          :bgcolor="getItemColor(itm.state)"
-          :style="
-            itm.state == '無'
-              ? ''
-              : itm.state.length > 0
-              ? 'border:2px solid;'
-              : 'width:50px;'
-          "
-        >
-          <mappoolelement
-            :item="itm"
-            :selitem="statcolor.filter(x => x.name != 'default')"
-            :showSelect="editState"
-            :myuser="$auth.$state.user.email"
-          ></mappoolelement>
-          <!-- <span
+    <v-row>
+      <v-col cols="12">
+        <v-icon @click="editState = !editState">mdi-pencil</v-icon>
+        <table style="border:0px solid; width:100%;" CellSpacing="15">
+          <tr v-for="(item, index) in Object.keys(pools)" :key="index">
+            <!-- <td>{{pools[Object.keys(pools)[item-1]]}}</td> -->
+            <td
+              v-for="(itm, idx) in pools[item]"
+              :key="idx"
+              :bgcolor="getItemColor(itm.state)"
+              :style="
+                itm.state == '無'
+                  ? ''
+                  : itm.state.length > 0
+                  ? 'border:2px solid;'
+                  : 'max-width:50px;'
+              "
+            >
+              <mappoolelement
+                :item="itm"
+                :selitem="statcolor.filter(x => x.name != 'default')"
+                :showSelect="editState"
+                :myuser="$auth.$state.user.email"
+              ></mappoolelement>
+              <!-- <span
             v-if="itm.state.length > 0"
             :style="itm.state == '無' ? 'color:white;' : ''"
             >{{ itm.name }}-{{ itm.state
@@ -37,17 +38,19 @@
             ></v-select
           ></span>
           <span v-else></span> -->
-        </td>
-      </tr>
-      <tr>
-        <td
-          class="grey lighten-2"
-          :colspan="pools[Object.keys(pools)[0]].length"
-        >
-          中央走道
-        </td>
-      </tr>
-    </table>
+            </td>
+          </tr>
+          <tr>
+            <td
+              class="grey lighten-2"
+              :colspan="pools[Object.keys(pools)[0]].length"
+            >
+              中央走道
+            </td>
+          </tr>
+        </table>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -86,7 +89,7 @@ export default {
         ]
       },
       statcolor: [
-        { name: "default", color: "grey" },
+        { name: "default", color: "#AAAAAA" }
         // { name: "放養中", color: "yellow" },
         // { name: "集中暫養中", color: "#0070C0" },
         // { name: "尚未洗池", color: "purple" },
@@ -126,6 +129,9 @@ export default {
   },
   methods: {
     getItemColor: function(data) {
+      if (data == "") {
+        return "white";
+      }
       let data2 = this.statcolor.filter(x => x.name == data);
       if (data2.length == 1) {
         return data2[0].color;
@@ -138,20 +144,20 @@ export default {
         ? !this.editState[data]
         : true;
       console.log(this.editState);
-    },
+    }
   }
 };
 </script>
 
 <style scoped>
 td {
-  font-size: 1.5em;
+  font-size: 1.2em;
   text-align: center;
   vertical-align: middle;
-  min-width: 50px;
+  min-width: 80px;
 }
 tr {
-  height: 80px;
+  height: 50px;
   max-height: 80px;
 }
 </style>
