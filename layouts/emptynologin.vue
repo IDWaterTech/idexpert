@@ -44,6 +44,13 @@
               :key="i"
               :to="item.to"
               @click="logoutchk(item.title)"
+              v-show="
+              $auth.$state.user &&
+                  [
+                    'jianwei.wen@idwater.com.tw',
+                    'jeff.wang@idwater.com.tw'
+                  ].includes($auth.$state.user.email)
+              "
             >
               <v-list-item-icon>
                 <v-icon>{{ item.icon }}</v-icon>
@@ -84,7 +91,7 @@
                 this.$auth.$state.loggedIn &&
                   [
                     'jianwei.wen@idwater.com.tw',
-                    'steven.huang@idwater.com.tw'
+                    'jeff.wang@idwater.com.tw'
                   ].includes(this.$auth.$state.user.email)
               "
               ><v-icon>mdi-cog-outline</v-icon></v-btn
@@ -178,6 +185,11 @@ export default {
           icon: "mdi-map-outline",
           title: "養殖池況",
           to: "/map/"
+        },
+        {
+          icon: "mdi-factory",
+          title: "廠域設定",
+          to: "/factory"
         }
         // {
         //   icon: "mdi-information-outline",
