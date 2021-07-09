@@ -21,7 +21,7 @@
         <el-table
           :data="accdata"
           style="width: 100%"
-          max-height="500"
+          max-height="600"
           row-key="id"
           :expand-row-keys="expands"
           @expand-change="expandSelect"
@@ -69,7 +69,8 @@
                 text-color="white"
                 v-for="(item, key) in scope.row.職位"
                 :key="key"
-                >{{ (item.單位=="艾滴科技股份有限公司")?"":item.單位+"-" }}{{ item.名稱 }}</v-chip
+                >{{ item.單位 == "艾滴科技股份有限公司" ? "" : item.單位 + "-"
+                }}{{ item.名稱 }}</v-chip
               >
             </template>
           </el-table-column>
@@ -182,8 +183,9 @@
                       :flat="true"
                       :default-expand-level="3"
                       placeholder="請選擇職位"
-                      :disable-branch-nodes="true">
-                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
+                      :disable-branch-nodes="true"
+                    >
+                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
                     </treeselect>
                   </v-col>
                 </v-row>
@@ -231,9 +233,12 @@
 <script>
 import "element-ui/lib/theme-chalk/index.css";
 import https from "https";
+const agent = new https.Agent({
+  rejectUnauthorized: false
+});
 export default {
   layout: "emptynologin",
-
+  middleware: "auth",
   data() {
     return {
       accdata: [
@@ -283,14 +288,21 @@ export default {
         account_name: "",
         created_user: "web",
         is_active: true,
-        position_id:[]
+        position_id: []
       },
       //單位顏色、ICON設定
       unit: [
         { name: "default", icon: "mdi-help", color: "lightgrey" },
         { name: "技術部", icon: "mdi-hammer-wrench", color: "primary" },
         { name: "養殖部", icon: "mdi-shaker-outline", color: "orange" },
-        { name: "艾滴科技股份有限公司", icon: "mdi-account-tie", color: "#ff0000" }
+        { name: "研發部", icon: "mdi-school", color: "success" },
+        { name: "包裝組", icon: "mdi-gift", color: "pink" },
+        { name: "人資部", icon: "mdi-account-group", color: "teal" },
+        {
+          name: "艾滴科技股份有限公司",
+          icon: "mdi-account-tie",
+          color: "#ff0000"
+        }
       ],
       options: [
         {
@@ -311,7 +323,7 @@ export default {
                 {
                   id: 9,
                   label: "組長",
-                  unit:"技術組",
+                  unit: "技術組",
                   is_leaf: true
                 },
                 {
@@ -350,18 +362,25 @@ export default {
             }
           ]
         }
-      ],
+      ]
     };
   },
   methods: {
     getaccList: async function() {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       await this.$axios
         .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
         .then(res => {
           this.accdata = res.data;
+        });
+    },
+    getorg: async function() {
+      await this.$axios
+        .get("https://61.56.172.10/user-access/organization/", {
+          httpsAgent: agent
+        })
+        .then(res => {
+          this.options = res.data;
+          console.log(res.data);
         });
     },
     getUnitSet: function(item, unitname) {
@@ -420,13 +439,11 @@ export default {
       this.addform.created_user = updUser;
       this.addform.is_active = true;
       this.addDialog = true;
+      this.addform.position_id = [];
     },
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
       if (valid) {
-        const agent = new https.Agent({
-          rejectUnauthorized: false
-        });
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
         await this.$axios
@@ -439,14 +456,21 @@ export default {
                 alert("新增結果：" + res.data + "(帳號可能已存在)");
                 break;
               case "新增成功":
-                alert("新增結果：" + res.data);
+                this.$toast.success("新增結果：" + res.data, {
+                  duration: 2000
+                });
                 this.addDialog = false;
                 break;
               default:
-                alert("新增結果：" + res.data);
+                this.$toast.success("新增結果：" + res.data, {
+                  duration: 2000
+                });
                 break;
             }
             console.log("新增api：" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.success("新增失敗：" + error, { duration: 2000 });
           })
           .finally(() => {
             this.getaccList();
@@ -456,6 +480,7 @@ export default {
   },
   async created() {
     await this.getaccList();
+    await this.getorg();
   }
 };
 </script>
