@@ -8,7 +8,13 @@
         :key="index"
       >
         <v-card>
-          <v-card-title>{{ item }}</v-card-title>
+          <v-card-title
+            >{{ item }}<v-spacer></v-spacer>
+            <v-btn icon @click="addShow(item)"
+              ><v-icon>mdi-plus</v-icon></v-btn
+            ></v-card-title
+          >
+
           <v-divider></v-divider>
           <v-card-text>
             <!-- <ul>
@@ -37,28 +43,115 @@
     <v-dialog v-model="editDialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">編輯項目</span>
+          <span class="text-h5">編輯項目-{{ editedItem.class }}</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" md="12">
-                        <v-text-field
-                          v-model="editedItem.class"
-                          label="主項目"
-                          disabled
-                        ></v-text-field>
-                        <v-text-field
-                          v-model="editedItem.item"
-                          label="項目"
-                          disabled
-                        ></v-text-field>
-                        <v-text-field
-                          v-model="editedItem.value"
-                          label="值"
-                          autocomplate="off"
-                        ></v-text-field>
-                      </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editedItem.item"
+                  label="項目"
+                  disabled
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editedItem.value"
+                  label="顯示文字"
+                  autocomplate="off"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="5">
+                <v-text-field
+                  label="下限"
+                  :value="editedItem.lmtmin"
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="999"
+                  @input="edit_lmtmincheck"
+                ></v-text-field
+                >
+              </v-col>
+              <v-col cols="12" md="2">
+                ~
+              </v-col>
+              <v-col cols="12" md="5">
+                <v-text-field
+                  v-model="editedItem.lmtmax"
+                  label="上限"
+                  autocomplate="off"
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="999"
+                  @input="edit_lmtmaxcheck"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="editDialog = false">
+            取消
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="editsubmit">
+            確定
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="addDialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">新增項目-{{ this.addItem.class }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="addItem.item"
+                  label="項目"
+                  autocomplate="off"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="addItem.value"
+                  label="顯示文字"
+                  autocomplate="off"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="5">
+                <v-text-field
+                  v-model="addItem.lmtmin"
+                  label="下限"
+                  autocomplate="off"
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="999"
+                  @input="add_lmtmincheck"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="2">
+                ~
+              </v-col>
+              <v-col cols="12" md="5">
+                <v-text-field
+                  v-model="addItem.lmtmax"
+                  label="上限"
+                  autocomplate="off"
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="999"
+                  @input="add_lmtmaxcheck"
+                ></v-text-field>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -114,7 +207,17 @@ export default {
       editedItem: {
         class: "",
         item: "",
-        value: ""
+        value: "",
+        lmtmin: 0,
+        lmtmax: 999
+      },
+      addDialog: false,
+      addItem: {
+        class: "",
+        item: "",
+        value: "",
+        lmtmin: 0,
+        lmtmax: 999
       }
     };
   },
@@ -150,13 +253,46 @@ export default {
   },
   methods: {
     editShow: function(data) {
-      this.editedItem = Object.assign({},data);
-      console.log(this.editedItem);
+      data.lmtmax = 999;
+      data.lmtmin = 0;
+      this.editedItem = Object.assign({}, data);
       this.editDialog = true;
     },
     editsubmit: function() {
       this.editDialog = false;
-    }
+    },
+    addShow: function(data) {
+      this.addItem.class = data;
+      this.addDialog = true;
+    },
+    edit_lmtmincheck(val){
+      this.editedItem.lmtmin = val ? parseFloat(val) : 0;
+      this.$nextTick(() => {
+        var objitem = this.editedItem.lmtmin;
+      this.editedItem.lmtmin = (objitem<0)?0:(objitem>this.editedItem.lmtmax)?Number(this.editedItem.lmtmax):objitem;
+      });
+    },
+    edit_lmtmaxcheck(val){
+      this.editedItem.lmtmax = val ? parseFloat(val) : 0;
+      this.$nextTick(() => {
+        var objitem = this.editedItem.lmtmax;
+      this.editedItem.lmtmax = (objitem>999)?999:(objitem<this.editedItem.lmtmin)?Number(this.editedItem.lmtmin):objitem;
+      });
+    },
+    add_lmtmincheck(val){
+      this.addItem.lmtmin = val ? parseFloat(val) : 0;
+      this.$nextTick(() => {
+        var objitem = this.addItem.lmtmin;
+      this.addItem.lmtmin = (objitem<0)?0:(objitem>this.addItem.lmtmax)?Number(this.addItem.lmtmax):objitem;
+      });
+    },
+    add_lmtmaxcheck(val){
+      this.addItem.lmtmax = val ? parseFloat(val) : 0;
+      this.$nextTick(() => {
+        var objitem = this.addItem.lmtmax;
+      this.addItem.lmtmax = (objitem>999)?999:(objitem<this.addItem.lmtmin)?Number(this.addItem.lmtmin):objitem;
+      });
+    },
   }
 };
 </script>
