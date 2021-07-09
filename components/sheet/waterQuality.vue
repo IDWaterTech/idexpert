@@ -11,15 +11,6 @@ export default {
   data() {
     return { linedata: [] };
   },
-  created() {
-    // this.$axios
-    //   .get(
-    //     "http://61.56.172.10/water-quality-data/?started_date=2021-01-01&ended_date=2021-01-10&factory_id=1&pond_area_id=2&pond_id=1"
-    //   )
-    //   .then(res => {
-    //     this.linedata = res.data;
-    //   });
-  },
   methods: {
     echartsInit() {
       // 找到容器
