@@ -427,7 +427,7 @@ export default {
           alert("失敗：" + err.message);
         });
       var acc = acclist.filter(
-        x => x.帳號 == this.$auth.$state.user.email && x.狀態 == true
+        x => x.username == this.$auth.$state.user.email && x.is_active == true
       );
       //登入成功
       if (acc.length == 1) {

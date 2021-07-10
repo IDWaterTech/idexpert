@@ -8,13 +8,13 @@
             >Dear&nbsp;
             <span
               ><u
-                ><strong>{{ $auth.$state.user.name }}</strong></u
+                ><strong>{{ ($auth.$state.user)?$auth.$state.user.name:'username' }}</strong></u
               ></span
             >
             &nbsp;先生/女士 您好：</v-card-title
           >
           <v-card-text style="font-size:16pt;">
-            您的帳號：<span style="color:red;">{{ $auth.$state.user.email }}</span>，未授權登入。<br />
+            您的帳號：<span style="color:red;">{{ ($auth.$state.user)?$auth.$state.user.email:'usermail' }}</span>，未授權登入。<br />
             可以使用以下2種方式解決
             <ol class="mx-5 my-2">
               <li>向主管提出申請</li>

@@ -1,5 +1,4 @@
 <template>
-  <no-ssr>
     <v-app dark>
       <v-main>
         <v-navigation-drawer
@@ -45,11 +44,11 @@
               :to="item.to"
               @click="logoutchk(item.title)"
               v-show="
-              $auth.$state.user &&
+              ($auth.$state.user &&
                   [
                     'jianwei.wen@idwater.com.tw',
                     'jeff.wang@idwater.com.tw'
-                  ].includes($auth.$state.user.email)
+                  ].includes($auth.$state.user.email) && item.title == '廠域設定') || item.title != '廠域設定'
               "
             >
               <v-list-item-icon>
@@ -116,7 +115,6 @@
         </v-container>
       </v-main>
     </v-app>
-  </no-ssr>
 </template>
 
 <script>
@@ -138,7 +136,7 @@ export default {
         .then(res => {
           acclist = res.data;
         });
-      var acc = acclist.filter(x => x.帳號.toLowerCase() == this.$auth.$state.user.email);
+      var acc = acclist.filter(x => x.username.toLowerCase() == this.$auth.$state.user.email);
       //登入成功
       if (acc.length == 1) {
         //增加身份判別---

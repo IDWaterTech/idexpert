@@ -29,8 +29,30 @@
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline>
-                <el-form-item label="expand">
-                  <span>{{ props.row }}</span>
+                <el-form-item>
+                  <span>id:{{ props.row.id }}</span
+                  ><br />
+                  <span>帳號：{{ props.row.username }}</span
+                  ><br />
+                  <span>姓名：{{ props.row.name }}</span
+                  ><v-icon @click="showedititemDialog(props.row, '姓名')"
+                    >mdi-square-edit-outline</v-icon
+                  ><br />
+                  <span
+                    >職位：
+                    <v-chip
+                      class="ma-2"
+                      color="pink"
+                      label
+                      text-color="white"
+                      v-for="item in props.row.position" :key="item"
+                    >
+                      <v-icon left>
+                        mdi-label
+                      </v-icon>
+                      {{ item.department }}-{{ item.name }}
+                    </v-chip>
+                  </span>
                 </el-form-item>
               </el-form>
             </template>
@@ -47,13 +69,13 @@
             v-show="false"
           >
           </el-table-column>
-          <el-table-column prop="單位" label="單位" width="250" align="left">
+          <el-table-column prop="department" label="單位" width="250" align="left">
             <template slot-scope="scope">
               <v-chip
                 class="ma-2"
                 :color="getUnitSet('color', item)"
                 text-color="white"
-                v-for="(item, key) in scope.row.單位"
+                v-for="(item, key) in scope.row.department"
                 :key="key"
                 ><v-avatar left>
                   <v-icon>{{ getUnitSet("icon", item) }}</v-icon> </v-avatar
@@ -61,28 +83,28 @@
               >
             </template>
           </el-table-column>
-          <el-table-column prop="職位" label="職位" width="150" align="center">
+          <el-table-column prop="position" label="職位" width="150" align="center">
             <template slot-scope="scope">
               <v-chip
                 class="ma-2"
-                :color="getUnitSet('color', item.單位)"
+                :color="getUnitSet('color', item.department)"
                 text-color="white"
-                v-for="(item, key) in scope.row.職位"
+                v-for="(item, key) in scope.row.position"
                 :key="key"
-                >{{ item.單位 == "艾滴科技股份有限公司" ? "" : item.單位 + "-"
-                }}{{ item.名稱 }}</v-chip
+                >{{ item.department == "艾滴科技股份有限公司" ? "" : item.department + "-"
+                }}{{ item.name }}</v-chip
               >
             </template>
           </el-table-column>
-          <el-table-column prop="狀態" label="狀態" width="150" align="center">
+          <el-table-column prop="is_active" label="狀態" width="150" align="center">
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.狀態 ? 'success' : 'danger'"
+                :type="scope.row.is_active ? 'success' : 'danger'"
                 disable-transitions
-                >{{ scope.row.狀態 ? "啟用中" : "停用中" }}</el-tag
+                >{{ scope.row.is_active ? "啟用中" : "停用中" }}</el-tag
               >
               <el-switch
-                v-model="scope.row.狀態"
+                v-model="scope.row.is_active"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
                 @change="statchange(scope.$index, scope.row)"
@@ -185,7 +207,9 @@
                       placeholder="請選擇職位"
                       :disable-branch-nodes="true"
                     >
-                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
+                      <div slot="value-label" slot-scope="{ node }">
+                        {{ node.raw.unit }}-{{ node.raw.label }}
+                      </div>
                     </treeselect>
                   </v-col>
                 </v-row>
@@ -225,6 +249,18 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="edititemDialog" max-width="500px">
+          <v-card>
+            <v-card-title>修改：{{ edititem.item }}</v-card-title>
+            <v-card-subtitle>{{ edititem.username }}</v-card-subtitle>
+            <v-card-text>
+              <v-text-field v-model="edititem.value"> </v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="submitedititem">確認</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-col>
     </v-row>
   </div>
@@ -260,11 +296,11 @@ export default {
         }
       ],
       accCols: [
-        { text: "帳號", value: "帳號", width: 300 },
-        { text: "姓名", value: "姓名", width: 150 },
-        { text: "單位", value: "單位", width: 150 },
-        { text: "職位", value: "職位", width: 150 },
-        { text: "狀態", value: "狀態", width: 150 }
+        { text: "帳號", value: "username", width: 300 },
+        { text: "姓名", value: "account_name", width: 150 },
+        { text: "單位", value: "department", width: 150 },
+        { text: "職位", value: "position", width: 150 },
+        { text: "狀態", value: "is_active", width: 150 }
       ],
       addDialog: false,
       valid: true,
@@ -272,7 +308,7 @@ export default {
         require: [v => !!v || "*必要項目"],
         eqpwd: [v => v == this.addform.password || "*密碼不一致"]
       },
-      accColsHide: ["狀態", "單位", "職位"], //隱藏欄位、或需要特殊建立的欄位
+      accColsHide: ["單位", "職位", "狀態"], //隱藏欄位、或需要特殊建立的欄位
       editDialog: false,
       editedData: {}, //編輯中的資料
       expands: [], //Expand only one line into the current line id
@@ -297,7 +333,12 @@ export default {
         { name: "養殖部", icon: "mdi-shaker-outline", color: "orange" },
         { name: "研發部", icon: "mdi-school", color: "success" },
         { name: "包裝組", icon: "mdi-gift", color: "pink" },
-        { name: "人資部", icon: "mdi-account-group", color: "teal" },
+        { name: "人資部", icon: "mdi-account-group", color: "#2a4c00" },
+        {
+          name: "財務部",
+          icon: "mdi-cash-register",
+          color: "lightgreen"
+        },
         {
           name: "艾滴科技股份有限公司",
           icon: "mdi-account-tie",
@@ -362,7 +403,14 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      edititemDialog: false,
+      edititem: {
+        id: "",
+        username: "",
+        item: "",
+        value: ""
+      }
     };
   },
   methods: {
@@ -371,6 +419,7 @@ export default {
         .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
         .then(res => {
           this.accdata = res.data;
+          console.log("api：" + res.request.responseURL);
         });
     },
     getorg: async function() {
@@ -380,7 +429,7 @@ export default {
         })
         .then(res => {
           this.options = res.data;
-          console.log(res.data);
+          console.log("api：" + res.request.responseURL);
         });
     },
     getUnitSet: function(item, unitname) {
@@ -476,6 +525,19 @@ export default {
             this.getaccList();
           });
       }
+    },
+    showedititemDialog: async function(data, item) {
+      this.edititem.id = data.id;
+      this.edititem.username = data.username;
+      this.edititem.item = item;
+      this.edititem.value = data[item];
+
+      this.edititemDialog = true;
+    },
+    submitedititem: async function() {
+      let parm = {};
+      parm[this.edititem.item] = this.edititem.value;
+      console.log(parm);
     }
   },
   async created() {
