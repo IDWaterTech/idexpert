@@ -1,33 +1,33 @@
 <template>
-    <v-app dark>
-      <v-main>
-        <v-navigation-drawer
-          app
-          v-model="drawer"
-          :mini-variant="miniVariant"
-          :clipped="clipped"
-          :mini-variant-width="this.$auth.$state.loggedIn ? '56' : '0'"
-        >
-          <!-- -->
-          <v-list>
-            <v-list-item>
-              <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
-                <v-img :src="this.$auth.$state.user.picture"></v-img>
-              </v-list-item-avatar>
-              <v-list-item-icon v-else>
-                <v-icon large>mdi-account-circle</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content v-if="this.$auth.$state.loggedIn" size="36">
-                <v-list-item-title class="title">
-                  {{ this.$auth.$state.user.name }}
-                </v-list-item-title>
-                <v-list-item-subtitle>{{
-                  this.$auth.$state.user.email
-                }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <!--指定item是link，自動使用href (当使用 href 或 to 属性) -->
-            <!-- <v-list-item link>
+  <v-app dark>
+    <v-main>
+      <v-navigation-drawer
+        app
+        v-model="drawer"
+        :mini-variant="miniVariant"
+        :clipped="clipped"
+        :mini-variant-width="this.$auth.$state.loggedIn ? '56' : '0'"
+      >
+        <!-- -->
+        <v-list>
+          <v-list-item>
+            <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
+              <v-img :src="this.$auth.$state.user.picture"></v-img>
+            </v-list-item-avatar>
+            <v-list-item-icon v-else>
+              <v-icon large>mdi-account-circle</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content v-if="this.$auth.$state.loggedIn" size="36">
+              <v-list-item-title class="title">
+                {{ this.$auth.$state.user.name }}
+              </v-list-item-title>
+              <v-list-item-subtitle>{{
+                this.$auth.$state.user.email
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <!--指定item是link，自動使用href (当使用 href 或 to 属性) -->
+          <!-- <v-list-item link>
               <v-list-item-content>
                 <v-list-item-title class="title">
                   Sandra Adams
@@ -36,73 +36,75 @@
               </v-list-item-content>
             </v-list-item> -->
 
-            <v-divider></v-divider>
+          <v-divider></v-divider>
 
-            <v-list-item
-              v-for="(item, i) in listitems"
-              :key="i"
-              :to="item.to"
-              @click="logoutchk(item.title)"
-              v-show="
+          <v-list-item
+            v-for="(item, i) in listitems"
+            :key="i"
+            :to="item.to"
+            @click="logoutchk(item.title)"
+            v-show="
               ($auth.$state.user &&
-                  [
-                    'jianwei.wen@idwater.com.tw',
-                    'jeff.wang@idwater.com.tw'
-                  ].includes($auth.$state.user.email) && item.title == '廠域設定') || item.title != '廠域設定'
-              "
+                [
+                  'jianwei.wen@idwater.com.tw',
+                  'jeff.wang@idwater.com.tw'
+                ].includes($auth.$state.user.email) &&
+                item.title == '廠域設定') ||
+                item.title != '廠域設定'
+            "
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <!--  -->
+      </v-navigation-drawer>
+      <v-container fluid>
+        <v-app-bar app color="">
+          <v-app-bar-nav-icon
+            @click.stop="drawer = !drawer"
+            v-show="this.$auth.$state.loggedIn"
+          />
+          <v-btn
+            icon
+            @click.stop="miniVariant = !miniVariant"
+            v-show="this.$auth.$state.loggedIn"
+          >
+            <v-icon
+              >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
             >
-              <v-list-item-icon>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-          <!--  -->
-        </v-navigation-drawer>
-        <v-container fluid>
-          <v-app-bar app color="">
-            <v-app-bar-nav-icon
-              @click.stop="drawer = !drawer"
-              v-show="this.$auth.$state.loggedIn"
-            />
-            <v-btn
-              icon
-              @click.stop="miniVariant = !miniVariant"
-              v-show="this.$auth.$state.loggedIn"
-            >
-              <v-icon
-                >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
-              >
-            </v-btn>
+          </v-btn>
 
-            <v-btn text to="/">艾滴科技</v-btn>
-            <!-- <v-btn icon to="/calendar"
+          <v-btn text to="/">艾滴科技</v-btn>
+          <!-- <v-btn icon to="/calendar"
               ><v-icon>mdi-calendar-star</v-icon></v-btn
             > -->
-            <!-- <v-btn icon to="/Indicator/edit"
+          <!-- <v-btn icon to="/Indicator/edit"
               ><v-icon>mdi-file-edit</v-icon></v-btn
             > -->
-            <v-spacer />
-            <v-btn
-              icon
-              to="/set/"
-              v-show="
-                this.$auth.$state.loggedIn &&
-                  [
-                    'jianwei.wen@idwater.com.tw',
-                    'jeff.wang@idwater.com.tw'
-                  ].includes(this.$auth.$state.user.email)
-              "
-              ><v-icon>mdi-cog-outline</v-icon></v-btn
-            >
-            <div v-if="this.$auth.$state.loggedIn">
-              {{ this.$auth.$state.user.name }}
-              <v-btn icon @click="logout"><v-icon>mdi-logout</v-icon></v-btn>
-            </div>
-            <div v-if="!this.$auth.$state.loggedIn">
-              <v-btn icon to="/login"><v-icon>mdi-login</v-icon></v-btn>
-            </div>
-            <!-- <div v-show="$auth.$state.loggedIn">
+          <v-spacer />
+          <v-btn
+            icon
+            to="/set/"
+            v-show="
+              this.$auth.$state.loggedIn &&
+                [
+                  'jianwei.wen@idwater.com.tw',
+                  'jeff.wang@idwater.com.tw'
+                ].includes(this.$auth.$state.user.email)
+            "
+            ><v-icon>mdi-cog-outline</v-icon></v-btn
+          >
+          <div v-if="this.$auth.$state.loggedIn">
+            {{ this.$auth.$state.user.name }}
+            <v-btn icon @click="logout"><v-icon>mdi-logout</v-icon></v-btn>
+          </div>
+          <div v-if="!this.$auth.$state.loggedIn">
+            <v-btn icon to="/login"><v-icon>mdi-login</v-icon></v-btn>
+          </div>
+          <!-- <div v-show="$auth.$state.loggedIn">
             {{ $auth.user.name }}－{{ $auth.user.email }}
             <v-btn text @click="$auth.logout()">Logout</v-btn>
           </div>
@@ -110,11 +112,11 @@
             <v-btn text to="/login">Login</v-btn>
             <v-btn text to="/register">Register</v-btn>
           </div> -->
-          </v-app-bar>
-          <nuxt />
-        </v-container>
-      </v-main>
-    </v-app>
+        </v-app-bar>
+        <nuxt />
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -125,6 +127,7 @@ export default {
     //   window.location.protocol = "https:";
     //   window.location.reload();
     // }
+    
     //登入時判別身份分別導頁
     if (this.$auth.$state.loggedIn) {
       const agent = new https.Agent({
@@ -136,7 +139,9 @@ export default {
         .then(res => {
           acclist = res.data;
         });
-      var acc = acclist.filter(x => x.username.toLowerCase() == this.$auth.$state.user.email);
+      var acc = acclist.filter(
+        x => x.username.toLowerCase() == this.$auth.$state.user.email
+      );
       //登入成功
       if (acc.length == 1) {
         //增加身份判別---
@@ -155,7 +160,12 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
+    // if (window.location.protocol !== "https:") {
+    //   window.location.replace(
+    //     `https:${window.location.href.substring(window.location.protocol.length)}`
+    //   );
+    // }
     // console.log("auth user",this.$auth.$state.user);
   },
   data() {
