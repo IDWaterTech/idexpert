@@ -53,6 +53,7 @@
                   v-model="editedItem.item"
                   label="項目"
                   disabled
+                  autocomplate="off"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -71,8 +72,7 @@
                   min="0"
                   max="999"
                   @input="edit_lmtmincheck"
-                ></v-text-field
-                >
+                ></v-text-field>
               </v-col>
               <v-col cols="12" md="2">
                 ~
@@ -104,75 +104,88 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="addDialog" max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">新增項目-{{ this.addItem.class }}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="addItem.item"
-                  label="項目"
-                  autocomplate="off"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="addItem.value"
-                  label="顯示文字"
-                  autocomplate="off"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="5">
-                <v-text-field
-                  v-model="addItem.lmtmin"
-                  label="下限"
-                  autocomplate="off"
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="999"
-                  @input="add_lmtmincheck"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="2">
-                ~
-              </v-col>
-              <v-col cols="12" md="5">
-                <v-text-field
-                  v-model="addItem.lmtmax"
-                  label="上限"
-                  autocomplate="off"
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="999"
-                  @input="add_lmtmaxcheck"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="editDialog = false">
-            取消
-          </v-btn>
-          <v-btn color="blue darken-1" text @click="editsubmit">
-            確定
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-form ref="addform" v-model="valid" lazy-validation>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">新增項目-{{ this.addItem.class }}</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="addItem.name_en"
+                    label="項目(英文)"
+                    autocomplate="off"
+                    :rules="rules.require"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="addItem.name_ch"
+                    label="項目(中文)"
+                    autocomplate="off"
+                    :rules="rules.require"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="12">
+                  <v-text-field
+                    v-model="addItem.unit"
+                    label="單位(ppm、°c...)"
+                    :rules="rules.require"
+                    autocomplate="off"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="5">
+                  <v-text-field
+                    v-model="addItem.lmtmin"
+                    label="下限"
+                    autocomplate="off"
+                    type="number"
+                    step="1"
+                    min="0"
+                    max="999"
+                    @input="add_lmtmincheck"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="2">
+                  ~
+                </v-col>
+                <v-col cols="12" md="5">
+                  <v-text-field
+                    v-model="addItem.lmtmax"
+                    label="上限"
+                    autocomplate="off"
+                    type="number"
+                    step="1"
+                    min="0"
+                    max="999"
+                    @input="add_lmtmaxcheck"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="addsubmit">
+              確定
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
   </div>
 </template>
 
 <script>
 import https from "https";
+const agent = new https.Agent({
+  rejectUnauthorized: false
+});
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   data() {
     return {
       headers: [
@@ -218,19 +231,18 @@ export default {
         value: "",
         lmtmin: 0,
         lmtmax: 999
-      }
+      },
+      //form
+      valid: true,
+      rules: { require: [v => !!v || "*必要項目"] }
     };
   },
   async created() {
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
     await this.$axios
       .get("https://61.56.172.10/all-col-name/", {
         httpsAgent: agent
       })
       .then(res => {
-        console.log("all項目");
         this.allcols = Object.assign({}, res.data);
       });
   },
@@ -261,38 +273,93 @@ export default {
     editsubmit: function() {
       this.editDialog = false;
     },
+    addsubmit: async function() {
+      if (this.$refs.addform.validate()) {
+        const updUser = this.$auth.$state.user.email;
+        let parm = {
+          name_en: this.addItem.name_en,
+          name_ch: this.addItem.name_ch,
+          unit: this.addItem.unit,
+          min: this.addItem.lmtmin,
+          max: this.addItem.lmtmax,
+          data_group: this.addItem.class,
+          created_user: updUser
+        };
+        console.log(parm);
+        await this.$axios
+          .post("https://61.56.172.10/all-col-name/", parm, {
+            httpsAgent: agent
+          })
+          .then(res => {
+            if (res.data == "新增成功") {
+              this.$toast.success(`新增成功`, { duration: 2000 });
+            } else {
+              this.$toast.error(`新增失敗` + res.data, { duration: 2000 });
+            }
+          })
+          .catch(error => {
+            this.$toast.error(`新增失敗` + error.message, { duration: 2000 });
+          })
+          .finally(() => {
+            //this.getdata();
+          });
+      }
+    },
     addShow: function(data) {
       this.addItem.class = data;
+      this.addItem.name_en = this.addItem.name_ch = this.addItem.unit = "";
+      this.addItem.lmtmin = 0;
+      this.addItem.lmtmax = 999;
       this.addDialog = true;
     },
-    edit_lmtmincheck(val){
+    edit_lmtmincheck(val) {
       this.editedItem.lmtmin = val ? parseFloat(val) : 0;
       this.$nextTick(() => {
         var objitem = this.editedItem.lmtmin;
-      this.editedItem.lmtmin = (objitem<0)?0:(objitem>this.editedItem.lmtmax)?Number(this.editedItem.lmtmax):objitem;
+        this.editedItem.lmtmin =
+          objitem < 0
+            ? 0
+            : objitem > this.editedItem.lmtmax
+            ? Number(this.editedItem.lmtmax)
+            : objitem;
       });
     },
-    edit_lmtmaxcheck(val){
+    edit_lmtmaxcheck(val) {
       this.editedItem.lmtmax = val ? parseFloat(val) : 0;
       this.$nextTick(() => {
         var objitem = this.editedItem.lmtmax;
-      this.editedItem.lmtmax = (objitem>999)?999:(objitem<this.editedItem.lmtmin)?Number(this.editedItem.lmtmin):objitem;
+        this.editedItem.lmtmax =
+          objitem > 999
+            ? 999
+            : objitem < this.editedItem.lmtmin
+            ? Number(this.editedItem.lmtmin)
+            : objitem;
       });
     },
-    add_lmtmincheck(val){
+    add_lmtmincheck(val) {
       this.addItem.lmtmin = val ? parseFloat(val) : 0;
       this.$nextTick(() => {
         var objitem = this.addItem.lmtmin;
-      this.addItem.lmtmin = (objitem<0)?0:(objitem>this.addItem.lmtmax)?Number(this.addItem.lmtmax):objitem;
+        this.addItem.lmtmin =
+          objitem < 0
+            ? 0
+            : objitem > this.addItem.lmtmax
+            ? Number(this.addItem.lmtmax)
+            : objitem;
       });
     },
-    add_lmtmaxcheck(val){
+    add_lmtmaxcheck(val) {
       this.addItem.lmtmax = val ? parseFloat(val) : 0;
       this.$nextTick(() => {
         var objitem = this.addItem.lmtmax;
-      this.addItem.lmtmax = (objitem>999)?999:(objitem<this.addItem.lmtmin)?Number(this.addItem.lmtmin):objitem;
+        this.addItem.lmtmax =
+          objitem > 999
+            ? 999
+            : objitem < this.addItem.lmtmin
+            ? Number(this.addItem.lmtmin)
+            : objitem;
       });
-    },
+    }
   }
 };
 </script>

@@ -131,7 +131,11 @@
           height=""
           ><v-icon>mdi-text-box-plus-outline</v-icon></v-btn
         >
-        <v-dialog v-model="addDialog" max-width="500px">
+        <v-dialog
+          v-model="addDialog"
+          max-width="500px"
+          :persistent="keepswitch"
+        >
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card v-if="addDialog"
               ><v-card-title>新增</v-card-title>
@@ -140,8 +144,15 @@
                   maindata[sel_main - 1].node[sel_area - 1].name
                 }}-<span class="font-weight-black" style="color:red;">{{
                   defitem
-                }}</span></v-card-subtitle
-              >
+                }}</span
+                ><v-switch
+                  v-model="keepswitch"
+                  color="red darken-3"
+                  :label="
+                    keepswitch ? '保留數值不關閉：on' : '保留數值不關閉：off'
+                  "
+                ></v-switch
+              ></v-card-subtitle>
               <v-card-text>
                 <v-row>
                   <v-col cols="12" md="6">
@@ -198,6 +209,7 @@
                       :id="item.name"
                       @keyup.enter="gofocusNxt(item.name)"
                       @change="getAddData"
+                      @keyup="getAddData"
                       ><p slot="prepend">{{ item.name }}</p></v-text-field
                     ></v-col
                   >
@@ -222,8 +234,14 @@
               <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
-
-                <v-btn @click="addsubmit" color="blue darken-1" text
+                <v-btn
+                  @click="addDialog = false"
+                  color="blue darken-1"
+                  text
+                  v-show="keepswitch"
+                  >取消</v-btn
+                >
+                <v-btn @click="addsubmit" color="blue darken-1" text :disabled="(!atime)"
                   >確定</v-btn
                 >
               </v-card-actions>
@@ -354,6 +372,9 @@
 <script>
 import dayjs from "dayjs";
 import https from "https";
+const agent = new https.Agent({
+  rejectUnauthorized: false
+});
 // import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 // import { number } from "~/node_modules/echarts/lib/export";
 export default {
@@ -399,6 +420,7 @@ export default {
       edate: "",
       adate: "",
       atime: "",
+      keepswitch: false, //保留數值不關閉
       //編輯視窗
       editDialog: false,
       editedItem: {}, //已編輯項目暫存這邊
@@ -414,9 +436,6 @@ export default {
   },
   async beforeCreate() {
     if (this.$auth.$state.loggedIn) {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       let acclist = [];
       await this.$axios
         .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
@@ -449,9 +468,6 @@ export default {
   },
   async created() {
     //抓廠資料
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
     await this.$axios
       .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
       .then(res => {
@@ -526,9 +542,6 @@ export default {
         id: this.sel_area
       };
       this.sel_pool = ""; //重選區域重置水池
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       if (this.sel_area) {
         //水池基本資料
         await this.$axios
@@ -604,9 +617,6 @@ export default {
       //歸零
       this.item = "";
       this.headers = [];
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       //抓資料
       await this.$axios
         .get(apiurl, { params: para }, { httpsAgent: agent })
@@ -686,9 +696,10 @@ export default {
       return mytime;
     },
     openadd: function() {
+      this.keepswitch = false;
       this.adate = "";
-      this.atime = "";
       this.addData = [];
+      this.atime = "";
       this.addDialog = true;
     },
     addsetnow: function() {
@@ -696,9 +707,7 @@ export default {
     },
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
+
       if (valid) {
         let colclass = this.getItemClass(this.defitem);
         let apiurl = "https://61.56.172.10/all-data/";
@@ -723,7 +732,10 @@ export default {
           .then(res => {
             if (res.data == "新增成功") {
               //this.getdata();新增未必有選到所有選項
-              this.addDialog = false; //close dialog
+              this.atime = "";
+              if (this.keepswitch == false) {
+                this.addDialog = false; //close dialog
+              }
               this.$toast.success(`新增成功`, { duration: 2000 });
             } else {
               alert("新增失敗!：" + res.data);
@@ -739,9 +751,6 @@ export default {
     },
     editsubmit: async function() {
       if (confirm("確定修改？") == true) {
-        const agent = new https.Agent({
-          rejectUnauthorized: false
-        });
         // await this.$axios.get("https://61.56.172.10/architecture/").then(res => {});
         let url = `https://61.56.172.10/all-data/${this.editedItem.id}/`;
         const updUser = this.$auth.$state.user.email;
@@ -770,9 +779,6 @@ export default {
       }
     },
     delsubmit: async function() {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       let url = `https://61.56.172.10/all-data/${this.editedItem.id}/`;
       let deldata = { data_group: this.editedItem.class };
       console.log("DEL data:", deldata);

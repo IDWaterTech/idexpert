@@ -29,29 +29,31 @@
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline>
-                <el-form-item>
-                  <span>id:{{ props.row.id }}</span
-                  ><br />
+                <el-form-item
+                  >
                   <span>帳號：{{ props.row.username }}</span
                   ><br />
-                  <span>姓名：{{ props.row.name }}</span
-                  ><v-icon @click="showedititemDialog(props.row, '姓名')"
+                  <span>姓名：{{ props.row.account_name }}</span
+                  ><v-icon
+                    @click="showedititemDialog(props.row, 'account_name')"
                     >mdi-square-edit-outline</v-icon
                   ><br />
-                  <span
-                    >職位：
+                  <span>
                     <v-chip
                       class="ma-2"
-                      color="pink"
+                      :color="getUnitSet('color', item.department)"
                       label
                       text-color="white"
-                      v-for="item in props.row.position" :key="item"
+                      v-for="item in props.row.position"
+                      :key="item.id"
                     >
                       <v-icon left>
-                        mdi-label
+                        {{getUnitSet('icon', item.department)}}
                       </v-icon>
-                      {{ item.department }}-{{ item.name }}
-                    </v-chip>
+                      {{ item.department }}-{{ item.name }} </v-chip
+                    ><v-icon @click="showpositDialog(props.row)"
+                      >mdi-square-edit-outline</v-icon
+                    >
                   </span>
                 </el-form-item>
               </el-form>
@@ -69,7 +71,12 @@
             v-show="false"
           >
           </el-table-column>
-          <el-table-column prop="department" label="單位" width="250" align="left">
+          <el-table-column
+            prop="department"
+            label="單位"
+            width="250"
+            align="left"
+          >
             <template slot-scope="scope">
               <v-chip
                 class="ma-2"
@@ -83,7 +90,12 @@
               >
             </template>
           </el-table-column>
-          <el-table-column prop="position" label="職位" width="150" align="center">
+          <el-table-column
+            prop="position"
+            label="職位"
+            width="150"
+            align="center"
+          >
             <template slot-scope="scope">
               <v-chip
                 class="ma-2"
@@ -91,12 +103,20 @@
                 text-color="white"
                 v-for="(item, key) in scope.row.position"
                 :key="key"
-                >{{ item.department == "艾滴科技股份有限公司" ? "" : item.department + "-"
+                >{{
+                  item.department == "艾滴科技股份有限公司"
+                    ? ""
+                    : item.department + "-"
                 }}{{ item.name }}</v-chip
               >
             </template>
           </el-table-column>
-          <el-table-column prop="is_active" label="狀態" width="150" align="center">
+          <el-table-column
+            prop="is_active"
+            label="狀態"
+            width="150"
+            align="center"
+          >
             <template slot-scope="scope">
               <el-tag
                 :type="scope.row.is_active ? 'success' : 'danger'"
@@ -142,12 +162,6 @@
                 >
               </v-toolbar>
               <v-divider></v-divider>
-              <!-- <v-card-title>
-                <span class="text-h5"
-                  >新增使用者帳號
-                  <v-icon>mdi-account-plus-outline</v-icon></span
-                >
-              </v-card-title> -->
               <v-card-text>
                 <v-row>
                   <v-col cols="12"
@@ -217,9 +231,6 @@
               <v-divider></v-divider>
               <v-footer color="white">
                 <v-spacer></v-spacer>
-                <!-- <v-btn color="blue darken-1" text @click="editDialog = false">
-                Cancel
-              </v-btn> -->
                 <v-btn color="blue darken-1" text @click="addsubmit">
                   確認
                 </v-btn>
@@ -251,14 +262,60 @@
         </v-dialog>
         <v-dialog v-model="edititemDialog" max-width="500px">
           <v-card>
-            <v-card-title>修改：{{ edititem.item }}</v-card-title>
+            <v-card-title
+              >修改：{{
+                edititem.item == "account_name" ? "姓名" : edititem.item
+              }}</v-card-title
+            >
             <v-card-subtitle>{{ edititem.username }}</v-card-subtitle>
             <v-card-text>
               <v-text-field v-model="edititem.value"> </v-text-field>
             </v-card-text>
+            <v-divider></v-divider>
             <v-card-actions>
-              <v-btn @click="submitedititem">確認</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn @click="submitedititem" text color="blue darken-1"
+                >確認</v-btn
+              >
             </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="positDialog" max-width="500px">
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>
+                <span class="text-h5"
+                  >修改：{{ (edititem.item=="position")?"職位":edititem.item }}
+                </span></v-toolbar-title
+              >
+            </v-toolbar>
+            <v-card-text>
+              <v-row
+                ><v-col cols="12"
+                  ><treeselect
+                    v-model="edititem.position"
+                    :multiple="true"
+                    :options="options"
+                    :flat="true"
+                    :default-expand-level="3"
+                    placeholder="請選擇職位"
+                    :disable-branch-nodes="true"
+                  >
+                    <div slot="value-label" slot-scope="{ node }">
+                      {{ node.raw.unit }}-{{ node.raw.label }}
+                    </div>
+                  </treeselect></v-col
+                ><v-spacer></v-spacer
+              ></v-row>
+              <table style="height:300px;"></table>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-footer color="white">
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="submitposit">
+                確認
+              </v-btn>
+            </v-footer>
           </v-card>
         </v-dialog>
       </v-col>
@@ -330,15 +387,15 @@ export default {
       unit: [
         { name: "default", icon: "mdi-help", color: "lightgrey" },
         { name: "技術部", icon: "mdi-hammer-wrench", color: "primary" },
-        { name: "養殖部", icon: "mdi-shaker-outline", color: "orange" },
+        { name: "工務組", icon: "mdi-hammer-wrench", color: "#26A69A" },
+        { name: "養殖組", icon: "mdi-shaker-outline", color: "orange" },
         { name: "研發部", icon: "mdi-school", color: "success" },
         { name: "包裝組", icon: "mdi-gift", color: "pink" },
         { name: "人資部", icon: "mdi-account-group", color: "#2a4c00" },
-        {
-          name: "財務部",
-          icon: "mdi-cash-register",
-          color: "lightgreen"
-        },
+        { name: "財務部", icon: "mdi-cash-register", color: "#D4E157" },
+        { name: "出納組", icon: "mdi-cash-register", color: "#D4E157" },
+        { name: "行銷部", icon: "mdi-home-city-outline", color: "#00ACC1" },
+        { name: "營運部", icon: "mdi-cogs", color: "#D4E157" },
         {
           name: "艾滴科技股份有限公司",
           icon: "mdi-account-tie",
@@ -409,8 +466,11 @@ export default {
         id: "",
         username: "",
         item: "",
-        value: ""
-      }
+        value: "",
+        position: []
+      },
+      editposit: [], //編輯職位選到的內容
+      positDialog: false //顯示編輯職位
     };
   },
   methods: {
@@ -460,11 +520,35 @@ export default {
       Object.assign(this.editedData, row);
       this.editDialog = true;
     },
-    handleDelete(index, row) {
-      console.log(index, row);
+    handleDelete:async function(index, row) {
+      if (confirm('是否確認刪除？')) {
+        await this.$axios
+        .delete(
+          `https://61.56.172.10/user-access/account/${row.id}/`,
+          { httpsAgent: agent }
+        )
+        .then(res => {
+          if (res.data == "刪除成功") {
+            this.getaccList(); //改畫面的資料
+            this.positDialog = false;
+            this.$toast.success("刪除成功", { duration: 2000 });
+          } else {
+            this.$toast.success("刪除失敗：" + res.data, { duration: 2000 });
+          }
+          console.log("api：" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+        })
+        .finally(() => {});
+      }
     },
     statchange(index, row) {
-      console.log(index, row.狀態);
+      let parm = {};
+      parm["is_active"] = row.is_active;
+      const updUser = this.$auth.$state.user.email;
+      parm["updated_user"] = updUser;
+      this.postedit(row.id,parm);
     },
     expandSelect(row, expandedRows) {
       if (expandedRows.length) {
@@ -487,8 +571,8 @@ export default {
       this.addform.account_name = "";
       this.addform.created_user = updUser;
       this.addform.is_active = true;
-      this.addDialog = true;
       this.addform.position_id = [];
+      this.addDialog = true;
     },
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
@@ -531,13 +615,99 @@ export default {
       this.edititem.username = data.username;
       this.edititem.item = item;
       this.edititem.value = data[item];
-
+      this.edititem.position = data.position.map(x => {
+        return x["id"];
+      });
       this.edititemDialog = true;
     },
     submitedititem: async function() {
       let parm = {};
       parm[this.edititem.item] = this.edititem.value;
+      const updUser = this.$auth.$state.user.email;
+      parm["updated_user"] = updUser;
       console.log(parm);
+      await this.$axios
+        .patch(
+          `https://61.56.172.10/user-access/account/${this.edititem.id}/`,
+          parm,
+          { httpsAgent: agent }
+        )
+        .then(res => {
+          if (res.data == "修改成功") {
+            this.edititemDialog = false;
+            this.accdata.filter(
+              x => x.id == this.edititem.id
+            )[0].account_name = this.edititem.value; //改畫面的資料
+            this.$toast.success("修改成功", { duration: 2000 });
+          } else {
+            this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+          }
+          console.log("api：" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+        })
+        .finally(() => {});
+    },
+    showpositDialog: function(data) {
+      this.edititem.id = data.id;
+      this.edititem.username = data.username;
+      this.edititem.item = "position";
+      this.edititem.value = data["position"];
+      this.edititem.position = data.position.map(x => {
+        return x["id"];
+      });
+      this.positDialog = true;
+    },
+    submitposit: async function() {
+      let parm = {};
+      parm["position_id"] = this.edititem.position;
+      const updUser = this.$auth.$state.user.email;
+      parm["updated_user"] = updUser;
+      console.log(parm);
+      this.postedit(this.edititem.id,parm);
+      // await this.$axios
+      //   .patch(
+      //     `https://61.56.172.10/user-access/account/${this.edititem.id}/`,
+      //     parm,
+      //     { httpsAgent: agent }
+      //   )
+      //   .then(res => {
+      //     if (res.data == "修改成功") {
+      //       this.getaccList(); //改畫面的資料
+      //       this.positDialog = false;
+      //       this.$toast.success("修改成功", { duration: 2000 });
+      //     } else {
+      //       this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+      //     }
+      //     console.log("api：" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {});
+    },
+    postedit:async function(upd_id,parm){
+      await this.$axios
+        .patch(
+          `https://61.56.172.10/user-access/account/${upd_id}/`,
+          parm,
+          { httpsAgent: agent }
+        )
+        .then(res => {
+          if (res.data == "修改成功") {
+            this.getaccList(); //改畫面的資料
+            this.positDialog = false;
+            this.$toast.success("修改成功", { duration: 2000 });
+          } else {
+            this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+          }
+          console.log("api：" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+        })
+        .finally(() => {});
     }
   },
   async created() {
