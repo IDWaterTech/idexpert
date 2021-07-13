@@ -1,5 +1,6 @@
 <template>
-  <v-app dark>
+<client-only>
+  <v-app>
     <v-main>
       <v-navigation-drawer
         app
@@ -8,7 +9,6 @@
         :clipped="clipped"
         :mini-variant-width="this.$auth.$state.loggedIn ? '56' : '0'"
       >
-        <!-- -->
         <v-list>
           <v-list-item>
             <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
@@ -21,28 +21,17 @@
               <v-list-item-title class="title">
                 {{ this.$auth.$state.user.name }}
               </v-list-item-title>
-              <v-list-item-subtitle>{{
-                this.$auth.$state.user.email
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle>
+                {{ this.$auth.$state.user.email }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <!--指定item是link，自動使用href (当使用 href 或 to 属性) -->
-          <!-- <v-list-item link>
-              <v-list-item-content>
-                <v-list-item-title class="title">
-                  Sandra Adams
-                </v-list-item-title>
-                <v-list-item-subtitle>sandra_a88@gmail.com</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item> -->
-
           <v-divider></v-divider>
 
           <v-list-item
             v-for="(item, i) in listitems"
             :key="i"
             :to="item.to"
-            @click="logoutchk(item.title)"
             v-show="
               ($auth.$state.user &&
                 [
@@ -66,7 +55,7 @@
           <v-app-bar-nav-icon
             @click.stop="drawer = !drawer"
             v-show="this.$auth.$state.loggedIn"
-          />
+          ></v-app-bar-nav-icon>
           <v-btn
             icon
             @click.stop="miniVariant = !miniVariant"
@@ -76,15 +65,8 @@
               >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
             >
           </v-btn>
-
           <v-btn text to="/">艾滴科技</v-btn>
-          <!-- <v-btn icon to="/calendar"
-              ><v-icon>mdi-calendar-star</v-icon></v-btn
-            > -->
-          <!-- <v-btn icon to="/Indicator/edit"
-              ><v-icon>mdi-file-edit</v-icon></v-btn
-            > -->
-          <v-spacer />
+          <v-spacer></v-spacer>
           <v-btn
             icon
             to="/set/"
@@ -92,50 +74,37 @@
               this.$auth.$state.loggedIn &&
                 [
                   'jianwei.wen@idwater.com.tw',
-                  'jeff.wang@idwater.com.tw'
+                  'jeff.wang@idwater.com.tw',
+                  'alex.chen@idwater.com.tw'
                 ].includes(this.$auth.$state.user.email)
             "
             ><v-icon>mdi-cog-outline</v-icon></v-btn
           >
           <div v-if="this.$auth.$state.loggedIn">
             {{ this.$auth.$state.user.name }}
-            <v-btn icon @click="logout"><v-icon>mdi-logout</v-icon></v-btn>
+            <v-btn icon @click="logout"><v-icon>mdi-home-export-outline</v-icon></v-btn>
           </div>
-          <div v-if="!this.$auth.$state.loggedIn">
-            <v-btn icon to="/login"><v-icon>mdi-login</v-icon></v-btn>
+          <div v-show="!this.$auth.$state.loggedIn">
+            <v-btn icon to="/login"><v-icon>mdi-home-import-outline</v-icon></v-btn>
           </div>
-          <!-- <div v-show="$auth.$state.loggedIn">
-            {{ $auth.user.name }}－{{ $auth.user.email }}
-            <v-btn text @click="$auth.logout()">Logout</v-btn>
-          </div>
-          <div v-else>
-            <v-btn text to="/login">Login</v-btn>
-            <v-btn text to="/register">Register</v-btn>
-          </div> -->
         </v-app-bar>
         <nuxt />
       </v-container>
     </v-main>
   </v-app>
+  </client-only>
 </template>
 
 <script>
 import https from "https";
+
 export default {
   async beforeCreate() {
-    // if (window.location.protocol != "https:") {
-    //   window.location.protocol = "https:";
-    //   window.location.reload();
-    // }
-    
     //登入時判別身份分別導頁
     if (this.$auth.$state.loggedIn) {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       let acclist = [];
       await this.$axios
-        .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
+        .get("https://61.56.172.10/user-access/account/")
         .then(res => {
           acclist = res.data;
         });
@@ -148,25 +117,17 @@ export default {
         const updatedUser = { ...this.$auth.user };
         updatedUser.role = "user"; //允許登入的
         updatedUser.authcheck = true; //授權可登入
-        this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+        // this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
         //--------------
       } else {
         //登入失敗
         const updatedUser = { ...this.$auth.user };
         updatedUser.role = "guest";
         updatedUser.authcheck = false;
-        this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+        // this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
         this.$router.push({ name: "loginfail" });
       }
     }
-  },
-  mounted() {
-    // if (window.location.protocol !== "https:") {
-    //   window.location.replace(
-    //     `https:${window.location.href.substring(window.location.protocol.length)}`
-    //   );
-    // }
-    // console.log("auth user",this.$auth.$state.user);
   },
   data() {
     return {
@@ -199,42 +160,13 @@ export default {
           title: "廠域設定",
           to: "/factory"
         }
-        // {
-        //   icon: "mdi-information-outline",
-        //   title: "intro",
-        //   to: "/intro"
-        // },
-        // {
-        //   icon: "mdi-login",
-        //   title: "Login",
-        //   to: "/login"
-        // },
-        // {
-        //   icon: "mdi-logout",
-        //   title: "logout"
-        // }
       ]
     };
   },
   methods: {
-    getaccList: async function() {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-      await this.$axios
-        .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
-        .then(res => {
-          this.acclist = res.data;
-        });
-    },
     logout: function() {
       this.drawer = false;
       $nuxt.$auth.logout();
-    },
-    logoutchk: function(item) {
-      if (item == "logout") {
-        $nuxt.$auth.logout();
-      }
     }
   }
 };
