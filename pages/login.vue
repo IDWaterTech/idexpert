@@ -2,13 +2,13 @@
   <v-container>
     <h1>Login</h1>
     <strong>{{ $auth.$state.redirect }}</strong>
-    <v-tabs  centered grow icons-and-text>
+    <v-tabs centered grow icons-and-text>
       <v-tab class="primary--text" :href="'#tab-2'">
         第三方登入<v-icon>mdi-google</v-icon>
       </v-tab>
     </v-tabs>
     <v-tabs-items v-model="tabs">
-      <v-tab-item :value="'tab-2'"  class="text-center mt-5">
+      <v-tab-item :value="'tab-2'" class="text-center mt-5">
         <br />
         <v-btn
           dark
@@ -51,7 +51,7 @@ export default {
   layout: "emptynologin",
   data() {
     return {
-      tabs: 'tab-2'
+      tabs: "tab-2"
     };
   },
   components: {
@@ -59,14 +59,14 @@ export default {
   },
   computed: {
     redirect() {
-      console.log("redirect!",this.$route.query.redirect);
+      console.log("redirect!", this.$route.query.redirect);
       return (
         this.$route.query.redirect &&
         decodeURIComponent(this.$route.query.redirect)
       );
     },
     isCallback() {
-      console.log("iscallback!",this.$route.query.callback);
+      console.log("iscallback!", this.$route.query.callback);
       return Boolean(this.$route.query.callback);
     }
   },
@@ -102,14 +102,21 @@ export default {
     },
     async loginGoogle() {
       try {
-        await this.$auth.loginWith("google").catch(errors => {
-          //errors.response.data;//可抓到錯誤
-          this.$toast.error("登入發生錯誤!:", { duration: 3000 });
-          console.log("error:" + errors.response.data);
-          console.log("google",a);
-        });
-      } catch(err) {
-          console.log(err);
+        await this.$auth
+          .loginWith("google")
+          .then(res =>
+            this.$toast.success("Logged In!" + res.data, { duration: 3000 })
+          )
+          .catch(errors => {
+            //errors.response.data;//可抓到錯誤
+            this.$toast.error("登入發生錯誤!:" + errors.message, {
+              duration: 3000
+            });
+            console.log("error:" + errors.response.data);
+            console.log("google", a);
+          });
+      } catch (err) {
+        console.log(err);
       }
     }
   }

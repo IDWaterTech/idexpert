@@ -1,24 +1,18 @@
 <template>
   <div>
-    <!-- <NuxtLink to="/set/account">
-      帳號管理
-    </NuxtLink>
-    <NuxtLink to="/set/account">
-      授權管理
-    </NuxtLink> -->
     <v-row>
-      <v-col cols="2" v-for="(item, idx) in link" :key="idx" @click="$nuxt.$router.push(`${item.to}`)">
+      <v-col cols="12" sm="3" v-for="(item, idx) in link" :key="idx" @click="$nuxt.$router.push(`${item.to}`)">
         <v-container fill-height>
           <v-layout align-center>
             <v-flex class="text-center" :style="`background-color:${item.color}`">
               <v-row>
                 <v-col cols="12">
-                  <v-icon size="100" color="white">
+                  <v-icon size="50" color="white">
                     {{ item.icon }}
                   </v-icon>
                 </v-col>
               </v-row>
-              <h2><span style="color:white;">{{ item.title }}</span></h2>
+              <span class="px-1" style="color:white;font-size:1.2em;">{{ item.title }}</span>
             </v-flex>
           </v-layout>
         </v-container>
