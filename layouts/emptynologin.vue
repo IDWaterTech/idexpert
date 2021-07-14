@@ -75,7 +75,8 @@
                 [
                   'jianwei.wen@idwater.com.tw',
                   'jeff.wang@idwater.com.tw',
-                  'alex.chen@idwater.com.tw'
+                  'alex.chen@idwater.com.tw',
+                  'eric.cheung@idwater.com.tw'//星希
                 ].includes(this.$auth.$state.user.email)
             "
             ><v-icon>mdi-cog-outline</v-icon></v-btn
