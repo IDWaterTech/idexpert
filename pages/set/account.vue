@@ -131,7 +131,8 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+           <!-- 禁刪使用者所以強制隱藏 -->
+          <el-table-column label="操作" v-if="false">
             <template slot-scope="scope">
               <!-- <el-button
                 size="mini"
