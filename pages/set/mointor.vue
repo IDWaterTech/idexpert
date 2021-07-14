@@ -1,15 +1,14 @@
 <template>
-  <div>
+  <div  id="top">
     <h1>監測設定</h1>
+    <v-chip class="mx-2" v-for="(item, index) in cols" :key="index" @click="$vuetify.goTo(`#${item}`, {duration:1500,offset:2,easing:'easeInOutCubic'})">#{{getgroupname(item)}}</v-chip>
     <v-row>
-      <v-col
-        cols="4"
-        v-for="(item, index) in Object.keys(allcols)"
-        :key="index"
-      >
+      <v-col cols="12" sm="12" v-for="(item, index) in cols" :key="index" :id="item">
         <v-card>
           <v-card-title
-            >{{ item }}<v-spacer></v-spacer>
+            >{{ getgroupname(item) }}
+            <v-icon @click="$vuetify.goTo(`#top`, {duration:500,offset:2,easing:'easeInOutCubic'})">mdi-format-vertical-align-top</v-icon>
+            <v-spacer></v-spacer>
             <v-btn icon @click="addShow(item)"
               ><v-icon>mdi-plus</v-icon></v-btn
             ></v-card-title
@@ -23,7 +22,7 @@
               </li>
             </ul> -->
             <v-data-table
-              :items="newitem.filter(x => x.class == item)"
+              :items="allcols.filter(x => x.group == item)"
               :headers="headers"
               :footer-props="footerProps"
             >
@@ -31,7 +30,7 @@
                 <v-icon small class="mr-2" @click="editShow(item)">
                   mdi-pencil
                 </v-icon>
-                <v-icon small>
+                <v-icon small class="mr-2" @click="delsubmit(item)">
                   mdi-delete
                 </v-icon>
               </template>
@@ -43,35 +42,42 @@
     <v-dialog v-model="editDialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">編輯項目-{{ editedItem.class }}</span>
+          <span class="text-h5">編輯項目-{{ editedItem.group }}</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="12">
                 <v-text-field
-                  v-model="editedItem.item"
-                  label="項目"
+                  v-model="editedItem.name_en"
+                  label="項目英文"
                   disabled
                   autocomplate="off"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" md="6">
+              <v-col cols="12" md="12">
                 <v-text-field
-                  v-model="editedItem.value"
-                  label="顯示文字"
+                  v-model="editedItem.name_ch"
+                  label="項目中文"
+                  autocomplate="off"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="12">
+                <v-text-field
+                  v-model="editedItem.unit"
+                  label="單位"
                   autocomplate="off"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="5">
                 <v-text-field
                   label="下限"
-                  :value="editedItem.lmtmin"
+                  :value="editedItem.min"
                   type="number"
                   step="1"
                   min="0"
                   max="999"
-                  @input="edit_lmtmincheck"
+                  @input="edit_mincheck"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="2">
@@ -79,14 +85,14 @@
               </v-col>
               <v-col cols="12" md="5">
                 <v-text-field
-                  v-model="editedItem.lmtmax"
+                  v-model="editedItem.max"
                   label="上限"
                   autocomplate="off"
                   type="number"
                   step="1"
                   min="0"
                   max="999"
-                  @input="edit_lmtmaxcheck"
+                  @input="edit_maxcheck"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -190,16 +196,35 @@ export default {
     return {
       headers: [
         {
-          text: "項目",
+          text: "項目英文",
           align: "center",
           sortable: false,
-          value: "item"
+          value: "name_en"
         },
         {
-          text: "顯示文字",
+          text: "項目中文",
           align: "center",
           sortable: false,
-          value: "value"
+          value: "name_ch"
+        },
+
+        {
+          text: "單位",
+          align: "center",
+          sortable: false,
+          value: "unit"
+        },
+        {
+          text: "最小值",
+          align: "center",
+          sortable: false,
+          value: "min"
+        },
+        {
+          text: "最大值",
+          align: "center",
+          sortable: false,
+          value: "max"
         },
         { text: "Actions", value: "actions", sortable: false }
       ],
@@ -207,22 +232,36 @@ export default {
         "items-per-page-text": "每頁",
         "items-per-page-options": [25, 50, 75, 100]
       },
-      allcols: {
-        water: {
-          排汙耗時: "排汙耗時(s)",
-          進水量: "進水量(L)"
+      groupmap:[
+        {item:"water",value:"水質監測"},{item:"env",value:"環境監測"},
+        {item:"feed",value:"投餵飼料"},{item:"obs",value:"飼料觀察網"},
+        {item:"adv",value:"進階值"},{item:"pbio",value:"投餵益生菌"}
+      ],
+      allcols: [
+        {
+          group: "water",
+          name_ch: "亞硝酸鹽清洗電壓",
+          name_en: "亞硝酸鹽清洗電壓",
+          unit: "V",
+          min: null,
+          max: null
         },
-        feed: {
-          排汙耗時feed: "排汙耗時(s)"
+        {
+          group: "water",
+          name_ch: "亞硝酸鹽測試電壓",
+          name_en: "亞硝酸鹽測試電壓",
+          unit: "V",
+          min: null,
+          max: null
         }
-      },
+      ],
       editDialog: false,
       editedItem: {
         class: "",
         item: "",
         value: "",
-        lmtmin: 0,
-        lmtmax: 999
+        min: 0,
+        max: 999
       },
       addDialog: false,
       addItem: {
@@ -238,13 +277,7 @@ export default {
     };
   },
   async created() {
-    await this.$axios
-      .get("https://61.56.172.10/all-col-name/", {
-        httpsAgent: agent
-      })
-      .then(res => {
-        this.allcols = Object.assign({}, res.data);
-      });
+    await this.getListData();
   },
   computed: {
     newitem: function(val) {
@@ -261,16 +294,78 @@ export default {
         }
       }
       return myobj;
+    },
+    cols: function() {
+      let col = [];
+      this.allcols.forEach(item => {
+        if (!col.includes(item.group)) {
+          col.push(item.group);
+        }
+      });
+      return col; //["water", "feed", "env", "obs", "adv", "pbio"]
     }
   },
   methods: {
+    getListData: async function() {
+      await this.$axios
+        .get("https://61.56.172.10/col-data/", {
+          httpsAgent: agent
+        })
+        .then(res => {
+          this.allcols = Object.assign([], res.data);
+        });
+    },
     editShow: function(data) {
-      data.lmtmax = 999;
-      data.lmtmin = 0;
+      // data
+      // group: "water"
+      // lmtmax: 999
+      // lmtmin: 0
+      // max: null
+      // min: null
+      // name_ch: "亞硝酸鹽清洗電壓"
+      // name_en: "亞硝酸鹽清洗電壓"
+      // unit: "V"
+      data.min = (data.min==null)?0:data.min;
+      data.max = (data.max==null)?999:data.max;
       this.editedItem = Object.assign({}, data);
+      // console.log(this.editedItem);
       this.editDialog = true;
     },
-    editsubmit: function() {
+    editsubmit:async function() {
+      const updUser = this.$auth.$state.user.email;
+      let parm = {
+          name_ch:this.editedItem.name_ch,
+          unit:this.editedItem.unit,
+          max:this.editedItem.max,
+          min:this.editedItem.min,
+          data_group:this.editedItem.group,
+          updated_user:updUser
+        };
+         console.log(parm);
+        await this.$axios
+          .patch(
+            `https://61.56.172.10/col-data/${this.editedItem.id}/`,
+            parm,
+            {
+              httpsAgent: agent
+            }
+          )
+          .then(res => {
+            if (res.data == "修改成功") {
+              this.getListData();
+              this.$toast.success(`修改成功`, { duration: 2000 });
+            } else {
+              this.$toast.error(`修改失敗` + res.data, { duration: 2000 });
+            }
+            console.log("修改api:" + res.request.responseURL, res);
+          })
+          .catch(error => {
+            this.$toast.error(`修改失敗` + error.message, { duration: 2000 });
+          })
+          .finally(() => {
+            //this.getdata();
+          });
+
       this.editDialog = false;
     },
     addsubmit: async function() {
@@ -285,13 +380,14 @@ export default {
           data_group: this.addItem.class,
           created_user: updUser
         };
-        console.log(parm);
         await this.$axios
-          .post("https://61.56.172.10/all-col-name/", parm, {
+          .post("https://61.56.172.10/col-data/", parm, {
             httpsAgent: agent
           })
           .then(res => {
             if (res.data == "新增成功") {
+              this.getListData();
+              this.addDialog = false;
               this.$toast.success(`新增成功`, { duration: 2000 });
             } else {
               this.$toast.error(`新增失敗` + res.data, { duration: 2000 });
@@ -312,27 +408,27 @@ export default {
       this.addItem.lmtmax = 999;
       this.addDialog = true;
     },
-    edit_lmtmincheck(val) {
-      this.editedItem.lmtmin = val ? parseFloat(val) : 0;
+    edit_mincheck(val) {
+      this.editedItem.min = val ? parseFloat(val) : 0;
       this.$nextTick(() => {
-        var objitem = this.editedItem.lmtmin;
-        this.editedItem.lmtmin =
+        var objitem = this.editedItem.min;
+        this.editedItem.min =
           objitem < 0
             ? 0
-            : objitem > this.editedItem.lmtmax
-            ? Number(this.editedItem.lmtmax)
+            : objitem > this.editedItem.max
+            ? Number(this.editedItem.max)
             : objitem;
       });
     },
-    edit_lmtmaxcheck(val) {
-      this.editedItem.lmtmax = val ? parseFloat(val) : 0;
+    edit_maxcheck(val) {
+      this.editedItem.max = val ? parseFloat(val) : 0;
       this.$nextTick(() => {
-        var objitem = this.editedItem.lmtmax;
-        this.editedItem.lmtmax =
+        var objitem = this.editedItem.max;
+        this.editedItem.max =
           objitem > 999
             ? 999
-            : objitem < this.editedItem.lmtmin
-            ? Number(this.editedItem.lmtmin)
+            : objitem < this.editedItem.min
+            ? Number(this.editedItem.min)
             : objitem;
       });
     },
@@ -359,6 +455,45 @@ export default {
             ? Number(this.addItem.lmtmin)
             : objitem;
       });
+    },
+    delsubmit: async function(data) {
+      console.log(data);
+      if (confirm(`確定刪除[ ${data.name_ch} ]?`)) {
+        let parm = {
+          data_group: data.group
+        };
+        await this.$axios
+          .delete(
+            `https://61.56.172.10/col-data/${data.id}/`,
+            { data: parm },
+            {
+              httpsAgent: agent
+            }
+          )
+          .then(res => {
+            if (res.data == "刪除成功") {
+              this.getListData();
+              this.$toast.success(`刪除成功`, { duration: 2000 });
+            } else {
+              this.$toast.error(`刪除失敗` + res.data, { duration: 2000 });
+            }
+            console.log("刪除api:" + res.request.responseURL, res);
+          })
+          .catch(error => {
+            this.$toast.error(`刪除失敗` + error.message, { duration: 2000 });
+          })
+          .finally(() => {
+            //this.getdata();
+          });
+      }
+    },
+    getgroupname:function(val){
+      var item = this.groupmap.filter(x=>x.item==val);
+      if (item.length==1) {
+        return item[0].value;
+      }else{
+        return val;
+      }
     }
   }
 };
