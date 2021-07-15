@@ -41,9 +41,10 @@
             <!-- <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay> -->
-            <wc v-if="tab.title == '武曲'" :key="cmpkey.wc"></wc>
-            <tf v-if="tab.title == '天府'" :key="cmpkey.tf"></tf>
-            <zw v-if="tab.title == '紫微'" :key="cmpkey.zw"></zw>
+            <v-icon @click="mapshowedit = !mapshowedit">mdi-pencil</v-icon>
+            <wc v-if="tab.title == '武曲'" :key="cmpkey.wc" :showedit="mapshowedit"></wc>
+            <tf v-if="tab.title == '天府'" :key="cmpkey.tf" :showedit="mapshowedit"></tf>
+            <zw v-if="tab.title == '紫微'" :key="cmpkey.zw" :showedit="mapshowedit"></zw>
             <setting
               v-if="tab.title == '狀態設定'"
               @update="settingUpdated"
@@ -71,6 +72,7 @@ export default {
   },
   data() {
     return {
+      mapshowedit:false,
       link: [
         {
           icon: "mdi-flare",

@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col cols="12">
-        <v-icon @click="editState = !editState">mdi-pencil</v-icon>
+        <!-- <v-icon @click="editState = !editState">mdi-pencil</v-icon> -->
         <table style="border:0px solid; width:100%;" CellSpacing="15">
           <tr v-for="item in Object.keys(pools.area1)" :key="item">
             <td
@@ -13,14 +13,14 @@
                 itm.state == '無'
                   ? ''
                   : itm.state.length > 0
-                  ? 'border:2px solid;'
+                  ? 'border:1px solid;border-radius: 5px;'
                   : 'max-width:50px;'
               "
             >
             <mappoolelement
                 :item="itm"
                 :selitem="statcolor.filter(x => x.name != 'default')"
-                :showSelect="editState"
+                :showSelect="showedit"
                 :myuser="$auth.$state.user.email"
               ></mappoolelement>
               <!-- <span v-if="itm.state.length > 0"
@@ -46,14 +46,14 @@
                 itm.state == '無'
                   ? ''
                   : itm.state.length > 0
-                  ? 'border:2px solid;'
+                  ? 'border:1px solid;border-radius: 5px;'
                   : 'max-width:50px;'
               "
             >
             <mappoolelement
                 :item="itm"
                 :selitem="statcolor.filter(x => x.name != 'default')"
-                :showSelect="editState"
+                :showSelect="showedit"
                 :myuser="$auth.$state.user.email"
               ></mappoolelement>
               <!-- <span
@@ -141,6 +141,12 @@ export default {
       ],
       editState: false //編輯池況
     };
+  },
+  props:{
+    showedit: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     getItemColor: function(data) {
