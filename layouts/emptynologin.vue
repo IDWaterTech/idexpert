@@ -34,10 +34,7 @@
             :to="item.to"
             v-show="
               ($auth.$state.user &&
-                [
-                  'jianwei.wen@idwater.com.tw',
-                  'jeff.wang@idwater.com.tw'
-                ].includes($auth.$state.user.email) &&
+                superaccount.includes($auth.$state.user.email) &&
                 item.title == '廠域設定') ||
                 item.title != '廠域設定'
             "
@@ -72,12 +69,7 @@
             to="/set/"
             v-show="
               this.$auth.$state.loggedIn &&
-                [
-                  'jianwei.wen@idwater.com.tw',
-                  'jeff.wang@idwater.com.tw',
-                  'alex.chen@idwater.com.tw',
-                  'eric.cheung@idwater.com.tw'//星希
-                ].includes(this.$auth.$state.user.email)
+                superaccount.includes(this.$auth.$state.user.email)
             "
             ><v-icon>mdi-cog-outline</v-icon></v-btn
           >
@@ -142,6 +134,11 @@ export default {
           to: "/"
         },
         {
+          icon: "mdi-chart-bell-curve",
+          title: "監測數據",
+          to: "/basic"
+        },
+        {
           icon: "mdi-calendar-star",
           title: "重要紀事",
           to: "/calendar"
@@ -161,7 +158,14 @@ export default {
           title: "廠域設定",
           to: "/factory"
         }
-      ]
+      ],
+      superaccount: [
+                  'jianwei.wen@idwater.com.tw',
+                  'jeff.wang@idwater.com.tw',//前驊
+                  'alex.chen@idwater.com.tw',//廷宇
+                  'steven.huang@idwater.com.tw',//璿中
+                  'eric.cheung@idwater.com.tw'//星希
+                ]
     };
   },
   methods: {
