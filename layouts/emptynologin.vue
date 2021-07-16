@@ -35,8 +35,8 @@
             v-show="
               ($auth.$state.user &&
                 superaccount.includes($auth.$state.user.email) &&
-                item.title == '廠域設定') ||
-                item.title != '廠域設定'
+                 ['廠域設定','觀察網影像'].includes(item.title)) ||
+                !['廠域設定','觀察網影像'].includes(item.title)
             "
           >
             <v-list-item-icon>
@@ -152,6 +152,11 @@ export default {
           icon: "mdi-map-outline",
           title: "養殖池況",
           to: "/map/"
+        },
+        {
+          icon: "mdi-video-box",
+          title: "觀察網影像",
+          to: "/video"
         },
         {
           icon: "mdi-factory",
