@@ -40,7 +40,12 @@
               icon
               :disabled="!sel_main"
               color="error"
-              @click="delsubmit('main', maindata[sel_main - 1].name)"
+              @click="
+                delsubmit(
+                  'main',
+                  maindata.filter(x => x.id == sel_main)[0].name
+                )
+              "
               ><v-icon>mdi-delete</v-icon></v-btn
             >
           </v-col>
@@ -60,6 +65,7 @@
               dense
               label="選擇區域"
               no-data-text="查無資料"
+              :disabled="!sel_main"
               @change="getPoolData"
             ></v-select>
           </v-col>
@@ -82,7 +88,12 @@
               icon
               :disabled="!sel_area"
               color="error"
-              @click="delsubmit('area', areadata[sel_area - 1].name)"
+              @click="
+                delsubmit(
+                  'area',
+                  areadata.filter(x => x.id == sel_area)[0].name
+                )
+              "
               ><v-icon>mdi-delete</v-icon></v-btn
             >
           </v-col>
@@ -97,7 +108,8 @@
               item-text="name"
               item-value="id"
               no-data-text="查無資料"
-              placeholder="水池"
+              placeholder="請選擇養殖池"
+              :disabled="!sel_area"
               clearable
               dense
             ></v-autocomplete>
@@ -171,6 +183,12 @@
             v-model="edititem.value"
             autocomplete="off"
           ></v-text-field>
+          <v-text-field
+            v-if="edititem.class == 'area'"
+            placeholder="請輸入英文代稱(wc、tf、zw...)"
+            v-model="edititem.value_en"
+            autocomplete="off"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -183,12 +201,13 @@
 
 <script>
 import https from "https";
-import { log } from "util";
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
+
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   data() {
     return {
       maindata: [],
@@ -207,17 +226,20 @@ export default {
     };
   },
   async created() {
-    await this.$axios
-      .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
-      .then(res => {
-        this.maindata = res.data;
-        console.log("API:" + res.request.responseURL);
-      })
-      .catch(error => {
-        this.$axios.error("error:" + error, { duration: 2000 });
-      });
+    await this.getmain();
   },
   methods: {
+    getmain: async function() {
+      await this.$axios
+        .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
+        .then(res => {
+          this.maindata = res.data;
+          console.log("API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$axios.error("error:" + error, { duration: 2000 });
+        });
+    },
     getPoolData: async function() {
       this.sel_pool = "";
       let pool = [];
@@ -248,14 +270,126 @@ export default {
         });
     },
     editsubmit: async function() {
-      console.log("edit submit", this.edititem);
+      const updUser = this.$auth.$state.user.email;
+      console.log(this.edititem);
+      let id = this.edititem.id;
+      if (this.edititem.type == "add") {
+        let parm = {
+          name: this.edititem.value,
+          created_user: updUser
+        };
+        switch (this.edititem.class) {
+          case "main":
+            await this.$axios
+              .post("https://61.56.172.10/factory/", parm, {
+                httpsAgent: agent
+              })
+              .then(res => {
+                console.log("API:" + res.request.responseURL);
+                if (res.data == "新增成功") {
+                  this.dialog.main = false;
+                  this.getmain();
+                  this.$toast.success("新增成功", { duration: 2000 });
+                } else {
+                  this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+                }
+              })
+              .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+              });
+            break;
+          case "area":
+            parm = {
+              area_no: this.edititem.value_en,
+              name: this.edititem.value,
+              factory_id: this.sel_main,
+              created_user: updUser
+            };
+            await this.$axios
+              .post("https://61.56.172.10/pond-area/", parm, {
+                httpsAgent: agent
+              })
+              .then(res => {
+                console.log("API:" + res.request.responseURL);
+                if (res.data == "新增成功") {
+                  this.dialog.main = false;
+                  this.getmain();
+                  this.$toast.success("新增成功", { duration: 2000 });
+                } else {
+                  this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+                }
+              })
+              .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+              });
+            break;
+          default:
+            break;
+        }
+      } else if (this.edititem.type == "edit") {
+        let parm = {
+          name: this.edititem.value,
+          updated_user: updUser
+        };
+        switch (this.edititem.class) {
+          case "main":
+            await this.$axios
+              .patch(`https://61.56.172.10/factory/${id}/`, parm, {
+                httpsAgent: agent
+              })
+              .then(res => {
+                console.log("API:" + res.request.responseURL);
+                if (res.data == "修改成功") {
+                  this.dialog.main = false;
+                  this.getmain();
+                  this.sel_main = "";
+                  this.$toast.success("修改成功", { duration: 2000 });
+                } else {
+                  this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+                }
+              })
+              .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+              });
+            break;
+          case "area":
+             parm = {
+              area_no: this.edititem.value_en,
+              name: this.edititem.value,
+              updated_user: updUser
+            };
+            await this.$axios
+              .patch(`https://61.56.172.10/pond-area/${id}/`, parm, {
+                httpsAgent: agent
+              })
+              .then(res => {
+                console.log("API:" + res.request.responseURL);
+                if (res.data == "修改成功") {
+                  this.dialog.main = false;
+                  this.getmain();
+                  this.sel_main = "";
+                  this.sel_area="";
+                  this.$toast.success("修改成功", { duration: 2000 });
+                } else {
+                  this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+                }
+              })
+              .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+              });
+            break;
+          default:
+            break;
+        }
+      }
     },
     showdialog: function(data, location) {
       this.edititem.type = data; //add edit
       this.edititem.class = location; //main area pool
-      this.edititem.id = this.sel_main;
+      
       switch (location) {
         case "main":
+          this.edititem.id = this.sel_main;
           this.edititem.value =
             data == "add"
               ? ""
@@ -264,12 +398,15 @@ export default {
               : ""; //add 空 del：帶項目值
           break;
         case "area":
+          this.edititem.id = this.sel_area;
           this.edititem.value =
             data == "add"
               ? ""
               : data == "edit"
               ? this.areadata.filter(x => x.id == this.sel_area)[0].name
               : ""; //add 空 del：帶項目值
+              //英文代稱
+            this.edititem.value_en = (data == "add")?"": (data == "edit")? this.areadata.filter(x => x.id == this.sel_area)[0].area_no:"";
           break;
         default:
           break;
@@ -278,13 +415,47 @@ export default {
       this.dialog.main = true;
     },
     delsubmit: async function(location, value) {
-      if (confirm(`是否刪除${value}`)) {
-        let parm = {
-          class: location, //廠、區、水池
-          value: value //研發一廠
-        };
-        console.log(parm);
-        this.$toast.success(`修改成功`, { duration: 2000 });
+      if (confirm(`是否刪除 ${value}`)) {
+        //  location, //main廠、區、水池
+        //  value //研發一廠
+
+        let id = "";
+        let apiUrl = "";
+        switch (location) {
+          case "main":
+            id = this.sel_main;
+            apiUrl = "factory";
+            break;
+          case "area":
+            id = this.sel_area;
+            apiUrl = "pond-area";
+            break;
+          case "pool":
+            id = this.sel_pool;
+            apiUrl = "pond";
+            break;
+          default:
+            break;
+        }
+        await this.$axios
+          .delete(`https://61.56.172.10/${apiUrl}/${id}`, {
+            httpsAgent: agent
+          })
+          .then(res => {
+            console.log("API:" + res.request.responseURL);
+            if (res.data == "刪除成功") {
+              this.getmain();
+              this.sel_main = "";
+              this.sel_area = "";
+              this.sel_pool = "";
+              this.$toast.success("刪除成功", { duration: 2000 });
+            } else {
+              this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+            }
+          })
+          .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+          });
       }
     }
   },
@@ -304,7 +475,7 @@ export default {
       let area = [];
       filtermain.forEach(function(x) {
         x.node.forEach(function(y) {
-          let yitem = { id: y.id, name: y.name };
+          let yitem = { id: y.id, name: y.name,area_no:y.area_no };
           if (area.indexOf(yitem) == -1) {
             //沒找到
             area.push(yitem);
