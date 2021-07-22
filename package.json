@@ -25,6 +25,7 @@
     "v-charts-v2": "^2.0.9",
     "v-img": "^0.2.0",
     "vue-chartjs": "^3.5.1",
+    "vue-flv-player": "^1.0.3",
     "vue-json-excel": "^0.3.0"
   },
   "devDependencies": {

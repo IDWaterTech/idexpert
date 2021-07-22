@@ -1,5 +1,4 @@
 import colors from "vuetify/es5/util/colors";
-
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -8,10 +7,11 @@ export default {
     htmlAttrs: {
       lang: "en"
     },
+    // script:[{src:'/static/js/flv.min.js'}]
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "" },
+      { hid: "description", name: "description", content: "" }
       // {
       //   "http-equiv": "Content-Security-Policy",
       //   content: "upgrade-insecure-requests"
@@ -31,7 +31,8 @@ export default {
     "~/plugins/vimg",
     "~/plugins/elementui",
     "~/plugins/json2excel",
-    { src: '~/plugins/vue-tree-select.js', ssr: false }
+    { src: "~/plugins/vue-tree-select.js", ssr: false },
+    { src: '@/plugins/vue-video.js', ssr: false }
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
     // { src: "~/plugins/vue-chartjs", mode: 'client' }
