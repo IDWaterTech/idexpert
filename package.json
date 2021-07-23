@@ -9,6 +9,7 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@easydarwin/easywasmplayer": "^4.0.13",
     "@nuxtjs/auth-next": "5.0.0-1613647907.37b1156",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/proxy": "^2.1.0",
@@ -25,7 +26,6 @@
     "v-charts-v2": "^2.0.9",
     "v-img": "^0.2.0",
     "vue-chartjs": "^3.5.1",
-    "vue-flv-player": "^1.0.3",
     "vue-json-excel": "^0.3.0"
   },
   "devDependencies": {

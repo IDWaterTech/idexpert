@@ -8,6 +8,7 @@ export default {
       lang: "en"
     },
     // script:[{src:'/static/js/flv.min.js'}]
+    script:[{src:'./EasyWasmPlayer.js'}],
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -32,7 +33,7 @@ export default {
     "~/plugins/elementui",
     "~/plugins/json2excel",
     { src: "~/plugins/vue-tree-select.js", ssr: false },
-    { src: '@/plugins/vue-video.js', ssr: false }
+    // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
     // { src: "~/plugins/vue-chartjs", mode: 'client' }
