@@ -40647,7 +40647,7 @@
                     e.seeking || e.seekToPercent(e.timeTrack.value, 1);
                   }),
                   (this.timeTrack.onchange = function() {})),
-                (C && void 0 !== C) ||
+                (C && void 0 !== C) /*||
                   ((this.logo = document.createElement("a")),
                   (this.logo.classList = "iconfont iconqingxiLOGO"),
                   (this.logo.title = "青犀视频"),
@@ -40656,7 +40656,7 @@
                   (this.logo.style =
                     "display:inline-block;color: #fff;font-size:70px;margin-right:40px;line-height: 27px;text-align:center;position:absolute;top:1px;right:0px;cursor:pointer;overflow: hidden;opacity: 1;"),
                   this.timeBox.appendChild(this.logo),
-                  this.detectionLogo()),
+                  this.detectionLogo())*/,
                 (this.domKbps = document.createElement("div")),
                 this.timeBox.appendChild(this.domKbps),
                 (this.full = document.createElement("span")),
@@ -40873,7 +40873,7 @@
               this.callbackFunc("endLoading"),
                 this.loadingBox ? (this.loadingBox.style = "display:none") : "";
             }),
-            (M.detectionLogo = function() {
+            /*(M.detectionLogo = function() {
               var A = this;
               this.LogoTimer = setInterval(function() {
                 (null != A.logo &&
@@ -40883,7 +40883,7 @@
                   "1" == A.logo.style.opacity) ||
                   A.stop();
               }, 1e3);
-            }),
+            }),*/
             (M.setSnap = function(A) {
               this.startLoading(),
                 (this.Snap.src = A),
