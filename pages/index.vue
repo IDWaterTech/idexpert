@@ -12,6 +12,7 @@
         aquaculture.
       </div>
     </v-col>
+    <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col>
     <v-col cols="12" md="4" class="text-justify">
       <v-card min-height="250px" color="blue-grey lighten-4" tile>
         <v-card-title>Mangrove destruction</v-card-title>
@@ -53,7 +54,7 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col><nuxt-link to="basic" class="display-1">Enter</nuxt-link></v-col>
+    
   </v-row>
 </template>
 

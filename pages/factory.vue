@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>廠域設定</h2>
+    <h2>廠域設定(開發中)</h2>
     <v-row no-gutters>
       <v-col cols="12" sm="4">
         <v-row no-gutters align="center">

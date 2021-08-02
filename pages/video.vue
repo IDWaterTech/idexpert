@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <h2>觀察網影像-系統開發中(限電腦使用)</h2>
-    <h3>系統測試中，手機仍無法查看</h3>
+    <h2>觀察網影像(開發中)</h2>
+    <h3>系統測試中</h3>
     <v-btn @click="chchanel('171')" color="primary">武曲A1</v-btn>
     <v-btn @click="chchanel('170')" color="primary">武曲A2</v-btn>
     <div id="Player" style="min-height:200px;background-color:black;">
