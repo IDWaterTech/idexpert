@@ -88,7 +88,15 @@
         ></v-autocomplete>
       </v-col>
       <v-col cols="12" md="2">
-        <v-select
+         <v-autocomplete
+          v-model="defitem"
+          :items="Object.keys(waterdatacols)"
+          no-data-text="查無資料"
+          placeholder="指定項目(必選)"
+          background-color="light-green lighten-4"
+          clearable
+        ></v-autocomplete>
+        <!-- <v-select
           v-model="defitem"
           clearable
           placeholder="指定項目(必選)"
@@ -97,7 +105,7 @@
           no-data-text="查無資料"
           background-color="light-green lighten-4"
         >
-        </v-select>
+        </v-select> -->
       </v-col>
       <v-col cols="12" md="1">
         <v-btn
