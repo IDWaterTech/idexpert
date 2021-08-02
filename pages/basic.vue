@@ -1217,6 +1217,7 @@ export default {
       .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
       .then(res => {
         this.maindata = res.data;
+        this.sel_main = 1;
       });
     //get all cols
     await this.$axios
