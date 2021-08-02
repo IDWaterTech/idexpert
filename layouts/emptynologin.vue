@@ -169,7 +169,8 @@ export default {
                   'jeff.wang@idwater.com.tw',//前驊
                   'alex.chen@idwater.com.tw',//廷宇
                   'steven.huang@idwater.com.tw',//璿中
-                  'eric.cheung@idwater.com.tw'//星希
+                  'eric.cheung@idwater.com.tw',//星希
+                  'eason.lin@idwater.com.tw',//奕昇
                 ]
     };
   },
