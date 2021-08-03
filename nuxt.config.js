@@ -8,7 +8,13 @@ export default {
       lang: "en"
     },
     // script:[{src:'/static/js/flv.min.js'}]
-    script:[{src:'./EasyWasmPlayer.js'}],
+    //script:[{src:'./EasyWasmPlayer.js'}],
+    //因為使用layout所以要放nuxt.config.js裡，無法單頁使用
+    script: [
+      { src: "../hls.js", body: true },
+      { src: "../DPlayer.min.js", body: true },
+      {src:'./EasyWasmPlayer.js'}
+    ],
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
