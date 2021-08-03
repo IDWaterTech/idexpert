@@ -102,21 +102,26 @@ export default {
     },
     async loginGoogle() {
       try {
-        await this.$auth
-          .loginWith("google")
-          .then(res =>
-            this.$toast.success("Logged In!" + res.data, { duration: 3000 })
-          )
-          .catch(errors => {
-            //errors.response.data;//可抓到錯誤
-            this.$toast.error("登入發生錯誤!:" + errors.message, {
-              duration: 3000
-            });
-            console.log("error:" + errors.response.data);
-            console.log("google", a);
-          });
+        await this.$auth.loginWith("google", {
+          params: { prompt: "select_account" }
+        });
+        // .then(res =>
+        //   this.$toast.success("Logged In!" + res.data, { duration: 3000 })
+        // )
+        // .catch(errors => {
+        //   debugger;
+        //   //errors.response.data;//可抓到錯誤
+        //   this.$toast.error("登入發生錯誤!:" + errors.message, {
+        //     duration: 3000
+        //   });
+        //   console.log("error:" + errors.response.data);
+        //   console.log("google", a);
+        // });
       } catch (err) {
         console.log(err);
+        this.$toast.error("登入發生錯誤!:" + err, {
+          duration: 5000
+        });
       }
     }
   }
