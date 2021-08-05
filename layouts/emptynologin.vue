@@ -171,6 +171,7 @@ export default {
                   'steven.huang@idwater.com.tw',//璿中
                   'eric.cheung@idwater.com.tw',//星希
                   'eason.lin@idwater.com.tw',//奕昇
+                  'cf.chien@idwater.com.tw',//靖芳
                 ]
     };
   },
