@@ -218,7 +218,7 @@
                       :multiple="true"
                       :options="options"
                       :flat="true"
-                      :default-expand-level="3"
+                      :default-expand-level="1"
                       placeholder="請選擇職位"
                       :disable-branch-nodes="true"
                     >
