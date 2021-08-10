@@ -1,8 +1,8 @@
 <template>
  <div id="app">
     <h2>觀察網影像(開發中)</h2>
-    <h3>系統測試中(HLS)</h3>
-    <v-btn :to="'/videoflv'" color="orange" tile>flv流</v-btn>
+    <h3>目前為：HLS模式(iphone推薦)</h3>
+    <v-btn :to="'/videoflv'" color="orange" tile>切換為：flv模式</v-btn>
     <v-btn @click="chchanel('171')" color="primary" tile>武曲A1</v-btn>
     <v-btn @click="chchanel('170')" color="primary" tile>武曲A2</v-btn>
     <div id="dplayer"></div>

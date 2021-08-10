@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <h2>觀察網影像(開發中)</h2>
-    <h3>系統測試中(FLV)</h3>
-    <v-btn :to="'/video'" color="orange" tile>HLS流</v-btn>
+    <h3>目前為：FLV模式</h3>
+    <v-btn :to="'/video'" color="orange" tile>切換為：hls模式</v-btn>
     <v-btn @click="chchanel('171')" color="primary" tile>武曲A1</v-btn>
     <v-btn @click="chchanel('170')" color="primary" tile>武曲A2</v-btn>
     <div id="Player" style="min-height:200px;background-color:black;">
