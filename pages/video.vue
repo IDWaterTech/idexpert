@@ -5,6 +5,7 @@
     <v-btn :to="'/videoflv'" color="orange" tile>切換為：flv模式</v-btn>
     <v-btn @click="chchanel('171')" color="primary" tile>武曲A1</v-btn>
     <v-btn @click="chchanel('170')" color="primary" tile>武曲A2</v-btn>
+    <v-btn @click="chchanel('172')" color="primary" tile>天府C1</v-btn>
     <div id="dplayer"></div>
   </div>
 </template>
