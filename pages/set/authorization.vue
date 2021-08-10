@@ -42,12 +42,12 @@
                       :flat="true"
                       :default-expand-level="2"
                       placeholder="已授權的職位"
+                      :sort-value-by="'INDEX'"
                       :disable-branch-nodes="true"
                     >
                       <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
                     </treeselect>
                     <!-- {{positdata.filter(x=>x.is_leaf==false)}} -->
-
                     單位
                     <treeselect
                       v-model="addform.department_id"
@@ -56,8 +56,23 @@
                       :flat="true"
                       :default-expand-level="1"
                       placeholder="被授權的單位"
+                      :sort-value-by="'INDEX'"
                       :disable-branch-nodes="false"
                     >
+                    </treeselect>
+                    授權
+                    <treeselect
+                      v-model="addform.privilege_id"
+                      :multiple="true"
+                      :options="privdata"
+                      :flat="true"
+                      :default-expand-level="1"
+                      placeholder="被授權的項目"
+                      :sort-value-by="'INDEX'"
+                      :disable-branch-nodes="false"
+                    >
+                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                    <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                     </treeselect>
                   </v-card-text>
                   <v-divider></v-divider>
@@ -103,6 +118,7 @@
                       :flat="true"
                       :default-expand-level="2"
                       placeholder="已授權的職位"
+                      :sort-value-by="'INDEX'"
                       :disable-branch-nodes="true"
                     >
                       <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
@@ -115,8 +131,23 @@
                       :flat="true"
                       :default-expand-level="1"
                       placeholder="被授權的單位"
+                      :sort-value-by="'INDEX'"
                       :disable-branch-nodes="false"
                     >
+                    </treeselect>
+                    授權
+                    <treeselect
+                      v-model="editform.privilege_id"
+                      :multiple="true"
+                      :options="privdata"
+                      :flat="true"
+                      :default-expand-level="1"
+                      placeholder="被授權的項目"
+                      :sort-value-by="'INDEX'"
+                      :disable-branch-nodes="false"
+                    >
+                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                    <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                     </treeselect>
                   </v-card-text>
                   <v-divider></v-divider>
@@ -127,11 +158,45 @@
                 </v-card>
               </v-form>
             </v-dialog>
-            <el-table :data="roledata" class="mt-3">
-              <el-table-column label="ID" prop="id" fixed width="50px">
+            <el-table :data="roledata" class="mt-3" row-key="id" :expand-row-keys="expands" @expand-change="expandSelect">
+              <el-table-column type="expand" fixed width="30px">
+                <template slot-scope="props">
+                  <v-row >
+                  <v-col cols="12">
+                    <div style="min-height:250px">
+                    <!-- {{props.row.privilege.map(item => {return item.id;})}} -->
+                    <span class="title">授權項目</span>
+                    <treeselect
+                      :multiple="true"
+                      :clearable="true"
+                      :searchable="true"
+                      :flat="true"
+                      :open-on-click="true"
+                      :clear-on-select="true"
+                      :close-on-select="true"
+                      :always-open="true"
+                      :openDirection="'bottom'"
+                      :options="privdatadisable"
+                      :sort-value-by="'INDEX'"
+                      :default-expand-level="2"
+                      :max-height="200"
+                      placeholder="無授權項目"
+                      zIndex="0"
+                      v-model="expandtree"
+                      >
+                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                    <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                    </treeselect>
+                    </div>
+                  </v-col>
+                </v-row>
+                </template>
+                
               </el-table-column>
+              <!-- <el-table-column label="ID" prop="id" fixed width="50px">
+              </el-table-column> -->
               <!-- <el-table-column label="角色名稱" prop="name"> </el-table-column> -->
-              <el-table-column label="角色名稱" align="center">
+              <el-table-column label="角色名稱" align="center" width="200px">
                 <template slot-scope="scope">
                   <el-popover trigger="hover" placement="top">
                     <p>角色狀態: {{ (scope.row.is_active)?"啟用中":"停用" }}</p>
@@ -168,17 +233,19 @@
                     >
                   </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="100">
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="60" align="center">
                   <template slot-scope="scope">
-                    <v-btn text color="primary" @click="showedit(scope.row)"
+                    <v-btn text color="primary" @click="showedit(scope.row)" style="padding:0px; min-width:unset;"
                       >編輯</v-btn
                     >
-                    <v-btn text color="error" @click="showdel(scope.row)"
+                    <v-btn text color="error" @click="showdel(scope.row)"  style="padding:0px; min-width:unset;"
                       >刪除</v-btn
                     >
                   </template>
                 </el-table-column>
-              </el-table-column>
+              
+              
             </el-table>
           </v-card-text>
         </v-card>
@@ -197,16 +264,20 @@ export default {
   data() {
     return {
       roledata: [
-        {
-          id: "12987122",
-          name: "測試用角色1",
-          desc: "側欄全開",
-          is_active: true,
-          department: [],
-          position: []
-        }
+        // {
+        //   id: "12987122",
+        //   name: "測試用角色1",
+        //   desc: "側欄全開",
+        //   is_active: true,
+        //   department: [],
+        //   position: []
+        // }
       ],
+      expands:[],
+      expandtree:[],
       positdata: [], //職位
+      privdata:[],//授權
+      privdatadisable:[],
       adddialog: false,
       editdialog: false,
       addform: {
@@ -228,6 +299,19 @@ export default {
     };
   },
   methods: {
+    expandSelect(row, expandedRows) {
+      if (expandedRows.length) {
+        this.expands = [];
+        if (row) {
+          this.expandtree = row.privilege.map(item => {return item.id;});
+          this.expands.push(row.id); //Expand only the current row id
+        }
+      } else {
+        //Description is put away
+        this.expands = [];
+      }
+      console.log("expand row:", row);
+    },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
@@ -241,14 +325,32 @@ export default {
           console.log(this.roledata);
         });
     },
+    setNestedDisabled: function(obj) {//全部都設成disabled
+      obj.forEach(itm => {
+        // console.log(itm.name);//所有node(含leaf)的名稱
+        itm.isDisabled = true;
+        if (itm.hasOwnProperty("children")) {
+          this.setNestedDisabled(itm.children);
+        }
+      });
+      return obj;
+    },
+    getPrivilege:async function(){
+      const url = `https://61.56.172.10/user-access/privilege/`;
+      await this.$axios
+        .get(url)
+        .then(res => {
+          this.privdata = res.data;
+          this.privdatadisable  = this.setNestedDisabled(_.cloneDeep(this.privdata));
+          console.log("api：" + res.request.responseURL);
+        });
+    },
     showadd: function() {
       this.addform.position_id=[];
       this.addform.department_id=[];
       this.adddialog = true;
     },
     showedit: function(data) {
-      console.log(data);
-
       this.editform = {
         id: data.id,
         name: data.name,
@@ -260,6 +362,9 @@ export default {
           return item.id;
         }),
         department_id: data.department.map(item => {
+          return item.id;
+        }),
+        privilege_id:data.privilege.map(item => {
           return item.id;
         }),
         updated_user: this.$auth.$state.user.email
@@ -299,6 +404,7 @@ export default {
       let valid = this.$refs.addform.validate();
       if (valid) {
         console.log(this.addform);
+        debugger;
         const url = "https://61.56.172.10/user-access/role/";
         let parms = this.addform;
         await this.$axios
@@ -324,7 +430,7 @@ export default {
       let valid = this.$refs.editform.validate();
       let parms = _.cloneDeep(this.editform);
       delete parms.id; //"刪掉id欄位"
-
+      console.log(parms);
       if (valid) {
         const url = `https://61.56.172.10/user-access/role/${this.editform.id}/`;
         await this.$axios
@@ -334,6 +440,7 @@ export default {
               this.editdialog = false;
               this.getRoles(); //更新畫面
               this.$toast.success(`修改成功`, { duration: 2000 });
+              this.expandtree = this.editform.privilege_id;
             } else {
               alert("修改失敗!：" + res.data);
             }
@@ -342,6 +449,7 @@ export default {
             alert("修改失敗!：" + error.message);
           })
           .finally(() => {});
+          //  this.expands = [];//展開close
       }
     }
   },
@@ -353,12 +461,17 @@ export default {
     }
   },
   mounted() {
-    this.getRoles();
+    this.getRoles();//所有角色的清單
   },
   async created() {
-    await this.getorg();
+    await this.getorg();//單位與職位清單
+    await this.getPrivilege();//授權項目清單
   }
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* .el-table__expanded-cell {
+    padding: 2px 5px !important;
+} */
+</style>
