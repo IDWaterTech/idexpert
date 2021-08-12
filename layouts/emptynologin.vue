@@ -7,7 +7,7 @@
         v-model="drawer"
         :mini-variant="miniVariant"
         :clipped="clipped"
-        :mini-variant-width="this.$auth.$state.loggedIn ? '56' : '0'"
+        :mini-variant-width="this.$auth.$state.loggedIn ? '60' : '0'"
       >
         <v-list>
           <v-list-item>
@@ -18,17 +18,17 @@
               <v-icon large>mdi-account-circle</v-icon>
             </v-list-item-icon>
             <v-list-item-content v-if="this.$auth.$state.loggedIn" size="36">
-              <v-list-item-title class="title">
+              <v-list-item-title class="h6">
                 {{ this.$auth.$state.user.name }}
               </v-list-item-title>
-              <v-list-item-subtitle>
+              <v-list-item-subtitle class="caption">
                 {{ this.$auth.$state.user.email }}
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
 
-          <v-list-item
+          <!-- <v-list-item
             v-for="(item, i) in listitems"
             :key="i"
             :to="item.to"
@@ -43,8 +43,9 @@
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
+          </v-list-item> -->
         </v-list>
+        <sidelist :myitem="listitems" titleName="name" urlName="url"></sidelist>
         <!--  -->
       </v-navigation-drawer>
       <v-container fluid>
@@ -56,15 +57,15 @@
           <v-btn
             icon
             @click.stop="miniVariant = !miniVariant"
-            v-show="this.$auth.$state.loggedIn"
+            v-show="this.$auth.$state.loggedIn && drawer==true"
           >
             <v-icon
               >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
             >
           </v-btn>
-          <v-btn text to="/">艾滴科技</v-btn>
+          <v-btn text to="/"><v-icon>mdi-home-outline</v-icon>艾滴科技</v-btn>
           <v-spacer></v-spacer>
-          <v-btn
+          <!-- <v-btn
             icon
             to="/set/"
             v-show="
@@ -72,9 +73,9 @@
                 superaccount.includes(this.$auth.$state.user.email)
             "
             ><v-icon>mdi-cog-outline</v-icon></v-btn
-          >
+          > -->
           <div v-if="this.$auth.$state.loggedIn">
-            {{ this.$auth.$state.user.name }}
+            <!-- {{ this.$auth.$state.user.name }} -->
             <v-btn icon @click="logout"><v-icon>mdi-home-export-outline</v-icon></v-btn>
           </div>
           <div v-show="!this.$auth.$state.loggedIn">
@@ -128,41 +129,41 @@ export default {
       miniVariant: true, //凝结导航抽屉宽度，也接受**.sync**修饰符。这样，抽屉在点击时会重新打开(小寬度的模式)
       clipped: false,
       listitems: [
-        {
-          icon: "mdi-apps",
-          title: "首頁",
-          to: "/"
-        },
-        {
-          icon: "mdi-chart-bell-curve",
-          title: "監測數據",
-          to: "/basic"
-        },
-        {
-          icon: "mdi-calendar-star",
-          title: "重要紀事",
-          to: "/calendar"
-        },
-        {
-          icon: "mdi-file-edit",
-          title: "指標資料修改",
-          to: "/Indicator/edit"
-        },
-        {
-          icon: "mdi-map-outline",
-          title: "養殖池況",
-          to: "/map/"
-        },
-        {
-          icon: "mdi-video-box",
-          title: "觀察網影像",
-          to: "/video"
-        },
-        {
-          icon: "mdi-factory",
-          title: "廠域設定",
-          to: "/factory"
-        }
+        // {
+        //   icon: "mdi-apps",
+        //   title: "首頁",
+        //   to: "/"
+        // },
+        // {
+        //   icon: "mdi-chart-bell-curve",
+        //   title: "監測數據",
+        //   to: "/basic"
+        // },
+        // {
+        //   icon: "mdi-calendar-star",
+        //   title: "重要紀事",
+        //   to: "/calendar"
+        // },
+        // {
+        //   icon: "mdi-file-edit",
+        //   title: "指標資料修改",
+        //   to: "/Indicator/edit"
+        // },
+        // {
+        //   icon: "mdi-map-outline",
+        //   title: "養殖池況",
+        //   to: "/map/"
+        // },
+        // {
+        //   icon: "mdi-video-box",
+        //   title: "觀察網影像",
+        //   to: "/video"
+        // },
+        // {
+        //   icon: "mdi-factory",
+        //   title: "廠域設定",
+        //   to: "/factory"
+        // }
       ],
       superaccount: [
                   'jianwei.wen@idwater.com.tw',
@@ -174,6 +175,59 @@ export default {
                   'cf.chien@idwater.com.tw',//靖芳
                 ]
     };
+  },
+  async mounted() {
+    let acclist = [];
+    if (this.$auth.$state.loggedIn) {
+      let accheader ={account:this.$auth.$state.user.email}
+      await this.$axios
+        .get("https://61.56.172.10/user-access/authorization/",{headers:accheader})
+        .then(res => {
+          acclist = res.data;
+        });
+    }
+    this.listitems = acclist;
+    console.log(this.listitems);
+    // this.listitems = [{
+    //       icon: "mdi-apps",
+    //       title: "首頁",
+    //       to: "/"
+    //     },
+    //     {
+    //       icon: "mdi-chart-bell-curve",
+    //       title: "監測數據",
+    //       to: "/basic"
+    //     },
+    //     {
+    //       icon: "mdi-calendar-star",
+    //       title: "重要紀事",
+    //       to: "/calendar"
+    //     },
+    //     {
+    //       icon: "mdi-file-edit",
+    //       title: "指標資料修改",
+    //       to: "/Indicator/edit"
+    //     },
+    //     {
+    //       icon: "mdi-map-outline",
+    //       title: "養殖池況",
+    //       to: "/map/"
+    //     },
+    //     {
+    //       icon: "mdi-video-box",
+    //       title: "觀察網影像",
+    //       to: "/video"
+    //     },
+    //     {
+    //       icon: "mdi-factory",
+    //       title: "廠域設定",
+    //       to: "/factory"
+    //     },
+    //     {
+    //       icon: "mdi-cog-outline",
+    //       title: "設定",
+    //       to: "/set"
+    //     }];
   },
   methods: {
     logout: function() {
