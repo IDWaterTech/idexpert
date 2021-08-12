@@ -162,14 +162,14 @@
               <el-table-column type="expand" fixed width="30px">
                 <template slot-scope="props">
                   <v-row >
-                  <v-col cols="12">
+                  <v-col cols="11">
                     <div style="min-height:250px">
                     <!-- {{props.row.privilege.map(item => {return item.id;})}} -->
                     <span class="title">授權項目</span>
                     <treeselect
                       :multiple="true"
                       :clearable="true"
-                      :searchable="true"
+                      :searchable="false"
                       :flat="true"
                       :open-on-click="true"
                       :clear-on-select="true"
@@ -189,6 +189,7 @@
                     </treeselect>
                     </div>
                   </v-col>
+                  <v-spacer></v-spacer>
                 </v-row>
                 </template>
                 
@@ -240,6 +241,7 @@
                       >編輯</v-btn
                     >
                     <v-btn text color="error" @click="showdel(scope.row)"  style="padding:0px; min-width:unset;"
+                    :disabled="scope.row.id==1"
                       >刪除</v-btn
                     >
                   </template>
