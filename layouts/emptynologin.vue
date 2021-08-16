@@ -45,7 +45,7 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item> -->
         </v-list>
-        <sidelist :myitem="listitems" titleName="name" urlName="url"></sidelist>
+        <sidelist :myitem="listitems" titleName="name" urlName="url" active="is_drop_down"></sidelist>
         <!--  -->
       </v-navigation-drawer>
       <v-container fluid>
@@ -98,7 +98,7 @@ export default {
     if (this.$auth.$state.loggedIn) {
       let acclist = [];
       await this.$axios
-        .get("https://61.56.172.10/user-access/account/")
+        .get("https://61.56.172.10/user-access/account/")//所有使用者的清單
         .then(res => {
           acclist = res.data;
         });
@@ -181,7 +181,7 @@ export default {
     if (this.$auth.$state.loggedIn) {
       let accheader ={account:this.$auth.$state.user.email}
       await this.$axios
-        .get("https://61.56.172.10/user-access/authorization/",{headers:accheader})
+        .get("https://61.56.172.10/user-access/authorization-menu/",{headers:accheader})//帳號被授權進入的項目
         .then(res => {
           acclist = res.data;
         });

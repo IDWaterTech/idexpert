@@ -1,10 +1,12 @@
 <template>
   <v-list>
     <div v-for="item in myitem" :key="item.id">
+      <!-- {{item.hasOwnProperty('children')}} -->
       <v-list-group
         v-if="item.hasOwnProperty('children')"
         :to="item[urlName]"
-        v-model="item.active"
+        v-model="item[active]"
+        v-show="item[isShow] || item.hasOwnProperty(isShow)==false"
       >
         <template v-slot:activator>
           <v-list-item-icon
@@ -12,9 +14,9 @@
           </v-list-item-icon>
           <v-list-item-title>{{ item[titleName] }}</v-list-item-title>
         </template>
-        <sidelist :myitem="item.children"></sidelist>
+        <sidelist :myitem="item.children"  :titleName="urlName" :urlName="urlName" :active="active" :isShow="isShow"></sidelist>
       </v-list-group>
-      <v-list-item :to="item[urlName]" v-else>
+      <v-list-item :to="item[urlName]" v-else v-show="item[isShow] || item.hasOwnProperty(isShow)==false">
         <v-list-item-icon
           ><v-icon>{{
             item[iconName] != undefined
@@ -91,7 +93,9 @@ export default {
     },
     iconName: { type: String, default: "icon" },
     titleName: { type: String, default: "name" },
-    urlName: { type: String, default: "url" }
+    urlName: { type: String, default: "url" },
+    active:{type: String, default: "active"},//是否預設展開下拉的節點
+    isShow:{type: String, default: "isShow"},
   },
   name: "sidelist"
 };

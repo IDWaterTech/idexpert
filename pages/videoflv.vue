@@ -31,6 +31,9 @@ export default {
       videoUrl: "https://61.56.172.10:8443/live/171.flv"
     };
   },
+  async created() {
+    await this._pageCheck();//驗證頁面是否可檢視
+  },
   mounted() {
     this.player = new WasmPlayer(
       this.videoUrl,

@@ -42,9 +42,21 @@
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay> -->
             <v-icon @click="mapshowedit = !mapshowedit">mdi-pencil</v-icon>
-            <wc v-if="tab.title == '武曲'" :key="cmpkey.wc" :showedit="mapshowedit"></wc>
-            <tf v-if="tab.title == '天府'" :key="cmpkey.tf" :showedit="mapshowedit"></tf>
-            <zw v-if="tab.title == '紫微'" :key="cmpkey.zw" :showedit="mapshowedit"></zw>
+            <wc
+              v-if="tab.title == '武曲'"
+              :key="cmpkey.wc"
+              :showedit="mapshowedit"
+            ></wc>
+            <tf
+              v-if="tab.title == '天府'"
+              :key="cmpkey.tf"
+              :showedit="mapshowedit"
+            ></tf>
+            <zw
+              v-if="tab.title == '紫微'"
+              :key="cmpkey.zw"
+              :showedit="mapshowedit"
+            ></zw>
             <setting
               v-if="tab.title == '狀態設定'"
               @update="settingUpdated"
@@ -72,7 +84,7 @@ export default {
   },
   data() {
     return {
-      mapshowedit:false,
+      mapshowedit: false,
       link: [
         {
           icon: "mdi-flare",
@@ -100,7 +112,7 @@ export default {
         }
       ],
       currenttab: "武曲",
-      cmpkey:{wc:0,tf:0,zw:0}
+      cmpkey: { wc: 0, tf: 0, zw: 0 }
     };
   },
   methods: {
@@ -110,7 +122,10 @@ export default {
       this.cmpkey.tf += 1;
       this.cmpkey.zw += 1;
     }
-  }
+  },
+  async created() {
+     await this._pageCheck();//驗證頁面是否可檢視
+  },
 };
 </script>
 

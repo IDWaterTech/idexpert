@@ -39,6 +39,7 @@ export default {
     "~/plugins/elementui",
     "~/plugins/json2excel",
     { src: "~/plugins/vue-tree-select.js", ssr: false },
+    { src: "~/plugins/mymethod.js", ssr: false },
     // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },

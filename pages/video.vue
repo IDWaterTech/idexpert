@@ -33,6 +33,9 @@ export default {
       type: "hls"
     };
   },
+  async created() {
+    await this._pageCheck();//驗證頁面是否可檢視
+  },
   methods: {
     chchanel: function(data) {
       this.url = `https://61.56.172.10:8443/live/${data}/index.m3u8`;

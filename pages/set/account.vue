@@ -712,6 +712,7 @@ export default {
     }
   },
   async created() {
+    await this._pageCheck();//驗證頁面是否可檢視
     await this.getaccList();
     await this.getorg();
   }
