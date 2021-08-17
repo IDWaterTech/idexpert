@@ -207,7 +207,7 @@ export default {
       this.urldata.sdate = e.value[0];
       if (Object.keys(this.urldata).length == 5) {
         let routeData = this.$router.resolve({
-          name: "Indicator",
+          name: "indicator",
           query: this.urldata
         });
         console.log(routeData);

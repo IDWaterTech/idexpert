@@ -180,6 +180,7 @@ export default {
     console.log(Object.keys(this.req));
   },
   async created() {
+    await this._pageCheck(); //驗證頁面是否可檢視
     let myurl = [
       "https://61.56.172.10/architecture/",
       "https://61.56.172.10/all-col-name/"
