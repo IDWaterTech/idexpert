@@ -88,7 +88,7 @@
         ></v-autocomplete>
       </v-col>
       <v-col cols="12" md="2">
-         <v-autocomplete
+        <v-autocomplete
           v-model="defitem"
           :items="Object.keys(waterdatacols)"
           no-data-text="查無資料"
@@ -211,7 +211,8 @@
                     md="6"
                     v-for="item in mainpool.items"
                     :key="item.id"
-                    ><v-text-field
+                    >
+                    <!-- <v-text-field
                       class="addinput"
                       type="number"
                       :id="item.name"
@@ -219,12 +220,24 @@
                       @change="getAddData"
                       @keyup="getAddData"
                       ><p slot="prepend">{{ item.name }}</p></v-text-field
-                    ></v-col
-                  >
+                    > -->
+                    {{item.name}}<el-input-number
+                      :id="item.name"
+                      :ref="item.name"
+                      @keyup.enter.native="gofocusNxt2(item.name)"
+                      class="ml-2"
+                      v-model="num[item.name]"
+                      size="mini"
+                      :precision="2"
+                      :step="0.1"
+                      :min="num_min"
+                      :max="num_max"
+                    ></el-input-number>
+                  </v-col>
                   <!-- @keyup="getAddData" -->
                 </v-row>
               </v-card-text>
-              <v-divider></v-divider>
+            
               <v-card-text>
                 <v-chip
                   class="ma-2"
@@ -240,6 +253,24 @@
                 </v-chip>
               </v-card-text>
               <v-divider></v-divider>
+              <v-card-text>
+                <v-chip
+                  class="ma-2"
+                  color="indigo darken-3"
+                  outlined
+                  v-for="(key, index) in Object.keys(num)"
+                  :key="index"
+                  v-show="typeof num[key] == 'number'"
+                >
+                  <div v-if="typeof num[key] == 'number'">
+                    <v-icon left>
+                      mdi-new-box
+                    </v-icon>
+                    {{ key }} [{{ num[key] }}]
+                  </div>
+                </v-chip>
+              </v-card-text>
+              <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
@@ -249,7 +280,11 @@
                   v-show="keepswitch"
                   >取消</v-btn
                 >
-                <v-btn @click="addsubmit" color="blue darken-1" text :disabled="(!atime)"
+                <v-btn
+                  @click="addsubmit"
+                  color="blue darken-1"
+                  text
+                  :disabled="!atime"
                   >確定</v-btn
                 >
               </v-card-actions>
@@ -385,6 +420,7 @@ const agent = new https.Agent({
 });
 // import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 // import { number } from "~/node_modules/echarts/lib/export";
+import "element-ui/lib/theme-chalk/index.css";
 export default {
   layout: "emptynologin",
   middleware: "auth",
@@ -437,13 +473,16 @@ export default {
       //新增視窗
       addDialog: false,
       addData: [],
+      num: {},
+      num_min: 0,
+      num_max: 999,
       //form
       valid: true,
       rules: { require: [v => !!v || "*必要項目"] }
     };
   },
   async created() {
-    await this._pageCheck();//驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     //抓廠資料
     await this.$axios
       .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
@@ -640,30 +679,41 @@ export default {
       this.delDialog = true;
     },
     addItem: async function() {},
-    gofocusNxt: async function(id) {
-      //document.getElementById(id).focus();
+    gofocusNxt2:function(id){
       var findeditem = this.mainpool.items.find(x => x.name == id);
       var idxitem = this.mainpool.items.indexOf(findeditem);
       if (idxitem + 1 == this.mainpool.items.length) {
-        //最後一項，鎖定原位
-        document.getElementById(id).focus();
-      } else {
-        //鎖定下一項
-        let nxtItem = this.mainpool.items[idxitem + 1];
-        document.getElementById(nxtItem.name).focus();
+        this.$refs[id][0].focus();//最後一項，鎖定原位
+      }else{
+        let nxtName = this.mainpool.items[idxitem + 1].name;
+        this.$refs[nxtName][0].focus();//最後一項，鎖定原位
       }
+      // this.$refs['A2'].$el.children[0].focus();
     },
-    getAddData: function() {
-      let adddatatmp = [];
-      for (const key in this.mainpool.items) {
-        let item = this.mainpool.items[key];
-        let myValue = document.getElementById(item.name).value.trim();
-        if (myValue.length > 0) {
-          adddatatmp.push({ name: item.name, value: myValue, id: item.id });
-        }
-      }
-      this.addData = adddatatmp;
-    },
+    // gofocusNxt_OLD: async function(id) {
+    //   //document.getElementById(id).focus();
+    //   var findeditem = this.mainpool.items.find(x => x.name == id);
+    //   var idxitem = this.mainpool.items.indexOf(findeditem);
+    //   if (idxitem + 1 == this.mainpool.items.length) {
+    //     //最後一項，鎖定原位
+    //     document.getElementById(id).focus();
+    //   } else {
+    //     //鎖定下一項
+    //     let nxtItem = this.mainpool.items[idxitem + 1];
+    //     document.getElementById(nxtItem.name).focus();
+    //   }
+    // },
+    // getAddData: function() {
+    //   let adddatatmp = [];
+    //   for (const key in this.mainpool.items) {
+    //     let item = this.mainpool.items[key];
+    //     let myValue = document.getElementById(item.name).value.trim();
+    //     if (myValue.length > 0) {
+    //       adddatatmp.push({ name: item.name, value: myValue, id: item.id });
+    //     }
+    //   }
+    //   this.addData = adddatatmp;
+    // },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
@@ -672,12 +722,30 @@ export default {
       let mytime = dayjs().format("HH:mm");
       return mytime;
     },
-    openadd: function() {
+    openadd: async function() {
       this.keepswitch = false;
       this.adate = "";
       this.addData = [];
       this.atime = "";
-      this.addDialog = true;
+      //this.getItemClass(this.defitem);
+      let coldata = [];
+      //抓項目的限制
+      await this.$axios.get("https://61.56.172.10/col-data/").then(res => {
+        coldata = Object.assign([], res.data);
+      });
+      var colitem = coldata.filter(
+        x =>
+          x.group == this.getItemClass(this.defitem) &&
+          x.name_ch == this.defitem
+      );
+      if (colitem.length == 1) {
+        this.num = {};//清空
+        this.num_min = (colitem[0].min!=undefined || typeof(colitem[0].min)=='number')?colitem[0].min:0;
+        this.num_max = (colitem[0].max!=undefined || typeof(colitem[0].max)=='number')?colitem[0].max:999;
+        this.addDialog = true;
+      } else {
+        this.$toast.error(`查無項目min、max資料`, { duration: 2000 });
+      }
     },
     addsetnow: function() {
       this.sdate = getNowDate();
@@ -698,10 +766,24 @@ export default {
           created_user: updUser, //建立者名稱
           data_group: colclass //water,adv,...
         };
-        let submitData = [];
-        this.addData.forEach(el => {
-          submitData.push({ id: el.id, val: el.value });
-        });
+         let submitData = [];
+        //原本抓textfield的方式
+        // this.addData.forEach(el => {
+        //   submitData.push({ id: el.id, val: el.value });
+        // });
+        //送出資料重判斷########################
+        //foreach Object.keys(this.num)
+        for (const key in Object.keys(this.num)) {
+            const element = Object.keys(this.num)[key];
+            if (this.num[element]!= undefined) {
+              const el_id = this.mainpool.items.filter(x=>x.name==element)[0].id;
+              submitData.push({ id: el_id, val: this.num[element] });
+            }
+        }
+        if (submitData.length <= 0) {
+          this.$toast.success(`無新增資料`, { duration: 2000 });
+          return;
+        }
         parms.data = submitData;
         console.log("adddata aparms", parms);
         await this.$axios
