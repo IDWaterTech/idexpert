@@ -14,7 +14,7 @@
           </v-list-item-icon>
           <v-list-item-title>{{ item[titleName] }}</v-list-item-title>
         </template>
-        <sidelist :myitem="item.children"  :titleName="urlName" :urlName="urlName" :active="active" :isShow="isShow"></sidelist>
+        <sidelist :myitem="item.children"  :titleName="titleName" :urlName="urlName" :active="active" :isShow="isShow"></sidelist>
       </v-list-group>
       <v-list-item :to="item[urlName]" v-else v-show="item[isShow] || item.hasOwnProperty(isShow)==false">
         <v-list-item-icon
