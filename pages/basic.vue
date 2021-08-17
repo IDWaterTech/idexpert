@@ -838,7 +838,6 @@
 
 <script>
 import treelst from "~/components/treeList.vue";
-import Ind1 from "./Indicator/ind1";
 import _ from "lodash";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import dayjs from "dayjs";
@@ -850,7 +849,6 @@ export default {
   middleware: "auth",
   components: {
     treelst,
-    Ind1,
     WaterQuality_Vcharts
   },
   data() {
