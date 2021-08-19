@@ -38,6 +38,7 @@ a {
 }
 </style>
 <script>
+import { number } from 'echarts/lib/export';
 export default {
   data() {
     return {
@@ -149,6 +150,14 @@ export default {
       default: function() {
         return {};
       }
+    },
+    chartmin:{
+      type:Number,
+      default:0
+    },
+    chartmax:{
+      type:Number,
+      default:0
     }
   },
   created() {
@@ -158,6 +167,8 @@ export default {
   updated() {
     //--外部參數資料帶入--
     this.set.legendAlias = this.legendAliasOut;
+    this.set.max = [this.chartmax];
+    this.set.min = [this.chartmin];
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
     var temp = (this.rowsData.length>0)?Object.keys(this.rowsData[0]):"";
