@@ -91,12 +91,16 @@
       </v-row>
       <v-row>
         <v-col cols="12">
+          顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0"></el-input-number>
+          顯示最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0"></el-input-number>
           <WaterQuality_Vcharts
             :rowsData="item.items"
             xColName="inspected_date"
             :defaultitem="{}"
             :loading="waterloading"
             :title="item.name"
+            :chartmin="chartmin"
+            :chartmax="chartmax"
           ></WaterQuality_Vcharts>
         </v-col>
         <v-col cols="12" v-if="item.items">
@@ -162,7 +166,9 @@ export default {
       menu_startdate: false,
       sdate: dayjs(new Date(2021, 0, 11))
         .add(-10, "day")
-        .format("YYYY-MM-DD")
+        .format("YYYY-MM-DD"),
+      chartmin:undefined,
+      chartmax:undefined
     };
   },
   mounted() {
@@ -294,7 +300,8 @@ export default {
         this.sel_main,
         this.defitem
       );
-
+      this.chartmin = undefined;
+      this.chartmax = undefined;
       //指定的項目是歸屬於哪個類別，水質/投餵
       var defitem_tmp = this.defitem; //判斷項目是屬於水質還是投餵用
       let itemclass = ``;
