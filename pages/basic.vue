@@ -77,7 +77,12 @@
                             readonly
                             v-bind="attrs"
                             v-on="on"
-                            @click:prepend="() => {sdate = getNowDate();daysSet();}"
+                            @click:prepend="
+                              () => {
+                                sdate = getNowDate();
+                                daysSet();
+                              }
+                            "
                           ></v-text-field>
                         </template>
                         <v-date-picker
@@ -106,7 +111,12 @@
                             readonly
                             v-bind="attrs"
                             v-on="on"
-                            @click:prepend="() => {edate = getNowDate();daysSet();}"
+                            @click:prepend="
+                              () => {
+                                edate = getNowDate();
+                                daysSet();
+                              }
+                            "
                           ></v-text-field>
                         </template>
                         <v-date-picker
@@ -149,7 +159,17 @@
                 >
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
                   <el-table-column
-                    v-for="(item, key) in headers"
+                    prop="labelname"
+                    label="養殖池"
+                    width="70"
+                    :fixed="true"
+                    >
+                    <template slot-scope="scope">
+                      <a :href="`/pool/?id=${scope.row.id}`">{{scope.row.name}}</a>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    v-for="(item, key) in headers.filter(x=>x.text != fixedname)"
                     :fixed="item.text == fixedname"
                     :prop="item.value"
                     :label="item.text"
@@ -1208,7 +1228,7 @@ export default {
     }
   },
   async created() {
-    await this._pageCheck();//驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
@@ -1366,29 +1386,29 @@ export default {
       }
       return item;
     }
-  },
+  }
 };
-//                            _ooOoo_  
-//                           o8888888o  
-//                           88" . "88  
-//                           (| -_- |)  
-//                            O\ = /O  
-//                        ____/`---'\____  
-//                      .   ' \\| |// `.  
-//                       / \\||| : |||// \  
-//                     / _||||| -:- |||||- \  
-//                       | | \\\ - /// | |  
-//                     | \_| ''\---/'' | |  
-//                      \ .-\__ `-` ___/-. /  
-//                   ___`. .' /--.--\ `. . __  
-//                ."" '< `.___\_<|>_/___.' >'"".  
-//               | | : `- \`.;`\ _ /`;.`/ - ` : | |  
-//                 \ \ `-. \_ __\ /__ _/ .-` / /  
-//         ======`-.____`-.___\_____/___.-`____.-'======  
-//                            `=---='  
-//  
-//         .............................................  
-//                  佛祖保佑             永無BUG 
+//                            _ooOoo_
+//                           o8888888o
+//                           88" . "88
+//                           (| -_- |)
+//                            O\ = /O
+//                        ____/`---'\____
+//                      .   ' \\| |// `.
+//                       / \\||| : |||// \
+//                     / _||||| -:- |||||- \
+//                       | | \\\ - /// | |
+//                     | \_| ''\---/'' | |
+//                      \ .-\__ `-` ___/-. /
+//                   ___`. .' /--.--\ `. . __
+//                ."" '< `.___\_<|>_/___.' >'"".
+//               | | : `- \`.;`\ _ /`;.`/ - ` : | |
+//                 \ \ `-. \_ __\ /__ _/ .-` / /
+//         ======`-.____`-.___\_____/___.-`____.-'======
+//                            `=---='
+//
+//         .............................................
+//                  佛祖保佑             永無BUG
 </script>
 
 <style scoped>
