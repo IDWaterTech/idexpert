@@ -28,7 +28,8 @@
     "v-charts-v2": "^2.0.9",
     "v-img": "^0.2.0",
     "vue-chartjs": "^3.5.1",
-    "vue-json-excel": "^0.3.0"
+    "vue-json-excel": "^0.3.0",
+    "vue-speedometer": "^1.8.0"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.1"

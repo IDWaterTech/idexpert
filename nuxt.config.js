@@ -13,7 +13,7 @@ export default {
     script: [
       { src: "../hls.js", body: true },
       { src: "../DPlayer.min.js", body: true },
-      {src:'./EasyWasmPlayer.js'}
+      { src: "./EasyWasmPlayer.js" }
     ],
     meta: [
       { charset: "utf-8" },
@@ -40,6 +40,7 @@ export default {
     "~/plugins/json2excel",
     { src: "~/plugins/vue-tree-select.js", ssr: false },
     { src: "~/plugins/mymethod.js", ssr: false },
+    { src: "~/plugins/speedometer.js", ssr: false },
     // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
@@ -212,5 +213,11 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {
+    // 解決speedometer
+    // [Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.
+    extend(config) {
+      config.resolve.alias['vue'] = 'vue/dist/vue.common'
+  }
+  }
 };
