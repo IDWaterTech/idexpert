@@ -163,9 +163,10 @@
                     label="養殖池"
                     width="70"
                     :fixed="true"
+                    align="center"
                     >
                     <template slot-scope="scope">
-                      <a :href="`/pool/?id=${scope.row.id}`">{{scope.row.name}}</a>
+                      <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{scope.row.name}}</a>
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -191,42 +192,6 @@
                   v-if="false"
                 >
                 </v-data-table>
-              </v-col>
-              <v-col cols="12" md="5" v-if="false">
-                <v-card class="pa-2" outlined tile min-height="300px">
-                  <v-treeview
-                    v-model="tree"
-                    :open="initiallyOpen"
-                    :items="pooldata"
-                    item-children="node"
-                    activatable
-                    item-key="name"
-                    open-on-click
-                    :selection-type="'leaf'"
-                  >
-                    <!-- item顯示，前面的預掛圖示 -->
-                    <template v-slot:prepend="{ item, open }">
-                      <v-icon v-if="!item.type && item.node">
-                        <!-- {{ open ? "mdi-folder-open" : "mdi-folder" }} 有NODE絕對不是最後一層-->
-                        {{ open ? "mdi-select-group" : "mdi-select-inverse" }}
-                      </v-icon>
-                      <v-icon v-else-if="!item.node">
-                        <!-- 沒Node當作已最後一層 -->
-                        {{ files["pool"] }}
-                      </v-icon>
-                      <v-icon v-else>
-                        {{ files[item.type] }}
-                      </v-icon>
-                    </template>
-                    <!-- item內容 -->
-                    <template slot="label" slot-scope="{ item }">
-                      <div @click="openDialog(item)" v-if="!item.node">
-                        {{ item.name }}
-                      </div>
-                      <div v-else @click="openDialog()">{{ item.name }}</div>
-                    </template>
-                  </v-treeview>
-                </v-card>
               </v-col>
               <v-divider vertical></v-divider>
               <v-col cols="12" md="4" v-if="false">
@@ -944,18 +909,19 @@ export default {
         //  { text: "id", value: "id", groupable: false },
         { text: "養殖池", value: "name", groupable: false },
         { text: "體積", value: "volume", groupable: false },
-        { text: "密度", value: "density", groupable: false },
+        // { text: "密度", value: "density", groupable: false },
         { text: "深度", value: "depth", groupable: false },
         { text: "小池數", value: "num", groupable: false },
-        { text: "狀態", value: "state", groupable: false },
-        { text: "放養日期", value: "started_date", groupable: false },
-        {
-          text: "預估收成日期",
-          value: "eliminated_ended_date",
-          groupable: false
-        },
-        { text: "初始放養隻數", value: "init_num", groupable: false },
-        { text: "累積飼料量", value: "feed_accumulation", groupable: false }
+        { text: "小池數", value: "num", groupable: false },
+        { text: "曝氣盤數", value: "aeration_tray_num", groupable: false },
+        // { text: "放養日期", value: "started_date", groupable: false },
+        // {
+        //   text: "預估收成日期",
+        //   value: "eliminated_ended_date",
+        //   groupable: false
+        // },
+        // { text: "初始放養隻數", value: "init_num", groupable: false },
+        // { text: "累積飼料量", value: "feed_accumulation", groupable: false }
       ],
       //---
       allcols: [],
@@ -1007,15 +973,15 @@ export default {
     };
   },
   methods: {
-    openDialog: function(item) {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-      this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
-      this.$axios
-        .get("https://61.56.172.10/pond-data/", { httpsAgent: agent })
-        .then(res => {});
-    },
+    // openDialog: function(item) {
+    //   const agent = new https.Agent({
+    //     rejectUnauthorized: false
+    //   });
+    //   this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
+    //   this.$axios
+    //     .get("https://61.56.172.10/pond-data/", { httpsAgent: agent })
+    //     .then(res => {});
+    // },
     closepanel: async function() {
       this.mypanel = [];
 
