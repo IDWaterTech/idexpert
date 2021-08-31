@@ -164,13 +164,14 @@
             <ol>
               <div v-for="it in Object.keys(item)" :key="it">
                 <li
-                  v-if="itemname.filter(x => x.name == it)[0].visible == true"
+                  v-if="itemname.filter(x => x.name == it).length>0 && itemname.filter(x => x.name == it)[0].visible == true"
                   style="font-weight:500;"
                 >
-                  {{ itemname.filter(x => x.name == it)[0].text }}-{{
+                  {{ itemname.filter(x => x.name == it)[0].text }}：{{
                     item[it]
                   }}
                 </li>
+                <li v-if="itemname.filter(x => x.name == it).length==0">{{it}}-{{item[it]}}</li>
               </div>
             </ol>
           </v-card-text>
@@ -293,6 +294,16 @@
                 ><span style="width:50px;">曝氣盤數</span></template
               >
             </v-text-field>
+            <v-text-field
+              autocomplete="off"
+              v-model="edititem_pool.parm.video_url"
+              clearable
+              placeholder="輸入包含https的連結"
+            >
+              <template slot="prepend"
+                ><span style="width:50px;">觀察網影像</span></template
+              >
+            </v-text-field>
             <v-select
               v-model="edititem_pool.parm.pond_state_id"
               :items="poolstat"
@@ -358,7 +369,9 @@ export default {
         { name: "depth", text: "深度", visible: true },
         { name: "num", text: "池子數", visible: true },
         { name: "aeration_tray_num", text: "曝氣盤數", visible: true },
-        { name: "state", text: "狀態", visible: true }
+        { name: "state", text: "狀態", visible: true },
+        { name: "video_url", text: "觀察網影像", visible: true },
+
       ]
     };
   },
@@ -586,7 +599,9 @@ export default {
         delete this.edititem_pool.parm.pond_state_id;//水池狀態不在這修改
         for (const key in this.edititem_pool.parm) {
           var getvalue = this.edititem_pool.parm[key];
-          this.edititem_pool.parm[key] =(typeof(getvalue)=="number" || key=="name")?getvalue: getvalue.match(/^[\d\.]+/)[0];
+          //排除規則不使用regexp的清單
+          const outreg = ['name','video_url'];
+          this.edititem_pool.parm[key] =(typeof(getvalue)=="number" || outreg.filter(x=>x==key).length > 0)?getvalue: getvalue.match(/^[\d\.]+/)[0];
         }
       }
       this.dialog.pool = true;
@@ -641,7 +656,6 @@ export default {
     },
     poolsubmit: async function(data) {
       const user = this.$auth.$state.user.email;
-      debugger;
       if (this.$refs.poolform.validate()) {
         if (data == "add") {//新增池
           this.edititem_pool.parm.created_user = user;
@@ -664,6 +678,7 @@ export default {
         } else {//編輯池
                this.edititem_pool.parm.updated_user = user;
                const id = this.edititem_pool.parm.id;
+               this.edititem_pool.parm.video_url = (this.edititem_pool.parm.video_url==null)?"":this.edititem_pool.parm.video_url;
                var parm = this.edititem_pool.parm;
                await this.$axios
             .patch(`https://61.56.172.10/pond/${id}`, parm)
