@@ -1,8 +1,11 @@
 <template>
   <div>
-    <v-expansion-panels class="mb-6" v-model="mypanel">
+    <v-expansion-panels class="mb-6" tile v-model="mypanel">
       <v-expansion-panel>
-        <v-expansion-panel-header expand-icon="mdi-menu-down">
+        <v-expansion-panel-header
+          expand-icon="mdi-menu-down"
+          style="background-color:#64B5F6;color:white;"
+        >
           選擇條件
         </v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -156,6 +159,8 @@
                   :data="mainpool.items"
                   style="width: 100%"
                   max-height="300"
+                  show-summary
+                  :summary-method="getSummaries"
                 >
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
                   <el-table-column
@@ -164,13 +169,17 @@
                     width="70"
                     :fixed="true"
                     align="center"
-                    >
+                  >
                     <template slot-scope="scope">
-                      <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{scope.row.name}}</a>
+                      <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
+                        scope.row.name
+                      }}</a>
                     </template>
                   </el-table-column>
                   <el-table-column
-                    v-for="(item, key) in headers.filter(x=>x.text != fixedname)"
+                    v-for="(item, key) in headers.filter(
+                      x => x.text != fixedname
+                    )"
                     :fixed="item.text == fixedname"
                     :prop="item.value"
                     :label="item.text"
@@ -908,12 +917,12 @@ export default {
       headers: [
         //  { text: "id", value: "id", groupable: false },
         { text: "養殖池", value: "name", groupable: false },
-        { text: "體積", value: "volume", groupable: false },
+        { text: "體積(頓)", value: "volume", groupable: false },
         // { text: "密度", value: "density", groupable: false },
-        { text: "深度", value: "depth", groupable: false },
-        { text: "小池數", value: "num", groupable: false },
-        { text: "小池數", value: "num", groupable: false },
-        { text: "曝氣盤數", value: "aeration_tray_num", groupable: false },
+        { text: "深度(m)", value: "depth", groupable: false },
+        { text: "小池數(個)", value: "num", groupable: false },
+        { text: "曝氣盤數(個)", value: "aeration_tray_num", groupable: false },
+        { text: "狀態", value: "state", groupable: false }
         // { text: "放養日期", value: "started_date", groupable: false },
         // {
         //   text: "預估收成日期",
@@ -1191,6 +1200,47 @@ export default {
     },
     daysSet: function() {
       this.days = dayjs(this.edate).diff(this.sdate, "day");
+    },
+    getSummaries: function(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = `共${data.length}池`;
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        var hiddenlist = ["體積(頓)","狀態"];
+        if (hiddenlist.filter(x => x == column.label).length > 0) {
+          sums[index] = "";
+          return;
+        }
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          var itemunit = [
+            { name: "深度(m)", unit: "m" },
+            { name: "小池數(個)", unit: "個" },
+            { name: "曝氣盤數(個)", unit: "個" }
+          ];
+          if (itemunit.filter(x => x.name == column.label).length > 0) {
+            sums[index] +=
+              " " + itemunit.filter(x => x.name == column.label)[0].unit;
+          } else {
+            sums[index] += "";
+          }
+        } else {
+          sums[index] = "N/A";
+        }
+      });
+
+      return sums;
     }
   },
   async created() {
