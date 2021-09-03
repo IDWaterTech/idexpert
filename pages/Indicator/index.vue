@@ -61,7 +61,7 @@
           ></v-autocomplete>
         </v-col>
         <v-col cols="12" md="2">
-          <v-select
+          <!-- <v-select
             v-model="defitem"
             clearable
             placeholder="指定項目"
@@ -69,7 +69,15 @@
             v-if="waterdatacols"
             no-data-text="查無資料"
           >
-          </v-select>
+          </v-select> -->
+           <v-autocomplete
+          v-model="defitem"
+          :items="Object.keys(waterdatacols)"
+          v-if="waterdatacols"
+          no-data-text="查無資料"
+          placeholder="指定項目"
+          clearable
+        ></v-autocomplete>
         </v-col>
         <v-col cols="12" md="1">
           <v-btn
@@ -101,6 +109,7 @@
             :title="item.name"
             :chartmin="chartmin"
             :chartmax="chartmax"
+            :markdata="markdata"
           ></WaterQuality_Vcharts>
         </v-col>
         <v-col cols="12" v-if="item.items">
@@ -168,7 +177,8 @@ export default {
         .add(-10, "day")
         .format("YYYY-MM-DD"),
       chartmin:undefined,
-      chartmax:undefined
+      chartmax:undefined,
+      markdata:{maxline:-999,minline:-999},
     };
   },
   mounted() {
@@ -292,6 +302,9 @@ export default {
       }
     },
     getdata: async function() {
+      //mark line 先歸零
+      this.markdata.maxline = -999;
+      this.markdata.minline = -999;
       console.log(
         "api 參數",
         this.sdate,
@@ -343,6 +356,10 @@ export default {
           // });
           this.item = res.data;
           this.item2 = data2;
+          //抓上下限資料
+          if ( res.data.items.length>0) {
+            this.getLimitData();
+          }
         })
         .catch(err => {
           alert("失敗：" + err.message);
@@ -351,7 +368,22 @@ export default {
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
-    }
+    },
+    getLimitData: async function() {
+      await this.$axios
+        .get("https://61.56.172.10/col-data/")
+        .then(res => {
+          // this.allcols = Object.assign([], res.data);
+          var lmtitem =  res.data.filter(x=>x.name_ch==this.defitem);
+          if(lmtitem.length>0){
+            this.markdata.maxline = lmtitem[0].critical_max;
+            this.markdata.minline = lmtitem[0].critical_min;
+          }else{
+            this.markdata.maxline = -999;
+            this.markdata.minline = -999;
+          }
+        });
+    },
   }
 };
 </script>

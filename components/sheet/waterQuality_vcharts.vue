@@ -25,6 +25,7 @@
       :events="{ click: helo.bind(this, urldata) }"
       :judge-width="true"
       v-show="chtData_new_1.rows.length > 0"
+      :mark-line="markLine"
     ></ve-line>
     <div v-show="chtData_new_1.rows.length <= 0">查無資料</div>
   </div>
@@ -38,10 +39,11 @@ a {
 }
 </style>
 <script>
-import { number } from 'echarts/lib/export';
+import { number } from "echarts/lib/export";
 export default {
   data() {
     return {
+      
       //水質---------------------------------------------------------------------------------------
       set: {
         legendAlias: {},
@@ -151,14 +153,23 @@ export default {
         return {};
       }
     },
-    chartmin:{
-      type:Number,
-      default:0
+    chartmin: {
+      type: Number,
+      default: 0
     },
-    chartmax:{
-      type:Number,
-      default:0
-    }
+    chartmax: {
+      type: Number,
+      default: 0
+    },
+    markdata:{
+      type:Object,
+      default: function() {
+        return {
+        maxline:-999,
+        minline:-999
+      };
+      }
+    },
   },
   created() {
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
@@ -171,7 +182,7 @@ export default {
     this.set.min = [this.chartmin];
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
-    var temp = (this.rowsData.length>0)?Object.keys(this.rowsData[0]):"";
+    var temp = this.rowsData.length > 0 ? Object.keys(this.rowsData[0]) : "";
     if (temp.indexOf(this.xColName) > -1) {
       temp.splice(temp.indexOf(this.xColName), 1); //去除default 時間欄位
     }
@@ -200,6 +211,39 @@ export default {
         }
       });
       return array;
+    },
+    markLine:function(){
+      const data = {
+        symbol: ["circle", "arrow"],
+        data: [
+          {
+            yAxis: this.markdata.maxline,
+            label:{
+              formatter:"警戒線：{c}",
+              fontSize: 20,
+              position: 'insideEndTop'
+            },
+            lineStyle: {
+              color: "red",
+              width: 2
+            }
+          },
+          {
+            yAxis: this.markdata.minline,
+            label:{
+              show:true,
+              formatter:"警戒線：{c}",
+              fontSize: 20,
+              position: 'insideEndTop'
+            },
+            lineStyle: {
+              color: "red",
+              width: 2,
+            }
+          }
+        ]
+      };
+      return data;
     }
   },
   methods: {
@@ -211,7 +255,6 @@ export default {
       }
     },
     helo(p, e) {
-      
       // this.$router.push("indicator/?")
       // let routeData = this.$router.resolve({name: 'Indicator', query: {data: "someData"}});
       this.urldata.defitem = e.seriesName;
