@@ -298,7 +298,7 @@
               autocomplete="off"
               v-model="edititem_pool.parm.video_url"
               clearable
-              placeholder="輸入包含https的連結"
+              placeholder="輸入影像IP(例：武曲171)"
             >
               <template slot="prepend"
                 ><span style="width:50px;">觀察網影像</span></template
@@ -365,10 +365,10 @@ export default {
       itemname: [
         { name: "id", text: "id", visible: false },
         { name: "name", text: "名稱", visible: true },
-        { name: "volume", text: "體積", visible: true },
-        { name: "depth", text: "深度", visible: true },
-        { name: "num", text: "池子數", visible: true },
-        { name: "aeration_tray_num", text: "曝氣盤數", visible: true },
+        { name: "volume", text: "體積(頓)", visible: true },
+        { name: "depth", text: "深度(m)", visible: true },
+        { name: "num", text: "小池數(個)", visible: true },
+        { name: "aeration_tray_num", text: "曝氣盤數(個)", visible: true },
         { name: "state", text: "狀態", visible: true },
         { name: "video_url", text: "觀察網影像", visible: true },
 
