@@ -201,16 +201,16 @@
         <v-card min-height="300px" elevation="3" class="mx-3" tile>
           <v-card-title
             class="py-2"
-            style="background-color:#00BCD4;color:white;"
+            style="background-color:#64B5F6;color:white;"
           >
             蝦況
           </v-card-title>
           <v-divider></v-divider>
           <v-card-title>
             <ul>
-              <li>大小</li>
-              <li>數量</li>
-              <li>檢疫</li>
+              <li>均長</li>
+              <li>重量</li>
+              <li>餐數</li>
             </ul>
           </v-card-title>
         </v-card>
@@ -219,7 +219,7 @@
         <v-card min-height="500px" elevation="3" class="mx-3" tile>
           <v-card-title
             class="py-2"
-            style="background-color:#00BCD4;color:white;"
+            style="background-color:#64B5F6;color:white;"
           >
             數據
           </v-card-title>
@@ -253,7 +253,7 @@
                             :max-width="200"
                           >
                             <v-card-title class="justify-center">
-                              {{ item.name }}<br />
+                              {{ item.name_ch }}<br />
                               {{ item.value }}
                             </v-card-title>
                             <div style="height:120px;" class="px-2">
@@ -286,8 +286,7 @@
                             </div>
                             <v-divider></v-divider>
                             <v-card-subtitle class=" py-2 px-2">
-                              {{ item.valuetime.substr(0, 10) }}<br />
-                              {{ item.valuetime.substr(11) }}
+                              共：{{item.rows}}筆
                             </v-card-subtitle>
                             <v-scale-transition>
                               <v-icon
@@ -304,6 +303,16 @@
                     <v-spacer></v-spacer>
                   </v-row>
                 </v-tab-item>
+                <v-tab-item :value="'tab-' + tabitems[1]">
+                  <v-row>
+                    <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
+                  </v-row>
+                </v-tab-item>
+                <v-tab-item :value="'tab-' + tabitems[2]">
+                  <v-row>
+                    <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
+                  </v-row>
+                </v-tab-item>
               </v-tabs-items>
             </v-tabs>
           </v-card-text>
@@ -316,7 +325,7 @@
         <v-card elevation="3" tile>
           <v-card-title
             class="py-2"
-            style="background-color:#00BCD4;color:white;"
+            style="background-color:#64B5F6;color:white;"
             >重要事件紀錄</v-card-title
           >
           <v-divider></v-divider>
@@ -337,7 +346,7 @@
         <v-card elevation="3" tile>
           <v-card-title
             class="py-2"
-            style="background-color:#00BCD4;color:white;"
+            style="background-color:#64B5F6;color:white;"
             >養殖歷程</v-card-title
           >
           <v-divider></v-divider>
@@ -380,74 +389,19 @@ export default {
         // }
       ],
       multipleSelection: [],
-      tabitems: ["檢測數據", "計算數據"],
+      tabitems: ["檢測數據", "計算數據","當前氣象資訊"],
       currentItem: "檢測數據",
       detectData: [
         {
-          name: "溶氧濃度",
+          name_ch: "測試",
           value: 678,
-          valuetime: "2020/01/01 12:00:00",
+          rows: "100",
           min: 0,
           max: 999,
           critical_min: 200,
           critical_max: 800,
           warning_min: 300,
           warning_max: 500
-        },
-        {
-          name: "溶養2",
-          value: 567,
-          valuetime: "2020/01/01 12:00:00",
-          min: 0,
-          max: 999,
-          critical_min: 200,
-          critical_max: 800,
-          warning_min: 300,
-          warning_max: 500
-        },
-        {
-          name: "鹽度",
-          value: 567,
-          valuetime: "2020/01/01 12:00:00",
-          min: 0,
-          max: 999,
-          critical_min: 200,
-          critical_max: 800,
-          warning_min: 300,
-          warning_max: 500
-        },
-        {
-          name: "溶養2",
-          value: 567,
-          valuetime: "2020/01/01 12:00:00",
-          min: 0,
-          max: 999,
-          critical_min: 200,
-          critical_max: 800,
-          warning_min: 300,
-          warning_max: 500
-        },
-        {
-          name: "酸鹼值",
-          value: 567,
-          valuetime: "2020/01/01 12:00:00",
-          min: 0,
-          max: 999,
-          critical_min: 200,
-          critical_max: 800,
-          warning_min: 300,
-          warning_max: 500
-        },
-        {
-          name: "溶養2",
-          value: 567,
-          valuetime: "2020/01/01 12:00:00",
-          min: 0,
-          max: 800,
-          critical_min: 100,
-          warning_min: 200,
-          warning_max: 650,
-          critical_max: 750
         }
       ],
       slidemodel: null,
@@ -473,7 +427,7 @@ export default {
     },
     tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
       if (rowIndex == 0) {
-        return "background-color:#00BCD4;color:#fff;font-weight:500;";
+        return "background-color:#64B5F6;color:#fff;font-weight:500;";
       }
     },
     getNowDate: function() {
@@ -520,6 +474,7 @@ export default {
       return obj;
     },
     mainchange: async function() {
+      this.detectData=[];
       //取得循環資料
       await this.getCircleData();
     },
@@ -561,8 +516,19 @@ export default {
         .get(`https://61.56.172.10/aquaculture-record/?${parm_url}`)
         .then(res => {
           this.circleData = res.data;
-          console.log(res.data);
+          if (this.circleData.length>0) {
+            this.getDetectData();
+          }
         });
+    },
+    getDetectData:async function(){
+
+      await this.$axios
+        .get(`https://61.56.172.10/timely-data/?pond_id=${this.poolid}`)
+        .then(res => {
+          this.detectData = res.data;
+        });
+
     },
     showadd: function() {
       this.addparm.started_date = undefined;
@@ -591,7 +557,7 @@ export default {
           this.$toast.error("error:" + error, { duration: 2000 });
         });
     },
-    handleSelectionChange(selection, row) {
+    handleSelectionChange:async function(selection, row) {
       //清除
       this.$refs.circletable.clearSelection();
       //選到當前
@@ -599,9 +565,12 @@ export default {
         this.$refs.circletable.toggleRowSelection(row);
       }
     },
-    handleCurrentChange(val) {
+    handleCurrentChange:async function(val) {
       this.$refs.circletable.clearSelection();
       this.$refs.circletable.toggleRowSelection(val);
+      if (val!=null) {
+        await this.getDetectData();
+      }
       // this.currentRow = val;
     }
   },
