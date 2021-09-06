@@ -14,7 +14,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 v-model="sdate"
-                label="選擇日期"
+                label="選擇起日"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
@@ -25,6 +25,32 @@
             <v-date-picker
               v-model="sdate"
               @input="menu_startdate = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" md="2">
+          <v-menu
+            v-model="menu_enddate"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="edate"
+                label="選擇訖日"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+                @click:prepend="() => (edate = getNowDate())"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="edate"
+              @input="menu_enddate = false"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -173,7 +199,11 @@ export default {
       item2: [{ name: "", items: [] }],
       //---日曆
       menu_startdate: false,
+      menu_enddate:false,
       sdate: dayjs(new Date(2021, 0, 11))
+        .add(-10, "day")
+        .format("YYYY-MM-DD"),
+      edate:dayjs(new Date(2021, 0, 11))
         .add(-10, "day")
         .format("YYYY-MM-DD"),
       chartmin:undefined,
@@ -212,6 +242,7 @@ export default {
     console.log("req", this.req);
     //
     this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
+    this.edate = this.req.hasOwnProperty('edate') && String(this.req.edate).length > 0 ? this.req.edate : this.sdate; 
     this.sel_main =
       Number(this.req.sel_main) > 0 ? Number(this.req.sel_main) : 0;
     this.sel_area =
@@ -305,9 +336,12 @@ export default {
       //mark line 先歸零
       this.markdata.maxline = -999;
       this.markdata.minline = -999;
+      //清空itm
+      this.item=[];
       console.log(
         "api 參數",
         this.sdate,
+        this.edate,
         this.sel_pool,
         this.sel_area,
         this.sel_main,
@@ -331,7 +365,7 @@ export default {
       //抓折線圖資料囉
       let parm = {
         started_date: this.sdate,
-        ended_date: this.sdate,
+        ended_date: this.edate,
         factory_id: this.sel_main,
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
@@ -354,6 +388,7 @@ export default {
           
           // data2.items.forEach(function(x) {//給表格用的資料
           // });
+          
           this.item = res.data;
           this.item2 = data2;
           //抓上下限資料
@@ -375,9 +410,9 @@ export default {
         .then(res => {
           // this.allcols = Object.assign([], res.data);
           var lmtitem =  res.data.filter(x=>x.name_ch==this.defitem);
-          if(lmtitem.length>0){
-            this.markdata.maxline = lmtitem[0].critical_max;
-            this.markdata.minline = lmtitem[0].critical_min;
+          if(lmtitem.length>0){//不可以有null值
+            this.markdata.maxline = (lmtitem[0].critical_max==null)?-999:lmtitem[0].critical_max;
+            this.markdata.minline = (lmtitem[0].critical_min==null)?-999:lmtitem[0].critical_min;
           }else{
             this.markdata.maxline = -999;
             this.markdata.minline = -999;

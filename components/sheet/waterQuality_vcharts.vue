@@ -217,7 +217,7 @@ export default {
         symbol: ["circle", "arrow"],
         data: [
           {
-            yAxis: this.markdata.maxline,
+            yAxis: (this.markdata.maxline==null)?-999:this.markdata.maxline,
             label:{
               formatter:"警戒線：{c}",
               fontSize: 20,
@@ -229,7 +229,7 @@ export default {
             }
           },
           {
-            yAxis: this.markdata.minline,
+            yAxis: (this.markdata.minline==null)?-999:this.markdata.minline,
             label:{
               show:true,
               formatter:"警戒線：{c}",
