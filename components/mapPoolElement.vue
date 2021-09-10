@@ -5,7 +5,8 @@
       :style="item.state == '無' ? 'color:white;' : ''"
       >{{ item.name }}-{{ item.state }}
     </span>
-
+    <br/>
+    <span style="color:grey;" v-if="item.state.length > 0" v-show="showSelect && item.state != ''" :style="item.state == '無' ? 'color:white;' : ''">{{item.updated_time}}</span>
     <v-select
       v-model="selectedItem"
       :items="selitem.filter(x => x.name != 'default')"

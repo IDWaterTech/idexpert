@@ -48,6 +48,14 @@
               中央走道
             </td>
           </tr>
+          <tr>
+            <td
+              class="text-right"
+              :colspan="pools[Object.keys(pools)[0]].length"
+            >
+              最後更新時間：{{ MaxDate }}
+            </td>
+          </tr>
         </table>
       </v-col>
     </v-row>
@@ -56,6 +64,7 @@
 
 <script>
 import mappoolelement from "@/components/mapPoolElement.vue";
+import dayjs from "dayjs";
 import https from "https";
 export default {
   layout: "emptynologin",
@@ -104,7 +113,7 @@ export default {
       editState: false //編輯池況
     };
   },
-  props:{
+  props: {
     showedit: {
       type: Boolean,
       default: false
@@ -150,6 +159,28 @@ export default {
         ? !this.editState[data]
         : true;
       console.log(this.editState);
+    }
+  },
+  computed: {
+    MaxDate: function() {
+      var rows1 = Object.keys(this.pools); //[a,b,c,d]
+
+      let alldate = [];
+      rows1.forEach(row =>
+        alldate.push(
+          ...this.pools[row]
+            .filter(
+              x => x.state !== "default" && x.state !== "無" && x.state !== ""
+            )
+            .map(x => {
+              return x.updated_time;
+            })
+        )
+      );
+
+      let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
+      // console.log(dayjs(minDate).format('YYYY-MM-DD HH:mm:ss'),dayjs(maxDate).format('YYYY-MM-DD HH:mm:ss'));
+      return dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
     }
   }
 };

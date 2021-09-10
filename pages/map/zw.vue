@@ -17,7 +17,7 @@
                   : 'max-width:50px;'
               "
             >
-            <mappoolelement
+              <mappoolelement
                 :item="itm"
                 :selitem="statcolor.filter(x => x.name != 'default')"
                 :showSelect="showedit"
@@ -50,7 +50,7 @@
                   : 'max-width:50px;'
               "
             >
-            <mappoolelement
+              <mappoolelement
                 :item="itm"
                 :selitem="statcolor.filter(x => x.name != 'default')"
                 :showSelect="showedit"
@@ -64,6 +64,11 @@
               <span v-else></span> -->
             </td>
           </tr>
+          <tr>
+            <td class="text-right" :colspan="pools.area2[Object.keys(pools.area2)[0]].length">
+              最後更新時間：{{ MaxDate }}
+            </td>
+          </tr>
         </table>
       </v-col>
     </v-row>
@@ -72,6 +77,7 @@
 
 <script>
 import mappoolelement from "@/components/mapPoolElement.vue";
+import dayjs from "dayjs";
 import https from "https";
 export default {
   layout: "emptynologin",
@@ -137,12 +143,12 @@ export default {
       },
       statcolor: [
         { name: "無", color: "white" },
-        { name: "default", color: "grey" },
+        { name: "default", color: "grey" }
       ],
       editState: false //編輯池況
     };
   },
-  props:{
+  props: {
     showedit: {
       type: Boolean,
       default: false
@@ -178,11 +184,45 @@ export default {
     await this.$axios
       .get("https://61.56.172.10/pond-state/", { httpsAgent: agent })
       .then(res => {
-        this.statcolor = res.data.filter(x=>x.name!="");//不提供保留項
+        this.statcolor = res.data.filter(x => x.name != ""); //不提供保留項
       })
       .catch(error => {
         alert("error:" + error.message);
       });
+  },
+  computed: {
+    MaxDate: function() {
+      var rows1 = Object.keys(this.pools.area1); //[a,b,c,d]
+      var rows2 = Object.keys(this.pools.area2); //[a,b,c,d]
+
+      let alldate = [];
+      rows1.forEach(row =>
+        alldate.push(
+          ...this.pools.area1[row]
+            .filter(
+              x => x.state !== "default" && x.state !== "無" && x.state !== ""
+            )
+            .map(x => {
+              return x.updated_time;
+            })
+        )
+      );
+      rows2.forEach(row =>
+        alldate.push(
+          ...this.pools.area2[row]
+            .filter(
+              x => x.state !== "default" && x.state !== "無" && x.state !== ""
+            )
+            .map(x => {
+              return x.updated_time;
+            })
+        )
+      );
+      // let minDate = new Date(Math.min(...alldate.map(date => new Date(date))));
+      let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
+      // console.log(dayjs(minDate).format('YYYY-MM-DD HH:mm:ss'),dayjs(maxDate).format('YYYY-MM-DD HH:mm:ss'));
+      return dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+    }
   }
 };
 </script>
