@@ -197,6 +197,7 @@
           </el-table-column>
         </el-table>
       </v-col>
+      <!-- 蝦況 -->
       <v-col cols="12" sm="4">
         <v-card min-height="300px" elevation="3" class="mx-3" tile>
           <v-card-title
@@ -204,17 +205,161 @@
             style="background-color:#64B5F6;color:white;"
           >
             蝦況
+            <v-spacer></v-spacer>
+            <v-icon
+              @click="showdialog_imgdialog"
+              :disabled="!poolid"
+              color="white"
+              >mdi-image-plus</v-icon
+            >
           </v-card-title>
           <v-divider></v-divider>
           <v-card-title>
-            <ul>
-              <li>均長</li>
-              <li>重量</li>
-              <li>餐數</li>
-            </ul>
+            <div v-if="shirimpData.length > 0">
+              <v-row>
+                <v-col
+                  cols="12"
+                  lg="6"
+                  v-for="(item, index) in shirimpData[0].item"
+                  :key="index"
+                  class="py-1"
+                >
+                  <v-btn block color="#64B5F6" outlined style="font-size:0.8em;">
+                    {{`${item.name_ch}:${item.value}`}}
+                  </v-btn>
+                  <!-- <v-chip class="ma-2" color="#64B5F6" label outlined>
+                    {{ item.name_ch }}：{{ item.value }}
+                  </v-chip> -->
+                </v-col>
+                <v-col cols="12" sm="12" class="text-center">
+                  <h5>
+                    {{ shirimpData[0].inspected_time }}
+                  </h5>
+                  <!-- 圖：{{shirimpData[0].image_url}}<br/> -->
+                </v-col>
+                <v-col cols="12" sm="12">
+                  <img
+                    v-img
+                    :src="shirimpData[0].image_url"
+                    v-if="shirimpData[0].image_url"
+                    width="100%"
+                    height="300px"
+                  />
+                </v-col>
+              </v-row>
+            </div>
+            <div class="text-center my-2" v-else>
+              <h4 style="color:#666666;">查無資料</h4>
+            </div>
           </v-card-title>
         </v-card>
+        <v-dialog v-model="imgdialog" max-width="500px">
+          <v-form ref="imgform" v-model="imgvalid" lazy-validation>
+            <v-card>
+              <!-- style="background-color:#64B5F6;color:white;" -->
+              <v-card-title>蝦況</v-card-title><v-divider></v-divider>
+              <v-card-text>
+                <!-- 日期時間 -->
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-menu
+                      v-model="menu_imgdate"
+                      :close-on-content-click="false"
+                      :nudge-right="40"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="auto"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="imgdata.imgdate"
+                          label="選擇日期(必選)"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          :rules="rules.require"
+                          @click:prepend="
+                            () => (imgdata.imgdate = getNowDate())
+                          "
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        v-model="imgdata.imgdate"
+                        @input="menu_imgdate = false"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="時間(必選)"
+                      v-model="imgdata.imgtime"
+                      value=""
+                      type="time"
+                      prepend-icon="mdi-timeline-clock-outline"
+                      @click:prepend="() => (imgdata.imgtime = getNowTime())"
+                      :rules="rules.require"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-file-input
+                  v-model="imgfiles"
+                  :rules="rules.filesize"
+                  accept="image/*"
+                  show-size
+                  placeholder="請選擇欲上傳圖片檔"
+                  prepend-icon="mdi-camera"
+                  label="蝦況圖片(必選)"
+                  @change="chgimgurl"
+                ></v-file-input>
+                <img
+                  v-img
+                  :key="imgurlkey"
+                  :src="showimgurl"
+                  v-if="showimgurl !== ''"
+                  width="100%"
+                />
+                <!-- <v-img v-img :key="imgurlkey" :src="showimgurl" v-if="showimgurl!==''" width="100%"></v-img> -->
+              </v-card-text>
+              <v-card-text>
+                <div v-for="(item, index) in imgdata.item" :key="index">
+                  <v-row>
+                    <v-col cols="12" sm="6">
+                      {{ item.name }}
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                      <el-input-number
+                        :id="item.name"
+                        :ref="item.name"
+                        class="ml-2"
+                        v-model="
+                          imgdata.item.filter(x => x.name == item.name)[0].value
+                        "
+                        size="mini"
+                        :precision="2"
+                        :step="1"
+                        :min="num_min"
+                        :max="num_max"
+                      ></el-input-number>
+                    </v-col>
+                  </v-row>
+                </div>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  tile
+                  color="primary"
+                  @click="submit_imgdialog"
+                  :disabled="false"
+                  >上傳</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-dialog>
       </v-col>
+      <!-- 數據 -->
       <v-col cols="12" sm="8" style="height:500px;">
         <v-card min-height="500px" elevation="3" class="mx-3" tile>
           <v-card-title
@@ -236,6 +381,12 @@
                 <v-tab-item :value="'tab-' + tabitems[0]">
                   <v-row>
                     <v-col cols="12">
+                      <div
+                        class="text-center mt-5"
+                        v-if="detectData.length == 0"
+                      >
+                        <h2>查無資料</h2>
+                      </div>
                       <v-slide-group
                         v-model="slidemodel"
                         :show-arrows="'always'"
@@ -286,7 +437,7 @@
                             </div>
                             <v-divider></v-divider>
                             <v-card-subtitle class=" py-2 px-2">
-                              共：{{item.rows}}筆
+                              共：{{ item.rows }}筆
                             </v-card-subtitle>
                             <v-scale-transition>
                               <v-icon
@@ -369,13 +520,20 @@
 import dayjs from "dayjs";
 import _ from "lodash";
 import "element-ui/lib/theme-chalk/index.css";
+// import axios from "~/plugins/axios";
 export default {
   layout: "emptynologin",
   middleware: "auth",
   data() {
     return {
       req: this.$route.query,
-      rules: { require: [v => !!v || "*必要項目"] },
+      rules: {
+        require: [v => !!v || "*必要項目"],
+        filesize: [
+          value => !value || value.size < 2000000 || "檔案大小必須小於 2 MB!",
+          v => !!v || "*必要項目"
+        ]
+      },
       poolid: this.$route.query.id,
       poolName: "",
       maindata: [],
@@ -389,22 +547,24 @@ export default {
         // }
       ],
       multipleSelection: [],
-      tabitems: ["檢測數據", "計算數據","當前氣象資訊"],
+      tabitems: ["檢測數據", "計算數據", "當前氣象資訊"],
       currentItem: "檢測數據",
       detectData: [
-        {
-          name_ch: "測試",
-          value: 678,
-          rows: "100",
-          min: 0,
-          max: 999,
-          critical_min: 200,
-          critical_max: 800,
-          warning_min: 300,
-          warning_max: 500
-        }
+        // {
+        //   name_ch: "測試",
+        //   value: 678,
+        //   rows: "100",
+        //   min: 0,
+        //   max: 999,
+        //   critical_min: 200,
+        //   critical_max: 800,
+        //   warning_min: 300,
+        //   warning_max: 500
+        // }
       ],
       slidemodel: null,
+      //蝦況
+      shirimpData: [],
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
@@ -416,7 +576,30 @@ export default {
       addDialog: false,
       addvalid: false,
       menu_adddate: false,
-      addparm: { started_date: undefined, name: undefined }
+      addparm: { started_date: undefined, name: undefined },
+      //蝦況
+      imgvalid: false,
+      imgdialog: false,
+      imgfiles: [],
+      menu_imgdate: false,
+      imgdata: {
+        imgdate: "",
+        imgtime: "",
+        item: [
+          { name: "飼料殘餘量", value: undefined },
+          { name: "健康狀況(活躍度)", value: undefined },
+          { name: "腸線", value: undefined },
+          { name: "均體長大小", value: undefined },
+          { name: "肝胰腺顏色", value: undefined },
+          { name: "增料比例", value: undefined },
+          { name: "殼的狀態", value: undefined },
+          { name: "均體重", value: undefined }
+        ]
+      },
+      num_min: 0,
+      num_max: 999,
+      showimgurl: "",
+      imgurlkey: 0 //強迫更新用
     };
   },
   methods: {
@@ -433,6 +616,10 @@ export default {
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
+    },
+    getNowTime: function() {
+      let mytime = dayjs().format("HH:mm");
+      return mytime;
     },
     delcircle: async function(data) {
       let id = data.id;
@@ -474,7 +661,6 @@ export default {
       return obj;
     },
     mainchange: async function() {
-      this.detectData=[];
       //取得循環資料
       await this.getCircleData();
     },
@@ -503,6 +689,14 @@ export default {
       }
     },
     getCircleData: async function() {
+      //取得循環資料-取得檢測數據、取得蝦況
+      //歸零
+      this.circleData = []; //循環
+      this.detectData = []; //檢測
+      this.shirimpData = []; //蝦況
+      if (this.poolid == undefined) {
+        return;
+      }
       let parm = {
         pond_id: this.poolid,
         started_date: this.started_date,
@@ -516,19 +710,28 @@ export default {
         .get(`https://61.56.172.10/aquaculture-record/?${parm_url}`)
         .then(res => {
           this.circleData = res.data;
-          if (this.circleData.length>0) {
+          if (this.circleData.length > 0) {
             this.getDetectData();
+            this.getshirimpData();
           }
         });
     },
-    getDetectData:async function(){
-
+    getDetectData: async function() {
       await this.$axios
         .get(`https://61.56.172.10/timely-data/?pond_id=${this.poolid}`)
         .then(res => {
           this.detectData = res.data;
         });
-
+    },
+    getshirimpData: async function() {
+      //蝦況
+      await this.$axios
+        .get(
+          `https://61.56.172.10/shrimp-status/?pond_id=${this.poolid}&is_last=true`
+        )
+        .then(res => {
+          this.shirimpData = res.data;
+        });
     },
     showadd: function() {
       this.addparm.started_date = undefined;
@@ -557,7 +760,78 @@ export default {
           this.$toast.error("error:" + error, { duration: 2000 });
         });
     },
-    handleSelectionChange:async function(selection, row) {
+    showdialog_imgdialog: async function() {
+      // this.imgdata.imgdate="";
+      // this.imgdata.imgtime="";
+      this.imgdata.item.forEach(item => {
+        item.value = undefined;
+      });
+      // this.imgfiles = [];
+      // this.showimgurl="";
+
+      if (this.$refs.imgform != undefined) {
+        this.$refs.imgform.reset();
+      }
+      this.imgdialog = true;
+    },
+    submit_imgdialog: async function() {
+      // let parm = this.imgdata;
+      let formData = new FormData();
+      const updUser = this.$auth.$state.user.email;
+      let additem = [];
+      for (const key in Object.keys(this.imgdata.item)) {
+        if (
+          this.imgdata.item[key].hasOwnProperty("value") &&
+          this.imgdata.item[key].value != undefined
+        ) {
+          additem.push(this.imgdata.item[key]);
+        }
+      }
+      let param = {
+        inspected_time: `${this.imgdata.imgdate} ${this.imgdata.imgtime}:00`,
+        pond_id: this.poolid,
+        created_user: updUser,
+        item: additem
+        // image:this.imgfiles
+      };
+      console.log(param);
+      formData.append("param", JSON.stringify(param));
+      // parm全部加入
+      // for (const key in parm) {
+      //   formData.append(key,parm[key]);
+      // }
+      if (!this.$refs.imgform.validate()) {
+        return;
+      }
+
+      formData.append("image", this.imgfiles); //required
+
+      let config = { headers: { "Content-Type": "multipart/form-data" } };
+      await this.$axios
+        .post("https://61.56.172.10/shrimp-status/", formData, config)
+        .then(res => {
+          console.log("API:" + res.request.responseURL);
+          if (res.data == "新增成功") {
+            this.getshirimpData(); //更新蝦況
+            this.imgdialog = false;
+            this.$toast.success("新增成功", { duration: 2000 });
+          } else {
+            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
+    },
+    chgimgurl: function() {
+      this.imgurlkey += 1;
+      this.showimgurl = "";
+      this.showimgurl =
+        this.imgfiles != null && this.imgfiles.length != 0
+          ? URL.createObjectURL(this.imgfiles)
+          : "";
+    },
+    handleSelectionChange: async function(selection, row) {
       //清除
       this.$refs.circletable.clearSelection();
       //選到當前
@@ -565,10 +839,10 @@ export default {
         this.$refs.circletable.toggleRowSelection(row);
       }
     },
-    handleCurrentChange:async function(val) {
+    handleCurrentChange: async function(val) {
       this.$refs.circletable.clearSelection();
       this.$refs.circletable.toggleRowSelection(val);
-      if (val!=null) {
+      if (val != null) {
         await this.getDetectData();
       }
       // this.currentRow = val;
@@ -606,8 +880,9 @@ export default {
 }
 </style>
 <style>
-  .el-table--striped .el-table__body tr.el-table__row--striped.current-row td, .el-table__body tr.current-row > td {
-    color: #000000;
-    background-color: #FFF09D !important;
-  }
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
+.el-table__body tr.current-row > td {
+  color: #000000;
+  background-color: #fff09d !important;
+}
 </style>
