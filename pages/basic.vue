@@ -917,7 +917,7 @@ export default {
       headers: [
         //  { text: "id", value: "id", groupable: false },
         { text: "養殖池", value: "name", groupable: false },
-        { text: "體積(頓)", value: "volume", groupable: false },
+        { text: "體積/水量(頓)", value: "volume", groupable: false },
         // { text: "密度", value: "density", groupable: false },
         { text: "深度(m)", value: "depth", groupable: false },
         { text: "小池數(個)", value: "num", groupable: false },
