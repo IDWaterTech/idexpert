@@ -9,7 +9,7 @@
           選擇條件
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-container class="grey lighten-5">
+          <v-container class="grey lighten-5" fluid>
             <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
                 <!-- <v-img v-img
@@ -922,7 +922,9 @@ export default {
         { text: "深度(m)", value: "depth", groupable: false },
         { text: "小池數(個)", value: "num", groupable: false },
         { text: "曝氣盤數(個)", value: "aeration_tray_num", groupable: false },
-        { text: "狀態", value: "state", groupable: false }
+        { text: "狀態", value: "state", groupable: false },
+        { text: "預估放養隻數", value: "estimated_num", groupable: false },
+        { text: "養殖密度", value: "num_per_unit", groupable: false }
         // { text: "放養日期", value: "started_date", groupable: false },
         // {
         //   text: "預估收成日期",

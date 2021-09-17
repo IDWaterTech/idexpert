@@ -136,6 +136,46 @@
                   ></v-date-picker>
                 </v-menu>
               </v-card-text>
+              <v-card-text>
+                <v-row align="center">
+                  <!-- 體積 -->
+                  <v-col cols="3">
+                    <v-text-field
+                      v-model="add_volume"
+                      label="體積(水量)"
+                      type="number"
+                      disabled
+                      background-color="blue-grey lighten-4"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="1"  class="text-center">X</v-col>
+                  <!-- 密度 -->
+                  <v-col cols="3">
+                    <v-text-field
+                      v-model.number="addparm.num_per_unit"
+                      label="密度"
+                      type="number"
+                      :rules="rules.require"
+                      @change="()=>{addparm.estimated_num= add_volume * addparm.num_per_unit}"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="text-center">=</v-col>
+                  <!-- 初始放苗量(估計) -->
+                  <v-col cols="4">
+                    <v-text-field
+                      v-model="addparm.estimated_num"
+                      label="初始放苗量(估計)"
+                      type="number"
+                      :rules="rules.require"
+                      disabled
+                      background-color="blue-grey lighten-4"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="primary" @click="submitadd">確認</v-btn>
@@ -182,6 +222,16 @@
             prop="name"
             align="center"
           ></el-table-column>
+           <el-table-column
+            label="養殖密度"
+            prop="num_per_unit"
+            align="center"
+          ></el-table-column>
+          <el-table-column
+            label="預估放養隻數"
+            prop="estimated_num"
+            align="center"
+          ></el-table-column>
           <el-table-column fixed="right" label="操作" width="100">
             <template slot-scope="scope">
               <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
@@ -224,8 +274,13 @@
                   :key="index"
                   class="py-1"
                 >
-                  <v-btn block color="#64B5F6" outlined style="font-size:0.8em;">
-                    {{`${item.name_ch}:${item.value}`}}
+                  <v-btn
+                    block
+                    color="#64B5F6"
+                    outlined
+                    style="font-size:0.8em;"
+                  >
+                    {{ `${item.name_ch}:${item.value}` }}
                   </v-btn>
                   <!-- <v-chip class="ma-2" color="#64B5F6" label outlined>
                     {{ item.name_ch }}：{{ item.value }}
@@ -576,7 +631,8 @@ export default {
       addDialog: false,
       addvalid: false,
       menu_adddate: false,
-      addparm: { started_date: undefined, name: undefined },
+      add_volume: undefined,
+      addparm: { started_date: undefined, name: undefined, num_per_unit: undefined , estimated_num: undefined },
       //蝦況
       imgvalid: false,
       imgdialog: false,
@@ -683,6 +739,7 @@ export default {
           }
         });
       });
+      //把區域名稱加進去
       if (getedItem.hasOwnProperty("name")) {
         this.poolName = getedItem.name;
         console.log(getedItem);
@@ -733,15 +790,39 @@ export default {
           this.shirimpData = res.data;
         });
     },
-    showadd: function() {
+    showadd: async function() {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
-      this.addDialog = true;
+      this.addparm.num_per_unit= undefined;
+      this.addparm.estimated_num = undefined;
+      if (this.poolid==undefined) {
+        this.$toast.info(`失敗：請先選擇養殖池`, {
+              duration: 2000
+            });
+        return;
+      }
+      //
+      await this.$axios
+        .get("https://61.56.172.10/ponds-data/")
+        .then(res => {
+          var items = res.data.filter(x => x.id == this.poolid);
+          if (items.length == 1) {
+            this.add_volume = items[0].volume;
+            this.addDialog = true;
+          } else {
+              this.$toast.success(`失敗：無法取得體積資料，池id:${this.poolid}}`, {
+              duration: 2000
+            });
+          }
+        })
+        .finally(() => {
+          /* 不論失敗成功皆會執行 */
+        });
     },
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
       this.addparm.created_user = updUser;
-      this.addparm.pond_id = this.req.id;
+      this.addparm.pond_id = this.poolid;
       let parm = this.addparm;
       console.log(parm);
       await this.$axios
