@@ -105,7 +105,7 @@
                   type="number"
                   step="1"
                   min="0"
-                  max="999"
+                  max="99999"
                   @input="edit_mincheck"
                 ></v-text-field>
               </v-col>
@@ -120,7 +120,7 @@
                   type="number"
                   step="1"
                   min="0"
-                  max="999"
+                  max="99999"
                   @input="edit_maxcheck"
                 ></v-text-field>
               </v-col> -->
@@ -146,7 +146,7 @@
                       range
                       :marks="limit.marks"
                       :min="0"
-                      :max="999"
+                      :max="99999"
                     >
                     </el-slider>
                   </v-col>
@@ -300,7 +300,7 @@
                     type="number"
                     step="1"
                     min="0"
-                    max="999"
+                    max="99999"
                     @input="add_lmtmincheck"
                   ></v-text-field>
                 </v-col>
@@ -315,7 +315,7 @@
                     type="number"
                     step="1"
                     min="0"
-                    max="999"
+                    max="99999"
                     @input="add_lmtmaxcheck"
                   ></v-text-field>
                 </v-col> -->
@@ -343,7 +343,7 @@
                       range
                       :marks="limit.marks"
                       :min="0"
-                      :max="999"
+                      :max="99999"
                     >
                     </el-slider>
                   </v-col>
@@ -351,7 +351,7 @@
                     ><v-text-field
                       v-model.number="minmax[1]"
                       type="number"
-                      :min="minmax[0]" :max="999"
+                      :min="minmax[0]" :max="99999"
                       @input="inputchk_addmax"
                       @change="
                         () => {
@@ -544,7 +544,7 @@ export default {
         item: "",
         value: "",
         min: 0,
-        max: 999
+        max: 99999
       },
       addDialog: false,
       addItem: {
@@ -552,11 +552,11 @@ export default {
         item: "",
         value: "",
         min: 0,
-        max: 999,
+        max: 99999,
         critical_min:0,
-        critical_max:999,
+        critical_max:99999,
         warning_min:0,
-        warning_max:999
+        warning_max:99999
       },
       //form
       valid: true,
@@ -564,15 +564,15 @@ export default {
       //最大最小值
       limit: {
         key: 0,
-        // minmax: [0, 999],
+        // minmax: [0, 99999],
         marks: {
           0: "0",
-          100: "100",
-          200: "200",
-          400: "400",
-          600: "600",
-          800: "800",
-          1000: "1000"
+          1000: "1000",
+          2000: "2000",
+          4000: "4000",
+          6000: "6000",
+          8000: "8000",
+          10000: "10000"
         }
       },
       //危險min max
@@ -580,12 +580,12 @@ export default {
         key:0,
         marks: {
           0: "0",
-          100: "100",
-          200: "200",
-          400: "400",
-          600: "600",
-          800: "800",
-          1000: "1000"
+          1000: "1000",
+          2000: "2000",
+          4000: "4000",
+          6000: "6000",
+          8000: "8000",
+          10000: "10000"
         }
       },
       //警戒min max
@@ -593,12 +593,12 @@ export default {
         key:0,
         marks: {
           0: "0",
-          100: "100",
-          200: "200",
-          400: "400",
-          600: "600",
-          800: "800",
-          1000: "1000"
+          1000: "1000",
+          2000: "2000",
+          4000: "4000",
+          6000: "6000",
+          8000: "8000",
+          10000: "10000"
         }
       }
     };
@@ -703,7 +703,7 @@ export default {
     editShow: function(data) {
       // data
       // group: "water"
-      // lmtmax: 999
+      // lmtmax: 99999
       // lmtmin: 0
       // max: null
       // min: null
@@ -713,7 +713,7 @@ export default {
       // name_en: "亞硝酸鹽清洗電壓"
       // unit: "V"
       data.min = data.min == null ? 0 : data.min;
-      data.max = data.max == null ? 999 : data.max;
+      data.max = data.max == null ? 99999 : data.max;
       data.critical_min= data.critical_min == null ? data.min : data.critical_min;
       data.critical_max= data.critical_max == null ? data.max : data.critical_max;
       data.warning_min= data.warning_min == null ? data.critical_min : data.warning_min;
@@ -800,11 +800,11 @@ export default {
       this.addItem.class = data;
       this.addItem.name_en = this.addItem.name_ch = this.addItem.unit = "";
       this.addItem.min = 0;
-      this.addItem.max = 999;
+      this.addItem.max = 99999;
       this.addItem.critical_min = 0;
-      this.addItem.critical_max =999;
+      this.addItem.critical_max =99999;
       this.addItem.warning_min = 0;
-      this.addItem.warning_max = 999;
+      this.addItem.warning_max = 99999;
       
       this.addDialog = true;
     },
@@ -825,8 +825,8 @@ export default {
       this.$nextTick(() => {
         var objitem = this.editedItem.max;
         this.editedItem.max =
-          objitem > 999
-            ? 999
+          objitem > 99999
+            ? 99999
             : objitem < this.editedItem.min
             ? Number(this.editedItem.min)
             : objitem;
@@ -847,11 +847,11 @@ export default {
       this.addItem.max = val ? parseFloat(val) : 0;
       var objitem = this.addItem.max;
       this.$nextTick(() => {
-        //大於999，等於999
+        //大於999，等於99999
         //小於最小值時，等於最小值
         //其餘等於原值
         this.addItem.max =
-          objitem > 999 ? 999 : objitem <= this.addItem.min ? Number(this.addItem.min) : objitem;
+          objitem > 99999 ? 99999 : objitem <= this.addItem.min ? Number(this.addItem.min) : objitem;
       });
     },
     // add_lmtmincheck(val) {
@@ -871,8 +871,8 @@ export default {
     //   this.$nextTick(() => {
     //     var objitem = this.addItem.lmtmax;
     //     this.addItem.lmtmax =
-    //       objitem > 999
-    //         ? 999
+    //       objitem > 99999
+    //         ? 99999
     //         : objitem < this.addItem.lmtmin
     //         ? Number(this.addItem.lmtmin)
     //         : objitem;

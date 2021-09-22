@@ -475,7 +475,7 @@ export default {
       addData: [],
       num: {},
       num_min: 0,
-      num_max: 999,
+      num_max: 99999,
       //form
       valid: true,
       rules: { require: [v => !!v || "*必要項目"] }
@@ -741,7 +741,7 @@ export default {
       if (colitem.length == 1) {
         this.num = {};//清空
         this.num_min = (colitem[0].min!=undefined || typeof(colitem[0].min)=='number')?colitem[0].min:0;
-        this.num_max = (colitem[0].max!=undefined || typeof(colitem[0].max)=='number')?colitem[0].max:999;
+        this.num_max = (colitem[0].max!=undefined || typeof(colitem[0].max)=='number')?colitem[0].max:99999;
         this.addDialog = true;
       } else {
         this.$toast.error(`查無項目min、max資料`, { duration: 2000 });
