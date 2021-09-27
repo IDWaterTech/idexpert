@@ -162,16 +162,26 @@
           <v-divider></v-divider>
           <v-card-text>
             <ol>
-              <div v-for="it in Object.keys(item)" :key="it">
+              <div
+                v-for="it in Object.keys(item).filter(
+                  x => !['estimated_num', 'num_per_unit'].includes(x)
+                )"
+                :key="it"
+              >
                 <li
-                  v-if="itemname.filter(x => x.name == it).length>0 && itemname.filter(x => x.name == it)[0].visible == true"
+                  v-if="
+                    itemname.filter(x => x.name == it).length > 0 &&
+                      itemname.filter(x => x.name == it)[0].visible == true
+                  "
                   style="font-weight:500;"
                 >
                   {{ itemname.filter(x => x.name == it)[0].text }}：{{
                     item[it]
                   }}
                 </li>
-                <li v-if="itemname.filter(x => x.name == it).length==0">{{it}}-{{item[it]}}</li>
+                <li v-if="itemname.filter(x => x.name == it).length == 0">
+                  {{ it }}-{{ item[it] }}
+                </li>
               </div>
             </ol>
           </v-card-text>
@@ -229,39 +239,94 @@
           >
           <v-divider></v-divider>
           <v-card-text>
-            <v-text-field
-              autocomplete="off"
-              v-model="edititem_pool.parm.name"
-              :rules="rules.require"
-              clearable
-              dense
-            >
-              <template slot="prepend"
-                ><span style="width:50px;">名稱</span></template
-              >
-            </v-text-field>
-            <v-text-field
-              autocomplete="off"
-              v-model="edititem_pool.parm.volume"
-              :rules="rules.require"
-              type="number"
-              clearable
-            >
-              <template slot="prepend"
-                ><span style="width:50px;">體積</span></template
-              >
-            </v-text-field>
-            <v-text-field
-              autocomplete="off"
-              v-model="edititem_pool.parm.depth"
-              :rules="rules.require"
-              type="number"
-              clearable
-            >
-              <template slot="prepend"
-                ><span style="width:50px;">深度</span></template
-              >
-            </v-text-field>
+            <v-row>
+              <!-- 名稱 -->
+              <v-col cols="12">
+                <v-text-field
+                  autocomplete="off"
+                  v-model="edititem_pool.parm.name"
+                  :rules="rules.require"
+                  clearable
+                  filled
+                  dense
+                >
+                  <span style="width:50px;" slot="prepend">名稱</span>
+                </v-text-field>
+              </v-col>
+              <!-- 體積 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model="edititem_pool.parm.volume"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                >
+                  <span style="width:50px;" slot="prepend">體積</span>
+                </v-text-field>
+              </v-col>
+              <!-- 深度 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.depth"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                >
+                  <span style="width:50px;" slot="prepend">深度</span>
+                </v-text-field>
+              </v-col>
+              <!-- 池子數 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.num"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  ><span style="width:50px;" slot="prepend">池子數</span>
+                </v-text-field>
+              </v-col>
+              <!-- 曝氣盤數 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.aeration_tray_num"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  required
+                >
+                  <span style="width:50px;" slot="prepend">曝氣盤</span>
+                </v-text-field>
+              </v-col>
+              <!-- 滿水高度 v-model.number=""-->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  required
+                >
+                  <span style="width:70px;" slot="prepend">滿水高度</span>
+                </v-text-field>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-text>
             <!-- <v-text-field
               autocomplete="off"
               v-model="edititem_pool.parm.density"
@@ -272,28 +337,7 @@
                 ><span style="width:50px;">密度</span></template
               >
             </v-text-field> -->
-            <v-text-field
-              autocomplete="off"
-              v-model="edititem_pool.parm.num"
-              :rules="rules.require"
-              type="number"
-              clearable
-            >
-              <template slot="prepend"
-                ><span style="width:50px;">池子數</span></template
-              >
-            </v-text-field>
-            <v-text-field
-              autocomplete="off"
-              v-model="edititem_pool.parm.aeration_tray_num"
-              :rules="rules.require"
-              type="number"
-              clearable
-            >
-              <template slot="prepend"
-                ><span style="width:50px;">曝氣盤數</span></template
-              >
-            </v-text-field>
+
             <v-text-field
               autocomplete="off"
               v-model="edititem_pool.parm.video_url"
@@ -320,7 +364,9 @@
           <v-divider></v-divider>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="poolsubmit(edititem_pool.type)">送出</v-btn>
+            <v-btn color="primary" @click="poolsubmit(edititem_pool.type)"
+              >送出</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-form>
@@ -340,7 +386,15 @@ export default {
   middleware: "auth",
   data() {
     return {
-      rules: { require: [v => !!v || "*必要項目"] },
+      rules: {
+        require: [v => !!v || "*必要項目"],
+        requireNum: [
+          v => {
+            if (!!v || !isNaN(parseFloat(v))) return true;
+            return "必要項目";
+          }
+        ]
+      },
       maindata: [],
       sel_main: "",
       sel_area: "",
@@ -370,8 +424,7 @@ export default {
         { name: "num", text: "小池數(個)", visible: true },
         { name: "aeration_tray_num", text: "曝氣盤數(個)", visible: true },
         { name: "state", text: "狀態", visible: true },
-        { name: "video_url", text: "觀察網影像", visible: true },
-
+        { name: "video_url", text: "觀察網影像", visible: true }
       ]
     };
   },
@@ -591,17 +644,33 @@ export default {
       this.edititem_pool.parm = {};
       this.edititem_pool.parm.pond_area_id = this.sel_area;
       this.edititem_pool.parm.pond_state_id = 3; //預設狀態=空池，id=3
+      if (data == "add") {
+        //重驗證
+        if (this.$refs.poolform != undefined) {
+          this.$refs.poolform.reset();
+        }
+      }
       if (data == "edit") {
         var pool = this.pooldata.filter(x => x.id == this.sel_pool)[0];
         this.edititem_pool.parm = _.cloneDeep(pool);
         // this.edititem_pool.parm.pond_state_id = 3;
-        delete this.edititem_pool.parm.state;//不需要的項目
-        delete this.edititem_pool.parm.pond_state_id;//水池狀態不在這修改
+        //不需要的項目state狀態、estimated_num初始投放隻數、num_per_unit放養密度
+        delete this.edititem_pool.parm.state;
+        delete this.edititem_pool.parm.estimated_num;
+        delete this.edititem_pool.parm.num_per_unit;
+        delete this.edititem_pool.parm.pond_state_id; //水池狀態不在這修改
         for (const key in this.edititem_pool.parm) {
           var getvalue = this.edititem_pool.parm[key];
           //排除規則不使用regexp的清單
-          const outreg = ['name','video_url'];
-          this.edititem_pool.parm[key] =(typeof(getvalue)=="number" || outreg.filter(x=>x==key).length > 0)?getvalue: getvalue.match(/^[\d\.]+/)[0];
+          const outreg = ["name", "video_url"];
+          // console.log(key,typeof(getvalue));
+          this.edititem_pool.parm[key] =
+            typeof getvalue == "number" ||
+            outreg.filter(x => x == key).length > 0
+              ? getvalue
+              : getvalue.match(/^[\d\.]+/) == null
+              ? null
+              : getvalue.match(/^[\d\.]+/)[0];
         }
       }
       this.dialog.pool = true;
@@ -657,7 +726,8 @@ export default {
     poolsubmit: async function(data) {
       const user = this.$auth.$state.user.email;
       if (this.$refs.poolform.validate()) {
-        if (data == "add") {//新增池
+        if (data == "add") {
+          //新增池
           this.edititem_pool.parm.created_user = user;
           var parm = this.edititem_pool.parm;
           await this.$axios
@@ -675,12 +745,16 @@ export default {
             .catch(error => {
               this.$axios.error("error:" + error, { duration: 2000 });
             });
-        } else {//編輯池
-               this.edititem_pool.parm.updated_user = user;
-               const id = this.edititem_pool.parm.id;
-               this.edititem_pool.parm.video_url = (this.edititem_pool.parm.video_url==null)?"":this.edititem_pool.parm.video_url;
-               var parm = this.edititem_pool.parm;
-               await this.$axios
+        } else {
+          //編輯池
+          this.edititem_pool.parm.updated_user = user;
+          const id = this.edititem_pool.parm.id;
+          this.edititem_pool.parm.video_url =
+            this.edititem_pool.parm.video_url == null
+              ? ""
+              : this.edititem_pool.parm.video_url;
+          var parm = this.edititem_pool.parm;
+          await this.$axios
             .patch(`https://61.56.172.10/pond/${id}`, parm)
             .then(res => {
               console.log("API:" + res.request.responseURL);
