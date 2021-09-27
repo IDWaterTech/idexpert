@@ -229,6 +229,7 @@
         </v-card>
       </v-form>
     </v-dialog>
+    <!-- 池編輯/新增 -->
     <v-dialog v-model="dialog.pool" width="500px">
       <v-form ref="poolform" v-model="poolvalid" lazy-validation>
         <v-card v-if="sel_area">
@@ -309,11 +310,11 @@
                   <span style="width:50px;" slot="prepend">曝氣盤</span>
                 </v-text-field>
               </v-col>
-              <!-- 滿水高度 v-model.number=""-->
+              <!-- 最大水位高度 v-model.number=""-->
               <v-col cols="12" sm="6">
                 <v-text-field
                   autocomplete="off"
-                  
+                  v-model.number="edititem_pool.parm.max_water_level"
                   :rules="rules.requireNum"
                   type="number"
                   clearable
@@ -321,7 +322,22 @@
                   dense
                   required
                 >
-                  <span style="width:70px;" slot="prepend">滿水高度</span>
+                  <span style="width:70px;" slot="prepend">最大水位高度</span>
+                </v-text-field>
+              </v-col>
+              <!-- 感測到水底高度 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.sensor_to_pond_bottom"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  required
+                >
+                  <span style="width:70px;" slot="prepend">感測到水底高度</span>
                 </v-text-field>
               </v-col>
             </v-row>
@@ -421,6 +437,8 @@ export default {
         { name: "name", text: "名稱", visible: true },
         { name: "volume", text: "體積(頓)", visible: true },
         { name: "depth", text: "深度(m)", visible: true },
+        { name: "max_water_level", text: "最大水位高度", visible: true },
+        { name: "sensor_to_pond_bottom", text: "感測到水底高度", visible: true },
         { name: "num", text: "小池數(個)", visible: true },
         { name: "aeration_tray_num", text: "曝氣盤數(個)", visible: true },
         { name: "state", text: "狀態", visible: true },
@@ -730,6 +748,7 @@ export default {
           //新增池
           this.edititem_pool.parm.created_user = user;
           var parm = this.edititem_pool.parm;
+          debugger;
           await this.$axios
             .post("https://61.56.172.10/pond/", parm)
             .then(res => {
@@ -739,7 +758,8 @@ export default {
                 this.dialog.pool = false; //close dialog
                 this.$toast.success(`新增成功`, { duration: 2000 });
               } else {
-                alert("新增失敗!：" + res.data);
+                 this.$toast.error(`新增失敗:${res.data}`, { duration: 3000 });
+
               }
             })
             .catch(error => {
@@ -770,6 +790,8 @@ export default {
               this.$axios.error("error:" + error, { duration: 2000 });
             });
         }
+      }else{
+              this.$toast.error(`尚有參數未填`, { duration: 2000 });
       }
       console.log(this.edititem_pool.parm);
     }
