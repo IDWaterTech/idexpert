@@ -139,6 +139,7 @@
           height=""
           ><v-icon>mdi-text-box-plus-outline</v-icon></v-btn
         >
+        <!-- 新增 -->
         <v-dialog
           v-model="addDialog"
           max-width="500px"
@@ -211,7 +212,7 @@
                     md="6"
                     v-for="item in mainpool.items"
                     :key="item.id"
-                    >
+                  >
                     <!-- <v-text-field
                       class="addinput"
                       type="number"
@@ -221,7 +222,8 @@
                       @keyup="getAddData"
                       ><p slot="prepend">{{ item.name }}</p></v-text-field
                     > -->
-                    {{item.name}}<el-input-number
+                    {{ item.name
+                    }}<el-input-number
                       :id="item.name"
                       :ref="item.name"
                       @keyup.enter.native="gofocusNxt2(item.name)"
@@ -237,7 +239,7 @@
                   <!-- @keyup="getAddData" -->
                 </v-row>
               </v-card-text>
-            
+
               <v-card-text>
                 <v-chip
                   class="ma-2"
@@ -327,6 +329,54 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <!-- 編輯項目 -->
+            <v-dialog v-model="editDialog" max-width="500px">
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">編輯項目</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="editedItem.id"
+                          disabled dense filled
+                        ><span style="width:50px;" slot="prepend">ID</span></v-text-field>
+                        <v-text-field
+                          v-model="editedItem.inspected_date"
+                          disabled dense filled
+                        ><span style="width:50px;" slot="prepend">日期</span></v-text-field>
+                        <!-- <v-text-field
+                          v-model="editedItem.value"
+                          autocomplate="off"
+                          type="number" dense filled
+                        ><span style="width:50px;" slot="prepend">值</span></v-text-field> -->
+                        <span style="width:50px;" class="mx-4" slot="prepend">值</span>
+                        <el-input-number
+                          class="ml-2"
+                          v-model="editedItem.value"
+                          size="medium"
+                          :precision="2"
+                          :step="0.1"
+                          :min="num_min"
+                          :max="num_max"
+                        ></el-input-number>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="editDialog = false">
+                    取消
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="editsubmit">
+                    確定
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
         <v-data-table
           :headers="headers"
           :items="item.items"
@@ -345,46 +395,8 @@
             </v-icon>
           </template>
           <template v-slot:top>
-            <v-dialog v-model="editDialog" max-width="500px">
-              <v-card>
-                <v-card-title>
-                  <span class="text-h5">編輯項目</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" md="12">
-                        <v-text-field
-                          v-model="editedItem.id"
-                          label="ID"
-                          disabled
-                        ></v-text-field>
-                        <v-text-field
-                          v-model="editedItem.inspected_date"
-                          label="日期"
-                          disabled
-                        ></v-text-field>
-                        <v-text-field
-                          v-model="editedItem.value"
-                          label="值"
-                          autocomplate="off"
-                          type="number"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="editDialog = false">
-                    取消
-                  </v-btn>
-                  <v-btn color="blue darken-1" text @click="editsubmit">
-                    確定
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            
+            <!-- 刪除項目 -->
             <v-dialog v-model="delDialog" max-width="500px">
               <v-card>
                 <v-card-title class="text-h5"> 是否刪除該項目?</v-card-title>
@@ -467,7 +479,7 @@ export default {
       keepswitch: false, //保留數值不關閉
       //編輯視窗
       editDialog: false,
-      editedItem: {}, //已編輯項目暫存這邊
+      editedItem: {id:undefined,class:undefined,value:undefined}, //已編輯項目暫存這邊
       //刪除視窗
       delDialog: false,
       //新增視窗
@@ -478,7 +490,7 @@ export default {
       num_max: 99999,
       //form
       valid: true,
-      rules: { require: [v => !!v || "*必要項目"] }
+      rules: { require: [v => !!v || "*必要項目"] },
     };
   },
   async created() {
@@ -668,7 +680,31 @@ export default {
       this.editedItem.id = item.id;
       this.editedItem.value = item[Object.keys(item)[3]];
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
-      this.editDialog = true;
+      //抓項目的限制
+      let coldata = [];
+      await this.$axios.get("https://61.56.172.10/col-data/").then(res => {
+        coldata = Object.assign([], res.data);
+      });
+      var colitem = coldata.filter(
+        x =>
+          x.group == this.getItemClass(this.defitem) &&
+          x.name_ch == this.defitem
+      );
+      if (colitem.length == 1) {
+        this.num = {}; //清空
+        this.num_min =
+          colitem[0].min != undefined || typeof colitem[0].min == "number"
+            ? colitem[0].min
+            : 0;
+        this.num_max =
+          colitem[0].max != undefined || typeof colitem[0].max == "number"
+            ? colitem[0].max
+            : 99999;
+        this.editDialog = true;
+      } else {
+        this.$toast.error(`查無項目min、max資料`, { duration: 2000 });
+      }
+      
     },
     delItem: async function(item) {
       //編輯中的物件item
@@ -679,41 +715,17 @@ export default {
       this.delDialog = true;
     },
     addItem: async function() {},
-    gofocusNxt2:function(id){
+    gofocusNxt2: function(id) {
       var findeditem = this.mainpool.items.find(x => x.name == id);
       var idxitem = this.mainpool.items.indexOf(findeditem);
       if (idxitem + 1 == this.mainpool.items.length) {
-        this.$refs[id][0].focus();//最後一項，鎖定原位
-      }else{
+        this.$refs[id][0].focus(); //最後一項，鎖定原位
+      } else {
         let nxtName = this.mainpool.items[idxitem + 1].name;
-        this.$refs[nxtName][0].focus();//最後一項，鎖定原位
+        this.$refs[nxtName][0].focus(); //最後一項，鎖定原位
       }
       // this.$refs['A2'].$el.children[0].focus();
     },
-    // gofocusNxt_OLD: async function(id) {
-    //   //document.getElementById(id).focus();
-    //   var findeditem = this.mainpool.items.find(x => x.name == id);
-    //   var idxitem = this.mainpool.items.indexOf(findeditem);
-    //   if (idxitem + 1 == this.mainpool.items.length) {
-    //     //最後一項，鎖定原位
-    //     document.getElementById(id).focus();
-    //   } else {
-    //     //鎖定下一項
-    //     let nxtItem = this.mainpool.items[idxitem + 1];
-    //     document.getElementById(nxtItem.name).focus();
-    //   }
-    // },
-    // getAddData: function() {
-    //   let adddatatmp = [];
-    //   for (const key in this.mainpool.items) {
-    //     let item = this.mainpool.items[key];
-    //     let myValue = document.getElementById(item.name).value.trim();
-    //     if (myValue.length > 0) {
-    //       adddatatmp.push({ name: item.name, value: myValue, id: item.id });
-    //     }
-    //   }
-    //   this.addData = adddatatmp;
-    // },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
@@ -728,8 +740,8 @@ export default {
       this.addData = [];
       this.atime = "";
       //this.getItemClass(this.defitem);
-      let coldata = [];
       //抓項目的限制
+      let coldata = [];
       await this.$axios.get("https://61.56.172.10/col-data/").then(res => {
         coldata = Object.assign([], res.data);
       });
@@ -739,9 +751,15 @@ export default {
           x.name_ch == this.defitem
       );
       if (colitem.length == 1) {
-        this.num = {};//清空
-        this.num_min = (colitem[0].min!=undefined || typeof(colitem[0].min)=='number')?colitem[0].min:0;
-        this.num_max = (colitem[0].max!=undefined || typeof(colitem[0].max)=='number')?colitem[0].max:99999;
+        this.num = {}; //清空
+        this.num_min =
+          colitem[0].min != undefined || typeof colitem[0].min == "number"
+            ? colitem[0].min
+            : 0;
+        this.num_max =
+          colitem[0].max != undefined || typeof colitem[0].max == "number"
+            ? colitem[0].max
+            : 99999;
         this.addDialog = true;
       } else {
         this.$toast.error(`查無項目min、max資料`, { duration: 2000 });
@@ -766,7 +784,7 @@ export default {
           created_user: updUser, //建立者名稱
           data_group: colclass //water,adv,...
         };
-         let submitData = [];
+        let submitData = [];
         //原本抓textfield的方式
         // this.addData.forEach(el => {
         //   submitData.push({ id: el.id, val: el.value });
@@ -774,11 +792,12 @@ export default {
         //送出資料重判斷########################
         //foreach Object.keys(this.num)
         for (const key in Object.keys(this.num)) {
-            const element = Object.keys(this.num)[key];
-            if (this.num[element]!= undefined) {
-              const el_id = this.mainpool.items.filter(x=>x.name==element)[0].id;
-              submitData.push({ id: el_id, val: this.num[element] });
-            }
+          const element = Object.keys(this.num)[key];
+          if (this.num[element] != undefined) {
+            const el_id = this.mainpool.items.filter(x => x.name == element)[0]
+              .id;
+            submitData.push({ id: el_id, val: this.num[element] });
+          }
         }
         if (submitData.length <= 0) {
           this.$toast.success(`無新增資料`, { duration: 2000 });
