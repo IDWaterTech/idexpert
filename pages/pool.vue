@@ -2,7 +2,150 @@
   <div>
     <!-- <v-card elevation="1" outlined tile min-height="200"> -->
     <v-row no-gutters justify="center">
-      <v-col cols="12" sm="3" class="text-center my-5">
+      <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-10">
+        <!-- 警示區 -->
+        <div style="min-height:100px;max-height:100px;">
+          <v-chip-group column>
+            <v-chip
+              filter
+              outlined
+              v-for="item in warnData"
+              :key="item.id"
+              @click="showwarning(item)"
+              color="red"
+              >{{
+                `${item.inspected_time.match(/[^\s]*$/)[0]}-[等級：${
+                  item.warning_level
+                }]：${item.warning_content}`
+              }}
+            </v-chip>
+          </v-chip-group>
+        </div>
+        <span class="subtitle">警示資料時間：{{ warnDataDt }}</span>
+        <v-btn
+          :loading="warnLoading"
+          :disabled="warnLoading"
+          color="green"
+          class="ma-2 white--text"
+          icon
+          @click="getwarnData"
+          v-if="poolid"
+        >
+          <v-icon dark>
+            mdi-reload
+          </v-icon>
+        </v-btn>
+        <v-dialog v-model="warnDialog" max-width="500px">
+          <v-form ref="warnform" v-model="warnvalid" lazy-validation>
+            <v-card>
+              <v-card-title
+                >警示等級：「{{ warnDataSel.warning_level }}」</v-card-title
+              >
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row dense>
+                  <v-col cols="12"
+                    >警示時間：{{ warnDataSel.inspected_time }}</v-col
+                  >
+                  <v-col cols="12"
+                    >警示內容：{{ warnDataSel.warning_content }}</v-col
+                  >
+                  <v-col cols="12"
+                    >警示來源(資料/設備 層面)：{{
+                      warnDataSel.warning_resource
+                    }}</v-col
+                  >
+                  <v-col cols="12"
+                    >警示建立者：{{ warnDataSel.created_user }}</v-col
+                  >
+                </v-row>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row dense>
+                  <v-col cols="12">
+                    <v-text-field
+                      dense
+                      v-model="warnDataSel.maintenance_user"
+                      clearable
+                      filled
+                      :rules="rules.require"
+                    >
+                      <span
+                        style="width:100px;"
+                        slot="prepend"
+                        @click="
+                          warnDataSel.maintenance_user = $auth.$state.user.name
+                        "
+                        ><v-tooltip bottom
+                          ><template v-slot:activator="{ on, attrs }"
+                            ><span
+                              v-bind="attrs"
+                              v-on="on"
+                              style="color:darkblue;"
+                              >最後處理人員</span
+                            ></template
+                          ><span>點擊可直接帶入登入者姓名</span></v-tooltip
+                        ></span
+                      ></v-text-field
+                    >
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field
+                      dense
+                      v-model="warnDataSel.warning_reason"
+                      clearable
+                      filled
+                      :rules="rules.require"
+                      ><span style="width:100px;" slot="prepend"
+                        >判定原因</span
+                      ></v-text-field
+                    >
+                  </v-col>
+                  <v-col cols="12">
+                    <v-textarea
+                      clearable
+                      filled
+                      v-model="warnDataSel.handling_method"
+                      auto-grow
+                      row="2"
+                      row-height="20"
+                      clear-icon="mdi-close-circle"
+                      :rules="rules.require"
+                      ><span style="width:100px;" slot="prepend"
+                        >處理方式</span
+                      ></v-textarea
+                    >
+                    <!-- <v-text-field dense clearable
+                    ><span style="width:100px;" slot="prepend" 
+                      >處理方式</span
+                    ></v-text-field
+                  > -->
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions
+                ><v-spacer></v-spacer
+                ><v-btn color="primary" @click="warnsubmit(false)" tile
+                  >暫存</v-btn
+                ></v-card-actions
+              >
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-switch
+                  v-model="warnDataSel.is_add_to_event_log"
+                  :label="`結案時一併加入重要紀事`"
+                  dense
+                  color="error"
+                ></v-switch>
+                <v-btn color="error" @click="warnsubmit(true)" tile>結案</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-dialog>
+      </v-col>
+      <v-col cols="12" sm="2" class="text-center my-5">
         <!-- <div class="circle">
           <span class="circletitle">{{ poolName }}</span>
         </div> -->
@@ -14,7 +157,7 @@
           v-model="poolid"
           :options="maindata"
           :default-expand-level="1"
-          placeholder="請選擇職位"
+          placeholder="養殖池"
           :disable-branch-nodes="true"
           children="node"
           :normalizer="
@@ -23,6 +166,7 @@
             }
           "
           @input="mainchange"
+          style="font-size:1.2em;"
         >
           <div slot="value-label" slot-scope="{ node }">
             {{ `${node.raw.parent}_${node.raw.name}` }}
@@ -32,8 +176,8 @@
           </div>
         </treeselect>
       </v-col>
-      <v-col cols="12" sm="9" style="border:3px dashed red;">警示區</v-col>
-      <v-col cols="12" sm="3">
+
+      <v-col cols="12" sm="2">
         <!-- 選擇起日 -->
         <v-menu
           v-model="menu_startdate"
@@ -60,7 +204,7 @@
           ></v-date-picker>
         </v-menu>
       </v-col>
-      <v-col cols="12" sm="3">
+      <v-col cols="12" sm="2">
         <!-- 選擇訖日 -->
         <v-menu
           v-model="menu_enddate"
@@ -87,14 +231,12 @@
           ></v-date-picker>
         </v-menu>
       </v-col>
+      <!-- 查詢、新增循環 按鈕 -->
       <v-col cols="12" sm="3">
         <v-btn tile class="mt-2" color="primary" @click="getCircleData"
           >查詢</v-btn
         >
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="12">
-        <v-btn color="primary" tile @click="showadd"
+        <v-btn color="primary" tile class="mt-2" @click="showadd"
           ><v-icon>mdi-plus</v-icon>新增循環</v-btn
         >
         <v-dialog v-model="addDialog" max-width="500px">
@@ -149,7 +291,7 @@
                       autocomplete="off"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="1"  class="text-center">X</v-col>
+                  <v-col cols="1" class="text-center">X</v-col>
                   <!-- 密度 -->
                   <v-col cols="3">
                     <v-text-field
@@ -157,7 +299,12 @@
                       label="密度"
                       type="number"
                       :rules="rules.require"
-                      @change="()=>{addparm.estimated_num= add_volume * addparm.num_per_unit}"
+                      @change="
+                        () => {
+                          addparm.estimated_num =
+                            add_volume * addparm.num_per_unit;
+                        }
+                      "
                       autocomplete="off"
                     ></v-text-field>
                   </v-col>
@@ -184,6 +331,8 @@
           </v-form>
         </v-dialog>
       </v-col>
+      <v-spacer></v-spacer>
+      <!-- 表格 -->
       <v-col cols="12" sm="12" class="my-3">
         <el-table
           ref="circletable"
@@ -222,7 +371,7 @@
             prop="name"
             align="center"
           ></el-table-column>
-           <el-table-column
+          <el-table-column
             label="養殖密度"
             prop="num_per_unit"
             align="center"
@@ -464,7 +613,7 @@
                             </v-card-title>
                             <div style="height:120px;" class="px-2">
                               <vue-speedometer
-                                :value="item.value"
+                                :value="parseFloat(item.value)"
                                 :needleHeightRatio="0.7"
                                 :minValue="item.min"
                                 :maxValue="item.max"
@@ -493,6 +642,10 @@
                             <v-divider></v-divider>
                             <v-card-subtitle class=" py-2 px-2">
                               共：{{ item.rows }}筆
+                              <span v-if="item.name_en == 'drain_depth'"
+                                ><br />{{ item.last_time }}</span
+                              >
+                              <!--限水位才有資料 -->
                             </v-card-subtitle>
                             <v-scale-transition>
                               <v-icon
@@ -532,16 +685,158 @@
           <v-card-title
             class="py-2"
             style="background-color:#64B5F6;color:white;"
-            >重要事件紀錄</v-card-title
-          >
+            >重要事件紀錄
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  class="mx-3"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="geteventData"
+                  :disabled="!poolid || !cirid"
+                >
+                  mdi-reload
+                </v-icon>
+              </template>
+              <span>立即重新取得重要事件紀錄</span>
+            </v-tooltip>
+          </v-card-title>
+
           <v-divider></v-divider>
           <v-card-title>
-            <ol>
-              <li>2020/01/01 asdfasdf</li>
-              <li>2020/01/01 asdfasdf</li>
-              <li>2020/01/01 asdfasdf</li>
-              <li>2020/01/01 asdfasdf</li>
-            </ol>
+            <v-btn
+              color="primary"
+              tile
+              :disabled="!poolid || !cirid"
+              @click="showlogDialog"
+              >新增紀錄<v-icon>mdi-plus</v-icon></v-btn
+            >
+            <v-dialog v-model="logDialog" max-width="500px">
+              <v-form ref="logform" v-model="logvalid" lazy-validation>
+                <v-card>
+                  <v-card-title>新增紀錄</v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <!-- 事件類型 -->
+                      <v-col cols="12">
+                        {{ logData.event_category_id }}
+                        <v-autocomplete
+                          v-model="logData.event_category_id"
+                          :items="eventCategory"
+                          item-text="name_ch"
+                          item-value="id"
+                          dense
+                          filled
+                          clearable
+                          :rules="rules.require"
+                          ><span style="width:80px;" slot="prepend"
+                            >事件類型</span
+                          ></v-autocomplete
+                        >
+                      </v-col>
+                      <!-- 標題 -->
+                      <v-col cols="12">
+                        <v-text-field
+                          autocomplete="off"
+                          v-model="logData.title"
+                          :rules="rules.require"
+                          clearable
+                          filled
+                          dense
+                        >
+                          <span style="width:80px;" slot="prepend">標題</span>
+                        </v-text-field>
+                      </v-col>
+                      <!-- 內容 -->
+                      <v-col cols="12">
+                        <v-textarea
+                          autocomplete="off"
+                          v-model="logData.content"
+                          :rules="rules.require"
+                          clearable
+                          filled
+                          dense
+                          auto-grow
+                          row="2"
+                          row-height="20"
+                        >
+                          <span style="width:80px;" slot="prepend">內容</span>
+                        </v-textarea>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" tile @click="submitlog">新增</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-form>
+            </v-dialog>
+          </v-card-title>
+          <v-card-title>
+            <el-table
+              ref="eventtable"
+              style="width:100%"
+              :data="eventData"
+              border
+              :header-cell-style="tableHeaderStyle"
+              height="250"
+            >
+              <template slot="empty">
+                <span
+                  ><v-btn
+                    color="primary"
+                    @click="geteventData"
+                    :disabled="!poolid || !cirid"
+                    >暫無資料，手動重新整理<v-icon
+                      class="mx-3"
+                      @click="geteventData"
+                    >
+                      mdi-reload
+                    </v-icon></v-btn
+                  ></span
+                >
+              </template>
+              <el-table-column
+                label="時間"
+                prop="created_time"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                label="分類"
+                prop="event_category"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                label="標題"
+                prop="title"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                label="內容"
+                prop="content"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                label="資料建立人員"
+                prop="created_user"
+                align="center"
+              ></el-table-column>
+              <el-table-column fixed="right" label="操作" width="150">
+                <template slot-scope="scope">
+                  <v-btn
+                    color="primary"
+                    outlined
+                    small
+                    :disabled="scope.row.ended_date != null"
+                    @click="dellog(scope.row)"
+                    >刪除</v-btn
+                  >
+                  <!-- @click="delcircle(scope.row)" -->
+                </template>
+              </el-table-column>
+            </el-table>
           </v-card-title>
         </v-card>
       </v-col>
@@ -590,6 +885,7 @@ export default {
         ]
       },
       poolid: this.$route.query.id,
+      cirid: undefined, //循環id
       poolName: "",
       maindata: [],
       circleData: [
@@ -632,7 +928,12 @@ export default {
       addvalid: false,
       menu_adddate: false,
       add_volume: undefined,
-      addparm: { started_date: undefined, name: undefined, num_per_unit: undefined , estimated_num: undefined },
+      addparm: {
+        started_date: undefined,
+        name: undefined,
+        num_per_unit: undefined,
+        estimated_num: undefined
+      },
       //蝦況
       imgvalid: false,
       imgdialog: false,
@@ -655,7 +956,25 @@ export default {
       num_min: 0,
       num_max: 999,
       showimgurl: "",
-      imgurlkey: 0 //強迫更新用
+      imgurlkey: 0, //強迫更新用
+      //警示
+      warnvalid: false, //警示的form
+      warnDialog: false,
+      warnData: [],
+      warnDataSel: { is_add_to_event_log: false }, //加入重要紀事(處理警示)
+      warnLoading: false,
+      warnDataDt: "", //警示資料什麼時候取得的
+      addimport: false, //加入重要紀事(處理警示)
+      //紀事
+      eventData: [],
+      logDialog: false, //
+      logvalid: true,
+      logData: {
+        title: undefined,
+        content: undefined,
+        event_category_id: undefined
+      },
+      eventCategory:[],//事件類型
     };
   },
   methods: {
@@ -676,6 +995,21 @@ export default {
     getNowTime: function() {
       let mytime = dayjs().format("HH:mm");
       return mytime;
+    },
+    geteventData: async function() {//取得事件紀錄清單
+      //this.poolid
+      // this.cirid
+      await this.$axios
+        .get(
+          `https://61.56.172.10/pond-event-log/?pond_record_head_id=${this.cirid}`
+        )
+        .then(res => {
+          this.eventData = res.data;
+          console.log("event api:", res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
     },
     delcircle: async function(data) {
       let id = data.id;
@@ -748,6 +1082,7 @@ export default {
     getCircleData: async function() {
       //取得循環資料-取得檢測數據、取得蝦況
       //歸零
+      this.warnData = []; //警示
       this.circleData = []; //循環
       this.detectData = []; //檢測
       this.shirimpData = []; //蝦況
@@ -768,6 +1103,7 @@ export default {
         .then(res => {
           this.circleData = res.data;
           if (this.circleData.length > 0) {
+            this.getwarnData();
             this.getDetectData();
             this.getshirimpData();
           }
@@ -790,15 +1126,31 @@ export default {
           this.shirimpData = res.data;
         });
     },
+    getwarnData: async function() {
+      //警示區
+      this.warnLoading = true;
+      this.warnData = []; //clear
+      await this.$axios
+        .get(`https://61.56.172.10/pond-abnormal-log/?pond_id=${this.poolid}`)
+        .then(res => {
+          this.warnData = res.data;
+          this.warnDataDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
+          console.log("警示區api:", res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
+      this.warnLoading = false;
+    },
     showadd: async function() {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
-      this.addparm.num_per_unit= undefined;
+      this.addparm.num_per_unit = undefined;
       this.addparm.estimated_num = undefined;
-      if (this.poolid==undefined) {
+      if (this.poolid == undefined) {
         this.$toast.info(`失敗：請先選擇養殖池`, {
-              duration: 2000
-            });
+          duration: 2000
+        });
         return;
       }
       //
@@ -810,13 +1162,90 @@ export default {
             this.add_volume = items[0].volume;
             this.addDialog = true;
           } else {
-              this.$toast.success(`失敗：無法取得體積資料，池id:${this.poolid}}`, {
-              duration: 2000
-            });
+            this.$toast.success(
+              `失敗：無法取得體積資料，池id:${this.poolid}}`,
+              {
+                duration: 2000
+              }
+            );
           }
         })
         .finally(() => {
           /* 不論失敗成功皆會執行 */
+        });
+    },
+    showlogDialog:async function() {
+      if (this.$refs.logform != undefined) {
+        this.$refs.logform.reset();
+      }
+      if (this.eventCategory.length<=0) {
+        await this.$axios
+        .get("https://61.56.172.10/event-category/")
+        .then(res => {
+          console.log("事件類型 API:" + res.request.responseURL);
+          this.eventCategory = res.data;
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
+      }
+      this.logDialog = true;
+    },
+    submitlog:async function(){
+      if (!this.$refs.logform.validate()) {
+        return;
+      }
+      var parm = this.logData;
+      parm.pond_record_head_id = this.cirid;
+      parm.created_user = this.$auth.$state.user.email;
+      // console.log(parm);
+      await this.$axios
+        .post("https://61.56.172.10/pond-event-log/", parm)
+        .then(res => {
+          console.log("新增 log API:" + res.request.responseURL);
+          if (res.data == "新增成功") {
+            this.geteventData();//取得事件紀錄清單
+            this.logDialog = false;
+            this.$toast.success("新增成功", { duration: 2000 });
+          } else {
+            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
+    },
+    dellog:async function(data){
+      console.log(data);
+      this.$confirm(`將永久删除該紀錄[${data.title}], 是否繼續?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$axios
+        .delete(`https://61.56.172.10/pond-event-log/${data.id}`)
+        .then(res => {
+          console.log("刪除 log API:" + res.request.responseURL);
+          if (res.data == "刪除成功") {
+            this.geteventData();//取得事件紀錄清單
+            this.$toast.success("刪除成功", { duration: 2000 });
+          } else {
+            this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
+          // this.$message({
+          //   type: 'success',
+          //   message: '删除成功!'
+          // });
+        }).catch((err) => {
+          // this.$message({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });
+          this.$toast.error(err,{duration:2000});
         });
     },
     submitadd: async function() {
@@ -854,6 +1283,44 @@ export default {
         this.$refs.imgform.reset();
       }
       this.imgdialog = true;
+    },
+    showwarning: function(data) {
+      this.warnDataSel = data;
+      this.warnDataSel.is_add_to_event_log = false; //switch 結案時加入重要紀事
+      this.warnDialog = true;
+    },
+    warnsubmit: async function(pra_is_closed = false) {
+      if (pra_is_closed == true && !confirm("結案後[警示區]不再顯示")) {
+        return;
+      }
+      const updUser = this.$auth.$state.user.email;
+      let parm = {
+        warning_reason: this.warnDataSel.warning_reason,
+        handling_method: this.warnDataSel.handling_method,
+        maintenance_user: this.warnDataSel.maintenance_user,
+        is_closed: pra_is_closed,
+        is_add_to_event_log: this.warnDataSel.is_add_to_event_log,
+        updated_user: updUser
+      };
+      console.log(this.warnDataSel.id, parm);
+      await this.$axios
+        .patch(
+          `https://61.56.172.10/pond-abnormal-log/${this.warnDataSel.id}`,
+          parm
+        )
+        .then(res => {
+          console.log("警示修改API:" + res.request.responseURL);
+          if (res.data == "修改成功") {
+            this.getwarnData(); //重取得警示資料
+            this.warnDialog = false;
+            this.$toast.success("修改成功", { duration: 2000 });
+          } else {
+            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
     },
     submit_imgdialog: async function() {
       // let parm = this.imgdata;
@@ -921,10 +1388,16 @@ export default {
       }
     },
     handleCurrentChange: async function(val) {
+      //清除
       this.$refs.circletable.clearSelection();
+      this.eventData = [];//清除事件紀錄清單
       this.$refs.circletable.toggleRowSelection(val);
+
       if (val != null) {
+        this.cirid = val.id; //循環id
         await this.getDetectData();
+      } else {
+        this.cirid = undefined;
       }
       // this.currentRow = val;
     }
@@ -937,6 +1410,8 @@ export default {
     }
     //取得整廠架構資料
     await this.getMainData();
+    //取得警示區資料
+    await this.getwarnData();
     //取得循環資料
     await this.getCircleData();
   }
