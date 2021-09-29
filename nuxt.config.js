@@ -30,6 +30,14 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
+  //定義環境變數,可透過以下兩種方式使用
+  //process.env.apiUrl
+  //context.env.apiUrl
+  env: {
+    apiUrl: 'https://61.56.172.10/',
+    apiUrl2:'https://61.56.172.10',//沒後斜線的
+  },
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     "~/plugins/axios",
@@ -166,15 +174,15 @@ export default {
         "^/gapi": ""
       }
     },
-    //設定代理
-    "/idapi": {
-      target: "http://61.56.172.10", // 介面的域名
-      changeOrigin: true,
-      ws: true,
-      pathRewrite: {
-        "^/idapi/": "" //萬用字元
-      }
-    }
+    //設定代理，目前沒用到
+    // "/idapi": {
+    //   target: "http://61.56.172.10", // 介面的域名
+    //   changeOrigin: true,
+    //   ws: true,
+    //   pathRewrite: {
+    //     "^/idapi/": "" //萬用字元
+    //   }
+    // }
   },
   router: {
     base: "/"

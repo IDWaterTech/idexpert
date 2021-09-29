@@ -28,8 +28,8 @@ export default {
   data() {
     return {
       player: undefined,
-      // url: "https://61.56.172.10:8443/live/170.flv",
-      url: "https://61.56.172.10:8443/live/170/index.m3u8",
+      // url: `${process.env.apiUrl2}:8443/live/170.flv`,
+      url: `${process.env.apiUrl2}:8443/live/170/index.m3u8`,
       type: "hls"
     };
   },
@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     chchanel: function(data) {
-      this.url = `https://61.56.172.10:8443/live/${data}/index.m3u8`;
+      this.url = `${process.env.apiUrl2}:8443/live/${data}/index.m3u8`;
       // this.player.pause();
       this.player.switchVideo({
         url: this.url

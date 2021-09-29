@@ -984,15 +984,6 @@ export default {
     };
   },
   methods: {
-    // openDialog: function(item) {
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-    //   this.clickeditem = item ? item.name : ""; //選到子項目才出現資料
-    //   this.$axios
-    //     .get("https://61.56.172.10/pond-data/", { httpsAgent: agent })
-    //     .then(res => {});
-    // },
     closepanel: async function() {
       this.mypanel = [];
 
@@ -1070,7 +1061,7 @@ export default {
         this.tableloading = true;
         await this.$axios
           .get(
-            "https://61.56.172.10/ponds-data/",
+            `${process.env.apiUrl}ponds-data/`,
             { params: para },
             { httpsAgent: agent }
           )
@@ -1096,7 +1087,7 @@ export default {
         rejectUnauthorized: false
       });
 
-      let apiURL = `https://61.56.172.10/all-data/`;
+      let apiURL = `${process.env.apiUrl}all-data/`;
       let parm = {
         started_date: start_date,
         ended_date: end_date,
@@ -1251,14 +1242,14 @@ export default {
       rejectUnauthorized: false
     });
     await this.$axios
-      .get("https://61.56.172.10/architecture/", { httpsAgent: agent })
+      .get(`${process.env.apiUrl}architecture/`, { httpsAgent: agent })
       .then(res => {
         this.maindata = res.data;
         this.sel_main = 1;
       });
     //get all cols
     await this.$axios
-      .get("https://61.56.172.10/all-col-name/", { httpsAgent: agent })
+      .get(`${process.env.apiUrl}all-col-name/`, { httpsAgent: agent })
       .then(res => {
         this.allcols = res.data;
       });

@@ -30,10 +30,10 @@ export default {
       player: "",
       // http: "http://192.168.50.171/cgi-bin/mjpg/video.cgi?channel=1&subtype=1",
       // flv: "http://localhost:8000/live/STREAM_NAME.flv"
-      // flv: "http://61.56.172.10:8000/live/171.flv"
-      // al: "https://61.56.172.10:8443/live/171.flv",
-      // a2: "https://61.56.172.10:8443/live/170.flv"
-      videourl: "https://61.56.172.10:8443/live/171.flv"
+      // flv: "${process.env.apiUrl2}:8000/live/171.flv"
+      // al: "${process.env.apiUrl2}:8443/live/171.flv",
+      // a2: "${process.env.apiUrl2}:8443/live/170.flv"
+      videourl: `${process.env.apiUrl2}:8443/live/171.flv`
       // rtsp:
       //   "rtsp://admin:dh123456@192.168.50.171:554/cam/realmonitor?channel=1&subtype=1",
       // rtmp: "rtmp://localhost/live/STREAM_NAME",
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     chchanel: function(data) {
-      this.videourl = `https://61.56.172.10:8443/live/${data}.flv`;
+      this.videourl = `${process.env.apiUrl2}:8443/live/${data}.flv`;
     }
   }
 };

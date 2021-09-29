@@ -479,7 +479,7 @@ export default {
   methods: {
     getaccList: async function() {
       await this.$axios
-        .get("https://61.56.172.10/user-access/account/", { httpsAgent: agent })
+        .get(`${process.env.apiUrl}user-access/account/`, { httpsAgent: agent })
         .then(res => {
           this.accdata = res.data;
           console.log("api：" + res.request.responseURL);
@@ -487,7 +487,7 @@ export default {
     },
     getorg: async function() {
       await this.$axios
-        .get("https://61.56.172.10/user-access/organization/", {
+        .get(`${process.env.apiUrl}user-access/organization/`, {
           httpsAgent: agent
         })
         .then(res => {
@@ -527,7 +527,7 @@ export default {
       if (confirm('是否確認刪除？')) {
         await this.$axios
         .delete(
-          `https://61.56.172.10/user-access/account/${row.id}/`,
+          `${process.env.apiUrl}user-access/account/${row.id}/`,
           { httpsAgent: agent }
         )
         .then(res => {
@@ -583,7 +583,7 @@ export default {
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
         await this.$axios
-          .post("https://61.56.172.10/user-access/account/", this.addform, {
+          .post(`${process.env.apiUrl}user-access/account/`, this.addform, {
             httpsAgent: agent
           })
           .then(res => {
@@ -631,7 +631,7 @@ export default {
       console.log(parm);
       await this.$axios
         .patch(
-          `https://61.56.172.10/user-access/account/${this.edititem.id}/`,
+          `${process.env.apiUrl}user-access/account/${this.edititem.id}/`,
           parm,
           { httpsAgent: agent }
         )
@@ -671,7 +671,7 @@ export default {
       this.postedit(this.edititem.id,parm);
       // await this.$axios
       //   .patch(
-      //     `https://61.56.172.10/user-access/account/${this.edititem.id}/`,
+      //     `${process.env.apiUrl}user-access/account/${this.edititem.id}/`,
       //     parm,
       //     { httpsAgent: agent }
       //   )
@@ -693,7 +693,7 @@ export default {
     postedit:async function(upd_id,parm){
       await this.$axios
         .patch(
-          `https://61.56.172.10/user-access/account/${upd_id}/`,
+          `${process.env.apiUrl}user-access/account/${upd_id}/`,
           parm,
           { httpsAgent: agent }
         )

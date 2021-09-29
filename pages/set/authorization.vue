@@ -351,7 +351,7 @@ export default {
     getRoles: async function() {
       //角色的清單
       await this.$axios
-        .get("https://61.56.172.10/user-access/role/")
+        .get(`${process.env.apiUrl}user-access/role/`)
         .then(res => {
           this.roledata = res.data;
           console.log("api：" + res.request.responseURL);
@@ -372,7 +372,7 @@ export default {
     getPrivilege: async function() {
       //授權項目的清單
       let accheader = { account: this.$auth.$state.user.email };
-      const url = `https://61.56.172.10/user-access/authorization-menu/?is_all=true`;
+      const url = `${process.env.apiUrl}user-access/authorization-menu/?is_all=true`;
       await this.$axios
         .get(url, {
           headers: accheader
@@ -416,7 +416,7 @@ export default {
       const str = `是否刪除? ${data.name}`;
 
       if (confirm(str)) {
-        const url = `https://61.56.172.10/user-access/role/${data.id}`;
+        const url = `${process.env.apiUrl}user-access/role/${data.id}`;
         await this.$axios
           .delete(url)
           .then(res => {
@@ -434,7 +434,7 @@ export default {
     },
     getorg: async function() {
       await this.$axios
-        .get("https://61.56.172.10/user-access/organization/")
+        .get(`${process.env.apiUrl}user-access/organization/`)
         .then(res => {
           this.positdata = res.data;
           console.log("api：" + res.request.responseURL);
@@ -445,7 +445,7 @@ export default {
       if (valid) {
         console.log(this.addform);
         debugger;
-        const url = "https://61.56.172.10/user-access/role/";
+        const url = `${process.env.apiUrl}user-access/role/`;
         let parms = this.addform;
         await this.$axios
           .post(url, parms)
@@ -472,7 +472,7 @@ export default {
       delete parms.id; //"刪掉id欄位"
       console.log(parms);
       if (valid) {
-        const url = `https://61.56.172.10/user-access/role/${this.editform.id}/`;
+        const url = `${process.env.apiUrl}user-access/role/${this.editform.id}/`;
         await this.$axios
           .patch(url, parms)
           .then(res => {

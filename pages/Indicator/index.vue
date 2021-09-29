@@ -228,8 +228,8 @@ export default {
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
     let myurl = [
-      "https://61.56.172.10/architecture/",
-      "https://61.56.172.10/all-col-name/"
+      `${process.env.apiUrl}architecture/`,
+      `${process.env.apiUrl}all-col-name/`
     ];
     const agent = new https.Agent({
       rejectUnauthorized: false
@@ -318,7 +318,7 @@ export default {
         //水池基本資料
         await this.$axios
           .get(
-            "https://61.56.172.10/ponds-data/",
+            `${process.env.apiUrl}ponds-data/`,
             { params: para },
             { httpsAgent: agent }
           )
@@ -372,7 +372,7 @@ export default {
         items: this.defitem,
         data_group: itemclass
       };
-      let apiURL = `https://61.56.172.10/all-data/`;
+      let apiURL = `${process.env.apiUrl}all-data/`;
       const agent = new https.Agent({
         rejectUnauthorized: false
       });
@@ -406,7 +406,7 @@ export default {
     },
     getLimitData: async function() {
       await this.$axios
-        .get("https://61.56.172.10/col-data/")
+        .get(`${process.env.apiUrl}col-data/`)
         .then(res => {
           // this.allcols = Object.assign([], res.data);
           var lmtitem =  res.data.filter(x=>x.name_ch==this.defitem);

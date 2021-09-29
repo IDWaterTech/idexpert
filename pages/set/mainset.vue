@@ -132,7 +132,7 @@ export default {
     };
   },
   async created() {
-    await this.$axios.get("http://61.56.172.10/architecture/").then(res => {
+    await this.$axios.get(`${process.env.apiUrl}architecture/`).then(res => {
       this.maindata = res.data;
     });
     //await this.getwater();

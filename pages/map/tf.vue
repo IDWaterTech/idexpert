@@ -150,7 +150,7 @@ export default {
     });
     //取得水池狀態
     await this.$axios
-      .get("https://61.56.172.10/tf-state/", { httpsAgent: agent })
+      .get(`${process.env.apiUrl}/tf-state/`, { httpsAgent: agent })
       .then(res => {
         this.pools = res.data;
       })
@@ -159,7 +159,7 @@ export default {
       });
     //取得池況顏色設定
     await this.$axios
-      .get("https://61.56.172.10/pond-state/", { httpsAgent: agent })
+      .get(`${process.env.apiUrl}pond-state/`, { httpsAgent: agent })
       .then(res => {
         this.statcolor = res.data.filter(x=>x.name!="");//不提供保留項
       })

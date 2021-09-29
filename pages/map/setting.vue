@@ -172,7 +172,7 @@ export default {
       };
       let id = this.statLst[this.selectedItem].id;
       await this.$axios
-        .patch(`https://61.56.172.10/pond-state/${id}/`, parm, {
+        .patch(`${process.env.apiUrl}pond-state/${id}/`, parm, {
           httpsAgent: agent
         })
         .then(res => {
@@ -210,7 +210,7 @@ export default {
       };
       let id = this.statLst[this.selectedItem].id;
       await this.$axios
-        .delete(`https://61.56.172.10/pond-state/${id}/`, parm, {
+        .delete(`${process.env.apiUrl}pond-state/${id}/`, parm, {
           httpsAgent: agent
         })
         .then(res => {
@@ -245,7 +245,7 @@ export default {
           created_user: updUser
         };
         await this.$axios
-          .post(`https://61.56.172.10/pond-state/`, parm, {
+          .post(`${process.env.apiUrl}pond-state/`, parm, {
             httpsAgent: agent
           })
           .then(res => {
@@ -270,7 +270,7 @@ export default {
         rejectUnauthorized: false
       });
       await this.$axios
-        .get("https://61.56.172.10/pond-state/", { httpsAgent: agent })
+        .get(`${process.env.apiUrl}pond-state/`, { httpsAgent: agent })
         .then(res => {
           this.statLst = res.data.filter(x => x.name != ""); //不提供保留項;
         })
