@@ -103,7 +103,7 @@ export default {
           acclist = res.data;
         });
       var acc = acclist.filter(
-        x => x.username.toLowerCase() == this.$auth.$state.user.email
+        x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase()
       );
       //登入成功
       if (acc.length == 1) {
