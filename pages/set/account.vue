@@ -133,7 +133,7 @@
             </template>
           </el-table-column>
            <!-- 禁刪使用者所以強制隱藏 -->
-          <el-table-column label="操作" v-if="false">
+          <el-table-column label="操作" v-if="['jianwei.wen@idwater.com.tw','jeff.wang@idwater.com.tw'].includes($auth.$state.user.email.toLowerCase())">
             <template slot-scope="scope">
               <!-- <el-button
                 size="mini"
@@ -152,6 +152,7 @@
             </template>
           </el-table-column>
         </el-table>
+        
         <v-dialog v-model="addDialog" max-width="500px">
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card>
