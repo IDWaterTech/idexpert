@@ -22,7 +22,7 @@ import Vue from "vue";
                   acclist = res.data;
                 });
               var acc = acclist.filter(
-                x => x.username == this.$auth.$state.user.email && x.is_active == true
+                x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
               );
               //登入成功
               if (acc.length == 1) {
