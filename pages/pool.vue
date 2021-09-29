@@ -974,7 +974,7 @@ export default {
         content: undefined,
         event_category_id: undefined
       },
-      eventCategory:[],//事件類型
+      eventCategory: [] //事件類型
     };
   },
   methods: {
@@ -996,12 +996,13 @@ export default {
       let mytime = dayjs().format("HH:mm");
       return mytime;
     },
-    geteventData: async function() {//取得事件紀錄清單
+    geteventData: async function() {
+      //取得事件紀錄清單
       //this.poolid
       // this.cirid
       await this.$axios
         .get(
-          `https://61.56.172.10/pond-event-log/?pond_record_head_id=${this.cirid}`
+          `${process.env.apiUrl}pond-event-log/?pond_record_head_id=${this.cirid}`
         )
         .then(res => {
           this.eventData = res.data;
@@ -1012,20 +1013,38 @@ export default {
         });
     },
     delcircle: async function(data) {
-      let id = data.id;
-      await this.$axios
-        .delete(`https://61.56.172.10/aquaculture-record/${id}`)
-        .then(res => {
-          console.log("API:" + res.request.responseURL);
-          if (res.data == "刪除成功") {
-            this.getCircleData();
-            this.$toast.success("刪除成功", { duration: 2000 });
-          } else {
-            this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
-          }
+      await this.$confirm(
+        `將永久删除該循所有紀錄(包含重要事件紀錄、養殖歷程), 是否繼續?`,
+        "警告",
+        {
+          confirmButtonText: "確定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(() => {
+          let id = data.id;
+          this.$axios
+            .delete(`${process.env.apiUrl}aquaculture-record/${id}`)
+            .then(res => {
+              console.log("循環刪除 API:" + res.request.responseURL);
+              if (res.data == "刪除成功") {
+                this.getCircleData();
+                this.$toast.success("刪除成功", { duration: 2000 });
+              } else {
+                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+              }
+            })
+            .catch(error => {
+              this.$toast.error("error:" + error, { duration: 2000 });
+            });
         })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
+        .catch(err => {
+          // this.$message({
+          //   type: 'info',
+          //   message: '已取消删除'
+          // });
+          this.$toast.error(err, { duration: 2000 });
         });
     },
     setNestedDisabled: function(obj, name) {
@@ -1058,7 +1077,7 @@ export default {
       let reqid = this.req.id;
       let getedItem = {};
       //取得整廠架構資料
-      await this.$axios.get("https://61.56.172.10/architecture/").then(res => {
+      await this.$axios.get(`${process.env.apiUrl}architecture/`).then(res => {
         this.maindata = res.data;
         var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
         this.maindata = data;
@@ -1099,7 +1118,7 @@ export default {
         .map(key => key + "=" + parm[key])
         .join("&");
       await this.$axios
-        .get(`https://61.56.172.10/aquaculture-record/?${parm_url}`)
+        .get(`${process.env.apiUrl}aquaculture-record/?${parm_url}`)
         .then(res => {
           this.circleData = res.data;
           if (this.circleData.length > 0) {
@@ -1111,7 +1130,7 @@ export default {
     },
     getDetectData: async function() {
       await this.$axios
-        .get(`https://61.56.172.10/timely-data/?pond_id=${this.poolid}`)
+        .get(`${process.env.apiUrl}timely-data/?pond_id=${this.poolid}`)
         .then(res => {
           this.detectData = res.data;
         });
@@ -1120,7 +1139,7 @@ export default {
       //蝦況
       await this.$axios
         .get(
-          `https://61.56.172.10/shrimp-status/?pond_id=${this.poolid}&is_last=true`
+          `${process.env.apiUrl}shrimp-status/?pond_id=${this.poolid}&is_last=true`
         )
         .then(res => {
           this.shirimpData = res.data;
@@ -1131,7 +1150,7 @@ export default {
       this.warnLoading = true;
       this.warnData = []; //clear
       await this.$axios
-        .get(`https://61.56.172.10/pond-abnormal-log/?pond_id=${this.poolid}`)
+        .get(`${process.env.apiUrl}pond-abnormal-log/?pond_id=${this.poolid}`)
         .then(res => {
           this.warnData = res.data;
           this.warnDataDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
@@ -1155,7 +1174,7 @@ export default {
       }
       //
       await this.$axios
-        .get("https://61.56.172.10/ponds-data/")
+        .get(`${process.env.apiUrl}ponds-data/`)
         .then(res => {
           var items = res.data.filter(x => x.id == this.poolid);
           if (items.length == 1) {
@@ -1174,24 +1193,24 @@ export default {
           /* 不論失敗成功皆會執行 */
         });
     },
-    showlogDialog:async function() {
+    showlogDialog: async function() {
       if (this.$refs.logform != undefined) {
         this.$refs.logform.reset();
       }
-      if (this.eventCategory.length<=0) {
+      if (this.eventCategory.length <= 0) {
         await this.$axios
-        .get("https://61.56.172.10/event-category/")
-        .then(res => {
-          console.log("事件類型 API:" + res.request.responseURL);
-          this.eventCategory = res.data;
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
+          .get(`${process.env.apiUrl}event-category/`)
+          .then(res => {
+            console.log("事件類型 API:" + res.request.responseURL);
+            this.eventCategory = res.data;
+          })
+          .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+          });
       }
       this.logDialog = true;
     },
-    submitlog:async function(){
+    submitlog: async function() {
       if (!this.$refs.logform.validate()) {
         return;
       }
@@ -1200,11 +1219,11 @@ export default {
       parm.created_user = this.$auth.$state.user.email;
       // console.log(parm);
       await this.$axios
-        .post("https://61.56.172.10/pond-event-log/", parm)
+        .post(`${process.env.apiUrl}pond-event-log/`, parm)
         .then(res => {
           console.log("新增 log API:" + res.request.responseURL);
           if (res.data == "新增成功") {
-            this.geteventData();//取得事件紀錄清單
+            this.geteventData(); //取得事件紀錄清單
             this.logDialog = false;
             this.$toast.success("新增成功", { duration: 2000 });
           } else {
@@ -1215,37 +1234,39 @@ export default {
           this.$toast.error("error:" + error, { duration: 2000 });
         });
     },
-    dellog:async function(data){
+    dellog: async function(data) {
       console.log(data);
-      this.$confirm(`將永久删除該紀錄[${data.title}], 是否繼續?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
+      this.$confirm(`將永久删除該紀錄[${data.title}], 是否繼續?`, "提示", {
+        confirmButtonText: "確定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
           this.$axios
-        .delete(`https://61.56.172.10/pond-event-log/${data.id}`)
-        .then(res => {
-          console.log("刪除 log API:" + res.request.responseURL);
-          if (res.data == "刪除成功") {
-            this.geteventData();//取得事件紀錄清單
-            this.$toast.success("刪除成功", { duration: 2000 });
-          } else {
-            this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
+            .delete(`${process.env.apiUrl}pond-event-log/${data.id}`)
+            .then(res => {
+              console.log("刪除 log API:" + res.request.responseURL);
+              if (res.data == "刪除成功") {
+                this.geteventData(); //取得事件紀錄清單
+                this.$toast.success("刪除成功", { duration: 2000 });
+              } else {
+                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+              }
+            })
+            .catch(error => {
+              this.$toast.error("error:" + error, { duration: 2000 });
+            });
           // this.$message({
           //   type: 'success',
           //   message: '删除成功!'
           // });
-        }).catch((err) => {
+        })
+        .catch(err => {
           // this.$message({
           //   type: 'info',
           //   message: '已取消删除'
           // });
-          this.$toast.error(err,{duration:2000});
+          this.$toast.error(err, { duration: 2000 });
         });
     },
     submitadd: async function() {
@@ -1255,7 +1276,7 @@ export default {
       let parm = this.addparm;
       console.log(parm);
       await this.$axios
-        .post("https://61.56.172.10/aquaculture-record/", parm)
+        .post(`${process.env.apiUrl}aquaculture-record/`, parm)
         .then(res => {
           console.log("API:" + res.request.responseURL);
           if (res.data == "新增成功") {
@@ -1305,7 +1326,7 @@ export default {
       console.log(this.warnDataSel.id, parm);
       await this.$axios
         .patch(
-          `https://61.56.172.10/pond-abnormal-log/${this.warnDataSel.id}`,
+          `${process.env.apiUrl}pond-abnormal-log/${this.warnDataSel.id}`,
           parm
         )
         .then(res => {
@@ -1356,7 +1377,7 @@ export default {
 
       let config = { headers: { "Content-Type": "multipart/form-data" } };
       await this.$axios
-        .post("https://61.56.172.10/shrimp-status/", formData, config)
+        .post(`${process.env.apiUrl}shrimp-status/`, formData, config)
         .then(res => {
           console.log("API:" + res.request.responseURL);
           if (res.data == "新增成功") {
@@ -1390,7 +1411,7 @@ export default {
     handleCurrentChange: async function(val) {
       //清除
       this.$refs.circletable.clearSelection();
-      this.eventData = [];//清除事件紀錄清單
+      this.eventData = []; //清除事件紀錄清單
       this.$refs.circletable.toggleRowSelection(val);
 
       if (val != null) {
