@@ -4,7 +4,8 @@
     <v-row no-gutters justify="center">
       <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-10">
         <!-- 警示區 -->
-        <div style="min-height:100px;max-height:100px;">
+        <v-sheet class="overflow-y-auto" min-height="100px" max-height="100">
+          <v-card-text>
           <v-chip-group column>
             <v-chip
               filter
@@ -20,7 +21,8 @@
               }}
             </v-chip>
           </v-chip-group>
-        </div>
+          </v-card-text>
+        </v-sheet>
         <span class="subtitle">警示資料時間：{{ warnDataDt }}</span>
         <v-btn
           :loading="warnLoading"
@@ -612,6 +614,7 @@
                               {{ item.value }}
                             </v-card-title>
                             <div style="height:120px;" class="px-2">
+                              <!-- 車速圖 -->
                               <vue-speedometer
                                 :value="parseFloat(item.value)"
                                 :needleHeightRatio="0.7"
@@ -637,14 +640,24 @@
                                 :ringWidth="20"
                                 :width="180"
                                 :forceRender="true"
+                                v-if="item.name_en != 'water_level'"
                               ></vue-speedometer>
+                              <!-- 水球圖 -->
+                              <v-card-text  v-if="item.name_en == 'water_level'">
+                                
+                                <waterball :value="parseFloat(item.value)/100"></waterball>
+                                
+                              </v-card-text>
                             </div>
                             <v-divider></v-divider>
                             <v-card-subtitle class=" py-2 px-2">
                               共：{{ item.rows }}筆
-                              <span v-if="item.name_en == 'drain_depth'"
-                                ><br />{{ item.last_time }}</span
+                              <span v-if="item.name_en == 'water_level'">
+                              <br/>{{`警戒上限：${item.critical_max}%`}}<br/>
+                                {{`警戒下限：${item.critical_min}%`}}
+                                <br />{{ item.last_time }}</span
                               >
+                            
                               <!--限水位才有資料 -->
                             </v-card-subtitle>
                             <v-scale-transition>
@@ -870,8 +883,10 @@
 import dayjs from "dayjs";
 import _ from "lodash";
 import "element-ui/lib/theme-chalk/index.css";
+import waterball from '~/components/waterball.vue';
 // import axios from "~/plugins/axios";
 export default {
+  components: { waterball },
   layout: "emptynologin",
   middleware: "auth",
   data() {

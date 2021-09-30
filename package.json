@@ -20,6 +20,7 @@
     "dayjs": "^1.10.6",
     "dplayer": "^1.26.0",
     "echarts": "^4.9.0",
+    "echarts-liquidfill": "^2.0.6",
     "element-ui": "^2.15.3",
     "hls.js": "^1.0.7",
     "lodash": "^4.17.21",

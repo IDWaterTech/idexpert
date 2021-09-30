@@ -53,6 +53,14 @@
               :headers="headers"
               :footer-props="footerProps"
             >
+             <template v-slot:[`item.is_enable_alert`]="{ item }">
+                <v-chip
+                  :color="(item.is_enable_alert)?'green':'red'"
+                  dark
+                >
+                  {{ (item.is_enable_alert)?'啟用':'停用' }}
+                </v-chip>
+              </template>
               <template v-slot:[`item.actions`]="{ item }">
                 <v-icon small class="mr-2" @click="editShow(item)">
                   mdi-pencil
