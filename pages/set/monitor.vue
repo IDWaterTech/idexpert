@@ -153,6 +153,16 @@
               </v-col> -->
               <!-- 新 min max 設定 -->
               <v-col cols="12" class="text-center">
+                <v-row>
+                  <v-col cols="2" style="background-color:black;color:white;">{{minmax[0]}}</v-col>
+                  <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[0]}}</v-col>
+                  <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[0]}}</v-col>
+                  <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[1]}}</v-col>
+                  <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[1]}}</v-col>
+                  <v-col cols="2" style="background-color:black;color:white;">{{minmax[1]}}</v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="12" class="text-center">
                 <span class="subtitle-1  font-weight-black"
                   >最小值←→最大值</span
                 >
@@ -638,39 +648,39 @@ export default {
         key: 0,
         // minmax: [0, 99999],
         marks: {
-          0: "0",
-          1000: "1000",
-          2000: "2000",
-          4000: "4000",
-          6000: "6000",
-          8000: "8000",
-          10000: "10000"
+          // 0: "0",
+          // 1000: "1000",
+          // 2000: "2000",
+          // 4000: "4000",
+          // 6000: "6000",
+          // 8000: "8000",
+          // 10000: "10000"
         }
       },
       //危險min max
       limit_critical: {
         key: 0,
         marks: {
-          0: "0",
-          1000: "1000",
-          2000: "2000",
-          4000: "4000",
-          6000: "6000",
-          8000: "8000",
-          10000: "10000"
+          // 0: "0",
+          // 1000: "1000",
+          // 2000: "2000",
+          // 4000: "4000",
+          // 6000: "6000",
+          // 8000: "8000",
+          // 10000: "10000"
         }
       },
       //警戒min max
       limit_warning: {
         key: 0,
         marks: {
-          0: "0",
-          1000: "1000",
-          2000: "2000",
-          4000: "4000",
-          6000: "6000",
-          8000: "8000",
-          10000: "10000"
+          // 0: "0",
+          // 1000: "1000",
+          // 2000: "2000",
+          // 4000: "4000",
+          // 6000: "6000",
+          // 8000: "8000",
+          // 10000: "10000"
         }
       }
     };
@@ -801,6 +811,7 @@ export default {
     editsubmit: async function() {
       const updUser = this.$auth.$state.user.email;
       let parm = {
+        name_en: this.editedItem.name_en,
         name_ch: this.editedItem.name_ch,
         unit: this.editedItem.unit,
         max: this.editedItem.max,

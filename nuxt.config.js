@@ -158,6 +158,7 @@ export default {
     }
   },
   proxy: {
+    //這個代理不會在線上環境生效的.只是給開發時使用
     "/mapi": {
       //表示 api url 當中的 path 部分，將會以 ‘api’ 開頭，例如：http://localhost:3000/api/
       target: "http://localhost:3031/", //表示要被代理請求的 api url ( server 地址）當請求/api/users時，從請求 http://localhost:3000/api/users 代理到 https://example.com/api/users
@@ -172,6 +173,13 @@ export default {
       changeOrigin: true,
       pathRewrite: {
         "^/gapi": ""
+      }
+    },
+    "/lineapi": {
+      target: "https://notify-api.line.me/",
+      changeOrigin: true,
+      pathRewrite: {
+        "^/lineapi": ""
       }
     },
     //設定代理，目前沒用到
@@ -227,5 +235,8 @@ export default {
     extend(config) {
       config.resolve.alias['vue'] = 'vue/dist/vue.common'
   }
+  },
+  generate:{
+    assetsPublicPath:'./'
   }
 };

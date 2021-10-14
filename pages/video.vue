@@ -3,9 +3,9 @@
     <h2>觀察網影像(開發中)</h2>
     <h3>目前為：HLS模式(iphone推薦)</h3>
     <v-btn :to="'/videoflv'" color="orange" tile>切換為：flv模式</v-btn>
-    <v-btn @click="chchanel('171')" color="primary" tile>武曲A1</v-btn>
-    <v-btn @click="chchanel('170')" color="primary" tile>武曲A2</v-btn>
-    <v-btn @click="chchanel('172')" color="primary" tile>天府C1</v-btn>
+    <v-btn @click="chchanel('170')" color="primary" tile>170</v-btn><!-- 武曲A2 -->
+    <v-btn @click="chchanel('171')" color="primary" tile>171</v-btn><!-- 武曲A1 -->
+    <v-btn @click="chchanel('172')" color="primary" tile>172</v-btn><!-- 天府C1 -->
     <div id="dplayer"></div>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default {
     return {
       player: undefined,
       // url: `${process.env.apiUrl2}:8443/live/170.flv`,
-      url: `${process.env.apiUrl2}:8443/live/170/index.m3u8`,
+      url: `${process.env.apiUrl2}:8443/live/171/index.m3u8`,
       type: "hls"
     };
   },

@@ -4,26 +4,66 @@
     <v-row no-gutters justify="center">
       <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-10">
         <!-- 警示區 -->
-        <v-sheet class="overflow-y-auto" min-height="100px" max-height="100">
+        <v-card min-height="100px" elevation="3" class="mx-3" tile>
+          <v-card-title
+            class="py-0"
+            style="background-color:#64B5F6;color:white;"
+          >
+            警示區
+            <v-spacer></v-spacer>
+            <span class="subtitle-3">警示資料時間：{{ warnDataDt.length == 0 ? "0000-00-00 00:00:00":"" }}{{warnDataDt}}</span>
+            <v-btn
+              :loading="warnLoading"
+              :disabled="!poolid || warnLoading"
+              class="ma-2 white--text"
+              icon
+              @click="getwarnData"
+            >
+              <v-icon dark>
+                mdi-reload
+              </v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
           <v-card-text>
-          <v-chip-group column>
-            <v-chip
-              filter
-              outlined
-              v-for="item in warnData"
-              :key="item.id"
-              @click="showwarning(item)"
-              color="red"
-              >{{
-                `${item.inspected_time.match(/[^\s]*$/)[0]}-[等級：${
-                  item.warning_level
-                }]：${item.warning_content}`
-              }}
-            </v-chip>
-          </v-chip-group>
+            <v-sheet
+              class="overflow-y-auto"
+              min-height="100px"
+              max-height="100"
+              v-if="warnData.length != 0"
+            >
+              <v-card-text>
+                <v-chip-group column>
+                  <v-chip
+                    filter
+                    outlined
+                    v-for="item in warnData"
+                    :key="item.id"
+                    @click="showwarning(item)"
+                    :color="
+                      item.warning_level.toLowerCase() == 'critical'
+                        ? `red`
+                        : `orange`
+                    "
+                    >{{
+                      `${item.inspected_time.match(/[^\s]*$/)[0]}-[等級：${
+                        item.warning_level
+                      }]：${item.warning_content}`
+                    }}
+                  </v-chip>
+                </v-chip-group>
+              </v-card-text>
+            </v-sheet>
+            <div
+                        class="text-center my-5"
+                        v-if="warnData.length == 0"
+                      >
+                        <h2>查無資料</h2>
+                      </div>
           </v-card-text>
-        </v-sheet>
-        <span class="subtitle">警示資料時間：{{ warnDataDt }}</span>
+        </v-card>
+
+        <!-- <span class="subtitle">警示資料時間：{{ warnDataDt }}</span>
         <v-btn
           :loading="warnLoading"
           :disabled="warnLoading"
@@ -36,7 +76,7 @@
           <v-icon dark>
             mdi-reload
           </v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-dialog v-model="warnDialog" max-width="500px">
           <v-form ref="warnform" v-model="warnvalid" lazy-validation>
             <v-card>
@@ -405,7 +445,7 @@
             class="py-2"
             style="background-color:#64B5F6;color:white;"
           >
-            蝦況
+            觀察網(蝦況)
             <v-spacer></v-spacer>
             <v-icon
               @click="showdialog_imgdialog"
@@ -463,7 +503,7 @@
           <v-form ref="imgform" v-model="imgvalid" lazy-validation>
             <v-card>
               <!-- style="background-color:#64B5F6;color:white;" -->
-              <v-card-title>蝦況</v-card-title><v-divider></v-divider>
+              <v-card-title>觀察網(蝦況)</v-card-title><v-divider></v-divider>
               <v-card-text>
                 <!-- 日期時間 -->
                 <v-row>
@@ -643,21 +683,22 @@
                                 v-if="item.name_en != 'water_level'"
                               ></vue-speedometer>
                               <!-- 水球圖 -->
-                              <v-card-text  v-if="item.name_en == 'water_level'">
-                                
-                                <waterball :value="parseFloat(item.value)/100"></waterball>
-                                
+                              <v-card-text v-if="item.name_en == 'water_level'">
+                                <waterball
+                                  :value="parseFloat(item.value) / 100"
+                                ></waterball>
                               </v-card-text>
                             </div>
                             <v-divider></v-divider>
                             <v-card-subtitle class=" py-2 px-2">
                               共：{{ item.rows }}筆
                               <span v-if="item.name_en == 'water_level'">
-                              <br/>{{`警戒上限：${item.critical_max}%`}}<br/>
-                                {{`警戒下限：${item.critical_min}%`}}
+                                <br />{{ `警戒上限：${item.critical_max}%`
+                                }}<br />
+                                {{ `警戒下限：${item.critical_min}%` }}
                                 <br />{{ item.last_time }}</span
                               >
-                            
+
                               <!--限水位才有資料 -->
                             </v-card-subtitle>
                             <v-scale-transition>
@@ -691,14 +732,14 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- 重要事件紀錄 -->
+    <!-- 事件紀錄 -->
     <v-row>
       <v-col cols="12">
         <v-card elevation="3" tile>
           <v-card-title
             class="py-2"
             style="background-color:#64B5F6;color:white;"
-            >重要事件紀錄
+            >事件紀錄
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon
@@ -712,7 +753,7 @@
                   mdi-reload
                 </v-icon>
               </template>
-              <span>立即重新取得重要事件紀錄</span>
+              <span>立即重新取得事件紀錄</span>
             </v-tooltip>
           </v-card-title>
 
@@ -865,12 +906,7 @@
           >
           <v-divider></v-divider>
           <v-card-title>
-            <ol>
-              <li>2020/01/01 asdfasdf</li>
-              <li>2020/01/01 asdfasdf</li>
-              <li>2020/01/01 asdfasdf</li>
-              <li>2020/01/01 asdfasdf</li>
-            </ol>
+            建置中
           </v-card-title>
         </v-card>
       </v-col>
@@ -883,7 +919,7 @@
 import dayjs from "dayjs";
 import _ from "lodash";
 import "element-ui/lib/theme-chalk/index.css";
-import waterball from '~/components/waterball.vue';
+import waterball from "~/components/waterball.vue";
 // import axios from "~/plugins/axios";
 export default {
   components: { waterball },
@@ -1029,7 +1065,7 @@ export default {
     },
     delcircle: async function(data) {
       await this.$confirm(
-        `將永久删除該循所有紀錄(包含重要事件紀錄、養殖歷程), 是否繼續?`,
+        `將永久删除該循所有紀錄(包含事件紀錄、養殖歷程), 是否繼續?`,
         "警告",
         {
           confirmButtonText: "確定",
@@ -1138,10 +1174,11 @@ export default {
           this.circleData = res.data;
           if (this.circleData.length > 0) {
             this.getwarnData();
-            this.getDetectData();
+            // this.getDetectData();
             this.getshirimpData();
           }
         });
+      this.getDetectData(); //無論如何都要抓
     },
     getDetectData: async function() {
       await this.$axios
@@ -1287,7 +1324,7 @@ export default {
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
       this.addparm.created_user = updUser;
-      this.addparm.pond_id = this.poolid;
+      this.addparm.pond_id = parseInt(this.poolid); //需要int
       let parm = this.addparm;
       console.log(parm);
       await this.$axios
@@ -1373,7 +1410,7 @@ export default {
       }
       let param = {
         inspected_time: `${this.imgdata.imgdate} ${this.imgdata.imgtime}:00`,
-        pond_id: this.poolid,
+        pond_id: parseInt(this.poolid), //需要int
         created_user: updUser,
         item: additem
         // image:this.imgfiles

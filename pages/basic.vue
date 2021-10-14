@@ -272,7 +272,9 @@
                   :disabled="waterloading == true"
                 >
                 </v-select>
+                
               </v-col>
+              <v-col cols="12" md="2"><v-btn rounded outlined block color="primary" @click="()=>{this.defitem=[ '亞硝酸鹽濃度', '氨氮濃度', '水溫', '溶氧濃度', '酸鹼濃度' ];}">主要觀測項目</v-btn></v-col>
               <v-col
                 cols="12"
                 md="3"
@@ -351,7 +353,8 @@
                   >查詢</v-btn
                 ></v-col
               >
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="5">
+                
                 <v-select
                   v-model="defitem_env"
                   clearable
@@ -851,7 +854,7 @@ export default {
       sel_main: "",
       sel_area: "",
       clickeditem: "",
-      defitem: "",
+      defitem: [ "亞硝酸鹽濃度", "氨氮濃度", "水溫", "溶氧濃度", "酸鹼濃度" ],
       defPool: { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [] },
       //items: ["A1", "A2"],
       tabs: [

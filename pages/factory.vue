@@ -258,7 +258,7 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   autocomplete="off"
-                  v-model="edititem_pool.parm.volume"
+                  v-model.number="edititem_pool.parm.volume"
                   :rules="rules.requireNum"
                   type="number"
                   clearable
@@ -290,6 +290,7 @@
                   :rules="rules.requireNum"
                   type="number"
                   clearable
+                  @keypress="(evt)=>{if(evt.key=='.'){ evt.preventDefault();}else{return true;}}"
                   filled
                   dense
                   ><span style="width:50px;" slot="prepend">池子數</span>
@@ -300,6 +301,7 @@
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.aeration_tray_num"
+                  @keypress="(evt)=>{if(evt.key=='.'){ evt.preventDefault();}else{return true;}}"
                   :rules="rules.requireNum"
                   type="number"
                   clearable
@@ -364,6 +366,7 @@
                 ><span style="width:50px;">觀察網影像</span></template
               >
             </v-text-field>
+            <!-- v-if="edititem_pool.type == `add`" -->
             <v-select
               v-model="edititem_pool.parm.pond_state_id"
               :items="poolstat"
@@ -371,7 +374,6 @@
               item-text="name"
               item-value="id"
               :disabled="true"
-              v-if="edititem_pool.type == `add`"
               ><template slot="prepend"
                 ><span style="width:50px;">狀態</span></template
               ></v-select
@@ -657,6 +659,9 @@ export default {
       this.dialog.main = true;
     },
     showdialog_pool: function(data) {
+      // if (this.$refs.poolform != undefined) {
+      //     this.$refs.poolform.reset();
+      //   }
       //data is add or edit
       this.edititem_pool.type = data;
       this.edititem_pool.parm = {};
@@ -664,19 +669,19 @@ export default {
       this.edititem_pool.parm.pond_state_id = 3; //預設狀態=空池，id=3
       if (data == "add") {
         //重驗證
-        if (this.$refs.poolform != undefined) {
-          this.$refs.poolform.reset();
-        }
+        
       }
       if (data == "edit") {
         var pool = this.pooldata.filter(x => x.id == this.sel_pool)[0];
         this.edititem_pool.parm = _.cloneDeep(pool);
+        var mystatename = this.edititem_pool.parm.state;
+        this.edititem_pool.parm.pond_state_id = this.poolstat.filter(x=>x.name==mystatename)[0].id;
         // this.edititem_pool.parm.pond_state_id = 3;
         //不需要的項目state狀態、estimated_num初始投放隻數、num_per_unit放養密度
         delete this.edititem_pool.parm.state;
         delete this.edititem_pool.parm.estimated_num;
         delete this.edititem_pool.parm.num_per_unit;
-        delete this.edititem_pool.parm.pond_state_id; //水池狀態不在這修改
+        // delete this.edititem_pool.parm.pond_state_id; //水池狀態不在這修改，但還是要補
         for (const key in this.edititem_pool.parm) {
           var getvalue = this.edititem_pool.parm[key];
           //排除規則不使用regexp的清單
@@ -748,7 +753,6 @@ export default {
           //新增池
           this.edititem_pool.parm.created_user = user;
           var parm = this.edititem_pool.parm;
-          debugger;
           await this.$axios
             .post(`${process.env.apiUrl}pond/`, parm)
             .then(res => {
