@@ -14,7 +14,7 @@
           @click="showaddDialog"
         >
           <v-icon dark>
-            mdi-plus
+            mdi-account-plus-outline
           </v-icon>
         </v-btn>
       </v-col>
@@ -26,12 +26,16 @@
           row-key="id"
           :expand-row-keys="expands"
           @expand-change="expandSelect"
+          :header-cell-style="{
+            'background-color': '#64B5F6',
+            color: '#fff',
+            'font-weight': '400'
+          }"
         >
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline>
-                <el-form-item
-                  >
+                <el-form-item>
                   <span>帳號：{{ props.row.username }}</span
                   ><br />
                   <span>姓名：{{ props.row.account_name }}</span
@@ -49,7 +53,7 @@
                       :key="item.id"
                     >
                       <v-icon left>
-                        {{getUnitSet('icon', item.department)}}
+                        {{ getUnitSet("icon", item.department) }}
                       </v-icon>
                       {{ item.department }}-{{ item.name }} </v-chip
                     ><v-icon @click="showpositDialog(props.row)"
@@ -127,13 +131,45 @@
               <el-switch
                 v-model="scope.row.is_active"
                 active-color="#13ce66"
-                inactive-color="#ff4949"
+                inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
               ></el-switch>
             </template>
           </el-table-column>
-           <!-- 禁刪使用者所以強制隱藏 -->
-          <el-table-column label="操作" v-if="['jianwei.wen@idwater.com.tw','jeff.wang@idwater.com.tw'].includes($auth.$state.user.email.toLowerCase())">
+          <el-table-column
+            prop="is_active"
+            label="允許接收通知"
+            width="150"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <v-icon color="#EA4335">mdi-gmail</v-icon>Mail
+              <el-switch
+                v-model="scope.row.is_enable_email"
+                active-color="#13ce66"
+                inactive-color="#eee"
+                @change="statchange(scope.$index, scope.row)"
+              ></el-switch
+              ><br />
+              <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line
+              <el-switch
+                v-model="scope.row.is_enable_line"
+                active-color="#13ce66"
+                inactive-color="#eee"
+                @change="statchange(scope.$index, scope.row)"
+              ></el-switch>
+            </template>
+          </el-table-column>
+          <!-- 禁刪使用者所以強制隱藏 -->
+          <el-table-column
+            label="操作"
+            v-if="
+              [
+                'jianwei.wen@idwater.com.tw',
+                'jeff.wang@idwater.com.tw'
+              ].includes($auth.$state.user.email.toLowerCase())
+            "
+          >
             <template slot-scope="scope">
               <!-- <el-button
                 size="mini"
@@ -152,7 +188,7 @@
             </template>
           </el-table-column>
         </el-table>
-        
+
         <v-dialog v-model="addDialog" max-width="500px">
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card>
@@ -201,16 +237,33 @@
                   ></v-col>
 
                   <v-col cols="12" md="6">
-                    帳號預設狀態：
+                    帳號預設狀態：<br />
                     <el-tag
-                      :type="addform.is_active ? 'success' : 'danger'"
+                      :type="addform.is_active ? 'success' : 'info'"
                       disable-transitions
                       >{{ addform.is_active ? "啟用" : "停用" }}</el-tag
                     >
                     <el-switch
                       v-model="addform.is_active"
                       active-color="#13ce66"
-                      inactive-color="#ff4949"
+                      inactive-color="#eee"
+                    ></el-switch>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    允許接收通知<br />
+                    <v-icon color="#EA4335">mdi-gmail</v-icon>Mail
+                    <el-switch
+                      v-model="addform.is_enable_email"
+                      active-color="#13ce66"
+                      inactive-color="#eee"
+                    ></el-switch
+                    ><br />
+                    <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon
+                    >Line
+                    <el-switch
+                      v-model="addform.is_enable_line"
+                      active-color="#13ce66"
+                      inactive-color="#eee"
                     ></el-switch>
                   </v-col>
                   <v-col cols="12">
@@ -234,7 +287,7 @@
               <v-divider></v-divider>
               <v-footer color="white">
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="addsubmit">
+                <v-btn color="blue darken-1" dark tile @click="addsubmit">
                   確認
                 </v-btn>
               </v-footer>
@@ -288,7 +341,9 @@
             <v-toolbar flat>
               <v-toolbar-title>
                 <span class="text-h5"
-                  >修改：{{ (edititem.item=="position")?"職位":edititem.item }}
+                  >修改：{{
+                    edititem.item == "position" ? "職位" : edititem.item
+                  }}
                 </span></v-toolbar-title
               >
             </v-toolbar>
@@ -384,6 +439,8 @@ export default {
         account_name: "",
         created_user: "web",
         is_active: true,
+        is_enable_email: false,
+        is_enable_line: false,
         position_id: []
       },
       //單位顏色、ICON設定
@@ -482,7 +539,7 @@ export default {
         .get(`${process.env.apiUrl}user-access/account/`, { httpsAgent: agent })
         .then(res => {
           this.accdata = res.data;
-          console.log("api：" + res.request.responseURL);
+          console.log("accList api：" + res.request.responseURL);
         });
     },
     getorg: async function() {
@@ -523,35 +580,36 @@ export default {
       Object.assign(this.editedData, row);
       this.editDialog = true;
     },
-    handleDelete:async function(index, row) {
-      if (confirm('是否確認刪除？')) {
+    handleDelete: async function(index, row) {
+      if (confirm("是否確認刪除？")) {
         await this.$axios
-        .delete(
-          `${process.env.apiUrl}user-access/account/${row.id}/`,
-          { httpsAgent: agent }
-        )
-        .then(res => {
-          if (res.data == "刪除成功") {
-            this.getaccList(); //改畫面的資料
-            this.positDialog = false;
-            this.$toast.success("刪除成功", { duration: 2000 });
-          } else {
-            this.$toast.success("刪除失敗：" + res.data, { duration: 2000 });
-          }
-          console.log("api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-        })
-        .finally(() => {});
+          .delete(`${process.env.apiUrl}user-access/account/${row.id}/`, {
+            httpsAgent: agent
+          })
+          .then(res => {
+            if (res.data == "刪除成功") {
+              this.getaccList(); //改畫面的資料
+              this.positDialog = false;
+              this.$toast.success("刪除成功", { duration: 2000 });
+            } else {
+              this.$toast.success("刪除失敗：" + res.data, { duration: 2000 });
+            }
+            console.log("api：" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+          })
+          .finally(() => {});
       }
     },
     statchange(index, row) {
       let parm = {};
       parm["is_active"] = row.is_active;
+      parm["is_enable_email"] = row.is_enable_email;
+      parm["is_enable_line"] = row.is_enable_line;
       const updUser = this.$auth.$state.user.email;
       parm["updated_user"] = updUser;
-      this.postedit(row.id,parm);
+      this.postedit(row.id, parm);
     },
     expandSelect(row, expandedRows) {
       if (expandedRows.length) {
@@ -566,15 +624,21 @@ export default {
       console.log("expand row:", row);
     },
     showaddDialog: function() {
+      if (this.$refs.form != undefined) {
+        this.$refs.form.reset();
+      }
+
       const updUser = this.$auth.$state.user.email;
-      this.addform.username = "";
-      this.addform.email = "";
-      this.addform.password = "";
-      this.addform.password2 = "";
-      this.addform.account_name = "";
+      // this.addform.username = "";
+      // this.addform.email = "";
+      // this.addform.password = "";
+      // this.addform.password2 = "";
+      // this.addform.account_name = "";
       this.addform.created_user = updUser;
-      this.addform.is_active = true;
-      this.addform.position_id = [];
+      // this.addform.is_active = true;
+      // this.addform.is_enable_email=false;
+      // this.addform.is_enable_line=false;
+      // this.addform.position_id = [];
       this.addDialog = true;
     },
     addsubmit: async function() {
@@ -668,7 +732,7 @@ export default {
       const updUser = this.$auth.$state.user.email;
       parm["updated_user"] = updUser;
       console.log(parm);
-      this.postedit(this.edititem.id,parm);
+      this.postedit(this.edititem.id, parm);
       // await this.$axios
       //   .patch(
       //     `${process.env.apiUrl}user-access/account/${this.edititem.id}/`,
@@ -690,13 +754,12 @@ export default {
       //   })
       //   .finally(() => {});
     },
-    postedit:async function(upd_id,parm){
+    postedit: async function(upd_id, parm) {
+      console.log("修改參數：",parm);
       await this.$axios
-        .patch(
-          `${process.env.apiUrl}user-access/account/${upd_id}/`,
-          parm,
-          { httpsAgent: agent }
-        )
+        .patch(`${process.env.apiUrl}user-access/account/${upd_id}/`, parm, {
+          httpsAgent: agent
+        })
         .then(res => {
           if (res.data == "修改成功") {
             this.getaccList(); //改畫面的資料
@@ -714,7 +777,7 @@ export default {
     }
   },
   async created() {
-    await this._pageCheck();//驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     await this.getaccList();
     await this.getorg();
   }
