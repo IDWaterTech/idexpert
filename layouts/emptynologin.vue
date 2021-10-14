@@ -9,7 +9,7 @@
         :clipped="clipped"
         :mini-variant-width="this.$auth.$state.loggedIn ? '60' : '0'"
       >
-        <v-list><a href="set/profile">
+        <v-list><a href="set/profile" style="text-decoration: none;">
           <v-list-item>
             
             <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">

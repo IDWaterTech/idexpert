@@ -21,8 +21,8 @@
                 align-self="center"
                 class="text-center title"
               >
-                <h3>{{ $auth.$state.user.name }}</h3>
-                {{ $auth.$state.user.email }}
+                <span class="title">{{ $auth.$state.user.name }}</span><br/>
+                <span class="subtitle-1">{{ $auth.$state.user.email }}</span>
               </v-col>
               <v-col cols="12" sm="2" align-self="center">
                 <v-avatar color="primary" size="76"
