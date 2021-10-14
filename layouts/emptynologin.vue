@@ -9,12 +9,13 @@
         :clipped="clipped"
         :mini-variant-width="this.$auth.$state.loggedIn ? '60' : '0'"
       >
-        <v-list>
+        <v-list><a href="set/profile">
           <v-list-item>
+            
             <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
-              <v-img :src="this.$auth.$state.user.picture"></v-img>
+              <v-img contain :src="this.$auth.$state.user.picture" ></v-img>
             </v-list-item-avatar>
-            <v-list-item-icon v-else>
+            <v-list-item-icon v-if="!this.$auth.$state.loggedIn">
               <v-icon large>mdi-account-circle</v-icon>
             </v-list-item-icon>
             <v-list-item-content v-if="this.$auth.$state.loggedIn" size="36">
@@ -27,7 +28,7 @@
             </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
-
+</a>
           <!-- <v-list-item
             v-for="(item, i) in listitems"
             :key="i"
