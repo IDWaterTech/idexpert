@@ -385,6 +385,16 @@
                 </v-col> -->
                 <!-- 新 min max 設定(add) -->
                 <v-col cols="12" class="text-center">
+                <v-row>
+                  <v-col cols="2" style="background-color:black;color:white;">{{minmax[0]}}</v-col>
+                  <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[0]}}</v-col>
+                  <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[0]}}</v-col>
+                  <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[1]}}</v-col>
+                  <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[1]}}</v-col>
+                  <v-col cols="2" style="background-color:black;color:white;">{{minmax[1]}}</v-col>
+                </v-row>
+              </v-col>
+                <v-col cols="12" class="text-center">
                   <span class="subtitle-1  font-weight-black"
                     >最小值←→最大值</span
                   >
@@ -886,9 +896,9 @@ export default {
       }
     },
     addShow: function(data) {
-      if (this.$refs.addform != undefined) {
-        this.$refs.addform.reset();
-      }
+      // if (this.$refs.addform != undefined) {
+      //   this.$refs.addform.reset();
+      // }
       this.addItem.class = data;
       this.addItem.name_en = this.addItem.name_ch = this.addItem.unit = "";
       this.addItem.min = 0;

@@ -300,8 +300,9 @@ export default {
         })
         .finally(() => {
           //重導頁不要有code
-          location.href = location.href.replace(location.search, "");
+          
         });
+        location.href = location.href.replace(location.search, "");
     }
   }
 };
