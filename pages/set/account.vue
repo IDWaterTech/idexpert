@@ -145,7 +145,7 @@
             <template slot-scope="scope">
               <v-icon color="#EA4335">mdi-gmail</v-icon>Mail
               <el-switch
-                v-model="scope.row.is_enable_email"
+                v-model="scope.row.is_sys_enable_email"
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
@@ -153,7 +153,7 @@
               ><br />
               <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line
               <el-switch
-                v-model="scope.row.is_enable_line"
+                v-model="scope.row.is_sys_enable_line"
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
@@ -253,7 +253,7 @@
                     允許接收通知<br />
                     <v-icon color="#EA4335">mdi-gmail</v-icon>Mail
                     <el-switch
-                      v-model="addform.is_enable_email"
+                      v-model="addform.is_sys_enable_email"
                       active-color="#13ce66"
                       inactive-color="#eee"
                     ></el-switch
@@ -261,7 +261,7 @@
                     <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon
                     >Line
                     <el-switch
-                      v-model="addform.is_enable_line"
+                      v-model="addform.is_sys_enable_line"
                       active-color="#13ce66"
                       inactive-color="#eee"
                     ></el-switch>
@@ -439,8 +439,8 @@ export default {
         account_name: "",
         created_user: "web",
         is_active: true,
-        is_enable_email: false,
-        is_enable_line: false,
+        is_sys_enable_email: false,
+        is_sys_enable_line: false,
         position_id: []
       },
       //單位顏色、ICON設定
@@ -605,8 +605,8 @@ export default {
     statchange(index, row) {
       let parm = {};
       parm["is_active"] = row.is_active;
-      parm["is_enable_email"] = row.is_enable_email;
-      parm["is_enable_line"] = row.is_enable_line;
+      parm["is_sys_enable_email"] = row.is_sys_enable_email;
+      parm["is_sys_enable_line"] = row.is_sys_enable_line;
       const updUser = this.$auth.$state.user.email;
       parm["updated_user"] = updUser;
       this.postedit(row.id, parm);
@@ -636,8 +636,8 @@ export default {
       // this.addform.account_name = "";
       this.addform.created_user = updUser;
       // this.addform.is_active = true;
-      // this.addform.is_enable_email=false;
-      // this.addform.is_enable_line=false;
+      // this.addform.is_sys_enable_email=false;
+      // this.addform.is_sys_enable_line=false;
       // this.addform.position_id = [];
       this.addDialog = true;
     },
