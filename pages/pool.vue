@@ -11,7 +11,11 @@
           >
             警示區
             <v-spacer></v-spacer>
-            <span class="subtitle-3">警示資料時間：{{ warnDataDt.length == 0 ? "0000-00-00 00:00:00":"" }}{{warnDataDt}}</span>
+            <span class="subtitle-3"
+              >警示資料時間：{{
+                warnDataDt.length == 0 ? "0000-00-00 00:00:00" : ""
+              }}{{ warnDataDt }}</span
+            >
             <v-btn
               :loading="warnLoading"
               :disabled="!poolid || warnLoading"
@@ -54,12 +58,9 @@
                 </v-chip-group>
               </v-card-text>
             </v-sheet>
-            <div
-                        class="text-center my-5"
-                        v-if="warnData.length == 0"
-                      >
-                        <h2>查無資料</h2>
-                      </div>
+            <div class="text-center my-5" v-if="warnData.length == 0">
+              <h2>查無資料</h2>
+            </div>
           </v-card-text>
         </v-card>
 
@@ -625,6 +626,12 @@
               </v-tab>
               <v-tabs-items v-model="currentItem">
                 <v-tab-item :value="'tab-' + tabitems[0]">
+                  <v-overlay :value="detectloading" :absolute="true">
+                    <v-progress-circular
+                      indeterminate
+                      size="64"
+                    ></v-progress-circular>
+                  </v-overlay>
                   <v-row>
                     <v-col cols="12">
                       <div
@@ -951,6 +958,7 @@ export default {
       multipleSelection: [],
       tabitems: ["檢測數據", "計算數據", "當前氣象資訊"],
       currentItem: "檢測數據",
+      detectloading: false, //是否正在取得24時資料
       detectData: [
         // {
         //   name_ch: "測試",
@@ -1181,10 +1189,15 @@ export default {
       this.getDetectData(); //無論如何都要抓
     },
     getDetectData: async function() {
+      this.detectloading = true;
       await this.$axios
         .get(`${process.env.apiUrl}timely-data/?pond_id=${this.poolid}`)
         .then(res => {
           this.detectData = res.data;
+          console.log("24小時資料 api:", res.request.responseURL);
+        })
+        .finally(() => {
+          this.detectloading = false;
         });
     },
     getshirimpData: async function() {
