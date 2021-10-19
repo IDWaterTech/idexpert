@@ -27,7 +27,7 @@
             >
               <mappoolelement
                 :item="itm"
-                :selitem="statcolor.filter(x => x.name != 'default')"
+                :selitem="statcolor.filter(x => !['default',''].includes(x.name))"
                 :showSelect="showedit"
                 :myuser="$auth.$state.user.email"
               ></mappoolelement>

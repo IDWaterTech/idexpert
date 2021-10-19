@@ -1136,6 +1136,7 @@ export default {
       let reqid = this.req.id;
       let getedItem = {};
       //取得整廠架構資料
+      //visible寫死名稱含^=false，寫死池的狀態=無=false
       await this.$axios.get(`${process.env.apiUrl}architecture/`).then(res => {
         this.maindata = res.data;
         var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
