@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <h1>Login</h1>
-    <strong>{{ $auth.$state.redirect }}</strong>
-    <v-tabs centered grow icons-and-text>
+    <h1>登入</h1>
+    <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
+    <v-tabs centered grow icons-and-text v-if="false">
       <v-tab class="primary--text" :href="'#tab-2'">
         第三方登入<v-icon>mdi-google</v-icon>
       </v-tab>
@@ -12,9 +12,11 @@
         <br />
         <v-btn
           dark
+          large tile
           style="border:0px;"
           @click="loginGoogle"
           :style="{ background: '#4284f4' }"
+          color="primary"
           >以Google登入</v-btn
         >
       </v-tab-item>

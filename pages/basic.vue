@@ -939,7 +939,7 @@ export default {
       ],
       //---
       allcols: [],
-      colstyle: 2, //0→4 or 1→6 or 2→12
+      colstyle: 1, //0→4 or 1→6 or 2→12
       //---
       tableloading: false,
       waterdata: [],

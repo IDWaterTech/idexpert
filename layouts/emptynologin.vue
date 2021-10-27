@@ -188,7 +188,7 @@ export default {
         });
     }
     this.listitems = acclist;
-    console.log(this.listitems);
+    console.log("被授權進入的項目",this.listitems);
     // this.listitems = [{
     //       icon: "mdi-apps",
     //       title: "首頁",

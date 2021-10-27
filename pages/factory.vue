@@ -435,7 +435,7 @@ export default {
       poolvalid: true,
       mainvalid: true,
       itemname: [
-        { name: "id", text: "id", visible: false },
+        { name: "id", text: "id", visible: true },
         { name: "name", text: "名稱", visible: true },
         { name: "volume", text: "體積(頓)", visible: true },
         { name: "depth", text: "深度(m)", visible: true },
