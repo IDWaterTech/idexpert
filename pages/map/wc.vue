@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12" v-if="false">
         <!-- <v-icon @click="editState = !editState">mdi-pencil</v-icon> -->
         <table style="border:0px solid; width:100%;" CellSpacing="15">
           <tr v-for="(item, index) in Object.keys(pools)" :key="index">
@@ -20,7 +20,9 @@
             >
               <mappoolelement
                 :item="itm"
-                :selitem="statcolor.filter(x => !['default',''].includes(x.name))"
+                :selitem="
+                  statcolor.filter(x => !['default', ''].includes(x.name))
+                "
                 :showSelect="showedit"
                 :myuser="$auth.$state.user.email"
               ></mappoolelement>
@@ -58,6 +60,51 @@
           </tr>
         </table>
       </v-col>
+      <v-col cols="12">
+        <v-row
+          v-for="(item, index) in Object.keys(pools)"
+          :key="index"
+          class="mx-1"
+        >
+          <v-col
+            :class="
+              `${windowWidth < 700 ? 'text-center' : 'text-center mx-3 my-1'}`
+            "
+            :style="
+              itm.state == '無'
+                ? ''
+                : itm.state.length > 0
+                ? `background:${getItemColor(
+                    itm.state
+                  )};border:1px solid;border-radius: 5px;`
+                : `background:${getItemColor(itm.state)};`
+            "
+            v-for="(itm, idx) in pools[item]"
+            :key="idx"
+          >
+             <mappoolelement
+                :item="itm"
+                :selitem="
+                  statcolor.filter(x => !['default', ''].includes(x.name))
+                "
+                :showSelect="showedit"
+                :myuser="$auth.$state.user.email"
+              ></mappoolelement>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col
+        cols="12"
+        class="grey lighten-2 text-center"
+        style="font-size:1.2em;"
+        >中央走道</v-col
+      >
+      <v-col
+        cols="12"
+        class="text-right"
+        style="font-size:1.2em;"
+        >最後更新時間：{{ MaxDate }}</v-col
+      >
     </v-row>
   </div>
 </template>
@@ -74,6 +121,7 @@ export default {
   },
   data() {
     return {
+      windowWidth:window.innerWidth,
       pools: {
         C: [
           { id: "C1", name: "C1", state: "放養中" },
@@ -122,6 +170,10 @@ export default {
   async mounted() {
     const agent = new https.Agent({
       rejectUnauthorized: false
+    });
+    //監控視窗
+     window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth
     });
     //取得水池狀態
     await this.$axios

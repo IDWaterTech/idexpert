@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12" v-if="false">
         <!-- <v-icon @click="editState = !editState">mdi-pencil</v-icon> -->
         <table style="border:0px solid; width:100%;" CellSpacing="15">
           <tr v-for="item in Object.keys(pools.area1)" :key="item">
@@ -52,7 +52,9 @@
             >
               <mappoolelement
                 :item="itm"
-                :selitem="statcolor.filter(x => !['default',''].includes(x.name))"
+                :selitem="
+                  statcolor.filter(x => !['default', ''].includes(x.name))
+                "
                 :showSelect="showedit"
                 :myuser="$auth.$state.user.email"
               ></mappoolelement>
@@ -65,12 +67,80 @@
             </td>
           </tr>
           <tr>
-            <td class="text-right" :colspan="pools.area2[Object.keys(pools.area2)[0]].length">
+            <td
+              class="text-right"
+              :colspan="pools.area2[Object.keys(pools.area2)[0]].length"
+            >
               最後更新時間：{{ MaxDate }}
             </td>
           </tr>
         </table>
       </v-col>
+      <hr class="red" />
+      <v-col cols="12" >
+        <v-row v-for="item in Object.keys(pools.area1)" :key="item" class="mx-1">
+          <v-col
+            v-for="(itm, idx) in pools.area1[item]"
+            :key="idx"
+            :bgcolor="getItemColor(itm.state)"
+            :class="`${windowWidth<700?'text-center':'text-center mx-3 my-1'}`"
+            :style="
+              itm.state == '無'
+                ? ''
+                : itm.state.length > 0
+                ? `background:${getItemColor(
+                    itm.state
+                  )};border:1px solid;border-radius: 5px;`
+                : `background:${getItemColor(itm.state)};`
+            "
+          >
+            <mappoolelement
+              :item="itm"
+              :selitem="statcolor.filter(x => x.name != 'default')"
+              :showSelect="showedit"
+              :myuser="$auth.$state.user.email"
+            ></mappoolelement>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col
+        cols="12"
+        class="grey lighten-2 text-center"
+        style="font-size:1.2em;"
+        >中央走道</v-col
+      >
+      <v-col cols="12">
+        <v-row v-for="item in Object.keys(pools.area2)" :key="item" class="mx-1">
+          <v-col
+            v-for="(itm, idx) in pools.area2[item]"
+            :key="idx"
+            :bgcolor="getItemColor(itm.state)"
+            :class="`${windowWidth<700?'text-center':'text-center mx-3 my-1'}`"
+            :style="
+              itm.state == '無'
+                ? ''
+                : itm.state.length > 0
+                ? `background:${getItemColor(
+                    itm.state
+                  )};border:1px solid;border-radius: 5px;`
+                : `background:${getItemColor(itm.state)};`
+            "
+          >
+            <mappoolelement
+              :item="itm"
+              :selitem="statcolor.filter(x => x.name != 'default')"
+              :showSelect="showedit"
+              :myuser="$auth.$state.user.email"
+            ></mappoolelement>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col
+        cols="12"
+        class="text-right"
+        style="font-size:1.2em;"
+        >最後更新時間：{{ MaxDate }}</v-col
+      >
     </v-row>
   </div>
 </template>
@@ -87,6 +157,7 @@ export default {
   },
   data() {
     return {
+      windowWidth:window.innerWidth,
       pools: {
         area1: {
           c: [
@@ -170,6 +241,10 @@ export default {
   async mounted() {
     const agent = new https.Agent({
       rejectUnauthorized: false
+    });
+    //監控視窗
+     window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth
     });
     //取得水池狀態
     await this.$axios

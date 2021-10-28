@@ -41,7 +41,7 @@
             <!-- <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay> -->
-            <v-icon @click="mapshowedit = !mapshowedit">mdi-pencil</v-icon>
+            <v-icon @click="mapshowedit = !mapshowedit" class="my-3" color="primary">mdi-pencil</v-icon>
             <wc
               v-if="tab.title == '武曲'"
               :key="cmpkey.wc"
