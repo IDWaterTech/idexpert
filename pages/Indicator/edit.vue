@@ -318,11 +318,11 @@
                 }_${defitem}`
               "
             >
-              <v-icon>mdi-export-variant</v-icon>
+              <v-icon>mdi-microsoft-excel</v-icon>
             </download-excel>
           </div>
           <div v-else>
-            <v-icon>mdi-export-variant</v-icon>
+            <v-icon>mdi-microsoft-excel</v-icon>
           </div>
         </v-btn>
       </v-col>
