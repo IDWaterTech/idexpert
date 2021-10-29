@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" align="center" class="text-center">
+  <v-row justify="center" align="center" class="text-center mb-5">
     <v-col cols="12">
       <h1>歡迎使用 IDWater 專家系統</h1>
       <h1>WelCome IDWater Expert System</h1>
@@ -14,11 +14,25 @@
         plus IoT technologies to solve three major problems of traditional
         aquaculture.
       </div>
+      
+    </v-col>
+    <v-col cols="12">
+      <div v-show="!this.$auth.$state.loggedIn">
+            <v-btn
+          dark
+          large tile
+          style="border:0px;"
+          @click="loginGoogle"
+          :style="{ background: '#4284f4' }"
+          color="primary"
+          >歡迎使用本系統Login</v-btn
+        >
+          </div>
     </v-col>
     <!-- <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col> -->
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" color="blue-grey lighten-4" tile>
-        <v-card-title>紅樹林破壞-Mangrove destruction</v-card-title>
+      <v-card min-height="550px" color="pink lighten-5" tile>
+        <v-card-title class="questionTitle">紅樹林破壞-Mangrove destruction</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
@@ -38,8 +52,8 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" color="blue-grey lighten-4" tile>
-        <v-card-title>水污染-Water pollution</v-card-title>
+      <v-card min-height="550px" color="blue lighten-5" tile>
+        <v-card-title class="questionTitle">水污染-Water pollution</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
@@ -57,8 +71,8 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" color="blue-grey lighten-4" tile>
-        <v-card-title>食品安全-Food safety</v-card-title>
+      <v-card min-height="550px" color="green lighten-5" tile>
+        <v-card-title class="questionTitle">食品安全-Food safety</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
@@ -82,7 +96,26 @@
 <script>
 export default {
   layout: "emptynologin",
+  methods: {
+    async loginGoogle() {
+      try {
+        await this.$auth.loginWith("google", {
+          params: { prompt: "select_account" }
+        });
+      } catch (err) {
+        console.log(err);
+        this.$toast.error("登入發生錯誤!:" + err, {
+          duration: 5000
+        });
+      }
+    }
+  },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.questionTitle{
+  background-color: #1986E1;
+  color: white;
+}
+</style>

@@ -3,6 +3,8 @@
   <v-app>
     <v-main>
       <v-navigation-drawer
+        color="#1986E1"
+        dark
         app
         v-model="drawer"
         :mini-variant="miniVariant"
@@ -50,7 +52,7 @@
         <!--  -->
       </v-navigation-drawer>
       <v-container fluid>
-        <v-app-bar app color="">
+        <v-app-bar app color="#1986E1" dark>
           <v-app-bar-nav-icon
             @click.stop="drawer = !drawer"
             v-show="this.$auth.$state.loggedIn"
