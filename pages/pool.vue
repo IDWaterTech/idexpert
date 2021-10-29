@@ -2,8 +2,8 @@
   <div>
     <!-- <v-card elevation="1" outlined tile min-height="200"> -->
     <v-row no-gutters justify="center">
-      <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-10">
-        <!-- 警示區 -->
+      <!-- 警示區 -->
+      <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-1">
         <v-card min-height="100px" elevation="3" class="mx-3" tile>
           <v-card-title
             class="py-0"
@@ -63,7 +63,6 @@
             </div>
           </v-card-text>
         </v-card>
-
         <!-- <span class="subtitle">警示資料時間：{{ warnDataDt }}</span>
         <v-btn
           :loading="warnLoading"
@@ -188,329 +187,116 @@
           </v-form>
         </v-dialog>
       </v-col>
-      <v-col cols="12" sm="2" class="text-center my-5">
-        <!-- <div class="circle">
+      <!-- 查詢、新增循環 功能按鈕 -->
+      <v-col cols="12" sm="2">
+        <v-row class="ml-3">
+          <!-- 養殖池 -->
+          <v-col cols="12" sm="12" class="text-center my-5">
+            <!-- <div class="circle">
           <span class="circletitle">{{ poolName }}</span>
         </div> -->
-        <!-- <span class="circletitle headline my-5 text-center">{{
+            <!-- <span class="circletitle headline my-5 text-center">{{
           poolName
         }}</span> -->
-        <!-- {{getNodeName(maindata,poolid)}} -->
-        <treeselect
-          v-model="poolid"
-          :options="maindata"
-          :default-expand-level="1"
-          placeholder="養殖池"
-          :disable-branch-nodes="true"
-          children="node"
-          :normalizer="
-            node => {
-              return { children: node.node };
-            }
-          "
-          @input="mainchange"
-          style="font-size:1.2em;"
-        >
-          <div slot="value-label" slot-scope="{ node }">
-            {{ `${node.raw.parent}_${node.raw.name}` }}
-          </div>
-          <div slot="option-label" slot-scope="{ node }">
-            {{ `${node.raw.name}` }}
-          </div>
-        </treeselect>
-      </v-col>
-
-      <v-col cols="12" sm="2">
-        <!-- 選擇起日 -->
-        <v-menu
-          v-model="menu_startdate"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="started_date"
-              label="選擇起日"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-              @click:prepend="() => (started_date = getNowDate())"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="started_date"
-            @input="menu_startdate = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
-      <v-col cols="12" sm="2">
-        <!-- 選擇訖日 -->
-        <v-menu
-          v-model="menu_enddate"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="ended_date"
-              label="選擇訖日"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-              @click:prepend="() => (ended_date = getNowDate())"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="ended_date"
-            @input="menu_enddate = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
-      <!-- 查詢、新增循環 按鈕 -->
-      <v-col cols="12" sm="3">
-        <v-btn tile class="mt-2" color="primary" @click="getCircleData"
-          >查詢</v-btn
-        >
-        <v-btn color="primary" tile class="mt-2" @click="showadd"
-          ><v-icon>mdi-plus</v-icon>新增循環</v-btn
-        >
-        <v-dialog v-model="addDialog" max-width="500px">
-          <v-form v-model="addvalid">
-            <v-card>
-              <v-card-title>新增-養殖循環</v-card-title>
-              <v-card-text>
-                <v-text-field
-                  v-model="addparm.name"
-                  label="名稱/批號"
-                  :rules="rules.require"
-                  autocomplete="off"
-                ></v-text-field>
-                <v-menu
-                  v-model="menu_adddate"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="addparm.started_date"
-                      label="選擇起日"
-                      :rules="rules.require"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                      @click:prepend="
-                        () => (addparm.started_date = getNowDate())
-                      "
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="addparm.started_date"
-                    @input="menu_adddate = false"
-                  ></v-date-picker>
-                </v-menu>
-              </v-card-text>
-              <v-card-text>
-                <v-row align="center">
-                  <!-- 體積 -->
-                  <v-col cols="3">
-                    <v-text-field
-                      v-model="add_volume"
-                      label="體積(水量)"
-                      type="number"
-                      disabled
-                      background-color="blue-grey lighten-4"
-                      autocomplete="off"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="1" class="text-center">X</v-col>
-                  <!-- 密度 -->
-                  <v-col cols="3">
-                    <v-text-field
-                      v-model.number="addparm.num_per_unit"
-                      label="密度"
-                      type="number"
-                      :rules="rules.require"
-                      @change="
-                        () => {
-                          addparm.estimated_num =
-                            add_volume * addparm.num_per_unit;
-                        }
-                      "
-                      autocomplete="off"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="1" class="text-center">=</v-col>
-                  <!-- 初始放苗量(估計) -->
-                  <v-col cols="4">
-                    <v-text-field
-                      v-model="addparm.estimated_num"
-                      label="初始放苗量(估計)"
-                      type="number"
-                      :rules="rules.require"
-                      disabled
-                      background-color="blue-grey lighten-4"
-                      autocomplete="off"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" @click="submitadd">確認</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-form>
-        </v-dialog>
-      </v-col>
-      <v-spacer></v-spacer>
-      <!-- 表格 -->
-      <v-col cols="12" sm="12" class="my-3">
-        <el-table
-          ref="circletable"
-          style="width:100%"
-          :data="circleData"
-          border
-          highlight-current-row
-          @current-change="handleCurrentChange"
-          :header-cell-style="tableHeaderStyle"
-          height="250"
-          @select="handleSelectionChange"
-          :header-cell-name="cellClass"
-        >
-          <!-- <el-table-column type="selection" label="123" width="55"></el-table-column> -->
-          <el-table-column
-            label="循環起日"
-            prop="started_date"
-            align="center"
-          ></el-table-column>
-          <el-table-column label="循環訖日" prop="ended_date" align="center">
-            <template slot-scope="scope">
-              <span style="margin-left: 10px">{{
-                scope.row.ended_date == null || scope.row.ended_date == ""
-                  ? `執行中`
-                  : scope.row.ended_date
-              }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="養殖天數"
-            prop="days"
-            align="center"
-          ></el-table-column>
-          <el-table-column
-            label="名稱/批號"
-            prop="name"
-            align="center"
-          ></el-table-column>
-          <el-table-column
-            label="養殖密度"
-            prop="num_per_unit"
-            align="center"
-          ></el-table-column>
-          <el-table-column
-            label="預估放養隻數"
-            prop="estimated_num"
-            align="center"
-          ></el-table-column>
-          <el-table-column fixed="right" label="操作" width="100">
-            <template slot-scope="scope">
-              <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
-              <v-btn
-                color="primary"
-                outlined
-                small
-                @click="delcircle(scope.row)"
-                :disabled="scope.row.ended_date != null"
-                >刪除</v-btn
-              >
-            </template>
-          </el-table-column>
-        </el-table>
-      </v-col>
-      <!-- 蝦況 -->
-      <v-col cols="12" sm="4">
-        <v-card min-height="300px" elevation="3" class="mx-3" tile>
-          <v-card-title
-            class="py-2"
-            style="background-color:#64B5F6;color:white;"
-          >
-            觀察網(蝦況)
-            <v-spacer></v-spacer>
-            <v-icon
-              @click="showdialog_imgdialog"
-              :disabled="!poolid"
-              color="white"
-              >mdi-image-plus</v-icon
+            <!-- {{getNodeName(maindata,poolid)}} -->
+            <treeselect
+              v-model="poolid"
+              :options="maindata"
+              :default-expand-level="1"
+              placeholder="養殖池"
+              :disable-branch-nodes="true"
+              children="node"
+              :normalizer="
+                node => {
+                  return { children: node.node };
+                }
+              "
+              @input="mainchange"
+              style="font-size:1.2em;"
             >
-          </v-card-title>
-          <v-divider></v-divider>
-          <v-card-title>
-            <div v-if="shirimpData.length > 0">
-              <v-row>
-                <v-col
-                  cols="12"
-                  lg="6"
-                  v-for="(item, index) in shirimpData[0].item"
-                  :key="index"
-                  class="py-1"
-                >
-                  <v-btn
-                    block
-                    color="#64B5F6"
-                    outlined
-                    style="font-size:0.8em;"
-                  >
-                    {{ `${item.name_ch}:${item.value}` }}
-                  </v-btn>
-                  <!-- <v-chip class="ma-2" color="#64B5F6" label outlined>
-                    {{ item.name_ch }}：{{ item.value }}
-                  </v-chip> -->
-                </v-col>
-                <v-col cols="12" sm="12" class="text-center">
-                  <h5>
-                    {{ shirimpData[0].inspected_time }}
-                  </h5>
-                  <!-- 圖：{{shirimpData[0].image_url}}<br/> -->
-                </v-col>
-                <v-col cols="12" sm="12">
-                  <img
-                    v-img
-                    :src="shirimpData[0].image_url"
-                    v-if="shirimpData[0].image_url"
-                    width="100%"
-                    height="300px"
-                  />
-                </v-col>
-              </v-row>
-            </div>
-            <div class="text-center my-2" v-else>
-              <h4 style="color:#666666;">查無資料</h4>
-            </div>
-          </v-card-title>
-        </v-card>
-        <v-dialog v-model="imgdialog" max-width="500px">
-          <v-form ref="imgform" v-model="imgvalid" lazy-validation>
-            <v-card>
-              <!-- style="background-color:#64B5F6;color:white;" -->
-              <v-card-title>觀察網(蝦況)</v-card-title><v-divider></v-divider>
-              <v-card-text>
-                <!-- 日期時間 -->
-                <v-row>
-                  <v-col cols="12" md="6">
+              <div slot="value-label" slot-scope="{ node }">
+                {{ `${node.raw.parent}_${node.raw.name}` }}
+              </div>
+              <div slot="option-label" slot-scope="{ node }">
+                {{ `${node.raw.name}` }}
+              </div>
+            </treeselect>
+          </v-col>
+          <!-- 選擇起日 -->
+          <v-col cols="12">
+            <v-menu
+              v-model="menu_startdate"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="started_date"
+                  label="選擇起日"
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                  @click:prepend="() => (started_date = getNowDate())"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="started_date"
+                @input="menu_startdate = false"
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+          <!-- 選擇訖日 -->
+          <v-col cols="12" sm="12">
+            <v-menu
+              v-model="menu_enddate"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="ended_date"
+                  label="選擇訖日"
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                  @click:prepend="() => (ended_date = getNowDate())"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="ended_date"
+                @input="menu_enddate = false"
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+          <!-- 按鈕 -->
+          <v-col cols="12" sm="12">
+            <v-btn tile class="mt-2" color="primary" @click="getCircleData"
+              >查詢</v-btn
+            >
+            <v-btn color="primary" tile class="mt-2" @click="showadd"
+              ><v-icon>mdi-plus</v-icon>新增循環</v-btn
+            >
+            <v-dialog v-model="addDialog" max-width="500px">
+              <v-form v-model="addvalid">
+                <v-card>
+                  <v-card-title>新增-養殖循環</v-card-title>
+                  <v-card-text>
+                    <v-text-field
+                      v-model="addparm.name"
+                      label="名稱/批號"
+                      :rules="rules.require"
+                      autocomplete="off"
+                    ></v-text-field>
                     <v-menu
-                      v-model="menu_imgdate"
+                      v-model="menu_adddate"
                       :close-on-content-click="false"
                       :nudge-right="40"
                       transition="scale-transition"
@@ -519,230 +305,462 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="imgdata.imgdate"
-                          label="選擇日期(必選)"
+                          v-model="addparm.started_date"
+                          label="選擇起日"
+                          :rules="rules.require"
                           prepend-icon="mdi-calendar"
                           readonly
                           v-bind="attrs"
                           v-on="on"
-                          :rules="rules.require"
                           @click:prepend="
-                            () => (imgdata.imgdate = getNowDate())
+                            () => (addparm.started_date = getNowDate())
                           "
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="imgdata.imgdate"
-                        @input="menu_imgdate = false"
+                        v-model="addparm.started_date"
+                        @input="menu_adddate = false"
                       ></v-date-picker>
                     </v-menu>
+                  </v-card-text>
+                  <v-card-text>
+                    <v-row align="center">
+                      <!-- 體積 -->
+                      <v-col cols="3">
+                        <v-text-field
+                          v-model="add_volume"
+                          label="體積(水量)"
+                          type="number"
+                          disabled
+                          background-color="blue-grey lighten-4"
+                          autocomplete="off"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="1" class="text-center">X</v-col>
+                      <!-- 密度 -->
+                      <v-col cols="3">
+                        <v-text-field
+                          v-model.number="addparm.num_per_unit"
+                          label="密度"
+                          type="number"
+                          :rules="rules.require"
+                          @change="
+                            () => {
+                              addparm.estimated_num =
+                                add_volume * addparm.num_per_unit;
+                            }
+                          "
+                          autocomplete="off"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="1" class="text-center">=</v-col>
+                      <!-- 初始放苗量(估計) -->
+                      <v-col cols="4">
+                        <v-text-field
+                          v-model="addparm.estimated_num"
+                          label="初始放苗量(估計)"
+                          type="number"
+                          :rules="rules.require"
+                          disabled
+                          background-color="blue-grey lighten-4"
+                          autocomplete="off"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" @click="submitadd">確認</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-form>
+            </v-dialog>
+          </v-col>
+        </v-row>
+      </v-col>
+
+      <v-col cols="12" sm="10">
+        <!-- 數據(24H) -->
+        <v-col cols="12" sm="12" style="height:500px;">
+          <v-card min-height="500px" elevation="3" tile>
+            <v-card-title
+              class="py-2"
+              style="background-color:#64B5F6;color:white;"
+            >
+              數據(24H)
+            </v-card-title>
+            <v-card-text>
+              <v-tabs v-model="currentItem">
+                <v-tab
+                  v-for="(item, index) in tabitems"
+                  :key="index"
+                  :href="'#tab-' + item"
+                >
+                  {{ item }}
+                </v-tab>
+                <v-tabs-items v-model="currentItem">
+                  <v-tab-item :value="'tab-' + tabitems[0]">
+                    <v-overlay :value="detectloading" :absolute="true">
+                      <v-progress-circular
+                        indeterminate
+                        size="64"
+                      ></v-progress-circular>
+                    </v-overlay>
+                    <v-row>
+                      <v-col cols="12">
+                        <div
+                          class="text-center mt-5"
+                          v-if="detectData.length == 0"
+                        >
+                          <h2>查無資料</h2>
+                        </div>
+                        <v-slide-group
+                          v-model="slidemodel"
+                          :show-arrows="'always'"
+                        >
+                          <v-slide-item
+                            v-for="(item, index) in detectData"
+                            :key="index"
+                            v-slot="{ active, toggle }"
+                          >
+                            <v-card
+                              elevation="3"
+                              class="mx-2 my-2 text-center"
+                              @click="toggle"
+                              :min-width="150"
+                              :max-width="200"
+                            >
+                              <v-card-title class="justify-center">
+                                {{ item.name_ch }}<br />
+                                {{ item.value }}
+                              </v-card-title>
+                              <div style="height:120px;" class="px-2">
+                                <!-- 車速圖 -->
+                                <vue-speedometer
+                                  :value="parseFloat(item.value)"
+                                  :needleHeightRatio="0.7"
+                                  :minValue="item.min"
+                                  :maxValue="item.max"
+                                  :customSegmentStops="[
+                                    item.min,
+                                    item.critical_min,
+                                    item.warning_min,
+                                    item.warning_max,
+                                    item.critical_max,
+                                    item.max
+                                  ]"
+                                  :segmentColors="[
+                                    '#F197B3',
+                                    '#FFEC8B',
+                                    '#89E0B6',
+                                    '#FFEC8B',
+                                    '#F197B3'
+                                  ]"
+                                  :needleTransitionDuration="3333"
+                                  needleTransition="easeElastic"
+                                  :ringWidth="20"
+                                  :width="180"
+                                  :forceRender="true"
+                                  v-if="
+                                    item.name_en != 'water_level_percentage'
+                                  "
+                                ></vue-speedometer>
+                                <!-- 水球圖 -->
+                                <v-card-text
+                                  v-if="
+                                    item.name_en == 'water_level_percentage'
+                                  "
+                                >
+                                  <waterball
+                                    :value="parseFloat(item.value) / 100"
+                                  ></waterball>
+                                </v-card-text>
+                              </div>
+                              <v-divider></v-divider>
+                              <v-card-subtitle class=" py-2 px-2">
+                                共：{{ item.rows }}筆
+                                <span
+                                  v-if="
+                                    item.name_en == 'water_level_percentage'
+                                  "
+                                >
+                                  <br />{{ `警戒上限：${item.critical_max}%`
+                                  }}<br />
+                                  {{ `警戒下限：${item.critical_min}%` }}
+                                  <br />{{ item.last_time }}</span
+                                >
+
+                                <!--限水位才有資料 -->
+                              </v-card-subtitle>
+                              <v-scale-transition>
+                                <v-icon
+                                  v-if="active"
+                                  color="blue"
+                                  size="48"
+                                  v-text="'mdi-close-circle-outline'"
+                                ></v-icon>
+                              </v-scale-transition>
+                            </v-card>
+                          </v-slide-item>
+                        </v-slide-group>
+                      </v-col>
+                      <v-spacer></v-spacer>
+                    </v-row>
+                  </v-tab-item>
+                  <v-tab-item :value="'tab-' + tabitems[1]">
+                    <v-row>
+                      <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
+                    </v-row>
+                  </v-tab-item>
+                  <v-tab-item :value="'tab-' + tabitems[2]">
+                    <v-row>
+                      <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
+                    </v-row>
+                  </v-tab-item>
+                </v-tabs-items>
+              </v-tabs>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <!-- 循環表格 -->
+        <v-col cols="12" sm="12" class="my-1">
+          <el-table
+            ref="circletable"
+            style="width:100%"
+            :data="circleData"
+            border
+            highlight-current-row
+            @current-change="handleCurrentChange"
+            :header-cell-style="tableHeaderStyle"
+            height="250"
+            @select="handleSelectionChange"
+            :header-cell-name="cellClass"
+          >
+            <!-- <el-table-column type="selection" label="123" width="55"></el-table-column> -->
+            <el-table-column
+              label="循環起日"
+              prop="started_date"
+              align="center"
+            ></el-table-column>
+            <el-table-column label="循環訖日" prop="ended_date" align="center">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{
+                  scope.row.ended_date == null || scope.row.ended_date == ""
+                    ? `執行中`
+                    : scope.row.ended_date
+                }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="養殖天數"
+              prop="days"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              label="名稱/批號"
+              prop="name"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              label="養殖密度"
+              prop="num_per_unit"
+              align="center"
+            ></el-table-column>
+            <el-table-column
+              label="預估放養隻數"
+              prop="estimated_num"
+              align="center"
+            ></el-table-column>
+            <el-table-column fixed="right" label="操作" width="100">
+              <template slot-scope="scope">
+                <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
+                <v-btn
+                  color="primary"
+                  outlined
+                  small
+                  @click="delcircle(scope.row)"
+                  :disabled="scope.row.ended_date != null"
+                  >刪除</v-btn
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+        </v-col>
+        <!--觀察網(蝦況) -->
+        <v-col cols="12" sm="12" class="my-1">
+          <v-card min-height="300px" elevation="3" tile>
+            <v-card-title
+              class="py-2"
+              style="background-color:#64B5F6;color:white;"
+            >
+              觀察網(蝦況)
+              <v-spacer></v-spacer>
+              <v-icon
+                @click="showdialog_imgdialog"
+                :disabled="!poolid"
+                color="white"
+                >mdi-image-plus</v-icon
+              >
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-title>
+              <div v-if="shirimpData.length > 0">
+                <v-row>
+                  <v-col
+                    cols="12"
+                    lg="6"
+                    v-for="(item, index) in shirimpData[0].item"
+                    :key="index"
+                    class="py-1"
+                  >
+                    <v-btn
+                      block
+                      color="#64B5F6"
+                      outlined
+                      style="font-size:0.8em;"
+                    >
+                      {{ `${item.name_ch}:${item.value}` }}
+                    </v-btn>
+                    <!-- <v-chip class="ma-2" color="#64B5F6" label outlined>
+                    {{ item.name_ch }}：{{ item.value }}
+                  </v-chip> -->
                   </v-col>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      label="時間(必選)"
-                      v-model="imgdata.imgtime"
-                      value=""
-                      type="time"
-                      prepend-icon="mdi-timeline-clock-outline"
-                      @click:prepend="() => (imgdata.imgtime = getNowTime())"
-                      :rules="rules.require"
-                    ></v-text-field>
+                  <v-col cols="12" sm="12" class="text-center">
+                    <h5>
+                      {{ shirimpData[0].inspected_time }}
+                    </h5>
+                    <!-- 圖：{{shirimpData[0].image_url}}<br/> -->
+                  </v-col>
+                  <v-col cols="12" sm="12">
+                    <img
+                      v-img
+                      :src="shirimpData[0].image_url"
+                      v-if="shirimpData[0].image_url"
+                      width="100%"
+                      height="300px"
+                    />
                   </v-col>
                 </v-row>
-                <v-file-input
-                  v-model="imgfiles"
-                  :rules="rules.filesize"
-                  accept="image/*"
-                  show-size
-                  placeholder="請選擇欲上傳圖片檔"
-                  prepend-icon="mdi-camera"
-                  label="蝦況圖片(必選)"
-                  @change="chgimgurl"
-                ></v-file-input>
-                <img
-                  v-img
-                  :key="imgurlkey"
-                  :src="showimgurl"
-                  v-if="showimgurl !== ''"
-                  width="100%"
-                />
-                <!-- <v-img v-img :key="imgurlkey" :src="showimgurl" v-if="showimgurl!==''" width="100%"></v-img> -->
-              </v-card-text>
-              <v-card-text>
-                <div v-for="(item, index) in imgdata.item" :key="index">
+              </div>
+              <div class="text-center my-2" v-else>
+                <h4 style="color:#666666;">查無資料</h4>
+              </div>
+            </v-card-title>
+          </v-card>
+          <v-dialog v-model="imgdialog" max-width="500px">
+            <v-form ref="imgform" v-model="imgvalid" lazy-validation>
+              <v-card>
+                <!-- style="background-color:#64B5F6;color:white;" -->
+                <v-card-title>觀察網(蝦況)</v-card-title><v-divider></v-divider>
+                <v-card-text>
+                  <!-- 日期時間 -->
                   <v-row>
-                    <v-col cols="12" sm="6">
-                      {{ item.name }}
-                    </v-col>
-                    <v-col cols="12" sm="6">
-                      <el-input-number
-                        :id="item.name"
-                        :ref="item.name"
-                        class="ml-2"
-                        v-model="
-                          imgdata.item.filter(x => x.name == item.name)[0].value
-                        "
-                        size="mini"
-                        :precision="2"
-                        :step="1"
-                        :min="num_min"
-                        :max="num_max"
-                      ></el-input-number>
-                    </v-col>
-                  </v-row>
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  tile
-                  color="primary"
-                  @click="submit_imgdialog"
-                  :disabled="false"
-                  >上傳</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-form>
-        </v-dialog>
-      </v-col>
-      <!-- 數據 -->
-      <v-col cols="12" sm="8" style="height:500px;">
-        <v-card min-height="500px" elevation="3" class="mx-3" tile>
-          <v-card-title
-            class="py-2"
-            style="background-color:#64B5F6;color:white;"
-          >
-            數據
-          </v-card-title>
-          <v-card-text>
-            <v-tabs v-model="currentItem">
-              <v-tab
-                v-for="(item, index) in tabitems"
-                :key="index"
-                :href="'#tab-' + item"
-              >
-                {{ item }}
-              </v-tab>
-              <v-tabs-items v-model="currentItem">
-                <v-tab-item :value="'tab-' + tabitems[0]">
-                  <v-overlay :value="detectloading" :absolute="true">
-                    <v-progress-circular
-                      indeterminate
-                      size="64"
-                    ></v-progress-circular>
-                  </v-overlay>
-                  <v-row>
-                    <v-col cols="12">
-                      <div
-                        class="text-center mt-5"
-                        v-if="detectData.length == 0"
+                    <v-col cols="12" md="6">
+                      <v-menu
+                        v-model="menu_imgdate"
+                        :close-on-content-click="false"
+                        :nudge-right="40"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
                       >
-                        <h2>查無資料</h2>
-                      </div>
-                      <v-slide-group
-                        v-model="slidemodel"
-                        :show-arrows="'always'"
-                      >
-                        <v-slide-item
-                          v-for="(item, index) in detectData"
-                          :key="index"
-                          v-slot="{ active, toggle }"
-                        >
-                          <v-card
-                            elevation="3"
-                            class="mx-2 my-2 text-center"
-                            @click="toggle"
-                            :min-width="150"
-                            :max-width="200"
-                          >
-                            <v-card-title class="justify-center">
-                              {{ item.name_ch }}<br />
-                              {{ item.value }}
-                            </v-card-title>
-                            <div style="height:120px;" class="px-2">
-                              <!-- 車速圖 -->
-                              <vue-speedometer
-                                :value="parseFloat(item.value)"
-                                :needleHeightRatio="0.7"
-                                :minValue="item.min"
-                                :maxValue="item.max"
-                                :customSegmentStops="[
-                                  item.min,
-                                  item.critical_min,
-                                  item.warning_min,
-                                  item.warning_max,
-                                  item.critical_max,
-                                  item.max
-                                ]"
-                                :segmentColors="[
-                                  '#F197B3',
-                                  '#FFEC8B',
-                                  '#89E0B6',
-                                  '#FFEC8B',
-                                  '#F197B3'
-                                ]"
-                                :needleTransitionDuration="3333"
-                                needleTransition="easeElastic"
-                                :ringWidth="20"
-                                :width="180"
-                                :forceRender="true"
-                                v-if="item.name_en != 'water_level'"
-                              ></vue-speedometer>
-                              <!-- 水球圖 -->
-                              <v-card-text v-if="item.name_en == 'water_level'">
-                                <waterball
-                                  :value="parseFloat(item.value) / 100"
-                                ></waterball>
-                              </v-card-text>
-                            </div>
-                            <v-divider></v-divider>
-                            <v-card-subtitle class=" py-2 px-2">
-                              共：{{ item.rows }}筆
-                              <span v-if="item.name_en == 'water_level'">
-                                <br />{{ `警戒上限：${item.critical_max}%`
-                                }}<br />
-                                {{ `警戒下限：${item.critical_min}%` }}
-                                <br />{{ item.last_time }}</span
-                              >
-
-                              <!--限水位才有資料 -->
-                            </v-card-subtitle>
-                            <v-scale-transition>
-                              <v-icon
-                                v-if="active"
-                                color="blue"
-                                size="48"
-                                v-text="'mdi-close-circle-outline'"
-                              ></v-icon>
-                            </v-scale-transition>
-                          </v-card>
-                        </v-slide-item>
-                      </v-slide-group>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field
+                            v-model="imgdata.imgdate"
+                            label="選擇日期(必選)"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-bind="attrs"
+                            v-on="on"
+                            :rules="rules.require"
+                            @click:prepend="
+                              () => (imgdata.imgdate = getNowDate())
+                            "
+                          ></v-text-field>
+                        </template>
+                        <v-date-picker
+                          v-model="imgdata.imgdate"
+                          @input="menu_imgdate = false"
+                        ></v-date-picker>
+                      </v-menu>
                     </v-col>
-                    <v-spacer></v-spacer>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        label="時間(必選)"
+                        v-model="imgdata.imgtime"
+                        value=""
+                        type="time"
+                        prepend-icon="mdi-timeline-clock-outline"
+                        @click:prepend="() => (imgdata.imgtime = getNowTime())"
+                        :rules="rules.require"
+                      ></v-text-field>
+                    </v-col>
                   </v-row>
-                </v-tab-item>
-                <v-tab-item :value="'tab-' + tabitems[1]">
-                  <v-row>
-                    <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
-                  </v-row>
-                </v-tab-item>
-                <v-tab-item :value="'tab-' + tabitems[2]">
-                  <v-row>
-                    <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
-                  </v-row>
-                </v-tab-item>
-              </v-tabs-items>
-            </v-tabs>
-          </v-card-text>
-        </v-card>
+                  <v-file-input
+                    v-model="imgfiles"
+                    :rules="rules.filesize"
+                    accept="image/*"
+                    show-size
+                    placeholder="請選擇欲上傳圖片檔"
+                    prepend-icon="mdi-camera"
+                    label="蝦況圖片(必選)"
+                    @change="chgimgurl"
+                  ></v-file-input>
+                  <img
+                    v-img
+                    :key="imgurlkey"
+                    :src="showimgurl"
+                    v-if="showimgurl !== ''"
+                    width="100%"
+                  />
+                  <!-- <v-img v-img :key="imgurlkey" :src="showimgurl" v-if="showimgurl!==''" width="100%"></v-img> -->
+                </v-card-text>
+                <v-card-text>
+                  <div v-for="(item, index) in imgdata.item" :key="index">
+                    <v-row>
+                      <v-col cols="12" sm="6">
+                        {{ item.name }}
+                      </v-col>
+                      <v-col cols="12" sm="6">
+                        <el-input-number
+                          :id="item.name"
+                          :ref="item.name"
+                          class="ml-2"
+                          v-model="
+                            imgdata.item.filter(x => x.name == item.name)[0]
+                              .value
+                          "
+                          size="mini"
+                          :precision="2"
+                          :step="1"
+                          :min="num_min"
+                          :max="num_max"
+                        ></el-input-number>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    tile
+                    color="primary"
+                    @click="submit_imgdialog"
+                    :disabled="false"
+                    >上傳</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </v-form>
+          </v-dialog>
+        </v-col>
+        
       </v-col>
     </v-row>
     <!-- 事件紀錄 -->
     <v-row>
       <v-col cols="12">
-        <v-card elevation="3" tile>
+        <v-card elevation="3" tile class="mx-3">
           <v-card-title
             class="py-2"
             style="background-color:#64B5F6;color:white;"
@@ -905,7 +923,7 @@
     <!-- 養殖歷程 -->
     <v-row>
       <v-col cols="12">
-        <v-card elevation="3" tile>
+        <v-card elevation="3" tile class="mx-3">
           <v-card-title
             class="py-2"
             style="background-color:#64B5F6;color:white;"
