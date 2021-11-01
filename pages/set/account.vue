@@ -350,7 +350,8 @@
             <v-card-text>
               <v-row
                 ><v-col cols="12"
-                  ><treeselect
+                  >
+                  <treeselect
                     v-model="edititem.position"
                     :multiple="true"
                     :options="options"
@@ -359,10 +360,10 @@
                     placeholder="請選擇職位"
                     :disable-branch-nodes="true"
                   >
-                    <div slot="value-label" slot-scope="{ node }">
-                      {{ node.raw.unit }}-{{ node.raw.label }}
+                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}
                     </div>
-                  </treeselect></v-col
+                  </treeselect>
+                  </v-col
                 ><v-spacer></v-spacer
               ></v-row>
               <table style="height:300px;"></table>
@@ -717,12 +718,13 @@ export default {
         .finally(() => {});
     },
     showpositDialog: function(data) {
+      //編輯單位
       this.edititem.id = data.id;
       this.edititem.username = data.username;
       this.edititem.item = "position";
       this.edititem.value = data["position"];
       this.edititem.position = data.position.map(x => {
-        return x["id"];
+        return x["position_id"];
       });
       this.positDialog = true;
     },
