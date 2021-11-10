@@ -1,70 +1,11 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="12" v-if="false">
-        <!-- <v-icon @click="editState = !editState">mdi-pencil</v-icon> -->
-        <table style="border:0px solid; width:100%;" CellSpacing="15">
-          <tr v-for="(item, index) in Object.keys(pools)" :key="index">
-            <!-- <td>{{pools[Object.keys(pools)[item-1]]}}</td> -->
-            <td
-              v-for="(itm, idx) in pools[item]"
-              :key="idx"
-              :bgcolor="getItemColor(itm.state)"
-              :style="
-                itm.state == '無'
-                  ? ''
-                  : itm.state.length > 0
-                  ? 'border:1px solid;border-radius: 5px;'
-                  : 'max-width:50px;'
-              "
-            >
-              <mappoolelement
-                :item="itm"
-                :selitem="
-                  statcolor.filter(x => !['default', ''].includes(x.name))
-                "
-                :showSelect="showedit"
-                :myuser="$auth.$state.user.email"
-              ></mappoolelement>
-              <!-- <span
-            v-if="itm.state.length > 0"
-            :style="itm.state == '無' ? 'color:white;' : ''"
-            >{{ itm.name }}-{{ itm.state
-            }}
-            <v-select
-              :items="statcolor.filter(x => x.name != 'default')"
-              item-text="name"
-              label="池況"
-              v-show="editState"
-              @click=""
-            ></v-select
-          ></span>
-          <span v-else></span> -->
-            </td>
-          </tr>
-          <tr>
-            <td
-              class="grey lighten-2"
-              :colspan="pools[Object.keys(pools)[0]].length"
-            >
-              中央走道
-            </td>
-          </tr>
-          <tr>
-            <td
-              class="text-right"
-              :colspan="pools[Object.keys(pools)[0]].length"
-            >
-              最後更新時間：{{ MaxDate }}
-            </td>
-          </tr>
-        </table>
-      </v-col>
       <v-col cols="12">
         <v-row
           v-for="(item, index) in Object.keys(pools)"
           :key="index"
-          class="mx-1"
+          class="mx-1 mainbg"
         >
           <v-col
             :class="
@@ -88,7 +29,7 @@
                   statcolor.filter(x => !['default', ''].includes(x.name))
                 "
                 :showSelect="showedit"
-                :myuser="$auth.$state.user.email"
+                :myuser="($auth.$state.user)?$auth.$state.user.email:''"
               ></mappoolelement>
           </v-col>
         </v-row>
@@ -102,7 +43,7 @@
       <v-col
         cols="12"
         class="text-right"
-        style="font-size:1.2em;"
+        style="font-size:1.2em;color:white;"
         >最後更新時間：{{ MaxDate }}</v-col
       >
     </v-row>
@@ -115,7 +56,7 @@ import dayjs from "dayjs";
 import https from "https";
 export default {
   layout: "emptynologin",
-  middleware: "auth",
+  // middleware: "auth",
   components: {
     mappoolelement
   },

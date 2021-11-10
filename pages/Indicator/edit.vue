@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-row>
+      <!-- 選擇起日 -->
       <v-col cols="12" md="2">
         <v-menu
           v-model="menu_startdate"
@@ -15,7 +16,7 @@
               v-model="sdate"
               label="選擇起日"
               prepend-icon="mdi-calendar"
-              readonly
+              readonly dark
               v-bind="attrs"
               v-on="on"
               @click:prepend="() => (sdate = getNowDate())"
@@ -27,6 +28,7 @@
           ></v-date-picker>
         </v-menu>
       </v-col>
+      <!-- 選擇訖日 -->
       <v-col cols="12" md="2">
         <v-menu
           v-model="menu_enddate"
@@ -41,7 +43,7 @@
               v-model="edate"
               label="選擇訖日"
               prepend-icon="mdi-calendar"
-              readonly
+              readonly dark
               v-bind="attrs"
               v-on="on"
               @click:prepend="() => (edate = getNowDate())"
@@ -53,6 +55,7 @@
           ></v-date-picker>
         </v-menu>
       </v-col>
+      <!-- 選擇廠(必選) -->
       <v-col cols="12" md="2">
         <v-select
           v-model="sel_main"
@@ -60,11 +63,12 @@
           item-value="id"
           item-text="name"
           label="選擇廠(必選)"
-          clearable
-          background-color="light-green lighten-4"
+          clearable dark
+          class="primary"
         >
         </v-select>
       </v-col>
+      <!-- 選擇區域(必選) -->
       <v-col cols="12" md="2">
         <v-select
           v-model="sel_area"
@@ -74,9 +78,11 @@
           clearable
           @change="areachange"
           label="選擇區域(必選)"
-          background-color="light-green lighten-4"
+          dark
+          class="primary"
         ></v-select>
       </v-col>
+      <!-- 水池 -->
       <v-col cols="12" md="1">
         <v-autocomplete
           v-model="sel_pool"
@@ -85,15 +91,18 @@
           item-value="id"
           no-data-text="查無資料"
           placeholder="水池"
+          dark
         ></v-autocomplete>
       </v-col>
+      <!-- 指定項目(必選) -->
       <v-col cols="12" md="2">
         <v-autocomplete
           v-model="defitem"
           :items="Object.keys(waterdatacols)"
           no-data-text="查無資料"
           placeholder="指定項目(必選)"
-          background-color="light-green lighten-4"
+          class="primary"
+          dark
           clearable
         ></v-autocomplete>
         <!-- <v-select
@@ -107,9 +116,9 @@
         >
         </v-select> -->
       </v-col>
-      <v-col cols="12" md="1">
+      <v-col cols="12" md="1" class="text-center align-self-center">
         <v-btn
-          block
+          block tile dark
           color="primary"
           @click="getdata"
           :disabled="
@@ -126,9 +135,11 @@
           >查詢</v-btn
         >
       </v-col>
+      <!-- 新增/匯出 -->
       <v-col cols="12" md="12">
+        <!-- 新增 -->
         <v-btn
-          icon
+          icon dark
           color="success"
           @click="openadd"
           :disabled="
@@ -139,7 +150,6 @@
           height=""
           ><v-icon>mdi-text-box-plus-outline</v-icon></v-btn
         >
-        <!-- 新增 -->
         <v-dialog
           v-model="addDialog"
           max-width="500px"
@@ -294,7 +304,7 @@
           </v-form>
         </v-dialog>
         <v-btn
-          icon
+          icon dark
           color="success"
           :disabled="item.items == undefined || item.items.length == 0"
         >
@@ -379,9 +389,9 @@
             </v-dialog>
         <v-data-table
           :headers="headers"
-          :items="item.items"
+          :items="item.items" dense
           :footer-props="footerProps"
-          class="elevation-1"
+          class="elevation-1 "
           v-if="headers.length > 0 || loading == true"
           :loading="loading"
           no-data-text="查無資料"

@@ -3,6 +3,7 @@
     <span
       v-if="item.state.length > 0"
       :style="item.state == '無' ? 'color:white;' : ''"
+      v-show="item.state != '無' || showSelect"
       >{{ item.name }}-{{ item.state }}
     </span>
     <br/>
@@ -14,7 +15,7 @@
       label="池況"
       v-show="showSelect && item.state != ''"
       append-outer-icon="mdi-check"
-      @change="changeEvent"
+      @change="changeEvent" dense :dark="item.state == '無'"
       @click:append-outer="selectchecked"
     ></v-select>
   </div>

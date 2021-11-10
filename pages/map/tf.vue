@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row>
+    <v-row class="mainbg">
       <!-- 先拿掉，改用col寫法 -->
       <v-col cols="12" v-if="false">
         <!-- <v-icon @click="editState = !editState">mdi-pencil</v-icon> -->
@@ -32,7 +32,7 @@
                   statcolor.filter(x => !['default', ''].includes(x.name))
                 "
                 :showSelect="showedit"
-                :myuser="$auth.$state.user.email"
+                :myuser="($auth.$state.user)?$auth.$state.user.email:''"
               ></mappoolelement>
               <!-- <span
                 v-if="itm.state.length > 0"
@@ -78,7 +78,7 @@
                 statcolor.filter(x => !['default', ''].includes(x.name))
               "
               :showSelect="showedit"
-              :myuser="$auth.$state.user.email"
+              :myuser="($auth.$state.user)?$auth.$state.user.email:''"
             ></mappoolelement>
           </v-col>
           <!-- <v-col cols="" v-for="(itm, idx) in pools[item]" :key="idx" :bgcolor="getItemColor(itm.state)" :style="
@@ -94,7 +94,7 @@
       <v-col
         cols="12"
         class="text-right"
-        style="font-size:1.2em;"
+        style="font-size:1.2em;color:white;"
         >最後更新時間：{{ MaxDate }}</v-col
       >
     </v-row>
@@ -108,7 +108,7 @@ import https from "https";
 import Index from "../index.vue";
 export default {
   layout: "emptynologin",
-  middleware: "auth",
+  // middleware: "auth",
   components: {
     mappoolelement,
     Index
@@ -193,7 +193,7 @@ export default {
   methods: {
     getItemColor: function(data) {
       if (data == "") {
-        return "white";
+        return "primary";
       }
       let data2 = this.statcolor.filter(x => x.name == data);
       if (data2.length == 1) {

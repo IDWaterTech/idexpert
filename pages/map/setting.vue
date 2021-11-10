@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>狀態設定</h1>
     <v-row>
       <v-col cols="6">
         <v-card class="mx-auto" max-width="300" tile>

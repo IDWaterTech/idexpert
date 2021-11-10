@@ -1,5 +1,5 @@
 <template>
- <div id="app">
+ <div id="app" style="color:white;">
     <h2>觀察網影像(開發中)</h2>
     <h3>目前為：HLS模式(iphone推薦)</h3>
     <v-btn :to="'/videoflv'" color="orange" tile>切換為：flv模式</v-btn>

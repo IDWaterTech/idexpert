@@ -17,6 +17,8 @@
     <!-- 外部更新資料必須顯示在DOM裡面才會更新資料，不得已只好放著，但不顯示 -->
     <div v-show="false">{{ defaultitem }}</div>
     <!-- <span v-if= 'chtData_new_1 != undefined && chtData_new_1.rows.length == 0'>查無資料</span> -->
+    <!-- <div>defaultitem:{{ defaultitem }}</div>
+    <div>chtData_new_1:{{ chtData_new_1.rows}}</div> -->
     <ve-line
       :data="chtData_new_1"
       :settings="set"
@@ -64,7 +66,17 @@ export default {
       show: false,
       chartExtend: {
         legend: {
-          selected: this.defaultitem
+          selected: this.defaultitem,
+          textStyle:{
+            color:'#c0861d'
+          },
+          
+        },
+        xAxis:{
+          axisLabel: { color: "#fff" }
+        },
+        yAxis:{
+          axisLabel: { color: "#fff" }
         }
       },
       chartEvent: {
@@ -185,6 +197,10 @@ export default {
     var temp = this.rowsData.length > 0 ? Object.keys(this.rowsData[0]) : "";
     if (temp.indexOf(this.xColName) > -1) {
       temp.splice(temp.indexOf(this.xColName), 1); //去除default 時間欄位
+    }
+    let showcols = Object.keys(this.defaultitem).filter(x=>this.defaultitem[x]==true);
+    if (showcols.length>0) {
+      temp=showcols;
     }
     this.chtData_Ora_1.columns = [this.xColName].concat(temp); //設定欄位
     this.chtData_Ora_1.rows[0].data = this.rowsData;

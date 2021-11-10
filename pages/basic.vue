@@ -1,23 +1,14 @@
 <template>
   <div>
-    <v-expansion-panels class="mb-6" tile v-model="mypanel">
-      <v-expansion-panel>
-        <v-expansion-panel-header
-          expand-icon="mdi-menu-down"
-          style="background-color:#64B5F6;color:white;"
-        >
+    <v-expansion-panels class="mb-6" tile v-model="mypanel" dark>
+      <v-expansion-panel style="background-color:white;">
+        <v-expansion-panel-header expand-icon="mdi-menu-down" class="cardtitle">
           選擇條件
         </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <v-container class="grey lighten-5" fluid>
+        <v-expansion-panel-content class="primary">
+          <v-container class="primary" fluid>
             <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
-                <!-- <v-img v-img
-                  :src="mpurl"
-                  class="grey lighten-2"
-                  v-if="showmp && sel_main"
-                ></v-img> -->
-                <!-- <img preview="0"  :preview-text="maindata[sel_main-1].name" v-img -->
                 <img
                   v-img
                   :src="mpurl"
@@ -28,9 +19,9 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12">
-                <v-card class="pa-2" outlined tile min-height="300px">
-                  <v-row>
+              <v-col cols="12" md="3">
+                <v-card class="pa-1 mainbg"  tile height="300">
+                  <v-row class="mx-1">
                     <v-col cols="12">
                       <v-select
                         v-model="sel_main"
@@ -48,7 +39,7 @@
                           v-if="sel_main"
                           slot="prepend"
                         >
-                          <v-icon>mdi-image</v-icon>
+                          <v-icon size="30">mdi-image</v-icon>
                         </v-btn>
                       </v-select>
                     </v-col>
@@ -61,9 +52,10 @@
                         clearable
                         @change="areachange"
                         label="選擇區域"
+                        dense
                       ></v-select>
                     </v-col>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" sm="6">
                       <v-menu
                         v-model="menu_startdate"
                         :close-on-content-click="false"
@@ -78,6 +70,7 @@
                             label="選擇起日"
                             prepend-icon="mdi-calendar"
                             readonly
+                            dense
                             v-bind="attrs"
                             v-on="on"
                             @click:prepend="
@@ -97,7 +90,7 @@
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" sm="6">
                       <v-menu
                         v-model="menu_enddate"
                         :close-on-content-click="false"
@@ -112,6 +105,7 @@
                             label="選擇訖日"
                             prepend-icon="mdi-calendar"
                             readonly
+                            dense
                             v-bind="attrs"
                             v-on="on"
                             @click:prepend="
@@ -131,35 +125,38 @@
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
-                    <v-col cols="12" md="1">
+                    <v-col cols="12" sm="6">
                       <v-text-field
                         label="天數"
                         step="1"
                         min="0"
                         type="number"
                         v-model.number="days"
-                        @input="daychange"
+                        @input="daychange" class="mx-1"
+                        dense
                       ></v-text-field>
                     </v-col>
+                    <v-col cols="12" sm="6" align-self="center" class="text-center">
+                      <!-- 可能同池名，在不同廠，所以value= name -->
+                      <v-btn
+                        tile
+                        color="primary"
+                        :disabled="!(sel_main && sel_area)"
+                        @click="closepanel"
+                        >確認</v-btn
+                      >
+                    </v-col>
                   </v-row>
-
-                  <!-- 可能同池名，在不同廠，所以value= name -->
-                  <v-btn
-                    tile
-                    color="primary"
-                    :disabled="!(sel_main && sel_area)"
-                    @click="closepanel"
-                    >確認</v-btn
-                  >
                 </v-card>
               </v-col>
               <!-- <v-divider vertical></v-divider> -->
-              <v-col cols="12">
+              <v-col cols="12" md="9" >
                 <el-table
                   :data="mainpool.items"
                   style="width: 100%"
                   max-height="300"
                   show-summary
+                  size="mini"
                   :summary-method="getSummaries"
                 >
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
@@ -202,53 +199,21 @@
                 >
                 </v-data-table>
               </v-col>
-              <v-divider vertical></v-divider>
-              <v-col cols="12" md="4" v-if="false">
-                <v-card class="pa-2" outlined tile min-height="300px">
-                  <div v-if="clickeditem.length > 0">
-                    水池:{{ clickeditem }}
-                    <v-list dense>
-                      <v-list-item-group color="primary">
-                        <v-list-item
-                          v-for="(item, i) in mainpool.items"
-                          :key="i"
-                        >
-                          <v-list-item-icon>
-                            <!-- <v-icon v-text="item.icon"></v-icon> -->
-                            <v-icon>mdi-source-commit-start</v-icon>
-                          </v-list-item-icon>
-
-                          <v-list-item-content>
-                            <!-- <v-list-item-title
-                            v-text="item.text"
-                          ></v-list-item-title> -->
-                            <v-list-item-title
-                              >{{ item.name }}({{ item.unit }})：{{
-                                item.value
-                              }}</v-list-item-title
-                            >
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                    </v-list>
-                  </div>
-                </v-card>
-              </v-col>
             </v-row>
           </v-container>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-    <v-tabs v-model="currenttab" background-color="blue lighten-2" dark>
+    <v-tabs v-model="currenttab" background-color="cardtitle" dark>
       <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name">
         {{ tab.name }}
       </v-tab>
       <!-- <v-tab-items v-model="currenttab"> -->
-      <v-tab-item :value="'水質監測'">
+      <v-tab-item :value="'水質監測'" >
         <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px">
+        <v-card flat min-height="900px" dark tile class="mainbg">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -265,16 +230,34 @@
                   v-model="defitem"
                   clearable
                   multiple
-                  chips
+                  chips dense
                   placeholder="指定項目"
                   :items="Object.keys(allcols.water)"
                   v-if="allcols.water"
                   :disabled="waterloading == true"
                 >
                 </v-select>
-                
               </v-col>
-              <v-col cols="12" md="2"><v-btn rounded outlined block color="primary" @click="()=>{this.defitem=[ '亞硝酸鹽濃度', '氨氮濃度', '水溫', '溶氧濃度', '酸鹼濃度' ];}">主要觀測項目</v-btn></v-col>
+              <v-col cols="12" md="2"
+                ><v-btn
+                  rounded
+                  
+                  block
+                  color="primary"
+                  @click="
+                    () => {
+                      this.defitem = [
+                        '亞硝酸鹽濃度',
+                        '氨氮濃度',
+                        '水溫',
+                        '溶氧濃度',
+                        '酸鹼濃度'
+                      ];
+                    }
+                  "
+                  >主要觀測項目</v-btn
+                ></v-col
+              >
               <v-col
                 cols="12"
                 md="3"
@@ -314,6 +297,7 @@
                   defPool.水質.includes(item.name) || defPool.水質.length == 0
                 "
               >
+              <!-- defitem -->
                 <WaterQuality_Vcharts
                   :rowsData="item.items"
                   :legendAliasOut="allcols.water"
@@ -341,7 +325,7 @@
         <v-overlay :value="envloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px">
+        <v-card flat min-height="900px" dark tile class="mainbg">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -354,7 +338,6 @@
                 ></v-col
               >
               <v-col cols="12" md="5">
-                
                 <v-select
                   v-model="defitem_env"
                   clearable
@@ -440,7 +423,7 @@
         <v-overlay :value="feedloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px">
+        <v-card flat min-height="900px" dark tile class="mainbg">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -538,7 +521,7 @@
         <v-overlay :value="envloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px">
+        <v-card flat min-height="900px" dark tile class="mainbg">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -636,7 +619,7 @@
         <v-overlay :value="advloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px">
+        <v-card flat min-height="900px" dark tile class="mainbg">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -734,7 +717,7 @@
         <v-overlay :value="pbioloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px">
+        <v-card flat min-height="900px" dark tile class="mainbg">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -854,7 +837,7 @@ export default {
       sel_main: "",
       sel_area: "",
       clickeditem: "",
-      defitem: [ "亞硝酸鹽濃度", "氨氮濃度", "水溫", "溶氧濃度", "酸鹼濃度" ],
+      defitem: ["亞硝酸鹽濃度", "氨氮濃度", "水溫", "溶氧濃度", "酸鹼濃度"],
       defPool: { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [] },
       //items: ["A1", "A2"],
       tabs: [
@@ -1206,7 +1189,7 @@ export default {
           return;
         }
         const values = data.map(item => Number(item[column.property]));
-        var hiddenlist = ["體積(頓)","狀態"];
+        var hiddenlist = ["體積(頓)", "狀態"];
         if (hiddenlist.filter(x => x == column.label).length > 0) {
           sums[index] = "";
           return;

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h2>設備設定</h2>
     <v-row>
       <v-col cols="12">
         <v-btn tile color="primary" @click="showdevdialog()">新增</v-btn>
@@ -159,8 +158,11 @@ export default {
   },
   methods: {
     tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
+      let bgcolor=$nuxt.$vuetify.theme.themes.light.cardtitle;
       if (rowIndex == 0) {
-        return "background-color:#64B5F6;color:#fff;font-weight:500;";
+        return `background-color:${bgcolor};color:#fff;font-weight:500;`;
+      }else{
+        return `background-color:${bgcolor};`;
       }
     },
     showdevdialog: function(mode = true,data) {

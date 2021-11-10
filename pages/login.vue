@@ -1,13 +1,13 @@
 <template>
   <v-container>
-    <h1>登入</h1>
+    <!-- <h1 style="color:lightblue;">登入</h1> -->
     <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
     <v-tabs centered grow icons-and-text v-if="false">
       <v-tab class="primary--text" :href="'#tab-2'">
         第三方登入<v-icon>mdi-google</v-icon>
       </v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tabs">
+    <v-tabs-items v-model="tabs" class="mainbg">
       <v-tab-item :value="'tab-2'" class="text-center mt-5">
         <br />
         <v-btn

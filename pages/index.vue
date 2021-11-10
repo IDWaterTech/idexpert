@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" align="center" class="text-center mb-5">
+  <v-row justify="center" align="center" class="text-center mb-5"  style="color:white;">
     <v-col cols="12">
       <h1>歡迎使用 IDWater 專家系統</h1>
       <h1>WelCome IDWater Expert System</h1>
@@ -31,8 +31,8 @@
     </v-col>
     <!-- <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col> -->
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" color="pink lighten-5" tile>
-        <v-card-title class="questionTitle">紅樹林破壞-Mangrove destruction</v-card-title>
+      <v-card min-height="550px" tile dark color="primary">
+        <v-card-title class="cardtitle">紅樹林破壞-Mangrove destruction</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
@@ -52,8 +52,8 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" color="blue lighten-5" tile>
-        <v-card-title class="questionTitle">水污染-Water pollution</v-card-title>
+      <v-card min-height="550px" tile dark color="primary">
+        <v-card-title class="cardtitle">水污染-Water pollution</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
@@ -71,8 +71,8 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" color="green lighten-5" tile>
-        <v-card-title class="questionTitle">食品安全-Food safety</v-card-title>
+      <v-card min-height="550px" tile dark color="primary">
+        <v-card-title class="cardtitle">食品安全-Food safety</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
@@ -115,7 +115,7 @@ export default {
 
 <style scoped>
 .questionTitle{
-  background-color: #1986E1;
+  background-color: #055394;
   color: white;
 }
 </style>

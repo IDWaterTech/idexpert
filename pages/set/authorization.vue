@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>授權管理</h1>
     <v-row>
       <v-col>
         <v-card>

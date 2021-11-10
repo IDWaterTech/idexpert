@@ -1,13 +1,12 @@
 <template>
   <div id="top">
-    <h1>監測設定</h1>
     <v-chip
-      class="mx-2"
+      class="mx-2 primary" dark
       v-for="(item, index) in cols"
       :key="index"
       @click="
         $vuetify.goTo(`#${item}`, {
-          duration: 1500,
+          duration: 500,
           offset: 2,
           easing: 'easeInOutCubic'
         })
@@ -291,10 +290,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="editDialog = false">
+          <v-btn class="primary" tile dark @click="editDialog = false">
             取消
           </v-btn>
-          <v-btn color="blue darken-1" text @click="editsubmit">
+          <v-btn class="primary" tile dark @click="editsubmit">
             確定
           </v-btn>
         </v-card-actions>
@@ -537,7 +536,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1"  dark tile @click="addsubmit">
+            <v-btn class="primary"  dark tile @click="addsubmit">
               確定
             </v-btn>
           </v-card-actions>

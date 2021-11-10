@@ -2,6 +2,7 @@
   <div>
     <v-container fluid>
       <v-row>
+        <!-- 選擇起日 -->
         <v-col cols="12" md="2">
           <v-menu
             v-model="menu_startdate"
@@ -16,7 +17,7 @@
                 v-model="sdate"
                 label="選擇起日"
                 prepend-icon="mdi-calendar"
-                readonly
+                readonly dark dense
                 v-bind="attrs"
                 v-on="on"
                 @click:prepend="() => (sdate = getNowDate())"
@@ -28,6 +29,7 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
+        <!-- 選擇訖日 -->
         <v-col cols="12" md="2">
           <v-menu
             v-model="menu_enddate"
@@ -42,7 +44,7 @@
                 v-model="edate"
                 label="選擇訖日"
                 prepend-icon="mdi-calendar"
-                readonly
+                readonly dark dense
                 v-bind="attrs"
                 v-on="on"
                 @click:prepend="() => (edate = getNowDate())"
@@ -54,6 +56,7 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
+        <!-- 選擇廠 -->
         <v-col cols="12" md="2">
           <v-select
             v-model="sel_main"
@@ -61,21 +64,23 @@
             item-value="id"
             item-text="name"
             label="選擇廠"
-            clearable
+            clearable dark dense
           >
           </v-select>
         </v-col>
+        <!-- 選擇區域 -->
         <v-col cols="12" md="2">
           <v-select
             v-model="sel_area"
             :items="areadata"
             item-value="id"
             item-text="name"
-            clearable
+            clearable dark dense
             @change="areachange"
             label="選擇區域"
           ></v-select>
         </v-col>
+        <!-- 選擇水池 -->
         <v-col cols="12" md="2">
           <v-autocomplete
             v-model="sel_pool"
@@ -84,30 +89,24 @@
             item-value="id"
             no-data-text="查無資料"
             placeholder="選擇水池"
+             dark dense
           ></v-autocomplete>
         </v-col>
+        <!-- 指定項目 -->
         <v-col cols="12" md="2">
-          <!-- <v-select
-            v-model="defitem"
-            clearable
-            placeholder="指定項目"
-            :items="Object.keys(waterdatacols)"
-            v-if="waterdatacols"
-            no-data-text="查無資料"
-          >
-          </v-select> -->
            <v-autocomplete
           v-model="defitem"
           :items="Object.keys(waterdatacols)"
           v-if="waterdatacols"
           no-data-text="查無資料"
           placeholder="指定項目"
-          clearable
+          clearable dark dense
         ></v-autocomplete>
         </v-col>
+        <!-- 確認鈕 -->
         <v-col cols="12" md="1">
           <v-btn
-            block
+            block tile dark
             color="primary"
             @click="getdata"
             :disabled="
@@ -124,9 +123,9 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12">
-          顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0"></el-input-number>
+        <v-col cols="12" class="white--text">
           顯示最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0"></el-input-number>
+          顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0"></el-input-number>
           <WaterQuality_Vcharts
             :rowsData="item.items"
             xColName="inspected_date"
@@ -423,4 +422,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+div /deep/ .el-input__inner{
+  border-radius:0px !important;
+}
+</style>

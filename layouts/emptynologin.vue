@@ -1,11 +1,11 @@
 <template>
 <client-only>
   <v-app>
-    <v-main>
+    <v-main class="mainbg">
       <v-navigation-drawer
-        color="#1986E1"
         dark
         app
+        class="mainnav"
         v-model="drawer"
         :mini-variant="miniVariant"
         :clipped="clipped"
@@ -52,7 +52,7 @@
         <!--  -->
       </v-navigation-drawer>
       <v-container fluid>
-        <v-app-bar app color="#1986E1" dark>
+        <v-app-bar app class="mainnav" dark>
           <v-app-bar-nav-icon
             @click.stop="drawer = !drawer"
             v-show="this.$auth.$state.loggedIn"
@@ -66,7 +66,8 @@
               >mdi-{{ `chevron-${miniVariant ? "right" : "left"}` }}</v-icon
             >
           </v-btn>
-          <v-btn text to="/"><v-icon>mdi-home-outline</v-icon>艾滴科技</v-btn>
+          <nuxt-link to="/" style="color:white;text-decoration:none;"><v-icon>mdi-home-outline</v-icon>艾滴科技</nuxt-link>
+          <!-- <v-btn text to="/"><v-icon>mdi-home-outline</v-icon>艾滴科技</v-btn> -->
           <v-spacer></v-spacer>
           <!-- <v-btn
             icon
@@ -93,8 +94,6 @@
 </template>
 
 <script>
-import https from "https";
-
 export default {
   async beforeCreate() {
     //登入時判別身份分別導頁
@@ -142,31 +141,6 @@ export default {
         //   title: "監測數據",
         //   to: "/basic"
         // },
-        // {
-        //   icon: "mdi-calendar-star",
-        //   title: "重要紀事",
-        //   to: "/calendar"
-        // },
-        // {
-        //   icon: "mdi-file-edit",
-        //   title: "指標資料修改",
-        //   to: "/Indicator/edit"
-        // },
-        // {
-        //   icon: "mdi-map-outline",
-        //   title: "養殖池況",
-        //   to: "/map/"
-        // },
-        // {
-        //   icon: "mdi-video-box",
-        //   title: "觀察網影像",
-        //   to: "/video"
-        // },
-        // {
-        //   icon: "mdi-factory",
-        //   title: "廠域設定",
-        //   to: "/factory"
-        // }
       ],
       superaccount: [
                   'jianwei.wen@idwater.com.tw',
@@ -187,50 +161,14 @@ export default {
         .get(`${process.env.apiUrl}user-access/authorization-menu/`,{headers:accheader})//帳號被授權進入的項目
         .then(res => {
           acclist = res.data;
-        });
+        })
+        .catch(err => {
+              // this.$toast.error("讀取api失敗：" + err.message, { duration: 2000 });
+              alert(`讀取api失敗：${err.message}`);
+            });
     }
     this.listitems = acclist;
     console.log("被授權進入的項目",this.listitems);
-    // this.listitems = [{
-    //       icon: "mdi-apps",
-    //       title: "首頁",
-    //       to: "/"
-    //     },
-    //     {
-    //       icon: "mdi-chart-bell-curve",
-    //       title: "監測數據",
-    //       to: "/basic"
-    //     },
-    //     {
-    //       icon: "mdi-calendar-star",
-    //       title: "重要紀事",
-    //       to: "/calendar"
-    //     },
-    //     {
-    //       icon: "mdi-file-edit",
-    //       title: "指標資料修改",
-    //       to: "/Indicator/edit"
-    //     },
-    //     {
-    //       icon: "mdi-map-outline",
-    //       title: "養殖池況",
-    //       to: "/map/"
-    //     },
-    //     {
-    //       icon: "mdi-video-box",
-    //       title: "觀察網影像",
-    //       to: "/video"
-    //     },
-    //     {
-    //       icon: "mdi-factory",
-    //       title: "廠域設定",
-    //       to: "/factory"
-    //     },
-    //     {
-    //       icon: "mdi-cog-outline",
-    //       title: "設定",
-    //       to: "/set"
-    //     }];
   },
   methods: {
     logout: function() {

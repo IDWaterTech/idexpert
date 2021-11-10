@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h2>廠域設定</h2>
     <v-row no-gutters>
       <v-col cols="12" sm="4">
-        <v-row no-gutters align="center">
+        <v-row no-gutters align="center" dense>
           <v-col cols="6"
             ><v-select
               v-model="sel_main"
@@ -11,7 +10,7 @@
               item-value="id"
               item-text="name"
               label="選擇廠"
-              clearable
+              clearable dark
               @change="
                 () => {
                   if (sel_main) {
@@ -26,14 +25,14 @@
             </v-select
           ></v-col>
           <v-col cols="6">
-            <v-btn icon color="success" @click="showdialog('add', 'main')"
+            <v-btn icon color="success" @click="showdialog('add', 'main')" dark
               ><v-icon>mdi-plus</v-icon></v-btn
             >
             <v-btn
               icon
               color="success"
               :disabled="!sel_main"
-              @click="showdialog('edit', 'main')"
+              @click="showdialog('edit', 'main')" dark
               ><v-icon>mdi-pencil-outline</v-icon></v-btn
             >
             <v-btn
@@ -45,7 +44,7 @@
                   'main',
                   maindata.filter(x => x.id == sel_main)[0].name
                 )
-              "
+              " dark
               ><v-icon>mdi-delete</v-icon></v-btn
             >
           </v-col>
@@ -62,7 +61,7 @@
               item-value="id"
               item-text="name"
               clearable
-              dense
+              dense dark
               label="選擇區域"
               no-data-text="查無資料"
               :disabled="!sel_main"
@@ -74,14 +73,14 @@
               icon
               :disabled="!sel_main"
               color="success"
-              @click="showdialog('add', 'area')"
+              @click="showdialog('add', 'area')" dark
               ><v-icon>mdi-plus</v-icon></v-btn
             >
             <v-btn
               icon
               color="success"
               :disabled="!sel_area"
-              @click="showdialog('edit', 'area')"
+              @click="showdialog('edit', 'area')" dark
               ><v-icon>mdi-pencil-outline</v-icon></v-btn
             >
             <v-btn
@@ -93,7 +92,7 @@
                   'area',
                   areadata.filter(x => x.id == sel_area)[0].name
                 )
-              "
+              " dark
               ><v-icon>mdi-delete</v-icon></v-btn
             >
           </v-col>
@@ -111,7 +110,7 @@
               placeholder="請選擇養殖池"
               :disabled="!sel_area"
               clearable
-              dense
+              dense dark
             ></v-autocomplete>
           </v-col>
           <v-col cols="6">
@@ -119,14 +118,14 @@
               icon
               :disabled="!sel_area"
               color="success"
-              @click="showdialog_pool('add')"
+              @click="showdialog_pool('add')" dark
               ><v-icon>mdi-plus</v-icon></v-btn
             >
             <v-btn
               icon
               :disabled="!sel_pool"
               color="success"
-              @click="showdialog_pool('edit')"
+              @click="showdialog_pool('edit')" dark
               ><v-icon>mdi-pencil-outline</v-icon></v-btn
             >
             <v-btn
@@ -138,7 +137,7 @@
                   'pool',
                   pooldata.filter(x => x.id == sel_pool)[0].name
                 )
-              "
+              " dark
               ><v-icon>mdi-delete</v-icon></v-btn
             >
           </v-col>
@@ -158,6 +157,12 @@
         <v-card tile>
           <v-card-subtitle>
             {{ item.name }}
+            <v-btn
+              icon
+              color="success"
+              @click="showdialog_pool('edit')" dark v-if="false"
+              ><v-icon>mdi-pencil-outline</v-icon></v-btn
+            >
           </v-card-subtitle>
           <v-divider></v-divider>
           <v-card-text>

@@ -21,7 +21,7 @@
                 :item="itm"
                 :selitem="statcolor.filter(x => x.name != 'default')"
                 :showSelect="showedit"
-                :myuser="$auth.$state.user.email"
+                :myuser="($auth.$state.user)?$auth.$state.user.email:''"
               ></mappoolelement>
               <!-- <span v-if="itm.state.length > 0"
                 >{{ itm.name }}-{{ itm.state }}</span
@@ -56,7 +56,7 @@
                   statcolor.filter(x => !['default', ''].includes(x.name))
                 "
                 :showSelect="showedit"
-                :myuser="$auth.$state.user.email"
+                :myuser="($auth.$state.user)?$auth.$state.user.email:''"
               ></mappoolelement>
               <!-- <span
                 v-if="itm.state.length > 0"
@@ -98,7 +98,7 @@
               :item="itm"
               :selitem="statcolor.filter(x => x.name != 'default')"
               :showSelect="showedit"
-              :myuser="$auth.$state.user.email"
+              :myuser="($auth.$state.user)?$auth.$state.user.email:''"
             ></mappoolelement>
           </v-col>
         </v-row>
@@ -130,7 +130,7 @@
               :item="itm"
               :selitem="statcolor.filter(x => x.name != 'default')"
               :showSelect="showedit"
-              :myuser="$auth.$state.user.email"
+              :myuser="($auth.$state.user)?$auth.$state.user.email:''"
             ></mappoolelement>
           </v-col>
         </v-row>
@@ -138,7 +138,7 @@
       <v-col
         cols="12"
         class="text-right"
-        style="font-size:1.2em;"
+        style="font-size:1.2em;color:white;"
         >最後更新時間：{{ MaxDate }}</v-col
       >
     </v-row>
@@ -151,7 +151,7 @@ import dayjs from "dayjs";
 import https from "https";
 export default {
   layout: "emptynologin",
-  middleware: "auth",
+  // middleware: "auth",
   components: {
     mappoolelement
   },
@@ -228,7 +228,7 @@ export default {
   methods: {
     getItemColor: function(data) {
       if (data == "") {
-        return "white";
+        return "primary";
       }
       let data2 = this.statcolor.filter(x => x.name == data);
       if (data2.length == 1) {

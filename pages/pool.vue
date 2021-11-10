@@ -4,10 +4,10 @@
     <v-row no-gutters justify="center">
       <!-- 警示區 -->
       <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-1">
-        <v-card min-height="100px" elevation="3" class="mx-3" tile>
+        <v-card min-height="100px" elevation="3" tile dark color="primary">
           <v-card-title
-            class="py-0"
-            style="background-color:#64B5F6;color:white;"
+            class="py-0 "
+            
           >
             警示區
             <v-spacer></v-spacer>
@@ -31,7 +31,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-sheet
-              class="overflow-y-auto"
+              class="overflow-y-auto mainbg"
               min-height="100px"
               max-height="100"
               v-if="warnData.length != 0"
@@ -187,9 +187,9 @@
           </v-form>
         </v-dialog>
       </v-col>
-      <!-- 查詢、新增循環 功能按鈕 -->
+      <!-- 主功能：查詢、新增循環 功能按鈕 -->
       <v-col cols="12" sm="2">
-        <v-row class="ml-3">
+        <v-row class="mx-3">
           <!-- 養殖池 -->
           <v-col cols="12" sm="12" class="text-center my-5">
             <!-- <div class="circle">
@@ -237,7 +237,7 @@
                   v-model="started_date"
                   label="選擇起日"
                   prepend-icon="mdi-calendar"
-                  readonly
+                  readonly dark dense
                   v-bind="attrs"
                   v-on="on"
                   @click:prepend="() => (started_date = getNowDate())"
@@ -264,7 +264,7 @@
                   v-model="ended_date"
                   label="選擇訖日"
                   prepend-icon="mdi-calendar"
-                  readonly
+                  readonly dark dense
                   v-bind="attrs"
                   v-on="on"
                   @click:prepend="() => (ended_date = getNowDate())"
@@ -380,25 +380,26 @@
       </v-col>
 
       <v-col cols="12" sm="10">
+        <v-row>
         <!-- 數據(24H) -->
-        <v-col cols="12" sm="12" style="height:500px;">
-          <v-card min-height="500px" elevation="3" tile>
+        <v-col cols="12" sm="12" style="min-height:500px;">
+          <v-card min-height="500px" elevation="3" tile dark color="primary">
             <v-card-title
               class="py-2"
-              style="background-color:#64B5F6;color:white;"
             >
               數據(24H)
             </v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
-              <v-tabs v-model="currentItem">
+              <v-tabs v-model="currentItem" background-color="cardtitle">
                 <v-tab
                   v-for="(item, index) in tabitems"
                   :key="index"
-                  :href="'#tab-' + item"
+                  :href="'#tab-' + item" class="cardtitle"
                 >
                   {{ item }}
                 </v-tab>
-                <v-tabs-items v-model="currentItem">
+                <v-tabs-items v-model="currentItem" class="primary">
                   <v-tab-item :value="'tab-' + tabitems[0]">
                     <v-overlay :value="detectloading" :absolute="true">
                       <v-progress-circular
@@ -523,16 +524,15 @@
           </v-card>
         </v-col>
         <!-- 循環表格 -->
-        <v-col cols="12" sm="12" class="my-1">
+        <v-col cols="12" sm="8" class="py-0 pr-2">
           <el-table
             ref="circletable"
             style="width:100%"
             :data="circleData"
-            border
             highlight-current-row
             @current-change="handleCurrentChange"
             :header-cell-style="tableHeaderStyle"
-            height="250"
+            height="300" class="primary"
             @select="handleSelectionChange"
             :header-cell-name="cellClass"
           >
@@ -587,18 +587,16 @@
           </el-table>
         </v-col>
         <!--觀察網(蝦況) -->
-        <v-col cols="12" sm="12" class="my-1">
-          <v-card min-height="300px" elevation="3" tile>
+        <v-col cols="12" sm="4" class="py-0 pl-0">
+          <v-card min-height="300px" elevation="3" tile dark color="primary">
             <v-card-title
-              class="py-2"
-              style="background-color:#64B5F6;color:white;"
+              class="py-2 cardtitle"
             >
               觀察網(蝦況)
               <v-spacer></v-spacer>
               <v-icon
                 @click="showdialog_imgdialog"
                 :disabled="!poolid"
-                color="white"
                 >mdi-image-plus</v-icon
               >
             </v-card-title>
@@ -643,7 +641,7 @@
                 </v-row>
               </div>
               <div class="text-center my-2" v-else>
-                <h4 style="color:#666666;">查無資料</h4>
+                查無資料
               </div>
             </v-card-title>
           </v-card>
@@ -754,16 +752,15 @@
             </v-form>
           </v-dialog>
         </v-col>
-        
+        </v-row>
       </v-col>
     </v-row>
     <!-- 事件紀錄 -->
     <v-row>
       <v-col cols="12">
-        <v-card elevation="3" tile class="mx-3">
+        <v-card elevation="3" tile dark class="primary">
           <v-card-title
-            class="py-2"
-            style="background-color:#64B5F6;color:white;"
+            class="py-2 "
             >事件紀錄
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
@@ -783,7 +780,7 @@
           </v-card-title>
 
           <v-divider></v-divider>
-          <v-card-title>
+          <v-card-title >
             <v-btn
               color="primary"
               tile
@@ -857,8 +854,7 @@
             <el-table
               ref="eventtable"
               style="width:100%"
-              :data="eventData"
-              border
+              :data="eventData" class="primary"
               :header-cell-style="tableHeaderStyle"
               height="250"
             >
@@ -923,15 +919,16 @@
     <!-- 養殖歷程 -->
     <v-row>
       <v-col cols="12">
-        <v-card elevation="3" tile class="mx-3">
+        <v-card elevation="3" tile dark class="primary">
           <v-card-title
             class="py-2"
-            style="background-color:#64B5F6;color:white;"
+            
             >養殖歷程</v-card-title
           >
           <v-divider></v-divider>
           <v-card-title>
-            建置中
+            <br/>
+            建置中<br/>
           </v-card-title>
         </v-card>
       </v-col>
@@ -1061,8 +1058,11 @@ export default {
       }
     },
     tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
+      let bgcolor=$nuxt.$vuetify.theme.themes.light.cardtitle;
       if (rowIndex == 0) {
-        return "background-color:#64B5F6;color:#fff;font-weight:500;";
+        return `background-color:${bgcolor};color:#fff;font-weight:500;`;
+      }else{
+        return `background-color:${bgcolor};`;
       }
     },
     getNowDate: function() {

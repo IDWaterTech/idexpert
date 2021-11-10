@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>帳號管理</h1>
     <v-row>
       <v-col>
         <!-- <el-button type="primary" icon="el-icon-plus" circle></el-button> -->
@@ -26,12 +25,14 @@
           row-key="id"
           :expand-row-keys="expands"
           @expand-change="expandSelect"
-          :header-cell-style="{
+          
+          :header-cell-style="tableHeaderStyle"
+        >
+        <!-- :header-cell-style="{
             'background-color': '#64B5F6',
             color: '#fff',
-            'font-weight': '400'
-          }"
-        >
+            'font-weight': '500'
+          }" -->
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline>
@@ -776,7 +777,17 @@ export default {
           this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
         })
         .finally(() => {});
-    }
+    },
+    tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
+      let bgcolor=$nuxt.$vuetify.theme.themes.light.cardtitle;
+      return `font-weight:500;`;
+      // if (rowIndex == 0) {
+      //   return `background-color:${bgcolor};color:#fff;font-weight:500;`;
+      //   return `font-weight:500;`;
+      // }else{
+      //   return `background-color:${bgcolor};`;
+      // }
+    },
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視

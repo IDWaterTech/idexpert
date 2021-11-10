@@ -1,34 +1,8 @@
 <template>
   <div>
     <v-row>
-      <!-- <v-col
-        cols="2"
-        v-for="(item, idx) in link"
-        :key="idx"
-        @click="$nuxt.$router.push(`${item.to}`)"
-      >
-        <v-container fill-height>
-          <v-layout align-center>
-            <v-flex
-              class="text-center"
-              :style="`background-color:${item.color}`"
-            >
-              <v-row>
-                <v-col cols="12">
-                  <v-icon size="100" color="white">
-                    {{ item.icon }}
-                  </v-icon>
-                </v-col>
-              </v-row>
-              <h2>
-                <span style="color:white;">{{ item.title }}</span>
-              </h2>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-col> -->
       <v-col cols="12">
-        <v-tabs v-model="currenttab" background-color="">
+        <v-tabs v-model="currenttab" dark  background-color="mainbg">
           <v-tab
             v-for="(tab, idx) in link"
             :key="idx"
@@ -37,11 +11,11 @@
           >
             <v-icon left> {{ tab.icon }} </v-icon>{{ tab.title }}
           </v-tab>
-          <v-tab-item v-for="(tab, idx) in link" :key="idx" :value="tab.title">
+          <v-tab-item v-for="(tab, idx) in link" :key="idx" :value="tab.title" class="mainbg">
             <!-- <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay> -->
-            <v-icon @click="mapshowedit = !mapshowedit" class="my-3" color="primary">mdi-pencil</v-icon>
+            <v-icon dark @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon>
             <wc
               v-if="tab.title == '武曲'"
               :key="cmpkey.wc"
