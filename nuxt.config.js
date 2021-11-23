@@ -87,7 +87,8 @@ export default {
     strategies: {
       local: {
         token: {
-          property: "access_token"
+          property: "access_token",
+          maxAge: 60*60*24*3//60秒*60*24小時*3天 令牌的到期時間
           // required: true,
           // type: 'Bearer'
         },
@@ -134,7 +135,7 @@ export default {
         token: {
           property: "access_token",
           type: "Bearer",
-          maxAge: 1800
+          maxAge: 60*60*24*3//60秒*60*24小時*3天 令牌的到期時間
         },
         refreshToken: {
           property: "refresh_token",
