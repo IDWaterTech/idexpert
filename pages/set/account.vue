@@ -288,7 +288,7 @@
               <v-divider></v-divider>
               <v-footer color="white">
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" dark tile @click="addsubmit">
+                <v-btn color="primary" dark tile @click="addsubmit">
                   確認
                 </v-btn>
               </v-footer>

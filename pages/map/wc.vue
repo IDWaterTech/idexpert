@@ -55,7 +55,7 @@ import mappoolelement from "@/components/mapPoolElement.vue";
 import dayjs from "dayjs";
 import https from "https";
 export default {
-  layout: "emptynologin",
+  layout: "emptynoheaderdrawer",
   // middleware: "auth",
   components: {
     mappoolelement

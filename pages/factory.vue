@@ -217,19 +217,19 @@
               placeholder="請輸入名稱"
               v-model="edititem.value"
               :rules="rules.require"
-              autocomplete="off"
-            ></v-text-field>
+              autocomplete="off" clearable filled dense
+            ><span style="width:50px;" slot="prepend">名稱</span></v-text-field>
             <v-text-field
               v-if="edititem.class == 'area'"
               placeholder="請輸入英文代稱(wc、tf、zw...)"
               v-model="edititem.value_en"
               :rules="rules.require"
-              autocomplete="off"
-            ></v-text-field>
+              autocomplete="off" clearable filled dense
+            ><span style="width:100px;" slot="prepend">英文代稱</span></v-text-field>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="editsubmit">送出</v-btn>
+            <v-btn tile color="primary" @click="editsubmit">送出</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -387,7 +387,7 @@
           <v-divider></v-divider>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="poolsubmit(edititem_pool.type)"
+            <v-btn tile color="primary" @click="poolsubmit(edititem_pool.type)"
               >送出</v-btn
             >
           </v-card-actions>

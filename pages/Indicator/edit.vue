@@ -287,15 +287,15 @@
                 <v-spacer></v-spacer>
                 <v-btn
                   @click="addDialog = false"
-                  color="blue darken-1"
-                  text
+                  color="primary"
+                  tile
                   v-show="keepswitch"
                   >取消</v-btn
                 >
                 <v-btn
                   @click="addsubmit"
-                  color="blue darken-1"
-                  text
+                  color="primary"
+                  tile
                   :disabled="!atime"
                   >確定</v-btn
                 >
@@ -378,10 +378,10 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="editDialog = false">
+                  <v-btn tile color="primary"  @click="editDialog = false">
                     取消
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="editsubmit">
+                  <v-btn tile color="primary"  @click="editsubmit">
                     確定
                   </v-btn>
                 </v-card-actions>

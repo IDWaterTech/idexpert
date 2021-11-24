@@ -1,0 +1,30 @@
+<template>
+<client-only>
+  <v-app>
+    <v-main class="mainbg">
+      <v-container fluid class="my-5">
+        <nuxt />
+      </v-container>
+    </v-main>
+  </v-app>
+  </client-only>
+</template>
+
+<script>
+export default {
+  async beforeCreate() {
+   
+  },
+  data() {
+    return {
+     
+    };
+  },
+  async mounted() {
+    
+  },
+  methods: {
+    
+  }
+};
+</script>

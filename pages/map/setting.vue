@@ -45,20 +45,20 @@
             </v-list-item-group>
           </v-list>
         </v-card>
-        <v-dialog v-model="adddialog" max-width="300">
+        <v-dialog v-model="adddialog" max-width="400">
           <v-card>
             <v-form ref="form" v-model="valid" lazy-validation>
-              <v-card-title>新增項目</v-card-title>
+              <v-card-title>新增狀態項目</v-card-title>
               <v-card-text
                 ><v-text-field
                   v-model="addItem"
-                  placeholder="新增項目"
+                  placeholder="新增項目" filled dense
                   :rules="rules.require"
-                ></v-text-field
+                ><span style="width:100px;" slot="prepend">新增項目</span></v-text-field
               ></v-card-text>
               <v-card-actions
                 ><v-spacer></v-spacer
-                ><v-btn color="primary" @click="coloradd"
+                ><v-btn tile color="primary" @click="coloradd"
                   >新增</v-btn
                 ></v-card-actions
               >

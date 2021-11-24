@@ -107,7 +107,7 @@ import dayjs from "dayjs";
 import https from "https";
 import Index from "../index.vue";
 export default {
-  layout: "emptynologin",
+  layout: "emptynoheaderdrawer",
   // middleware: "auth",
   components: {
     mappoolelement,

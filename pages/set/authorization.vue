@@ -79,7 +79,7 @@
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="addsubmit">新增</v-btn>
+                    <v-btn tile color="primary" @click="addsubmit">新增</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-form>
@@ -154,7 +154,7 @@
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="editsubmit">確認修改</v-btn>
+                    <v-btn tile color="primary" @click="editsubmit">確認修改</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-form>

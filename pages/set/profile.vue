@@ -5,15 +5,14 @@
       <v-col cols="8">
         <!-- <div v-if="!location.href.includes('expert.idwatertech.com')">{{`目前網址[${location.href}]無法使用本頁功能`}}</div>
         <v-card tile :disabled="!location.href.includes('expert.idwatertech.com')"> -->
-        <v-card tile>
-          <v-card-title style="background-color:#64B5F6;color:white;"
-            >個人設定</v-card-title
+        <v-card tile dark color="primary">
+          <v-card-title class="cardtitle">個人設定</v-card-title
           >
           <v-overlay :value="$route.query.hasOwnProperty('code')" :absolute="true">
             <v-progress-circular indeterminate size="64"></v-progress-circular>
           </v-overlay>
-          <v-card-text class="pt-2 pb-10">
-            <v-subheader
+          <v-card-text class="pt-2 pb-10 white--text">
+            <v-subheader dark
               ><v-icon class="mx-2">mdi-account-circle-outline</v-icon
               >個人資訊</v-subheader
             ><v-divider class="mb-2"></v-divider>
@@ -38,7 +37,7 @@
                 ></v-avatar>
               </v-col>
             </v-row>
-            <v-subheader
+            <v-subheader dark
               ><v-icon class="mx-2">mdi-bell-circle-outline</v-icon
               >接收通知</v-subheader
             ><v-divider class="mb-2"></v-divider>
@@ -202,7 +201,7 @@ export default {
         });
     },
     testMsg: async function() {
-      let msg = `這是由您由系統主動發送的測試訊息，時間：${dayjs(
+      let msg = `這是您由系統主動發送的測試訊息，時間：${dayjs(
         new Date()
       ).format("YYYY-MM-DD HH:mm:ss")}`;
       let line_token = this.profile.line_token;

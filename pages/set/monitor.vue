@@ -1,7 +1,7 @@
 <template>
   <div id="top">
     <v-chip
-      class="mx-2 primary" dark
+      class="mx-2 my-2 primary" dark
       v-for="(item, index) in cols"
       :key="index"
       @click="

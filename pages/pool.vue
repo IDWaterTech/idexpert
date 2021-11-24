@@ -370,7 +370,7 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" @click="submitadd">確認</v-btn>
+                    <v-btn tile color="primary" @click="submitadd">確認</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-form>
@@ -860,7 +860,7 @@
             >
               <template slot="empty">
                 <span
-                  ><v-btn
+                  ><v-btn tile
                     color="primary"
                     @click="geteventData"
                     :disabled="!poolid || !cirid"
