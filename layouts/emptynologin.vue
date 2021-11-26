@@ -67,6 +67,7 @@
             >
           </v-btn>
           <nuxt-link to="/" style="color:white;text-decoration:none;"><v-icon>mdi-home-outline</v-icon>艾滴科技</nuxt-link>
+          <weather></weather>
           <!-- <v-btn text to="/"><v-icon>mdi-home-outline</v-icon>艾滴科技</v-btn> -->
           <v-spacer></v-spacer>
           <!-- <v-btn

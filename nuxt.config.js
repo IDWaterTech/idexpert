@@ -34,8 +34,8 @@ export default {
   //process.env.apiUrl
   //context.env.apiUrl
   env: {
-    apiUrl: 'https://61.56.172.10/',
-    apiUrl2:'https://61.56.172.10',//沒後斜線的
+    apiUrl: "https://61.56.172.10/",
+    apiUrl2: "https://61.56.172.10" //沒後斜線的
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -48,7 +48,7 @@ export default {
     "~/plugins/json2excel",
     { src: "~/plugins/vue-tree-select.js", ssr: false },
     { src: "~/plugins/mymethod.js", ssr: false },
-    { src: "~/plugins/speedometer.js", ssr: false },
+    { src: "~/plugins/speedometer.js", ssr: false }
     // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
@@ -88,7 +88,7 @@ export default {
       local: {
         token: {
           property: "access_token",
-          maxAge: 60*60*24*3//60秒*60*24小時*3天 令牌的到期時間
+          maxAge: 60 * 60 * 24 * 3 //60秒*60*24小時*3天 令牌的到期時間
           // required: true,
           // type: 'Bearer'
         },
@@ -135,7 +135,7 @@ export default {
         token: {
           property: "access_token",
           type: "Bearer",
-          maxAge: 60*60*24*3//60秒*60*24小時*3天 令牌的到期時間
+          maxAge: 60 * 60 * 24 * 3 //60秒*60*24小時*3天 令牌的到期時間
         },
         refreshToken: {
           property: "refresh_token",
@@ -182,7 +182,7 @@ export default {
       pathRewrite: {
         "^/lineapi": ""
       }
-    },
+    }
     //設定代理，目前沒用到
     // "/idapi": {
     //   target: "http://61.56.172.10", // 介面的域名
@@ -237,15 +237,15 @@ export default {
           info: colors.teal.lighten1,
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
+          success: colors.green.accent3
         },
         light: {
-          primary:'#3F6D9E',
-          mainnav:'#02325A',
-          mainbg:'#063E6C',
-          cardtitle:'#055394',
-          lightblue:'#074C86'
-      }
+          primary: "#3F6D9E",
+          mainnav: "#02325A",
+          mainbg: "#063E6C",
+          cardtitle: "#055394",
+          lightblue: "#074C86"
+        }
       }
     }
   },
@@ -255,10 +255,10 @@ export default {
     // 解決speedometer
     // [Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.
     extend(config) {
-      config.resolve.alias['vue'] = 'vue/dist/vue.common'
-  }
+      config.resolve.alias["vue"] = "vue/dist/vue.common";
+    }
   },
-  generate:{
-    assetsPublicPath:'./'
+  generate: {
+    assetsPublicPath: "./"
   }
 };

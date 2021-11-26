@@ -14,7 +14,6 @@
         plus IoT technologies to solve three major problems of traditional
         aquaculture.
       </div>
-      
     </v-col>
     <v-col cols="12">
       <div v-show="!this.$auth.$state.loggedIn">
