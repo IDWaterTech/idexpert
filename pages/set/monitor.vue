@@ -784,7 +784,7 @@ export default {
   methods: {
     getListData: async function() {
       await this.$axios
-        .get(`${process.env.apiUrl}col-data/`, {
+        .get(`${process.env.apiUrl}/col-data/`, {
           httpsAgent: agent
         })
         .then(res => {
@@ -835,7 +835,7 @@ export default {
       };
       console.log(parm);
       await this.$axios
-        .patch(`${process.env.apiUrl}col-data/${this.editedItem.id}/`, parm, {
+        .patch(`${process.env.apiUrl}/col-data/${this.editedItem.id}/`, parm, {
           httpsAgent: agent
         })
         .then(res => {
@@ -874,7 +874,7 @@ export default {
           created_user: updUser
         };
         await this.$axios
-          .post(`${process.env.apiUrl}col-data/`, parm, {
+          .post(`${process.env.apiUrl}/col-data/`, parm, {
             httpsAgent: agent
           })
           .then(res => {
@@ -973,7 +973,7 @@ export default {
         };
         await this.$axios
           .delete(
-            `${process.env.apiUrl}col-data/${data.id}/`,
+            `${process.env.apiUrl}/col-data/${data.id}/`,
             { data: parm },
             {
               httpsAgent: agent

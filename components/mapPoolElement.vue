@@ -73,7 +73,7 @@ export default {
           rejectUnauthorized: false
         });
         await this.$axios
-          .patch(`${process.env.apiUrl}pond-to-state/${this.item.id}/`, parm, {
+          .patch(`${process.env.apiUrl}/pond-to-state/${this.item.id}/`, parm, {
             httpsAgent: agent
           })
           .then(res => {

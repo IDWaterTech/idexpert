@@ -34,8 +34,9 @@ export default {
   //process.env.apiUrl
   //context.env.apiUrl
   env: {
-    apiUrl: "https://61.56.172.10/",
-    apiUrl2: "https://61.56.172.10" //沒後斜線的
+    apiUrl: "https://192.168.50.77/api",//統一不要有後斜線
+    apiIIS82:"https://192.168.50.77:82",
+    apiVideo8443:"https://192.168.50.77:8443"
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

@@ -461,7 +461,7 @@ export default {
   methods: {
     getmain: async function() {
       await this.$axios
-        .get(`${process.env.apiUrl}architecture/`, { httpsAgent: agent })
+        .get(`${process.env.apiUrl}/architecture/`, { httpsAgent: agent })
         .then(res => {
           this.maindata = res.data;
           console.log("API:" + res.request.responseURL);
@@ -473,7 +473,7 @@ export default {
     getpoolstat: async function() {
       //取得池狀態清單
       await this.$axios
-        .get(`${process.env.apiUrl}pond-state/`)
+        .get(`${process.env.apiUrl}/pond-state/`)
         .then(res => {
           this.poolstat = res.data.filter(x => x.name != ""); //不提供保留項;
         })
@@ -494,7 +494,7 @@ export default {
 
       await this.$axios
         .get(
-          `${process.env.apiUrl}ponds-data/`,
+          `${process.env.apiUrl}/ponds-data/`,
           { params: para },
           { httpsAgent: agent }
         )
@@ -525,7 +525,7 @@ export default {
         switch (this.edititem.class) {
           case "main":
             await this.$axios
-              .post(`${process.env.apiUrl}factory/`, parm, {
+              .post(`${process.env.apiUrl}/factory/`, parm, {
                 httpsAgent: agent
               })
               .then(res => {
@@ -550,7 +550,7 @@ export default {
               created_user: updUser
             };
             await this.$axios
-              .post(`${process.env.apiUrl}pond-area/`, parm, {
+              .post(`${process.env.apiUrl}/pond-area/`, parm, {
                 httpsAgent: agent
               })
               .then(res => {
@@ -578,7 +578,7 @@ export default {
         switch (this.edititem.class) {
           case "main":
             await this.$axios
-              .patch(`${process.env.apiUrl}factory/${id}/`, parm, {
+              .patch(`${process.env.apiUrl}/factory/${id}/`, parm, {
                 httpsAgent: agent
               })
               .then(res => {
@@ -603,7 +603,7 @@ export default {
               updated_user: updUser
             };
             await this.$axios
-              .patch(`${process.env.apiUrl}pond-area/${id}/`, parm, {
+              .patch(`${process.env.apiUrl}/pond-area/${id}/`, parm, {
                 httpsAgent: agent
               })
               .then(res => {
@@ -727,7 +727,7 @@ export default {
             break;
         }
         await this.$axios
-          .delete(`${process.env.apiUrl}${apiUrl}/${id}`, {
+          .delete(`${process.env.apiUrl}/${apiUrl}/${id}`, {
             httpsAgent: agent
           })
           .then(res => {
@@ -759,7 +759,7 @@ export default {
           this.edititem_pool.parm.created_user = user;
           var parm = this.edititem_pool.parm;
           await this.$axios
-            .post(`${process.env.apiUrl}pond/`, parm)
+            .post(`${process.env.apiUrl}/pond/`, parm)
             .then(res => {
               console.log("API:" + res.request.responseURL);
               if (res.data == "新增成功") {
@@ -784,7 +784,7 @@ export default {
               : this.edititem_pool.parm.video_url;
           var parm = this.edititem_pool.parm;
           await this.$axios
-            .patch(`${process.env.apiUrl}pond/${id}`, parm)
+            .patch(`${process.env.apiUrl}/pond/${id}`, parm)
             .then(res => {
               console.log("API:" + res.request.responseURL);
               if (res.data == "修改成功") {

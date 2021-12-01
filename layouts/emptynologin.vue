@@ -101,7 +101,7 @@ export default {
     if (this.$auth.$state.loggedIn) {
       let acclist = [];
       await this.$axios
-        .get(`${process.env.apiUrl}user-access/account/`)//所有使用者的清單
+        .get(`${process.env.apiUrl}/user-access/account/`)//所有使用者的清單
         .then(res => {
           acclist = res.data;
         });
@@ -159,7 +159,7 @@ export default {
     if (this.$auth.$state.loggedIn) {
       let accheader ={account:this.$auth.$state.user.email}
       await this.$axios
-        .get(`${process.env.apiUrl}user-access/authorization-menu/`,{headers:accheader})//帳號被授權進入的項目
+        .get(`${process.env.apiUrl}/user-access/authorization-menu/`,{headers:accheader})//帳號被授權進入的項目
         .then(res => {
           acclist = res.data;
         })

@@ -117,7 +117,7 @@ export default {
            latitude: this.loc.latitude,
       };
       await this.$axios
-        .post(`${process.env.apiUrl2}:82/weather.asmx/weatherData`, parm)
+        .post(`${process.env.apiIIS82}/weather.asmx/weatherData`, parm)
         .then(res => {
           let weadata = JSON.parse(res.data.d);
           this.weatherdata.main = weadata.main;
@@ -134,7 +134,7 @@ export default {
            latitude: this.loc.latitude,
       };
       await this.$axios
-        .post(`${process.env.apiUrl2}:82/weather.asmx/location`, parm)
+        .post(`${process.env.apiIIS82}/weather.asmx/location`, parm)
         .then(res => {
           let loc = JSON.parse(res.data.d);
           // var max = Math.max.apply(Math, loc.map(function(o) { return o.cnt; }));

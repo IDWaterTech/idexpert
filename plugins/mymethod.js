@@ -17,7 +17,7 @@ import Vue from "vue";
            if (this.$auth.$state.loggedIn) {
               let acclist = [];
               await this.$axios
-                .get(`${process.env.apiUrl}user-access/account/`) //所有使用者的清單
+                .get(`${process.env.apiUrl}/user-access/account/`) //所有使用者的清單
                 .then(res => {
                   acclist = res.data;
                 });
@@ -31,7 +31,7 @@ import Vue from "vue";
                 let accheader = { account: this.$auth.$state.user.email };
                 let accPagelst = [];
                 await this.$axios
-                  .get(`${process.env.apiUrl}user-access/authorization-menu/`, {
+                  .get(`${process.env.apiUrl}/user-access/authorization-menu/`, {
                     headers: accheader
                   }) 
                   .then(res => {

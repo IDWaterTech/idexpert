@@ -28,8 +28,8 @@ export default {
   data() {
     return {
       player: undefined,
-      // url: `${process.env.apiUrl2}:8443/live/170.flv`,
-      url: `${process.env.apiUrl2}:8443/live/171/index.m3u8`,
+      // url: `${process.env.apiVideo8443}/live/170.flv`,
+      url: `${process.env.apiVideo8443}/live/171/index.m3u8`,
       type: "hls"
     };
   },
@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     chchanel: function(data) {
-      this.url = `${process.env.apiUrl2}:8443/live/${data}/index.m3u8`;
+      this.url = `${process.env.apiVideo8443}/live/${data}/index.m3u8`;
       // this.player.pause();
       this.player.switchVideo({
         url: this.url

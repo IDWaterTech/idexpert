@@ -507,7 +507,7 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     //抓廠資料
     await this.$axios
-      .get(`${process.env.apiUrl}architecture/`, { httpsAgent: agent })
+      .get(`${process.env.apiUrl}/architecture/`, { httpsAgent: agent })
       .then(res => {
         console.log("廠");
         this.maindata = res.data;
@@ -533,7 +533,7 @@ export default {
       });
     //抓all項目
     await this.$axios
-      .get(`${process.env.apiUrl}all-col-name/`, {
+      .get(`${process.env.apiUrl}/all-col-name/`, {
         httpsAgent: agent
       })
       .then(res => {
@@ -584,7 +584,7 @@ export default {
         //水池基本資料
         await this.$axios
           .get(
-            `${process.env.apiUrl}ponds-data/`,
+            `${process.env.apiUrl}/ponds-data/`,
             {
               params: para
             },
@@ -651,7 +651,7 @@ export default {
         items: this.defitem,
         data_group: itemclass
       };
-      let apiurl = `${process.env.apiUrl}all-data/`;
+      let apiurl = `${process.env.apiUrl}/all-data/`;
       //歸零
       this.item = "";
       this.headers = [];
@@ -692,7 +692,7 @@ export default {
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
       //抓項目的限制
       let coldata = [];
-      await this.$axios.get(`${process.env.apiUrl}col-data/`).then(res => {
+      await this.$axios.get(`${process.env.apiUrl}/col-data/`).then(res => {
         coldata = Object.assign([], res.data);
       });
       var colitem = coldata.filter(
@@ -752,7 +752,7 @@ export default {
       //this.getItemClass(this.defitem);
       //抓項目的限制
       let coldata = [];
-      await this.$axios.get(`${process.env.apiUrl}col-data/`).then(res => {
+      await this.$axios.get(`${process.env.apiUrl}/col-data/`).then(res => {
         coldata = Object.assign([], res.data);
       });
       var colitem = coldata.filter(
@@ -783,7 +783,7 @@ export default {
 
       if (valid) {
         let colclass = this.getItemClass(this.defitem);
-        let apiurl = `${process.env.apiUrl}all-data/`;
+        let apiurl = `${process.env.apiUrl}/all-data/`;
 
         let url = apiurl;
         const updUser = this.$auth.$state.user.email;
@@ -839,8 +839,8 @@ export default {
     },
     editsubmit: async function() {
       if (confirm("確定修改？") == true) {
-        // await this.$axios.get("${process.env.apiUrl}architecture/").then(res => {});
-        let url = `${process.env.apiUrl}all-data/${this.editedItem.id}/`;
+        // await this.$axios.get("${process.env.apiUrl}/architecture/").then(res => {});
+        let url = `${process.env.apiUrl}/all-data/${this.editedItem.id}/`;
         const updUser = this.$auth.$state.user.email;
         let data = {
           val: this.editedItem.value,
@@ -867,7 +867,7 @@ export default {
       }
     },
     delsubmit: async function() {
-      let url = `${process.env.apiUrl}all-data/${this.editedItem.id}/`;
+      let url = `${process.env.apiUrl}/all-data/${this.editedItem.id}/`;
       let deldata = { data_group: this.editedItem.class };
       console.log("DEL data:", deldata);
       console.log("DEL:" + url);

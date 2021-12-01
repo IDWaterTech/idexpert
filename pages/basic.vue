@@ -1047,7 +1047,7 @@ export default {
         this.tableloading = true;
         await this.$axios
           .get(
-            `${process.env.apiUrl}ponds-data/`,
+            `${process.env.apiUrl}/ponds-data/`,
             { params: para },
             { httpsAgent: agent }
           )
@@ -1073,7 +1073,7 @@ export default {
         rejectUnauthorized: false
       });
 
-      let apiURL = `${process.env.apiUrl}all-data/`;
+      let apiURL = `${process.env.apiUrl}/all-data/`;
       let parm = {
         started_date: start_date,
         ended_date: end_date,
@@ -1228,14 +1228,14 @@ export default {
       rejectUnauthorized: false
     });
     await this.$axios
-      .get(`${process.env.apiUrl}architecture/`, { httpsAgent: agent })
+      .get(`${process.env.apiUrl}/architecture/`, { httpsAgent: agent })
       .then(res => {
         this.maindata = res.data;
         this.sel_main = 1;
       });
     //get all cols
     await this.$axios
-      .get(`${process.env.apiUrl}all-col-name/`, { httpsAgent: agent })
+      .get(`${process.env.apiUrl}/all-col-name/`, { httpsAgent: agent })
       .then(res => {
         this.allcols = res.data;
       });

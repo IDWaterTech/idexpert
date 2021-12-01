@@ -151,7 +151,7 @@ export default {
       };
       await this.$axios
         .patch(
-          `${process.env.apiUrl}user-access/personal-settings/${this.profile.user_id}`,
+          `${process.env.apiUrl}/user-access/personal-settings/${this.profile.user_id}`,
           parm,
           {
             headers: accheader
@@ -182,7 +182,7 @@ export default {
     getUser: async function() {
       let accheader = { account: this.$auth.$state.user.email };
       await this.$axios
-        .get(`${process.env.apiUrl}user-access/personal-settings/`, {
+        .get(`${process.env.apiUrl}/user-access/personal-settings/`, {
           headers: accheader
         })
         .then(res => {
@@ -218,7 +218,7 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${process.env.apiUrl2}:82/linenotify.asmx/LineMsg`, parm)
+        .post(`${process.env.apiIIS82}/linenotify.asmx/LineMsg`, parm)
         .then(res => {
           this.$toast.success(`成功:${res.data.d}`, { duration: 2000 });
         })
@@ -235,7 +235,7 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${process.env.apiUrl2}:82/linenotify.asmx/revoke`, parm)
+        .post(`${process.env.apiIIS82}/linenotify.asmx/revoke`, parm)
         .then(res => {
           let revokedata = JSON.parse(res.data.d);
           if (revokedata.message == "ok") {
@@ -278,7 +278,7 @@ export default {
 
       let parm = { code: this.$route.query.code,re_uri :location.href.replace(location.search, "") };
       await this.$axios
-        .post(`${process.env.apiUrl2}:82/linenotify.asmx/getToken`, parm)
+        .post(`${process.env.apiIIS82}/linenotify.asmx/getToken`, parm)
         .then(res => {
           let linetoken = JSON.parse(res.data.d);
           if (

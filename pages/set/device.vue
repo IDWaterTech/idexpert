@@ -188,7 +188,7 @@ export default {
       if (mode == true) {
         let parm = this.dialog.parm;
         await this.$axios
-          .post(`${process.env.apiUrl}device/`, parm)
+          .post(`${process.env.apiUrl}/device/`, parm)
           .then(res => {
             console.log("新增 API:" + res.request.responseURL);
             if (res.data == "新增成功") {
@@ -204,7 +204,7 @@ export default {
       } else {
         //edit mode
         let parm = _.cloneDeep(this.dialog.parm);
-        let url = `${process.env.apiUrl}device/${parm.id}`;
+        let url = `${process.env.apiUrl}/device/${parm.id}`;
         parm.updated_user = parm.created_user;
         delete parm.created_user;
         delete parm.id;
@@ -231,7 +231,7 @@ export default {
     deldev:async function(data){
       if (confirm('確定刪除？')) {
         await this.$axios
-        .delete(`${process.env.apiUrl}device/${data.id}`)
+        .delete(`${process.env.apiUrl}/device/${data.id}`)
         .then(res => {
           if (res.data=="刪除成功") {
             this.$toast.success("刪除成功", { duration: 2000 });
@@ -250,7 +250,7 @@ export default {
     },
     getDevice: async function() {
       await this.$axios
-        .get(`${process.env.apiUrl}device/`)
+        .get(`${process.env.apiUrl}/device/`)
         .then(res => {
           this.devicedata = res.data;
           console.log("device清單 API:" + res.request.responseURL);
@@ -285,7 +285,7 @@ export default {
       let reqid = "";
       let getedItem = {};
       await this.$axios
-        .get(`${process.env.apiUrl}architecture/`)
+        .get(`${process.env.apiUrl}/architecture/`)
         .then(res => {
           // this.maindata = res.data;
           var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
