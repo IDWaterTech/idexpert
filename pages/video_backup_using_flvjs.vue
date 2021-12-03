@@ -30,10 +30,10 @@ export default {
       player: "",
       // http: "http://192.168.50.171/cgi-bin/mjpg/video.cgi?channel=1&subtype=1",
       // flv: "http://localhost:8000/live/STREAM_NAME.flv"
-      // flv: "${process.env.apiVideo8443}/live/171.flv"
-      // al: "${process.env.apiVideo8443}/live/171.flv",
-      // a2: "${process.env.apiVideo8443}/live/170.flv"
-      videourl: `${process.env.apiVideo8443}/live/171.flv`
+      // flv: "${this.$store.state.mydata.gobal_api.apiVideo8443}/live/171.flv"
+      // al: "${this.$store.state.mydata.gobal_api.apiVideo8443}/live/171.flv",
+      // a2: "${this.$store.state.mydata.gobal_api.apiVideo8443}/live/170.flv"
+      videourl: `${this.$store.state.mydata.gobal_api.apiVideo8443}/live/171.flv`
       // rtsp:
       //   "rtsp://admin:dh123456@192.168.50.171:554/cam/realmonitor?channel=1&subtype=1",
       // rtmp: "rtmp://localhost/live/STREAM_NAME",
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     chchanel: function(data) {
-      this.videourl = `${process.env.apiVideo8443}/live/${data}.flv`;
+      this.videourl = `${this.$store.state.mydata.gobal_api.apiVideo8443}/live/${data}.flv`;
     }
   }
 };

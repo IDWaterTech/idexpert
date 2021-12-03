@@ -68,7 +68,6 @@
           </v-btn>
           <nuxt-link to="/" style="color:white;text-decoration:none;"><v-icon>mdi-home-outline</v-icon>艾滴科技</nuxt-link>
           <weather></weather>
-          <!-- <v-btn text to="/"><v-icon>mdi-home-outline</v-icon>艾滴科技</v-btn> -->
           <v-spacer></v-spacer>
           <!-- <v-btn
             icon
@@ -79,6 +78,13 @@
             "
             ><v-icon>mdi-cog-outline</v-icon></v-btn
           > -->
+          <div>
+            <v-switch class="mt-3 mx-1"
+              v-model="site" dense
+              :label="`${(site)?'外網':'內網'}`"
+              @change="changeSite"
+            ></v-switch>
+          </div>
           <div v-if="this.$auth.$state.loggedIn">
             <!-- {{ this.$auth.$state.user.name }} -->
             <v-btn icon @click="logout"><v-icon>mdi-home-export-outline</v-icon></v-btn>
@@ -101,7 +107,7 @@ export default {
     if (this.$auth.$state.loggedIn) {
       let acclist = [];
       await this.$axios
-        .get(`${process.env.apiUrl}/user-access/account/`)//所有使用者的清單
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`)//所有使用者的清單
         .then(res => {
           acclist = res.data;
         });
@@ -151,15 +157,18 @@ export default {
                   'eric.cheung@idwater.com.tw',//星希
                   'eason.lin@idwater.com.tw',//奕昇
                   'cf.chien@idwater.com.tw',//靖芳
-                ]
+                ],
+      site:true,//true 外網 false 內網
     };
   },
   async mounted() {
     let acclist = [];
+    var sitevalue = this.getSite();//return external or internal
+    this.site = (sitevalue == 'external');//判斷內外網路
     if (this.$auth.$state.loggedIn) {
       let accheader ={account:this.$auth.$state.user.email}
       await this.$axios
-        .get(`${process.env.apiUrl}/user-access/authorization-menu/`,{headers:accheader})//帳號被授權進入的項目
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`,{headers:accheader})//帳號被授權進入的項目
         .then(res => {
           acclist = res.data;
         })
@@ -175,6 +184,13 @@ export default {
     logout: function() {
       this.drawer = false;
       $nuxt.$auth.logout();
+    },
+    changeSite(){
+      if (this.site) {
+        this.setSite("external");
+      }else{
+        this.setSite("internal");
+      }
     }
   }
 };

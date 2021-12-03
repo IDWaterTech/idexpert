@@ -36,7 +36,17 @@ export default {
   env: {
     apiUrl: "https://192.168.50.77/api",//統一不要有後斜線
     apiIIS82:"https://192.168.50.77:82",
-    apiVideo8443:"https://192.168.50.77:8443"
+    apiVideo8443:"https://192.168.50.77:8443",
+    internal:{
+      apiUrl: "https://192.168.50.77/api",//統一不要有後斜線
+      apiIIS82:"https://192.168.50.77:82",
+      apiVideo8443:"https://192.168.50.77:8443",
+    },
+    external:{
+      apiUrl: "https://61.56.172.10/api",//統一不要有後斜線
+      apiIIS82:"https://61.56.172.10:82",
+      apiVideo8443:"https://61.56.172.10:8443",
+    },
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

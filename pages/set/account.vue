@@ -538,7 +538,7 @@ export default {
   methods: {
     getaccList: async function() {
       await this.$axios
-        .get(`${process.env.apiUrl}/user-access/account/`, { httpsAgent: agent })
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent })
         .then(res => {
           this.accdata = res.data;
           console.log("accList api：" + res.request.responseURL);
@@ -546,7 +546,7 @@ export default {
     },
     getorg: async function() {
       await this.$axios
-        .get(`${process.env.apiUrl}/user-access/organization/`, {
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`, {
           httpsAgent: agent
         })
         .then(res => {
@@ -585,7 +585,7 @@ export default {
     handleDelete: async function(index, row) {
       if (confirm("是否確認刪除？")) {
         await this.$axios
-          .delete(`${process.env.apiUrl}/user-access/account/${row.id}/`, {
+          .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${row.id}/`, {
             httpsAgent: agent
           })
           .then(res => {
@@ -649,7 +649,7 @@ export default {
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
         await this.$axios
-          .post(`${process.env.apiUrl}/user-access/account/`, this.addform, {
+          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, this.addform, {
             httpsAgent: agent
           })
           .then(res => {
@@ -697,7 +697,7 @@ export default {
       console.log(parm);
       await this.$axios
         .patch(
-          `${process.env.apiUrl}/user-access/account/${this.edititem.id}/`,
+          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.edititem.id}/`,
           parm,
           { httpsAgent: agent }
         )
@@ -738,7 +738,7 @@ export default {
       this.postedit(this.edititem.id, parm);
       // await this.$axios
       //   .patch(
-      //     `${process.env.apiUrl}/user-access/account/${this.edititem.id}/`,
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.edititem.id}/`,
       //     parm,
       //     { httpsAgent: agent }
       //   )
@@ -760,7 +760,7 @@ export default {
     postedit: async function(upd_id, parm) {
       console.log("修改參數：",parm);
       await this.$axios
-        .patch(`${process.env.apiUrl}/user-access/account/${upd_id}/`, parm, {
+        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${upd_id}/`, parm, {
           httpsAgent: agent
         })
         .then(res => {

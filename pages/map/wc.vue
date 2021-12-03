@@ -118,7 +118,7 @@ export default {
     });
     //取得水池狀態
     await this.$axios
-      .get(`${process.env.apiUrl}/wc-state/`, { httpsAgent: agent })
+      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`, { httpsAgent: agent })
       .then(res => {
         this.pools = res.data;
       })
@@ -127,7 +127,7 @@ export default {
       });
     //取得池況顏色設定
     await this.$axios
-      .get(`${process.env.apiUrl}/pond-state/`, { httpsAgent: agent })
+      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
       .then(res => {
         this.statcolor = res.data;
       })

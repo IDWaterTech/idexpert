@@ -28,7 +28,7 @@ export default {
       fluent: true, //流畅模式
       autoplay: true,
       player: undefined,
-      videoUrl: `${process.env.apiVideo8443}/live/171.flv`
+      videoUrl: `${this.$store.state.mydata.gobal_api.apiVideo8443}/live/171.flv`
     };
   },
   async created() {
@@ -52,7 +52,7 @@ export default {
     },
     chchanel: function(data) {
       this.player.destroy();
-      this.videoUrl = `${process.env.apiVideo8443}/live/${data}.flv`;
+      this.videoUrl = `${this.$store.state.mydata.gobal_api.apiVideo8443}/live/${data}.flv`;
       console.log(this.videoUrl);
       this.player = new WasmPlayer(null, "Player", this.callbackfun);
       //(0：默认，1：自动播放)

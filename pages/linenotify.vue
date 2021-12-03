@@ -35,7 +35,7 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${process.env.apiIIS82}/linenotify.asmx/LineMsg`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm)
         .then(res => {
           this.msg = "";
           this.$toast.success(`成功:${res.data.d}`, { duration: 2000 });

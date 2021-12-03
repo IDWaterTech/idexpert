@@ -6,7 +6,8 @@ import Vue from "vue";
     Vue.mixin({
       data () {
         return {
-          moment_format: 'DD/MM/YYYY HH:mm'
+          moment_format: 'DD/MM/YYYY HH:mm',
+          
         }
       },
       methods: {
@@ -17,7 +18,7 @@ import Vue from "vue";
            if (this.$auth.$state.loggedIn) {
               let acclist = [];
               await this.$axios
-                .get(`${process.env.apiUrl}/user-access/account/`) //所有使用者的清單
+                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`) //所有使用者的清單
                 .then(res => {
                   acclist = res.data;
                 });
@@ -31,7 +32,7 @@ import Vue from "vue";
                 let accheader = { account: this.$auth.$state.user.email };
                 let accPagelst = [];
                 await this.$axios
-                  .get(`${process.env.apiUrl}/user-access/authorization-menu/`, {
+                  .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`, {
                     headers: accheader
                   }) 
                   .then(res => {
@@ -62,6 +63,25 @@ import Vue from "vue";
                 //登入失敗
                 this.$router.push({ name: "loginfail" });
               }
+            }
+          },
+          getSite:function(){//return external or internal
+            if(localStorage.getItem('site')==null){
+              localStorage.setItem('site', 'external');
+            }
+            if (localStorage.getItem('site')=='external') {
+              this.$store.commit('mydata/set_api', process.env['external']);
+            }else{
+              this.$store.commit('mydata/set_api', process.env['internal']);
+            }
+            return localStorage.getItem('site');
+          },
+          setSite:function(data){
+            localStorage.setItem('site', data);
+            if (localStorage.getItem('site')=='external') {
+              this.$store.commit('mydata/set_api', process.env['external']);
+            }else{
+              this.$store.commit('mydata/set_api', process.env['internal']);
             }
           }
       },

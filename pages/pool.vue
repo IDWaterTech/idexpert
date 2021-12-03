@@ -1079,7 +1079,7 @@ export default {
       // this.cirid
       await this.$axios
         .get(
-          `${process.env.apiUrl}/pond-event-log/?pond_record_head_id=${this.cirid}`
+          `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/?pond_record_head_id=${this.cirid}`
         )
         .then(res => {
           this.eventData = res.data;
@@ -1102,7 +1102,7 @@ export default {
         .then(() => {
           let id = data.id;
           this.$axios
-            .delete(`${process.env.apiUrl}/aquaculture-record/${id}`)
+            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/${id}`)
             .then(res => {
               console.log("循環刪除 API:" + res.request.responseURL);
               if (res.data == "刪除成功") {
@@ -1155,7 +1155,7 @@ export default {
       let getedItem = {};
       //取得整廠架構資料
       //visible寫死名稱含^=false，寫死池的狀態=無=false
-      await this.$axios.get(`${process.env.apiUrl}/architecture/`).then(res => {
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`).then(res => {
         this.maindata = res.data;
         var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
         this.maindata = data;
@@ -1196,7 +1196,7 @@ export default {
         .map(key => key + "=" + parm[key])
         .join("&");
       await this.$axios
-        .get(`${process.env.apiUrl}/aquaculture-record/?${parm_url}`)
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/?${parm_url}`)
         .then(res => {
           this.circleData = res.data;
           if (this.circleData.length > 0) {
@@ -1210,7 +1210,7 @@ export default {
     getDetectData: async function() {
       this.detectloading = true;
       await this.$axios
-        .get(`${process.env.apiUrl}/timely-data/?pond_id=${this.poolid}`)
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/timely-data/?pond_id=${this.poolid}`)
         .then(res => {
           this.detectData = res.data;
           console.log("24小時資料 api:", res.request.responseURL);
@@ -1223,7 +1223,7 @@ export default {
       //蝦況
       await this.$axios
         .get(
-          `${process.env.apiUrl}/shrimp-status/?pond_id=${this.poolid}&is_last=true`
+          `${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-status/?pond_id=${this.poolid}&is_last=true`
         )
         .then(res => {
           this.shirimpData = res.data;
@@ -1234,7 +1234,7 @@ export default {
       this.warnLoading = true;
       this.warnData = []; //clear
       await this.$axios
-        .get(`${process.env.apiUrl}/pond-abnormal-log/?pond_id=${this.poolid}`)
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-abnormal-log/?pond_id=${this.poolid}`)
         .then(res => {
           this.warnData = res.data;
           this.warnDataDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
@@ -1258,7 +1258,7 @@ export default {
       }
       //
       await this.$axios
-        .get(`${process.env.apiUrl}/ponds-data/`)
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
         .then(res => {
           var items = res.data.filter(x => x.id == this.poolid);
           if (items.length == 1) {
@@ -1283,7 +1283,7 @@ export default {
       }
       if (this.eventCategory.length <= 0) {
         await this.$axios
-          .get(`${process.env.apiUrl}/event-category/`)
+          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
           .then(res => {
             console.log("事件類型 API:" + res.request.responseURL);
             this.eventCategory = res.data;
@@ -1303,7 +1303,7 @@ export default {
       parm.created_user = this.$auth.$state.user.email;
       // console.log(parm);
       await this.$axios
-        .post(`${process.env.apiUrl}/pond-event-log/`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/`, parm)
         .then(res => {
           console.log("新增 log API:" + res.request.responseURL);
           if (res.data == "新增成功") {
@@ -1327,7 +1327,7 @@ export default {
       })
         .then(() => {
           this.$axios
-            .delete(`${process.env.apiUrl}/pond-event-log/${data.id}`)
+            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/${data.id}`)
             .then(res => {
               console.log("刪除 log API:" + res.request.responseURL);
               if (res.data == "刪除成功") {
@@ -1360,7 +1360,7 @@ export default {
       let parm = this.addparm;
       console.log(parm);
       await this.$axios
-        .post(`${process.env.apiUrl}/aquaculture-record/`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/`, parm)
         .then(res => {
           console.log("API:" + res.request.responseURL);
           if (res.data == "新增成功") {
@@ -1410,7 +1410,7 @@ export default {
       console.log(this.warnDataSel.id, parm);
       await this.$axios
         .patch(
-          `${process.env.apiUrl}/pond-abnormal-log/${this.warnDataSel.id}`,
+          `${this.$store.state.mydata.gobal_api.apiUrl}/pond-abnormal-log/${this.warnDataSel.id}`,
           parm
         )
         .then(res => {
@@ -1461,7 +1461,7 @@ export default {
 
       let config = { headers: { "Content-Type": "multipart/form-data" } };
       await this.$axios
-        .post(`${process.env.apiUrl}/shrimp-status/`, formData, config)
+        .post(`${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-status/`, formData, config)
         .then(res => {
           console.log("API:" + res.request.responseURL);
           if (res.data == "新增成功") {

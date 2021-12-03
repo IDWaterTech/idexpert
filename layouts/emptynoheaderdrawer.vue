@@ -12,9 +12,6 @@
 
 <script>
 export default {
-  async beforeCreate() {
-   
-  },
   data() {
     return {
      
@@ -23,8 +20,5 @@ export default {
   async mounted() {
     
   },
-  methods: {
-    
-  }
 };
 </script>

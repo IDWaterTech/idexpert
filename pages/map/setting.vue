@@ -171,7 +171,7 @@ export default {
       };
       let id = this.statLst[this.selectedItem].id;
       await this.$axios
-        .patch(`${process.env.apiUrl}/pond-state/${id}/`, parm, {
+        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/${id}/`, parm, {
           httpsAgent: agent
         })
         .then(res => {
@@ -209,7 +209,7 @@ export default {
       };
       let id = this.statLst[this.selectedItem].id;
       await this.$axios
-        .delete(`${process.env.apiUrl}/pond-state/${id}/`, parm, {
+        .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/${id}/`, parm, {
           httpsAgent: agent
         })
         .then(res => {
@@ -244,7 +244,7 @@ export default {
           created_user: updUser
         };
         await this.$axios
-          .post(`${process.env.apiUrl}/pond-state/`, parm, {
+          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, parm, {
             httpsAgent: agent
           })
           .then(res => {
@@ -269,7 +269,7 @@ export default {
         rejectUnauthorized: false
       });
       await this.$axios
-        .get(`${process.env.apiUrl}/pond-state/`, { httpsAgent: agent })
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
         .then(res => {
           this.statLst = res.data.filter(x => x.name != ""); //不提供保留項;
         })
