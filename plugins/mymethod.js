@@ -67,7 +67,7 @@ import Vue from "vue";
           },
           getSite:function(){//return external or internal
             if(localStorage.getItem('site')==null){
-              localStorage.setItem('site', 'external');
+              localStorage.setItem('site', 'internal');
             }
             if (localStorage.getItem('site')=='external') {
               this.$store.commit('mydata/set_api', process.env['external']);

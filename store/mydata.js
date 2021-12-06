@@ -1,7 +1,7 @@
 export const state = () => ({
     list: [],
-    site:"external",
-    gobal_api:process.env.external
+    site:"internal",
+    gobal_api:process.env.internal
   })
   
   export const mutations = {
