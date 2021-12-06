@@ -174,6 +174,15 @@
               ></v-card-subtitle>
               <v-card-text>
                 <v-row>
+                  <v-col cols="12" md="12">
+                    <v-autocomplete
+                      v-model="defitem"
+                      :items="Object.keys(waterdatacols)"
+                      no-data-text="查無資料"
+                      placeholder="指定項目(必選)"
+                      clearable
+                    ></v-autocomplete>
+                  </v-col>
                   <v-col cols="12" md="6">
                     <v-menu
                       v-model="menu_adate"
