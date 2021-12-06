@@ -102,36 +102,40 @@
 
 <script>
 export default {
-  async beforeCreate() {
-    //登入時判別身份分別導頁
-    if (this.$auth.$state.loggedIn) {
-      let acclist = [];
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`)//所有使用者的清單
-        .then(res => {
-          acclist = res.data;
-        });
-      var acc = acclist.filter(
-        x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase()
-      );
-      //登入成功
-      if (acc.length == 1) {
-        //增加身份判別---
-        const updatedUser = { ...this.$auth.user };
-        updatedUser.role = "user"; //允許登入的
-        updatedUser.authcheck = true; //授權可登入
-        // this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-        //--------------
-      } else {
-        //登入失敗
-        const updatedUser = { ...this.$auth.user };
-        updatedUser.role = "guest";
-        updatedUser.authcheck = false;
-        // this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-        this.$router.push({ name: "loginfail" });
-      }
-    }
-  },
+  // async beforeCreate() {
+  //   //登入時判別身份分別導頁
+  //   if (this.$auth.$state.loggedIn) {
+  //     let acclist = [];
+  //     console.log("now api:"+this.$store.state.mydata.gobal_api.apiUrl);
+  //     var sitevalue = this.getSite();
+  //     debugger;
+  //     console.log("now api:"+this.$store.state.mydata.gobal_api.apiUrl);
+  //     await this.$axios
+  //       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`)//所有使用者的清單
+  //       .then(res => {
+  //         acclist = res.data;
+  //       });
+  //     var acc = acclist.filter(
+  //       x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase()
+  //     );
+  //     //登入成功
+  //     if (acc.length == 1) {
+  //       //增加身份判別---
+  //       const updatedUser = { ...this.$auth.user };
+  //       updatedUser.role = "user"; //允許登入的
+  //       updatedUser.authcheck = true; //授權可登入
+  //       // this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+  //       //--------------
+  //     } else {
+  //       //登入失敗
+  //       const updatedUser = { ...this.$auth.user };
+  //       updatedUser.role = "guest";
+  //       updatedUser.authcheck = false;
+  //       // this.$auth.setUser(updatedUser); //會造成Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+  //       this.$router.push({ name: "loginfail" });
+  //     }
+  //   }
+  // },
   data() {
     return {
       drawer: false, //一開始有無顯示drawer
@@ -168,13 +172,14 @@ export default {
     if (this.$auth.$state.loggedIn) {
       let accheader ={account:this.$auth.$state.user.email}
       await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`,{headers:accheader})//帳號被授權進入的項目
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`,{headers:accheader,timeout: 3000})//帳號被授權進入的項目
         .then(res => {
           acclist = res.data;
         })
         .catch(err => {
+          acclist=[];
               // this.$toast.error("讀取api失敗：" + err.message, { duration: 2000 });
-              alert(`讀取api失敗：${err.message}`);
+              alert(`讀取api失敗：[${err.config.url}]_${err.message}`);
             });
     }
     this.listitems = acclist;
