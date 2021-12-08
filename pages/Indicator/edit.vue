@@ -164,23 +164,25 @@
                 }}-<span class="font-weight-black" style="color:red;">{{
                   defitem
                 }}</span
-                ><v-switch
-                  v-model="keepswitch"
-                  color="red darken-3"
-                  :label="
-                    keepswitch ? '保留數值不關閉：on' : '保留數值不關閉：off'
-                  "
-                ></v-switch
-              ></v-card-subtitle>
+                ></v-card-subtitle>
               <v-card-text>
                 <v-row>
-                  <v-col cols="12" md="12">
+                  <v-col cols="12" md="6">
+                    <v-switch
+                      v-model="keepswitch"
+                      color="red darken-3" dense
+                      :label="
+                        keepswitch ? '保留數值不關閉：on' : '保留數值不關閉：off'
+                      "
+                    ></v-switch>
+                  </v-col>
+                  <v-col cols="12" md="6">
                     <v-autocomplete
                       v-model="defitem"
                       :items="Object.keys(waterdatacols)"
                       no-data-text="查無資料"
                       placeholder="指定項目(必選)"
-                      clearable
+                      dense
                     ></v-autocomplete>
                   </v-col>
                   <v-col cols="12" md="6">
@@ -197,7 +199,7 @@
                           v-model="adate"
                           label="選擇日期"
                           prepend-icon="mdi-calendar"
-                          readonly
+                          readonly dense
                           v-bind="attrs"
                           v-on="on"
                           :rules="rules.require"
@@ -214,7 +216,7 @@
                     <v-text-field
                       label="時間"
                       v-model="atime"
-                      value=""
+                      value="" dense
                       type="time"
                       prepend-icon="mdi-timeline-clock-outline"
                       @click:prepend="() => (atime = getNowTime())"
@@ -224,6 +226,20 @@
                 </v-row>
               </v-card-text>
               <v-divider></v-divider>
+              <!-- <v-card-text>
+                <v-row>
+                  <v-col cols="12">
+                    {{toggle_calc}}
+                    <v-btn-toggle v-model="toggle_calc">
+                    <v-btn icon><v-icon>mdi-plus</v-icon></v-btn>
+                    <v-btn icon><v-icon>mdi-minus</v-icon></v-btn>
+                    <v-btn icon><v-icon>mdi-multiplication</v-icon></v-btn>
+                    <v-btn icon><v-icon>mdi-division</v-icon></v-btn>
+                    </v-btn-toggle>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-divider></v-divider> -->
               <v-card-text>
                 <v-row>
                   <v-col
@@ -507,6 +523,7 @@ export default {
       num: {},
       num_min: 0,
       num_max: 99999,
+      toggle_calc:null,
       //form
       valid: true,
       rules: { require: [v => !!v || "*必要項目"] },
