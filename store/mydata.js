@@ -1,7 +1,8 @@
 export const state = () => ({
     list: [],
     site:"internal",
-    gobal_api:process.env.internal
+    gobal_api:process.env.internal,
+    listitems:[],//被授權進入的項目
   })
   
   export const mutations = {
@@ -22,5 +23,8 @@ export const state = () => ({
     },
     set_api(state,text){
         state.gobal_api = text;
-    }
+    },
+    set_listitems(state,text){
+      state.listitems = text;
+  },
   }

@@ -9,16 +9,54 @@
     </v-tabs>
     <v-tabs-items v-model="tabs" class="mainbg">
       <v-tab-item :value="'tab-2'" class="text-center mt-5">
-        <br />
-        <v-btn
-          dark
-          large tile
-          style="border:0px;"
-          @click="loginGoogle"
-          :style="{ background: '#4284f4' }"
-          color="primary"
-          >以Google登入</v-btn
-        >
+        <v-row>
+          <v-spacer></v-spacer>
+          <v-col cols="12" sm="5">
+            <v-row>
+                <!-- 本地登入 -->
+                <v-col cols="12">
+                   <v-form ref="formjwt" v-model="validjwt" lazy-validation>
+                      <div>
+                          <v-text-field dark
+                          v-model="loginjwt.username"
+                          :rules="rules.require"
+                          label="使用者名稱"
+                          required filled dense clearable
+                        ></v-text-field>
+                      </div>
+                      <div>
+                        <v-text-field dark
+                          v-model="loginjwt.password"
+                          :rules="rules.require"
+                          label="密碼"
+                          required filled dense clearable
+                        ></v-text-field>
+                      </div>
+                      <div>
+                        
+                        <v-btn color="primary" block dark
+                        large tile @click="loginJWT"
+                        style="border:0px;"><v-icon size="24">mdi-water-outline</v-icon>{{`　本地登入(開發測試中)`}}</v-btn>
+                      </div>
+                    </v-form>
+                </v-col>
+                <!-- Google登入 -->
+                <v-col cols="12">
+                  <v-btn
+                    dark
+                    large tile
+                    style="border:0px;"
+                    @click="loginGoogle"
+                    :style="{ background: '#4284f4' }"
+                    color="error" block
+                    ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
+                  >
+                </v-col>
+            </v-row>
+           
+          </v-col>
+         <v-spacer></v-spacer>
+        </v-row>
       </v-tab-item>
     </v-tabs-items>
     <!-- <v-tabs v-model="tabs" centered grow icons-and-text>
@@ -53,7 +91,13 @@ export default {
   layout: "emptynologin",
   data() {
     return {
-      tabs: "tab-2"
+      tabs: "tab-2",
+      rules: { require: [v => !!v || "*必要項目"] },
+      loginjwt:{
+        username:'jeff.wang@idwater.com.tw',
+        password:'idw12345'
+      },
+      validjwt:true,
     };
   },
   components: {
@@ -106,6 +150,46 @@ export default {
       try {
         await this.$auth.loginWith("google", {
           params: { prompt: "select_account" }
+        });
+        // .then(res =>
+        //   this.$toast.success("Logged In!" + res.data, { duration: 3000 })
+        // )
+        // .catch(errors => {
+        //   debugger;
+        //   //errors.response.data;//可抓到錯誤
+        //   this.$toast.error("登入發生錯誤!:" + errors.message, {
+        //     duration: 3000
+        //   });
+        //   console.log("error:" + errors.response.data);
+        //   console.log("google", a);
+        // });
+      } catch (err) {
+        console.log(err);
+        this.$toast.error("登入發生錯誤!:" + err, {
+          duration: 5000
+        });
+      }
+    },
+    async loginJWT() {
+      if (this.$refs.formjwt.validate()==false) {
+        
+        return;
+      }
+      console.log(this.loginjwt);
+      var parm = {
+        username:this.loginjwt.username,
+        password:this.loginjwt.password
+      }
+      try {
+        await this.$auth.loginWith("localjwt", {data: this.loginjwt})
+        .then(() => {
+          this._pageCheck();//驗證頁面是否可檢視，並取得全域可檢視清單
+          this.$toast.success('Logged In!',{duration:3000});
+          })
+        .catch(err=>{
+          this.$toast.error(`登入發生錯誤!:${err.message}-[${err.response.data.detail}]`, {
+            duration: 3000
+          });
         });
         // .then(res =>
         //   this.$toast.success("Logged In!" + res.data, { duration: 3000 })

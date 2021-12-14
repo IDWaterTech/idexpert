@@ -125,7 +125,7 @@ import "element-ui/lib/theme-chalk/index.css";
 import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
-  middleware: "auth",
+  middleware: 'auth',
   data() {
     return {
       profile: {
@@ -140,6 +140,9 @@ export default {
       interactionLink: ``,
       req: this.$route.query
     };
+  },
+  async created() {
+    await this._pageCheck();//驗證頁面是否可檢視
   },
   methods: {
     statchange: async function(data) {
@@ -303,7 +306,7 @@ export default {
         });
         location.href = location.href.replace(location.search, "");
     }
-  }
+  },
 };
 </script>
 

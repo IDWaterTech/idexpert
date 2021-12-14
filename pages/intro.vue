@@ -16,7 +16,7 @@
     </v-col>
     <v-col>
       <v-btn @click="btnck">click</v-btn>
-       <!-- <v-btn @click="()=>{this.$store.commit('mydata/set_site', 'internal')}">click</v-btn> -->
+       <!-- <v-btn @click="()=>{this.$store.commit('mydata/set_listitems', 'internal')}">click</v-btn> -->
        <v-btn @click="setItem('internal')">click in</v-btn>
        <v-btn @click="setItem('external')">click ex</v-btn>
     </v-col>

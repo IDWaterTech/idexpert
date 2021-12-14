@@ -17,6 +17,7 @@ import Vue from "vue";
           _pageCheck:async function(){
            if (this.$auth.$state.loggedIn) {
               let acclist = [];
+              
               await this.$axios
                 .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`) //所有使用者的清單
                 .then(res => {
@@ -25,6 +26,7 @@ import Vue from "vue";
               var acc = acclist.filter(
                 x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
               );
+              console.log("ACC DATA:",acc);
               //登入成功
               if (acc.length == 1) {
                 //增加身份判別---
@@ -37,6 +39,8 @@ import Vue from "vue";
                   }) 
                   .then(res => {
                     accPagelst = res.data;
+                    console.log("accPagelst:",accPagelst);
+                    this.$store.commit('mydata/set_listitems', accPagelst);
                   });
                   let urlpath = $nuxt.$route.path;
                   function getallpath(item){
@@ -53,7 +57,8 @@ import Vue from "vue";
                     return tmplst;
                   }
                   let accPagelstNew= getallpath(accPagelst).map((x)=>{return x.toLowerCase();});
-                  var isallowPath =accPagelstNew.filter(x=>x == urlpath.toLowerCase()).length == 1;
+                  //排除根目錄、個人頁、登入頁
+                  var isallowPath =(accPagelstNew.filter(x=>x == urlpath.toLowerCase()).length == 1) || ["/","/set/profile","/login"].includes(urlpath);
                   console.log(`是否允許進入頁面:${isallowPath}[${urlpath}]`);
                   if (isallowPath == false) {
                     this.$router.push({ name: "pagefail" });
@@ -83,6 +88,7 @@ import Vue from "vue";
             }else{
               this.$store.commit('mydata/set_api', process.env['internal']);
             }
+            console.log("設定網路：",)
           }
       },
       

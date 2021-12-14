@@ -11,8 +11,8 @@
         :clipped="clipped"
         :mini-variant-width="this.$auth.$state.loggedIn ? '60' : '0'"
       >
-        <v-list><a href="set/profile" style="text-decoration: none;">
-          <v-list-item>
+        <v-list v-if="this.$auth.$state.loggedIn">
+          <v-list-item to="/set/profile">
             
             <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
               <v-img contain :src="this.$auth.$state.user.picture" ></v-img>
@@ -30,7 +30,7 @@
             </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
-</a>
+
           <!-- <v-list-item
             v-for="(item, i) in listitems"
             :key="i"
@@ -48,7 +48,7 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item> -->
         </v-list>
-        <sidelist :myitem="listitems" titleName="name" urlName="url" active="is_drop_down"></sidelist>
+        <sidelist :myitem="listitems" titleName="name" urlName="url" active="is_drop_down" v-if="listitems.length > 0"></sidelist>
         <!--  -->
       </v-navigation-drawer>
       <v-container fluid>
@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 export default {
   // async beforeCreate() {
   //   //登入時判別身份分別導頁
@@ -141,18 +142,6 @@ export default {
       drawer: false, //一開始有無顯示drawer
       miniVariant: true, //凝结导航抽屉宽度，也接受**.sync**修饰符。这样，抽屉在点击时会重新打开(小寬度的模式)
       clipped: false,
-      listitems: [
-        // {
-        //   icon: "mdi-apps",
-        //   title: "首頁",
-        //   to: "/"
-        // },
-        // {
-        //   icon: "mdi-chart-bell-curve",
-        //   title: "監測數據",
-        //   to: "/basic"
-        // },
-      ],
       superaccount: [
                   'jianwei.wen@idwater.com.tw',
                   'jeff.wang@idwater.com.tw',//前驊
@@ -166,36 +155,47 @@ export default {
     };
   },
   async mounted() {
-    let acclist = [];
-    var sitevalue = this.getSite();//return external or internal
-    this.site = (sitevalue == 'external');//判斷內外網路
-    if (this.$auth.$state.loggedIn) {
-      let accheader ={account:this.$auth.$state.user.email}
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`,{headers:accheader,timeout: 3000})//帳號被授權進入的項目
-        .then(res => {
-          acclist = res.data;
-        })
-        .catch(err => {
-          acclist=[];
-              // this.$toast.error("讀取api失敗：" + err.message, { duration: 2000 });
-              alert(`讀取api失敗：[${err.config.url}]_${err.message}`);
-            });
-    }
-    this.listitems = acclist;
-    console.log("被授權進入的項目",this.listitems);
+        var sitevalue = this.getSite();//return external or internal
+        this.site = (sitevalue == 'external');//判斷內外網路
   },
+  computed: {
+    listitems:function(){
+      var data = this.$store.state.mydata.listitems;
+      return _.cloneDeep(data);
+    }
+  },
+  // async mounted() {
+  //   let acclist = [];
+  //   var sitevalue = this.getSite();//return external or internal
+  //   this.site = (sitevalue == 'external');//判斷內外網路
+  //   if (this.$auth.$state.loggedIn) {
+  //     let accheader ={account:this.$auth.$state.user.email}
+  //     await this.$axios
+  //       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`,{headers:accheader,timeout: 3000})//帳號被授權進入的項目
+  //       .then(res => {
+  //         acclist = res.data;
+  //       })
+  //       .catch(err => {
+  //         acclist=[];
+  //             // this.$toast.error("讀取api失敗：" + err.message, { duration: 2000 });
+  //             alert(`讀取api失敗：[${err.config.url}]_${err.message}`);
+  //           });
+  //   }
+  //   this.listitems = acclist;
+  //   console.log("被授權進入的項目",this.listitems);
+  // },
   methods: {
     logout: function() {
       this.drawer = false;
       $nuxt.$auth.logout();
     },
     changeSite(){
-      if (this.site) {
+      if (this.site) {//true 外網
         this.setSite("external");
       }else{
         this.setSite("internal");
       }
+      window.location.reload();
     }
   }
 };

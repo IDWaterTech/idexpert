@@ -17,7 +17,7 @@
     </v-col>
     <v-col cols="12">
       <div v-show="!this.$auth.$state.loggedIn">
-            <v-btn
+            <!-- <v-btn
           dark
           large tile
           style="border:0px;"
@@ -25,7 +25,16 @@
           :style="{ background: '#4284f4' }"
           color="primary"
           >歡迎使用本系統Login</v-btn
-        >
+        > -->
+        <v-btn
+                    dark
+                    large tile
+                    style="border:0px;"
+                    @click="loginGoogle"
+                    :style="{ background: '#4284f4' }"
+                    color="error" 
+                    ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
+                  >
           </div>
     </v-col>
     <!-- <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col> -->
@@ -108,6 +117,9 @@ export default {
         });
       }
     }
+  },
+  async created() {
+    await this._pageCheck();//驗證頁面是否可檢視
   },
 };
 </script>
