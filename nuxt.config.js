@@ -34,19 +34,19 @@ export default {
   //process.env.apiUrl
   //context.env.apiUrl
   env: {
-    apiUrl: "https://192.168.50.77/api",//統一不要有後斜線
-    apiIIS82:"https://192.168.50.77:82",
-    apiVideo8443:"https://192.168.50.77:8443",
-    internal:{
-      apiUrl: "https://localhost.idwatertech.com/api",//統一不要有後斜線
-      apiIIS82:"https://localhost.idwatertech.com:82",
-      apiVideo8443:"https://localhost.idwatertech.com:8443",
+    apiUrl: "https://192.168.50.77/api", //統一不要有後斜線
+    apiIIS82: "https://192.168.50.77:82",
+    apiVideo8443: "https://192.168.50.77:8443",
+    internal: {
+      apiUrl: "https://localhost.idwatertech.com/api", //統一不要有後斜線
+      apiIIS82: "https://localhost.idwatertech.com:82",
+      apiVideo8443: "https://localhost.idwatertech.com:8443"
     },
-    external:{
-      apiUrl: "https://61.56.172.10/api",//統一不要有後斜線
-      apiIIS82:"https://61.56.172.10:82",
-      apiVideo8443:"https://61.56.172.10:8443",
-    },
+    external: {
+      apiUrl: "https://61.56.172.10/api", //統一不要有後斜線
+      apiIIS82: "https://61.56.172.10:82",
+      apiVideo8443: "https://61.56.172.10:8443"
+    }
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -59,7 +59,7 @@ export default {
     "~/plugins/json2excel",
     { src: "~/plugins/vue-tree-select.js", ssr: false },
     { src: "~/plugins/mymethod.js", ssr: false },
-    { src: "~/plugins/speedometer.js", ssr: false }
+    { src: "~/plugins/speedometer.js", ssr: false },
     // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },
@@ -96,12 +96,39 @@ export default {
       home: "/basic" //登入後，會導到此路徑
     },
     strategies: {
-      local: {
+      // local: {
+      //   token: {
+      //     property: "access_token",
+      //     maxAge: 60 * 60 * 24 * 3 //60秒*60*24小時*3天 令牌的到期時間
+      //     // required: true,
+      //     // type: 'Bearer'
+      //   },
+      //   user: {
+      //     //property: 'UserId',//依據回傳的json去取得資料，回傳的欄位寫UserId就可取得UserId裡面所有的物件 $auth.user.*
+      //     property: "user",
+      //     autoFetch: true
+      //   },
+      //   endpoints: {
+      //     //login: { url: '/api/auth/login', method: 'post' },
+      //     //login: { url: '/sessions', method: 'post',propertyName:'token' },
+      //     login: { url: "/mapi/token", method: "post" },
+      //     logout: { url: "/mapi/api/logout", method: "post" },
+      //     user: { url: "/mapi/api/user", method: "get" }
+      //   }
+      // },
+      localjwt: {
+        scheme:'refresh',
         token: {
-          property: "access_token",
-          maxAge: 60 * 60 * 24 * 3 //60秒*60*24小時*3天 令牌的到期時間
+          property: "access", //access_token
+          maxAge: 60 * 60 * 24 * 3, //60秒*60*24小時*3天 令牌的到期時間
           // required: true,
-          // type: 'Bearer'
+          type: 'Bearer'
+        },
+        tokenType: 'JWT',
+        refreshToken: {
+          property: "refresh",//refresh_token
+          maxAge: 60 * 60 * 24 * 30,
+          type: 'Bearer'
         },
         user: {
           //property: 'UserId',//依據回傳的json去取得資料，回傳的欄位寫UserId就可取得UserId裡面所有的物件 $auth.user.*
@@ -109,11 +136,13 @@ export default {
           autoFetch: true
         },
         endpoints: {
-          //login: { url: '/api/auth/login', method: 'post' },
-          //login: { url: '/sessions', method: 'post',propertyName:'token' },
-          login: { url: "/mapi/token", method: "post" },
-          logout: { url: "/mapi/api/logout", method: "post" },
-          user: { url: "/mapi/api/user", method: "get" }
+          login: {
+            url: "https://localhost.idwatertech.com/api/token/",
+            method: "post"
+          },
+          refresh: { url: 'https://localhost.idwatertech.com/api/token/refresh/', method: 'post'},
+          user: { url: "https://localhost.idwatertech.com/api/user-data/", method: "get", headers: {Referer: "https://localhost.idwatertech.com/"} },
+          logout: false
         }
       },
       // google:{
@@ -146,7 +175,7 @@ export default {
         token: {
           property: "access_token",
           type: "Bearer",
-          maxAge: 60 * 60 * 24 * 3 //60秒*60*24小時*3天 令牌的到期時間
+          maxAge: 60 * 60 * 24 * 3 //60秒*60*24小時*3天 (1 month) 令牌的到期時間
         },
         refreshToken: {
           property: "refresh_token",

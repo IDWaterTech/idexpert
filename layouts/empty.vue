@@ -80,7 +80,7 @@ export default {
   beforeCreate() {
     //登入時判別身份分別導頁
     if (this.$auth.loggedIn) {
-      if (this.$auth.state.user.email == "techadmin@idwater.com.tw") {
+      if (this.$auth.$state.user.email == "techadmin@idwater.com.tw") {
         const updatedUser = { ...this.$auth.user };//增加身份判別
         updatedUser.role = "admin";
         this.$auth.setUser(updatedUser);
