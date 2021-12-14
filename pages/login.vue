@@ -21,7 +21,7 @@
                           v-model="loginjwt.username"
                           :rules="rules.require"
                           label="使用者名稱"
-                          required filled dense clearable
+                          required filled dense clearable disabled
                         ></v-text-field>
                       </div>
                       <div>
@@ -29,13 +29,13 @@
                           v-model="loginjwt.password"
                           :rules="rules.require"
                           label="密碼"
-                          required filled dense clearable
+                          required filled dense clearable disabled
                         ></v-text-field>
                       </div>
                       <div>
                         
                         <v-btn color="primary" block dark
-                        large tile @click="loginJWT"
+                        large tile @click="loginJWT" disabled
                         style="border:0px;"><v-icon size="24">mdi-water-outline</v-icon>{{`　本地登入(開發測試中)`}}</v-btn>
                       </div>
                     </v-form>
@@ -94,8 +94,8 @@ export default {
       tabs: "tab-2",
       rules: { require: [v => !!v || "*必要項目"] },
       loginjwt:{
-        username:'jeff.wang@idwater.com.tw',
-        password:'idw12345'
+        username:'',//jeff.wang@idwater.com.tw
+        password:'',//idw12345
       },
       validjwt:true,
     };
