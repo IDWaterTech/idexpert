@@ -58,6 +58,9 @@
 
 <script>
 import "element-ui/lib/theme-chalk/index.css";
+const agent = new https.Agent({
+          rejectUnauthorized: false
+        });
 export default {
   data() {
     return {
@@ -117,7 +120,9 @@ export default {
            latitude: this.loc.latitude,
       };
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm,{
+            httpsAgent: agent
+          })
         .then(res => {
           let weadata = JSON.parse(res.data.d);
           this.weatherdata.main = weadata.main;
@@ -134,7 +139,9 @@ export default {
            latitude: this.loc.latitude,
       };
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/location`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/location`, parm ,{
+            httpsAgent: agent
+          })
         .then(res => {
           let loc = JSON.parse(res.data.d);
           // var max = Math.max.apply(Math, loc.map(function(o) { return o.cnt; }));

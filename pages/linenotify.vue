@@ -20,6 +20,9 @@
 </template>
 
 <script>
+const agent = new https.Agent({
+          rejectUnauthorized: false
+        });
 export default {
   layout: "emptynologin",
   data() {
@@ -35,7 +38,9 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm,{
+            httpsAgent: agent
+          })
         .then(res => {
           this.msg = "";
           this.$toast.success(`成功:${res.data.d}`, { duration: 2000 });
