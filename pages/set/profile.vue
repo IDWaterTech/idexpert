@@ -123,6 +123,9 @@
 <script>
 import "element-ui/lib/theme-chalk/index.css";
 import dayjs from "dayjs";
+const agent = new https.Agent({
+          rejectUnauthorized: false
+        });
 export default {
   layout: "emptynologin",
   middleware: 'auth',
@@ -221,7 +224,9 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm,{
+            httpsAgent: agent
+          })
         .then(res => {
           this.$toast.success(`成功:${res.data.d}`, { duration: 2000 });
         })
@@ -238,7 +243,9 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/revoke`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/revoke`, parm,{
+            httpsAgent: agent
+          })
         .then(res => {
           let revokedata = JSON.parse(res.data.d);
           if (revokedata.message == "ok") {
@@ -281,7 +288,9 @@ export default {
 
       let parm = { code: this.$route.query.code,re_uri :location.href.replace(location.search, "") };
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/getToken`, parm)
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/getToken`, parm,{
+            httpsAgent: agent
+          })
         .then(res => {
           let linetoken = JSON.parse(res.data.d);
           if (

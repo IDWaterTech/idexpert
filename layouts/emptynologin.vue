@@ -67,6 +67,7 @@
             >
           </v-btn>
           <nuxt-link to="/" style="color:white;text-decoration:none;"><v-icon>mdi-home-outline</v-icon>艾滴科技</nuxt-link>
+          <nuxt-link class="mx-3" to="/videorecog" style="color:white;text-decoration:none;"><v-icon>mdi-video</v-icon>觀察網影像辨識(測試)</nuxt-link>
           <weather></weather>
           <v-spacer></v-spacer>
           <!-- <v-btn
