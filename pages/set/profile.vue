@@ -123,6 +123,7 @@
 <script>
 import "element-ui/lib/theme-chalk/index.css";
 import dayjs from "dayjs";
+import https from "https";
 const agent = new https.Agent({
           rejectUnauthorized: false
         });
