@@ -19,6 +19,10 @@
        <!-- <v-btn @click="()=>{this.$store.commit('mydata/set_listitems', 'internal')}">click</v-btn> -->
        <v-btn @click="setItem('internal')">click in</v-btn>
        <v-btn @click="setItem('external')">click ex</v-btn>
+       <v-btn @click="getPrice">get Price</v-btn>
+    </v-col>
+    <v-col>
+      {{priceData}}
     </v-col>
   </v-row>
 </template>
@@ -29,6 +33,11 @@ export default {
   middleware: 'auth',
   created() {
   },
+  data() {
+    return {
+      priceData:[]
+    }
+  },
   methods: {
     btnck:function(){
 
@@ -37,6 +46,13 @@ export default {
     },
     setItem(data){
         this.setSite(data);
+    },
+    getPrice:async function(){
+      //${this.$store.state.mydata.gobal_api.apiUrl}
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/getAquaticTransData`)
+      .then(res => {
+      this.priceData = res.data;
+    });
     }
   },
 };
