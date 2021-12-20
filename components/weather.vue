@@ -1,5 +1,4 @@
 <template>
-<v-row>
     <el-popover placement="top-start" width="300" trigger="hover" popper-class="popoverColor">
       
           <v-row style="color:#FFF;" justify="center" align="center" >
@@ -53,7 +52,6 @@
       <v-btn slot="reference" text dark><v-img max-width="30" :src="`http://openweathermap.org/img/w/${weatherdata.weather[0].icon}.png`"></v-img>{{weatherdata.main.temp}}°C</v-btn>
       <!-- <v-icon slot="reference" dark>mdi-weather-partly-cloudy</v-icon> -->
     </el-popover>
-    </v-row>
 </template>
 
 <script>
