@@ -1,4 +1,6 @@
 import Vue from "vue";
+import https from "https";
+
 // Make sure to pick a unique name for the flag
 // so it won't conflict with any other mixin.
   if (!Vue.__my_mixin__) {
@@ -17,11 +19,16 @@ import Vue from "vue";
           _pageCheck:async function(){
            if (this.$auth.$state.loggedIn) {
               let acclist = [];
-              
+              const agent = new https.Agent({
+                rejectUnauthorized: false
+              });
               await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`) //所有使用者的清單
+                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent }) //所有使用者的清單
                 .then(res => {
                   acclist = res.data;
+                })
+                .catch(error => {
+                  this.$toast.error("錯誤" + error, { duration: 2000 });
                 });
               var acc = acclist.filter(
                 x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
