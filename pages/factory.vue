@@ -680,7 +680,7 @@ export default {
         var pool = this.pooldata.filter(x => x.id == this.sel_pool)[0];
         this.edititem_pool.parm = _.cloneDeep(pool);
         var mystatename = this.edititem_pool.parm.state;
-        this.edititem_pool.parm.pond_state_id = this.poolstat.filter(x=>x.name==mystatename)[0].id;
+        this.edititem_pool.parm.pond_state_id = (mystatename=="")?3:this.poolstat.filter(x=>x.name==mystatename)[0].id;
         // this.edititem_pool.parm.pond_state_id = 3;
         //不需要的項目state狀態、estimated_num初始投放隻數、num_per_unit放養密度
         delete this.edititem_pool.parm.state;
