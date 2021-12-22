@@ -12,7 +12,8 @@
         <v-col>
           魚貨名稱:白蝦<br />
           全台灣平均價：{{ average }}元/公斤<br />
-          單位：公斤
+          單位：公斤<br/>
+          資料來源：漁產品交易行情(<a target="_blank" style="color:#40C4FF;" href="https://data.coa.gov.tw/open_detail.aspx?id=039">行政院農業委員會資料開放平台</a>)
           <el-table
             :data="priceData"
             style="width: 100%"
@@ -42,7 +43,7 @@
       </v-row>
 
       <v-btn slot="reference" text dark
-        ><v-icon>mdi-currency-twd</v-icon>{{ average }}(元/公斤)</v-btn
+        ><v-icon>mdi-gold</v-icon>{{ average }}(元/公斤)</v-btn
       >
     </el-popover>
 </template>
