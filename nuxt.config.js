@@ -38,7 +38,8 @@ export default {
     apiIIS82: "https://192.168.50.77:82",
     apiVideo8443: "https://192.168.50.77:8443",
     internal: {
-      apiUrl: "https://www.idwatertech.com/api", //統一不要有後斜線
+      apiUrl: "https://www.idwatertech.com/api", //正式站，統一不要有後斜線
+      // apiUrl: "https://www.idwatertech.com:8011/api", //測試站
       apiIIS82: "https://www.idwatertech.com:82",
       apiVideo8443: "https://www.idwatertech.com:8443"
     },
