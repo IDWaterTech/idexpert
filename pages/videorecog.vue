@@ -1,113 +1,185 @@
 <template>
   <div>
-    <v-row dense>
+    <v-row dense align="center">
       <v-col cols="12"><h1 class="white--text">觀察網影像辨識</h1></v-col>
-      <v-col cols="12">
-        <v-btn color="primary" @click="getRecog">getData</v-btn>
+      <v-col cols="12" class="cardtitle">
+        <v-row>
+          <!-- 養殖池 -->
+      <v-col cols="12" sm="3" class="text-center my-5">
+        <!-- <div class="circle">
+          <span class="circletitle">{{ poolName }}</span>
+        </div> -->
+        <!-- <span class="circletitle headline my-5 text-center">{{
+          poolName
+        }}</span> -->
+        <!-- {{getNodeName(maindata,poolid)}} -->
+        <treeselect
+          v-model="poolid"
+          :options="maindata"
+          :default-expand-level="1"
+          placeholder="養殖池"
+          :disable-branch-nodes="true"
+          children="node"
+          :normalizer="
+            node => {
+              return { children: node.node };
+            }
+          "
+          style="font-size:1.2em;"
+        >
+          <div slot="value-label" slot-scope="{ node }">
+            {{ `${node.raw.parent}_${node.raw.name}` }}
+          </div>
+          <div slot="option-label" slot-scope="{ node }">
+            {{ `${node.raw.name}` }}
+          </div>
+        </treeselect>
       </v-col>
-      <v-col cols="12">
+      <!-- 選擇起日 -->
+      <v-col cols="12" md="2">
+        <v-menu
+          v-model="menu_startdate"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="sdate"
+              label="選擇起日"
+              prepend-icon="mdi-calendar"
+              readonly
+              dark
+              v-bind="attrs"
+              v-on="on"
+              clearable
+              @click:prepend="() => (sdate = getNowDate())"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="sdate"
+            @input="menu_startdate = false"
+          ></v-date-picker>
+        </v-menu>
       </v-col>
+      <!-- 選擇訖日 -->
+      <v-col cols="12" md="2">
+        <v-menu
+          v-model="menu_enddate"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="edate"
+              label="選擇訖日"
+              prepend-icon="mdi-calendar"
+              readonly
+              dark
+              v-bind="attrs"
+              v-on="on"
+              clearable
+              @click:prepend="() => (edate = getNowDate())"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="edate"
+            @input="menu_enddate = false"
+          ></v-date-picker>
+        </v-menu>
+      </v-col>
+      <!-- 查詢 -->
+      <v-col cols="12" md="2" align-self="center">
+        <v-btn color="primary" dark @click="getRecog" :disabled="!(sdate && edate)" tile large
+          >查詢</v-btn
+        >
+      </v-col>
+        </v-row>
+      </v-col>
+      
       <v-col cols="12">
         <el-table
           ref="recogtable"
           style="width:100%"
-          :data="recogData"
+          :data="recogData.items"
           highlight-current-row
           :header-cell-style="tableHeaderStyle"
-          height="300"
+          height="500"
           class="primary"
           :header-cell-name="cellClass"
         >
+        <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
           <!-- @current-change="handleCurrentChange"
           @select="handleSelectionChange" -->
-          <el-table-column
-            label="水池"
-            align="center"
-          >
-          <div slot-scope="scope">
-              ({{scope.row.id}})-{{scope.row.name}}
-          </div>
+          <el-table-column label="資料" align="center">
+            <div slot-scope="scope">
+              {{scope.row.id}}<br/>
+              {{scope.row.inspected_date}}
+            </div>
           </el-table-column>
           <el-table-column
-            label="資料id"
-            prop="items.id"
-            align="center"
-          ></el-table-column>
-          <el-table-column
-            label="原圖"
-            prop="items.original_img"
+            label="投餌前飼料圖(已辨識)"
+            prop="feed_img_before_bait"
             align="center"
           >
             <div slot-scope="scope">
-              <el-image :src="scope.row.items.original_img">
+              <img v-img="{group:scope.row.id}" :src="scope.row.feed_img_before_bait" width="100%" />
+               <!-- <el-image :src="scope.row.feed_img_before_bait"  width="100%">
                 <div slot="error" class="image-slot">
                   <img :src="images.feedfish" width="64" />
                 </div>
-              </el-image>
+              </el-image> -->
             </div>
           </el-table-column>
           <el-table-column
-            label="飼料辨識後的圖"
-            prop="items.feed_result_img"
+            label="投餌後飼料圖(已辨識)"
+            prop="feed_img_after_bait"
             align="center"
           >
             <div slot-scope="scope">
-              <el-image :src="scope.row.items.feed_result_img">
-                <div slot="error" class="image-slot">
-                  <img :src="images.feedfish" width="64" />
-                </div>
-              </el-image>
+              <img v-img="{group:scope.row.id}" :src="scope.row.feed_img_after_bait"  width="100%" />
+             
             </div>
           </el-table-column>
           <el-table-column
-            label="蝦子辨識後的圖"
-            prop="items.shrimp_result_img"
+            label="投餌後蝦子圖(已辨識)"
+            prop="shrimp_img_after_bait"
             align="center"
           >
             <div slot-scope="scope">
-              <el-image :src="scope.row.items.shrimp_result_img">
-                <div slot="error" class="image-slot">
-                  <img :src="images.shrimp" width="64" />
-                </div>
-              </el-image>
+              <img v-img="{group:scope.row.id}" :src="scope.row.shrimp_img_after_bait" width="100%" />
             </div>
           </el-table-column>
           <el-table-column
-            label="網子大小(pixel)"
-            prop="items.net_size"
+            label="網子面積(cm²)"
+            prop="net_size"
             align="center"
           ></el-table-column>
-          <el-table-column
-            label="飼料大小(pixel)"
-            prop="items.feed_size"
-            align="center"
-          ></el-table-column>
-          <el-table-column
-            label="蝦子大小"
-            prop="items.shrimp_size"
-            align="center"
-          >
-          <div slot-scope="scope">
-              {{scope.row.items.shrimp_size}}
-          </div>
+          <el-table-column label="投餌飼料面積(cm²)" align="center">
+            <div slot-scope="scope">
+              前：{{ scope.row.feed_size_before_bait }} <br />
+              後：{{ scope.row.feed_size_after_bait }}
+            </div>
           </el-table-column>
           <el-table-column
-            label="飼料比例"
-            prop="items.feed_perccentage"
-            align="center"
-          ></el-table-column>
-          <el-table-column
-            label="蝦子座標"
-            prop="items.shrimp_coordinate"
+            label="飼料比例(投餌後飼料/投餌前飼料)"
+            prop="feed_percentage"
             align="center"
           >
-          <div slot-scope="scope">
-              {{scope.row.items.shrimp_coordinate}}
-          </div>
+          </el-table-column>
+          <el-table-column label="蝦子面積" prop="shrimp_size" align="center">
+            <div slot-scope="scope">
+              {{ scope.row.shrimp_size }}
+            </div>
           </el-table-column>
           <el-table-column
             label="檢測時間"
-            prop="items.inspected_date"
+            prop="inspected_date"
             align="center"
           ></el-table-column>
           <!-- <el-table-column label="循環訖日" prop="ended_date" align="center">
@@ -121,12 +193,7 @@
           </el-table-column> -->
           <el-table-column fixed="right" label="操作" width="100">
             <template slot-scope="">
-              <v-btn
-                color="primary"
-                outlined
-                small
-                disabled
-                @click="() => {}"
+              <v-btn color="primary" outlined small disabled @click="() => {}"
                 >刪除</v-btn
               >
             </template>
@@ -139,40 +206,45 @@
 
 <script>
 import "element-ui/lib/theme-chalk/index.css";
+import dayjs from "dayjs";
+import _ from "lodash";
 export default {
   layout: "emptynologin",
   data() {
     return {
-      recogData: [
-        {
-          id: 1,
-          name: "A1",
-          items: {
-            id: 1,
-            original_img:
-              "https://localhost.idwatertech.com/.well-known/observation/20211028093910_1_1/feed/original.jpg",
-            feed_result_img:
-              "https://localhost.idwatertech.com/.well-known/observation/20211028093910_1_1/feed/result.jpg",
-            shrimp_result_img:
-              "https://localhost.idwatertech.com/.well-known/observation/20211028093910_1_1/shrimp/result.jpg",
-            net_size: 1902345,
-            feed_size: 24233,
-            shrimp_size: [2222, 3333, 4444, 5555],
-            feed_percentage: 6.234,
-            shrimp_coordinate: [
-              [318, 581, 1723, 2386],
-              [1039, 1816, 1395, 2005],
-              [1183, 1184, 1531, 1406],
-              [1107, 1533, 1368, 1695]
-            ],
-            inspected_date: "2021-01-01 00:00:00"
-          }
-        }
-      ],
+      poolid: 1,
+      maindata: [],
+      //
+      recogData: {
+        id: 1,
+        name: "A1",
+        items: [
+          // {
+          //   id: 1,
+          //   feed_img_before_bait:
+          //     "https://www.idwatertech.com/.well-known/observation/20211028093910_1_1/feed_result.jpg",
+          //   feed_img_after_bait:
+          //     "https://www.idwatertech.com/.well-known/observation/20211028093910_1_2/feed_result.jpg",
+          //   shrimp_img_after_bait:
+          //     "https://www.idwatertech.com/.well-known/observation/20211028093910_1_2/shrimp_result.jpg",
+          //   net_size: 1600,
+          //   feed_size_before_bait: 80.66,
+          //   feed_size_after_bait: 40.21,
+          //   feed_percentage: 6.234,
+          //   shrimp_size: [2222, 3333, 4444, 5555],
+          //   inspected_date: "2021-01-01 00:00:00"
+          // }
+        ]
+      },
       images: {
         feedfish: require("~/assets/feedfish.png"),
         shrimp: require("~/assets/shrimp.png")
-      }
+      },
+      //---日曆
+      menu_startdate: false,
+      menu_enddate: false,
+      sdate: "",
+      edate: ""
     };
   },
   methods: {
@@ -191,17 +263,16 @@ export default {
     },
     getRecog: async function() {
       var parm = {
-        started_date: "2021-01-01",
-        ended_date: "2021-01-01",
-        pond_id: "1"
+        started_date: this.sdate,
+        ended_date: this.edate,
+        pond_id: this.poolid
       };
       await this.$axios
         .get(
           `${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-data/`,
-          parm
+          { params: parm }
         )
         .then(res => {
-          debugger;
           this.recogData = res.data;
           //   if (res.data == "修改成功") {
           //     if (data != "nomsg") {
@@ -218,7 +289,65 @@ export default {
         .catch(error => {
           this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
         });
+    },
+    getNowDate: function() {
+      let mydate = dayjs().format("YYYY-MM-DD");
+      return mydate;
+    },
+    setNestedDisabled: function(obj, name) {
+      //全部都設成disabled
+      obj.forEach((itm, index) => {
+        // console.log(itm.name);//所有node(含leaf)的名稱
+        itm.parent = itm.hasOwnProperty("parent")
+          ? itm.parent + "_" + name
+          : name;
+        const nodelst = ["1", "2"];
+        if (nodelst.filter(x => x == itm.level) > 0) {
+          itm.id = itm.name + "_" + itm.id;
+        }
+        if (itm.visible == false) {
+          //隱藏走道用
+          delete obj[index];
+          return obj; //不用再找有無node
+        }
+        if (itm.hasOwnProperty("node")) {
+          this.setNestedDisabled(itm.node, itm.name);
+        }
+      });
+      return obj;
+    },
+    getMainData: async function() {
+      let reqid = this.poolid;
+      let getedItem = {};
+      //取得整廠架構資料
+      //visible寫死名稱含^=false，寫死池的狀態=無=false
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+        .then(res => {
+          this.maindata = res.data;
+          var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+          this.maindata = data;
+        });
+      //用id抓到name
+      this.maindata.forEach(x => {
+        x.node.forEach(y => {
+          var item = y.node.filter(z => z.id == reqid);
+          if (item.length == 1) {
+            getedItem = item[0];
+            return;
+          }
+        });
+      });
+      //把區域名稱加進去
+      if (getedItem.hasOwnProperty("name")) {
+        this.poolName = getedItem.name;
+        console.log(getedItem);
+      }
     }
+  },
+  async mounted() {
+    //取得整廠架構資料
+    await this.getMainData();
   }
 };
 </script>
