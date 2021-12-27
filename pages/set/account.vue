@@ -25,10 +25,9 @@
           row-key="id"
           :expand-row-keys="expands"
           @expand-change="expandSelect"
-          
           :header-cell-style="tableHeaderStyle"
         >
-        <!-- :header-cell-style="{
+          <!-- :header-cell-style="{
             'background-color': '#64B5F6',
             color: '#fff',
             'font-weight': '500'
@@ -350,8 +349,7 @@
             </v-toolbar>
             <v-card-text>
               <v-row
-                ><v-col cols="12"
-                  >
+                ><v-col cols="12">
                   <treeselect
                     v-model="edititem.position"
                     :multiple="true"
@@ -361,10 +359,10 @@
                     placeholder="請選擇職位"
                     :disable-branch-nodes="true"
                   >
-                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}
+                    <div slot="value-label" slot-scope="{ node }">
+                      {{ node.raw.unit }}-{{ node.raw.label }}
                     </div>
-                  </treeselect>
-                  </v-col
+                  </treeselect> </v-col
                 ><v-spacer></v-spacer
               ></v-row>
               <table style="height:300px;"></table>
@@ -538,17 +536,26 @@ export default {
   methods: {
     getaccList: async function() {
       await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent })
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
+          { httpsAgent: agent }
+        )
         .then(res => {
           this.accdata = res.data;
           console.log("accList api：" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("accList api ERR：" + error, { duration: 2000 });
         });
     },
     getorg: async function() {
       await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`, {
-          httpsAgent: agent
-        })
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`,
+          {
+            httpsAgent: agent
+          }
+        )
         .then(res => {
           this.options = res.data;
           console.log("api：" + res.request.responseURL);
@@ -585,9 +592,12 @@ export default {
     handleDelete: async function(index, row) {
       if (confirm("是否確認刪除？")) {
         await this.$axios
-          .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${row.id}/`, {
-            httpsAgent: agent
-          })
+          .delete(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${row.id}/`,
+            {
+              httpsAgent: agent
+            }
+          )
           .then(res => {
             if (res.data == "刪除成功") {
               this.getaccList(); //改畫面的資料
@@ -649,9 +659,13 @@ export default {
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
         await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, this.addform, {
-            httpsAgent: agent
-          })
+          .post(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
+            this.addform,
+            {
+              httpsAgent: agent
+            }
+          )
           .then(res => {
             switch (res.data) {
               case "資料建立有問題":
@@ -758,11 +772,15 @@ export default {
       //   .finally(() => {});
     },
     postedit: async function(upd_id, parm) {
-      console.log("修改參數：",parm);
+      console.log("修改參數：", parm);
       await this.$axios
-        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${upd_id}/`, parm, {
-          httpsAgent: agent
-        })
+        .patch(
+          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${upd_id}/`,
+          parm,
+          {
+            httpsAgent: agent
+          }
+        )
         .then(res => {
           if (res.data == "修改成功") {
             this.getaccList(); //改畫面的資料
@@ -779,7 +797,7 @@ export default {
         .finally(() => {});
     },
     tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
-      let bgcolor=$nuxt.$vuetify.theme.themes.light.cardtitle;
+      let bgcolor = $nuxt.$vuetify.theme.themes.light.cardtitle;
       return `font-weight:500;`;
       // if (rowIndex == 0) {
       //   return `background-color:${bgcolor};color:#fff;font-weight:500;`;
@@ -787,7 +805,7 @@ export default {
       // }else{
       //   return `background-color:${bgcolor};`;
       // }
-    },
+    }
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
