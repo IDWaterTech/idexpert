@@ -26,9 +26,10 @@ import https from "https";
                 .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent }) //所有使用者的清單
                 .then(res => {
                   acclist = res.data;
+                  console.log("accList api：" + res.request.responseURL);
                 })
                 .catch(error => {
-                  this.$toast.error("錯誤" + error, { duration: 2000 });
+                  this.$toast.error("錯誤：" + error, { duration: 2000 });
                 });
               var acc = acclist.filter(
                 x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
