@@ -210,6 +210,7 @@ import dayjs from "dayjs";
 import _ from "lodash";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   data() {
     return {
       poolid: 1,
@@ -348,6 +349,9 @@ export default {
   async mounted() {
     //取得整廠架構資料
     await this.getMainData();
+  },
+  async created() {
+    await this._pageCheck(); //驗證頁面是否可檢視
   }
 };
 </script>
