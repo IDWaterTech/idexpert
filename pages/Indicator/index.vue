@@ -155,7 +155,38 @@
               align="center"
             >
             </el-table-column>
+             <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+                <template slot-scope="scope">
+                  <v-icon small @click="delItem(scope.row)" color="red">mdi-delete</v-icon>
+                  <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                  <el-button type="text" size="small">编辑</el-button> -->
+                </template>
+              </el-table-column>
           </el-table>
+           <!-- 刪除項目 -->
+            <v-dialog v-model="delDialog" max-width="500px">
+              <v-card>
+                <v-card-title class="text-h5"> 是否刪除該項目?</v-card-title>
+                <v-card-text class="text-h5">
+                  id:{{ editedItem.id }}<br />
+                  時間：{{ editedItem.inspected_date }}<br />
+                  值：{{ editedItem.value }}
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="delDialog = false"
+                    >取消</v-btn
+                  >
+                  <v-btn color="blue darken-1" text @click="delsubmit"
+                    >確定刪除！</v-btn
+                  >
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
         </v-col>
       </v-row>
     </v-container>
@@ -168,6 +199,9 @@ import dayjs from "dayjs";
 import "element-ui/lib/theme-chalk/index.css";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import _ from "lodash";
+const agent = new https.Agent({
+  rejectUnauthorized: false
+});
 // import { number } from "~/node_modules/echarts/lib/export";
 export default {
   layout: "emptynologin",
@@ -208,6 +242,10 @@ export default {
       chartmin:undefined,
       chartmax:undefined,
       markdata:{maxline:-999,minline:-999},
+      //編輯中或刪除中的項目
+      editedItem:{},
+      //刪除視窗
+      delDialog:false
     };
   },
   mounted() {
@@ -260,18 +298,18 @@ export default {
     //---
     // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
     await Promise.all(promiseArray).then(([...data]) => {
-      console.log("廠");
       let res = data[0]; // first promise resolved
       this.maindata = res.data;
-      //抓all項目
+      console.log("廠",this.maindata);
 
-      console.log("all項目");
+      //抓all項目
       res = data[1];
       for (let i = 0; i < Object.keys(res.data).length; i++) {
         let colsclass = Object.keys(res.data)[i]; //water;
         Object.assign(this.waterdatacols, res.data[colsclass]);
       }
       this.allcols = Object.assign({}, res.data);
+      console.log("all項目",this.allcols);
     });
 
     // //參數代入
@@ -418,6 +456,46 @@ export default {
           }
         });
     },
+    getItemClass: function(item) {//依項目回傳主要類別是什麼
+      let colclass = "";
+      for (let i = 0; i < Object.keys(this.allcols).length; i++) {
+        let inclass = Object.keys(this.allcols)[i]; //water;
+        let checkclass = Object.keys(this.allcols[inclass]).includes(item);
+        if (checkclass == true) {
+          colclass = inclass;
+          return colclass;
+        }
+      }
+    },
+    delItem: async function(item) {
+      //編輯中的物件item
+      this.editedItem.id = item.id;
+      this.editedItem.inspected_date = item.inspected_date;
+      this.editedItem.value = item[Object.keys(item)[3]];
+      this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
+      this.delDialog = true;
+    },
+    delsubmit: async function() {
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${this.editedItem.id}/`;
+      let deldata = { data_group: this.editedItem.class };
+      console.log("DEL data:", deldata);
+      console.log("DEL:" + url);
+      await this.$axios
+        .delete(url, { data: deldata }, { httpsAgent: agent })
+        .then(res => {
+          if (res.data == "刪除成功") {
+            this.getdata();
+            this.delDialog = false; //close dialog
+            this.$toast.success(`刪除成功`, { duration: 2000 });
+            this.getdata();//重取得資料
+          } else {
+            alert("刪除失敗!：" + res.data);
+          }
+        })
+        .catch(error => {
+          alert("刪除失敗!：" + error.message);
+        });
+    }
   }
 };
 </script>
