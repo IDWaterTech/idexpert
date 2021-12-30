@@ -425,7 +425,7 @@
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="delItem(item)">
+            <v-icon small @click="delItem(item)" color="red">
               mdi-delete
             </v-icon>
           </template>
