@@ -109,7 +109,7 @@
           :data="recogData.items"
           highlight-current-row
           :header-cell-style="tableHeaderStyle"
-          height="500"
+          max-height="500"
           class="primary"
           :header-cell-name="cellClass"
         >

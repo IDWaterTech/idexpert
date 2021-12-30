@@ -235,7 +235,12 @@ export default {
     // }
   },
   router: {
-    base: "/"
+    base: "/",
+    // extendRoutes (routes, resolve) {
+    //   routes.push({
+    //     path: '/basic',component: resolve(__dirname, 'pages/basic.vue')
+    //   });
+    // }
     //middleware: ['auth']
   },
   toast: {
