@@ -29,6 +29,9 @@
             <el-table-column label="市場名稱" prop="市場名稱" align="center">
             </el-table-column>
             <el-table-column label="平均價" prop="平均價" align="center">
+              <template slot-scope="scope">
+                     {{(scope.row.平均價==0)?scope.row.魚貨名稱:scope.row.平均價}}
+                    </template>
             </el-table-column>
             <el-table-column label="上價" prop="上價" align="center">
             </el-table-column>
@@ -84,7 +87,7 @@ export default {
   computed: {
     // 计算属性的 getter
     average: function() {
-      var data = this.priceData.map(x => x["平均價"]);
+      var data = this.priceData.filter(x=>x["平均價"]!=0).map(x => x["平均價"]);
       const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
       let changeTWUnit = 1;
       var result = (average(data) * changeTWUnit).toFixed(2);
