@@ -1787,6 +1787,9 @@ export default {
     await this.getwarnData();
     //取得循環資料
     await this.getCircleData();
+  },
+  async created() {
+    await this._pageCheck(); //驗證頁面是否可檢視
   }
 };
 </script>
