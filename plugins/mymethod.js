@@ -48,6 +48,7 @@ import https from "https";
                   .then(res => {
                     accPagelst = res.data;
                     console.log("accPagelst:",accPagelst);
+                    console.log("accPage api:",res.request.responseURL);
                     this.$store.commit('mydata/set_listitems', accPagelst);
                   });
                   let urlpath = $nuxt.$route.path;
