@@ -235,26 +235,40 @@ export default {
           {
             yAxis: (this.markdata.maxline==null)?-999:this.markdata.maxline,
             label:{
-              formatter:"警戒線：{c}",
-              fontSize: 20,
+              formatter:"危險線：{c}",
+              fontSize: 18,
               position: 'insideEndTop'
             },
             lineStyle: {
-              color: "red",
-              width: 2
+              type:'dashed',
+              color: "#EF5350",
+              width: 2.5
+            },
+            emphasis: {
+              lineStyle: {
+                type:'dashed',
+                width: 2.5,	// hover时的折线宽度
+              }
             }
           },
           {
             yAxis: (this.markdata.minline==null)?-999:this.markdata.minline,
             label:{
               show:true,
-              formatter:"警戒線：{c}",
-              fontSize: 20,
-              position: 'insideEndTop'
+              formatter:"危險線：{c}",
+              fontSize: 18,
+              position: 'insideEndBottom'
             },
             lineStyle: {
-              color: "red",
-              width: 2,
+              type:'dashed',
+              color: "#EF5350",
+              width: 2.5,
+            },
+             emphasis: {//hover折線固定不變，所以要強設定
+              lineStyle: {
+                type:'dashed',
+                width: 2.5,	// hover时的折线宽度
+              }
             }
           }
         ]
