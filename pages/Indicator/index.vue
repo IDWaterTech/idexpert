@@ -454,6 +454,7 @@ export default {
             this.markdata.maxline = -999;
             this.markdata.minline = -999;
           }
+          console.log("col data:",res.request.responseURL);
         });
     },
     getItemClass: function(item) {//依項目回傳主要類別是什麼
