@@ -139,6 +139,23 @@
             >
               今天
             </v-btn>
+            <!-- 新增紀事 -->
+            <v-btn icon large @click="dialog.add=true"><v-icon>mdi-calendar-plus</v-icon>新增</v-btn>
+            <v-dialog v-model="dialog.add" width="500px">
+              <v-form ref="mainform" v-model="addvalid" lazy-validation>
+                <v-card >
+                  <v-card-title class="cardtitle" style="color:white;">新增紀事</v-card-title>
+                  <v-divider></v-divider>
+                  <v-card-text>
+                    test
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn class="primary" dark tile>新增</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-form>
+            </v-dialog>
             <v-btn fab text small color="grey darken-2" @click="prev">
               <v-icon small>
                 mdi-chevron-left
@@ -267,6 +284,11 @@ export default {
       selectedEvent: {},
       selectedElement: null,
       selectedOpen: false,
+      //dialog
+      dialog: {
+        add: false,
+      },
+      addvalid:true,
       // events: [],
       eventsData: [
         {
@@ -515,6 +537,9 @@ export default {
         })
         .then(res => {
           this.eventsData = res.data;
+          if (res.data.length==0) {
+             this.$toast.success(`查無資料`, { duration: 2000 });
+          }
           console.log("event api:", res.request.responseURL);
         })
         .catch(err => {
