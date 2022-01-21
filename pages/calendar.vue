@@ -140,18 +140,204 @@
               今天
             </v-btn>
             <!-- 新增紀事 -->
-            <v-btn icon large @click="dialog.add=true"><v-icon>mdi-calendar-plus</v-icon>新增</v-btn>
-            <v-dialog v-model="dialog.add" width="500px">
-              <v-form ref="mainform" v-model="addvalid" lazy-validation>
-                <v-card >
-                  <v-card-title class="cardtitle" style="color:white;">新增紀事</v-card-title>
+            <v-btn icon large @click="openedit('add')"><v-icon>mdi-calendar-plus</v-icon>新增</v-btn>
+            <v-dialog v-model="dialog.add" width="800px">
+              <v-form ref="editform" v-model="addvalid" lazy-validation>
+                <v-card tile>
+                  <v-card-title class="cardtitle" style="color:white;">{{(edited.mode=="add")?"新增":"編輯"}}紀事</v-card-title>
                   <v-divider></v-divider>
                   <v-card-text>
-                    test
+                    <v-row>
+                      <!-- 全日 -->
+                      <v-col cols="12">
+                        <v-switch
+                          v-model="edited.is_all_day"
+                          :label="`全日事件: ${edited.is_all_day}`"
+                        ></v-switch>
+                      </v-col>
+                      <!-- 起日 -->
+                      <v-col cols="12" sm="9">
+                        <v-menu
+                          v-model="menu_edit_sdate"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="edited.started_date"
+                              label="選擇起日"
+                              prepend-icon="mdi-calendar"
+                              dense filled
+                              v-bind="attrs" 
+                              v-on="on"
+                              :rules="rules.require"
+                              @click:prepend="
+                                () => {
+                                  edited.started_date = getNowDate();
+                                }
+                              "
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="edited.started_date"
+                            @input="menu_edit_sdate = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                      <v-col cols="12" sm="3">
+                        <v-text-field
+                          label="時間"
+                          v-model="edited.stime"
+                          dense filled
+                          type="time"
+                          :disabled="edited.is_all_day"
+                          prepend-icon="mdi-timeline-clock-outline"
+                          :rules="rules.require"
+                          @click:prepend="() => (edited.stime = getNowTime())"
+                        ></v-text-field>
+                      </v-col>
+                      <!-- 訖日 -->
+                      <v-col cols="12" sm="9">
+                        <v-menu 
+                          v-model="menu_edit_edate"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="edited.ended_date"
+                              label="選擇訖日"
+                              prepend-icon="mdi-calendar"
+                              dense filled
+                              v-bind="attrs" 
+                              v-on="on"
+                              :rules="rules.require"
+                              @click:prepend="
+                                () => {
+                                  edited.ended_date = getNowDate();
+                                }
+                              "
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="edited.ended_date"
+                            @input="menu_edit_edate = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                      <v-col cols="12" sm="3">
+                        <v-text-field
+                          label="時間"
+                          v-model="edited.etime"
+                          dense filled
+                          type="time"
+                          :disabled="edited.is_all_day"
+                          :rules="rules.require"
+                          prepend-icon="mdi-timeline-clock-outline"
+                          @click:prepend="() => (edited.etime = getNowTime())"
+                        ></v-text-field>
+                      </v-col>
+                      <!-- 資料範圍 -->
+                      <v-col cols="12" sm="4">
+                        <v-autocomplete
+                          auto-select-first
+                          dense
+                          outlined
+                          :items="datarange"
+                          item-text="name"
+                          item-value="level"
+                          v-model="edited.level"
+                          @change="rangechange"
+                        >
+                          <template slot="prepend"
+                            ><span style="width:70px;">資料範圍</span></template
+                          >
+                        </v-autocomplete>
+                      </v-col>
+                      <v-col cols="12" sm="5">
+                          <treeselect
+                            v-model="edited.poolid"
+                            :options="maindatacpd_edited"
+                            :default-expand-level="1"
+                            :disable-branch-nodes="true"
+                            children="node"
+                            :multiple="true"
+                            :normalizer="
+                              node => {
+                                return { children: node.node };
+                              }
+                            "
+                            style="font-size:1.2em;"
+                          >
+                            <div slot="value-label" slot-scope="{ node }">
+                              {{
+                                `${
+                                  node.raw.parent != undefined && node.raw.parent.length > 0
+                                    ? node.raw.parent + "_"
+                                    : ""
+                                }${node.raw.name}`
+                              }}
+                            </div>
+                            <div slot="option-label" slot-scope="{ node }">
+                              {{ `${node.raw.name}` }}
+                            </div>
+                          </treeselect>
+                      </v-col>
+                      <v-col cols="auto" sm="3"></v-col>
+                      <!-- 事件等級 -->
+                      <v-col cols="12" sm="4">
+                        <v-autocomplete
+                          dense
+                          outlined
+                          :items="eventLevelData"
+                          item-text="name_ch"
+                          item-value="id"
+                          v-model="edited.event_level_id"
+                        >
+                          <template slot="prepend"
+                            ><span style="width:70px;">事件等級</span></template
+                          >
+                        </v-autocomplete>
+                      </v-col>
+                      <!-- 事件類型 -->
+                      <v-col cols="12" sm="4">
+                        <v-autocomplete
+                          dense
+                          outlined
+                          :rules="rules.require"
+                          :items="eventCategoryData"
+                          item-text="name_ch"
+                          item-value="id"
+                          v-model="edited.event_category_id"
+                        >
+                          <template slot="prepend"
+                            ><span style="width:70px;">事件類型</span></template
+                          >
+                        </v-autocomplete>
+                      </v-col>
+                      <!-- 標題 -->
+                      <v-col cols="12">
+                        <v-text-field v-model="edited.title" dense filled clearable :rules="rules.require">
+                          <span slot="prepend" style="width:70px;">標題</span>
+                        </v-text-field>
+                      </v-col>
+                      <!-- 內容 -->
+                      <v-col cols="12">
+                        <v-textarea v-model="edited.content" dense filled clearable :rules="rules.require">
+                          <span slot="prepend" style="width:70px;">內容</span>
+                        </v-textarea>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn class="primary" dark tile>新增</v-btn>
+                    <v-btn class="primary" dark tile @click="editsubmit(edited.mode)">確認</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-form>
@@ -221,19 +407,20 @@
             :activator="selectedElement"
             offset-x
           >
+          <!-- 紀事內容 -->
             <v-card color="grey lighten-4" min-width="350px" flat>
               <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon>
+                <v-btn icon @click="openedit('edit')">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
                 <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn icon>
-                  <v-icon>mdi-heart</v-icon>
+                <v-btn icon @click="deleteEvent(selectedEvent.id)">
+                  <v-icon>mdi-delete</v-icon>
                 </v-btn>
-                <v-btn icon>
+                <!-- <v-btn icon>
                   <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
+                </v-btn> -->
               </v-toolbar>
               <v-card-subtitle v-if="selectedEvent.start">
                 <span v-html="`起：${selectedEvent.start}<br/>訖：${selectedEvent.end}<br/>建立者：${selectedEvent.created_user}<br/>全日：${selectedEvent.timed}`"></span>
@@ -268,9 +455,10 @@
 <script>
 import _ from "lodash";
 import dayjs from "dayjs";
+// import axios from '~/plugins/axios';
 export default {
   layout: "emptynologin",
-  // middleware: "auth",
+  middleware: "auth",
   data() {
     return {
       focus: "",
@@ -350,18 +538,50 @@ export default {
         .format("YYYY-MM-DD"),
       edate: new Date().toISOString().substr(0, 10),
       menu_startdate: false,
-      menu_enddate: false
+      menu_enddate: false,
+      //edited event
+      edited:{
+        mode:"add",//add,edit
+        level:1,//範圍
+        poolid:[],//範圍id
+        started_date:undefined,
+        ended_date:undefined,
+        stime:"00:00",
+        etime:"00:00",
+        factory_id:[],//廠id
+        pond_area_id:[],//區域id
+        pond_id:[],//池id
+        event_level_id:3,//事件等級
+        event_category_id:undefined,//事件類型id
+        title:"",
+        content:"",
+        is_all_day:true,
+        created_user:"",
+      },
+      menu_edit_sdate:false,
+      menu_edit_edate:false,
+      eventLevelData:[],//警戒等級
+      eventCategoryData:[],//事件類型
+      rules: { require: [v => !!v || "*必要項目"] },
     };
   },
   async mounted() {
     this.$refs.calendar.checkChange();
     //取得整廠架構資料
     await this.getMainData();
+    //取得警戒等級
+    await this.getEventLevelData();
+    //取得事件類型
+    await this.getEventCategoryData();
   },
   methods: {
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
+    },
+    getNowTime: function() {
+      let mytime = dayjs().format("HH:mm");
+      return mytime;
     },
     viewDay({ date }) {
       this.focus = date;
@@ -433,6 +653,7 @@ export default {
       // var data = this.setNestedDisabled(this.maindata, "",this.level);
       // this.maindata = data;
       this.poolid = null;
+      this.edited.poolid=null;
     },
     setNestedDisabled: function(obj, name, onlyshowlevel = 1) {
       //全部都設成disabled
@@ -545,6 +766,191 @@ export default {
         .catch(err => {
           this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
         });
+    },
+    //取得警戒等級
+    getEventLevelData:async function(){
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-level/`)
+        .then(res => {
+          this.eventLevelData = res.data;
+
+          console.log("event api:", res.request.responseURL);
+        })
+        .catch(err => {
+          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+        });
+    
+    },
+    //取得事件類型
+    getEventCategoryData:async function(){
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
+        .then(res => {
+          this.eventCategoryData = res.data;
+
+          console.log("event api:", res.request.responseURL);
+        })
+        .catch(err => {
+          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+        });
+    },
+    //打開紀事(新增)
+    openedit:function(mode){
+      this.edited = {
+        mode:mode,//add,edit
+        level:1,//範圍
+        poolid:[],//範圍id
+        started_date:undefined,
+        ended_date:undefined,
+        stime:"00:00",
+        etime:"00:00",
+        factory_id:[],//廠id
+        pond_area_id:[],//區域id
+        pond_id:[],//池id
+        event_level_id:3,//事件等級
+        event_category_id:undefined,//事件類型id
+        title:"",
+        content:"",
+        is_all_day:true,
+        created_user:"",
+      }
+      if (mode=="add") {
+        if (this.$refs.editform != undefined) {
+          this.$refs.editform.reset();
+        }
+        this.dialog.add=true;
+      }
+      if(mode=="edit"){
+        const updUser = this.$auth.$state.user.email;
+        console.log("",this.selectedEvent);
+        this.edited = {
+        mode:mode,//add,edit
+        id:this.selectedEvent.id,//edit的話就有id
+        level:1,//範圍
+        poolid:this.selectedEvent.items.map(x=>x.name + '_' + x.id),//範圍id
+        started_date:this.selectedEvent.start.substr(0,10),
+        ended_date:this.selectedEvent.end.substr(0,10),
+        stime:this.selectedEvent.start.substr(-8,5),
+        etime:this.selectedEvent.end.substr(-8,5),
+        factory_id: [],//廠id
+        pond_area_id:[],//區域id
+        pond_id:[],//池id
+        event_level_id:Number(this.selectedEvent.event_level_id),//事件等級
+        event_category_id:Number(this.selectedEvent.event_category_id),//事件類型id
+        title:this.selectedEvent.name,
+        content:this.selectedEvent.content,
+        is_all_day:this.selectedEvent.timed,
+        created_user:updUser,
+      }
+        this.dialog.add=true;
+      }
+    },
+    //送出事件
+    editsubmit:async function(mode){
+      let valid = this.$refs.editform.validate();
+      if (this.edited.poolid.length==0) {
+        this.$toast.error(`您尚未選擇資料範圍`, { duration: 2000 }); return;
+      }
+      if (valid) {
+        const updUser = this.$auth.$state.user.email;
+        if (mode=="add") {
+          var parm = {
+            started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
+            ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
+            factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
+            pond_area_id: (this.level==2)?this.edited.poolid:null,
+            pond_id: (this.level==3)?this.edited.poolid:null,
+            event_level_id: this.edited.event_level_id,
+            event_category_id: this.edited.event_category_id,
+            title: this.edited.title,
+            content: this.edited.content,
+            is_all_day: this.edited.is_all_day,
+            created_user: updUser
+          };
+          await this.$axios
+          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,parm)
+          .then(res => {
+            if (res.data=="新增成功") {
+              this.dialog.add = false;
+              this.$toast.success(`新增成功`, { duration: 2000 });
+            }else{
+              this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
+            }
+            console.log("event api:", res.request.responseURL);
+          })
+          .catch(err => {
+            this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
+          });
+          this.getEventData();//更新畫面資料
+         }
+        if (mode=="edit") {
+          var parm = {
+            started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
+            ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
+            factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
+            pond_area_id: (this.level==2)?this.poolidcpd_edited:null,//this.edited.poolid
+            pond_id: (this.level==3)?this.poolidcpd_edited:null,//this.edited.poolid
+            event_level_id: this.edited.event_level_id,
+            event_category_id: this.edited.event_category_id,
+            title: this.edited.title,
+            content: this.edited.content,
+            is_all_day: this.edited.is_all_day,
+            created_user: updUser
+          };
+          await this.$axios
+          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${this.edited.id}`,parm)
+          .then(res => {
+            if (res.data=="修改成功") {
+              this.dialog.add = false;
+              this.$toast.success(`修改成功`, { duration: 2000 });
+            }else{
+              this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
+            }
+            console.log("event api:", res.request.responseURL);
+          })
+          .catch(err => {
+            this.$toast.error(`資料修改失敗:${err.message}`, { duration: 2000 });
+          });
+          this.getEventData();//更新畫面資料
+        }
+      }
+    },
+    //刪除事件
+    deleteEvent:async function(id){
+      if (confirm(`是否刪除?`)==false) {
+        return;
+      }
+      await this.$axios
+        .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${id}`)
+        .then(res => {
+          if (res.data=="刪除成功") {
+            this.selectedOpen = false;
+            this.$toast.success(`刪除成功`, { duration: 2000 });
+          }else{
+            this.$toast.error(`資料刪除失敗:${res.data}`, { duration: 2000 });
+          }
+          this.getEventData();//更新畫面資料
+          console.log("event api:", res.request.responseURL);
+        })
+        .catch(err => {
+          this.$toast.error(`資料刪除失敗:${err.message}`, { duration: 2000 });
+        });
+    },
+
+    addEventData:async function(){
+      await this.$axios
+              .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,parm)
+              .then(res => {
+                if (res.data=="新增成功") {
+                  this.$toast.success(`新增成功`, { duration: 2000 });
+                }else{
+                  this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
+                }
+                console.log("event api:", res.request.responseURL);
+              })
+              .catch(err => {
+                this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
+              });
     }
   },
   computed: {
@@ -553,9 +959,10 @@ export default {
       let tempArray = [];
       dataa.forEach(ele => {
         var item = {
+          id:ele.id,
           name: ele.title,
           start: (ele.is_all_day)?ele.started_date.substr(0,10):ele.started_date,
-          end: (ele.is_all_day)?ele.ended_date.substr(0,10):ele.started_date,
+          end: (ele.is_all_day)?ele.ended_date.substr(0,10):ele.ended_date,
           // color: this.colors[this.rnd(0, this.colors.length - 1)],
           color: ele.color,
           // color:
@@ -581,11 +988,36 @@ export default {
       var data = _.cloneDeep(this.maindata);
       return this.nestedMain(data, this.level);
     },
+    maindatacpd_edited: function() {
+      var data = _.cloneDeep(this.maindata);
+      return this.nestedMain(data, this.edited.level);
+    },
     poolidcpd: function() {
       //重組選到的id，去除_線
       var poolid = this.poolid;
       var poolidreg = [];
       if (!this.poolid) {
+        return [];
+      }
+      poolid.forEach(element => {
+        //數值型態直接納入
+        if (typeof element == "number") {
+          poolidreg.push(element);
+        } else {
+          //其他自己算
+          var elereg = element.match("[^_]+$");
+          if (elereg != null && elereg != 0) {
+            poolidreg.push(elereg[0]);
+          }
+        }
+      });
+      return poolidreg;
+    },
+    poolidcpd_edited: function() {
+      //重組選到的id，去除_線
+      var poolid = this.edited.poolid;
+      var poolidreg = [];
+      if (!this.edited.poolid) {
         return [];
       }
       poolid.forEach(element => {
