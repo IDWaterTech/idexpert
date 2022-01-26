@@ -492,7 +492,7 @@ export default {
           event_category_id: 4,
           event_category_name: "緊急發生",
           color: "#FF0000",
-          title: "停電",
+          title: "停電(local test)",
           content: "變電箱故障",
           is_all_day: true,
           created_user: "技術部-王前驊",
@@ -618,8 +618,8 @@ export default {
       nativeEvent.stopPropagation();
     },
     updateRange: async function({ start, end }) {
-      // this.sdate = start.date;
-      // this.edate = end.date;
+      this.sdate = start.date;
+      this.edate = end.date;
       console.log("updateRange!!!");
       console.log("sdate",this.sdate);
       console.log("edate",this.edate);
@@ -738,6 +738,7 @@ export default {
     },
     getEventData: async function() {
       var parms = {};
+      this.eventsData.splice(0,this.eventsData.length);
       // started_date=2022-01-01&ended_date=2022-01-04
       parms.started_date = this.sdate;
       parms.ended_date = this.edate;
@@ -761,6 +762,8 @@ export default {
           if (res.data.length==0) {
              this.$toast.success(`查無資料`, { duration: 2000 });
           }
+          
+          console.log("parms:",parms);
           console.log("event api:", res.request.responseURL);
         })
         .catch(err => {
@@ -816,9 +819,10 @@ export default {
       }
       if (mode=="add") {
         if (this.$refs.editform != undefined) {
-          this.$refs.editform.reset();
+          // this.$refs.editform.reset();
         }
         this.dialog.add=true;
+        
       }
       if(mode=="edit"){
         const updUser = this.$auth.$state.user.email;
@@ -826,12 +830,12 @@ export default {
         this.edited = {
         mode:mode,//add,edit
         id:this.selectedEvent.id,//edit的話就有id
-        level:1,//範圍
+        level:this.selectedEvent.level,//選中的範圍
         poolid:this.selectedEvent.items.map(x=>x.name + '_' + x.id),//範圍id
         started_date:this.selectedEvent.start.substr(0,10),
         ended_date:this.selectedEvent.end.substr(0,10),
-        stime:this.selectedEvent.start.substr(-8,5),
-        etime:this.selectedEvent.end.substr(-8,5),
+        stime:(this.selectedEvent.timed)?'00:00':this.selectedEvent.start.substr(-8,5),
+        etime:(this.selectedEvent.timed)?'00:00':this.selectedEvent.end.substr(-8,5),
         factory_id: [],//廠id
         pond_area_id:[],//區域id
         pond_id:[],//池id
@@ -858,8 +862,8 @@ export default {
             started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
             ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
             factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
-            pond_area_id: (this.level==2)?this.edited.poolid:null,
-            pond_id: (this.level==3)?this.edited.poolid:null,
+            pond_area_id: (this.level==2)?this.poolidcpd_edited:null,
+            pond_id: (this.level==3)?this.poolidcpd_edited:null,
             event_level_id: this.edited.event_level_id,
             event_category_id: this.edited.event_category_id,
             title: this.edited.title,
@@ -895,13 +899,24 @@ export default {
             title: this.edited.title,
             content: this.edited.content,
             is_all_day: this.edited.is_all_day,
-            created_user: updUser
+            updated_user: updUser
           };
           await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${this.edited.id}`,parm)
+          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${this.edited.id}/`,parm)
           .then(res => {
             if (res.data=="修改成功") {
               this.dialog.add = false;
+              this.selectedOpen = false;
+              this.selectedEvent.start = parm.started_date;
+              this.selectedEvent.end = parm.ended_date;
+              this.selectedEvent.created_user = this.$auth.$state.user.name;
+              this.selectedEvent.event_level_id = parm.event_level_id;
+              this.selectedEvent.event_category_id= parm.event_category_id;
+              this.selectedEvent.title = parm.title;
+              this.selectedEvent.content = parm.content;
+              this.selectedEvent.is_all_day = parm.is_all_day;
+              this.selectedEvent.stime = `${(this.edited.is_all_day)?'00:00':this.edited.stime}`;
+              this.selectedEvent.etime = `${(this.edited.is_all_day)?'00:00':this.edited.etime}`;
               this.$toast.success(`修改成功`, { duration: 2000 });
             }else{
               this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
@@ -917,7 +932,7 @@ export default {
     },
     //刪除事件
     deleteEvent:async function(id){
-      if (confirm(`是否刪除?`)==false) {
+      if (confirm(`是否刪除?[會刪除所有事件範圍：${this.selectedEvent.items.map(x=>x.name).join()}]`)==false) {
         return;
       }
       await this.$axios
@@ -960,6 +975,7 @@ export default {
       dataa.forEach(ele => {
         var item = {
           id:ele.id,
+          level:ele.level,
           name: ele.title,
           start: (ele.is_all_day)?ele.started_date.substr(0,10):ele.started_date,
           end: (ele.is_all_day)?ele.ended_date.substr(0,10):ele.ended_date,
