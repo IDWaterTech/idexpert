@@ -427,7 +427,7 @@
               </v-card-subtitle>
               <v-card-text v-if="selectedEvent.event_category_id">
                 <span v-html="`事件等級：${selectedEvent.event_level_name}<br/>事件類別：${selectedEvent.event_category_name}<br/>事件範圍：${this.selectedEvent.items.map(x=>x.name).join()}`"></span>
-                <div v-html="`事件內容：${selectedEvent.content}`"></div>
+                <div style="white-space: pre-wrap;" v-html="`事件內容：${selectedEvent.content}`"></div>
               </v-card-text>
               <v-card-actions>
                 <v-btn :color="selectedEvent.color" dark tile @click="selectedOpen = false">

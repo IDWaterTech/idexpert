@@ -156,7 +156,7 @@
               <template slot-scope="scope">
                 全日事件：{{scope.row.is_all_day?'Yes':'No'}}<br/>
                 標題：{{scope.row.title}} [最後編輯： {{scope.row.created_user}}]<br/>
-                內容：{{scope.row.content}}
+                內容：<div style="white-space: pre-wrap;">{{scope.row.content}}</div>
               </template>
             </el-table-column>
             <el-table-column label="資料範圍" width="200" align="center">
