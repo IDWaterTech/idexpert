@@ -137,6 +137,35 @@
             :markdata="markdata"
           ></WaterQuality_Vcharts>
         </v-col>
+        <v-col cols="12">
+          <el-table :data="eventsData" style="width: 100%" max-height="300">
+            <el-table-column label="ID" width="50" prop="id" align="center"></el-table-column>
+            <el-table-column label="事件等級" width="80" prop="event_level_name" align="center">
+              <template slot-scope="scope">
+                <v-chip dark :color="scope.row.color">{{scope.row.event_level_name}}</v-chip>
+              </template>
+
+            </el-table-column>
+            <el-table-column label="事件類別" width="80" prop="event_category_name" align="center"></el-table-column>
+            <el-table-column label="時間" width="200" align="center">
+              <template slot-scope="scope">
+                起：{{scope.row.started_date}}<br/>訖：{{scope.row.ended_date}}
+              </template>
+            </el-table-column>
+            <el-table-column label="內容" align="left">
+              <template slot-scope="scope">
+                全日事件：{{scope.row.is_all_day?'Yes':'No'}}<br/>
+                標題：{{scope.row.title}} [最後編輯： {{scope.row.created_user}}]<br/>
+                內容：{{scope.row.content}}
+              </template>
+            </el-table-column>
+            <el-table-column label="資料範圍" width="200" align="center">
+              <template slot-scope="scope">
+                {{scope.row.items.map(x=>x.name).join()}}
+              </template>
+            </el-table-column>
+          </el-table>
+        </v-col>
         <v-col cols="12" v-if="item.items">
           <el-table
             :data="item2.items"
@@ -245,7 +274,9 @@ export default {
       //編輯中或刪除中的項目
       editedItem:{},
       //刪除視窗
-      delDialog:false
+      delDialog:false,
+      //事件資料
+      eventsData:[]
     };
   },
   mounted() {
@@ -348,9 +379,7 @@ export default {
       var para = {
         id: this.sel_area
       };
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
+      
       if (this.sel_area) {
         //水池基本資料
         await this.$axios
@@ -410,9 +439,6 @@ export default {
         data_group: itemclass
       };
       let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       await this.$axios
         .get(apiURL, { params: parm }, { httpsAgent: agent })
         .then(res => {
@@ -436,6 +462,51 @@ export default {
         .catch(err => {
           alert("失敗：" + err.message);
         });
+      //抓事件資料
+      this.eventsData.splice(0,this.eventsData.length);
+      var result1 = await this.getEventData(1);
+      var result2 = await this.getEventData(2);
+      var result3 = await this.getEventData(3);
+      this.eventsData = result1.concat(result2,result3);
+      console.log("event data:",this.eventsData);
+    },
+    //抓事件資料
+    getEventData: async function(level=1) {
+      var parms = {};
+      var poolidcpd = [];
+      var result =[];
+      
+      this.eventsData.splice(0,this.eventsData.length);
+      // started_date=2022-01-01&ended_date=2022-01-04
+      parms.started_date = this.sdate;
+      parms.ended_date = this.edate;
+      switch (level) {
+        case 1:
+          poolidcpd.push(this.sel_main);
+          parms.factory_id = poolidcpd.join();
+          break;
+        case 2:
+          poolidcpd.push(this.sel_area);
+          parms.pond_area_id = poolidcpd.join();
+          break;
+        case 3:
+          poolidcpd.push(this.sel_pool);
+          parms.pond_id = poolidcpd.join();
+          break;
+      }
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`, {
+          params: parms
+        })
+        .then(res => {
+          result = res.data;
+          console.log("event api:", res.request.responseURL);
+          
+        })
+        .catch(err => {
+          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+        });
+        return result;
     },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
