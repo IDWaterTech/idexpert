@@ -275,6 +275,9 @@ export default {
         )
         .then(res => {
           this.recogData = res.data;
+          if ( res.data.items.length==0) {
+            this.$toast.success(`查無資料`, { duration: 2000 });
+          }
           //   if (res.data == "修改成功") {
           //     if (data != "nomsg") {
           //       this.$toast.success(`修改成功`, { duration: 2000 });
