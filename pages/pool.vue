@@ -6,7 +6,7 @@
       <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-1">
         <v-card min-height="100px" elevation="3" tile dark color="primary">
           <v-card-title class="py-0 ">
-            警示區
+            警示區<span style="font-size: 0.8em;color:darkred;">(24小時內且目前有啟用警示項目最新一列資料)</span>
             <v-spacer></v-spacer>
             <span class="subtitle-3"
               >警示資料時間：{{
@@ -34,13 +34,13 @@
               v-if="warnData.length != 0"
             >
               <v-card-text>
-                <v-chip-group column>
+                <!-- <v-chip-group column dark> -->
+                  <!-- @click="showwarning(item)" 拿掉處理的視窗-->
                   <v-chip
-                    filter
-                    outlined
+                    class="mr-1"
                     v-for="item in warnData"
                     :key="item.id"
-                    @click="showwarning(item)"
+                    
                     :color="
                       item.warning_level.toLowerCase() == 'critical'
                         ? `red`
@@ -52,7 +52,7 @@
                       }]：${item.warning_content}`
                     }}
                   </v-chip>
-                </v-chip-group>
+                <!-- </v-chip-group> -->
               </v-card-text>
             </v-sheet>
             <div class="text-center my-5" v-if="warnData.length == 0">
