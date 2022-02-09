@@ -861,9 +861,9 @@ export default {
           var parm = {
             started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
             ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
-            factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
-            pond_area_id: (this.level==2)?this.poolidcpd_edited:null,
-            pond_id: (this.level==3)?this.poolidcpd_edited:null,
+            factory_id: (this.edited.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
+            pond_area_id: (this.edited.level==2)?this.poolidcpd_edited:null,
+            pond_id: (this.edited.level==3)?this.poolidcpd_edited:null,
             event_level_id: this.edited.event_level_id,
             event_category_id: this.edited.event_category_id,
             title: this.edited.title,
