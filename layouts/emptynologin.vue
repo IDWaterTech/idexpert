@@ -83,7 +83,7 @@
           <div>
             <v-switch class="mt-3 mx-1"
               v-model="site" dense
-              :label="`${(site)?'外網':'內網'}`"
+              :label="`${(site)?'IP':'網域'}`"
               @change="changeSite"
             ></v-switch>
           </div>
