@@ -135,6 +135,20 @@
           >查詢</v-btn
         >
       </v-col>
+      <v-col cols="12">
+        <v-dialog v-model="captchaDialog" width="350">
+          <v-card height="230">
+            <v-card-title>驗證碼</v-card-title>
+            <v-card-text>
+              <recaptcha />
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn class="primary" tile @click="captchacheck">送出</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        </v-col>
       <!-- 新增/匯出 -->
       <v-col cols="12" md="12">
         <!-- 新增 -->
@@ -441,7 +455,7 @@
                 hide-details
               >
               </v-checkbox>
-              <v-btn class="primary" tile small :disabled="selected.length==0 || !showselect" @click="delItems">批次刪除</v-btn>
+              <v-btn class="primary" tile small :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
             </v-toolbar>
             
             <!-- 刪除項目 -->
@@ -489,6 +503,7 @@ export default {
   // },
   data() {
     return {
+      captchaDialog:false,
       req: this.$route.query,
       maindata: [],
       sel_main: 0,
@@ -764,6 +779,25 @@ export default {
       this.editedItem.value = item[Object.keys(item)[3]];
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
       this.delDialog = true;
+    },
+    opencapDialog:async function(){
+      this.captchaDialog = true;
+    },
+    captchacheck:async function(){
+      const token = await this.$recaptcha.getResponse();
+      var parm = {token:token};
+        await this.$axios
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm}
+        )
+        .then(res => {
+          var resdata = JSON.parse(res.data);
+          if(resdata.success){
+            this.captchaDialog=false;
+            this.delItems();
+          }
+        });
+      await this.$recaptcha.reset();
     },
     delItems:async function(){
       if(confirm(`批次刪除${this.selected.length}筆資料？`)){
