@@ -413,12 +413,14 @@
               </v-card>
             </v-dialog>
         <v-data-table
+          v-model="selected"
           :headers="headers"
           :items="item.items" dense
           :footer-props="footerProps"
           class="elevation-1 "
           v-if="headers.length > 0 || loading == true"
           :loading="loading"
+          :show-select="showselect"
           no-data-text="查無資料"
         >
           <template v-slot:[`item.actions`]="{ item }">
@@ -430,6 +432,17 @@
             </v-icon>
           </template>
           <template v-slot:top>
+            <v-toolbar flat>
+              <v-spacer></v-spacer>
+              <v-checkbox
+                v-model="showselect"
+                label=""
+                color="red"
+                hide-details
+              >
+              </v-checkbox>
+              <v-btn class="primary" tile small :disabled="selected.length==0 || !showselect" @click="delItems">批次刪除</v-btn>
+            </v-toolbar>
             
             <!-- 刪除項目 -->
             <v-dialog v-model="delDialog" max-width="500px">
@@ -492,6 +505,8 @@ export default {
       headers: [
         //   { text: "inspected_date", value: "inspected_date", groupable: false },
       ],
+      selected: [],//多選項目
+      showselect:false,
       loading: false,
       footerProps: {
         "items-per-page-text": "每頁",
@@ -749,6 +764,38 @@ export default {
       this.editedItem.value = item[Object.keys(item)[3]];
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
       this.delDialog = true;
+    },
+    delItems:async function(){
+      if(confirm(`批次刪除${this.selected.length}筆資料？`)){
+        var delsuccess = 0;
+        for (let i = 0; i < this.selected.length; i++) {
+          const item = this.selected[i];
+          const editedItem = item;
+          editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
+          let url = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${editedItem.id}/`;
+          let deldata = { data_group: editedItem.class };
+          // console.log("DEL data:", deldata);
+          // console.log("DEL:" + url);
+          await this.$axios
+            .delete(url, { data: deldata }, { httpsAgent: agent })
+            .then(res => {
+              if (res.data == "刪除成功") {
+                delsuccess += 1;
+              } else {
+                console.log(`刪除失敗：${editedItem.id}-${res.data}`);
+                alert(`刪除失敗!：${editedItem.id}-` + res.data);
+              }
+            })
+            .catch(error => {
+               console.log(`刪除失敗：${editedItem.id}-${error.message}`);
+              alert(`刪除失敗!：${editedItem.id}-` + error.message);
+            });
+        }
+        this.getdata();
+        this.showselect = false;
+        this.$toast.success(`刪除結果 成功筆數/總筆數：${delsuccess}/${this.selected.length}`, { duration: 2000 });
+        this.selected = [];
+      }
     },
     addItem: async function() {},
     gofocusNxt2: function(id) {
