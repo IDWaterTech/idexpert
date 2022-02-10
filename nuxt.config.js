@@ -82,8 +82,14 @@ export default {
     "@nuxtjs/axios",
     "@nuxtjs/auth-next",
     "@nuxtjs/proxy",
-    "@nuxtjs/toast"
+    "@nuxtjs/toast",
+    "@nuxtjs/recaptcha",
   ],
+  recaptcha:{
+    ideBadge: true, // 是否隱藏badge
+    siteKey: '6LfSN2weAAAAAMMb3CSwAng4z7F6uoV1JoOILo6p',
+    version: 2, // 版本
+  },
   axios: {
     proxy: true,
     //prefix:'/api',//：用來配置 baseUrl。以上面的程式碼為例，baseUrl default 會是 https://localhost:3000/api
