@@ -98,7 +98,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="12" sm="4">
+      <v-col cols="12" sm="4" v-show="false">
         <v-row no-gutters align="center">
           <v-col cols="6">
             <v-autocomplete
@@ -149,18 +149,19 @@
       <v-col
         cols="12"
         sm="3"
-        v-for="item in pooldata.filter(
-          x => x.id == sel_pool || sel_pool == undefined || sel_pool == ''
-        )"
+        v-for="item in pooldata"
         :key="item.id"
       >
+      <!-- v-for="item in pooldata.filter(
+          x => x.id == sel_pool || sel_pool == undefined || sel_pool == ''
+        )" -->
         <v-card tile>
           <v-card-subtitle>
             {{ item.name }}
             <v-btn
               icon
               color="success"
-              @click="showdialog_pool('edit')" dark v-if="false"
+              @click="()=>{sel_pool=item.id;showdialog_pool('edit');}" dark
               ><v-icon>mdi-pencil-outline</v-icon></v-btn
             >
           </v-card-subtitle>
