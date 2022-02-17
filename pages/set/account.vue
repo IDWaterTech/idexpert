@@ -12,10 +12,11 @@
           depressed
           @click="showaddDialog"
         >
-          <v-icon dark>
+          <v-icon >
             mdi-account-plus-outline
           </v-icon>
         </v-btn>
+        <v-btn class="mx-2" @click="showannDialog" fab dark small color="primary" depressed><v-icon>mdi-cellphone-message</v-icon></v-btn>
       </v-col>
       <v-col cols="12" align-self="center">
         <el-table
@@ -43,6 +44,7 @@
                     @click="showedititemDialog(props.row, 'account_name')"
                     >mdi-square-edit-outline</v-icon
                   ><br />
+                  職位：
                   <span>
                     <v-chip
                       class="ma-2"
@@ -60,6 +62,8 @@
                       >mdi-square-edit-outline</v-icon
                     >
                   </span>
+                  <br/>
+                  <span><v-autocomplete clearable multiple :items="maindata" item-text="name" item-value="id" dense deletable-chips chips style="width:600px"><span slot="prepend" style="width:180px">開放接收哪些廠的通知</span></v-autocomplete></span>
                 </el-form-item>
               </el-form>
             </template>
@@ -265,6 +269,9 @@
                       active-color="#13ce66"
                       inactive-color="#eee"
                     ></el-switch>
+                    <v-autocomplete dense :disabled="!addform.is_sys_enable_line"  :items="maindata" item-text="name" item-value="id" v-model="sel_main" filled
+                      multiple placeholder="開放接收哪些廠的通知"
+                    ></v-autocomplete>
                   </v-col>
                   <v-col cols="12">
                     職位
@@ -375,6 +382,43 @@
               </v-btn>
             </v-footer>
           </v-card>
+        </v-dialog>
+        <v-dialog v-model="annDialog" max-width="500px">
+           <v-form ref="annform" v-model="annvalid" lazy-validation>
+            <v-card>
+              <v-toolbar flat>
+                <v-toolbar-title>
+                  <span class="text-h5"
+                    >發佈公告
+                    <v-icon>mdi-cellphone-message</v-icon></span
+                  ></v-toolbar-title
+                >
+              </v-toolbar>
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-row>
+                 <v-col cols="12">
+                    <v-alert type="success" dense icon="mdi-bell-outline" class="multi-line">【IDWaterExpert】
+                      公告者：{{$auth.$state.user.name.replace($auth.$state.user.family_name,"")}}
+                      內容：{{annmsg}}
+                    </v-alert>
+                 </v-col>
+                 <v-col cols="12">
+                   <v-textarea v-model="annmsg" filled>
+
+                   </v-textarea>
+                 </v-col>
+                </v-row>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-footer color="white">
+                <v-spacer></v-spacer>
+                <v-btn color="primary" dark tile @click="annsubmit" >
+                  發佈
+                </v-btn>
+              </v-footer>
+            </v-card>
+          </v-form>
         </v-dialog>
       </v-col>
     </v-row>
@@ -530,7 +574,12 @@ export default {
         position: []
       },
       editposit: [], //編輯職位選到的內容
-      positDialog: false //顯示編輯職位
+      positDialog: false, //顯示編輯職位
+      maindata:[],
+      sel_main:[],
+      annDialog:false,//公告
+      annvalid:true,
+      annmsg:"",
     };
   },
   methods: {
@@ -560,6 +609,14 @@ export default {
           this.options = res.data;
           console.log("api：" + res.request.responseURL);
         });
+    },
+    getmainData:async function(){
+      await this.$axios
+      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
+      .then(res => {
+        this.maindata = res.data;
+        // this.sel_main = 1;
+      });
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱
@@ -635,6 +692,13 @@ export default {
       }
       console.log("expand row:", row);
     },
+    showannDialog:function(){
+      this.annDialog = true;
+    },
+    annsubmit:async function(){
+      var parm = `公告者：${this.$auth.$state.user.name.replace(this.$auth.$state.user.family_name,"")}\n內容：${this.annmsg}`;
+      
+    },
     showaddDialog: function() {
       if (this.$refs.form != undefined) {
         this.$refs.form.reset();
@@ -653,6 +717,7 @@ export default {
       // this.addform.position_id = [];
       this.addDialog = true;
     },
+    
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
       if (valid) {
@@ -811,8 +876,13 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getaccList();
     await this.getorg();
+    await this.getmainData();//get 廠資料
   }
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+  .multi-line {
+  white-space: pre-line;
+}
+</style>
