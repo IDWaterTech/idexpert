@@ -204,7 +204,7 @@ export default {
       } else {
         //edit mode
         let parm = _.cloneDeep(this.dialog.parm);
-        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/device/${parm.id}`;
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/device/${parm.id}/`;
         parm.updated_user = parm.created_user;
         delete parm.created_user;
         delete parm.id;
