@@ -12,11 +12,20 @@
           depressed
           @click="showaddDialog"
         >
-          <v-icon >
+          <v-icon>
             mdi-account-plus-outline
           </v-icon>
         </v-btn>
-        <v-btn class="mx-2" @click="showannDialog" fab dark small color="primary" depressed><v-icon>mdi-cellphone-message</v-icon></v-btn>
+        <v-btn
+          class="mx-2"
+          @click="showannDialog"
+          fab
+          dark
+          small
+          color="primary"
+          depressed
+          ><v-icon>mdi-cellphone-message</v-icon></v-btn
+        >
       </v-col>
       <v-col cols="12" align-self="center">
         <el-table
@@ -62,8 +71,39 @@
                       >mdi-square-edit-outline</v-icon
                     >
                   </span>
-                  <br/>
-                  <span><v-autocomplete clearable multiple :items="maindata" item-text="name" item-value="id" dense deletable-chips chips style="width:600px"><span slot="prepend" style="width:180px">開放接收哪些廠的通知</span></v-autocomplete></span>
+                  <br />
+                  <span>
+                    <span>所屬廠別：</span>
+                    <v-chip
+                      class="ma-2"
+                      label
+                      color="teal"
+                      text-color="white"
+                      v-for="item in props.row.factory_id"
+                      :key="item"
+                    >
+                      {{ maindata.filter(x=>x.id == item).length==1?maindata.filter(x=>x.id == item)[0].name:item}} </v-chip
+                    ><v-icon slot="append" @click="showedititemDialog(props.row, 'factory_id')"
+                      >mdi-square-edit-outline</v-icon
+                    >
+                    <!-- <v-autocomplete
+                      v-model="props.row.factory_id"
+                      filled
+                      disabled
+                      color="#ff0000"
+                      multiple
+                      :items="maindata"
+                      item-text="name"
+                      item-value="id"
+                      dense
+                      deletable-chips
+                      chips
+                      style="width:450px"
+                      ><v-icon slot="append" @click="showedititemDialog(props.row, 'factory_id')"
+                      >mdi-square-edit-outline</v-icon
+                    ></v-autocomplete
+                    > -->
+                  </span>
                 </el-form-item>
               </el-form>
             </template>
@@ -269,8 +309,15 @@
                       active-color="#13ce66"
                       inactive-color="#eee"
                     ></el-switch>
-                    <v-autocomplete dense :disabled="!addform.is_sys_enable_line"  :items="maindata" item-text="name" item-value="id" v-model="sel_main" filled
-                      multiple placeholder="開放接收哪些廠的通知"
+                    <v-autocomplete
+                      dense
+                      :items="maindata"
+                      item-text="name"
+                      item-value="id"
+                      v-model="addform.factory_id"
+                      filled
+                      multiple
+                      placeholder="所屬廠別"
                     ></v-autocomplete>
                   </v-col>
                   <v-col cols="12">
@@ -326,18 +373,31 @@
         <v-dialog v-model="edititemDialog" max-width="500px">
           <v-card>
             <v-card-title
-              >修改：{{
-                edititem.item == "account_name" ? "姓名" : edititem.item
-              }}</v-card-title
+              >修改：{{accCols.filter(x=>x.value==edititem.item).length==1?accCols.filter(x=>x.value==edititem.item)[0].text:edititem.item}}</v-card-title
             >
             <v-card-subtitle>{{ edititem.username }}</v-card-subtitle>
             <v-card-text>
-              <v-text-field v-model="edititem.value"> </v-text-field>
+              <v-text-field v-model="edititem.value" v-if="edititem.item!='factory_id'"> </v-text-field>
+              <!-- 開放接收哪些廠的通知 -->
+              <v-autocomplete
+                      v-if="edititem.item=='factory_id'"
+                      v-model="edititem.value"
+                      filled
+                      clearable
+                      multiple
+                      :items="maindata"
+                      item-text="name"
+                      item-value="id"
+                      dense
+                      deletable-chips
+                      chips
+                      style="width:600px"
+                      ></v-autocomplete>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click="submitedititem" text color="blue darken-1"
+              <v-btn @click="submitedititem" class="primary" dark tile
                 >確認</v-btn
               >
             </v-card-actions>
@@ -384,36 +444,44 @@
           </v-card>
         </v-dialog>
         <v-dialog v-model="annDialog" max-width="500px">
-           <v-form ref="annform" v-model="annvalid" lazy-validation>
+          <v-form ref="annform" v-model="annvalid" lazy-validation>
             <v-card>
               <v-toolbar flat>
                 <v-toolbar-title>
                   <span class="text-h5"
-                    >發佈公告
-                    <v-icon>mdi-cellphone-message</v-icon></span
+                    >發佈公告 <v-icon>mdi-cellphone-message</v-icon></span
                   ></v-toolbar-title
                 >
               </v-toolbar>
               <v-divider></v-divider>
               <v-card-text>
                 <v-row>
-                 <v-col cols="12">
-                    <v-alert type="success" dense icon="mdi-bell-outline" class="multi-line">【IDWaterExpert】
-                      公告者：{{$auth.$state.user.name.replace($auth.$state.user.family_name,"")}}
-                      內容：{{annmsg}}
+                  <v-col cols="12">
+                    <h2>＊模擬畫面＊</h2>
+                    <v-alert
+                      type="success"
+                      dense
+                      icon="mdi-bell-outline"
+                      class="multi-line"
+                      >【IDWaterExpert】 
+                      公告者：{{
+                        $auth.$state.user.name.replace(
+                          $auth.$state.user.family_name,
+                          ""
+                        )
+                      }}
+                      內容：{{ (annmsg!= undefined && annmsg.length>0)?annmsg:'...' }}
                     </v-alert>
-                 </v-col>
-                 <v-col cols="12">
-                   <v-textarea v-model="annmsg" filled>
-
-                   </v-textarea>
-                 </v-col>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-textarea v-model="annmsg" filled clearable> </v-textarea>
+                  </v-col>
                 </v-row>
               </v-card-text>
               <v-divider></v-divider>
               <v-footer color="white">
                 <v-spacer></v-spacer>
-                <v-btn color="primary" dark tile @click="annsubmit" >
+                <v-btn color="primary" tile @click="annsubmit" :loading="annsubmitbtn" :disabled="annmsg== undefined || annmsg.length<=0">
                   發佈
                 </v-btn>
               </v-footer>
@@ -456,10 +524,11 @@ export default {
       ],
       accCols: [
         { text: "帳號", value: "username", width: 300 },
-        { text: "姓名", value: "account_name", width: 150 },
+        { text: "姓名", value: "account_name", width: 150},
         { text: "單位", value: "department", width: 150 },
         { text: "職位", value: "position", width: 150 },
-        { text: "狀態", value: "is_active", width: 150 }
+        { text: "狀態", value: "is_active", width: 150},
+        { text: "所屬廠別", value: "factory_id", width: 150 }
       ],
       addDialog: false,
       valid: true,
@@ -467,7 +536,7 @@ export default {
         require: [v => !!v || "*必要項目"],
         eqpwd: [v => v == this.addform.password || "*密碼不一致"]
       },
-      accColsHide: ["單位", "職位", "狀態"], //隱藏欄位、或需要特殊建立的欄位
+      accColsHide: ["單位", "職位", "狀態","所屬廠別"], //隱藏欄位、或需要特殊建立的欄位
       editDialog: false,
       editedData: {}, //編輯中的資料
       expands: [], //Expand only one line into the current line id
@@ -485,7 +554,8 @@ export default {
         is_active: true,
         is_sys_enable_email: false,
         is_sys_enable_line: false,
-        position_id: []
+        position_id: [],
+        factory_id: [],
       },
       //單位顏色、ICON設定
       unit: [
@@ -575,11 +645,12 @@ export default {
       },
       editposit: [], //編輯職位選到的內容
       positDialog: false, //顯示編輯職位
-      maindata:[],
-      sel_main:[],
-      annDialog:false,//公告
-      annvalid:true,
-      annmsg:"",
+      maindata: [],
+      sel_main: [],
+      annDialog: false, //公告
+      annsubmitbtn:false,//發送鈕loading用
+      annvalid: true,
+      annmsg: ""
     };
   },
   methods: {
@@ -610,13 +681,15 @@ export default {
           console.log("api：" + res.request.responseURL);
         });
     },
-    getmainData:async function(){
+    getmainData: async function() {
       await this.$axios
-      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
-      .then(res => {
-        this.maindata = res.data;
-        // this.sel_main = 1;
-      });
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, {
+          httpsAgent: agent
+        })
+        .then(res => {
+          this.maindata = res.data;
+          // this.sel_main = 1;
+        });
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱
@@ -692,12 +765,49 @@ export default {
       }
       console.log("expand row:", row);
     },
-    showannDialog:function(){
+    showannDialog: function() {
+      this.annmsg = "";
       this.annDialog = true;
     },
-    annsubmit:async function(){
-      var parm = `公告者：${this.$auth.$state.user.name.replace(this.$auth.$state.user.family_name,"")}\n內容：${this.annmsg}`;
-      
+    annsubmit: async function() {
+      this.annsubmitbtn = true;
+      var pcontent = `\n公告者：${this.$auth.$state.user.name.replace(
+        this.$auth.$state.user.family_name,
+        ""
+      )}\n內容：${this.annmsg}`;
+      if(this.annmsg.length<=0){
+       this.$toast.success(`未填入訊息`, {duration: 2000});
+        return;
+      }
+      const updUser = this.$auth.$state.user.email;
+      var parm = {
+        sender:updUser,
+        content:pcontent
+      }
+      await this.$axios
+          .post(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/line-notify/`,
+            parm
+          )
+          .then(res => {
+            this.$toast.success(`發送結果：${(res.data=='發送結束')?'成功':res.data}`, {
+                  duration: 2000
+                });
+            switch (res.data) {
+              case "發送結束":
+                this.annDialog = false;
+                break;
+              default:
+                break;
+            }
+            console.log("發送api：" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.success("發送失敗：" + error, { duration: 2000 });
+          })
+          .finally(() => {
+            this.annsubmitbtn = false;
+          });
     },
     showaddDialog: function() {
       if (this.$refs.form != undefined) {
@@ -717,7 +827,7 @@ export default {
       // this.addform.position_id = [];
       this.addDialog = true;
     },
-    
+
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
       if (valid) {
@@ -770,7 +880,7 @@ export default {
     },
     submitedititem: async function() {
       let parm = {};
-      parm[this.edititem.item] = this.edititem.value;
+      parm[this.edititem.item] = this.edititem.value;//項目=值
       const updUser = this.$auth.$state.user.email;
       parm["updated_user"] = updUser;
       console.log(parm);
@@ -785,7 +895,7 @@ export default {
             this.edititemDialog = false;
             this.accdata.filter(
               x => x.id == this.edititem.id
-            )[0].account_name = this.edititem.value; //改畫面的資料
+            )[0][this.edititem.item] = this.edititem.value; //改畫面的資料
             this.$toast.success("修改成功", { duration: 2000 });
           } else {
             this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
@@ -876,13 +986,13 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getaccList();
     await this.getorg();
-    await this.getmainData();//get 廠資料
+    await this.getmainData(); //get 廠資料
   }
 };
 </script>
 
 <style scoped>
-  .multi-line {
+.multi-line {
   white-space: pre-line;
 }
 </style>
