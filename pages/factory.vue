@@ -98,7 +98,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="12" sm="4" v-show="false">
+      <v-col cols="12" sm="4">
         <v-row no-gutters align="center">
           <v-col cols="6">
             <v-autocomplete
