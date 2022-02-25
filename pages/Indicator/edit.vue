@@ -173,9 +173,7 @@
             <v-card v-if="addDialog"
               ><v-card-title>新增</v-card-title>
               <v-card-subtitle class="title"
-                >{{ maindata[sel_main - 1].name }}-{{
-                  maindata[sel_main - 1].node[sel_area - 1].name
-                }}-<span class="font-weight-black" style="color:red;">{{
+                >{{maindata.filter(x=>x.id==sel_main)[0].name}}-{{maindata.filter(x=>x.id==sel_main)[0].node.filter(x=>x.id==sel_area)[0].name}}-<span class="font-weight-black" style="color:red;">{{
                   defitem
                 }}</span
                 ></v-card-subtitle>
@@ -360,8 +358,8 @@
             <download-excel
               :data="item.items"
               :name="
-                `${sdate}_${edate}_${maindata[sel_main - 1].name}_${
-                  maindata[sel_main - 1].node[sel_area - 1].name
+                `${sdate}_${edate}_${maindata.filter(x=>x.id==sel_main)[0].name}_${
+                  maindata.filter(x=>x.id==sel_main)[0].node.filter(x=>x.id==sel_area)[0].name
                 }_${
                   mainpool.items.filter(x => x.id == sel_pool)[0].name
                 }_${defitem}`
