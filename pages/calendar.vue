@@ -321,6 +321,23 @@
                           >
                         </v-autocomplete>
                       </v-col>
+                      <v-col cols="12" class="pt-0">
+                        <span>
+                          <h3>【事件等級(定義說明)】</h3>
+                          <v-alert color="#E539" dense>
+                            ●重要→會直接影響到"經濟損失"的，一般來說就是跟蝦子有關，如溶氧過低，會造成蝦子死亡，此類列為重要
+                          </v-alert>
+                          <v-alert color="#00AC" dense style="color:white">
+                            ●一般→會影響到部分項目，但不影響"經濟損失"。如把機台拿回來維護，這段時間不會有數據上傳但不影響蝦子
+                          </v-alert>
+                          <v-alert color="#7575" dense>
+                            ●不重要→如機台定期添加試劑、純水等，完全不影響資料上傳或是蝦子，列為此類
+                          </v-alert>
+                          <!-- <font style="background-color:#E539;color:white;"></font><br/>
+                          <font style="background-color:#00AC;color:white;"></font><br/>
+                          <font style="background-color:#7575;color:white;"></font><br/> -->
+                        </span>
+                      </v-col>
                       <!-- 標題 -->
                       <v-col cols="12">
                         <v-text-field v-model="edited.title" dense filled clearable :rules="rules.require">
