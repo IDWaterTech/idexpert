@@ -169,7 +169,18 @@
               clearable
               @change="ficselect"
             ><v-icon slot="prepend" @click="getficdata">mdi-reload</v-icon></v-autocomplete>
-            成份清單<v-chip class="mx-3" v-for="n in fing.filter(x=>x.feed_ingredient_category_id==fic_idx)" :key="n.id">#{{n.name}}</v-chip>
+            成份清單
+            <v-chip-group
+              v-model="fingchip"
+              active-class="primary--text"
+              column
+              @change="fingchipclick"
+            >
+              <v-chip class="mx-3" v-for="n in fing.filter(x=>x.feed_ingredient_category_id==fic_idx)"
+                      :key="n.id" >
+                {{n.name}}</v-chip>
+            </v-chip-group>
+            
              <v-card class="mt-1">
               <v-toolbar flat color="lightblue" dark>
                 <v-icon class="mx-2">mdi-food-drumstick</v-icon>
@@ -239,7 +250,7 @@
                   v-if="ficmode=='edit'"
                   :disabled="!ficisEditing"
                   color="error"
-                  @click="ficdelete"
+                  @click="ficdelete" small
                 >
                   確認刪除
                 </v-btn>
@@ -247,7 +258,7 @@
                   v-if="ficmode=='edit'"
                   :disabled="!ficisEditing"
                   color="primary"
-                  @click="ficedit"
+                  @click="ficedit" small
                 >
                   確認修改
                 </v-btn>
@@ -274,7 +285,7 @@
                   color="primary"
                   fab
                   small
-                  @click="fingisEditing = !fingisEditing"
+                  @click="fingeditchange"
                   v-if="fingmode=='add'"
                 >
                   <v-icon v-if="fingisEditing">
@@ -301,7 +312,7 @@
               </v-toolbar>
               <v-card-text>
                 <v-form ref="fingform" v-model="fingvalid" :disabled="!fingisEditing">
-                  <v-text-field v-model="fingfield.feed_ingredient_category_id" dense placeholder="feed_ingredient_category_id" filled :rules="rules.require" :disabled="true">
+                  <v-text-field v-show="false" v-model="fingfield.feed_ingredient_category_id" dense placeholder="feed_ingredient_category_id" filled :rules="rules.require" :disabled="true">
                   <span slot="prepend" style="width:100px;">正在新增(之後不show)</span>
                   </v-text-field>
                   <v-text-field
@@ -330,7 +341,7 @@
                     clearable
                   ><span slot="prepend" style="width:100px;">廠商</span></v-autocomplete>
                   <v-text-field
-                    v-model="fingfield.price"
+                    v-model.number="fingfield.price"
                     filled
                     clearable
                     placeholder="15,20,150,..."
@@ -344,7 +355,7 @@
                     :rules="rules.require"
                   ><span slot="prepend" style="width:100px;">單位</span></v-text-field>
                   <v-text-field
-                    v-model="fingfield.unit_quantity"
+                    v-model.number="fingfield.unit_quantity"
                     filled
                     clearable
                     placeholder="100,6,50,..."
@@ -356,9 +367,6 @@
                     placeholder="memo"
                   ></v-text-field> -->
                   <v-divider></v-divider>
-                  <h2 class="my-2">詳細內容
-                      <v-btn class="mx-3"  x-small fab dark color="primary" @click="ingitemcrease('+')">+</v-btn>
-                  </h2>
                   <v-autocomplete
                     v-model="fingparam"
                     :items="parmdata"
@@ -373,29 +381,16 @@
                     multiple
                     ><span slot="prepend" style="width:100px;"
                       >成份參數</span
-                    ><v-btn slot="append-outer" x-small fab class="primary" @click="showparam">+</v-btn></v-autocomplete>
+                    ><v-btn slot="append-outer" x-small outlined dark fab color="primary" @click="showparam">+</v-btn></v-autocomplete>
                     <v-row v-for="item in fingparam" :key="item">
                       <v-col cols="12" align-self="center">
-                        <v-text-field filled dense clearable :rules="rules.require" placeholder="90%,0.85,...">
-                          <span slot="prepend" style="width:50px;">{{item}}</span>
+                        <v-text-field v-model="fingparamitem[item]" filled dense clearable :rules="rules.require" placeholder="90%,0.85,...">
+                          <span slot="prepend" style="width:50px;">{{parmdata.filter(x=>x.id==item)[0].name_ch}}</span>
                         </v-text-field>
                       </v-col>
                     </v-row>
-                      <v-row v-for="item in ingitem" :key="item.id">
-                          <v-col cols="3" align-self="center">
-                              <v-text-field v-model="item.item_name" filled dense clearable :rules="rules.require"><span slot="prepend" style="width:50px;">項目</span></v-text-field>
-                          </v-col>
-                          <v-col cols="4">
-                              <v-text-field v-model="item.item_en" filled dense clearable :rules="rules.require"><span slot="prepend" style="width:50px;">項目(英)</span></v-text-field>
-                          </v-col>
-                          <v-col cols="4">
-                              <v-text-field v-model="item.value" filled dense clearable :rules="rules.require"><span slot="prepend" style="width:50px;">內容</span></v-text-field>
-                          </v-col>
-                          <v-col cols="1">
-                              <v-btn  x-small fab dark color="primary" @click="ingitemcrease(item.id)">-</v-btn>
-                          </v-col>
-                      </v-row>
                 </v-form>
+                <!-- 新增參數視窗 -->
                 <v-dialog v-model="dialog.param" width="400px">
                   <v-card>
                     <v-toolbar flat color="lightblue" dark dense>
@@ -433,12 +428,27 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
-                  :disabled="!isEditing"
+                  :disabled="!fingisEditing"
                   color="primary"
-                  @click="manusubmit"
+                  @click="fingsubmit"
+                  v-if="fingmode=='add'"
                 >
                   確定
                 </v-btn>
+                <v-btn
+                  :disabled="!fingisEditing"
+                  color="error"
+                  small
+                  v-if="fingmode=='edit'"
+                  @click="fingdelete"
+                >確認刪除</v-btn>
+                <v-btn
+                  :disabled="!fingisEditing"
+                  color="primary"
+                  small
+                  @click="fingedit"
+                  v-if="fingmode=='edit'"
+                >確認修改</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -664,6 +674,8 @@ export default {
       ficmode:'add',
       ficisEditing:false,
       ficfield:{},
+      fingparamitem:{},
+      fingchip:{},//成份清單  
       //成份清單(detail)
       fing:[],
       fingvalid:true,
@@ -759,7 +771,7 @@ export default {
       ingredientsItem: {},
       isEditing: false,
       customFilter: "",
-      ingitem:[],//成份詳細內容
+      // ingitem:[],//成份詳細內容
     };
   },
   async mounted() {
@@ -885,8 +897,10 @@ export default {
         this.ficfield = {};
         this.fingfield.feed_ingredient_category_id = undefined;
       }
+      this.fingparam = [],//成份參數
       this.ficisEditing=false;//只要select change就關閉編輯成份類別
       this.fingisEditing=false;//只要select change就關閉編輯成份清單
+      this.getparmdata();//參數清單
     },
     //取得廠商清單
     getmanudata:async function(){
@@ -928,6 +942,9 @@ export default {
           .then(res => {
             if (res.data == "刪除成功") {
               this.$toast.success(`刪除成功`, { duration: 2000 });
+              this.ficisEditing = false;
+              this.fic_idx=null;
+              this.ficfield = {};
             }else{
               this.$toast.error(`刪除失敗${ res.data}`, { duration: 2000 });
             }
@@ -981,6 +998,9 @@ export default {
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient-category/`;
         let parms = this.ficfield;
         parms.created_user= this.$auth.$state.user.email;
+        if(this.ficfield.hasOwnProperty("is_main")==false){
+          parms["is_main"]=false;
+          }
         await this.$axios
           .post(url, parms)
           .then(res => {
@@ -1021,6 +1041,135 @@ export default {
       
     
     },
+    //成份編輯狀態改變
+    fingeditchange:function(){
+      this.fingisEditing = !this.fingisEditing;
+      if(this.fingisEditing==false){
+        this.fingfield={};
+      }
+    },
+    //成份清單，單一項目被選到
+    fingchipclick:function(){
+      console.log(this.fingchip);
+      if (this.fingchip==null || this.fingchip == undefined) {
+        this.fingmode = 'add';
+        this.fingfield = {};
+      }else{
+        this.fingmode = 'edit';
+        var parms = _.cloneDeep(this.fing[this.fingchip]);
+        // this.fingfield.name = this.fing[this.fingchip].name;
+        delete parms["created_time"];//刪去不必要欄位
+        delete parms["created_user"];
+        delete parms["updated_user"];
+        delete parms["updated_time"];
+        this.fingfield = parms;
+        // parms["parameters"] = 
+          //參數下拉清單 - 重新指定
+        this.fingparam =  parms["parameters"].map(x=>x.id);
+        this.fingparam.forEach(element => {
+          this.fingparamitem[element] = parms["parameters"].filter(x=>x.id==element)[0].value;
+        });
+        
+      }
+    },
+    //編輯成份
+    fingedit:async function(){
+      console.log(this.fingfield);
+      let parameters =[];
+      this.fingparam.forEach(element => {
+        parameters.push({"id":element,"value":this.fingparamitem[element]});
+      });
+      this.fingfield.parameters = parameters;
+      let parms = _.cloneDeep(this.fingfield);
+      parms.updated_user= this.$auth.$state.user.email;   
+      let val = this.$refs.fingform.validate();
+      if (val) {
+        let id = parms["id"];
+        delete parms["id"];
+        debugger; 
+        
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/  `; 
+        await this.$axios
+          .patch(url, parms)
+          .then(res => {
+            if (res.data == "修改成功") {
+              this.$toast.success(`新增成功`, { duration: 2000 });
+              this.fingfield = {};
+              this.fingisEditing = false;
+              this.fingchip=null;
+            } else {
+              alert("修改失敗!：" + res.data);
+            }
+          })
+          .catch(error => {
+            alert("新增失敗!：" + error.message);
+          })
+          .finally(() => {
+            this.getfingdata();
+          });
+      }
+    },
+    //刪除成份
+    fingdelete:async function(){
+      let id = this.fingfield["id"];
+      let name = this.fingfield["name"];
+       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/`;
+      if(confirm("是否刪除?-" + name)){
+        await this.$axios
+          .delete(url)
+          .then(res => {
+            if (res.data == "刪除成功") {
+              this.$toast.success(`刪除成功`, { duration: 2000 });
+              this.fingfield = {};
+              this.fingisEditing = false;
+            }else{
+              this.$toast.error(`刪除失敗${ res.data}`, { duration: 2000 });
+            }
+          }
+          ).catch(error => {
+            alert("刪除失敗!：" + error.message);
+          })
+          .finally(() => {
+            this.getfingdata();
+          });
+
+      }
+    },
+    //新增成份
+    fingsubmit:async function(){
+      
+      let parameters =[];
+      this.fingparam.forEach(element => {
+        parameters.push({"id":element,"value":this.fingparamitem[element]});
+      });
+      this.fingfield.parameters = parameters;
+      console.log(this.fingfield);
+      let val = this.$refs.fingform.validate();
+      if (val) {
+        this.fingfield.created_user = this.$auth.$state.user.email;
+        //--
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/`;
+        let parms = this.fingfield;
+        parms.created_user= this.$auth.$state.user.email;
+        await this.$axios
+          .post(url, parms)
+          .then(res => {
+            if (res.data == "新增成功") {
+              this.$toast.success(`新增成功`, { duration: 2000 });
+              this.fingfield = {};
+              this.fingisEditing = false;
+            } else {
+              alert("新增失敗!：" + res.data);
+            }
+          })
+          .catch(error => {
+            alert("新增失敗!：" + error.message);
+          })
+          .finally(() => {
+            this.getfingdata();
+          });
+      }
+    },
     //取得成份清單
     getfingdata:async function(){
       // this.fiidx=null;//還原成未選
@@ -1039,6 +1188,7 @@ export default {
             //this.getdata();
           });
     },
+    //顯示參數視窗
     showparam:function(){
       this.parmfield = {};
       this.dialog.param = true;
@@ -1086,24 +1236,9 @@ export default {
           });
       }
     },
-    getRnd:function(){
-        return Math.floor(Math.random() * 1000);
-    },
-    ingitemcrease:async function(data){
-        switch(data){
-            case "+":
-                var newid = this.getRnd();
-                while (this.ingitem.filter(x=>x.id==newid).length!=0) {
-                    newid = getRnd();
-                }
-                this.ingitem.push({"id":newid,"item_name":"","item_en":"","value":""});
-                break;
-            default:
-                var itemidx = this.ingitem.indexOf(this.ingitem.find(x=>x.id==data));
-                this.ingitem.splice(itemidx,1);
-                break;
-        }
-    }
+    // getRnd:function(){
+    //     return Math.floor(Math.random() * 1000);
+    // },
   }
 };
 </script>
