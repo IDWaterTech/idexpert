@@ -174,10 +174,10 @@
               v-model="fingchip"
               active-class="primary--text"
               column
-              @change="fingchipclick"
+              @change="fingchipclick" 
             >
               <v-chip class="mx-3" v-for="n in fing.filter(x=>x.feed_ingredient_category_id==fic_idx)"
-                      :key="n.id" >
+                      :key="n.id" :value="n.id">
                 {{n.name}}</v-chip>
             </v-chip-group>
             
@@ -945,6 +945,7 @@ export default {
               this.ficisEditing = false;
               this.fic_idx=null;
               this.ficfield = {};
+              this.ficmode='add';//回到新增模式
             }else{
               this.$toast.error(`刪除失敗${ res.data}`, { duration: 2000 });
             }
@@ -1056,7 +1057,7 @@ export default {
         this.fingfield = {};
       }else{
         this.fingmode = 'edit';
-        var parms = _.cloneDeep(this.fing[this.fingchip]);
+        var parms = _.cloneDeep(this.fing.filter(x=>x.id==this.fingchip)[0]);
         // this.fingfield.name = this.fing[this.fingchip].name;
         delete parms["created_time"];//刪去不必要欄位
         delete parms["created_user"];
