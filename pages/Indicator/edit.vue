@@ -98,23 +98,15 @@
       <v-col cols="12" md="2">
         <v-autocomplete
           v-model="defitem"
-          :items="Object.keys(waterdatacols)"
+          :items="waterdatacols"
+          item-text="name"
+          item-value="value"
           no-data-text="查無資料"
           placeholder="指定項目(必選)"
           class="primary"
           dark
           clearable
         ></v-autocomplete>
-        <!-- <v-select
-          v-model="defitem"
-          clearable
-          placeholder="指定項目(必選)"
-          :items="Object.keys(waterdatacols)"
-          v-if="waterdatacols"
-          no-data-text="查無資料"
-          background-color="light-green lighten-4"
-        >
-        </v-select> -->
       </v-col>
       <v-col cols="12" md="1" class="text-center align-self-center">
         <v-btn
@@ -191,7 +183,9 @@
                   <v-col cols="12" md="6">
                     <v-autocomplete
                       v-model="defitem"
-                      :items="Object.keys(waterdatacols)"
+                      :items="waterdatacols"
+                      item-text="name"
+                      item-value="value"
                       no-data-text="查無資料"
                       placeholder="指定項目(必選)"
                       dense
@@ -526,7 +520,8 @@ export default {
         "items-per-page-options": [25, 50, 75, 100]
       },
       defitem: [],
-      waterdatacols: {},
+      waterdatacols: [],
+      coldata:[],//{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
       allcols: {},
       waterloading: false, //折線圖，
       item: [{ name: "", items: [] }],
@@ -559,6 +554,18 @@ export default {
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+    //抓欄位資料 waterdatacols ，coldata
+    var myitem=[];
+     await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
+       res.data.forEach(element => {
+         myitem.push({name:element.name_ch,value:element.name_en});
+       });
+       this.waterdatacols = myitem;
+       this.coldata = Object.assign([], res.data);
+      })
+      .catch(err => {
+        alert("失敗：" + err.message);
+      });
     //抓廠資料
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
@@ -579,23 +586,28 @@ export default {
         }
         this.defitem =
           this.req.defitem != undefined && this.req.defitem.length > 0
-            ? this.req.defitem
+            ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0].name_en
             : [];
       })
       .catch(err => {
         alert("失敗：" + err.message);
       });
     //抓all項目
+
+
+
+
+    //  "env": {"排汙耗時": "排汙耗時(s)"....}
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, {
         httpsAgent: agent
       })
       .then(res => {
         console.log("all項目");
-        for (let i = 0; i < Object.keys(res.data).length; i++) {
-          let colsclass = Object.keys(res.data)[i]; //water;
-          Object.assign(this.waterdatacols, res.data[colsclass]);
-        }
+        // for (let i = 0; i < Object.keys(res.data).length; i++) {
+        //   let colsclass = Object.keys(res.data)[i]; //water;
+        //   Object.assign(this.waterdatacols, res.data[colsclass]); //{亞硝酸鹽清洗電壓: "亞硝酸鹽清洗電壓(V)",....}
+        // }
         this.allcols = Object.assign({}, res.data);
       })
       .catch(err => {
@@ -662,7 +674,7 @@ export default {
     getItemClass: function(item) {
       let colclass = "";
       for (let i = 0; i < Object.keys(this.allcols).length; i++) {
-        let inclass = Object.keys(this.allcols)[i]; //water;
+        let inclass = Object.keys(this.allcols)[i]; //Object.keys(this.allcols) : ['env', 'water', 'obs', 'adv', 'feed', 'pbio']
         let checkclass = Object.keys(this.allcols[inclass]).includes(item);
         if (checkclass == true) {
           colclass = inclass;
@@ -682,27 +694,30 @@ export default {
       );
       this.loading = true;
       //指定的項目是歸屬於哪個類別，水質/投餵
-      var defitem_tmp = this.defitem; //判斷項目是屬於水質還是投餵用
-      let itemclass = ``;
-      let mycols = this.allcols;
+      // var defitem_tmp = this.defitem; //判斷項目是屬於水質還是投餵用
+      // let itemclass = ``;
+      // let mycols = this.allcols;
 
-      for (const idx in Object.keys(mycols)) {
-        var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(
-          keys => keys == defitem_tmp
-        );
-        if (tmp !== undefined && tmp == defitem_tmp) {
-          itemclass = Object.keys(mycols)[idx];
-        }
-      }
+      // for (const idx in Object.keys(mycols)) {
+      //   var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(
+      //     keys => keys == defitem_tmp
+      //   );
+      //   if (tmp !== undefined && tmp == defitem_tmp) {
+      //     itemclass = Object.keys(mycols)[idx];
+      //   }
+      // }
 
       //抓折線圖資料囉
+      var defitemall = this.coldata.filter(x=>x.name_en==this.defitem)[0];
+      let itemclass = defitemall.group;
+      let defitem_name = defitemall.name_ch;
       let para = {
         started_date: this.sdate,
         ended_date: this.edate,
         factory_id: this.sel_main,
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
-        items: this.defitem,
+        items: defitem_name,
         data_group: itemclass
       };
       let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
@@ -745,15 +760,21 @@ export default {
       this.editedItem.value = item[Object.keys(item)[3]];
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
       //抓項目的限制
-      let coldata = [];
-      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
-        coldata = Object.assign([], res.data);
-      });
-      var colitem = coldata.filter(
-        x =>
-          x.group == this.getItemClass(this.defitem) &&
-          x.name_ch == this.defitem
-      );
+      // let coldata = [];
+      // await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
+      //   coldata = Object.assign([], res.data);
+      // });
+      // name: "進水量"
+      // value: "inflow"
+      // var defitem_name = this.waterdatacols.filter(x=>x.value==this.defitem)[0].name;//用「inflow」取回中文「進水量」
+      //  this.getItemClass(defitem_name);//「進水量」取回「env」
+      // var colitem = coldata.filter(
+      //   x =>
+      //     x.group == this.getItemClass(this.defitem) &&
+      //     x.name_ch == this.defitem
+      // );
+      //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
+      var colitem = this.coldata.filter(x=>x.name_en==this.defitem);
       if (colitem.length == 1) {
         this.num = {}; //清空
         this.num_min =
@@ -856,15 +877,20 @@ export default {
       this.atime = "";
       //this.getItemClass(this.defitem);
       //抓項目的限制
-      let coldata = [];
-      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
-        coldata = Object.assign([], res.data);
-      });
-      var colitem = coldata.filter(
-        x =>
-          x.group == this.getItemClass(this.defitem) &&
-          x.name_ch == this.defitem
-      );
+      // let coldata = [];
+      // await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
+      //   coldata = Object.assign([], res.data);
+      // });
+      // name: "進水量"
+      // value: "inflow"
+      // var defitem_name = this.waterdatacols.filter(x=>x.value==this.defitem)[0].name;
+      // var colitem = coldata.filter(
+      //   x =>
+      //     x.group == this.getItemClass(this.defitem) &&
+      //     x.name_ch == this.defitem
+      // );
+      //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
+      var colitem = this.coldata.filter(x=>x.name_en==this.defitem);
       if (colitem.length == 1) {
         this.num = {}; //清空
         this.num_min =
@@ -885,15 +911,17 @@ export default {
     },
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
-
       if (valid) {
-        let colclass = this.getItemClass(this.defitem);
+        // let colclass = this.getItemClass(this.defitem);
+        var defitemall = this.coldata.filter(x=>x.name_en==this.defitem)[0];
+        let colclass = defitemall.group;
+
         let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
 
         let url = apiurl;
         const updUser = this.$auth.$state.user.email;
         let parms = {
-          items: this.defitem, //亞硝酸鹽濃度
+          items: this.defitem, //inflow (要用英文的)
           inspected_time: `${this.adate} ${this.atime}:00`, //無秒數，直接補0
           data: [],
           created_user: updUser, //建立者名稱
