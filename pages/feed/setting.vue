@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 style="color:white;">投餵飼料-管理</h2>
+    <h2 style="color:white;">飼料表設定</h2>
     <v-tabs v-model="tablindex" background-color="cardtitle" center-active dark>
       <v-tab :href="`#廠商設定`">廠商設定</v-tab>
       <v-tab :href="`#成份設定`">成份設定</v-tab>
@@ -9,18 +9,18 @@
     <!-- tabe的主要內容 -->
     <v-tabs-items v-model="tablindex">
       <!-- 廠商設定 -->
-      <v-tab-item value="廠商設定">
+      <v-tab-item value="廠商設定" class="tabitembg">
         <v-row class="mx-3 my-3 mt-3">
-          <v-col cols="12" sm="6" class="my-2">
+          <v-spacer></v-spacer>
+          <v-col cols="12" sm="8" class="my-2">
             <v-autocomplete
               v-model="manuidx"
               style="width"
               :items="manu"
               item-text="name_ch"
               item-value="id"
-              dense
+              dense filled
               label="選擇廠商"
-              solo
               clearable
               @change="manselect"
             ><v-icon slot="prepend" @click="getmanudata">mdi-reload</v-icon></v-autocomplete>
@@ -154,7 +154,7 @@
         </v-row>
       </v-tab-item>
       <!-- 成份設定 -->
-      <v-tab-item value="成份設定">
+      <v-tab-item value="成份設定" class="tabitembg">
         <v-row class="mx-3 my-3 mt-3">
           <v-col cols="12" sm="6" class="my-2">
             <v-autocomplete
@@ -165,7 +165,7 @@
               item-value="id"
               dense
               label="選擇成份類別"
-              solo
+              filled
               clearable
               @change="ficselect"
             ><v-icon slot="prepend" @click="getficdata">mdi-reload</v-icon></v-autocomplete>
@@ -455,28 +455,30 @@
         </v-row>
       </v-tab-item>
       <!-- 飼料資訊(套餐) -->
-      <v-tab-item value="飼料設定(套餐)">
+      <v-tab-item value="飼料設定(套餐)" class="tabitmbg">
         <v-row class="mx-3 my-3 mt-3">
-          <v-col cols="12" sm="6" class="my-2">
+          <v-spacer></v-spacer>
+          <v-col cols="12" sm="10" class="my-2">
+            <!-- 選擇飼料(套餐) -->
             <v-autocomplete
               v-model="comboidx"
               style="width"
               :items="combo"
-              item-text="name"
-              item-value="value"
+              item-text="name_ch"
+              item-value="id"
               dense
               label="選擇飼料(套餐)"
-              solo
+              filled
               clearable
-              @change="isEditing = false"
-            ></v-autocomplete>
+              @change="comboselect"
+            ><v-icon slot="prepend" @click="getcombodata">mdi-reload</v-icon></v-autocomplete>
             <v-card>
               <v-toolbar flat color="lightblue" dark>
                 <v-icon class="mx-2">mdi-food</v-icon>
                 <v-toolbar-title class="font-weight-light">
-                  飼料資訊(套餐)：{{
-                    combo.filter(x => x.value == comboidx).length > 0
-                      ? combo.filter(x => x.value == comboidx)[0].name
+                  飼料資訊(套餐){{
+                    combo.filter(x => x.id == comboidx).length > 0
+                      ? "：" + combo.filter(x => x.id == comboidx)[0].name_ch
                       : ""
                   }}
                 </v-toolbar-title>
@@ -485,24 +487,24 @@
                   color="primary"
                   fab
                   small
-                  @click="isEditing = !isEditing"
-                  v-if="manu.filter(x => x.value == manuidx).length == 0"
+                  @click="()=>{sub_formula = {},comboisEditing = !comboisEditing;}"
+                  v-if="combo.filter(x => x.id == comboidx).length == 0"
                 >
-                  <v-icon v-if="isEditing">
+                  <v-icon v-if="comboisEditing">
                     mdi-close
                   </v-icon>
                   <v-icon v-else>
-                    mdi-account-multiple-plus
+                    mdi-hamburger-plus
                   </v-icon>
                 </v-btn>
                 <v-btn
                   color="primary"
                   fab
                   small
-                  @click="isEditing = !isEditing"
-                  v-if="manu.filter(x => x.value == manuidx).length > 0"
+                  @click="()=>{comboisEditing = !comboisEditing;}"
+                  v-if="combo.filter(x => x.id == comboidx).length > 0"
                 >
-                  <v-icon v-if="isEditing">
+                  <v-icon v-if="comboisEditing">
                     mdi-close
                   </v-icon>
                   <v-icon v-else>
@@ -511,20 +513,24 @@
                 </v-btn>
               </v-toolbar>
               <v-card-text>
-                <v-form ref="" v-model="manvalid">
+                <v-form ref="comboform" v-model="combovalid" :disabled="!comboisEditing">
                   <v-text-field
+                    v-model="combofield.name_ch"
                     filled
                     clearable
-                    placeholder="0號料"
+                    placeholder="1號套餐"
                     :rules="rules.require"
                   ><span slot="prepend" style="width:100px;">飼料名稱</span></v-text-field>
                   <v-text-field
+                    v-model="combofield.name_en"
                     filled
                     clearable
-                    placeholder="feed0"
+                    placeholder="Meal No.1"
                     :rules="rules.require"
+                    :disabled="combomode=='edit'"
                   ><span slot="prepend" style="width:100px;">飼料名稱(英)</span></v-text-field>
                   <v-text-field
+                    v-model="combofield.remark"
                     label="備註"
                     clearable outlined
                     placeholder="memo"
@@ -532,26 +538,48 @@
                   <v-divider></v-divider>
                   <h2 class="my-2">配方</h2>
                   <v-autocomplete
-                    v-model="mingidx"
+                    v-model="combofield.main_items"
                     style="width"
-                    :items="maining"
+                    :items="ficwithdetail_main"
                     item-text="name"
-                    item-value="value"
+                    item-value="id"
                     dense
+                    chips
+                    deletable-chips
                     label="選擇主成份"
                     filled
                     clearable
+                    multiple
                     @change="isEditing = false"
                     ><span slot="prepend" style="width:50px;"
                       >主成份</span
                     ></v-autocomplete
                   >
+                   <div v-for="item in combofield.main_items" :key="item.id">
+                      <v-alert
+                        outlined dense
+                        color="purple"
+                      >
+                        <div class="body-1">
+                          {{ficwithdetail_main.filter(x => x.id == item)[0].name}}
+                        
+                        <v-chip v-for="parmitem in ficwithdetail_main.filter(x => x.id == item)[0].parameters"
+                        :key="parmitem.id" small
+                        >{{`${parmitem.name}:${parmitem.value}`}}</v-chip>
+                        <span v-if="ficwithdetail_main.filter(x => x.id == item)[0].hasOwnProperty('parameters') == false" style="font-size:12px;">
+                            無相關參數資料
+                          </span>
+                        </div>
+                      </v-alert>
+                     
+                      
+                     </div>
                   <v-autocomplete
-                    v-model="ingidx"
+                    v-model="combofield.sub_items"
                     style="width"
-                    :items="ingredients"
+                    :items="ficwithdetail_sub"
                     item-text="name"
-                    item-value="value"
+                    item-value="id"
                     dense
                     chips
                     deletable-chips
@@ -559,47 +587,29 @@
                     filled
                     clearable
                     multiple
-                    @change="isEditing = false"
+                    @change="subchange"
                     ><span slot="prepend" style="width:50px;"
                       >次成份</span
                     ></v-autocomplete
                   >
-                  <span v-show="ingidx.length>0">比例</span>
-                  <v-row
-                    v-for="item in ingidx"
-                    :key="item"
-                    align="center"
-                    align-content="center"
-                  >
+                  <span v-show="combofield.sub_items && combofield.sub_items.length>0">比例</span>
+                  
+                  <v-row dense   v-for="item in combofield.sub_items" :key="item" justify="center"  align="center" align-content="center">
                     <v-col cols="2">
                       <div
-                        class="headline text-center mb-3"
+                        class="subtitle-1 text-center mb-3"
                         style="border: 2px grey solid;"
                       >
-                        {{ ingredients.filter(x => x.value == item)[0].name }}
+                        {{ficwithdetail_sub.filter(x=>x.id==item)[0].name}}
                       </div>
                     </v-col>
-                    <v-col cols="3" align-self="center">
-                      <v-autocomplete
-                        v-model="
-                          ingredientsItem[
-                            ingredients.filter(x => x.value == item)[0].value
-                          ]
-                        "
-                        filled
-                        dense
-                        :rules="rules.require"
-                        item-text="name"
-                        :items="
-                          ingredients.filter(x => x.value == item)[0].items
-                        "
-                      ></v-autocomplete>
+                    <v-col cols="2" class="algin-center text-center mb-3">
+                        = sum(主成份) *
                     </v-col>
-                    <v-col cols="3">
-                      <div class="text-center">= 飼料(主成份) X</div>
-                    </v-col>
-                    <v-col cols="4">
+                    <v-col cols="8">
+                      <!-- {{ficwithdetail_sub.filter(x=>x.id==item)[0].name]}} -->
                       <v-text-field
+                        v-model="sub_formula[item]"
                         filled
                         dense
                         clearable
@@ -607,31 +617,41 @@
                         :rules="rules.require"
                       ></v-text-field>
                     </v-col>
-
-                    <v-col cols="12">{{
-                      ingredients
-                        .filter(x => x.value == item)[0]
-                        .items.filter(
-                          x =>
-                            x.name ==
-                            ingredientsItem[
-                              ingredients.filter(x => x.value == item)[0].value
-                            ]
-                        )
-                    }}</v-col>
+                    <v-col cols="12" class="pt-0">
+                      <v-chip v-for="parmitem in ficwithdetail_sub.filter(x => x.id == item)[0].parameters"
+                        :key="parmitem.id" small
+                        >{{`${parmitem.name}:${parmitem.value}`}}</v-chip>
+                     </v-col>
                   </v-row>
-                  
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
-                  :disabled="!manisEditing"
+                  :disabled="!comboisEditing"
                   color="primary"
-                  @click="manusubmit"
+                  @click="combosubmit"
+                  v-if="combomode=='add'"
                 >
                   確定
+                </v-btn>
+                <!-- 編輯模式 -->
+                <v-btn
+                  :disabled="!comboisEditing"
+                  color="error" tile
+                  @click="combodelete"
+                  v-if="combomode=='edit'"
+                >
+                  確認刪除
+                </v-btn>
+                <v-btn
+                  :disabled="!comboisEditing"
+                  color="primary" tile
+                  @click="comboedit"
+                  v-if="combomode=='edit'"
+                >
+                  修改送出
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -692,92 +712,54 @@ export default {
       parmvalid:true,
       parmdata:[],
       //---
-      mingidx: "",
-      //---
+      //---套餐清單(飼料設定)
+      combofield:{},
       comboidx:"",
       combo:[],
+      comboisEditing:false,
+      combovalid:true,
+      sub_formula:{},//子項目公式
+      combomode:'add',
       //--
-      maining: [
-        { name: "0號料", value: "1" },
-        { name: "1號料", value: "2" },
-        { name: "2號料", value: "3" }
-      ],
-      ingidx: "", //次成份
-      ingredients: [
-        {
-          name: "糖",
-          value: "suger",
-          items: [
-            {
-              name: "default",
-              id: 1,
-              other: [
-                { name: "廠商", value: "喜互惠" },
-                { name: "純度", value: "10" },
-                { name: "C%", value: "11" }
-              ]
-            },
-            {
-              name: "糖1",
-              id: 2,
-              other: [
-                { name: "廠商", value: "全聯" },
-                { name: "純度", value: "10" },
-                { name: "C%", value: "11" }
-              ]
-            },
-            {
-              name: "糖2",
-              id: 2,
-              other: [
-                { name: "廠商", value: "全聯" },
-                { name: "純度", value: "10" },
-                { name: "C%", value: "11" }
-              ]
-            }
-          ]
-        },
-        {
-          name: "水",
-          value: "water",
-          items: [
-            {
-              name: "default",
-              id: 1,
-              other: [
-                { name: "廠商", value: "喜互惠" },
-                { name: "純度", value: "10" },
-                { name: "C%", value: "11" }
-              ]
-            }
-          ]
-        },
-        {
-          name: "三菌總帥",
-          value: "probiotics",
-          items: [
-            {
-              name: "default",
-              id: 1,
-              other: [
-                { name: "廠商", value: "喜互惠" },
-                { name: "純度", value: "10" },
-                { name: "C%", value: "11" }
-              ]
-            }
-          ]
-        }
-      ],
-      ingredientsItem: {},
       isEditing: false,
-      customFilter: "",
-      // ingitem:[],//成份詳細內容
+      //--成份類別及細項 清單
+      ficwithdetail:[]
     };
   },
   async mounted() {
     await this.getmanudata();//取得廠商資料
     await this.getficdata();//取得成份類別
     await this.getfingdata();//取得成份清單
+    await this.getficwithdetaildata();//取得成份類別及細項
+    await this.getcombodata();//取得套餐清單(飼料設定)
+  },
+  computed: {
+    ficwithdetail_main:function(){
+      var oraitems  = _.cloneDeep(this.ficwithdetail['main_items']);
+      var items = [];
+      if (oraitems!= undefined && oraitems.length>0) {
+        oraitems.forEach(element => {
+        items.push({ header: element.name,id:`${element.name}_${element.id}` });
+        //delete element.items.parameters;參數細項內容
+        items.push(...element.items)
+        items.push({ divider: true })
+      }); 
+      }
+      return items;
+    },
+    ficwithdetail_sub:function(){
+          var oraitems  = _.cloneDeep(this.ficwithdetail['sub_items']);
+          var items = [];
+          if (oraitems!= undefined && oraitems.length>0) {
+            oraitems.forEach(element => {
+            items.push({ header: element.name,id:`${element.name}_${element.id}` });
+            //delete element.items.parameters;參數細項內容
+            items.push(...element.items)
+            items.push({ divider: true })
+          }); 
+          }
+          return items;
+        }
   },
   methods: {
     //選擇廠商
@@ -1022,6 +1004,23 @@ export default {
           });
       }
     },
+    //取得成份類別及細項
+    getficwithdetaildata:async function(){
+      this.ficwithdetail = [];
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-category-and-items/`;
+      await this.$axios
+          .get(url)
+          .then(res => {
+            this.ficwithdetail =res.data;
+            console.log("取得成份類別及細項API:" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.error(`取得成份類別及細項失敗:${error}`, { duration: 2000 });
+          })
+          .finally(() => {
+            //this.getdata();
+          });
+    },
     //取得成份類別清單
     getficdata:async function(){
       this.fic_idx=null;//還原成未選
@@ -1039,8 +1038,214 @@ export default {
           .finally(() => {
             //this.getdata();
           });
+    },
+    subchange:async function(){
+      // var items = Object.keys(this.sub_formula);
+        var formula={};
+        for (let i = 0; i < this.combofield.sub_items.length; i++) {
+         var parmid = this.combofield.sub_items[i];
+          formula[parmid] = this.sub_formula[parmid];
+          
+        }
+        this.sub_formula = formula;
+    },
+    //編輯套餐清單(飼料設定)
+    comboedit:async function(){
+      let val = this.$refs.comboform.validate();
+      if(val){
+        var id = this.combofield.id;
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
+        var parms = _.cloneDeep(this.combofield);
+        //主成份
+        delete parms.main_items;
+        var main = [];
+        this.combofield.main_items.forEach(element => {
+          main.push({id:element});
+        });
+        parms.main_items = main;
+        //次成份
+        delete parms.sub_items;
+        var sub = [];
+        for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
+          const id = Object.keys(this.sub_formula)[i];
+          const value  = this.sub_formula[id];
+          sub.push({id:id,formula:value});
+          
+        }
+        parms.sub_items = sub;
+        parms.updated_user= this.$auth.$state.user.email;
+        //刪掉不要的
+        delete parms.created_time;
+        delete parms.created_user;
+        delete parms.id;
+        delete parms.updated_time;
+
+
+        await this.$axios
+          .patch(url,parms)
+          .then(res => {
+            if(res.data=="修改成功"){
+              this.$toast.success(`修改套餐清單(飼料設定)成功`, { duration: 2000 });
+              this.combofield = {};
+              this.comboidx = null;
+              this.comboisEditing = false;
+              this.combomode='add';
+              this.getcombodata();
+              console.log("修改套餐清單(飼料設定)API:" + res.request.responseURL);
+            }else{
+              this.$toast.error(`修改套餐清單(飼料設定)失敗:${res.data}`, { duration: 2000 });
+            }
+          })
+          .catch(error => {
+            this.$toast.error(`修改套餐清單(飼料設定)失敗:${error}`, { duration: 2000 });
+          })
+          .finally(() => {
+            
+          });
+      }
       
-    
+      
+    },
+    //刪除套餐清單(飼料設定)
+    combodelete:async function(){
+      var id = this.combofield.id;
+      var name = this.combofield.name_ch;
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
+      if(confirm("是否刪除?-" + name)){
+        await this.$axios
+          .delete(url)
+          .then(res => {
+            if (res.data == "刪除成功") {
+              this.$toast.success(`刪除成功`, { duration: 2000 });
+              this.comboisEditing = false;
+              this.comboidx=null;
+              this.combofield = {};
+              this.combomode='add';//回到新增模式
+            }else{
+              this.$toast.error(`刪除失敗${ res.data}`, { duration: 2000 });
+            }
+          }
+          ).catch(error => {
+            alert("刪除失敗!：" + error.message);
+          })
+          .finally(() => {
+            this.getcombodata();
+          });
+
+      }
+    },
+    //選擇套餐清單(飼料設定)
+    comboselect:async function(){
+      if(this.combo.filter(x => x.id == this.comboidx).length>0){
+        //edit mode
+        this.combomode= 'edit';
+        this.combofield = _.cloneDeep(this.combo.filter(x => x.id == this.comboidx)[0]);
+        //主成份
+        var main=[];
+        this.combofield.main_items.forEach(element => {
+          main.push(element.id);
+        });
+        this.combofield.main_items = main;
+        //次成份
+        //sub_formula
+        var sub_items  = [];
+        var sub = [];
+        this.combofield.sub_items.forEach(element => {
+          sub_items.push(element.id);
+          sub[element.id]=element.formula;
+        });
+        this.combofield.sub_items = sub_items;
+        this.sub_formula = sub;
+      }else{
+        //add mode
+        this.combomode= 'add';
+        this.combofield={};
+      }
+      // if (this.feed_ingredient_category.filter(x => x.id == this.fic_idx).length > 0) {
+      //   //edit mode
+      //   this.ficmode='edit';
+      //   this.ficfield = this.feed_ingredient_category.filter(x => x.id == this.fic_idx)[0];
+      //   var tmpfic = this.feed_ingredient_category.filter(x => x.id == this.fic_idx)[0].id;
+      //   var newid = _.cloneDeep(tmpfic);
+      //   this.fingfield.feed_ingredient_category_id = newid;
+        
+      // }else{
+      //   this.ficmode='add';
+      //   this.ficfield = {};
+      //   this.fingfield.feed_ingredient_category_id = undefined;
+      // }
+      // this.fingparam = [],//成份參數
+      // this.ficisEditing=false;//只要select change就關閉編輯成份類別
+      this.comboisEditing=false;//只要select change就關閉編輯套餐清單
+      // this.getparmdata();//參數清單
+    },
+    //新增套餐清單(飼料設定)
+    combosubmit:async function(){
+      let val = this.$refs.comboform.validate();
+      if(val){
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
+        var parms = _.cloneDeep(this.combofield);
+        //主成份
+        delete parms.main_items;
+        var main = [];
+        this.combofield.main_items.forEach(element => {
+          main.push({id:element});
+        });
+        parms.main_items = main;
+        //次成份
+        delete parms.sub_items;
+        var sub = [];
+        for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
+          const id = Object.keys(this.sub_formula)[i];
+          const value  = this.sub_formula[id];
+          sub.push({id:id,formula:value});
+          
+        }
+        parms.sub_items = sub;
+        parms.created_user= this.$auth.$state.user.email;
+
+        await this.$axios
+          .post(url,parms)
+          .then(res => {
+            if(res.data=="新增成功"){
+              this.$toast.success(`新增套餐清單(飼料設定)成功`, { duration: 2000 });
+              this.combofield = {};
+              this.comboidx = null;
+              this.comboisEditing = false;
+              this.getcombodata();
+              console.log("新增套餐清單(飼料設定)API:" + res.request.responseURL);
+            }else{
+              this.$toast.error(`新增套餐清單(飼料設定)失敗:${res.data}`, { duration: 2000 });
+            }
+          })
+          .catch(error => {
+            this.$toast.error(`新增套餐清單(飼料設定)失敗:${error}`, { duration: 2000 });
+          })
+          .finally(() => {
+            
+          }); 
+
+      }
+      
+    },
+    //取得套餐清單(飼料設定)
+    getcombodata:async function(){
+      this.combo=[];
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
+      await this.$axios
+          .get(url)
+          .then(res => {
+            this.combo =res.data;
+            this.comboidx=null;
+            this.combofield={};
+            console.log("取得得套餐清單(飼料設定)API:" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.error(`取得得套餐清單(飼料設定)失敗:${error}`, { duration: 2000 });
+          })
+          .finally(() => {
+            //this.getdata();
+          }); 
     },
     //成份編輯狀態改變
     fingeditchange:function(){
@@ -1237,9 +1442,17 @@ export default {
           });
       }
     },
-    // getRnd:function(){
-    //     return Math.floor(Math.random() * 1000);
-    // },
+      // getRnd:function(){
+      //     return Math.floor(Math.random() * 1000);
+      // },
+  },
+   async created() {
+    await this._pageCheck(); //驗證頁面是否可檢視
   }
 };
 </script>
+<style scoped>
+.tabitembg{
+   background-color:#FAFAFA;
+}
+</style>
