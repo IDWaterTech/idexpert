@@ -292,10 +292,10 @@ export default {
           success: colors.green.accent3
         },
         light: {
-          primary: "#3F6D9E",
+          primary: "#6c9bcd",//3F6D9E
           mainnav: "#02325A",
-          mainbg: "#063E6C",
-          cardtitle: "#055394",
+          mainbg: "#075594",//063E6C
+          cardtitle: "#135f9f",//055394
           lightblue: "#074C86"
         }
       }
