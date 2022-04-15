@@ -15,7 +15,7 @@
             <!-- <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay> -->
-            <v-icon dark @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon>
+            <v-icon dark @click="mapshowedit = !mapshowedit" class="my-3" v-show="tab.title != '狀態設定'">mdi-pencil</v-icon>
             <wc
               v-if="tab.title == '武曲'"
               :key="cmpkey.wc"
@@ -32,6 +32,7 @@
               :showedit="mapshowedit"
             ></zw>
             <setting
+              class="mt-3"
               v-if="tab.title == '狀態設定'"
               @update="settingUpdated"
             ></setting>
