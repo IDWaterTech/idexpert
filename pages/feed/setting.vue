@@ -471,7 +471,7 @@
               filled
               clearable
               @change="comboselect"
-            ><v-icon slot="prepend" @click="getcombodata;">mdi-reload</v-icon></v-autocomplete>
+            ><v-icon slot="prepend" @click="getcombodata">mdi-reload</v-icon></v-autocomplete>
             <v-card>
               <v-toolbar flat color="lightblue" dark>
                 <v-icon class="mx-2">mdi-food</v-icon>
@@ -607,7 +607,6 @@
                         = sum(主成份) *
                     </v-col>
                     <v-col cols="8">
-                      <!-- {{ficwithdetail_sub.filter(x=>x.id==item)[0].name]}} -->
                       <v-text-field
                         v-model="sub_formula[item]"
                         filled
@@ -615,6 +614,13 @@
                         clearable
                         placeholder="範例：*0.5*1.5*300%*1(2+50)"
                         :rules="rules.require"
+                      ></v-text-field>
+                       <v-text-field
+                        v-model="sub_formula_remark[item]"
+                        filled
+                        dense
+                        clearable
+                        placeholder="公式備註：粗蛋白率*CN比*含氮率"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" class="pt-0">
@@ -719,6 +725,7 @@ export default {
       comboisEditing:false,
       combovalid:true,
       sub_formula:{},//子項目公式
+      sub_formula_remark:{},//子項目公式備註
       combomode:'add',
       //--
       isEditing: false,
@@ -737,7 +744,6 @@ export default {
     ficwithdetail_main:function(){
       // var oraitems  = _.cloneDeep(this.ficwithdetail['main_items']);
       var oraitems  = this.ficwithdetail['main_items'];
-      // debugger;
       var items = [];
       if (oraitems!= undefined && oraitems.length>0) {
         oraitems.forEach(element => {
@@ -1046,12 +1052,15 @@ export default {
     subchange:async function(){
       // var items = Object.keys(this.sub_formula);
         var formula={};
+        var formula_remark={};
         for (let i = 0; i < this.combofield.sub_items.length; i++) {
          var parmid = this.combofield.sub_items[i];
           formula[parmid] = this.sub_formula[parmid];
-          
+          formula_remark[parmid] = this.sub_formula[parmid];
         }
+        //{6: '0.8*154'} 糖1的id:糖1的公式
         this.sub_formula = formula;
+        this.sub_formula_remark = formula_remark;
     },
     //編輯套餐清單(飼料設定)
     comboedit:async function(){
@@ -1073,7 +1082,8 @@ export default {
         for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
           const id = Object.keys(this.sub_formula)[i];
           const value  = this.sub_formula[id];
-          sub.push({id:id,formula:value});
+          const remark = this.sub_formula_remark[id];
+          sub.push({id:id,formula:value,remark:remark});
           
         }
         parms.sub_items = sub;
@@ -1083,7 +1093,6 @@ export default {
         delete parms.created_user;
         delete parms.id;
         delete parms.updated_time;
-
 
         await this.$axios
           .patch(url,parms)
@@ -1154,12 +1163,17 @@ export default {
         //sub_formula
         var sub_items  = [];
         var sub = [];
+        var sub_fla_remark = {};
         this.combofield.sub_items.forEach(element => {
           sub_items.push(element.id);
+          //公式
           sub[element.id]=element.formula;
+          //公式備註
+          sub_fla_remark[element.id] = element.remark;
         });
         this.combofield.sub_items = sub_items;
         this.sub_formula = sub;
+        this.sub_formula_remark = sub_fla_remark;
       }else{
         //add mode
         this.combomode= 'add';
@@ -1202,7 +1216,8 @@ export default {
         for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
           const id = Object.keys(this.sub_formula)[i];
           const value  = this.sub_formula[id];
-          sub.push({id:id,formula:value});
+          const remark = this.sub_formula_remark[id];
+          sub.push({id:id,formula:value,remark:remark});
           
         }
         parms.sub_items = sub;
