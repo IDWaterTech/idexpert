@@ -471,7 +471,7 @@
               filled
               clearable
               @change="comboselect"
-            ><v-icon slot="prepend" @click="getcombodata">mdi-reload</v-icon></v-autocomplete>
+            ><v-icon slot="prepend" @click="getcombodata;">mdi-reload</v-icon></v-autocomplete>
             <v-card>
               <v-toolbar flat color="lightblue" dark>
                 <v-icon class="mx-2">mdi-food</v-icon>
@@ -735,7 +735,9 @@ export default {
   },
   computed: {
     ficwithdetail_main:function(){
-      var oraitems  = _.cloneDeep(this.ficwithdetail['main_items']);
+      // var oraitems  = _.cloneDeep(this.ficwithdetail['main_items']);
+      var oraitems  = this.ficwithdetail['main_items'];
+      // debugger;
       var items = [];
       if (oraitems!= undefined && oraitems.length>0) {
         oraitems.forEach(element => {
@@ -748,7 +750,8 @@ export default {
       return items;
     },
     ficwithdetail_sub:function(){
-          var oraitems  = _.cloneDeep(this.ficwithdetail['sub_items']);
+          //var oraitems  = _.cloneDeep(this.ficwithdetail['sub_items']);
+          var oraitems  = this.ficwithdetail['sub_items'];
           var items = [];
           if (oraitems!= undefined && oraitems.length>0) {
             oraitems.forEach(element => {
@@ -1006,7 +1009,7 @@ export default {
     },
     //取得成份類別及細項
     getficwithdetaildata:async function(){
-      this.ficwithdetail = [];
+      // this.ficwithdetail = [];
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-category-and-items/`;
       await this.$axios
           .get(url)
@@ -1015,6 +1018,7 @@ export default {
             console.log("取得成份類別及細項API:" + res.request.responseURL);
           })
           .catch(error => {
+            this.ficwithdetail = [];
             this.$toast.error(`取得成份類別及細項失敗:${error}`, { duration: 2000 });
           })
           .finally(() => {
@@ -1272,10 +1276,10 @@ export default {
         // parms["parameters"] = 
           //參數下拉清單 - 重新指定
         this.fingparam =  parms["parameters"].map(x=>x.id);
+         this.fingparamitem = {};
         this.fingparam.forEach(element => {
           this.fingparamitem[element] = parms["parameters"].filter(x=>x.id==element)[0].value;
         });
-        
       }
     },
     //編輯成份
@@ -1292,7 +1296,6 @@ export default {
       if (val) {
         let id = parms["id"];
         delete parms["id"];
-        debugger; 
         
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/  `; 
         await this.$axios
@@ -1311,7 +1314,8 @@ export default {
             alert("新增失敗!：" + error.message);
           })
           .finally(() => {
-            this.getfingdata();
+            this.getfingdata();//成份清單
+            this.getficwithdetaildata();//取得成份類別及細項
           });
       }
     },
@@ -1336,7 +1340,8 @@ export default {
             alert("刪除失敗!：" + error.message);
           })
           .finally(() => {
-            this.getfingdata();
+            this.getfingdata();//成份清單
+            this.getficwithdetaildata();//取得成份類別及細項
           });
 
       }
