@@ -487,7 +487,7 @@
                   color="primary"
                   fab
                   small
-                  @click="()=>{sub_formula = {},comboisEditing = !comboisEditing;}"
+                  @click="()=>{main_formula={};sub_formula = {},comboisEditing = !comboisEditing;}"
                   v-if="combo.filter(x => x.id == comboidx).length == 0"
                 >
                   <v-icon v-if="comboisEditing">
@@ -537,6 +537,7 @@
                   ></v-text-field>
                   <v-divider></v-divider>
                   <h2 class="my-2">配方</h2>
+                  主成份
                   <v-autocomplete
                     v-model="combofield.main_items"
                     style="width"
@@ -550,12 +551,13 @@
                     filled
                     clearable
                     multiple
-                    @change="isEditing = false"
+                    @change="mainchange"
                     ><span slot="prepend" style="width:50px;"
                       >主成份</span
                     ></v-autocomplete
                   >
-                   <div v-for="item in combofield.main_items" :key="item.id">
+                  <v-row v-for="item in combofield.main_items" :key="item.id">
+                    <v-col cols="12" sm="4" >
                       <v-alert
                         outlined dense
                         color="purple"
@@ -571,9 +573,27 @@
                           </span>
                         </div>
                       </v-alert>
-                     
-                      
-                     </div>
+                    </v-col>
+                    <v-col cols="12" sm="8">
+                        <v-text-field
+                        v-model="main_formula[item]"
+                        filled
+                        dense
+                        clearable
+                        placeholder="公式範例：100%,90%,0.5,0.8...."
+                        :rules="rules.require"
+                      ></v-text-field>
+                      <v-text-field
+                        v-model="main_formula_remark[item]"
+                        filled
+                        dense
+                        clearable
+                        placeholder="備註範例：該混料只需8成"
+                      ></v-text-field>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                  </v-row>
+                   <!-- 次成份 -->
                   <v-autocomplete
                     v-model="combofield.sub_items"
                     style="width"
@@ -724,8 +744,10 @@ export default {
       combo:[],
       comboisEditing:false,
       combovalid:true,
-      sub_formula:{},//子項目公式
-      sub_formula_remark:{},//子項目公式備註
+      main_formula:{},
+      main_formula_remark:{},//主成份公式備註
+      sub_formula:{},//次成份公式
+      sub_formula_remark:{},//次成份公式備註
       combomode:'add',
       //--
       isEditing: false,
@@ -1049,6 +1071,18 @@ export default {
             //this.getdata();
           });
     },
+    mainchange:async function(){
+      var formula={};
+        var formula_remark={};
+        for (let i = 0; i < this.combofield.main_items.length; i++) {
+         var parmid = this.combofield.main_items[i];
+          formula[parmid] = this.main_formula[parmid];
+          formula_remark[parmid] = this.main_formula[parmid];
+        }
+        //{6: '0.8*154'} 糖1的id:糖1的公式
+        this.main_formula = formula;
+        this.main_formula_remark = formula_remark;
+    },
     subchange:async function(){
       // var items = Object.keys(this.sub_formula);
         var formula={};
@@ -1072,10 +1106,16 @@ export default {
         //主成份
         delete parms.main_items;
         var main = [];
-        this.combofield.main_items.forEach(element => {
-          main.push({id:element});
-        });
-        parms.main_items = main;
+        // this.combofield.main_items.forEach(element => {
+        //   main.push({id:element});
+        // });
+        for (let i = 0; i < Object.keys(this.main_formula).length; i++) {
+          const id = Object.keys(this.main_formula)[i];
+          const value  = this.main_formula[id];
+          const remark = this.main_formula_remark[id];
+          main.push({id:id,formula:value,remark:remark});
+        }
+        parms.main_items =  main;
         //次成份
         delete parms.sub_items;
         var sub = [];
@@ -1155,14 +1195,20 @@ export default {
         this.combofield = _.cloneDeep(this.combo.filter(x => x.id == this.comboidx)[0]);
         //主成份
         var main=[];
+        var m_formula = {};
+        var m_formula_remark = {};
         this.combofield.main_items.forEach(element => {
           main.push(element.id);
+          m_formula[element.id]=element.formula;//公式
+          m_formula_remark[element.id] =element.remark;//公式備註
         });
         this.combofield.main_items = main;
+        this.main_formula = m_formula;
+        this.main_formula_remark = m_formula_remark;
         //次成份
         //sub_formula
         var sub_items  = [];
-        var sub = [];
+        var sub = {};
         var sub_fla_remark = {};
         this.combofield.sub_items.forEach(element => {
           sub_items.push(element.id);
@@ -1206,10 +1252,16 @@ export default {
         //主成份
         delete parms.main_items;
         var main = [];
-        this.combofield.main_items.forEach(element => {
-          main.push({id:element});
-        });
-        parms.main_items = main;
+        // this.combofield.main_items.forEach(element => {
+        //   main.push({id:element});
+        // });
+        for (let i = 0; i < Object.keys(this.main_formula).length; i++) {
+          const id = Object.keys(this.main_formula)[i];
+          const value  = this.main_formula[id];
+          const remark = this.main_formula_remark[id];
+          main.push({id:id,formula:value,remark:remark});
+        }
+        parms.main_items =  main;
         //次成份
         delete parms.sub_items;
         var sub = [];
