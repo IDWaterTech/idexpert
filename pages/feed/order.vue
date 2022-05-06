@@ -13,48 +13,47 @@
           item-value="id"
         ></v-autocomplete>
       </v-col>
-      <!-- 選擇起日 -->
-      <v-col cols="12" md="3">
-        <v-menu
-          v-model="menu_date"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="sdate"
-              label="選擇日期"
-              filled
-              dense
-              prepend-icon="mdi-calendar"
-              readonly
-              dark
-              v-bind="attrs"
-              v-on="on"
-              clearable
-              @click:prepend="() => (sdate = getNowDate())"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="sdate"
-            @input="menu_sdate = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
 
       <v-col cols="12" md="3">
         <v-btn class="primary mb-3" large @click="showimport"
           ><v-icon>mdi-database-import</v-icon>帶入料表資料</v-btn
         >
-        <v-dialog v-model="importdialog" width="350">
+        <v-dialog v-model="importdialog" width="400">
           <v-card min-height="350">
             <v-card-title>帶入料表</v-card-title>
             <v-card-text>
               <v-row align-content="center">
-                <v-col cols="12" sm="9" v-if="false">
+                <!-- 選擇日期sdate -->
+                <v-col cols="12" sm="8">
+                  <v-menu
+                    v-model="menu_date"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="sdate"
+                        label="選擇日期"
+                        filled
+                        dense
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        clearable
+                        @click:prepend="() => (sdate = getNowDate())"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="sdate"
+                      @input="menu_sdate = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" sm="4" v-if="false">
                   <v-menu
                     v-model="menu_impdate"
                     :close-on-content-click="false"
@@ -90,6 +89,7 @@
                     tile
                     title="取得料表清單"
                     @click="getimptimedata"
+                    :disabled="!sdate"
                     ><v-icon>mdi-reload</v-icon>取得料表</v-btn
                   >
                 </v-col>
@@ -98,10 +98,7 @@
                     <v-list-item v-for="item in imptimedata" :key="item.time">
                       <v-list-item-content>{{ item.time }}</v-list-item-content>
                       <v-list-item-action
-                        ><v-btn
-                          tile
-                          class="primary"
-                          @click="settabledata(item)"
+                        ><v-btn tile class="primary" @click="settabledata(item)"
                           >帶入此資料<v-icon>mdi-redo</v-icon></v-btn
                         ></v-list-item-action
                       >
@@ -120,25 +117,26 @@
       ref="feedtable"
       :headers="headers"
       :items="desserts.filter(x => x.factory_id == factoryid)"
-      item-key="id"
-      sort-by="name"
-      group-by="area"
+      item-key="pond_id"
+      sort-by="pond_name"
+      group-by="area_name"
       class="elevation-1"
       :show-group-by="false"
       :footer-props="{
         'items-per-page-options': [-1, 25, 50, 100]
       }"
     >
+      <!-- group -->
       <template v-slot:[`group.header`]="{ items, isOpen, toggle }">
         <th :colspan="headers.length">
           <v-icon @click="toggle"
             >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
           </v-icon>
-          {{ items[0].area }}
+          {{ items[0].area_name }}
         </th>
       </template>
-      <!-- feed_amount -->
-      <template v-slot:[`item.feed_amount`]="{ item }">
+      <!-- initial_val投餵量 -->
+      <template v-slot:[`item.initial_val`]="{ item }">
         <v-row class="">
           <v-col cols="12" sm="12"
             ><v-text-field
@@ -147,7 +145,7 @@
               filled
               hide-details
               placeholder="數值"
-              v-model.number="item.feed_amount"
+              v-model.number="item.initial_val"
               type="number"
               @input="setformula_val(item)"
               ><span slot="append">g</span>
@@ -156,12 +154,12 @@
           <v-spacer></v-spacer>
         </v-row>
       </template>
-      <!-- combo -->
-      <template v-slot:[`item.combo`]="{ item }">
+      <!-- feed_combo_id 套餐id-->
+      <template v-slot:[`item.feed_combo_id`]="{ item }">
         <v-row class="ma-1" dense>
           <v-col cols="12" sm="3"
             ><v-autocomplete
-              v-model="item.combo"
+              v-model="item.feed_combo_id"
               :items="combo"
               dense
               hide-details
@@ -180,19 +178,19 @@
             </v-col>
           </div> -->
           <v-col
-            v-for="mfla in item.main_formula"
+            v-for="mfla in item.main_items"
             :key="mfla.id"
-            :style="Number(mfla.val) <= 0 ? 'color:red;' : ''"
-            v-html="`${mfla.name}<br/>${mfla.val}g`"
+            :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : ''"
+            v-html="`${mfla.name}<br/>${mfla.feed_amount}g`"
             :title="`公式：${mfla.formula}`"
           >
           </v-col>
           <v-divider vertical></v-divider>
           <v-col
-            v-for="fla in item.sub_formula"
+            v-for="fla in item.sub_items"
             :key="fla.id"
-            :style="Number(fla.val) <= 0 ? 'color:red;' : ''"
-            v-html="`${fla.name}<br/>${fla.val}g`"
+            :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : ''"
+            v-html="`${fla.name}<br/>${fla.feed_amount}g`"
             :title="`公式：${fla.formula}`"
           >
           </v-col>
@@ -202,6 +200,7 @@
       <!-- top -->
       <template v-slot:top>
         <v-toolbar elevation="1">
+          <span v-if="imptimeidx">帶入的資料時間：{{ imptimeidx }}</span>
           <v-spacer></v-spacer>
           <v-btn color="primary" icon @click="dataclear"
             ><v-icon title="清除資料">mdi-shimmer</v-icon></v-btn
@@ -217,7 +216,7 @@
         <v-card-title>操作</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-row  class="my-2" justify="center">
+          <v-row class="my-2" justify="center">
             <!-- 時間 -->
             <v-col cols="12" md="7">
               <v-text-field
@@ -233,11 +232,26 @@
               ></v-text-field>
             </v-col>
             <v-col cols="5">
-              <v-btn class="error mb-3" tile :disabled="!atime" large @click="feedsubmit">以此時間新增</v-btn>
+              <v-btn
+                class="error mb-3"
+                tile
+                :disabled="!atime"
+                large
+                @click="feedsubmit"
+                >以此時間新增</v-btn
+              >
             </v-col>
-            <v-col cols="12"  style="font-size:1.2em">
-              <span>帶入資料時間：{{(!imptimeidx)?'無':imptimedata.filter(x=>x.id==imptimeidx)[0].time}}</span>
-              <v-btn class="primary mb-3" tile large :disabled="!imptimeidx">修改此帶入資料</v-btn>
+            <v-col cols="12" style="font-size:1.2em">
+              <span
+                >帶入資料時間：{{
+                  !imptimeidx
+                    ? "無"
+                    : imptimedata.filter(x => x.time == imptimeidx)[0].time
+                }}</span
+              >
+              <v-btn class="primary mb-3" tile large :disabled="!imptimeidx"
+                >修改此帶入資料</v-btn
+              >
             </v-col>
           </v-row>
         </v-card-text>
@@ -256,23 +270,28 @@ export default {
     return {
       headers: [
         //  { text: "區域", value: "factory", align: "right", sortable: false },
-        { text: "區域", value: "area", align: "right", sortable: false },
+        { text: "區域", value: "area_name", align: "right", sortable: false },
         {
           text: "養殖池",
           align: "start",
-          value: "name",
+          value: "pond_name",
           width: 100,
           sortable: false
         },
         {
           text: "投餵量",
-          value: "feed_amount",
+          value: "initial_val",
           align: "center",
           width: 200,
           sortable: false
         },
         // { text: "主成份", value: "feedmain", align: "center", width: 200 },
-        { text: "成份", value: "combo", align: "center", sortable: false }
+        {
+          text: "成份",
+          value: "feed_combo_id",
+          align: "center",
+          sortable: false
+        }
         // { text: "Actions", value: "actions", sortable: false }
       ],
       desserts: [
@@ -316,7 +335,7 @@ export default {
       imptimedata: [], //取得帶入的資料
       //----
       submitdig: false,
-      imptimeidx:'',
+      imptimeidx: ""
     };
   },
   methods: {
@@ -347,33 +366,34 @@ export default {
     setformula_val: async function(item) {
       var item = item;
 
-      var feed_amount = item.feed_amount;
-      if (this.combo.filter(x => x.id == item.combo).length > 0) {
+      var initial_val = item.initial_val;
+      if (this.combo.filter(x => x.id == item.feed_combo_id).length > 0) {
         //選到餐點
-        var subitem = this.combo.filter(x => x.id == item.combo)[0].sub_items;
-        var main_items = this.combo.filter(x => x.id == item.combo)[0]
+        var subitem = this.combo.filter(x => x.id == item.feed_combo_id)[0]
+          .sub_items;
+        var main_items = this.combo.filter(x => x.id == item.feed_combo_id)[0]
           .main_items;
         //主成份
-        var main_formula = [];
+        var my_main_items = [];
         main_items.forEach(element => {
-          var val = this.formula_eval(feed_amount, element.formula);
+          var val = this.formula_eval(initial_val, element.formula);
           var ele = Object.assign({}, element);
-          ele["val"] = val;
-          main_formula.push(ele);
+          ele["feed_amount"] = val; //數值為feed_amount
+          my_main_items.push(ele);
         });
         // 次成份
-        var sub_formula = [];
+        var my_sub_items = [];
         subitem.forEach(element => {
-          var val = this.formula_eval(feed_amount, element.formula);
+          var val = this.formula_eval(initial_val, element.formula);
           var ele = Object.assign({}, element);
-          ele["val"] = val;
-          sub_formula.push(ele);
+          ele["feed_amount"] = val; //數值為feed_amount
+          my_sub_items.push(ele);
         });
       } else {
         // debugger;
       }
-      item.main_formula = main_formula;
-      item.sub_formula = sub_formula;
+      item.main_items = my_main_items;
+      item.sub_items = my_sub_items;
     },
     getNowTime: function() {
       let mytime = dayjs().format("HH:mm");
@@ -400,7 +420,10 @@ export default {
     //送出新增料表
     feedsubmit: async function() {
       var data = this.desserts.filter(
-        x => x.combo > 0 && x.feed_amount > 0 && x.factory_id == this.factoryid
+        x =>
+          x.feed_combo_id > 0 &&
+          x.initial_val > 0 &&
+          x.factory_id == this.factoryid
       ); //抓有選飼料餐號、填投餵量
       console.log(data);
       debugger;
@@ -420,14 +443,20 @@ export default {
               const factory_id = element.id;
               for (let i = 0; i < element.node.length; i++) {
                 const ele = element.node[i];
+                // ele.node
+                //   .filter(x => x.visible == true)
+                //   .map(x => (x.area_name = ele.name)); //把天府名稱放入area_name,把池名稱放入pond_name
                 ele.node
                   .filter(x => x.visible == true)
-                  .map(x => (x.area = ele.name)); //把天府名稱放入
+                  .map(x => {
+                    (x.area_name = ele.name), (x.pond_name = x.name), (x.pond_id = x.id);
+                  }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
                 ele.node
                   .filter(x => x.visible == true)
                   .map(x => (x.factory_id = factory_id)); //把廠id放入
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
+
                 // if(ele.hasOwnProperty("node")){
                 //   debugger;
                 //   item.push(..._.cloneDeep(getdata));
@@ -464,14 +493,14 @@ export default {
           data: [
             {
               id: 115, //池id
-              area: "武曲",
-              name: "A1",
+              area_name: "武曲",
+              pond_name: "A1",
               factory_id: 1, //廠id
               level: "1", //不需要
               visible: true,
-              feed_amount: 111, //投餵量
-              combo: 3, //套餐id
-              main_formula: [
+              initial_val: 111, //投餵量
+              feed_combo_id: 3, //套餐id
+              main_items: [
                 //主成份
                 {
                   id: 1, //要紀錄的主成份id
@@ -490,7 +519,7 @@ export default {
                   val: "33.30"
                 }
               ],
-              sub_formula: [
+              sub_items: [
                 //次成份
                 {
                   id: 8,
@@ -512,10 +541,10 @@ export default {
             },
             {
               id: 115,
-              name: "A1",
+              area_name: "test",
+              pond_name: "A1",
               level: "3",
               visible: true,
-              area: "test",
               factory_id: 30
             }
           ]
@@ -535,19 +564,68 @@ export default {
           ]
         }
       ];
+      var para = {
+        feed_date: this.sdate
+      };
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
+          params: para
+        })
+        .then(res => {
+          this.imptimedata = res.data;
+          console.log("取得帶入的資料API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        })
+        .finally(() => {});
     },
     //設定帶入資料
     settabledata: async function(item) {
-      var data  = item.data;
-      this.imptimeidx = item.id;
-      this.factoryid = data[0].factory_id;
-      this.desserts = data;
+      var data = item.data;
+      this.imptimeidx = item.time; //time即index
+      this.factoryid = data[0].factory_id; //第1筆資料即為首選廠
+      var desserts = this.desserts;
+      // console.log(this.desserts.length,desserts.length);
+      for (let idx = 0; idx < data.length; idx++) {
+        // console.log(this.desserts.length,desserts.length);
+        //資料塞進去
+        const pond_id = data[idx].pond_id;
+        
+        var dessitem = desserts.filter(x => x.pond_id == pond_id);
+        if (dessitem.length == 0) {
+          //沒有這id，塞進去
+          desserts.push(data[idx]);
+          // console.log("add:",id,data[idx].area_name,data[idx].pond_name);
+        } else {
+          console.log(desserts.length);
+          // 有這id，蓋上去
+          console.log("covered:",pond_id,data[idx].area_name,data[idx].pond_name,data[idx]);
+          var deleteidx = desserts.indexOf(dessitem[0]);
+          desserts.splice(deleteidx,1);
+          desserts.push(data[idx]);
+          // desserts.filter(x => x.id == id)[0] = _.cloneDeep(data[idx]);
+        }
+      }
+
+      var setdata = new Set(data.map(x=>x.factory_id));
+      var listdata  =[...setdata];
+      var tostmsg = [];
+      listdata.forEach(factory => {
+        var facname = this.factoryData.filter(x=>x.id==factory)[0].name;
+        var cnt = data.filter(x=>x.factory_id==factory).length;
+        tostmsg.push(`${facname}帶入${cnt}筆資料`);
+      });
+      console.log(tostmsg);
+      this.$toast.success(`${tostmsg.join('<br/>')}`, { duration: 2000 });
+      // this.$toast.success(`帶入${data.length}筆資料`, { duration: 2000 });
+       this.desserts = desserts;
     },
     //顯示送出視窗
     showsubmitdig: function() {
       this.submitdig = true;
     },
-    dataclear:async function(){
+    dataclear: async function() {
       this.imptimeidx = null;
       await this.getarchitecture(); //取得廠架構
     }
