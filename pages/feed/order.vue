@@ -53,36 +53,7 @@
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
-                <v-col cols="12" sm="4" v-if="false">
-                  <v-menu
-                    v-model="menu_impdate"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="impdate"
-                        label="選擇日期"
-                        filled
-                        dense
-                        hide-details
-                        prepend-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                        clearable
-                        @click:prepend="() => (impdate = getNowDate())"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="impdate"
-                      @input="menu_impdate = false"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
+
                 <v-col cols="12" sm="3" align-self="center">
                   <v-btn
                     class="primary"
@@ -200,7 +171,7 @@
       <!-- top -->
       <template v-slot:top>
         <v-toolbar elevation="1">
-          <span v-if="imptimeidx">帶入的資料時間：{{ imptimeidx }}</span>
+          <span v-if="imptimeidx">帶入的資料時間：{{sdate}}-{{ imptimeidx }}</span>
           <v-spacer></v-spacer>
           <v-btn color="primary" icon @click="dataclear"
             ><v-icon title="清除資料">mdi-shimmer</v-icon></v-btn
@@ -217,7 +188,38 @@
         <v-divider></v-divider>
         <v-card-text>
           <v-row class="my-2" justify="center">
-            <!-- 時間 -->
+            <!-- 日期 adate-->
+            <v-col cols="12" sm="12">
+              <v-menu
+                v-model="menu_adate"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="adate"
+                    label="選擇日期"
+                    filled
+                    dense
+                    hide-details
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    clearable
+                    @click:prepend="() => (adate = getNowDate())"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="adate"
+                  @input="menu_adate = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- 時間 atime-->
             <v-col cols="12" md="7">
               <v-text-field
                 v-model="atime"
@@ -231,11 +233,12 @@
                 @click:prepend="() => (atime = getNowTime())"
               ></v-text-field>
             </v-col>
+            <!-- 新增按鈕 -->
             <v-col cols="5">
               <v-btn
                 class="error mb-3"
                 tile
-                :disabled="!atime"
+                :disabled="!atime || !adate"
                 large
                 @click="feedsubmit"
                 >以此時間新增</v-btn
@@ -243,11 +246,8 @@
             </v-col>
             <v-col cols="12" style="font-size:1.2em">
               <span
-                >帶入資料時間：{{
-                  !imptimeidx
-                    ? "無"
-                    : imptimedata.filter(x => x.time == imptimeidx)[0].time
-                }}</span
+                >帶入資料時間：{{imptimeidx}}
+                </span
               >
               <v-btn class="primary mb-3" tile large :disabled="!imptimeidx"
                 >修改此帶入資料</v-btn
@@ -266,6 +266,7 @@ import dayjs from "dayjs";
 import _ from "lodash";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   data() {
     return {
       headers: [
@@ -327,13 +328,13 @@ export default {
       //---日曆
       menu_date: false,
       sdate: "",
-      atime: "",
       //----帶入資料
       importdialog: false,
-      menu_impdate: false,
-      impdate: "",
       imptimedata: [], //取得帶入的資料
       //----
+      menu_adate: false,
+      adate: "",
+      atime: "",
       submitdig: false,
       imptimeidx: ""
     };
@@ -378,7 +379,7 @@ export default {
         main_items.forEach(element => {
           var val = this.formula_eval(initial_val, element.formula);
           var ele = Object.assign({}, element);
-          ele["feed_amount"] = val; //數值為feed_amount
+          ele["feed_amount"] = Number(val); //數值為feed_amount
           my_main_items.push(ele);
         });
         // 次成份
@@ -386,7 +387,7 @@ export default {
         subitem.forEach(element => {
           var val = this.formula_eval(initial_val, element.formula);
           var ele = Object.assign({}, element);
-          ele["feed_amount"] = val; //數值為feed_amount
+          ele["feed_amount"] = Number(val); //數值為feed_amount
           my_sub_items.push(ele);
         });
       } else {
@@ -425,8 +426,39 @@ export default {
           x.initial_val > 0 &&
           x.factory_id == this.factoryid
       ); //抓有選飼料餐號、填投餵量
-      console.log(data);
-      debugger;
+      // console.log(data);
+      var parm = {
+        feed_time: `${this.adate} ${this.atime}`,
+        created_user:this.$auth.$state.user.email,
+        data: data
+      };
+      console.log("parm",parm);
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
+      await this.$axios
+        .post(url, parm)
+        .then(res => {
+          debugger;
+          if (res.data == "新增成功") {
+            this.dataclear();//清除資料
+            this.$toast.success(`新增成功`, {
+              duration: 2000
+            });
+          }else{
+            this.$toast.success(`新增失敗:${res.data}`, {
+              duration: 2000
+            });
+            
+          }
+          console.log("新增API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error(`新增失敗:${error}`, {
+            duration: 2000
+          });
+        })
+        .finally(() => {
+          //
+        });
     },
     //取得廠架構
     getarchitecture: async function() {
@@ -449,7 +481,9 @@ export default {
                 ele.node
                   .filter(x => x.visible == true)
                   .map(x => {
-                    (x.area_name = ele.name), (x.pond_name = x.name), (x.pond_id = x.id);
+                    (x.area_name = ele.name),
+                      (x.pond_name = x.name),
+                      (x.pond_id = x.id);
                   }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
                 ele.node
                   .filter(x => x.visible == true)
@@ -591,7 +625,7 @@ export default {
         // console.log(this.desserts.length,desserts.length);
         //資料塞進去
         const pond_id = data[idx].pond_id;
-        
+
         var dessitem = desserts.filter(x => x.pond_id == pond_id);
         if (dessitem.length == 0) {
           //沒有這id，塞進去
@@ -600,31 +634,38 @@ export default {
         } else {
           console.log(desserts.length);
           // 有這id，蓋上去
-          console.log("covered:",pond_id,data[idx].area_name,data[idx].pond_name,data[idx]);
+          console.log(
+            "covered:",
+            pond_id,
+            data[idx].area_name,
+            data[idx].pond_name,
+            data[idx]
+          );
           var deleteidx = desserts.indexOf(dessitem[0]);
-          desserts.splice(deleteidx,1);
+          desserts.splice(deleteidx, 1);
           desserts.push(data[idx]);
           // desserts.filter(x => x.id == id)[0] = _.cloneDeep(data[idx]);
         }
       }
 
-      var setdata = new Set(data.map(x=>x.factory_id));
-      var listdata  =[...setdata];
+      var setdata = new Set(data.map(x => x.factory_id));
+      var listdata = [...setdata];
       var tostmsg = [];
       listdata.forEach(factory => {
-        var facname = this.factoryData.filter(x=>x.id==factory)[0].name;
-        var cnt = data.filter(x=>x.factory_id==factory).length;
+        var facname = this.factoryData.filter(x => x.id == factory)[0].name;
+        var cnt = data.filter(x => x.factory_id == factory).length;
         tostmsg.push(`${facname}帶入${cnt}筆資料`);
       });
       console.log(tostmsg);
-      this.$toast.success(`${tostmsg.join('<br/>')}`, { duration: 2000 });
+      this.$toast.success(`${tostmsg.join("<br/>")}`, { duration: 2000 });
       // this.$toast.success(`帶入${data.length}筆資料`, { duration: 2000 });
-       this.desserts = desserts;
+      this.desserts = desserts;
     },
     //顯示送出視窗
     showsubmitdig: function() {
       this.submitdig = true;
     },
+    //清除資料
     dataclear: async function() {
       this.imptimeidx = null;
       await this.getarchitecture(); //取得廠架構
