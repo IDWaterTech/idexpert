@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 style="color: white">飼料表作業</h2>
+    <h2 style="color: white">料表作業<v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn><v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn></h2>
     <v-row align="center">
       <!-- 選擇廠 -->
       <v-col cols="12" md="3">
@@ -71,7 +71,8 @@
                       <v-list-item-action
                         ><v-btn tile class="primary" @click="settabledata(item)"
                           >帶入此資料<v-icon>mdi-redo</v-icon></v-btn
-                        ></v-list-item-action
+                        >
+                        </v-list-item-action
                       >
                     </v-list-item>
                   </v-list>
@@ -171,7 +172,7 @@
       <!-- top -->
       <template v-slot:top>
         <v-toolbar elevation="1">
-          <span v-if="imptimeidx">帶入的資料時間：{{sdate}}-{{ imptimeidx }}</span>
+          <span v-if="imptimeidx">帶入的資料時間：{{sdate}}-{{ imptimeidx }}<v-btn class="error mx-2" @click="delimpsubmit">刪除此廠[{{imptimeidx}}]資料</v-btn></span>
           <v-spacer></v-spacer>
           <v-btn color="primary" icon @click="dataclear"
             ><v-icon title="清除資料">mdi-shimmer</v-icon></v-btn
@@ -249,7 +250,7 @@
                 >帶入資料時間：{{imptimeidx}}
                 </span
               >
-              <v-btn class="primary mb-3" tile large :disabled="!imptimeidx"
+              <v-btn class="primary mb-3" tile large :disabled="!imptimeidx" v-if="false"
                 >修改此帶入資料</v-btn
               >
             </v-col>
@@ -518,86 +519,125 @@ export default {
           //this.getdata();
         });
     },
+    //刪除帶入的資料
+    delimpsubmit:async function(){
+      const factory_name = this.factoryData.filter(x=>x.id==this.factoryid)[0].name;
+       var parm ={
+          factory_id:this.factoryid,
+          feed_time :`${this.sdate} ${this.imptimeidx}`
+        };
+      if (confirm(`是否刪除所有資料，廠：${factory_name}，時間：${parm.feed_time}`)) {
+       
+        debugger;
+        console.log(parm);
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-batch-delete/`;
+        await this.$axios
+        .post(url, parm)
+        .then(res => {
+          if (res.data == "刪除成功") {
+            this.dataclear();//清除資料
+            this.imptimedata =[];//清空取得的帶入資料
+            this.$toast.success(`刪除${factory_name}[${parm.feed_time}]成功`, {
+              duration: 2000
+            });
+          }else{
+            this.$toast.success(`刪除失敗:${res.data}`, {
+              duration: 2000
+            });
+            
+          }
+          console.log("刪除API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error(`刪除失敗:${error}`, {
+            duration: 2000
+          });
+        })
+        .finally(() => {
+          //
+        });
+      }
+    },
     //取得帶入的資料
     getimptimedata: async function() {
-      this.imptimedata = [
-        {
-          id: 1, //資料id
-          time: "01:00",
-          data: [
-            {
-              id: 115, //池id
-              area_name: "武曲",
-              pond_name: "A1",
-              factory_id: 1, //廠id
-              level: "1", //不需要
-              visible: true,
-              initial_val: 111, //投餵量
-              feed_combo_id: 3, //套餐id
-              main_items: [
-                //主成份
-                {
-                  id: 1, //要紀錄的主成份id
-                  name: "蝦料1",
-                  item_no: "10001",
-                  formula: "*0.7",
-                  remark: "",
-                  val: "77.70" //要紀錄的主成份值
-                },
-                {
-                  id: 2,
-                  name: "蝦料2",
-                  item_no: "10002",
-                  formula: "*0.3",
-                  remark: "",
-                  val: "33.30"
-                }
-              ],
-              sub_items: [
-                //次成份
-                {
-                  id: 8,
-                  name: "水1",
-                  item_no: "10025",
-                  formula: "*1.2",
-                  remark: "",
-                  val: "133.20"
-                },
-                {
-                  id: 6,
-                  name: "糖1",
-                  item_no: "10005",
-                  formula: "*0.8",
-                  remark: "",
-                  val: "88.80"
-                }
-              ]
-            },
-            {
-              id: 115,
-              area_name: "test",
-              pond_name: "A1",
-              level: "3",
-              visible: true,
-              factory_id: 30
-            }
-          ]
-        },
-        {
-          id: 2,
-          time: "15:00",
-          data: [
-            {
-              id: 115,
-              name: "A1",
-              level: "3",
-              visible: true,
-              area: "test",
-              factory_id: 30
-            }
-          ]
-        }
-      ];
+      // this.imptimedata = [
+      //   {
+      //     id: 1, //資料id
+      //     time: "01:00",
+      //     data: [
+      //       {
+      //         id: 115, //池id
+      //         area_name: "武曲",
+      //         pond_name: "A1",
+      //         factory_id: 1, //廠id
+      //         level: "1", //不需要
+      //         visible: true,
+      //         initial_val: 111, //投餵量
+      //         feed_combo_id: 3, //套餐id
+      //         main_items: [
+      //           //主成份
+      //           {
+      //             id: 1, //要紀錄的主成份id
+      //             name: "蝦料1",
+      //             item_no: "10001",
+      //             formula: "*0.7",
+      //             remark: "",
+      //             val: "77.70" //要紀錄的主成份值
+      //           },
+      //           {
+      //             id: 2,
+      //             name: "蝦料2",
+      //             item_no: "10002",
+      //             formula: "*0.3",
+      //             remark: "",
+      //             val: "33.30"
+      //           }
+      //         ],
+      //         sub_items: [
+      //           //次成份
+      //           {
+      //             id: 8,
+      //             name: "水1",
+      //             item_no: "10025",
+      //             formula: "*1.2",
+      //             remark: "",
+      //             val: "133.20"
+      //           },
+      //           {
+      //             id: 6,
+      //             name: "糖1",
+      //             item_no: "10005",
+      //             formula: "*0.8",
+      //             remark: "",
+      //             val: "88.80"
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         id: 115,
+      //         area_name: "test",
+      //         pond_name: "A1",
+      //         level: "3",
+      //         visible: true,
+      //         factory_id: 30
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     id: 2,
+      //     time: "15:00",
+      //     data: [
+      //       {
+      //         id: 115,
+      //         name: "A1",
+      //         level: "3",
+      //         visible: true,
+      //         area: "test",
+      //         factory_id: 30
+      //       }
+      //     ]
+      //   }
+      // ];
       var para = {
         feed_date: this.sdate
       };
@@ -616,6 +656,7 @@ export default {
     },
     //設定帶入資料
     settabledata: async function(item) {
+      await this.dataclear();//歸零
       var data = item.data;
       this.imptimeidx = item.time; //time即index
       this.factoryid = data[0].factory_id; //第1筆資料即為首選廠

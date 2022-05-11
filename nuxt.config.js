@@ -2,10 +2,10 @@ import colors from "vuetify/es5/util/colors";
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: "ID Expert - %s",
-    title: "idwater",
+    titleTemplate: "ID Water - %s",
+    title: "專家系統",
     htmlAttrs: {
-      lang: "en"
+      lang: "zh-TW"
     },
     // script:[{src:'/static/js/flv.min.js'}]
     //script:[{src:'./EasyWasmPlayer.js'}],
