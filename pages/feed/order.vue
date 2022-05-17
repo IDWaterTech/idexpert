@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2 style="color: white">料表作業<v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn><v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn></h2>
+    <h2 style="color: white">料表作業
+    <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
+    <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn></h2>
     <v-row align="center">
       <!-- 選擇廠 -->
       <v-col cols="12" md="3">
@@ -526,7 +528,7 @@ export default {
           factory_id:this.factoryid,
           feed_time :`${this.sdate} ${this.imptimeidx}`
         };
-      if (confirm(`是否刪除所有資料，廠：${factory_name}，時間：${parm.feed_time}`)) {
+      if (confirm(`是否刪除所有資料\n注意：包含已確認執行的資料!!!\n廠：${factory_name}\n時間：${parm.feed_time}`)) {
        
         debugger;
         console.log(parm);

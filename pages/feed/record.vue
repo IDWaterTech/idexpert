@@ -1,36 +1,13 @@
 <template>
   <div>
     <h2 style="color: white">
-      料表紀錄查詢<v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
+      料表紀錄查詢
+      <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
+      <v-btn class="mx-2 my-1" to="/feed/order">料表作業</v-btn>
     </h2>
     <v-row align="center" dense>
-      <v-col cols="12">
-        <v-card min-width="300">
-          <v-card-text>
-            <v-row>
-              <v-col
-                cols="12"
-                v-for="item in comboTotal"
-                :key="item.combo_name"
-              >
-                {{ item.combo_name }}
-                <v-chip class="ma-2" color="brown lighten-1" text-color="white" label v-for="chp in Object.keys(item.main_items)" :key="chp">
-                  {{`${chp}：${item.main_items[chp]} g`}}
-                </v-chip>
-                <v-chip class="ma-2" color="cyan" text-color="white" label v-for="chp in Object.keys(item.sub_items)" :key="chp">
-                  {{`${chp}：${item.sub_items[chp]} g`}}
-                </v-chip>
-                <v-chip class="ma-2" color="red lighten-1" label outlined>
-                    {{`合計：${item.total} g`}}
-                </v-chip>
-                
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
       <!-- 選擇廠 -->
-      <v-col cols="12" md="2">
+      <v-col cols="12" sm="2">
         <v-autocomplete
           dark
           filled
@@ -43,7 +20,7 @@
       <!-- 選擇日期sdate -->
       <v-col cols="12" sm="3">
         <v-menu
-          v-model="menu_date"
+          v-model="menu_sdate"
           :close-on-content-click="false"
           :nudge-right="40"
           transition="scale-transition"
@@ -76,6 +53,7 @@
       <!-- 選擇時間點imptimedata -->
       <v-col cols="12" sm="3">
         <v-autocomplete
+          v-model="stime"
           dark
           filled
           item-text="time"
@@ -87,66 +65,137 @@
         ></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="8"></v-col>
+      <!-- 餐別明細 -->
+      <v-col cols="12">
+        <v-card min-width="300">
+          <v-card-title>餐別明細</v-card-title>
+          <v-card-text class="mt-3">
+            <v-row>
+              <v-col
+                cols="12"
+                v-for="item in comboTotal"
+                :key="item.combo_name"
+              >
+                <span class="text-h6 font-weight-black"
+                  >{{ item.combo_name }}：</span
+                >
+                <v-chip
+                  class="ma-2"
+                  color="brown lighten-1"
+                  text-color="white"
+                  label
+                  v-for="chp in Object.keys(item.main_items)"
+                  :key="chp"
+                >
+                  {{ `${chp}：${item.main_items[chp]} g` }}
+                </v-chip>
+                <v-chip
+                  class="ma-2"
+                  color="cyan"
+                  text-color="white"
+                  label
+                  v-for="chp in Object.keys(item.sub_items)"
+                  :key="chp"
+                >
+                  {{ `${chp}：${item.sub_items[chp]} g` }}
+                </v-chip>
+                <v-chip class="ma-2" color="red lighten-1" label outlined>
+                  {{ `合計：${item.total} g` }}
+                </v-chip>
+              </v-col>
+              <v-col v-if="comboTotal.length == 0" class="text-center">
+                <h2>查無資料</h2>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
       <!-- 料表 -->
       <v-col cols="12" class="mb-8">
-        <el-table
-          ref="mutitable"
-          :data="feedData2"
-          row-key="id"
-          default-expand-all
-          @selection-change="handleSelectionChange"
-          @select-all="selectall"
-        >
-          <el-table-column prop="area_name" label="區域" sortable width="100" />
-          <el-table-column
-            prop="pond_name"
-            label="養殖池"
-            sortable
-            width="100"
-          /><el-table-column
-            prop="feed_combo_name"
-            label="餐別"
-            sortable
-            width="180"
-          />
-          <el-table-column
-            prop="feed_total"
-            label="總量"
-            sortable
-            width="180"
-          />
-          <el-table-column
-            prop="ovserve_total"
-            label="觀察網總量"
-            sortable
-            width="180"
-          />
-          <el-table-column
-            align="center"
-            type="selection"
-            :selectable="checkSelectable"
-            width="55"
+        <el-card>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-col cols="2"
+              ><v-btn
+                class="primary"
+                @click="execsubmit"
+                :disabled="multipleSelection.length == 0"
+                >執行</v-btn
+              ></v-col
+            >
+          </v-row>
+          <el-table
+            ref="mutitable"
+            :data="feedData2"
+            row-key="id"
+            default-expand-all
+            @selection-change="handleSelectionChange"
+            @select-all="selectall"
           >
-          </el-table-column>
-          <el-table-column align="right">
-            <!-- <template #header>
+            <el-table-column
+              prop="area_name"
+              label="區域"
+              sortable
+              width="100"
+            />
+            <el-table-column
+              prop="pond_name"
+              label="養殖池"
+              sortable
+              width="100"
+            /><el-table-column
+              prop="feed_combo_name"
+              label="餐別"
+              sortable
+              width="180"
+            />
+            <el-table-column
+              prop="feed_total"
+              label="總量"
+              sortable
+              width="180"
+            />
+            <el-table-column
+              prop="observation_total"
+              label="觀察網總量"
+              sortable
+              width="180"
+            />
+            <el-table-column
+              prop="executed_user"
+              label="執行人員"
+              sortable
+              width="180"
+            />
+            <el-table-column
+              align="center"
+              type="selection"
+              :selectable="checkSelectable"
+              width="55"
+            >
+            </el-table-column>
+
+            <el-table-column align="right" v-if="false">
+              <!-- <template #header>
               <el-input
                 v-model="search"
                 size="small"
                 placeholder="Type to search"
               />
             </template> -->
-            <template #default="scope">
-              <el-button
-                size="small"
-                @click="handleEdit(scope.$index, scope.row)" v-if="!scope.row.hasOwnProperty('children')"
-                :disabled="scope.row.is_executed"
-                >{{(scope.row.is_executed)?'已執行':'執行'}}</el-button
-              >
-            </template>
-          </el-table-column>
-          <!-- <el-table-column prop="id" label="ID" width="180"> </el-table-column> -->
-        </el-table>
+              <template #default="scope">
+                <el-button
+                  size="small"
+                  @click="handleEdit(scope.$index, scope.row)"
+                  v-if="!scope.row.hasOwnProperty('children')"
+                  :disabled="scope.row.is_executed"
+                  >{{ scope.row.is_executed ? "已執行" : "執行" }}</el-button
+                >
+              </template>
+            </el-table-column>
+            <!-- <el-table-column prop="id" label="ID" width="180"> </el-table-column> -->
+          </el-table>
+        </el-card>
       </v-col>
     </v-row>
   </div>
@@ -161,8 +210,9 @@ export default {
       factoryData: [], //廠架構
       factoryid: "", //廠id
       //---日曆
-      menu_date: false,
+      menu_sdate: false,
       sdate: "",
+      stime: "",
       //--帶入資料
       imptimedata: [],
       //料表資料
@@ -221,6 +271,8 @@ export default {
     //取得帶入的資料
     getimptimedata: async function() {
       this.feedData = []; //清空表格資料
+      this.stime = "";
+
       if (!this.sdate) {
         this.imptimedata = [];
         return;
@@ -244,68 +296,118 @@ export default {
     },
     //取得料表
     getfeedData: async function() {
-      this.feedData = [
-        {
-          id: 1,
-          time: "01:00",
-          area_name: "武曲",
-          pond_name: "A1",
-          pond_id: 1,
-          feed_combo_id: 1,
-          feed_combo_name: "1號餐",
-          feed_total: 1000,
-          ovserve_total: 30,
-          is_executed: false,
-          main_items: [
-            { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
-            { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
-          ],
-          sub_items: [
-            { sub_id: 1, sub_name: "糖", feed_amount: 1 },
-            { sub_id: 2, sub_name: "水", feed_amount: 2 }
-          ]
-        },
-        {
-          id: 3,
-          time: "01:00",
-          area_name: "紫薇",
-          pond_name: "A1",
-          pond_id: 3,
-          feed_combo_id: 1,
-          feed_combo_name: "1號餐",
-          feed_total: 1200,
-          ovserve_total: 36,
-          is_executed: true,
-          main_items: [
-            { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
-            { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
-          ],
-          sub_items: [
-            { sub_id: 1, sub_name: "糖", feed_amount: 9 },
-            { sub_id: 2, sub_name: "水", feed_amount: 8 }
-          ]
-        },
-        {
-          id: 2,
-          time: "01:00",
-          area_name: "武曲",
-          pond_name: "A2",
-          pond_id: 2,
-          feed_combo_id: 2,
-          feed_combo_name: "2號餐",
-          feed_total: 1500,
-          ovserve_total: 45,
-          is_executed: false,
-          main_items: [
-            { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
-            { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
-          ],
-          sub_items: [
-            { sub_id: 1, sub_name: "糖", feed_amount: 1 },
-            { sub_id: 2, sub_name: "水", feed_amount: 2 }
-          ]
-        }
-      ];
+      // this.feedData = [
+      //   {
+      //     id: 1,
+      //     time: "01:00",
+      //     area_name: "武曲",
+      //     pond_name: "A1",
+      //     pond_id: 1,
+      //     feed_combo_id: 1,
+      //     feed_combo_name: "1號餐",
+      //     feed_total: 1000,
+      //     ovserve_total: 30,
+      //     is_executed: false,
+      //     main_items: [
+      //       { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
+      //       { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
+      //     ],
+      //     sub_items: [
+      //       { sub_id: 1, sub_name: "糖", feed_amount: 1 },
+      //       { sub_id: 2, sub_name: "水", feed_amount: 2 }
+      //     ]
+      //   },
+      //   {
+      //     id: 3,
+      //     time: "01:00",
+      //     area_name: "紫薇",
+      //     pond_name: "A1",
+      //     pond_id: 3,
+      //     feed_combo_id: 1,
+      //     feed_combo_name: "1號餐",
+      //     feed_total: 1200,
+      //     ovserve_total: 36,
+      //     is_executed: true,
+      //     main_items: [
+      //       { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
+      //       { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
+      //     ],
+      //     sub_items: [
+      //       { sub_id: 1, sub_name: "糖", feed_amount: 9 },
+      //       { sub_id: 2, sub_name: "水", feed_amount: 8 }
+      //     ]
+      //   },
+      //   {
+      //     id: 2,
+      //     time: "01:00",
+      //     area_name: "武曲",
+      //     pond_name: "A2",
+      //     pond_id: 2,
+      //     feed_combo_id: 2,
+      //     feed_combo_name: "2號餐",
+      //     feed_total: 1500,
+      //     ovserve_total: 45,
+      //     is_executed: false,
+      //     main_items: [
+      //       { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
+      //       { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
+      //     ],
+      //     sub_items: [
+      //       { sub_id: 1, sub_name: "糖", feed_amount: 1 },
+      //       { sub_id: 2, sub_name: "水", feed_amount: 2 }
+      //     ]
+      //   }
+      // ];
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist/`;
+      var parm = {
+        factory_id: this.factoryid,
+        feed_time: `${this.sdate} ${this.stime}`
+      };
+      await this.$axios
+        .get(url, { params: parm })
+        .then(res => {
+          this.feedData = res.data;
+          this.$toast.success(`取得料表成功`, { duration: 2000 });
+          console.log("取得料表API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error(`取得料表失敗:${error}`, {
+            duration: 2000
+          });
+        })
+        .finally(() => {
+          //this.getdata();
+        });
+    },
+    //執行
+    execsubmit: async function() {
+      var parm = {
+        executed_user: this.$auth.$state.user.email,
+        id: this.multipleSelection.map(x=>x.id),
+        is_executed:true
+      };
+      console.log(parm);
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`;
+      await this.$axios
+        .post(url, parm)
+        .then(res => {
+          if(res.data=='修改成功'){
+            this.feedData = []; //清空表格資料
+            this.stime = "";
+            this.$toast.success(`執行成功：${parm.id.length}筆`,{duration:2000});
+          }else{
+            this.$toast.error(`執行失敗：${res.data}`,{duration:2000});
+          }
+          console.log("執行API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error(`執行失敗:${error}`, {
+            duration: 2000
+          });
+        })
+        .finally(() => {
+          //this.getdata();
+        });
     },
     //多選用
     handleSelectionChange(val) {
@@ -376,8 +478,8 @@ export default {
       //   feed_total: 1000,
       //   ovserve_total: 30,
       //   is_executed: false,
-      //   main_items:[{main_id:1,main_name:"蝦料1",feed_amount:100},{main_id:2,main_name:"蝦料2",feed_amount:110}],
-      //   sub_items:[{sub_id:1,sub_name:"糖",feed_amount:1},{sub_id:2,sub_name:"水",feed_amount:2}]
+      //   main_items:[{main_id:1,name:"蝦料1",feed_amount:100},{main_id:2,name:"蝦料2",feed_amount:110}],
+      //   sub_items:[{sub_id:1,name:"糖",feed_amount:1},{sub_id:2,name:"水",feed_amount:2}]
       // }
       var data = this.feedData;
       if (this.feedData.length > 0) {
@@ -397,25 +499,35 @@ export default {
             const sitem = combo_item[mainidx].sub_items;
             mitem.forEach(element => {
               var pre =
-                main_items[element.main_name] == undefined
-                  ? 0
-                  : main_items[element.main_name];
-              main_items[element.main_name] = pre + element.feed_amount;
+                main_items[element.name] == undefined
+                  ? 0.0
+                  : main_items[element.name];
+              // main_items[element.name] = pre + element.feed_amount;
+              var value = pre + element.feed_amount;
+              //math用來解決浮點數相加會出現10.000000000001的狀況
+              main_items[element.name] =
+                Math.round((value + Number.EPSILON) * 100) / 100;
             });
+
             sitem.forEach(element => {
               var pre =
-                sub_items[element.sub_name] == undefined
+                sub_items[element.name] == undefined
                   ? 0
-                  : sub_items[element.sub_name];
-              sub_items[element.sub_name] = pre + element.feed_amount;
+                  : sub_items[element.name];
+              // sub_items[element.name] = pre + element.feed_amount;
+              var value = pre + element.feed_amount;
+              sub_items[element.name] =
+                Math.round((value + Number.EPSILON) * 100) / 100;
             });
           }
-          const tot = Object.values(main_items).reduce((prev, curr) => prev + curr, 0) + Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
+          const tot =
+            Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
+            Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
           combo_result.push({
             combo_name: combo_name,
             main_items: main_items,
             sub_items: sub_items,
-            total:tot
+            total: tot
           });
           // console.log("main",main_items);
           // console.log("sub",sub_items);
