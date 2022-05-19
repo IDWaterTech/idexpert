@@ -101,7 +101,7 @@ export default {
     redirect: {
       login: "/login", //需要登入時會導到此路徑
       logout: "/", //登出後，會導到此路徑
-      home: "/basic" //登入後，會導到此路徑
+      home: "/" //登入後，會導到此路徑
     },
     strategies: {
       // local: {
