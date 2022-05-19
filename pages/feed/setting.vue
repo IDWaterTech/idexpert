@@ -1,8 +1,8 @@
 <template>
   <div>
     <h2 style="color:white;">料表設定
-      <v-btn class="mx-2 my-1" to="/feed/order">料表作業</v-btn>
-      <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn>
+      <!-- <v-btn class="mx-2 my-1" to="/feed/order">料表作業</v-btn>
+      <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn> -->
       </h2>
     <v-tabs v-model="tablindex" background-color="cardtitle" center-active dark>
       <v-tab :href="`#廠商設定`">廠商設定</v-tab>

@@ -1,9 +1,9 @@
 <template>
   <div>
     <h2 style="color: white">
-      料表紀錄查詢
-      <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
-      <v-btn class="mx-2 my-1" to="/feed/order">料表作業</v-btn>
+      料表執行
+      <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
+      <v-btn class="mx-2 my-1" to="/feed/order">料量設定</v-btn> -->
     </h2>
     <v-row align="center" dense>
       <!-- 選擇廠 -->
@@ -102,7 +102,9 @@
                 <v-chip class="ma-2" color="red lighten-1" label outlined>
                   {{ `合計：${item.total} g` }}
                 </v-chip>
+                <v-divider></v-divider>
               </v-col>
+                
               <v-col v-if="comboTotal.length == 0" class="text-center">
                 <h2>查無資料</h2>
               </v-col>
@@ -132,34 +134,38 @@
             @selection-change="handleSelectionChange"
             @select-all="selectall"
           >
+          <!-- 減少一欄佔空間所以用area_name2解決 -->
             <el-table-column
-              prop="area_name"
+              prop="area_name2"
               label="區域"
-              sortable
+              sortable fixed="left"
               width="100"
-            />
-            <el-table-column
+            >
+            <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
+            </el-table-column>
+            <!-- <el-table-column
               prop="pond_name"
               label="養殖池"
               sortable
               width="100"
-            /><el-table-column
-              prop="feed_combo_name"
-              label="餐別"
-              sortable
-              width="180"
-            />
+            /> -->
             <el-table-column
               prop="feed_total"
               label="總量"
               sortable
-              width="180"
+              width="100"
             />
             <el-table-column
               prop="observation_total"
               label="觀察網總量"
               sortable
-              width="180"
+              width="100"
+            />
+            <el-table-column
+              prop="feed_combo_name"
+              label="餐別"
+              sortable
+              width="150"
             />
             <el-table-column
               prop="executed_user"
@@ -174,7 +180,7 @@
               width="55"
             >
             </el-table-column>
-
+            <!-- 本來要弄button按鈕，目前不需要 -->
             <el-table-column align="right" v-if="false">
               <!-- <template #header>
               <el-input
@@ -205,6 +211,7 @@
 import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
+  middleware: "auth",
   data() {
     return {
       factoryData: [], //廠架構
@@ -456,10 +463,12 @@ export default {
       var items = [];
       for (let idx = 0; idx < arealst.length; idx++) {
         const area_name = arealst[idx];
+        this.feedData.filter(x => x.area_name == area_name).map(x=>x.area_name2=x.pond_name);
+        const children =  this.feedData.filter(x => x.area_name == area_name);
         var item = {
           id: `${idx}_${area_name}`,
-          area_name: area_name,
-          children: this.feedData.filter(x => x.area_name == area_name)
+          area_name2: area_name,
+          children: children
         };
         items.push(item);
       }
@@ -539,6 +548,9 @@ export default {
   },
   async mounted() {
     await this.getarchitecture(); //取得廠架構
+  },
+  async created() {
+    await this._pageCheck(); //驗證頁面是否可檢視
   }
 };
 </script>

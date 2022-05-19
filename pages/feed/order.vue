@@ -1,8 +1,9 @@
 <template>
   <div>
-    <h2 style="color: white">料表作業
-    <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
-    <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn></h2>
+    <h2 style="color: white">料量設定
+    <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
+    <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn> -->
+    </h2>
     <v-row align="center">
       <!-- 選擇廠 -->
       <v-col cols="12" md="3">
@@ -724,6 +725,9 @@ export default {
     keys.forEach(x => {
       table.$vnode.componentInstance.openCache[x] = false;
     });
+  },
+  async created() {
+    await this._pageCheck(); //驗證頁面是否可檢視
   }
 };
 </script>
