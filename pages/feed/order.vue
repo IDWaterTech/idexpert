@@ -1,7 +1,8 @@
 <template>
   <div>
-    <h2 style="color: white">料量設定
-    <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
+    <h2 style="color: white">
+      料量設定
+      <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
     <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn> -->
     </h2>
     <v-row align="center">
@@ -75,8 +76,7 @@
                         ><v-btn tile class="primary" @click="settabledata(item)"
                           >帶入此資料<v-icon>mdi-redo</v-icon></v-btn
                         >
-                        </v-list-item-action
-                      >
+                      </v-list-item-action>
                     </v-list-item>
                   </v-list>
                 </v-col>
@@ -132,7 +132,7 @@
       <!-- feed_combo_id 套餐id-->
       <template v-slot:[`item.feed_combo_id`]="{ item }">
         <v-row class="ma-1" dense>
-          <v-col cols="12" sm="3"
+          <v-col cols="12" sm="4"
             ><v-autocomplete
               v-model="item.feed_combo_id"
               :items="combo"
@@ -172,10 +172,28 @@
           <v-spacer></v-spacer>
         </v-row>
       </template>
+      <!-- has_observation 放置觀察網 -->
+      <template v-slot:[`item.has_observation`]="{ item }">
+        <v-simple-checkbox v-model="item.has_observation"></v-simple-checkbox>
+        <!-- <span v-if="item.is_executed" style="color:red;">已執行</span> -->
+      </template>
+      <template v-slot:[`header.has_observation`]="{ header }">
+        <v-simple-checkbox
+          v-model="has_observe"
+          @click="has_observe_click"
+          title="有輸入完整資料(投餵量、選擇飼料餐號)才會勾選"
+        ></v-simple-checkbox
+        >{{ header.text }}
+      </template>
       <!-- top -->
       <template v-slot:top>
         <v-toolbar elevation="1">
-          <span v-if="imptimeidx">帶入的資料時間：{{sdate}}-{{ imptimeidx }}<v-btn class="error mx-2" @click="delimpsubmit">刪除此廠[{{imptimeidx}}]資料</v-btn></span>
+          <span v-if="imptimeidx"
+            >帶入的資料時間：{{ sdate }}-{{ imptimeidx
+            }}<v-btn class="error mx-2" @click="delimpsubmit"
+              >刪除此廠[{{ imptimeidx }}]資料</v-btn
+            ></span
+          >
           <v-spacer></v-spacer>
           <v-btn color="primary" icon @click="dataclear"
             ><v-icon title="清除資料">mdi-shimmer</v-icon></v-btn
@@ -186,7 +204,7 @@
         </v-toolbar>
       </template>
     </v-data-table>
-    <v-dialog v-model="submitdig" width="400">
+    <v-dialog v-model="submitdig" width="450">
       <v-card min-height="250">
         <v-card-title>操作</v-card-title>
         <v-divider></v-divider>
@@ -219,6 +237,7 @@
                 </template>
                 <v-date-picker
                   v-model="adate"
+                  locale="zh-tw"
                   @input="menu_adate = false"
                 ></v-date-picker>
               </v-menu>
@@ -245,17 +264,23 @@
                 :disabled="!atime || !adate"
                 large
                 @click="feedsubmit"
-                >以此時間新增</v-btn
+                >設定此時間{{ atime }}</v-btn
               >
             </v-col>
-            <v-col cols="12" style="font-size:1.2em">
-              <span
-                >帶入資料時間：{{imptimeidx}}
-                </span
-              >
-              <v-btn class="primary mb-3" tile large :disabled="!imptimeidx" v-if="false"
-                >修改此帶入資料</v-btn
-              >
+            <v-col cols="12" class="text-center" style="font-size:1.2em">
+            <span style="color:red;">若已執行修改後需重新執行</span>
+              <!-- <v-btn
+                class="primary mb-3"
+                tile small
+                @click="
+                  () => {
+                    atime = imptimeidx;
+                    adate = sdate;
+                  }
+                "
+                :disabled="!imptimeidx"
+                >↑使用原帶入日期時間{{ imptimeidx }}</v-btn
+              > -->
             </v-col>
           </v-row>
         </v-card-text>
@@ -296,6 +321,13 @@ export default {
           value: "feed_combo_id",
           align: "center",
           sortable: false
+        },
+        {
+          text: "放置觀察網",
+          value: "has_observation",
+          align: "center",
+          width: 100,
+          sortable: false
         }
         // { text: "Actions", value: "actions", sortable: false }
       ],
@@ -326,6 +358,7 @@ export default {
           name: "A2"
         }
       ],
+      has_observe: false,
       factoryData: [], //廠架構
       factoryid: "", //廠id
       combo: [],
@@ -344,6 +377,32 @@ export default {
     };
   },
   methods: {
+    //觀察網全選
+    has_observe_click: async function() {
+      if (this.has_observe) {
+        var data = this.desserts.filter(
+          x =>
+            x.feed_combo_id > 0 &&
+            x.initial_val > 0 &&
+            x.factory_id == this.factoryid
+        ); //抓有選飼料餐號、填投餵量
+        // 放置觀察網 打勾
+        data.forEach(element => {
+          element.has_observation = true;
+        });
+      } else {
+        var data = this.desserts.filter(
+          x =>
+            x.feed_combo_id > 0 &&
+            x.initial_val > 0 &&
+            x.factory_id == this.factoryid
+        ); //抓有選飼料餐號、填投餵量
+        // 放置觀察網 打勾
+        data.forEach(element => {
+          element.has_observation = false;
+        });
+      }
+    },
     //取得套餐清單(飼料設定)
     getcombodata: async function() {
       this.combo = [];
@@ -424,6 +483,35 @@ export default {
     },
     //送出新增料表
     feedsubmit: async function() {
+      //先確認投餵資料筆數是否已有資料
+      let feedurl = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-rows/`;
+      var feedparm = {
+        feed_time: `${this.adate} ${this.atime}`,
+        factory_id: this.factoryid
+      }
+      var datecount = 0;
+      var errormsg = "";
+      await this.$axios
+      .get(feedurl,{params:feedparm})
+      .then(res=>{
+        if(res.status==200){
+          datecount = res.data.data_rows;
+        }else{
+          datecount = -1;
+          errormsg = res.data;
+        }
+      })
+      .catch(error=>{
+        datecount=-1;
+        errormsg = error
+      });
+      if(datecount==-1){
+        this.$toast.error(`發生錯誤：${errormsg}`,{duration:2000});
+          return
+      }
+      if(datecount>0 && confirm(`當日已有資料是否覆蓋資料，原資料${datecount}筆將被刪除`)==false){
+        return;
+      }
       var data = this.desserts.filter(
         x =>
           x.feed_combo_id > 0 &&
@@ -433,25 +521,24 @@ export default {
       // console.log(data);
       var parm = {
         feed_time: `${this.adate} ${this.atime}`,
-        created_user:this.$auth.$state.user.email,
+        created_user: this.$auth.$state.user.email,
         data: data
       };
-      console.log("parm",parm);
+      console.log("parm", parm);
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
       await this.$axios
         .post(url, parm)
         .then(res => {
-          debugger;
           if (res.data == "新增成功") {
-            this.dataclear();//清除資料
+            this.dataclear(); //清除資料
+            this.submitdig = false;//關閉dialog
             this.$toast.success(`新增成功`, {
               duration: 2000
             });
-          }else{
+          } else {
             this.$toast.success(`新增失敗:${res.data}`, {
               duration: 2000
             });
-            
           }
           console.log("新增API:" + res.request.responseURL);
         })
@@ -481,13 +568,18 @@ export default {
                 const ele = element.node[i];
                 // ele.node
                 //   .filter(x => x.visible == true)
-                //   .map(x => (x.area_name = ele.name)); //把天府名稱放入area_name,把池名稱放入pond_name
+                //   .map(x => (x.area_name = ele.name));
+                //把天府名稱放入area_name,把池名稱放入pond_name
+                //把放置觀察網放入has_observation
+                //把是否執行放入is_executed
                 ele.node
                   .filter(x => x.visible == true)
                   .map(x => {
                     (x.area_name = ele.name),
                       (x.pond_name = x.name),
-                      (x.pond_id = x.id);
+                      (x.pond_id = x.id),
+                      (x.has_observation = false),
+                      (x.is_executed = false);
                   }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
                 ele.node
                   .filter(x => x.visible == true)
@@ -523,42 +615,49 @@ export default {
         });
     },
     //刪除帶入的資料
-    delimpsubmit:async function(){
-      const factory_name = this.factoryData.filter(x=>x.id==this.factoryid)[0].name;
-       var parm ={
-          factory_id:this.factoryid,
-          feed_time :`${this.sdate} ${this.imptimeidx}`
-        };
-      if (confirm(`是否刪除所有資料\n注意：包含已確認執行的資料!!!\n廠：${factory_name}\n時間：${parm.feed_time}`)) {
-       
+    delimpsubmit: async function() {
+      const factory_name = this.factoryData.filter(
+        x => x.id == this.factoryid
+      )[0].name;
+      var parm = {
+        factory_id: this.factoryid,
+        feed_time: `${this.sdate} ${this.imptimeidx}`
+      };
+      if (
+        confirm(
+          `是否刪除所有資料\n注意：包含已確認執行的資料!!!\n廠：${factory_name}\n時間：${parm.feed_time}`
+        )
+      ) {
         debugger;
         console.log(parm);
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-batch-delete/`;
         await this.$axios
-        .post(url, parm)
-        .then(res => {
-          if (res.data == "刪除成功") {
-            this.dataclear();//清除資料
-            this.imptimedata =[];//清空取得的帶入資料
-            this.$toast.success(`刪除${factory_name}[${parm.feed_time}]成功`, {
+          .post(url, parm)
+          .then(res => {
+            if (res.data == "刪除成功") {
+              this.dataclear(); //清除資料
+              this.imptimedata = []; //清空取得的帶入資料
+              this.$toast.success(
+                `刪除${factory_name}[${parm.feed_time}]成功`,
+                {
+                  duration: 2000
+                }
+              );
+            } else {
+              this.$toast.success(`刪除失敗:${res.data}`, {
+                duration: 2000
+              });
+            }
+            console.log("刪除API:" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.error(`刪除失敗:${error}`, {
               duration: 2000
             });
-          }else{
-            this.$toast.success(`刪除失敗:${res.data}`, {
-              duration: 2000
-            });
-            
-          }
-          console.log("刪除API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`刪除失敗:${error}`, {
-            duration: 2000
+          })
+          .finally(() => {
+            //
           });
-        })
-        .finally(() => {
-          //
-        });
       }
     },
     //取得帶入的資料
@@ -659,32 +758,29 @@ export default {
     },
     //設定帶入資料
     settabledata: async function(item) {
-      await this.dataclear();//歸零
+      await this.dataclear(); //歸零
       var data = item.data;
       this.imptimeidx = item.time; //time即index
       this.factoryid = data[0].factory_id; //第1筆資料即為首選廠
       var desserts = this.desserts;
-      // console.log(this.desserts.length,desserts.length);
+      
       for (let idx = 0; idx < data.length; idx++) {
-        // console.log(this.desserts.length,desserts.length);
         //資料塞進去
         const pond_id = data[idx].pond_id;
-
+        data[idx].is_executed = false;//強制把執行狀態刪除
         var dessitem = desserts.filter(x => x.pond_id == pond_id);
         if (dessitem.length == 0) {
           //沒有這id，塞進去
           desserts.push(data[idx]);
-          // console.log("add:",id,data[idx].area_name,data[idx].pond_name);
         } else {
-          console.log(desserts.length);
           // 有這id，蓋上去
-          console.log(
-            "covered:",
-            pond_id,
-            data[idx].area_name,
-            data[idx].pond_name,
-            data[idx]
-          );
+          // console.log(
+          //   "covered:",
+          //   pond_id,
+          //   data[idx].area_name,
+          //   data[idx].pond_name,
+          //   data[idx]
+          // );
           var deleteidx = desserts.indexOf(dessitem[0]);
           desserts.splice(deleteidx, 1);
           desserts.push(data[idx]);

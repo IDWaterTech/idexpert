@@ -830,11 +830,11 @@ export default {
               this.manisEditing = false;
               this.manfield = {};
             } else {
-              alert("新增失敗!：" + res.data);
+              alert("新增廠商失敗：" + res.data);
             }
           })
           .catch(error => {
-            alert("新增失敗!：" + error.message);
+            alert("新增廠商失敗：" + error.message);
           })
           .finally(() => {
             //this.getdata();
@@ -888,10 +888,12 @@ export default {
               this.manfield = {};
             } else {
               alert("修改失敗!：" + res.data);
+              debugger;
             }
           })
           .catch(error => {
             alert("修改失敗!：" + error.message);
+            debugger;
           })
           .finally(() => {
             this.getmanudata();
@@ -998,10 +1000,12 @@ export default {
               this.ficfield = {};
             } else {
               alert("修改失敗!：" + res.data);
+              debugger;
             }
           })
           .catch(error => {
             alert("修改失敗!：" + error.message);
+            debugger;
           })
           .finally(() => {
             this.getficdata();
@@ -1378,10 +1382,12 @@ export default {
               this.fingchip=null;
             } else {
               alert("修改失敗!：" + res.data);
+              debugger;
             }
           })
           .catch(error => {
             alert("新增失敗!：" + error.message);
+            debugger;
           })
           .finally(() => {
             this.getfingdata();//成份清單
@@ -1441,10 +1447,12 @@ export default {
               this.fingisEditing = false;
             } else {
               alert("新增失敗!：" + res.data);
+              debugger;
             }
           })
           .catch(error => {
             alert("新增失敗!：" + error.message);
+            debugger;
           })
           .finally(() => {
             this.getfingdata();
@@ -1507,10 +1515,12 @@ export default {
               this.$toast.success(`新增成功`, { duration: 2000 });
             } else {
               this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
+              debugger;
             }
           })
           .catch(error => {
-            alert("新增失敗!：" + error.message);
+            alert("新增成份參數失敗!：" + error.message);
+            debugger;
           })
           .finally(() => {
             this.getparmdata();

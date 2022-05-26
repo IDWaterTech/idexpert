@@ -65,10 +65,10 @@
         ></v-autocomplete>
       </v-col>
       <v-col cols="12" sm="8"></v-col>
-      <!-- 餐別明細 -->
+      <!-- 當日餐別明細 -->
       <v-col cols="12">
         <v-card min-width="300">
-          <v-card-title>餐別明細</v-card-title>
+          <v-card-title>當日餐別明細</v-card-title>
           <v-card-text class="mt-3">
             <v-row>
               <v-col
@@ -104,7 +104,7 @@
                 </v-chip>
                 <v-divider></v-divider>
               </v-col>
-                
+
               <v-col v-if="comboTotal.length == 0" class="text-center">
                 <h2>查無資料</h2>
               </v-col>
@@ -116,17 +116,38 @@
       <v-col cols="12" class="mb-8">
         <el-card>
           <v-row>
+            <!-- 獨立拉出資料 -->
+            <v-col cols="12" sm="2" align-self="center">
+              <span>獨立顯示子成份項目</span>
+            </v-col>
+            <v-col cols="12" sm="5">
+              <v-autocomplete
+                v-model="showsub"
+                multiple
+                chips
+                clearable
+                no-data-text="無項目"
+                :items="sub_allitems"
+                filled
+                placeholder="獨立顯示子成份項目"
+              ></v-autocomplete>
+            </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="2"
+            <v-col cols="12" sm="2"><v-btn tile small class="success" @click="downloadcsv" :block="$vuetify.breakpoint.name=='xs'">下載檔案</v-btn></v-col>
+            <v-col cols="12" sm="2"
               ><v-btn
-                class="primary"
+                :block="$vuetify.breakpoint.name=='xs'"
+                class="primary" tile small
                 @click="execsubmit"
                 :disabled="multipleSelection.length == 0"
                 >執行</v-btn
-              ></v-col
+              >
+              
+              </v-col
             >
           </v-row>
           <el-table
+            id="outTable"
             ref="mutitable"
             :data="feedData2"
             row-key="id"
@@ -134,14 +155,15 @@
             @selection-change="handleSelectionChange"
             @select-all="selectall"
           >
-          <!-- 減少一欄佔空間所以用area_name2解決 -->
+            <!-- 減少一欄佔空間所以用area_name2解決 -->
             <el-table-column
               prop="area_name2"
               label="區域"
-              sortable fixed="left"
+              sortable
+              fixed="left"
               width="100"
             >
-            <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
+              <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
             </el-table-column>
             <!-- <el-table-column
               prop="pond_name"
@@ -151,15 +173,39 @@
             /> -->
             <el-table-column
               prop="feed_total"
-              label="總量"
+              label="總量(主+次)"
               sortable
               width="100"
             />
+            <el-table-column label="獨立項目" v-if="showsub.length > 0">
+              <template #default="scope">
+                <div v-if="scope.row.hasOwnProperty('sub_items')">
+                  <v-chip
+                    class="mx-2"
+                    color="purple"
+                    label
+                    outlined
+                    v-for="(sub, idx) in scope.row.sub_items.filter(x =>
+                      showsub.includes(x.name)
+                    )"
+                    :key="idx"
+                  >
+                    {{ `${sub.name}:${sub.feed_amount}` }}
+                  </v-chip>
+                </div>
+                <!-- <el-button
+                  size="small"
+                  @click="handleEdit(scope.$index, scope.row)"
+                  v-if="!scope.row.hasOwnProperty('children')"
+                  :disabled="scope.row.is_executed"
+                  >{{ scope.row.is_executed ? "已執行" : "執行" }}</el-button
+                > -->
+              </template>
+            </el-table-column>
             <el-table-column
               prop="observation_total"
-              label="觀察網總量"
-              sortable
-              width="100"
+              label="觀察網(不含糖)"
+              width="120"
             />
             <el-table-column
               prop="feed_combo_name"
@@ -170,7 +216,6 @@
             <el-table-column
               prop="executed_user"
               label="執行人員"
-              sortable
               width="180"
             />
             <el-table-column
@@ -178,6 +223,7 @@
               type="selection"
               :selectable="checkSelectable"
               width="55"
+              fixed="right"
             >
             </el-table-column>
             <!-- 本來要弄button按鈕，目前不需要 -->
@@ -208,6 +254,8 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx/xlsx.js'
 import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
@@ -226,10 +274,29 @@ export default {
       feedData: [],
       //tablesetting
       multipleSelection: [],
-      checkedkeys: false
+      checkedkeys: false,
+      //獨立顯示子成份項目
+      showsub: [],
+      //餐別合計
+      totalData:[],
     };
   },
   methods: {
+    downloadcsv:function(){
+      // 如果表格中没有fixed属性固定列，直接取表格id就行
+  // const table = document.querySelector(‘#outTable’)
+  // 如果表格中有fixed属性固定列，需要像下面这样做一下处理，要不然下载的excel数据会重复2次！参考：https://blog.csdn.net/WYA1993/article/details/85319138
+  const table = document.querySelector('#outTable').cloneNode(true)
+  if (table.querySelector('.el-table__fixed')) {
+    table.removeChild(table.querySelector('.el-table__fixed'))
+  }
+  var wb = XLSX.utils.table_to_book(table)
+  var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+  try {
+    FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `下載_${dayjs().format("YYYY-MM-DD")}.xlsx`)
+  } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+  return wbout
+    },
     //取得廠架構
     getarchitecture: async function() {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
@@ -324,47 +391,8 @@ export default {
       //       { sub_id: 2, sub_name: "水", feed_amount: 2 }
       //     ]
       //   },
-      //   {
-      //     id: 3,
-      //     time: "01:00",
-      //     area_name: "紫薇",
-      //     pond_name: "A1",
-      //     pond_id: 3,
-      //     feed_combo_id: 1,
-      //     feed_combo_name: "1號餐",
-      //     feed_total: 1200,
-      //     ovserve_total: 36,
-      //     is_executed: true,
-      //     main_items: [
-      //       { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
-      //       { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
-      //     ],
-      //     sub_items: [
-      //       { sub_id: 1, sub_name: "糖", feed_amount: 9 },
-      //       { sub_id: 2, sub_name: "水", feed_amount: 8 }
-      //     ]
-      //   },
-      //   {
-      //     id: 2,
-      //     time: "01:00",
-      //     area_name: "武曲",
-      //     pond_name: "A2",
-      //     pond_id: 2,
-      //     feed_combo_id: 2,
-      //     feed_combo_name: "2號餐",
-      //     feed_total: 1500,
-      //     ovserve_total: 45,
-      //     is_executed: false,
-      //     main_items: [
-      //       { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
-      //       { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
-      //     ],
-      //     sub_items: [
-      //       { sub_id: 1, sub_name: "糖", feed_amount: 1 },
-      //       { sub_id: 2, sub_name: "水", feed_amount: 2 }
-      //     ]
-      //   }
       // ];
+      //取得料表
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist/`;
       var parm = {
         factory_id: this.factoryid,
@@ -374,6 +402,7 @@ export default {
         .get(url, { params: parm })
         .then(res => {
           this.feedData = res.data;
+          this.gettotalData();//取得合計
           this.$toast.success(`取得料表成功`, { duration: 2000 });
           console.log("取得料表API:" + res.request.responseURL);
         })
@@ -385,25 +414,52 @@ export default {
         .finally(() => {
           //this.getdata();
         });
+      
+      
+    },
+    //取得合計
+    gettotalData:async function(){
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-total-by-time/`;
+      var parm = {
+        feed_date:`${this.sdate}`,
+        factory_id:this.factoryid
+      }
+       await this.$axios
+        .get(url, { params: parm })
+        .then(res => {
+          // this.feedData = res.data;
+          this.totalData = res.data;
+          this.$toast.success(`取得合計成功`, { duration: 2000 });
+          console.log("取得合計API:" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error(`取得合計失敗:${error}`, {
+            duration: 2000
+          });
+        })
+        .finally(() => {
+        });
     },
     //執行
     execsubmit: async function() {
       var parm = {
         executed_user: this.$auth.$state.user.email,
-        id: this.multipleSelection.map(x=>x.id),
-        is_executed:true
+        id: this.multipleSelection.map(x => x.id),
+        is_executed: true
       };
       console.log(parm);
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`;
       await this.$axios
         .post(url, parm)
         .then(res => {
-          if(res.data=='修改成功'){
+          if (res.data == "修改成功") {
             this.feedData = []; //清空表格資料
             this.stime = "";
-            this.$toast.success(`執行成功：${parm.id.length}筆`,{duration:2000});
-          }else{
-            this.$toast.error(`執行失敗：${res.data}`,{duration:2000});
+            this.$toast.success(`執行成功：${parm.id.length}筆`, {
+              duration: 2000
+            });
+          } else {
+            this.$toast.error(`執行失敗：${res.data}`, { duration: 2000 });
           }
           console.log("執行API:" + res.request.responseURL);
         })
@@ -463,8 +519,42 @@ export default {
       var items = [];
       for (let idx = 0; idx < arealst.length; idx++) {
         const area_name = arealst[idx];
-        this.feedData.filter(x => x.area_name == area_name).map(x=>x.area_name2=x.pond_name);
-        const children =  this.feedData.filter(x => x.area_name == area_name);
+        //把水池名組合到area_name2
+        this.feedData
+          .filter(x => x.area_name == area_name)
+          .map(x => (x.area_name2 = x.pond_name));
+        const children = this.feedData.filter(x => x.area_name == area_name);
+        var sub = this.showsub;
+        console.log(sub);
+        //扣除獨立顯示項目的量
+        children.forEach(element => {
+          if (element.sub_items.filter(x => sub.includes(x.name)).length > 0) {
+            //陣列裡每個項目(包主次項目)
+            var main_total = element.main_items
+              .map(x => x.feed_amount)
+              .reduce((a, b) => {
+                return a + b;
+              });
+            var sub_total = element.sub_items
+              .map(x => x.feed_amount)
+              .reduce((a, b) => {
+                return a + b;
+              });
+            var total = main_total + sub_total;
+            //陣列裡面每個數字加起來(限獨立項目)
+            var value = element.sub_items
+              .filter(x => sub.includes(x.name))
+              .map(x => x.feed_amount)
+              .reduce((a, b) => {
+                return a + b;
+              });
+            //total扣除
+            element.feed_total =
+              Math.round((total - value + Number.EPSILON) * 100) /
+              100;
+          }
+          // element.feed_total
+        });
         var item = {
           id: `${idx}_${area_name}`,
           area_name2: area_name,
@@ -475,32 +565,34 @@ export default {
       console.log(items);
       return items;
     },
+    //當明餐別合計
     comboTotal: function() {
-      // {
-      //   id: 1,
-      //   time: "01:00",
-      //   area_name: "武曲",
-      //   pond_name: "A1",
-      //   pond_id: 1,
-      //   feed_combo_id: 1,
-      //   feed_combo_name: "1號餐",
-      //   feed_total: 1000,
-      //   ovserve_total: 30,
-      //   is_executed: false,
-      //   main_items:[{main_id:1,name:"蝦料1",feed_amount:100},{main_id:2,name:"蝦料2",feed_amount:110}],
-      //   sub_items:[{sub_id:1,name:"糖",feed_amount:1},{sub_id:2,name:"水",feed_amount:2}]
-      // }
-      var data = this.feedData;
-      if (this.feedData.length > 0) {
-        var combo_list = Array.from(
-          new Set(this.feedData.map(x => x.feed_combo_name))
-        ); //['1號餐', '2號餐']
-        const combo_result = [];
-        for (let idx = 0; idx < combo_list.length; idx++) {
+      //[{time:'01:00',feed:[{feed_combo_name: [{…}],
+                          // main_items: [{…}],
+                          // sub_items},{..........}]}]
+      // var data = this.feedData;
+      let data  = this.totalData;
+      if (this.totalData.length > 0) {
+         //['1號餐', '2號餐']
+        // var combo_list = Array.from(
+        //   new Set(this.totalData.map(x => x.feed_combo_name))
+        // );
+        let combo_list2 = []; //展開成單一一筆
+        data.forEach(dataelement => {
+          var name_list = dataelement.feed;//.map(x=>x.feed_combo_id);
+          combo_list2.push(...name_list);
+        });
+        //['1號餐', '2號餐']
+        var combo_list = Array.from(new Set(combo_list2.map(x=>x.feed_combo_name)));//feed_combo_name
+        let combo_result = [];
+        for (let idx = 0; idx < combo_list.length; idx++) {//每種餐下去算各別的量
+          var totaldata = data;
           const combo_name = combo_list[idx];
-          const combo_item = this.feedData.filter(
-            x => x.feed_combo_name == combo_name
-          ); //抓1號餐所有資料
+          // const combo_item = this.totalData.filter(
+          //   x => x.feed_combo_name == combo_name
+          // );
+          //抓1號餐所有資料
+          const combo_item = combo_list2.filter(x=>x.feed_combo_name==combo_name);
           const main_items = {};
           const sub_items = {};
           for (let mainidx = 0; mainidx < combo_item.length; mainidx++) {
@@ -511,20 +603,19 @@ export default {
                 main_items[element.name] == undefined
                   ? 0.0
                   : main_items[element.name];
-              // main_items[element.name] = pre + element.feed_amount;
-              var value = pre + element.feed_amount;
+              // var value = pre + element.feed_amount;
+              var value = pre + element.total_amount;
               //math用來解決浮點數相加會出現10.000000000001的狀況
               main_items[element.name] =
                 Math.round((value + Number.EPSILON) * 100) / 100;
             });
-
             sitem.forEach(element => {
               var pre =
                 sub_items[element.name] == undefined
                   ? 0
                   : sub_items[element.name];
-              // sub_items[element.name] = pre + element.feed_amount;
-              var value = pre + element.feed_amount;
+              // var value = pre + element.feed_amount;
+              var value = pre + element.total_amount;
               sub_items[element.name] =
                 Math.round((value + Number.EPSILON) * 100) / 100;
             });
@@ -532,18 +623,31 @@ export default {
           const tot =
             Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
             Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
+
           combo_result.push({
             combo_name: combo_name,
             main_items: main_items,
             sub_items: sub_items,
             total: tot
           });
-          // console.log("main",main_items);
-          // console.log("sub",sub_items);
+         
         }
         return combo_result;
       }
       return [];
+    },
+    sub_allitems: function() {
+      var sub = this.comboTotal.map(x => Object.keys(x.sub_items));
+      var sub2 = [];
+      for (let i = 0; i < sub.length; i++) {
+        //[['w1','w2'],[..]]
+        sub[i].forEach(ele => {
+          if (sub2.includes(ele) == false) {
+            sub2.push(ele);
+          }
+        });
+      }
+      return sub2;
     }
   },
   async mounted() {
