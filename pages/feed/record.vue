@@ -528,19 +528,24 @@ export default {
         console.log(sub);
         //扣除獨立顯示項目的量
         children.forEach(element => {
+          //主成份total
+          var main_total = element.main_items
+              .map(x => x.feed_amount)
+              .reduce((a, b) => {
+                return a + b;
+              });
+          //子成份total
+          var sub_total = element.sub_items
+              .map(x => x.feed_amount)
+              .reduce((a, b) => {
+                return a + b;
+              });
+          var total = main_total + sub_total;
+          element.feed_total = total;
+          //子成份查找有無包含獨立顯示，有的話再去改total
           if (element.sub_items.filter(x => sub.includes(x.name)).length > 0) {
-            //陣列裡每個項目(包主次項目)
-            var main_total = element.main_items
-              .map(x => x.feed_amount)
-              .reduce((a, b) => {
-                return a + b;
-              });
-            var sub_total = element.sub_items
-              .map(x => x.feed_amount)
-              .reduce((a, b) => {
-                return a + b;
-              });
-            var total = main_total + sub_total;
+            //陣列裡每個項目(次項目)
+            
             //陣列裡面每個數字加起來(限獨立項目)
             var value = element.sub_items
               .filter(x => sub.includes(x.name))
