@@ -718,11 +718,8 @@ export default {
     },
     cols: function() {
       let col = [];
-      this.allcols.forEach(item => {
-        if (!col.includes(item.group)) {
-          col.push(item.group);
-        }
-      });
+      col = [...new Set(this.allcols.map(x=>x.group))];
+      col = col.filter(x=>x!='feed');//排除項目
       return col; //["water", "feed", "env", "obs", "adv", "pbio"]
     },
     minmax: {
