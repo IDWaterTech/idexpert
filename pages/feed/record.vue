@@ -39,6 +39,11 @@
               v-bind="attrs"
               v-on="on"
               @change="getimptimedata"
+              @click:clear="
+                () => {
+                  (totalData = {}), (imptimedata = []);
+                }
+              "
               clearable
               @click:prepend="() => ((sdate = getNowDate()), getimptimedata())"
             ></v-text-field>
@@ -133,18 +138,27 @@
               ></v-autocomplete>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="12" sm="2"><v-btn tile small class="success" @click="downloadcsv" :block="$vuetify.breakpoint.name=='xs'">下載檔案</v-btn></v-col>
             <v-col cols="12" sm="2"
               ><v-btn
-                :block="$vuetify.breakpoint.name=='xs'"
-                class="primary" tile small
+                tile
+                small
+                class="success"
+                @click="downloadcsv"
+                :block="$vuetify.breakpoint.name == 'xs'"
+                >下載檔案</v-btn
+              ></v-col
+            >
+            <v-col cols="12" sm="2"
+              ><v-btn
+                :block="$vuetify.breakpoint.name == 'xs'"
+                class="primary"
+                tile
+                small
                 @click="execsubmit"
                 :disabled="multipleSelection.length == 0"
                 >執行</v-btn
               >
-              
-              </v-col
-            >
+            </v-col>
           </v-row>
           <el-table
             id="outTable"
@@ -254,8 +268,8 @@
 </template>
 
 <script>
-import FileSaver from 'file-saver'
-import XLSX from 'xlsx/xlsx.js'
+import FileSaver from "file-saver";
+import XLSX from "xlsx/xlsx.js";
 import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
@@ -278,24 +292,33 @@ export default {
       //獨立顯示子成份項目
       showsub: [],
       //餐別合計
-      totalData:[],
+      totalData: []
     };
   },
   methods: {
-    downloadcsv:function(){
+    downloadcsv: function() {
       // 如果表格中没有fixed属性固定列，直接取表格id就行
-  // const table = document.querySelector(‘#outTable’)
-  // 如果表格中有fixed属性固定列，需要像下面这样做一下处理，要不然下载的excel数据会重复2次！参考：https://blog.csdn.net/WYA1993/article/details/85319138
-  const table = document.querySelector('#outTable').cloneNode(true)
-  if (table.querySelector('.el-table__fixed')) {
-    table.removeChild(table.querySelector('.el-table__fixed'))
-  }
-  var wb = XLSX.utils.table_to_book(table)
-  var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
-  try {
-    FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `下載_${dayjs().format("YYYY-MM-DD")}.xlsx`)
-  } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
-  return wbout
+      // const table = document.querySelector(‘#outTable’)
+      // 如果表格中有fixed属性固定列，需要像下面这样做一下处理，要不然下载的excel数据会重复2次！参考：https://blog.csdn.net/WYA1993/article/details/85319138
+      const table = document.querySelector("#outTable").cloneNode(true);
+      if (table.querySelector(".el-table__fixed")) {
+        table.removeChild(table.querySelector(".el-table__fixed"));
+      }
+      var wb = XLSX.utils.table_to_book(table);
+      var wbout = XLSX.write(wb, {
+        bookType: "xlsx",
+        bookSST: true,
+        type: "array"
+      });
+      try {
+        FileSaver.saveAs(
+          new Blob([wbout], { type: "application/octet-stream" }),
+          `下載_${dayjs().format("YYYY-MM-DD")}.xlsx`
+        );
+      } catch (e) {
+        if (typeof console !== "undefined") console.log(e, wbout);
+      }
+      return wbout;
     },
     //取得廠架構
     getarchitecture: async function() {
@@ -349,6 +372,7 @@ export default {
 
       if (!this.sdate) {
         this.imptimedata = [];
+        // this.totalData = {};
         return;
       }
       var para = {
@@ -402,7 +426,7 @@ export default {
         .get(url, { params: parm })
         .then(res => {
           this.feedData = res.data;
-          this.gettotalData();//取得合計
+          this.gettotalData(); //取得合計
           this.$toast.success(`取得料表成功`, { duration: 2000 });
           console.log("取得料表API:" + res.request.responseURL);
         })
@@ -414,22 +438,20 @@ export default {
         .finally(() => {
           //this.getdata();
         });
-      
-      
     },
     //取得合計
-    gettotalData:async function(){
+    gettotalData: async function() {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-total-by-time/`;
       var parm = {
-        feed_date:`${this.sdate}`,
-        factory_id:this.factoryid
-      }
-       await this.$axios
+        feed_date: `${this.sdate}`,
+        factory_id: this.factoryid
+      };
+      await this.$axios
         .get(url, { params: parm })
         .then(res => {
           // this.feedData = res.data;
           this.totalData = res.data;
-          this.$toast.success(`取得合計成功`, { duration: 2000 });
+          // this.$toast.success(`取得合計成功`, { duration: 2000 });
           console.log("取得合計API:" + res.request.responseURL);
         })
         .catch(error => {
@@ -437,8 +459,7 @@ export default {
             duration: 2000
           });
         })
-        .finally(() => {
-        });
+        .finally(() => {});
     },
     //執行
     execsubmit: async function() {
@@ -530,22 +551,22 @@ export default {
         children.forEach(element => {
           //主成份total
           var main_total = element.main_items
-              .map(x => x.feed_amount)
-              .reduce((a, b) => {
-                return a + b;
-              });
+            .map(x => x.feed_amount)
+            .reduce((a, b) => {
+              return a + b;
+            });
           //子成份total
           var sub_total = element.sub_items
-              .map(x => x.feed_amount)
-              .reduce((a, b) => {
-                return a + b;
-              });
+            .map(x => x.feed_amount)
+            .reduce((a, b) => {
+              return a + b;
+            });
           var total = main_total + sub_total;
-          element.feed_total = total;
+          element.feed_total = Math.round((total + Number.EPSILON) * 100) / 100;
           //子成份查找有無包含獨立顯示，有的話再去改total
           if (element.sub_items.filter(x => sub.includes(x.name)).length > 0) {
             //陣列裡每個項目(次項目)
-            
+
             //陣列裡面每個數字加起來(限獨立項目)
             var value = element.sub_items
               .filter(x => sub.includes(x.name))
@@ -555,8 +576,7 @@ export default {
               });
             //total扣除
             element.feed_total =
-              Math.round((total - value + Number.EPSILON) * 100) /
-              100;
+              Math.round((total - value + Number.EPSILON) * 100) / 100;
           }
           // element.feed_total
         });
@@ -573,31 +593,36 @@ export default {
     //當明餐別合計
     comboTotal: function() {
       //[{time:'01:00',feed:[{feed_combo_name: [{…}],
-                          // main_items: [{…}],
-                          // sub_items},{..........}]}]
+      // main_items: [{…}],
+      // sub_items},{..........}]}]
       // var data = this.feedData;
-      let data  = this.totalData;
+      let data = this.totalData;
       if (this.totalData.length > 0) {
-         //['1號餐', '2號餐']
+        //['1號餐', '2號餐']
         // var combo_list = Array.from(
         //   new Set(this.totalData.map(x => x.feed_combo_name))
         // );
         let combo_list2 = []; //展開成單一一筆
         data.forEach(dataelement => {
-          var name_list = dataelement.feed;//.map(x=>x.feed_combo_id);
+          var name_list = dataelement.feed; //.map(x=>x.feed_combo_id);
           combo_list2.push(...name_list);
         });
         //['1號餐', '2號餐']
-        var combo_list = Array.from(new Set(combo_list2.map(x=>x.feed_combo_name)));//feed_combo_name
+        var combo_list = Array.from(
+          new Set(combo_list2.map(x => x.feed_combo_name))
+        ); //feed_combo_name
         let combo_result = [];
-        for (let idx = 0; idx < combo_list.length; idx++) {//每種餐下去算各別的量
+        for (let idx = 0; idx < combo_list.length; idx++) {
+          //每種餐下去算各別的量
           var totaldata = data;
           const combo_name = combo_list[idx];
           // const combo_item = this.totalData.filter(
           //   x => x.feed_combo_name == combo_name
           // );
           //抓1號餐所有資料
-          const combo_item = combo_list2.filter(x=>x.feed_combo_name==combo_name);
+          const combo_item = combo_list2.filter(
+            x => x.feed_combo_name == combo_name
+          );
           const main_items = {};
           const sub_items = {};
           for (let mainidx = 0; mainidx < combo_item.length; mainidx++) {
@@ -635,7 +660,6 @@ export default {
             sub_items: sub_items,
             total: tot
           });
-         
         }
         return combo_result;
       }
