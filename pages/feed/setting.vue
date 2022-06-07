@@ -559,7 +559,7 @@
                   @click="fingsubmit"
                   v-if="fingmode == 'add'"
                 >
-                  確定
+                  新增成份
                 </v-btn>
                 <v-btn
                   :disabled="!fingisEditing"
@@ -567,7 +567,7 @@
                   small
                   v-if="fingmode == 'edit'"
                   @click="fingdelete"
-                  >確認刪除</v-btn
+                  >刪除成份</v-btn
                 >
                 <v-btn
                   :disabled="!fingisEditing"
@@ -575,7 +575,7 @@
                   small
                   @click="fingedit"
                   v-if="fingmode == 'edit'"
-                  >確認修改</v-btn
+                  >修改成份</v-btn
                 >
               </v-card-actions>
             </v-card>
@@ -714,8 +714,9 @@
                           {{
                             ficwithdetail_main.filter(x => x.id == item)[0].name
                           }}
-
+                          <br/>
                           <v-chip
+                            class="mx-1"
                             v-for="parmitem in ficwithdetail_main.filter(
                               x => x.id == item
                             )[0].parameters"
@@ -733,6 +734,9 @@
                           >
                             無相關參數資料
                           </span>
+                          <div v-else>
+
+                          </div>
                         </div>
                       </v-alert>
                     </v-col>
@@ -742,7 +746,8 @@
                         filled
                         dense
                         clearable
-                        placeholder="公式範例：100%,90%,0.5,0.8...."
+                        @keyup="limitcharacter"
+                        placeholder="公式範例：1,0.2,0.5,0.8...."
                         :rules="rules.require"
                       ></v-text-field>
                       <v-text-field
@@ -982,6 +987,10 @@ export default {
     }
   },
   methods: {
+    //限制特殊字元
+    limitcharacter:function(e){
+       e.target.value = e.target.value.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g,"");
+    },
     //選擇廠商
     manselect: function() {
       if (this.manu.filter(x => x.id == this.manuidx).length > 0) {
@@ -1661,6 +1670,7 @@ export default {
           })
           .finally(() => {
             this.getfingdata();
+            this.getficwithdetaildata(); //取得成份類別及細項
           });
       }
     },
