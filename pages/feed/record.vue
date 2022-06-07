@@ -191,7 +191,7 @@
               sortable
               width="100"
             />
-            <el-table-column label="獨立項目" v-if="showsub.length > 0">
+            <el-table-column label="獨立項目" v-if="showsub.length > 0" width="200">
               <template #default="scope">
                 <div v-if="scope.row.hasOwnProperty('sub_items')">
                   <v-chip
@@ -207,13 +207,6 @@
                     {{ `${sub.name}:${sub.feed_amount}` }}
                   </v-chip>
                 </div>
-                <!-- <el-button
-                  size="small"
-                  @click="handleEdit(scope.$index, scope.row)"
-                  v-if="!scope.row.hasOwnProperty('children')"
-                  :disabled="scope.row.is_executed"
-                  >{{ scope.row.is_executed ? "已執行" : "執行" }}</el-button
-                > -->
               </template>
             </el-table-column>
             <el-table-column
@@ -300,11 +293,16 @@ export default {
       // 如果表格中没有fixed属性固定列，直接取表格id就行
       // const table = document.querySelector(‘#outTable’)
       // 如果表格中有fixed属性固定列，需要像下面这样做一下处理，要不然下载的excel数据会重复2次！参考：https://blog.csdn.net/WYA1993/article/details/85319138
-      const table = document.querySelector("#outTable").cloneNode(true);
-      if (table.querySelector(".el-table__fixed")) {
-        table.removeChild(table.querySelector(".el-table__fixed"));
+      const tb = document.querySelector("#outTable").cloneNode(true);
+      if (tb.querySelector(".el-table__fixed")) {
+        tb.removeChild(tb.querySelector(".el-table__fixed"));
       }
-      var wb = XLSX.utils.table_to_book(table);
+      //fixed=right就要加這段
+      if (tb.querySelector(".el-table__fixed-right")) {
+        tb.removeChild(tb.querySelector(".el-table__fixed-right"));
+        debugger
+      }
+      var wb = XLSX.utils.table_to_book(tb);
       var wbout = XLSX.write(wb, {
         bookType: "xlsx",
         bookSST: true,
@@ -653,7 +651,7 @@ export default {
           const tot =
             Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
             Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
-
+          tot = Math.round((tot + Number.EPSILON) * 100) / 100;
           combo_result.push({
             combo_name: combo_name,
             main_items: main_items,
