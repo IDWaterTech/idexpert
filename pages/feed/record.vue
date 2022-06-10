@@ -50,7 +50,7 @@
           </template>
           <v-date-picker
             v-model="sdate"
-            @change="getimptimedata"
+            @change="getimptimedata" no-title
             @input="menu_sdate = false"
           ></v-date-picker>
         </v-menu>

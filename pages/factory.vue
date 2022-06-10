@@ -9,15 +9,18 @@
               :items="maindata"
               item-value="id"
               item-text="name"
-              label="選擇廠"
+              placeholder="選擇廠"
               clearable dark
               @change="
                 () => {
-                  if (sel_main) {
-                  } else {
-                    sel_area = undefined;
-                    pooldata = [];
-                  }
+                  sel_area = undefined;
+                  sel_pool = undefined;
+                  pooldata = [];
+                  // if (sel_main) {
+                  // } else {
+                  //   sel_area = undefined;
+                  //   pooldata = [];
+                  // }
                 }
               "
               dense
@@ -62,7 +65,7 @@
               item-text="name"
               clearable
               dense dark
-              label="選擇區域"
+              placeholder="選擇區域"
               no-data-text="查無資料"
               :disabled="!sel_main"
               @change="getPoolData"

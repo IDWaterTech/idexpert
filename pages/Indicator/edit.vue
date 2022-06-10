@@ -23,7 +23,7 @@
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="sdate"
+            v-model="sdate" locale="zh-tw" no-title
             @input="menu_startdate = false"
           ></v-date-picker>
         </v-menu>
@@ -50,7 +50,7 @@
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="edate"
+            v-model="edate" locale="zh-tw" no-title
             @input="menu_enddate = false"
           ></v-date-picker>
         </v-menu>
@@ -62,7 +62,7 @@
           :items="maindata"
           item-value="id"
           item-text="name"
-          label="選擇廠(必選)"
+          placeholder="選擇廠(必選)" hide-details
           clearable dark
           class="primary"
         >
@@ -77,7 +77,7 @@
           item-text="name"
           clearable
           @change="areachange"
-          label="選擇區域(必選)"
+          placeholder="選擇區域(必選)" hide-details
           dark
           class="primary"
         ></v-select>
@@ -102,7 +102,7 @@
           item-text="name"
           item-value="value"
           no-data-text="查無資料"
-          placeholder="指定項目(必選)"
+          placeholder="指定項目(必選)" hide-details
           class="primary"
           dark
           clearable

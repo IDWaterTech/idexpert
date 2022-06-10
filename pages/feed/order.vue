@@ -52,12 +52,13 @@
                       ></v-text-field>
                     </template>
                     <v-date-picker
-                      v-model="sdate"
+                      v-model="sdate" locale="zh-tw"
+                      no-title
                       @input="menu_sdate = false"
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
-
+                <!-- 取得料表 -->
                 <v-col cols="12" sm="3" align-self="center">
                   <v-btn
                     class="primary"
@@ -65,13 +66,14 @@
                     title="取得料表清單"
                     @click="getimptimedata"
                     :disabled="!sdate"
+                    :loading="imploading"
                     ><v-icon>mdi-reload</v-icon>取得料表</v-btn
                   >
                 </v-col>
                 <v-col cols="12">
                   <v-list>
                     <v-list-item v-for="item in imptimedata" :key="item.time">
-                      <v-list-item-content>{{ item.time }}</v-list-item-content>
+                      <v-list-item-content class="justify-center text-h5">{{ item.time }}</v-list-item-content>
                       <v-list-item-action
                         ><v-btn tile class="primary" @click="settabledata(item)"
                           >帶入此資料<v-icon>mdi-redo</v-icon></v-btn
@@ -237,6 +239,7 @@
                 </template>
                 <v-date-picker
                   v-model="adate"
+                  no-title
                   locale="zh-tw"
                   @input="menu_adate = false"
                 ></v-date-picker>
@@ -368,6 +371,7 @@ export default {
       //----帶入資料
       importdialog: false,
       imptimedata: [], //取得帶入的資料
+      imploading:false,
       //----
       menu_adate: false,
       adate: "",
@@ -740,6 +744,8 @@ export default {
       //     ]
       //   }
       // ];
+      this.imploading=true;//載入中
+      this.imptimedata=[];//清空清單
       var para = {
         feed_date: this.sdate
       };
@@ -754,7 +760,9 @@ export default {
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
         })
-        .finally(() => {});
+        .finally(() => {
+          this.imploading=false;
+        });
     },
     //設定帶入資料
     settabledata: async function(item) {

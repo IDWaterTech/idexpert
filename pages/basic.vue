@@ -19,7 +19,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="4">
                 <v-card class="pa-1 mainbg"  tile height="300">
                   <v-row class="mx-1">
                     <v-col cols="12">
@@ -28,9 +28,9 @@
                         :items="maindata"
                         item-value="id"
                         item-text="name"
-                        label="選擇廠"
+                        placeholder="選擇廠"
                         @change="sel_main > 0 ? '' : (showmp = false)"
-                        clearable
+                        clearable filled
                       >
                         <v-btn
                           icon
@@ -82,7 +82,7 @@
                           ></v-text-field>
                         </template>
                         <v-date-picker
-                          v-model="sdate"
+                          v-model="sdate" locale="zh-tw" no-title
                           @input="
                             menu_startdate = false;
                             daysSet();
@@ -117,7 +117,7 @@
                           ></v-text-field>
                         </template>
                         <v-date-picker
-                          v-model="edate"
+                          v-model="edate" locale="zh-tw" no-title
                           @input="
                             menu_enddate = false;
                             daysSet();
@@ -150,10 +150,10 @@
                 </v-card>
               </v-col>
               <!-- <v-divider vertical></v-divider> -->
-              <v-col cols="12" md="9" >
+              <v-col cols="12" md="8" >
                 <el-table
                   :data="mainpool.items"
-                  style="width: 100%"
+                  style="width: 100%;"
                   max-height="300"
                   show-summary
                   size="mini"
@@ -182,7 +182,7 @@
                     :label="item.text"
                     :key="key"
                     align="center"
-                    :width="item.text == fixedname ? 70 : 150"
+                    :width="item.text == fixedname ? 70 : 100"
                   >
                   </el-table-column>
                 </el-table>
@@ -225,12 +225,12 @@
                   >查詢</v-btn
                 ></v-col
               >
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="4" align-self="center">
                 <v-select
                   v-model="defitem"
                   clearable
-                  multiple
-                  chips dense
+                  multiple filled  deletable-chips
+                  chips dense hide-details
                   placeholder="指定項目"
                   :items="Object.keys(allcols.water)"
                   v-if="allcols.water"
@@ -238,7 +238,7 @@
                 >
                 </v-select>
               </v-col>
-              <v-col cols="12" md="2"
+              <v-col cols="12" md="2" align-self="center"
                 ><v-btn
                   rounded
                   
@@ -258,9 +258,7 @@
                   >主要觀測項目</v-btn
                 ></v-col
               >
-              <v-col
-                cols="12"
-                md="3"
+              <v-col cols="12" md="3"
                 v-if="Object.keys(allcols).length > 0 && waterloading == false"
               >
                 <v-select
@@ -275,9 +273,9 @@
                 >
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="2">
                 顯示：{{ colstyle + 1 }}欄式
-                <v-btn-toggle v-model="colstyle" dense mandatory>
+                <v-btn-toggle v-model="colstyle" mandatory>
                   <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
                   <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
                   <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
@@ -315,7 +313,7 @@
             </v-row>
             <v-row v-if="waterdata.length < 1 && waterloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -341,7 +339,7 @@
                 <v-select
                   v-model="defitem_env"
                   clearable
-                  multiple
+                  multiple  deletable-chips
                   chips
                   placeholder="指定項目"
                   :items="Object.keys(allcols.env)"
@@ -413,7 +411,7 @@
             </v-row>
             <v-row v-if="envdata.length < 1 && envloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -439,7 +437,7 @@
                 <v-select
                   v-model="defitem_feed"
                   clearable
-                  multiple
+                  multiple  deletable-chips
                   chips
                   placeholder="指定項目"
                   :items="Object.keys(allcols.feed)"
@@ -511,7 +509,7 @@
             </v-row>
             <v-row v-if="feeddata.length < 1 && feedloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -537,7 +535,7 @@
                 <v-select
                   v-model="defitem_obs"
                   clearable
-                  multiple
+                  multiple  deletable-chips
                   chips
                   placeholder="指定項目"
                   :items="Object.keys(allcols.obs)"
@@ -609,7 +607,7 @@
             </v-row>
             <v-row v-if="obsdata.length < 1 && obsloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -635,7 +633,7 @@
                 <v-select
                   v-model="defitem_adv"
                   clearable
-                  multiple
+                  multiple  deletable-chips
                   chips
                   placeholder="指定項目"
                   :items="Object.keys(allcols.adv)"
@@ -707,7 +705,7 @@
             </v-row>
             <v-row v-if="advdata.length < 1 && advloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -733,7 +731,7 @@
                 <v-select
                   v-model="defitem_pbio"
                   clearable
-                  multiple
+                  multiple  deletable-chips
                   chips
                   placeholder="指定項目"
                   :items="Object.keys(allcols.pbio)"
@@ -806,7 +804,7 @@
             </v-row>
             <v-row v-if="pbiodata.length < 1 && pbioloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
