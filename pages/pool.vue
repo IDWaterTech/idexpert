@@ -243,7 +243,7 @@
                 ></v-text-field>
               </template>
               <v-date-picker
-                v-model="started_date"
+                v-model="started_date" no-title
                 @input="menu_startdate = false"
               ></v-date-picker>
             </v-menu>
@@ -272,7 +272,7 @@
                 ></v-text-field>
               </template>
               <v-date-picker
-                v-model="ended_date"
+                v-model="ended_date" no-title
                 @input="menu_enddate = false"
               ></v-date-picker>
             </v-menu>
@@ -319,7 +319,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="addparm.started_date"
+                        v-model="addparm.started_date"  no-title
                         @input="menu_adddate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -590,7 +590,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="chart_ended_date"
+                        v-model="chart_ended_date"  no-title
                         @input="menu_chart_enddate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -1333,13 +1333,17 @@ export default {
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`)
         .then(res => {
           //拆主要類別，保留子項目
-          var allitems = {};
+          var allitems = [];
           for (let i = 0; i < Object.keys(res.data).length; i++) {
             let colsclass = Object.keys(res.data)[i]; //water,env...;
-            // var allitems = Object.keys(res.data[colsclass]); //res.data[colsclass] 水溫,溶氧濃度,餘氯...
-            Object.assign(allitems, res.data[colsclass]);
+            if (i!=0) {
+              allitems.push({ divider: true });
+            }
+             allitems.push({ header: colsclass });//group name
+             allitems.push(...Object.keys(res.data[colsclass]));
+
           }
-          this.waterdatacols = Object.keys(allitems);
+          this.waterdatacols = allitems;
           this.allcols = Object.assign({}, res.data);
           console.log("子項目 api", res.request.responseURL);
           // console.log("waterdatacols 子項目", this.waterdatacols);
@@ -1755,6 +1759,7 @@ export default {
           res.data.items.forEach(function(x) {//給折線圖用的資料
             delete x.id; //"刪掉id欄位"
             delete x.updated_user; //"刪掉updated_user欄位"
+            delete x.group;//"刪掉group欄位"
           });
           
           this.item = res.data;
@@ -1767,8 +1772,10 @@ export default {
         })
         .catch(err => {
           alert("失敗：" + err.message);
+        })
+        .finally(()=>{
+          this.waterloading = false;
         });
-        this.waterloading = false;
     },
   },
   async mounted() {

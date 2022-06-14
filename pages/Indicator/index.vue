@@ -24,7 +24,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="sdate"
+              v-model="sdate" no-title locale="zh-tw"
               @input="menu_startdate = false"
             ></v-date-picker>
           </v-menu>
@@ -51,7 +51,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="edate"
+              v-model="edate" no-title
               @input="menu_enddate = false"
             ></v-date-picker>
           </v-menu>
@@ -96,7 +96,7 @@
         <v-col cols="12" md="2">
            <v-autocomplete
           v-model="defitem"
-          :items="Object.keys(waterdatacols)"
+          :items="waterdatacols"
           v-if="waterdatacols"
           no-data-text="查無資料"
           placeholder="指定項目"
@@ -189,7 +189,7 @@
                 label="操作"
                 width="100">
                 <template slot-scope="scope">
-                  <v-icon small @click="delItem(scope.row)" color="red">mdi-delete</v-icon>
+                  <v-icon small :disabled="['feed','pbio'].includes(scope.row.group)" @click="delItem(scope.row)" color="red">mdi-delete</v-icon>
                   <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
                   <el-button type="text" size="small">编辑</el-button> -->
                 </template>
@@ -335,12 +335,18 @@ export default {
 
       //抓all項目
       res = data[1];
+      var allitems = [];
       for (let i = 0; i < Object.keys(res.data).length; i++) {
-        let colsclass = Object.keys(res.data)[i]; //water;
-        Object.assign(this.waterdatacols, res.data[colsclass]);
+        let colsclass = Object.keys(res.data)[i]; //water,env....
+        if (i!=0) {
+              allitems.push({ divider: true });
+            }
+             allitems.push({ header: colsclass });//group name
+             allitems.push(...Object.keys(res.data[colsclass]));
       }
-      this.allcols = Object.assign({}, res.data);
-      console.log("all項目",this.allcols);
+      this.waterdatacols = allitems;
+      this.allcols = Object.assign({}, res.data);//{adv:{每日成長量: "每日成長量(cm)",...},...}
+      console.log("子項目 api",this.allcols);
     });
 
     // //參數代入
@@ -442,11 +448,12 @@ export default {
       await this.$axios
         .get(apiURL, { params: parm }, { httpsAgent: agent })
         .then(res => {
-          console.log("AI:", res.request.responseURL);
+          console.log("all-data API:", res.request.responseURL);
           let data2 = _.cloneDeep(res.data);
           res.data.items.forEach(function(x) {//給折線圖用的資料
             delete x.id; //"刪掉id欄位"
             delete x.updated_user; //"刪掉updated_user欄位"
+            delete x.group;//"刪掉group欄位"
           });
           
           // data2.items.forEach(function(x) {//給表格用的資料

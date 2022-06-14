@@ -204,12 +204,12 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-    <v-tabs v-model="currenttab" background-color="cardtitle" dark>
-      <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name">
+    <v-tabs v-model="currenttab" background-color="primary">
+      <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name" light style="font-size:1.2em;">
         {{ tab.name }}
       </v-tab>
       <!-- <v-tab-items v-model="currenttab"> -->
-      <v-tab-item :value="'水質監測'" >
+      <v-tab-item :value="'水質監測'">
         <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
@@ -241,7 +241,6 @@
               <v-col cols="12" md="2" align-self="center"
                 ><v-btn
                   rounded
-                  
                   block
                   color="primary"
                   @click="
@@ -844,7 +843,7 @@ export default {
         { name: "投餵飼料" },
         { name: "飼料觀察網" },
         { name: "進階值" },
-        { name: "投餵益生菌" }
+        // { name: "投餵益生菌" }  pbio目前沒有先拿掉
       ],
       currenttab: "水質監測",
       tree: [],

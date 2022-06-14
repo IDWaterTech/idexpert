@@ -106,7 +106,9 @@
           class="primary"
           dark
           clearable
-        ></v-autocomplete>
+        >
+          <template v-slot:item="data">{{`　${data.item.name}`}}</template>
+        </v-autocomplete>
       </v-col>
       <v-col cols="12" md="1" class="text-center align-self-center">
         <v-btn
@@ -189,7 +191,9 @@
                       no-data-text="查無資料"
                       placeholder="指定項目(必選)"
                       dense
-                    ></v-autocomplete>
+                    >
+                      <template v-slot:item="data">{{`　${data.item.name}`}}</template>
+                    </v-autocomplete>
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-menu
@@ -328,7 +332,7 @@
                   color="primary"
                   tile
                   :disabled="!atime"
-                  >確定</v-btn
+                  >新增資料</v-btn
                 >
               </v-card-actions>
             </v-card>
@@ -430,10 +434,10 @@
           no-data-text="查無資料"
         >
           <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small class="mr-2" @click="editItem(item)">
+            <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)" color="success">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="delItem(item)" color="red">
+            <v-icon small @click="delItem(item)" :disabled="['feed','pbio'].includes(item.group)" color="red">
               mdi-delete
             </v-icon>
           </template>
@@ -556,14 +560,20 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     //抓欄位資料 waterdatacols ，coldata
     var myitem=[];
-     await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
-       res.data.forEach(element => {
-         myitem.push({name:element.name_ch,value:element.name_en});
-       });
+     await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`).then(res=>{
+       var group =  Array.from(new Set(res.data.map(x=>x.group))); 
+       for (let i = 0; i < group.length; i++) {
+        const element = group[i];
+        if (i!=0) {
+           myitem.push({ divider: true });
+        }
+         myitem.push({ header: element });//group name
+         myitem.push(...res.data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
+       }
+      //  myitem = res.data.map(x=>({'name':x.name_ch,'value':x.name_en}));
        this.waterdatacols = myitem;
        this.coldata = Object.assign([], res.data);
-      })
-      .catch(err => {
+     }).catch(err => {
         alert("失敗：" + err.message);
       });
     //抓廠資料
@@ -593,9 +603,6 @@ export default {
         alert("失敗：" + err.message);
       });
     //抓all項目
-
-
-
 
     //  "env": {"排汙耗時": "排汙耗時(s)"....}
     await this.$axios
@@ -720,14 +727,20 @@ export default {
         items: defitem_name,
         data_group: itemclass
       };
+
       let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
       //歸零
       this.item = "";
       this.headers = [];
+      
       //抓資料
       await this.$axios
         .get(apiurl, { params: para }, { httpsAgent: agent })
         .then(res => {
+          console.log("API:" + res.request.responseURL);
+          if(res.data=='欄位資料有誤'){
+            this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+          }else{
           this.item = res.data;
           if (res.data.items.length > 0) {
             let cols = Object.keys(res.data.items[0]);
@@ -746,7 +759,7 @@ export default {
             value: "actions",
             sortable: false
           });
-          console.log("API:" + res.request.responseURL);
+          }
         })
         .catch(err => {
           alert("查詢失敗：" + err.message);
@@ -759,20 +772,7 @@ export default {
       this.editedItem.id = item.id;
       this.editedItem.value = item[Object.keys(item)[3]];
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
-      //抓項目的限制
-      // let coldata = [];
-      // await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
-      //   coldata = Object.assign([], res.data);
-      // });
-      // name: "進水量"
-      // value: "inflow"
-      // var defitem_name = this.waterdatacols.filter(x=>x.value==this.defitem)[0].name;//用「inflow」取回中文「進水量」
-      //  this.getItemClass(defitem_name);//「進水量」取回「env」
-      // var colitem = coldata.filter(
-      //   x =>
-      //     x.group == this.getItemClass(this.defitem) &&
-      //     x.name_ch == this.defitem
-      // );
+     
       //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
       var colitem = this.coldata.filter(x=>x.name_en==this.defitem);
       if (colitem.length == 1) {
@@ -875,20 +875,7 @@ export default {
       this.adate = "";
       this.addData = [];
       this.atime = "";
-      //this.getItemClass(this.defitem);
-      //抓項目的限制
-      // let coldata = [];
-      // await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`).then(res => {
-      //   coldata = Object.assign([], res.data);
-      // });
-      // name: "進水量"
-      // value: "inflow"
-      // var defitem_name = this.waterdatacols.filter(x=>x.value==this.defitem)[0].name;
-      // var colitem = coldata.filter(
-      //   x =>
-      //     x.group == this.getItemClass(this.defitem) &&
-      //     x.name_ch == this.defitem
-      // );
+      
       //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
       var colitem = this.coldata.filter(x=>x.name_en==this.defitem);
       if (colitem.length == 1) {
@@ -915,7 +902,10 @@ export default {
         // let colclass = this.getItemClass(this.defitem);
         var defitemall = this.coldata.filter(x=>x.name_en==this.defitem)[0];
         let colclass = defitemall.group;
-
+        if(['feed','pbio'].includes(colclass)){
+           this.$toast.error(`僅供查詢，禁止新增該群資料：${colclass}`, { duration: 2000 });
+          return;
+        }
         let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
 
         let url = apiurl;
