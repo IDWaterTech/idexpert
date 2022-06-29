@@ -122,7 +122,7 @@
         <el-card>
           <v-row>
             <!-- 獨立拉出資料 -->
-            <v-col cols="12" sm="2" align-self="center">
+            <v-col cols="12" sm="2" align-self="center" >
               <span>獨立顯示子成份項目</span>
             </v-col>
             <v-col cols="12" sm="5">
@@ -139,7 +139,11 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="12" sm="2"
-              ><v-btn
+              >
+              <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
+              <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
+              <v-btn icon @click="cellsize = 1"><v-icon>mdi-format-color-text</v-icon></v-btn>
+              <v-btn
                 tile
                 small
                 class="success"
@@ -168,12 +172,15 @@
             default-expand-all
             @selection-change="handleSelectionChange"
             @select-all="selectall"
+            :cell-style="cellStyle"
+            
           >
             <!-- 減少一欄佔空間所以用area_name2解決 -->
             <el-table-column
               prop="area_name2"
               label="區域"
               sortable
+              :sort-by="['area_name2']"
               fixed="left"
               width="100"
             >
@@ -185,12 +192,14 @@
               sortable
               width="100"
             /> -->
+            <!-- 總量(主+次) -->
             <el-table-column
               prop="feed_total"
               label="總量(主+次)"
               sortable
               width="100"
             />
+            <!-- 獨立項目 -->
             <el-table-column label="獨立項目" v-if="showsub.length > 0" width="200">
               <template #default="scope">
                 <div v-if="scope.row.hasOwnProperty('sub_items')">
@@ -204,21 +213,23 @@
                     )"
                     :key="idx"
                   >
-                    {{ `${sub.name}:${sub.feed_amount}` }}
+                    <span :style="`font-size:${cellsize}em`">{{ `${sub.name}:${sub.feed_amount}` }}</span>
                   </v-chip>
                 </div>
               </template>
             </el-table-column>
+            <!-- 觀察網(不含糖) -->
             <el-table-column
               prop="observation_total"
               label="觀察網(不含糖)"
               width="120"
             />
+            <!-- 餐別 -->
             <el-table-column
               prop="feed_combo_name"
               label="餐別"
               sortable
-              width="150"
+              min-width="150"
             />
             <el-table-column
               prop="executed_user"
@@ -285,10 +296,13 @@ export default {
       //獨立顯示子成份項目
       showsub: [],
       //餐別合計
-      totalData: []
+      totalData: [],
+      //table cell size
+      cellsize:1
     };
   },
   methods: {
+    
     downloadcsv: function() {
       // 如果表格中没有fixed属性固定列，直接取表格id就行
       // const table = document.querySelector(‘#outTable’)
@@ -533,6 +547,14 @@ export default {
     }
   },
   computed: {
+    cellStyle:function(){
+      let r = {
+        "font-size":this.cellsize + 'em',
+        // "height":"20px",
+        "padding":"0px",
+      }
+      return r;
+    },
     feedData2: function() {
       var arealst = Array.from(new Set(this.feedData.map(x => x.area_name)));
       var items = [];
@@ -585,8 +607,7 @@ export default {
         };
         items.push(item);
       }
-      console.log(items);
-      return items;
+      return items.sort();
     },
     //當明餐別合計
     comboTotal: function() {
@@ -686,4 +707,6 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+
+</style>
