@@ -1,7 +1,7 @@
 <template>
     <el-popover
       placement="top-start"
-      width="600"
+      width="400"
       trigger="hover"
       popper-class="popoverColor"
     >
@@ -46,7 +46,7 @@
       </v-row>
 
       <v-btn slot="reference" text dark
-        ><v-icon>mdi-gold</v-icon>{{ average }}(元/公斤)</v-btn
+        ><v-icon>mdi-gold</v-icon>${{ average }}</v-btn
       >
     </el-popover>
 </template>
