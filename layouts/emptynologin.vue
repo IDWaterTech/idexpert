@@ -3,7 +3,7 @@
   <v-app>
     <v-main class="mainbg">
       <v-navigation-drawer
-        dark
+        dark :height="($nuxt.$vuetify.breakpoint.name=='xs')?'80%':'100%'"
         app
         class="mainnav"
         v-model="drawer"
@@ -69,7 +69,7 @@
           <nuxt-link to="/" style="color:white;text-decoration:none;"><v-icon>mdi-home-outline</v-icon><span class="hidden-sm-and-down">艾滴科技</span></nuxt-link>
           <!-- <nuxt-link class="mx-3" to="/videorecog" style="color:white;text-decoration:none;"><v-icon>mdi-video</v-icon>觀察網影像辨識(測試)</nuxt-link> -->
           <weather></weather>
-          <market-price></market-price>
+          <market-price class="hidden-sm-and-down"></market-price>
           <v-spacer></v-spacer>
           <!-- <v-btn
             icon
@@ -83,9 +83,8 @@
           <div>
             <v-switch class="mt-3 mx-1"
               v-model="site" dense
-              :label="`${(site)?'IP':'網域'}`"
               @change="changeSite"
-            ></v-switch>
+            ><span class="hidden-sm-and-down" slot="label">{{(site)?'IP':'網域'}}</span></v-switch>
           </div>
           <div v-if="this.$auth.$state.loggedIn">
             <!-- {{ this.$auth.$state.user.name }} -->
