@@ -196,7 +196,6 @@
             <el-table-column
               prop="feed_total"
               label="總量(主+次)"
-              sortable
               width="100"
             />
             <!-- 獨立項目 -->
@@ -213,7 +212,7 @@
                     )"
                     :key="idx"
                   >
-                    <span :style="`font-size:${cellsize}em`">{{ `${sub.name}:${sub.feed_amount}` }}</span>
+                    <span :style="`font-size:${cellsize}em`">{{ `${sub.name.substr(0,1)}:${Math.round((sub.feed_amount + Number.EPSILON) * 1) / 1}` }}</span>
                   </v-chip>
                 </div>
               </template>
@@ -228,7 +227,6 @@
             <el-table-column
               prop="feed_combo_name"
               label="餐別"
-              sortable
               min-width="150"
             />
             <el-table-column
@@ -582,7 +580,7 @@ export default {
               return a + b;
             });
           var total = main_total + sub_total;
-          element.feed_total = Math.round((total + Number.EPSILON) * 100) / 100;
+          element.feed_total = Math.round((total + Number.EPSILON) * 1) / 1;
           //子成份查找有無包含獨立顯示，有的話再去改total
           if (element.sub_items.filter(x => sub.includes(x.name)).length > 0) {
             //陣列裡每個項目(次項目)
@@ -595,15 +593,21 @@ export default {
                 return a + b;
               });
             //total扣除
+            //小數點2位
+            // Math.round((total - value + Number.EPSILON) * 100) / 100;
+            //小數點0位
             element.feed_total =
-              Math.round((total - value + Number.EPSILON) * 100) / 100;
+              Math.round((total - value + Number.EPSILON) * 1) / 1;
           }
-          // element.feed_total
+          // observation_total 小數點去掉
+          element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 1) / 1;
         });
+        //以id排序
+        // children.sort(function(a,b){return a.feed_combo_id - b.feed_combo_id})
         var item = {
           id: `${idx}_${area_name}`,
           area_name2: area_name,
-          children: children
+          children: children.sort(function(a,b){return a.feed_combo_name.localeCompare(b.feed_combo_name)})//以name排序
         };
         items.push(item);
       }
@@ -656,7 +660,7 @@ export default {
               var value = pre + element.total_amount;
               //math用來解決浮點數相加會出現10.000000000001的狀況
               main_items[element.name] =
-                Math.round((value + Number.EPSILON) * 100) / 100;
+                Math.round((value + Number.EPSILON) * 1) / 1;
             });
             sitem.forEach(element => {
               var pre =
@@ -666,13 +670,13 @@ export default {
               // var value = pre + element.feed_amount;
               var value = pre + element.total_amount;
               sub_items[element.name] =
-                Math.round((value + Number.EPSILON) * 100) / 100;
+                Math.round((value + Number.EPSILON) * 1) / 1;
             });
           }
           const tot =
             Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
             Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
-          tot = Math.round((tot + Number.EPSILON) * 100) / 100;
+          tot = Math.round((tot + Number.EPSILON) * 1) / 1;
           combo_result.push({
             combo_name: combo_name,
             main_items: main_items,

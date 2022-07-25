@@ -664,6 +664,7 @@
                     clearable
                     placeholder="1號套餐"
                     :rules="rules.require"
+                    counter maxlength="50"
                     ><span slot="prepend" style="width:100px;"
                       >飼料名稱</span
                     ></v-text-field
@@ -674,6 +675,7 @@
                     clearable
                     placeholder="Meal No.1"
                     :rules="rules.require"
+                    counter maxlength="50"
                     :disabled="combomode == 'edit'"
                     ><span slot="prepend" style="width:100px;"
                       >飼料名稱(英)</span
