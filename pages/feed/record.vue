@@ -81,6 +81,16 @@
                 v-for="item in comboTotal"
                 :key="item.combo_name"
               >
+              <span>
+                <v-switch
+                  v-model="combomark"
+                  color="#FFD600"
+                  @click="combomarkclick(item.combo_name)"
+                  label="" dense hide-details inset
+                  :value="item.combo_name"
+                  
+                ></v-switch>
+              </span>
                 <span class="text-h6 font-weight-black"
                   >{{ item.combo_name }}：</span
                 >
@@ -168,12 +178,13 @@
             id="outTable"
             ref="mutitable"
             :data="feedData2"
+            :row-style="isTagColor"
             row-key="id"
             default-expand-all
             @selection-change="handleSelectionChange"
             @select-all="selectall"
             :cell-style="cellStyle"
-            
+            :key="mutitablekey"
           >
             <!-- 減少一欄佔空間所以用area_name2解決 -->
             <el-table-column
@@ -296,11 +307,32 @@ export default {
       //餐別合計
       totalData: [],
       //table cell size
-      cellsize:1
+      cellsize:1,
+      //餐別mark
+      combomark:[],
+      mutitablekey:false,
     };
   },
   methods: {
-    
+    combomarkclick:function(data){
+      if(this.feedData2.length>0){
+        this.feedData2.forEach(element=>{
+          element.children.forEach (ele2 =>{
+            ele2.combomark = this.combomark.includes(ele2.feed_combo_name);
+          },this)
+        },this
+        );
+      }
+      this.mutitablekey = !this.mutitablekey;
+    },
+    isTagColor:function(row){
+      if(row.row.combomark==true){
+      return {
+        backgroundColor: "#FFD600",
+        color: "#827717",
+      }
+      }
+    },
     downloadcsv: function() {
       // 如果表格中没有fixed属性固定列，直接取表格id就行
       // const table = document.querySelector(‘#outTable’)
@@ -461,6 +493,7 @@ export default {
         .then(res => {
           // this.feedData = res.data;
           this.totalData = res.data;
+          
           // this.$toast.success(`取得合計成功`, { duration: 2000 });
           console.log("取得合計API:" + res.request.responseURL);
         })
@@ -601,13 +634,16 @@ export default {
           }
           // observation_total 小數點去掉
           element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 1) / 1;
+          element.combomark = false;
         });
         //以id排序
         // children.sort(function(a,b){return a.feed_combo_id - b.feed_combo_id})
+        //以name排序
+        //children.sort(function(a,b){return a.feed_combo_name.localeCompare(b.feed_combo_name)})/
         var item = {
           id: `${idx}_${area_name}`,
           area_name2: area_name,
-          children: children.sort(function(a,b){return a.feed_combo_name.localeCompare(b.feed_combo_name)})//以name排序
+          children: children
         };
         items.push(item);
       }
