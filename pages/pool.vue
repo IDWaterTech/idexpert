@@ -245,7 +245,7 @@
               </template>
               <v-date-picker
                 v-model="started_date"
-                no-title
+                no-title locale="zh-tw"
                 @input="menu_startdate = false"
               ></v-date-picker>
             </v-menu>
@@ -275,7 +275,7 @@
               </template>
               <v-date-picker
                 v-model="ended_date"
-                no-title
+                no-title locale="zh-tw"
                 @input="menu_enddate = false"
               ></v-date-picker>
             </v-menu>
@@ -323,7 +323,7 @@
                       </template>
                       <v-date-picker
                         v-model="addparm.started_date"
-                        no-title
+                        no-title locale="zh-tw"
                         @input="menu_adddate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -563,7 +563,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="chart_started_date"
+                        v-model="chart_started_date" locale="zh-tw" no-title
                         @input="menu_startdate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -595,7 +595,7 @@
                       </template>
                       <v-date-picker
                         v-model="chart_ended_date"
-                        no-title
+                        no-title locale="zh-tw"
                         @input="menu_chart_enddate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -816,7 +816,7 @@
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                            v-model="imgdata.imgdate"
+                            v-model="imgdata.imgdate" locale="zh-tw" no-title
                             @input="menu_imgdate = false"
                           ></v-date-picker>
                         </v-menu>

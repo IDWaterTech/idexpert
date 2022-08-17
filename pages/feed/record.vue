@@ -49,7 +49,7 @@
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="sdate"
+            v-model="sdate" locale="zh-tw"
             @change="getimptimedata" no-title
             @input="menu_sdate = false"
           ></v-date-picker>

@@ -51,7 +51,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="edate" no-title
+              v-model="edate" no-title locale="zh-tw"
               @input="menu_enddate = false"
             ></v-date-picker>
           </v-menu>

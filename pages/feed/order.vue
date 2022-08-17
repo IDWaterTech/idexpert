@@ -815,6 +815,7 @@ export default {
       this.$toast.success(`${tostmsg.join("<br/>")}`, { duration: 2000 });
       // this.$toast.success(`帶入${data.length}筆資料`, { duration: 2000 });
       this.desserts = desserts;
+      this.importdialog = false;
     },
     //顯示送出視窗
     showsubmitdig: function() {
