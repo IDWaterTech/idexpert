@@ -195,6 +195,7 @@
                       <template v-slot:item="data">{{`　${data.item.name}`}}</template>
                     </v-autocomplete>
                   </v-col>
+                  <!-- 日期 -->
                   <v-col cols="12" md="6">
                     <v-menu
                       v-model="menu_adate"
@@ -217,11 +218,12 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="adate"
+                        v-model="adate" locale="zh-tw" no-title
                         @input="menu_adate = false"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
+                  <!-- 時間 -->
                   <v-col cols="12" md="6">
                     <v-text-field
                       label="時間"
@@ -232,6 +234,16 @@
                       @click:prepend="() => (atime = getNowTime())"
                       :rules="rules.require"
                     ></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-row>
+                      <v-col md="9">
+                        <v-text-field v-model="formula"  hide-details dense filled clearable title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(20+5)]，預設為相乘"></v-text-field>
+                      </v-col>
+                      <v-col md="3">
+                        <v-btn block color="primary" :disabled="!formula" @click="reCalc" tile>計算</v-btn>
+                      </v-col>
+                    </v-row>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -485,6 +497,7 @@
 <script>
 import dayjs from "dayjs";
 import https from "https";
+import mee from "math-expression-evaluator";
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -554,6 +567,8 @@ export default {
       //form
       valid: true,
       rules: { require: [v => !!v || "*必要項目"] },
+      //公式
+      formula:"",
     };
   },
   async created() {
@@ -896,13 +911,41 @@ export default {
     addsetnow: function() {
       this.sdate = getNowDate();
     },
+    formula_eval: function(feed, formula) {
+      feed = feed == undefined || isNaN(feed) || feed == null ? 0 : feed;
+      var data = isNaN(formula.substr(0, 1))
+        ? `${feed}${formula}`
+        : `${feed}*${formula}`;
+      var result;
+      try {
+        //避免出現其他無法解決符號
+        result = mee.eval(data).toFixed(2);
+      } catch (error) {
+        result = 0;
+      }
+      return result;
+    },
+    reCalc:function(){
+      //計算公式
+      for (const key in Object.keys(this.num)) {
+        const element = Object.keys(this.num)[key];//A1
+          if (this.num[element] != undefined) {
+            var newvalue = this.formula_eval(this.num[element],this.formula);
+            this.num[element] = newvalue;
+      //       const el_id = this.mainpool.items.filter(x => x.name == element)[0]
+      //         .id;
+      //       submitData.push({ id: el_id, val: this.num[element] });
+          }
+        }
+       this.formula="";
+    },
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
       if (valid) {
         // let colclass = this.getItemClass(this.defitem);
         var defitemall = this.coldata.filter(x=>x.name_en==this.defitem)[0];
         let colclass = defitemall.group;
-        if(['feed','pbio'].includes(colclass)){
+        if(['feed','pbio','breeding_material'].includes(colclass)){
            this.$toast.error(`僅供查詢，禁止新增該群資料：${colclass}`, { duration: 2000 });
           return;
         }

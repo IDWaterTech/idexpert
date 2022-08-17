@@ -152,7 +152,7 @@
               >
               <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
               <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
-              <v-btn icon @click="cellsize = 1"><v-icon>mdi-format-color-text</v-icon></v-btn>
+              <v-btn icon @click="cellsize = 1.2"><v-icon>mdi-format-color-text</v-icon></v-btn>
               <v-btn
                 tile
                 small
@@ -307,7 +307,7 @@ export default {
       //餐別合計
       totalData: [],
       //table cell size
-      cellsize:1,
+      cellsize:1.2,
       //餐別mark
       combomark:[],
       mutitablekey:false,
@@ -582,6 +582,8 @@ export default {
       let r = {
         "font-size":this.cellsize + 'em',
         // "height":"20px",
+        // "margin-top":"5px",
+        "ine-height":"none",
         "padding":"0px",
       }
       return r;
@@ -599,15 +601,16 @@ export default {
         var sub = this.showsub;
         console.log(sub);
         //扣除獨立顯示項目的量
+        
         children.forEach(element => {
           //主成份total
-          var main_total = element.main_items
+          var main_total = (element.main_items.length==0)?0:element.main_items
             .map(x => x.feed_amount)
             .reduce((a, b) => {
               return a + b;
             });
           //子成份total
-          var sub_total = element.sub_items
+          var sub_total = (element.sub_items.length==0)?0:element.sub_items
             .map(x => x.feed_amount)
             .reduce((a, b) => {
               return a + b;

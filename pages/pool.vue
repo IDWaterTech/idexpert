@@ -6,7 +6,9 @@
       <v-col cols="12" sm="12" style="border:0px dashed red;" class="py-1">
         <v-card min-height="100px" elevation="3" tile dark color="primary">
           <v-card-title class="py-0 ">
-            警示區<span style="font-size: 0.8em;color:darkred;">(24小時內且目前有啟用警示項目最新一列資料)</span>
+            警示區<span style="font-size: 0.8em;color:darkred;"
+              >(24小時內且目前有啟用警示項目最新一列資料)</span
+            >
             <v-spacer></v-spacer>
             <span class="subtitle-3"
               >警示資料時間：{{
@@ -35,23 +37,22 @@
             >
               <v-card-text>
                 <!-- <v-chip-group column dark> -->
-                  <!-- @click="showwarning(item)" 拿掉處理的視窗-->
-                  <v-chip
-                    class="mr-1"
-                    v-for="item in warnData"
-                    :key="item.id"
-                    
-                    :color="
-                      item.warning_level.toLowerCase() == 'critical'
-                        ? `red`
-                        : `orange`
-                    "
-                    >{{
-                      `${item.inspected_time.match(/[^\s]*$/)[0]}-[等級：${
-                        item.warning_level
-                      }]：${item.warning_content}`
-                    }}
-                  </v-chip>
+                <!-- @click="showwarning(item)" 拿掉處理的視窗-->
+                <v-chip
+                  class="mr-1"
+                  v-for="item in warnData"
+                  :key="item.id"
+                  :color="
+                    item.warning_level.toLowerCase() == 'critical'
+                      ? `red`
+                      : `orange`
+                  "
+                  >{{
+                    `${item.inspected_time.match(/[^\s]*$/)[0]}-[等級：${
+                      item.warning_level
+                    }]：${item.warning_content}`
+                  }}
+                </v-chip>
                 <!-- </v-chip-group> -->
               </v-card-text>
             </v-sheet>
@@ -243,7 +244,8 @@
                 ></v-text-field>
               </template>
               <v-date-picker
-                v-model="started_date" no-title
+                v-model="started_date"
+                no-title
                 @input="menu_startdate = false"
               ></v-date-picker>
             </v-menu>
@@ -272,7 +274,8 @@
                 ></v-text-field>
               </template>
               <v-date-picker
-                v-model="ended_date" no-title
+                v-model="ended_date"
+                no-title
                 @input="menu_enddate = false"
               ></v-date-picker>
             </v-menu>
@@ -319,7 +322,8 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="addparm.started_date"  no-title
+                        v-model="addparm.started_date"
+                        no-title
                         @input="menu_adddate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -590,7 +594,8 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="chart_ended_date"  no-title
+                        v-model="chart_ended_date"
+                        no-title
                         @input="menu_chart_enddate = false"
                       ></v-date-picker>
                     </v-menu>
@@ -610,7 +615,8 @@
                   <!-- 確認鈕 -->
                   <v-col cols="12" md="1">
                     <v-btn
-                      tile dark
+                      tile
+                      dark
                       color="cardtitle"
                       @click="getdata"
                       :disabled="
@@ -629,8 +635,16 @@
               <v-card-text>
                 <v-row>
                   <v-col cols="12">
-                    顯示最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0"></el-input-number>
-                    顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0"></el-input-number>
+                    顯示最小值：<el-input-number
+                      v-model="chartmin"
+                      controls-position="right"
+                      :min="0"
+                    ></el-input-number>
+                    顯示最大值：<el-input-number
+                      v-model="chartmax"
+                      controls-position="right"
+                      :min="0"
+                    ></el-input-number>
                     <WaterQuality_Vcharts
                       :rowsData="item.items"
                       xColName="inspected_date"
@@ -1048,7 +1062,14 @@
     <v-row>
       <v-col cols="12">
         <v-card elevation="3" tile dark class="primary">
-          <v-card-title class="py-2">養殖歷程</v-card-title>
+          <v-card-title class="py-2"
+            ><span>養殖歷程</span><v-spacer></v-spacer
+            ><span
+              ><v-btn icon title="養殖歷程設定" to="story/setting"
+                ><v-icon>mdi-cog</v-icon></v-btn
+              ></span
+            ></v-card-title
+          >
           <v-divider></v-divider>
           <v-card-title>
             <br />
@@ -1069,8 +1090,8 @@ import waterball from "~/components/waterball.vue";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import https from "https";
 const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
+  rejectUnauthorized: false
+});
 // import axios from "~/plugins/axios";
 export default {
   components: { waterball },
@@ -1130,12 +1151,12 @@ export default {
         .add(-7, "day")
         .format("YYYY-MM-DD"),
       defitem: [], //指定項目
-      allcols: {},//項目主清單
+      allcols: {}, //項目主清單
       waterdatacols: [], //項目子清單
-      markdata:{maxline:-999,minline:-999},
-      chartmin:undefined,
-      chartmax:undefined,
-      item: [{ name: "", items: [] }],//線圖的主資料項
+      markdata: { maxline: -999, minline: -999 },
+      chartmin: undefined,
+      chartmax: undefined,
+      item: [{ name: "", items: [] }], //線圖的主資料項
       waterloading: false, //折線圖
       //---日曆
       menu_startdate: false,
@@ -1336,12 +1357,11 @@ export default {
           var allitems = [];
           for (let i = 0; i < Object.keys(res.data).length; i++) {
             let colsclass = Object.keys(res.data)[i]; //water,env...;
-            if (i!=0) {
+            if (i != 0) {
               allitems.push({ divider: true });
             }
-             allitems.push({ header: colsclass });//group name
-             allitems.push(...Object.keys(res.data[colsclass]));
-
+            allitems.push({ header: colsclass }); //group name
+            allitems.push(...Object.keys(res.data[colsclass]));
           }
           this.waterdatacols = allitems;
           this.allcols = Object.assign({}, res.data);
@@ -1698,7 +1718,7 @@ export default {
       // this.currentRow = val;
     },
     //依項目回傳主要類別是什麼
-    getItemClass:async function(item) {
+    getItemClass: async function(item) {
       let colclass = "";
       for (let i = 0; i < Object.keys(this.allcols).length; i++) {
         let inclass = Object.keys(this.allcols)[i]; //water;
@@ -1715,11 +1735,14 @@ export default {
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`)
         .then(res => {
           // this.allcols = Object.assign([], res.data);
-          var lmtitem =  res.data.filter(x=>x.name_ch==item);
-          if(lmtitem.length>0){//不可以有null值
-            this.markdata.maxline = (lmtitem[0].critical_max==null)?-999:lmtitem[0].critical_max;
-            this.markdata.minline = (lmtitem[0].critical_min==null)?-999:lmtitem[0].critical_min;
-          }else{
+          var lmtitem = res.data.filter(x => x.name_ch == item);
+          if (lmtitem.length > 0) {
+            //不可以有null值
+            this.markdata.maxline =
+              lmtitem[0].critical_max == null ? -999 : lmtitem[0].critical_max;
+            this.markdata.minline =
+              lmtitem[0].critical_min == null ? -999 : lmtitem[0].critical_min;
+          } else {
             this.markdata.maxline = -999;
             this.markdata.minline = -999;
           }
@@ -1731,13 +1754,13 @@ export default {
       this.markdata.maxline = -999;
       this.markdata.minline = -999;
       //清空itm
-      this.item=[];
+      this.item = [];
 
       this.chartmin = undefined;
       this.chartmax = undefined;
       //指定的項目是歸屬於哪個類別，水質/投餵
       let itemclass = await this.getItemClass(this.defitem); //判斷項目是屬於水質還是投餵用
-       //判斷項目是屬於水質還是投餵用
+      //判斷項目是屬於水質還是投餵用
       //抓折線圖資料囉
       let parm = {
         started_date: this.chart_started_date,
@@ -1756,27 +1779,28 @@ export default {
           console.log("chart data api:", res.request.responseURL);
           // let data2 = _.cloneDeep(res.data); //原始資料
           //整理資料長相
-          res.data.items.forEach(function(x) {//給折線圖用的資料
+          res.data.items.forEach(function(x) {
+            //給折線圖用的資料
             delete x.id; //"刪掉id欄位"
             delete x.updated_user; //"刪掉updated_user欄位"
-            delete x.group;//"刪掉group欄位"
+            delete x.group; //"刪掉group欄位"
           });
-          
+
           this.item = res.data;
-          console.log("chart data count:",this.item.items.length);
+          console.log("chart data count:", this.item.items.length);
           // this.item2 = data2;
           //抓上下限資料
-          if ( res.data.items.length>0) {
+          if (res.data.items.length > 0) {
             this.getLimitData(this.defitem);
           }
         })
         .catch(err => {
           alert("失敗：" + err.message);
         })
-        .finally(()=>{
+        .finally(() => {
           this.waterloading = false;
         });
-    },
+    }
   },
   async mounted() {
     if (this.req.id == undefined) {

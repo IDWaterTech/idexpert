@@ -303,7 +303,11 @@
                   >
                   <v-switch
                     v-model="ficfield.is_main"
-                    :label="`主類別(主成份)/一般類別(次成份)`"
+                    :label="`類別(主/次)：${(ficfield.is_main)?'主成份':'次成份'}`"
+                  ></v-switch>
+                  <v-switch
+                    v-model="ficfield.is_feed"
+                    :label="`歸屬(餌/料)：${(ficfield.is_feed)?'投餌':'投料'}`"
                   ></v-switch>
                 </v-form>
               </v-card-text>
@@ -1218,6 +1222,9 @@ export default {
         parms.created_user = this.$auth.$state.user.email;
         if (this.ficfield.hasOwnProperty("is_main") == false) {
           parms["is_main"] = false;
+        }
+         if (this.ficfield.hasOwnProperty("is_feed") == false) {
+          parms["is_feed"] = false;
         }
         await this.$axios
           .post(url, parms)

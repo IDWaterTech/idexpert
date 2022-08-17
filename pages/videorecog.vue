@@ -1,187 +1,123 @@
 <template>
   <div>
     <v-row dense align="center">
-      <v-col cols="12"><h1 class="white--text">觀察網影像辨識</h1></v-col>
+      <v-col cols="12">
+        <h1 class="white--text">影像辨識</h1>
+      </v-col>
       <v-col cols="12" class="cardtitle">
         <v-row>
           <!-- 養殖池 -->
-      <v-col cols="12" sm="3" class="text-center my-5">
-        <!-- <div class="circle">
+          <v-col cols="12" sm="3" class="text-center my-5">
+            <!-- <div class="circle">
           <span class="circletitle">{{ poolName }}</span>
         </div> -->
-        <!-- <span class="circletitle headline my-5 text-center">{{
+            <!-- <span class="circletitle headline my-5 text-center">{{
           poolName
         }}</span> -->
-        <!-- {{getNodeName(maindata,poolid)}} -->
-        <treeselect
-          v-model="poolid"
-          :options="maindata"
-          :default-expand-level="1"
-          placeholder="養殖池"
-          :disable-branch-nodes="true"
-          children="node"
-          :normalizer="
-            node => {
-              return { children: node.node };
-            }
-          "
-          style="font-size:1.2em;"
-        >
-          <div slot="value-label" slot-scope="{ node }">
-            {{ `${node.raw.parent}_${node.raw.name}` }}
-          </div>
-          <div slot="option-label" slot-scope="{ node }">
-            {{ `${node.raw.name}` }}
-          </div>
-        </treeselect>
-      </v-col>
-      <!-- 選擇起日 -->
-      <v-col cols="12" md="2">
-        <v-menu
-          v-model="menu_startdate"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="sdate"
-              label="選擇起日"
-              prepend-icon="mdi-calendar"
-              readonly
-              dark
-              v-bind="attrs"
-              v-on="on"
-              clearable
-              @click:prepend="() => (sdate = getNowDate())"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="sdate"
-            @input="menu_startdate = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
-      <!-- 選擇訖日 -->
-      <v-col cols="12" md="2">
-        <v-menu
-          v-model="menu_enddate"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="edate"
-              label="選擇訖日"
-              prepend-icon="mdi-calendar"
-              readonly
-              dark
-              v-bind="attrs"
-              v-on="on"
-              clearable
-              @click:prepend="() => (edate = getNowDate())"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="edate"
-            @input="menu_enddate = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
-      <!-- 查詢 -->
-      <v-col cols="12" md="2" align-self="center">
-        <v-btn color="primary" dark @click="getRecog" :disabled="!(sdate && edate)" tile large
-          >查詢</v-btn
-        >
-      </v-col>
+            <!-- {{getNodeName(maindata,poolid)}} -->
+            <treeselect v-model="poolid" :options="maindata" :default-expand-level="1" placeholder="養殖池"
+              :disable-branch-nodes="true" children="node" :normalizer="
+                node => {
+                  return { children: node.node };
+                }
+              " style="font-size:1.2em;">
+              <div slot="value-label" slot-scope="{ node }">
+                {{ `${node.raw.parent}_${node.raw.name}` }}
+              </div>
+              <div slot="option-label" slot-scope="{ node }">
+                {{ `${node.raw.name}` }}
+              </div>
+            </treeselect>
+          </v-col>
+          <!-- 選擇起日 -->
+          <v-col cols="12" md="2">
+            <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
+              transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field v-model="sdate" label="選擇起日" prepend-icon="mdi-calendar" readonly dark v-bind="attrs"
+                  v-on="on" clearable @click:prepend="() => (sdate = getNowDate())"></v-text-field>
+              </template>
+              <v-date-picker v-model="sdate" @input="menu_startdate = false" locale="zh-tw" no-title></v-date-picker>
+            </v-menu>
+          </v-col>
+          <!-- 選擇訖日 -->
+          <v-col cols="12" md="2">
+            <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
+              transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly dark v-bind="attrs"
+                  v-on="on" clearable @click:prepend="() => (edate = getNowDate())"></v-text-field>
+              </template>
+              <v-date-picker v-model="edate" @input="menu_enddate = false"  locale="zh-tw" no-title></v-date-picker>
+            </v-menu>
+          </v-col>
+          <!-- 查詢 -->
+          <v-col cols="12" md="1" align-self="center">
+            <v-btn color="primary" dark @click="getRecog" :disabled="!(sdate && edate)" tile large>查詢</v-btn>
+          </v-col>
+          <!-- 選擇類別 -->
+          <v-col cols="12" md="3" align-self="center">
+            <v-radio-group row dark v-model="dataClass" mandatory>
+              <v-radio
+                v-for="(item,i) in dataClassList"
+                :label="item.name"
+                :value="item.name"
+                :key="i"
+              ><span slot="label"><v-icon class="mr-1">{{item.icon}}</v-icon>{{`${item.name}`}}</span></v-radio>
+            </v-radio-group>
+          </v-col>
+          <v-spacer></v-spacer>
         </v-row>
       </v-col>
-      
-      <v-col cols="12">
-        <el-table
-          ref="recogtable"
-          style="width:100%"
-          :data="recogData.items"
-          highlight-current-row
-          :header-cell-style="tableHeaderStyle"
-          max-height="500"
-          class="primary"
-          :header-cell-name="cellClass"
-        >
-        <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
+
+      <v-col cols="12" v-if="dataClass=='觀察網'">
+        <el-table ref="recogtable" style="width:100%" :data="recogData.items" highlight-current-row
+          :header-cell-style="tableHeaderStyle" max-height="500" class="primary" :header-cell-name="cellClass">
+          <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
           <!-- @current-change="handleCurrentChange"
           @select="handleSelectionChange" -->
           <el-table-column label="資料" align="center">
             <div slot-scope="scope">
-              {{scope.row.id}}<br/>
-              {{scope.row.inspected_date}}
+              {{ scope.row.id }}<br />
+              {{ scope.row.inspected_date }}
             </div>
           </el-table-column>
-          <el-table-column
-            label="投餌前飼料圖(已辨識)"
-            prop="feed_img_before_bait"
-            align="center"
-          >
+          <el-table-column label="投餌前飼料圖(已辨識)" prop="feed_img_before_bait" align="center">
             <div slot-scope="scope">
-              <img v-img="{group:scope.row.id}" :src="scope.row.feed_img_before_bait" width="100%" />
-               <!-- <el-image :src="scope.row.feed_img_before_bait"  width="100%">
+              <img v-img="{ group: scope.row.id }" :src="scope.row.feed_img_before_bait" width="100%" />
+              <!-- <el-image :src="scope.row.feed_img_before_bait"  width="100%">
                 <div slot="error" class="image-slot">
                   <img :src="images.feedfish" width="64" />
                 </div>
               </el-image> -->
             </div>
           </el-table-column>
-          <el-table-column
-            label="投餌後飼料圖(已辨識)"
-            prop="feed_img_after_bait"
-            align="center"
-          >
+          <el-table-column label="投餌後飼料圖(已辨識)" prop="feed_img_after_bait" align="center">
             <div slot-scope="scope">
-              <img v-img="{group:scope.row.id}" :src="scope.row.feed_img_after_bait"  width="100%" />
-             
+              <img v-img="{ group: scope.row.id }" :src="scope.row.feed_img_after_bait" width="100%" />
+
             </div>
           </el-table-column>
-          <el-table-column
-            label="投餌後蝦子圖(已辨識)"
-            prop="shrimp_img_after_bait"
-            align="center"
-          >
+          <el-table-column label="投餌後蝦子圖(已辨識)" prop="shrimp_img_after_bait" align="center">
             <div slot-scope="scope">
-              <img v-img="{group:scope.row.id}" :src="scope.row.shrimp_img_after_bait" width="100%" />
+              <img v-img="{ group: scope.row.id }" :src="scope.row.shrimp_img_after_bait" width="100%" />
             </div>
           </el-table-column>
-          <el-table-column
-            label="網子面積(cm²)"
-            prop="net_size"
-            align="center"
-          ></el-table-column>
+          <el-table-column label="網子面積(cm²)" prop="net_size" align="center"></el-table-column>
           <el-table-column label="投餌飼料面積(cm²)" align="center">
             <div slot-scope="scope">
               前：{{ scope.row.feed_size_before_bait }} <br />
               後：{{ scope.row.feed_size_after_bait }}
             </div>
           </el-table-column>
-          <el-table-column
-            label="飼料比例(投餌後飼料/投餌前飼料)"
-            prop="feed_percentage"
-            align="center"
-          >
+          <el-table-column label="飼料比例(投餌後飼料/投餌前飼料)" prop="feed_percentage" align="center">
           </el-table-column>
           <el-table-column label="蝦子面積" prop="shrimp_size" align="center">
             <div slot-scope="scope">
               {{ scope.row.shrimp_size }}
             </div>
           </el-table-column>
-          <el-table-column
-            label="檢測時間"
-            prop="inspected_date"
-            align="center"
-          ></el-table-column>
+          <el-table-column label="檢測時間" prop="inspected_date" align="center"></el-table-column>
           <!-- <el-table-column label="循環訖日" prop="ended_date" align="center">
             <template slot-scope="scope">
               <span style="margin-left: 10px">{{
@@ -193,12 +129,13 @@
           </el-table-column> -->
           <el-table-column fixed="right" label="操作" width="100">
             <template slot-scope="">
-              <v-btn color="primary" outlined small disabled @click="() => {}"
-                >刪除</v-btn
-              >
+              <v-btn color="primary" outlined small disabled @click="() => { }">刪除</v-btn>
             </template>
           </el-table-column>
         </el-table>
+      </v-col>
+      <v-col v-if="dataClass=='菌盤'">
+        <beca></beca>
       </v-col>
     </v-row>
   </div>
@@ -208,9 +145,13 @@
 import "element-ui/lib/theme-chalk/index.css";
 import dayjs from "dayjs";
 import _ from "lodash";
+import beca from "@/pages/becateriarecog.vue";
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  components:{
+    beca
+  },
   data() {
     return {
       poolid: 1,
@@ -245,11 +186,14 @@ export default {
       menu_startdate: false,
       menu_enddate: false,
       sdate: "",
-      edate: ""
+      edate: "",
+      //---選定類別
+      dataClass:"",
+      dataClassList:[{"name":"觀察網","icon":"mdi-plus"},{"name":"菌盤","icon":"mdi-bacteria-outline"}]
     };
   },
   methods: {
-    cellClass: function(row) {
+    cellClass: function (row) {
       if (row.columnIndex == 0) {
         return "disableSelection";
       }
@@ -262,7 +206,7 @@ export default {
         return `background-color:${bgcolor};`;
       }
     },
-    getRecog: async function() {
+    getRecog: async function () {
       var parm = {
         started_date: this.sdate,
         ended_date: this.edate,
@@ -275,7 +219,7 @@ export default {
         )
         .then(res => {
           this.recogData = res.data;
-          if ( res.data.items.length==0) {
+          if (res.data.items.length == 0) {
             this.$toast.success(`查無資料`, { duration: 2000 });
           }
           //   if (res.data == "修改成功") {
@@ -294,11 +238,11 @@ export default {
           this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
         });
     },
-    getNowDate: function() {
+    getNowDate: function () {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
     },
-    setNestedDisabled: function(obj, name) {
+    setNestedDisabled: function (obj, name) {
       //全部都設成disabled
       obj.forEach((itm, index) => {
         // console.log(itm.name);//所有node(含leaf)的名稱
@@ -320,7 +264,7 @@ export default {
       });
       return obj;
     },
-    getMainData: async function() {
+    getMainData: async function () {
       let reqid = this.poolid;
       let getedItem = {};
       //取得整廠架構資料
@@ -359,4 +303,5 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

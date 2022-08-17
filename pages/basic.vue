@@ -9,194 +9,92 @@
           <v-container class="primary" fluid>
             <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
-                <img
-                  v-img
-                  :src="mpurl"
-                  width="100%"
-                  :alt="maindata[sel_main - 1].name"
-                  class="grey lighten-2"
-                />
+                <img v-img :src="mpurl" width="100%" :alt="maindata[sel_main - 1].name" class="grey lighten-2" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col cols="12" md="4">
-                <v-card class="pa-1 mainbg"  tile height="300">
+                <v-card class="pa-1 mainbg" tile height="300">
                   <v-row class="mx-1">
                     <v-col cols="12">
-                      <v-select
-                        v-model="sel_main"
-                        :items="maindata"
-                        item-value="id"
-                        item-text="name"
-                        placeholder="選擇廠"
-                        @change="sel_main > 0 ? '' : (showmp = false)"
-                        clearable filled
-                      >
-                        <v-btn
-                          icon
-                          color="teal lighten-2"
-                          @click="showmpFun"
-                          v-if="sel_main"
-                          slot="prepend"
-                        >
+                      <v-select v-model="sel_main" :items="maindata" item-value="id" item-text="name" placeholder="選擇廠"
+                        @change="sel_main > 0 ? '' : (showmp = false)" clearable filled>
+                        <v-btn icon color="teal lighten-2" @click="showmpFun" v-if="sel_main" slot="prepend">
                           <v-icon size="30">mdi-image</v-icon>
                         </v-btn>
                       </v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
-                        v-model="sel_area"
-                        :items="areadata"
-                        item-value="id"
-                        item-text="name"
-                        clearable
-                        @change="areachange"
-                        label="選擇區域"
-                        dense
-                      ></v-select>
+                      <v-select v-model="sel_area" :items="areadata" item-value="id" item-text="name" clearable
+                        @change="areachange" label="選擇區域" dense></v-select>
                     </v-col>
                     <v-col cols="12" sm="6">
-                      <v-menu
-                        v-model="menu_startdate"
-                        :close-on-content-click="false"
-                        :nudge-right="40"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                      >
+                      <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
+                        transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="sdate"
-                            label="選擇起日"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            dense
-                            v-bind="attrs"
-                            v-on="on"
-                            @click:prepend="
+                          <v-text-field v-model="sdate" label="選擇起日" prepend-icon="mdi-calendar" readonly dense
+                            v-bind="attrs" v-on="on" @click:prepend="
                               () => {
                                 sdate = getNowDate();
                                 daysSet();
                               }
-                            "
-                          ></v-text-field>
+                            "></v-text-field>
                         </template>
-                        <v-date-picker
-                          v-model="sdate" locale="zh-tw" no-title
-                          @input="
-                            menu_startdate = false;
-                            daysSet();
-                          "
-                        ></v-date-picker>
+                        <v-date-picker v-model="sdate" locale="zh-tw" no-title @input="
+                          menu_startdate = false;
+                        daysSet();
+                        "></v-date-picker>
                       </v-menu>
                     </v-col>
                     <v-col cols="12" sm="6">
-                      <v-menu
-                        v-model="menu_enddate"
-                        :close-on-content-click="false"
-                        :nudge-right="40"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                      >
+                      <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
+                        transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="edate"
-                            label="選擇訖日"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            dense
-                            v-bind="attrs"
-                            v-on="on"
-                            @click:prepend="
+                          <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly dense
+                            v-bind="attrs" v-on="on" @click:prepend="
                               () => {
                                 edate = getNowDate();
                                 daysSet();
                               }
-                            "
-                          ></v-text-field>
+                            "></v-text-field>
                         </template>
-                        <v-date-picker
-                          v-model="edate" locale="zh-tw" no-title
-                          @input="
-                            menu_enddate = false;
-                            daysSet();
-                          "
-                        ></v-date-picker>
+                        <v-date-picker v-model="edate" locale="zh-tw" no-title @input="
+                          menu_enddate = false;
+                        daysSet();
+                        "></v-date-picker>
                       </v-menu>
                     </v-col>
                     <v-col cols="12" sm="6">
-                      <v-text-field
-                        label="天數"
-                        step="1"
-                        min="0"
-                        type="number"
-                        v-model.number="days"
-                        @input="daychange" class="mx-1"
-                        dense
-                      ></v-text-field>
+                      <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange"
+                        class="mx-1" dense></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" align-self="center" class="text-center">
                       <!-- 可能同池名，在不同廠，所以value= name -->
-                      <v-btn
-                        tile
-                        color="primary"
-                        :disabled="!(sel_main && sel_area)"
-                        @click="closepanel"
-                        >確認</v-btn
-                      >
+                      <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">確認</v-btn>
                     </v-col>
                   </v-row>
                 </v-card>
               </v-col>
               <!-- <v-divider vertical></v-divider> -->
-              <v-col cols="12" md="8" >
-                <el-table
-                  :data="mainpool.items"
-                  style="width: 100%;"
-                  max-height="300"
-                  show-summary
-                  size="mini"
-                  :summary-method="getSummaries"
-                >
+              <v-col cols="12" md="8">
+                <el-table :data="mainpool.items" style="width: 100%;" max-height="300" show-summary size="mini"
+                  :summary-method="getSummaries">
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
-                  <el-table-column
-                    prop="labelname"
-                    label="養殖池"
-                    width="70"
-                    :fixed="true"
-                    align="center"
-                  >
+                  <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
                     <template slot-scope="scope">
                       <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
-                        scope.row.name
+                          scope.row.name
                       }}</a>
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    v-for="(item, key) in headers.filter(
-                      x => x.text != fixedname
-                    )"
-                    :fixed="item.text == fixedname"
-                    :prop="item.value"
-                    :label="item.text"
-                    :key="key"
-                    align="center"
-                    :width="item.text == fixedname ? 70 : 100"
-                  >
+                  <el-table-column v-for="(item, key) in headers.filter(
+                    x => x.text != fixedname
+                  )" :fixed="item.text == fixedname" :prop="item.value" :label="item.text" :key="key" align="center"
+                    :width="item.text == fixedname ? 70 : 100">
                   </el-table-column>
                 </el-table>
-                <v-data-table
-                  :headers="headers"
-                  :items="mainpool.items"
-                  item-key="unit"
-                  :footer-props="footerProps"
-                  no-data-text="查無資料"
-                  disable-sort
-                  :loading="tableloading"
-                  height="300px"
-                  v-if="false"
-                >
+                <v-data-table :headers="headers" :items="mainpool.items" item-key="unit" :footer-props="footerProps"
+                  no-data-text="查無資料" disable-sort :loading="tableloading" height="300px" v-if="false">
                 </v-data-table>
               </v-col>
             </v-row>
@@ -217,67 +115,44 @@
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
-                <v-btn
-                  tile
-                  color="primary"
-                  :disabled="!(sel_main && sel_area)"
-                  @click="closepanel"
-                  >查詢</v-btn
-                ></v-col
-              >
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
               <v-col cols="12" md="4" align-self="center">
-                <v-select
-                  v-model="defitem"
-                  clearable
-                  multiple filled  deletable-chips
-                  chips dense hide-details
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.water)"
-                  v-if="allcols.water"
-                  :disabled="waterloading == true"
-                >
+                <v-select v-model="defitem" clearable multiple filled deletable-chips chips dense hide-details
+                  placeholder="指定項目" :items="Object.keys(allcols.water)" v-if="allcols.water"
+                  :disabled="waterloading == true">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="2" align-self="center"
-                ><v-btn
-                  rounded
-                  block
-                  color="primary"
-                  @click="
-                    () => {
-                      this.defitem = [
-                        '亞硝酸鹽濃度',
-                        '氨氮濃度',
-                        '水溫',
-                        '溶氧濃度',
-                        '酸鹼濃度'
-                      ];
-                    }
-                  "
-                  >主要觀測項目</v-btn
-                ></v-col
-              >
-              <v-col cols="12" md="3"
-                v-if="Object.keys(allcols).length > 0 && waterloading == false"
-              >
-                <v-select
-                  v-model="defPool.水質"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="waterdata.map(x => x['name'])"
-                  v-if="allcols.water"
-                  no-data-text="查無資料"
-                >
+              <v-col cols="12" md="2" align-self="center">
+                <v-btn rounded block color="primary" @click="
+                  () => {
+                    this.defitem = [
+                      '亞硝酸鹽濃度',
+                      '氨氮濃度',
+                      '水溫',
+                      '溶氧濃度',
+                      '酸鹼濃度'
+                    ];
+                  }
+                ">主要觀測項目</v-btn>
+              </v-col>
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && waterloading == false">
+                <v-select v-model="defPool.水質" clearable multiple chips placeholder="顯示養殖池"
+                  :items="waterdata.map(x => x['name'])" v-if="allcols.water" no-data-text="查無資料">
                 </v-select>
               </v-col>
               <v-col cols="12" md="2">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" mandatory>
-                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
             </v-row>
@@ -285,34 +160,24 @@
               <!-- <v-col cols="12" md="4"> 使用echarts
                   <water-quality defaultitem="density" chartId="mmm"></water-quality>
                 </v-col> -->
-              <v-col
-                cols="12"
-                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
-                v-for="item in waterdata"
-                :key="item.id"
-                v-show="
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in waterdata"
+                :key="item.id" v-show="
                   defPool.水質.includes(item.name) || defPool.水質.length == 0
-                "
-              >
-              <!-- defitem -->
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.water"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList"
-                  :loading="waterloading"
-                  :title="item.name"
-                  :urldata="{
+                ">
+                <!-- defitem -->
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
+                  :defaultitem="defalutItemList" :loading="waterloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
                     sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
+                  }"></WaterQuality_Vcharts>
               </v-col>
             </v-row>
             <v-row v-if="waterdata.length < 1 && waterloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center">
+                <h2>無資料</h2>
+              </v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -326,25 +191,11 @@
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
-                <v-btn
-                  tile
-                  color="primary"
-                  :disabled="!(sel_main && sel_area)"
-                  @click="closepanel"
-                  >查詢</v-btn
-                ></v-col
-              >
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
               <v-col cols="12" md="5">
-                <v-select
-                  v-model="defitem_env"
-                  clearable
-                  multiple  deletable-chips
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.env)"
-                  v-if="allcols.env"
-                  :disabled="envloading == true"
-                >
+                <v-select v-model="defitem_env" clearable multiple deletable-chips chips placeholder="指定項目"
+                  :items="Object.keys(allcols.env)" v-if="allcols.env" :disabled="envloading == true">
                 </v-select>
                 <!-- <v-select
                   v-model="defitem_env"
@@ -357,60 +208,44 @@
                 >
                 </v-select> -->
               </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                v-if="Object.keys(allcols).length > 0 && envloading == false"
-              >
-                <v-select
-                  v-model="defPool.環境"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="envdata.map(x => x['name'])"
-                  v-if="allcols.env"
-                  no-data-text="查無資料"
-                >
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && envloading == false">
+                <v-select v-model="defPool.環境" clearable multiple chips placeholder="顯示養殖池"
+                  :items="envdata.map(x => x['name'])" v-if="allcols.env" no-data-text="查無資料">
                 </v-select>
               </v-col>
               <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
-                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
-                v-for="item in envdata"
-                :key="item.id"
-                v-show="
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in envdata"
+                :key="item.id" v-show="
                   defPool.環境.includes(item.name) || defPool.環境.length == 0
-                "
-              >
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.env"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList_env"
-                  :loading="envloading"
-                  :title="item.name"
-                  :urldata="{
+                ">
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
+                  :defaultitem="defalutItemList_env" :loading="envloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
                     sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
+                  }"></WaterQuality_Vcharts>
               </v-col>
             </v-row>
             <v-row v-if="envdata.length < 1 && envloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center">
+                <h2>無資料</h2>
+              </v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -424,25 +259,11 @@
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
-                <v-btn
-                  tile
-                  color="primary"
-                  :disabled="!(sel_main && sel_area)"
-                  @click="closepanel"
-                  >查詢</v-btn
-                ></v-col
-              >
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
               <v-col cols="12" md="3">
-                <v-select
-                  v-model="defitem_feed"
-                  clearable
-                  multiple  deletable-chips
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.feed)"
-                  v-if="allcols.feed"
-                  :disabled="feedloading == true"
-                >
+                <v-select v-model="defitem_feed" clearable multiple deletable-chips chips placeholder="指定項目"
+                  :items="Object.keys(allcols.feed)" v-if="allcols.feed" :disabled="feedloading == true">
                 </v-select>
                 <!-- <v-select
                   v-model="defitem_feed"
@@ -455,60 +276,44 @@
                 >
                 </v-select> -->
               </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                v-if="Object.keys(allcols).length > 0 && feedloading == false"
-              >
-                <v-select
-                  v-model="defPool.飼料"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="feeddata.map(x => x['name'])"
-                  v-if="allcols.feed"
-                  no-data-text="查無資料"
-                >
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && feedloading == false">
+                <v-select v-model="defPool.飼料" clearable multiple chips placeholder="顯示養殖池"
+                  :items="feeddata.map(x => x['name'])" v-if="allcols.feed" no-data-text="查無資料">
                 </v-select>
               </v-col>
               <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
-                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
-                v-for="item in feeddata"
-                :key="item.id"
-                v-show="
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in feeddata"
+                :key="item.id" v-show="
                   defPool.飼料.includes(item.name) || defPool.飼料.length == 0
-                "
-              >
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.feed"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList_feed"
-                  :loading="feedloading"
-                  :title="item.name"
-                  :urldata="{
+                ">
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
+                  :defaultitem="defalutItemList_feed" :loading="feedloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
                     sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
+                  }"></WaterQuality_Vcharts>
               </v-col>
             </v-row>
             <v-row v-if="feeddata.length < 1 && feedloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center">
+                <h2>無資料</h2>
+              </v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -522,25 +327,11 @@
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
-                <v-btn
-                  tile
-                  color="primary"
-                  :disabled="!(sel_main && sel_area)"
-                  @click="closepanel"
-                  >查詢</v-btn
-                ></v-col
-              >
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
               <v-col cols="12" md="3">
-                <v-select
-                  v-model="defitem_obs"
-                  clearable
-                  multiple  deletable-chips
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.obs)"
-                  v-if="allcols.obs"
-                  :disabled="obsloading == true"
-                >
+                <v-select v-model="defitem_obs" clearable multiple deletable-chips chips placeholder="指定項目"
+                  :items="Object.keys(allcols.obs)" v-if="allcols.obs" :disabled="obsloading == true">
                 </v-select>
                 <!-- <v-select
                   v-model="defitem_obs"
@@ -553,60 +344,44 @@
                 >
                 </v-select> -->
               </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                v-if="Object.keys(allcols).length > 0 && obsloading == false"
-              >
-                <v-select
-                  v-model="defPool.觀察"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="obsdata.map(x => x['name'])"
-                  v-if="allcols"
-                  no-data-text="查無資料"
-                >
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && obsloading == false">
+                <v-select v-model="defPool.觀察" clearable multiple chips placeholder="顯示養殖池"
+                  :items="obsdata.map(x => x['name'])" v-if="allcols" no-data-text="查無資料">
                 </v-select>
               </v-col>
               <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
-                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
-                v-for="item in obsdata"
-                :key="item.id"
-                v-show="
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in obsdata"
+                :key="item.id" v-show="
                   defPool.觀察.includes(item.name) || defPool.觀察.length == 0
-                "
-              >
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.obs"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList_obs"
-                  :loading="obsloading"
-                  :title="item.name"
-                  :urldata="{
+                ">
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
+                  :defaultitem="defalutItemList_obs" :loading="obsloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
                     sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
+                  }"></WaterQuality_Vcharts>
               </v-col>
             </v-row>
             <v-row v-if="obsdata.length < 1 && obsloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center">
+                <h2>無資料</h2>
+              </v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -620,25 +395,11 @@
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
-                <v-btn
-                  tile
-                  color="primary"
-                  :disabled="!(sel_main && sel_area)"
-                  @click="closepanel"
-                  >查詢</v-btn
-                ></v-col
-              >
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
               <v-col cols="12" md="3">
-                <v-select
-                  v-model="defitem_adv"
-                  clearable
-                  multiple  deletable-chips
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.adv)"
-                  v-if="allcols.adv"
-                  :disabled="advloading == true"
-                >
+                <v-select v-model="defitem_adv" clearable multiple deletable-chips chips placeholder="指定項目"
+                  :items="Object.keys(allcols.adv)" v-if="allcols.adv" :disabled="advloading == true">
                 </v-select>
                 <!-- <v-select
                   v-model="defitem_adv"
@@ -651,60 +412,44 @@
                 >
                 </v-select> -->
               </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                v-if="Object.keys(allcols).length > 0 && advloading == false"
-              >
-                <v-select
-                  v-model="defPool.進階"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="advdata.map(x => x['name'])"
-                  v-if="allcols.adv"
-                  no-data-text="查無資料"
-                >
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && advloading == false">
+                <v-select v-model="defPool.進階" clearable multiple chips placeholder="顯示養殖池"
+                  :items="advdata.map(x => x['name'])" v-if="allcols.adv" no-data-text="查無資料">
                 </v-select>
               </v-col>
               <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
-                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
-                v-for="item in advdata"
-                :key="item.id"
-                v-show="
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in advdata"
+                :key="item.id" v-show="
                   defPool.進階.includes(item.name) || defPool.進階.length == 0
-                "
-              >
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.adv"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList_adv"
-                  :loading="advloading"
-                  :title="item.name"
-                  :urldata="{
+                ">
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
+                  :defaultitem="defalutItemList_adv" :loading="advloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
                     sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
+                  }"></WaterQuality_Vcharts>
               </v-col>
             </v-row>
             <v-row v-if="advdata.length < 1 && advloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center">
+                <h2>無資料</h2>
+              </v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-card-text>
@@ -718,25 +463,11 @@
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
-                <v-btn
-                  tile
-                  color="primary"
-                  :disabled="!(sel_main && sel_area)"
-                  @click="closepanel"
-                  >查詢</v-btn
-                ></v-col
-              >
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
               <v-col cols="12" md="3">
-                <v-select
-                  v-model="defitem_pbio"
-                  clearable
-                  multiple  deletable-chips
-                  chips
-                  placeholder="指定項目"
-                  :items="Object.keys(allcols.pbio)"
-                  v-if="allcols.pbio"
-                  :disabled="pbioloading == true"
-                >
+                <v-select v-model="defitem_pbio" clearable multiple deletable-chips chips placeholder="指定項目"
+                  :items="Object.keys(allcols.pbio)" v-if="allcols.pbio" :disabled="pbioloading == true">
                 </v-select>
                 <!-- <v-select
                   v-model="defitem_pbio"
@@ -749,62 +480,98 @@
                 >
                 </v-select> -->
               </v-col>
-              <v-col
-                cols="12"
-                md="3"
-                v-if="Object.keys(allcols).length > 0 && pbioloading == false"
-              >
-                <v-select
-                  v-model="defPool.益生菌"
-                  clearable
-                  multiple
-                  chips
-                  placeholder="顯示養殖池"
-                  :items="pbiodata.map(x => x['name'])"
-                  v-if="allcols.pbio"
-                  no-data-text="查無資料"
-                >
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && pbioloading == false">
+                <v-select v-model="defPool.益生菌" clearable multiple chips placeholder="顯示養殖池"
+                  :items="pbiodata.map(x => x['name'])" v-if="allcols.pbio" no-data-text="查無資料">
                 </v-select>
               </v-col>
               <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
-                  <v-btn small><v-icon>mdi-square-medium</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-pause</v-icon></v-btn>
-                  <v-btn small><v-icon>mdi-view-column</v-icon></v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'"
-                v-for="item in pbiodata"
-                :key="item.id"
-                v-show="
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in pbiodata"
+                :key="item.id" v-show="
                   defPool.益生菌.includes(item.name) ||
-                    defPool.益生菌.length == 0
-                "
-              >
-                <WaterQuality_Vcharts
-                  :rowsData="item.items"
-                  :legendAliasOut="allcols.pbio"
-                  xColName="inspected_date"
-                  :defaultitem="defalutItemList_pbio"
-                  :loading="pbioloading"
-                  :title="item.name"
-                  :urldata="{
+                  defPool.益生菌.length == 0
+                ">
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
+                  :defaultitem="defalutItemList_pbio" :loading="pbioloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
                     sel_pool: item.id
-                  }"
-                ></WaterQuality_Vcharts>
+                  }"></WaterQuality_Vcharts>
               </v-col>
             </v-row>
             <v-row v-if="pbiodata.length < 1 && pbioloading == false">
               <v-spacer></v-spacer>
-              <v-col cols="4" class="mt-5 text-center"><h2>無資料</h2></v-col>
+              <v-col cols="4" class="mt-5 text-center">
+                <h2>無資料</h2>
+              </v-col>
               <v-spacer></v-spacer>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item :value="'養殖用料'">
+        <v-overlay :value="materialloading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <v-card flat min-height="900px" dark tile class="mainbg">
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" md="1" align-self="center">
+                <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
+              </v-col>
+              <v-col cols="12" md="3">
+                <v-select v-model="defitem_material" clearable multiple deletable-chips chips placeholder="指定項目"
+                  :items="Object.keys(allcols.breeding_material)" v-if="allcols.breeding_material" :disabled="materialloading == true">
+                </v-select>
+              </v-col>
+              <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && materialloading == false">
+                <v-select v-model="defPool.用料" clearable multiple chips placeholder="顯示養殖池"
+                  :items="materialdata.map(x => x['name'])" v-if="allcols.breeding_material" no-data-text="查無資料">
+                </v-select>
+              </v-col>
+              <v-col cols="12" md="3">
+                顯示：{{ colstyle + 1 }}欄式
+                <v-btn-toggle v-model="colstyle" dense mandatory>
+                  <v-btn small>
+                    <v-icon>mdi-square-medium</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-pause</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon>mdi-view-column</v-icon>
+                  </v-btn>
+                </v-btn-toggle>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in materialdata"
+                :key="item.id" v-show="
+                  defPool.用料.includes(item.name) ||
+                  defPool.用料.length == 0
+                ">
+                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
+                  :defaultitem="defalutItemList_material" :loading="materialloading" :title="item.name" :urldata="{
+                    sel_main: sel_main,
+                    sel_area: sel_area,
+                    sel_pool: item.id
+                  }"></WaterQuality_Vcharts>
+              </v-col>
             </v-row>
           </v-card-text>
         </v-card>
@@ -835,7 +602,7 @@ export default {
       sel_area: "",
       clickeditem: "",
       defitem: ["亞硝酸鹽濃度", "氨氮濃度", "水溫", "溶氧濃度", "酸鹼濃度"],
-      defPool: { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [] },
+      defPool: { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [],用料:[] },
       //items: ["A1", "A2"],
       tabs: [
         { name: "水質監測" },
@@ -843,6 +610,7 @@ export default {
         { name: "投餵飼料" },
         { name: "飼料觀察網" },
         { name: "進階值" },
+        { name: "養殖用料" }
         // { name: "投餵益生菌" }  pbio目前沒有先拿掉
       ],
       currenttab: "水質監測",
@@ -963,11 +731,15 @@ export default {
       // pbiodatacols: {}, //欄位
       pbioloading: false, //是否載入中
       pbiodata: [], //資料
-      defitem_pbio: "" //預設項目[哪些被勾選]
+      defitem_pbio: "", //預設項目[哪些被勾選]
+      //養殖用料
+      materialloading: false,
+      materialdata: [],
+      defitem_material: ""
     };
   },
   methods: {
-    closepanel: async function() {
+    closepanel: async function () {
       this.mypanel = [];
 
       //觸發取得水質資料
@@ -1028,12 +800,21 @@ export default {
               "pbio"
             );
             break;
+          case "養殖用料":
+            await this.getAll(
+              this.sdate,
+              this.edate,
+              this.sel_main,
+              this.sel_area,
+              "material"
+            );
+            break;
           default:
             break;
         }
       }
     },
-    areachange: async function() {
+    areachange: async function () {
       var para = {
         id: this.sel_area
       };
@@ -1059,7 +840,7 @@ export default {
       }
     },
     //所有資料
-    getAll: async function(
+    getAll: async function (
       start_date,
       end_date,
       sel_main,
@@ -1154,30 +935,40 @@ export default {
             });
           this.pbioloading = false;
           break;
+        case "material"://養殖用料
+          this.materialloading = true;
+          parm.data_group = 'breeding_material';
+          await this.$axios
+            .get(apiURL, { params: parm }, { httpsAgent: agent })
+            .then(res => {
+              console.log("select:", res.request.responseURL);
+              this.materialdata = res.data;
+            });
+          this.materialloading = false;
         default:
           break;
       }
     },
-    showmpFun: function() {
+    showmpFun: function () {
       this.showmp = !this.showmp;
     },
-    showpool: function(data) {
+    showpool: function (data) {
       console.log(data.name);
     },
-    getNowDate: function() {
+    getNowDate: function () {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
     },
-    daychange: function() {
+    daychange: function () {
       let nd = dayjs(this.edate)
         .add(-this.days, "day")
         .format("YYYY-MM-DD");
       this.sdate = nd;
     },
-    daysSet: function() {
+    daysSet: function () {
       this.days = dayjs(this.edate).diff(this.sdate, "day");
     },
-    getSummaries: function(param) {
+    getSummaries: function (param) {
       const { columns, data } = param;
       const sums = [];
       columns.forEach((column, index) => {
@@ -1238,12 +1029,12 @@ export default {
       });
   },
   computed: {
-    mpurl: function() {
+    mpurl: function () {
       return this.sel_main && this.showmp
         ? `/factory_${this.sel_main}.jpg?lazy`
         : "/factory_err.jpg?lazy";
     },
-    areadata: function() {
+    areadata: function () {
       let filtermain = [];
       filtermain = this.maindata;
       // console.log("maindata node count:",this.maindata[0].node.length);
@@ -1258,8 +1049,8 @@ export default {
       }
       var area = [];
 
-      filtermain.forEach(function(x) {
-        x.node.forEach(function(y) {
+      filtermain.forEach(function (x) {
+        x.node.forEach(function (y) {
           var yitem = { id: y.id, name: y.name };
           if (area.indexOf(yitem) == -1) {
             //沒找到
@@ -1269,7 +1060,7 @@ export default {
       });
       return area;
     },
-    pooldata: function() {
+    pooldata: function () {
       let filterarea = _.cloneDeep(this.maindata);
       //filterarea = this.maindata;
 
@@ -1290,7 +1081,7 @@ export default {
         filterarea.length > 0
       ) {
         let astr = this.sel_area;
-        filterarea.forEach(function(item, index) {
+        filterarea.forEach(function (item, index) {
           obj.push(item);
           obj[index].node = item.node.filter(x => x.name == astr);
         });
@@ -1306,7 +1097,7 @@ export default {
 
       //return obj;
     },
-    defalutItemList: function() {
+    defalutItemList: function () {
       var item = _.cloneDeep(this.allcols.water);
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem && this.defitem.length > 0) {
@@ -1318,7 +1109,7 @@ export default {
       }
       return item;
     },
-    defalutItemList_feed: function() {
+    defalutItemList_feed: function () {
       //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.allcols.feed);
       for (const [key, value] of Object.entries(item)) {
@@ -1330,7 +1121,7 @@ export default {
       }
       return item;
     },
-    defalutItemList_env: function() {
+    defalutItemList_env: function () {
       //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.allcols.env);
       for (const [key, value] of Object.entries(item)) {
@@ -1342,7 +1133,7 @@ export default {
       }
       return item;
     },
-    defalutItemList_obs: function() {
+    defalutItemList_obs: function () {
       //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.allcols.obs);
       for (const [key, value] of Object.entries(item)) {
@@ -1354,7 +1145,7 @@ export default {
       }
       return item;
     },
-    defalutItemList_adv: function() {
+    defalutItemList_adv: function () {
       //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.allcols.adv);
       for (const [key, value] of Object.entries(item)) {
@@ -1366,7 +1157,7 @@ export default {
       }
       return item;
     },
-    defalutItemList_pbio: function() {
+    defalutItemList_pbio: function () {
       //多選欄位，哪些要被預設顯示
       var item = _.cloneDeep(this.allcols.pbio);
       for (const [key, value] of Object.entries(item)) {
@@ -1377,7 +1168,19 @@ export default {
         }
       }
       return item;
-    }
+    },
+    defalutItemList_material:function(){
+      //多選欄位，哪些要被預設顯示
+      var item = _.cloneDeep(this.allcols.breeding_material);
+      for (const [key, value] of Object.entries(item)) {
+        if (this.defitem_material && this.defitem_material.length > 0) {
+          item[key] = this.defitem_material.includes(key) ? true : false;
+        } else {
+          item[key] = true;
+        }
+      }
+      return item;
+    },
   }
 };
 //                            _ooOoo_

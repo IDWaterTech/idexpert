@@ -304,7 +304,7 @@ export default {
     });
     const fetchURL = url =>
       this.$axios.get(url, { httpsAgent: agent }).catch(err => {
-        alert("失敗：" + err.message);
+        alert("fetchURL失敗：" + err.message);
       });
     const promiseArray = myurl.map(fetchURL);
     console.log("req", this.req);

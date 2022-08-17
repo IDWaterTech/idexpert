@@ -115,7 +115,7 @@
       <!-- initial_val投餵量 -->
       <template v-slot:[`item.initial_val`]="{ item }">
         <v-row class="">
-          <v-col cols="12" sm="12"
+          <v-col cols="12" sm="9"
             ><v-text-field
               clearable
               dense
@@ -126,8 +126,10 @@
               type="number"
               @input="setformula_val(item)"
               ><span slot="append">g</span>
-            </v-text-field></v-col
+            </v-text-field>
+            </v-col
           >
+          <v-col cols="12" sm="3"><v-btn tile color="primary" @click="()=>{item.initial_val = formula_eval(item.initial_val, formula);setformula_val(item);}" :disabled="!formula || !item.initial_val">計算</v-btn></v-col>
           <v-spacer></v-spacer>
         </v-row>
       </template>
@@ -197,12 +199,15 @@
             ></span
           >
           <v-spacer></v-spacer>
+          <div style="width:350px"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(20+5)]，預設為相乘" filled dense hide-details clearable></v-text-field></div>
+          <v-divider vertical class="mx-2"></v-divider>
           <v-btn color="primary" icon @click="dataclear"
             ><v-icon title="清除資料">mdi-shimmer</v-icon></v-btn
           >
           <v-btn color="primary" icon @click="showsubmitdig"
             ><v-icon title="操作">mdi-circle-edit-outline</v-icon></v-btn
           >
+          
         </v-toolbar>
       </template>
     </v-data-table>
@@ -315,7 +320,7 @@ export default {
           text: "投餵量",
           value: "initial_val",
           align: "center",
-          width: 200,
+          width: 300,
           sortable: false
         },
         // { text: "主成份", value: "feedmain", align: "center", width: 200 },
@@ -377,7 +382,9 @@ export default {
       adate: "",
       atime: "",
       submitdig: false,
-      imptimeidx: ""
+      imptimeidx: "",
+      //---公式
+      formula:"",
     };
   },
   methods: {
