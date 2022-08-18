@@ -1,7 +1,8 @@
 <template>
 <client-only>
   <v-app>
-    <v-main class="mainbg">
+     <!-- class="mainbg" -->
+    <v-main>
       <v-navigation-drawer
         dark :height="($nuxt.$vuetify.breakpoint.name=='xs')?'80%':'100%'"
         app
@@ -204,3 +205,10 @@ export default {
   }
 };
 </script>
+<style>
+#app {
+  background: url('~/assets/bg_blue_papper.jpg')
+    repeat center center fixed !important;
+  background-size: cover;
+}
+</style>
