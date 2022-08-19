@@ -40,9 +40,10 @@
     <!-- <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col> -->
     <v-col cols="12" md="4" class="text-justify">
       <v-card min-height="550px" tile dark color="primary" class="papper_item">
-        <v-card-title class="cardtitle">紅樹林破壞-Mangrove destruction</v-card-title>
+        <!-- <v-card-title class="blue" style="color:black">紅樹林破壞-Mangrove destruction</v-card-title> -->
+        <v-card-text class="blue" style="color:black;font-size: 1.2em;">紅樹林破壞-Mangrove destruction</v-card-text>
         <v-divider class="mx-4"></v-divider>
-        <v-card-text >
+        <v-card-text style="font-size:1.2em;">
           <div align="center">
             <img src="~/assets/Mangrove.png"  height="200px"/>
           </div>
@@ -61,9 +62,10 @@
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
       <v-card min-height="550px" tile dark color="primary" class="papper_item">
-        <v-card-title class="cardtitle">水污染-Water pollution</v-card-title>
+        <!-- <v-card-title class="blue" style="color:black">水污染-Water pollution</v-card-title> -->
+        <v-card-text class="blue" style="color:black;font-size: 1.2em;">水污染-Water pollution</v-card-text>
         <v-divider class="mx-4"></v-divider>
-        <v-card-text>
+        <v-card-text style="font-size:1.2em;">
           <div align="center">
             <img src="~/assets/gomi_grease_trap_pit.png"  height="200px"/>
           </div>
@@ -80,9 +82,10 @@
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
       <v-card min-height="550px" tile dark color="primary" class="papper_item">
-        <v-card-title class="cardtitle">食品安全-Food safety</v-card-title>
+        <!-- <v-card-title class="blue" style="color:black">食品安全-Food safety</v-card-title> -->
+        <v-card-text class="blue" style="color:black;font-size: 1.2em;">食品安全-Food safety</v-card-text>
         <v-divider class="mx-4"></v-divider>
-        <v-card-text>
+        <v-card-text style="font-size:1.2em;">
           <div align="center">
             <img src="~/assets/foodsafety.png"  height="200px"/>
           </div>
@@ -134,4 +137,10 @@ export default {
     repeat center center fixed !important;
   background-size: cover;
 }
+.papper_blue {
+  background: url('~/assets/papper_blue.jpg')
+    repeat center center fixed !important;
+  background-size: cover;
+}
+
 </style>

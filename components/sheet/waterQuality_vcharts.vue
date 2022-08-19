@@ -68,7 +68,7 @@ export default {
         legend: {
           selected: this.defaultitem,
           textStyle:{
-            color:'#c0861d'
+            color:'#FFEB3B'
           },
           
         },

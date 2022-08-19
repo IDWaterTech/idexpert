@@ -294,7 +294,7 @@ export default {
         },
         light: {
           primary: "#6c9bcd",//3F6D9E
-          mainnav: "#02325A",
+          mainnav: "#006aa6",//02325A 006aa6 0D47A1
           mainbg: "#075594",//063E6C
           cardtitle: "#135f9f",//055394
           lightblue: "#074C86"

@@ -53,7 +53,7 @@
         <!--  -->
       </v-navigation-drawer>
       <v-container fluid>
-        <v-app-bar app class="mainnav" dark>
+        <v-app-bar app class="mainnav"  dark>
           <v-app-bar-nav-icon
             @click.stop="drawer = !drawer"
             v-show="this.$auth.$state.loggedIn"
@@ -213,7 +213,7 @@ export default {
 }
 .papper {
   background: url('~/assets/bg_blue_papper.jpg')
-    no-repeat center center fixed !important;
+    repeat center center fixed !important;
   background-size: cover;
 }
 </style>

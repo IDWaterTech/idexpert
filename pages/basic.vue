@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-expansion-panels class="mb-6" tile v-model="mypanel" dark>
-      <v-expansion-panel style="background-color:white;">
+    <v-expansion-panels class="mb-6" tile v-model="mypanel" dark >
+      <v-expansion-panel>
         <v-expansion-panel-header expand-icon="mdi-menu-down" class="cardtitle">
-          選擇條件
+          <span  style="color:white;font-size:1.2em;">選擇條件</span>
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="primary">
-          <v-container class="primary" fluid>
+        <v-expansion-panel-content class="papper">
+          <v-container fluid>
             <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
                 <img v-img :src="mpurl" width="100%" :alt="maindata[sel_main - 1].name" class="grey lighten-2" />
@@ -102,8 +102,8 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-    <v-tabs v-model="currenttab" background-color="primary">
-      <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name" light style="font-size:1.2em;">
+    <v-tabs v-model="currenttab" background-color="cardtitle" dark slider-size="3">
+      <v-tab v-for="(tab, idx) in tabs" :key="idx" :href="`#` + tab.name" style="font-size:1.2em;">
         {{ tab.name }}
       </v-tab>
       <!-- <v-tab-items v-model="currenttab"> -->
@@ -1212,5 +1212,8 @@ export default {
   background: url('~/assets/papper_grape.jpg')
     repeat center center fixed !important;
   background-size: cover;
+}
+.v-expansion-panel::before{
+  box-shadow: none !important;
 }
 </style>
