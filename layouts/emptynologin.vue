@@ -211,4 +211,9 @@ export default {
     repeat center center fixed !important;
   background-size: cover;
 }
+.papper {
+  background: url('~/assets/bg_blue_papper.jpg')
+    no-repeat center center fixed !important;
+  background-size: cover;
+}
 </style>

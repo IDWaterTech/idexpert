@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row class="mainbg">
+    <v-row >
       <!-- 先拿掉，改用col寫法 -->
       <v-col cols="12" v-if="false">
         <!-- <v-icon @click="editState = !editState">mdi-pencil</v-icon> -->

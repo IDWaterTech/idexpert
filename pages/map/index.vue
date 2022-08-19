@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col cols="12">
-        <v-tabs v-model="currenttab" dark  background-color="mainbg">
+        <v-tabs v-model="currenttab" dark  background-color="papper">
           <v-tab
             v-for="(tab, idx) in link"
             :key="idx"
@@ -11,7 +11,7 @@
           >
             <v-icon left> {{ tab.icon }} </v-icon>{{ tab.title }}
           </v-tab>
-          <v-tab-item v-for="(tab, idx) in link" :key="idx" :value="tab.title" class="mainbg">
+          <v-tab-item v-for="(tab, idx) in link" :key="idx" :value="tab.title" class="papper">
             <!-- <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay> -->

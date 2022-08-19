@@ -2,7 +2,7 @@
   <div>
     <v-row dense align="center">
       <v-col cols="12">
-        <h1 class="white--text">影像辨識</h1>
+        <h2 class="white--text">影像辨識</h2>
       </v-col>
       <v-col cols="12" class="cardtitle">
         <v-row>
@@ -48,7 +48,7 @@
                 <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly dark v-bind="attrs"
                   v-on="on" clearable @click:prepend="() => (edate = getNowDate())"></v-text-field>
               </template>
-              <v-date-picker v-model="edate" @input="menu_enddate = false"  locale="zh-tw" no-title></v-date-picker>
+              <v-date-picker v-model="edate" @input="menu_enddate = false" locale="zh-tw" no-title></v-date-picker>
             </v-menu>
           </v-col>
           <!-- 查詢 -->
@@ -58,19 +58,17 @@
           <!-- 選擇類別 -->
           <v-col cols="12" md="3" align-self="center">
             <v-radio-group row dark v-model="dataClass" mandatory>
-              <v-radio
-                v-for="(item,i) in dataClassList"
-                :label="item.name"
-                :value="item.name"
-                :key="i"
-              ><span slot="label"><v-icon class="mr-1">{{item.icon}}</v-icon>{{`${item.name}`}}</span></v-radio>
+              <v-radio v-for="(item, i) in dataClassList" :label="item.name" :value="item.name" :key="i"><span
+                  slot="label">
+                  <v-icon class="mr-1">{{ item.icon }}</v-icon>{{ `${item.name}` }}
+                </span></v-radio>
             </v-radio-group>
           </v-col>
           <v-spacer></v-spacer>
         </v-row>
       </v-col>
 
-      <v-col cols="12" v-if="dataClass=='觀察網'">
+      <v-col cols="12" v-if="dataClass == '觀察網'">
         <el-table ref="recogtable" style="width:100%" :data="recogData.items" highlight-current-row
           :header-cell-style="tableHeaderStyle" max-height="500" class="primary" :header-cell-name="cellClass">
           <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
@@ -127,14 +125,14 @@
               }}</span>
             </template>
           </el-table-column> -->
-          <el-table-column fixed="right" label="操作" width="100">
+          <el-table-column fixed="right" label="操作" width="80">
             <template slot-scope="">
               <v-btn color="primary" outlined small disabled @click="() => { }">刪除</v-btn>
             </template>
           </el-table-column>
         </el-table>
       </v-col>
-      <v-col v-if="dataClass=='菌盤'">
+      <v-col v-if="dataClass == '菌盤'">
         <beca></beca>
       </v-col>
     </v-row>
@@ -149,7 +147,7 @@ import beca from "@/pages/becateriarecog.vue";
 export default {
   layout: "emptynologin",
   middleware: "auth",
-  components:{
+  components: {
     beca
   },
   data() {
@@ -188,8 +186,8 @@ export default {
       sdate: "",
       edate: "",
       //---選定類別
-      dataClass:"",
-      dataClassList:[{"name":"觀察網","icon":"mdi-plus"},{"name":"菌盤","icon":"mdi-bacteria-outline"}]
+      dataClass: "",
+      dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌盤", "icon": "mdi-bacteria-outline" }]
     };
   },
   methods: {
@@ -207,36 +205,51 @@ export default {
       }
     },
     getRecog: async function () {
-      var parm = {
-        started_date: this.sdate,
-        ended_date: this.edate,
-        pond_id: this.poolid
-      };
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-data/`,
-          { params: parm }
-        )
-        .then(res => {
-          this.recogData = res.data;
-          if (res.data.items.length == 0) {
-            this.$toast.success(`查無資料`, { duration: 2000 });
-          }
-          //   if (res.data == "修改成功") {
-          //     if (data != "nomsg") {
-          //       this.$toast.success(`修改成功`, { duration: 2000 });
-          //     }
-          //   } else {
-          //     if (data != "nomsg") {
-          //       this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
-          //     }
-          //   }
-          // this.profile = res.data;
-          // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
-        })
-        .catch(error => {
-          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
-        });
+      switch (this.dataClass) {
+
+        case "觀察網":
+          var parm = {
+            started_date: this.sdate,
+            ended_date: this.edate,
+            pond_id: this.poolid
+          };
+          await this.$axios
+            .get(
+              `${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-data/`,
+              { params: parm }
+            )
+            .then(res => {
+              this.recogData = res.data;
+              if (res.data.items.length == 0) {
+                this.$toast.success(`查無觀察網資料`, { duration: 2000 });
+              }
+                console.log("觀察網api：",res.request.responseURL);
+            })
+            .catch(error => {
+              this.$toast.error(`取得觀察網資料失敗:${error.message}`, { duration: 2000 });
+            });
+          break;
+        case "菌盤":
+          var parm = {
+            started_date: this.sdate,
+            ended_date: this.edate,
+            pond_id: this.poolid
+          };
+          await this.$axios
+            .get(
+              `${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-data/`,
+              { params: parm }
+            )
+            .then(res => {
+            })
+            .catch(error => {
+              this.$toast.error(`取得菌盤資料失敗:${error.message}`, { duration: 2000 });
+            });
+          break;
+        default:
+          break;
+      }
+
     },
     getNowDate: function () {
       let mydate = dayjs().format("YYYY-MM-DD");

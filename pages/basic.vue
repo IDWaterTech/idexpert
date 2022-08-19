@@ -70,7 +70,7 @@
                     </v-col>
                     <v-col cols="12" sm="6" align-self="center" class="text-center">
                       <!-- 可能同池名，在不同廠，所以value= name -->
-                      <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">確認</v-btn>
+                      <v-btn  tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">確認</v-btn>
                     </v-col>
                   </v-row>
                 </v-card>
@@ -111,7 +111,7 @@
         <v-overlay :value="waterloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -187,7 +187,7 @@
         <v-overlay :value="envloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -255,7 +255,7 @@
         <v-overlay :value="feedloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -323,7 +323,7 @@
         <v-overlay :value="envloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -391,7 +391,7 @@
         <v-overlay :value="advloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -459,7 +459,7 @@
         <v-overlay :value="pbioloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -528,7 +528,7 @@
         <v-overlay :value="materialloading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card flat min-height="900px" dark tile class="mainbg">
+        <v-card flat min-height="900px" dark tile class="papper">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="1" align-self="center">
@@ -1208,4 +1208,9 @@ export default {
 
 <style scoped>
 @import "https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css";
+.papper_blue {
+  background: url('~/assets/papper_grape.jpg')
+    repeat center center fixed !important;
+  background-size: cover;
+}
 </style>

@@ -7,7 +7,7 @@
         第三方登入<v-icon>mdi-google</v-icon>
       </v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tabs" class="mainbg">
+    <v-tabs-items v-model="tabs" class="papper">
       <v-tab-item :value="'tab-2'" class="text-center mt-5">
         <v-row>
           <v-spacer></v-spacer>

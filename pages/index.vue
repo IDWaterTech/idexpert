@@ -39,10 +39,10 @@
     </v-col>
     <!-- <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col> -->
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" tile dark color="primary">
+      <v-card min-height="550px" tile dark color="primary" class="papper_item">
         <v-card-title class="cardtitle">紅樹林破壞-Mangrove destruction</v-card-title>
         <v-divider class="mx-4"></v-divider>
-        <v-card-text>
+        <v-card-text >
           <div align="center">
             <img src="~/assets/Mangrove.png"  height="200px"/>
           </div>
@@ -60,12 +60,12 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" tile dark color="primary">
+      <v-card min-height="550px" tile dark color="primary" class="papper_item">
         <v-card-title class="cardtitle">水污染-Water pollution</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
           <div align="center">
-            <img src="~/assets/pollution.png"  height="200px"/>
+            <img src="~/assets/gomi_grease_trap_pit.png"  height="200px"/>
           </div>
           <div>
             養蝦會產生含有氮和磷的高污染水。2018年，中國政府因水質不達標關閉了4萬個蝦池。
@@ -79,7 +79,7 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" tile dark color="primary">
+      <v-card min-height="550px" tile dark color="primary" class="papper_item">
         <v-card-title class="cardtitle">食品安全-Food safety</v-card-title>
         <v-divider class="mx-4"></v-divider>
         <v-card-text>
@@ -128,5 +128,10 @@ export default {
 .questionTitle{
   background-color: #055394;
   color: white;
+}
+.papper_item {
+  background: url('~/assets/papper_grape.jpg')
+    repeat center center fixed !important;
+  background-size: cover;
 }
 </style>
