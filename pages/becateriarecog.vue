@@ -37,7 +37,7 @@
                         <span slot-scope="scope">
                             共{{scope.row.images.length}}張
                             <!-- <img v-img="{group: scope.row.id}" :src="scope.row.images[0]" width="100%" :hidden="false" /> -->
-                            <img v-img="{group: scope.row.id }" v-for="(item,i) in scope.row.images" :key="i" :src="scope.row.images[i]" width="100%" :hidden="false" />
+                            <img class="mx-1" v-img="{group: scope.row.id }" height="64" v-for="(item,i) in scope.row.images" :key="i" :src="scope.row.images[i]" :hidden="false" />
                         </span>
                     </el-table-column>
                     <!-- 使用fixed會造成表重複 -->
@@ -55,38 +55,45 @@
 import "element-ui/lib/theme-chalk/index.css";
 export default {
     layout: "emptynologin",
+    
     data() {
         return {
-            recogData: {
-                id: 1,
-                name: "A1",
-                items: [
-                    {
-                        id: 1,
-                        class1: "3.6000E+01",
-                        class2: "0.0000E+00",
-                        class3: ".0000E+00",
-                        class4: ".0000E00",
-                        class5: ".2000E00",
-                        is_heated: true,
-                        inspected_time: "2022-08-18 11:00:00",
-                        images: ["https://www.idwatertech.com:8011/.well-known/bacteria/a.jpg", "https://www.idwatertech.com:8011/.well-known/bacteria/b.jpg"]
-                    },
-                    {
-                        id: 2,
-                        class1: "4.8000E+01",
-                        class2: "2.3000E+00",
-                        class3: "0.0000E+00",
-                        class4: "1.8000E+00",
-                        class5: "0.0000E+00",
-                        is_heated: false,
-                        inspected_time: "2022-08-18 11:00:00",
-                        images: ["https://www.idwatertech.com:8011/.well-known/bacteria/c.jpg", "https://www.idwatertech.com:8011/.well-known/bacteria/d.jpg", "https://www.idwatertech.com:8011/.well-known/bacteria/e.jpg"]
-                    }
-                ]
-            }
+            // recogData: {
+            //     id: 1,
+            //     name: "A1",
+            //     items: [
+            //         {
+            //             id: 1,
+            //             class1: "3.6000E+01",
+            //             class2: "0.0000E+00",
+            //             class3: ".0000E+00",
+            //             class4: ".0000E00",
+            //             class5: ".2000E00",
+            //             is_heated: true,
+            //             inspected_time: "2022-08-18 11:00:00",
+            //             images: ["https://www.idwatertech.com:8011/.well-known/bacteria/a.jpg", "https://www.idwatertech.com:8011/.well-known/bacteria/b.jpg"]
+            //         },
+            //         {
+            //             id: 2,
+            //             class1: "4.8000E+01",
+            //             class2: "2.3000E+00",
+            //             class3: "0.0000E+00",
+            //             class4: "1.8000E+00",
+            //             class5: "0.0000E+00",
+            //             is_heated: false,
+            //             inspected_time: "2022-08-18 11:00:00",
+            //             images: ["https://www.idwatertech.com:8011/.well-known/bacteria/c.jpg", "https://www.idwatertech.com:8011/.well-known/bacteria/d.jpg", "https://www.idwatertech.com:8011/.well-known/bacteria/e.jpg"]
+            //         }
+            //     ]
+            // }
         }
     },
+    props: {
+    recogData: {
+      type: Object,
+      default: {}
+    }
+  },
     methods: {
         cellClass: function (row) {
             if (row.columnIndex == 0) {

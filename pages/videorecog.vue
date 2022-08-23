@@ -57,7 +57,7 @@
           </v-col>
           <!-- 選擇類別 -->
           <v-col cols="12" md="3" align-self="center">
-            <v-radio-group row dark v-model="dataClass" mandatory>
+            <v-radio-group row dark v-model="dataClass" mandatory @change="()=>{recogData={};}">
               <v-radio v-for="(item, i) in dataClassList" :label="item.name" :value="item.name" :key="i"><span
                   slot="label">
                   <v-icon class="mr-1">{{ item.icon }}</v-icon>{{ `${item.name}` }}
@@ -133,7 +133,7 @@
         </el-table>
       </v-col>
       <v-col v-if="dataClass == '菌盤'">
-        <beca></beca>
+        <beca :recogData="recogData"></beca>
       </v-col>
     </v-row>
   </div>
@@ -237,10 +237,15 @@ export default {
           };
           await this.$axios
             .get(
-              `${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-data/`,
+              `${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/`,
               { params: parm }
             )
             .then(res => {
+               this.recogData = res.data;
+              if (res.data.items.length == 0) {
+                this.$toast.success(`查無菌盤資料`, { duration: 2000 });
+              }
+                console.log("菌盤api：",res.request.responseURL);
             })
             .catch(error => {
               this.$toast.error(`取得菌盤資料失敗:${error.message}`, { duration: 2000 });
