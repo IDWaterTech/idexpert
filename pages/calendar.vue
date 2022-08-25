@@ -125,6 +125,82 @@
               >確認</v-btn
             >
           </v-col>
+          <v-col cols="12" sm="2">
+            <v-btn tile dark color="primary" @click="()=>{dialog.eventSet=true;this.eventSetGet();}">飼料表事件設定</v-btn>
+              <v-dialog v-model="dialog.eventSet" width="500px">
+              <v-form ref="eventSetform" v-model="eventSetvalid" lazy-validation>
+                <v-card>
+                  <v-card-title>飼料表事件設定</v-card-title>
+                  <v-card-text>
+                    <v-autocomplete v-model="eventSetList" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable @change="eventSetChange">
+                      <v-btn slot="prepend" icon @click="eventSetGet"><v-icon>mdi-reload</v-icon></v-btn>
+                    </v-autocomplete>
+                  </v-card-text>
+                  <v-card-text>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-btn v-if="eventSet.mode=='add'" tile color="primary" @click="eventSet_isEdit = !eventSet_isEdit">新增</v-btn>
+                        <v-btn v-else tile color="primary" @click="eventSet_isEdit = !eventSet_isEdit">編輯</v-btn>
+                      </v-col>
+                      <!-- 事件等級 -->
+                      <v-col cols="12" sm="6">
+                        <v-autocomplete
+                          dense
+                          outlined
+                          :items="eventLevelData"
+                          item-text="name_ch"
+                          item-value="id"
+                          v-model="eventSet.event_level_id"
+                          :disabled="!eventSet_isEdit"
+                        >
+                          <template slot="prepend"
+                            ><span style="width:70px;">事件等級</span></template
+                          >
+                        </v-autocomplete>
+                      </v-col>
+                      <!-- 事件類型 -->
+                      <v-col cols="12" sm="6">
+                        <v-autocomplete
+                          dense
+                          outlined
+                          :rules="rules.require"
+                          :items="eventCategoryData"
+                          item-text="name_ch"
+                          item-value="id"
+                          v-model="eventSet.event_category_id"
+                          :disabled="!eventSet_isEdit"
+                        >
+                          <template slot="prepend"
+                            ><span style="width:70px;">事件類型</span></template
+                          >
+                        </v-autocomplete>
+                      </v-col>
+                      <!-- 標題 -->
+                      <v-col cols="12">
+                        <v-text-field v-model="eventSet.title" dense filled clearable :rules="rules.require" :disabled="!eventSet_isEdit">
+                          <span slot="prepend" style="width:70px;">標題</span>
+                        </v-text-field>
+                      </v-col>
+                      <!-- 內容 -->
+                      <v-col cols="12">
+                        <v-textarea v-model="eventSet.content" dense filled clearable :rules="rules.require" :disabled="!eventSet_isEdit">
+                          <span slot="prepend" style="width:70px;">內容</span>
+                        </v-textarea>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn v-if="eventSet.mode=='add'" tile  color="primary" @click="eventSetAdd" :disabled="!eventSet_isEdit">新增</v-btn>
+                    <span v-else>
+                      <v-btn tile  color="primary" :disabled="!eventSet_isEdit" @click="eventSetEdit">確認修改</v-btn>
+                      <v-btn tile  color="error" :disabled="!eventSet_isEdit" @click="eventSetDel">刪除</v-btn>
+                    </span>
+                  </v-card-actions>
+                </v-card>
+                </v-form>
+              </v-dialog>
+          </v-col>
         </v-row>
       </v-col>
       <!-- 日曆 -->
@@ -492,6 +568,7 @@ export default {
       //dialog
       dialog: {
         add: false,
+        eventSet:false,//飼料表事件
       },
       addvalid:true,
       // events: [],
@@ -580,6 +657,18 @@ export default {
       eventLevelData:[],//警戒等級
       eventCategoryData:[],//事件類型
       rules: { require: [v => !!v || "*必要項目"] },
+      //飼料表事件設定
+      eventSetvalid:true,
+      eventSet:{
+        mode:"add",
+        event_level_id:3,//事件等級
+        event_category_id:undefined,//事件類型id,
+        title:"",
+        content:"",
+      },
+      eventSetData:[],
+      eventSetList:"",
+      eventSet_isEdit:false,
     };
   },
   async mounted() {
@@ -592,6 +681,108 @@ export default {
     await this.getEventCategoryData();
   },
   methods: {
+    //清單-刪除
+    eventSetDel:async function(){
+      var id = this.eventSet.id; 
+      await this.$axios
+          .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`)
+          .then(res => {
+            if (res.data=="刪除成功") {
+              this.eventSet = {mode:'add'};
+              this.eventSet_isEdit = false;
+              this.$toast.success(`刪除成功`, { duration: 2000 });
+            }else{
+              this.$toast.error(`資料刪除失敗:${res.data}`, { duration: 2000 });
+            }
+            console.log("飼料表設定-刪除 api:", res.request.responseURL);
+          })
+          .catch(err => {
+            debugger;
+            this.$toast.error(`資料刪除失敗:${err.message}`, { duration: 2000 });
+          });
+          this.eventSetGet();
+    },
+    //清單-修改
+    eventSetEdit:async function(){
+      var parm = {
+        title:this.eventSet.title,
+        content:this.eventSet.content,
+        event_category_id:this.eventSet.event_category_id,
+        event_level_id:this.eventSet.event_level_id,
+        updated_user:this.$auth.$state.user.email
+      }
+      var id = this.eventSet.id;
+      await this.$axios
+          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`,parm)
+          .then(res => {
+            if (res.data=="修改成功") {
+              this.$toast.success(`修改成功`, { duration: 2000 });
+            }else{
+              this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
+            }
+            console.log("飼料表設定-修改 api:", res.request.responseURL);
+          })
+          .catch(err => {
+            debugger;
+            this.$toast.error(`資料修改失敗:${err.message}`, { duration: 2000 });
+          });
+          this.eventSet = {mode:'add'};
+          this.eventSetList = null;
+          this.eventSet_isEdit = false;
+          this.eventSetGet();
+    },
+    // 清單-change select
+    eventSetChange:function(){
+      this.eventSet.mode = (this.eventSetList==null)?"add":"edit";
+      if(this.eventSet.mode=="edit"){
+        var data = this.eventSetData.filter(x=>x.id==this.eventSetList)[0];
+        this.eventSet.id = data.id;
+        this.eventSet.title = data.title;
+        this.eventSet.content = data.content;
+        this.eventSet.event_category_id = data.event_category_id;
+        this.eventSet.event_level_id = data.event_level_id;
+      }else{
+        this.eventSet = {mode:'add'};
+      }
+
+    },
+    // 飼料表設定-清單
+    eventSetGet:async function(){
+      await this.$axios
+          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+          .then(res => {
+            this.eventSetData = res.data;
+            console.log(res.data);
+            console.log("飼料表設定-清單 api:", res.request.responseURL);
+          })
+          .catch(err => {
+            this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
+          });
+    },
+    // 飼料表設定-新增
+    eventSetAdd:async function(){
+      var parm = Object.assign({},this.eventSet) ;
+      const user = this.$auth.$state.user.email;
+      delete parm.mode;
+      parm.created_user = user;
+      await this.$axios
+          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`,parm)
+          .then(res => {
+            if (res.data=="新增成功") {
+              this.eventSet = {mode:'add'};
+              this.eventSetList = null;
+              this.eventSet_isEdit = false;
+              this.eventSetGet();
+              this.$toast.success(`新增成功`, { duration: 2000 });
+            }else{
+              this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
+            }
+            console.log("飼料表設定-新增 api:", res.request.responseURL);
+          })
+          .catch(err => {
+            this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
+          });
+    },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
