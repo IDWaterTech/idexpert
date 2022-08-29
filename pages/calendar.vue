@@ -752,7 +752,6 @@ export default {
           .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
           .then(res => {
             this.eventSetData = res.data;
-            console.log(res.data);
             console.log("飼料表設定-清單 api:", res.request.responseURL);
           })
           .catch(err => {
