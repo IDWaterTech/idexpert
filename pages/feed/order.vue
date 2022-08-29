@@ -75,8 +75,8 @@
                     <v-list-item v-for="item in imptimedata" :key="item.time">
                       <v-list-item-content class="justify-center text-h5">{{ item.time }}</v-list-item-content>
                       <v-list-item-action
-                        ><v-btn tile class="primary" @click="settabledata(item)"
-                          >帶入此資料<v-icon>mdi-redo</v-icon></v-btn
+                        ><v-btn fab color="primary" @click="settabledata(item)" title="帶入此資料"
+                          ><v-icon>mdi-database-export-outline</v-icon></v-btn
                         >
                       </v-list-item-action>
                     </v-list-item>
@@ -175,6 +175,11 @@
           </v-col>
           <v-spacer></v-spacer>
         </v-row>
+      </template>
+      <!-- 事件 -->
+      <template v-slot:[`item.feed_event`]="{item}">
+         <v-autocomplete v-model="item.item" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
+         </v-autocomplete>
       </template>
       <!-- has_observation 放置觀察網 -->
       <template v-slot:[`item.has_observation`]="{ item }">
@@ -331,6 +336,13 @@ export default {
           sortable: false
         },
         {
+          text: "事件",
+          value: "feed_event",
+          align: "center",
+          width: 300,
+          sortable: false
+        },
+        {
           text: "放置觀察網",
           value: "has_observation",
           align: "center",
@@ -385,9 +397,23 @@ export default {
       imptimeidx: "",
       //---公式
       formula:"",
+      //事件
+      eventSetData:[],
     };
   },
   methods: {
+    // 飼料表設定-清單
+    eventSetGet:async function(){
+      await this.$axios
+          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+          .then(res => {
+            this.eventSetData = res.data;
+            console.log("飼料表設定-清單 api:", res.request.responseURL);
+          })
+          .catch(err => {
+            this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
+          });
+    },
     //觀察網全選
     has_observe_click: async function() {
       if (this.has_observe) {
@@ -762,6 +788,13 @@ export default {
         })
         .then(res => {
           this.imptimedata = res.data;
+          res.data.sort(function(a,b){
+            var a1 = a.time.replace(":","");
+            var b1 = b.time.replace(":","");
+            if(a1 > b1){return 1};
+            if(a1 < b1){return -1};
+            return 0;
+          });
           console.log("取得帶入的資料API:" + res.request.responseURL);
         })
         .catch(error => {
@@ -829,6 +862,7 @@ export default {
   },
 
   async mounted() {
+    await this.eventSetGet();//取得事件清單
     await this.getcombodata(); //取得套餐清單(飼料設定)
     await this.getarchitecture(); //取得廠架構
     //表格group預設是false
