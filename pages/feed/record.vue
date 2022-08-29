@@ -427,6 +427,13 @@ export default {
         })
         .then(res => {
           this.imptimedata = res.data;
+          res.data.sort(function(a,b){
+            var a1 = a.time.replace(":","");
+            var b1 = b.time.replace(":","");
+            if(a1 > b1){return 1};
+            if(a1 < b1){return -1};
+            return 0;
+          });
           console.log("取得帶入的資料API:" + res.request.responseURL);
         })
         .catch(error => {
