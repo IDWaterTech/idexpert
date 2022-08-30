@@ -177,8 +177,8 @@
         </v-row>
       </template>
       <!-- 事件 -->
-      <template v-slot:[`item.feed_event`]="{item}">
-         <v-autocomplete v-model="item.item" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
+      <template v-slot:[`item.feed_event_settings_id`]="{item}">
+         <v-autocomplete v-model="item.feed_event_settings_id" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
          </v-autocomplete>
       </template>
       <!-- has_observation 放置觀察網 -->
@@ -337,7 +337,7 @@ export default {
         },
         {
           text: "事件",
-          value: "feed_event",
+          value: "feed_event_settings_id",
           align: "center",
           width: 300,
           sortable: false
@@ -607,6 +607,7 @@ export default {
                 //   .filter(x => x.visible == true)
                 //   .map(x => (x.area_name = ele.name));
                 //把天府名稱放入area_name,把池名稱放入pond_name
+                //把事件放入feed_event_settings_id
                 //把放置觀察網放入has_observation
                 //把是否執行放入is_executed
                 ele.node
@@ -615,6 +616,7 @@ export default {
                     (x.area_name = ele.name),
                       (x.pond_name = x.name),
                       (x.pond_id = x.id),
+                      (x.feed_event_settings_id = ""),
                       (x.has_observation = false),
                       (x.is_executed = false);
                   }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
