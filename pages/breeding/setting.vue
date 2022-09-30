@@ -3,9 +3,25 @@
  -->
 <template>
     <div>
-        <h1 style="color:white;">養殖歷程-設定</h1>
+        <h1 style="color:white;">養殖設定</h1>
         <span ></span>
         <v-row dense class="mx-14">
+            <!-- 下拉 -->
+            <v-col cols="12">
+                <v-select dark v-model="settingModel" :items="modelitems" dense filled hide-details item-value="id" item-text="name">
+                    <span slot="prepend" style="width:80px;">設定項目</span>
+                </v-select>
+            </v-col>
+            <v-col cols="12" v-if="settingModel">
+                <v-card min-height="500">
+                    <v-card-title>{{modelitems.filter(x=>x.id==settingModel)[0].name}}設定</v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <seedlings v-if="modelitems.filter(x=>x.id==settingModel)[0].name=='種苗'"></seedlings>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+
             <v-col sm="6" class="pa-0 pr-1">
                 <v-card tile>
                     <v-toolbar color="cyan" dark dense>
@@ -57,8 +73,12 @@
 </template>
 
 <script>
+import seedlings from "@/pages/breeding/seedlings.vue";
 export default {
     layout: "emptynologin",
+    components: {
+        seedlings
+    },
     data() {
         return {
             //templateform
@@ -68,6 +88,9 @@ export default {
             //---
             template_selected: 1,
             template_items: [],
+            //下拉
+            settingModel:1,
+            modelitems:[{id:1,name:'種苗'},{id:2,name:'苗2'}]
         };
     },
     methods: {
