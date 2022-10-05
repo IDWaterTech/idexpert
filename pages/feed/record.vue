@@ -63,9 +63,10 @@
           filled
           item-text="time"
           item-value="time"
+          :loading="stime_loading"
           :items="imptimedata"
           placeholder="選擇資料時間"
-          no-data-text="查無資料"
+          :no-data-text="`${stime_loading?'資料載入中':'查無資料'}`"
           @change="getfeedData"
         ></v-autocomplete>
       </v-col>
@@ -295,6 +296,7 @@ export default {
       menu_sdate: false,
       sdate: "",
       stime: "",
+      stime_loading:false,
       //--帶入資料
       imptimedata: [],
       //料表資料
@@ -409,9 +411,10 @@ export default {
     },
     //取得帶入的資料
     getimptimedata: async function() {
+
       this.feedData = []; //清空表格資料
       this.stime = "";
-
+      this.stime_loading = true;//loading
       if (!this.sdate) {
         this.imptimedata = [];
         // this.totalData = {};
@@ -439,10 +442,13 @@ export default {
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
         })
-        .finally(() => {});
+        .finally(() => {
+          this.stime_loading = false;//loading
+        });
     },
     //取得料表
     getfeedData: async function() {
+      this.combomark=[];
       // this.feedData = [
       //   {
       //     id: 1,
