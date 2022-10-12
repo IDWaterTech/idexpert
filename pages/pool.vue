@@ -282,14 +282,14 @@
           </v-col>
           <!-- 按鈕 -->
           <v-col cols="12" sm="12">
-            <v-btn tile class="mt-2" color="primary" @click="getCircleData"
+            <v-btn tile class="mt-2" color="primary" @click="getCircleData" block
               >查詢</v-btn
             >
-            <v-btn color="primary" tile class="mt-2" @click="showadd"
+            <v-btn color="primary" tile class="mt-2" @click="showadd" block
               ><v-icon>mdi-plus</v-icon>新增循環</v-btn
             >
             <v-dialog v-model="addDialog" max-width="500px">
-              <v-form v-model="addvalid">
+              <v-form v-model="addvalid" ref="cycleform">
                 <v-card>
                   <v-card-title>新增-養殖循環</v-card-title>
                   <v-card-text>
@@ -371,6 +371,31 @@
                           autocomplete="off"
                         ></v-text-field>
                       </v-col>
+                      <v-col cols="12">
+                        <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" item-text="name_ch" clearable :rules="rules.require">
+                          <span slot="prepend" style="width:80px">選擇種苗</span>
+                        </v-select>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username" :filter="filterincharge" clearable :rules="rules.require">
+                          <span slot="prepend" style="width:80px">養殖負責</span>
+                          <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                          <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                        </v-autocomplete>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-row>
+                          <v-col cols="6">
+                            <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_catty"><span slot="prepend" style="width:80px">預計收成斤數(kg)(選)</span></v-text-field>
+                          </v-col>
+                          <v-col cols="6">
+                            <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate"><span slot="prepend" style="width:80px">預計存活率(%)(選)</span></v-text-field>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                      <v-col cols="12">
+                            <v-text-field filled dense v-model="addparm.remark"><span slot="prepend" style="width:80px">備註(選)</span></v-text-field>
+                          </v-col>
                     </v-row>
                   </v-card-text>
                   <v-card-actions>
@@ -674,12 +699,13 @@
               @select="handleSelectionChange"
               :header-cell-name="cellClass"
             >
-              <!-- <el-table-column type="selection" label="123" width="55"></el-table-column> -->
+              <!-- 循環起日 -->
               <el-table-column
                 label="循環起日"
                 prop="started_date"
                 align="center"
               ></el-table-column>
+              <!-- 循環訖日 -->
               <el-table-column
                 label="循環訖日"
                 prop="ended_date"
@@ -693,27 +719,33 @@
                   }}</span>
                 </template>
               </el-table-column>
+              <!-- 養殖天數 -->
               <el-table-column
                 label="養殖天數"
                 prop="days"
                 align="center"
               ></el-table-column>
+              <!-- 名稱/批號 -->
               <el-table-column
                 label="名稱/批號"
                 prop="name"
                 align="center"
               ></el-table-column>
+              <!-- 養殖密度 -->
               <el-table-column
                 label="養殖密度"
                 prop="num_per_unit"
                 align="center"
               ></el-table-column>
+              <!-- 預估放養隻數 -->
               <el-table-column
                 label="預估放養隻數"
-                prop="estimated_num"
+                prop="total"
                 align="center"
               ></el-table-column>
-              <el-table-column fixed="right" label="操作" width="100">
+              <el-table-column label="養殖負責" prop="person_in_charge" align="center">
+              </el-table-column>
+              <el-table-column fixed="right" label="操作" width="80">
                 <template slot-scope="scope">
                   <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
                   <v-btn
@@ -922,7 +954,7 @@
           <v-divider></v-divider>
           <v-card-title>
             <v-btn
-              color="primary"
+              class="info"
               tile
               :disabled="!poolid || !cirid"
               @click="showlogDialog"
@@ -1003,7 +1035,7 @@
                 <span
                   ><v-btn
                     tile
-                    color="primary"
+                    color="info0"
                     @click="geteventData"
                     :disabled="!poolid || !cirid"
                     >暫無資料，手動重新整理<v-icon
@@ -1059,13 +1091,13 @@
       </v-col>
     </v-row>
     <!-- 養殖歷程 -->
-    <v-row>
+    <v-row class="mb-10">
       <v-col cols="12">
         <v-card elevation="3" tile dark class="primary">
           <v-card-title class="py-2"
             ><span>養殖歷程</span><v-spacer></v-spacer
             ><span
-              ><v-btn icon title="養殖歷程設定" to="story/setting"
+              ><v-btn :disabled="true" icon title="養殖歷程設定" to="" target="_blank"
                 ><v-icon>mdi-cog</v-icon></v-btn
               ></span
             ></v-card-title
@@ -1094,14 +1126,21 @@ const agent = new https.Agent({
 });
 // import axios from "~/plugins/axios";
 export default {
+  
   components: { waterball },
   layout: "emptynologin",
   middleware: "auth",
   components: {
     WaterQuality_Vcharts
   },
+  head(){
+    return {
+      title:"養殖池",
+    }
+  },
   data() {
     return {
+      title: 'Home page',
       req: this.$route.query,
       rules: {
         require: [v => !!v || "*必要項目"],
@@ -1161,7 +1200,7 @@ export default {
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
-      ended_date: this.getNowDate(),
+      ended_date: this.getNowDate(3,'month'),
       started_date: dayjs(this.ended_date)
         .add(-3, "month")
         .format("YYYY-MM-DD"),
@@ -1171,11 +1210,18 @@ export default {
       menu_adddate: false,
       add_volume: undefined,
       addparm: {
-        started_date: undefined,
-        name: undefined,
-        num_per_unit: undefined,
-        estimated_num: undefined
+        started_date: undefined,//開始日期，有ended_date結束日期，但新增不需使用
+        name: undefined,//名稱或批號
+        num_per_unit: undefined,//放養密度
+        estimated_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
+        seedling_id:undefined,//種苗id
+        estimated_harvest_catty:undefined,//預計收成斤數
+        estimated_survival_rate:undefined,//預計存活率
+        remark:"",//備註
+        person_in_charge:undefined,//負責人
       },
+      //種苗
+      SeedlingData:[],
       //蝦況
       imgvalid: false,
       imgdialog: false,
@@ -1216,10 +1262,39 @@ export default {
         content: undefined,
         event_category_id: undefined
       },
-      eventCategory: [] //事件類型
+      eventCategory: [], //事件類型
+      accdata:[],//帳號清單
     };
   },
   methods: {
+    //負責人搜尋
+    filterincharge:function(item, queryText, itemText){
+      // This is optional. You might want to remove this if you want to search for items with case sensitivity
+      const searchText = queryText.toLowerCase();
+      // define your custom logic of your filter
+      const name = item.account_name.toLowerCase();
+      const position = item.position.toString();
+      const mail = item.username.toString();
+
+      return (
+        name.indexOf(searchText) > -1 ||
+        position.indexOf(searchText) > -1 ||
+        mail.indexOf(searchText) > -1
+      );
+    },
+    //取得苗清單
+    getSeedlingData:async function(){
+                this.SeedlingModel = undefined;
+                var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
+                await this.$axios
+                    .get(url)
+                    .then(res => {
+                        this.SeedlingData = res.data;
+                    })
+                    .finally(() => {
+                /* 不論失敗成功皆會執行 */ 
+                    });
+            },
     cellClass: function(row) {
       if (row.columnIndex == 0) {
         return "disableSelection";
@@ -1233,8 +1308,16 @@ export default {
         return `background-color:${bgcolor};`;
       }
     },
-    getNowDate: function() {
-      let mydate = dayjs().format("YYYY-MM-DD");
+    getNowDate: function(addnum,type) {
+      var mydate;
+      if(type==undefined){
+        type='day';
+      }
+      if(addnum!=undefined && addnum > 0){
+        mydate = dayjs().add(addnum,type).format("YYYY-MM-DD");
+      }else{
+        mydate = dayjs().format("YYYY-MM-DD");
+      }
       return mydate;
     },
     getNowTime: function() {
@@ -1259,7 +1342,7 @@ export default {
     },
     delcircle: async function(data) {
       await this.$confirm(
-        `將永久删除該循所有紀錄(包含事件紀錄、養殖歷程), 是否繼續?`,
+        `將永久删除該循環所有紀錄(包含事件紀錄、養殖歷程), 是否繼續?`,
         "警告",
         {
           confirmButtonText: "確定",
@@ -1271,7 +1354,7 @@ export default {
           let id = data.id;
           this.$axios
             .delete(
-              `${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/${id}`
+              `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`
             )
             .then(res => {
               console.log("循環刪除 API:" + res.request.responseURL);
@@ -1285,13 +1368,29 @@ export default {
             .catch(error => {
               this.$toast.error("error:" + error, { duration: 2000 });
             });
+          // this.$axios
+          //   .delete(
+          //     `${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/${id}`
+          //   )
+          //   .then(res => {
+          //     console.log("循環刪除 API:" + res.request.responseURL);
+          //     if (res.data == "刪除成功") {
+          //       this.getCircleData();
+          //       this.$toast.success("刪除成功", { duration: 2000 });
+          //     } else {
+          //       this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+          //     }
+          //   })
+          //   .catch(error => {
+          //     this.$toast.error("error:" + error, { duration: 2000 });
+          //   });
         })
         .catch(err => {
           // this.$message({
           //   type: 'info',
           //   message: '已取消删除'
           // });
-          this.$toast.error(err, { duration: 2000 });
+          this.$toast.error("已取消删除" + err, { duration: 2000 });
         });
     },
     setNestedDisabled: function(obj, name) {
@@ -1384,13 +1483,12 @@ export default {
         started_date: this.started_date,
         ended_date: this.ended_date
       };
-      console.log(parm);
       var parm_url = Object.keys(parm)
         .map(key => key + "=" + parm[key])
         .join("&");
-      await this.$axios
+        await this.$axios
         .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/?${parm_url}`
+          `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/?${parm_url}`
         )
         .then(res => {
           this.circleData = res.data;
@@ -1399,7 +1497,23 @@ export default {
             // this.getDetectData();
             this.getshirimpData();
           }
+        })
+        .catch(error=>{
+          this.$toast.error("error:" + error, { duration: 2000 });
         });
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/?${parm_url}`
+      //   )
+      //   .then(res => {
+      //     this.circleData = res.data;
+      //     if (this.circleData.length > 0) {
+      //       this.getwarnData();
+      //       // this.getDetectData();
+      //       this.getshirimpData();
+      //     }
+      //   });
+
       this.getDetectData(); //無論如何都要抓
     },
     getDetectData: async function() {
@@ -1411,6 +1525,10 @@ export default {
         .then(res => {
           this.detectData = res.data;
           console.log("24小時資料 api:", res.request.responseURL);
+        })
+        .catch(error=>{
+          console.log("24小時資料-" + error);
+          console.log("24小時資料 api:", error.config.url);
         })
         .finally(() => {
           this.detectloading = false;
@@ -1557,30 +1675,57 @@ export default {
           this.$toast.error(err, { duration: 2000 });
         });
     },
+    //帳號清單
+    getaccList: async function() {
+      await this.$axios
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
+          { httpsAgent: agent }
+        )
+        .then(res => {
+          var data = res.data;
+          var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
+          this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
+          console.log("accList api：" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("accList api ERR：" + error, { duration: 2000 });
+        });
+    },
+    //新增循環
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
       this.addparm.created_user = updUser;
       this.addparm.pond_id = parseInt(this.poolid); //需要int
-      let parm = this.addparm;
+      let parm = Object.assign({},this.addparm);
+      delete parm.estimated_num;//刪除初始放苗量
       console.log(parm);
-      await this.$axios
-        .post(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/aquaculture-record/`,
-          parm
-        )
-        .then(res => {
-          console.log("API:" + res.request.responseURL);
-          if (res.data == "新增成功") {
-            this.getCircleData();
-            this.addDialog = false;
-            this.$toast.success("新增成功", { duration: 2000 });
-          } else {
-            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
+      var valid = this.$refs.cycleform.validate();
+      // if (this.$refs.logform != undefined) {
+      //   this.$refs.logform.reset();
+      // }
+        if(valid){
+          await this.$axios
+            .post(
+              `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
+              parm
+            )
+            .then(res=>{
+              if (res.data == "新增成功") {
+                this.addDialog = false;
+                this.$refs.cycleform.reset();
+                this.getCircleData();
+                this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
+              }else{
+                this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+                console.log(res.data);
+              }
+            })
+            .catch(error=>{
+              this.$toast.error("新增失敗:" +error, { duration: 2000 });
+              console.log(error);
+            })
+        }
     },
     showdialog_imgdialog: async function() {
       // this.imgdata.imgdate="";
@@ -1702,11 +1847,12 @@ export default {
       if (selection.length != 0) {
         this.$refs.circletable.toggleRowSelection(row);
       }
+      
     },
     handleCurrentChange: async function(val) {
       //清除
       this.$refs.circletable.clearSelection();
-      this.eventData = []; //清除事件紀錄清單
+      // this.eventData = []; //清除事件紀錄清單
       this.$refs.circletable.toggleRowSelection(val);
 
       if (val != null) {
@@ -1716,6 +1862,7 @@ export default {
         this.cirid = undefined;
       }
       // this.currentRow = val;
+      await this.geteventData();//取得事件紀錄清單
     },
     //依項目回傳主要類別是什麼
     getItemClass: async function(item) {
@@ -1818,6 +1965,8 @@ export default {
     await this.getwarnData();
     //取得循環資料
     await this.getCircleData();
+    await this.getSeedlingData();//取得苗清單
+    await this.getaccList();//帳號清單
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
