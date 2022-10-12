@@ -3,8 +3,8 @@
  -->
 <template>
     <div>
-        <h1 style="color:white;">養殖設定</h1>
-        <span ></span>
+        <!-- <h1 style="color:white;">養殖設定</h1>
+        <span ></span> -->
         <v-row dense class="mx-14">
             <!-- 下拉 -->
             <v-col cols="12">
@@ -79,6 +79,11 @@ export default {
     components: {
         seedlings
     },
+    head(){
+    return{
+      title:'養殖設定'
+    }
+  },
     data() {
         return {
             //templateform

@@ -238,6 +238,11 @@ export default {
   components: {
     WaterQuality_Vcharts
   },
+  head(){
+    return{
+      title:'指標資料明細'
+    }
+  },
   data() {
     return {
       req: this.$route.query,

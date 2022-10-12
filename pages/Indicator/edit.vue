@@ -510,6 +510,11 @@ export default {
   // components: {
   //   WaterQuality_Vcharts
   // },
+  head(){
+    return{
+      title:'指標資料修改'
+    }
+  },
   data() {
     return {
       captchaDialog:false,

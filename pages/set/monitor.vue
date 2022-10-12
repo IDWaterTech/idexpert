@@ -558,6 +558,11 @@ const agent = new https.Agent({
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return {
+      title:"監測管理",
+    }
+  },
   data() {
     return {
       headers: [

@@ -552,6 +552,11 @@ import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return{
+      title:'重要紀事'
+    }
+  },
   data() {
     return {
       focus: "",

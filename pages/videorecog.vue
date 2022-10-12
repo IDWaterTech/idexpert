@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-row dense align="center">
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <h2 class="white--text">影像辨識</h2>
-      </v-col>
+      </v-col> -->
       <v-col cols="12" class="cardtitle">
         <v-row>
           <!-- 養殖池 -->
@@ -149,6 +149,11 @@ export default {
   middleware: "auth",
   components: {
     beca
+  },
+  head(){
+    return{
+      title:'影像辨識'
+    }
   },
   data() {
     return {

@@ -281,7 +281,8 @@
               >
             </v-col>
             <v-col cols="12" class="text-center" style="font-size:1.2em">
-            <span style="color:red;">若已執行修改後需重新執行</span>
+            <span style="color:red;">若已執行修改後需重新執行</span><br/>
+            <span style="color:red;">✔觀察網 = (主成分*0.03) 跟 (次成分*0) 且 (排除 糖)</span>
               <!-- <v-btn
                 class="primary mb-3"
                 tile small
@@ -309,6 +310,11 @@ import _ from "lodash";
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return {
+      title:"料量設定",
+    }
+  },
   data() {
     return {
       headers: [

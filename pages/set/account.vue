@@ -502,6 +502,11 @@ const agent = new https.Agent({
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return {
+      title:'帳號管理'
+    }
+  },
   data() {
     return {
       accdata: [

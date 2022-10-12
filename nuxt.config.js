@@ -2,7 +2,7 @@ import colors from "vuetify/es5/util/colors";
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: "ID Water - %s",
+    titleTemplate: "專家系統 - %s",
     title: "專家系統",
     htmlAttrs: {
       lang: "zh-TW"

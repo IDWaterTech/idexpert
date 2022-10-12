@@ -57,6 +57,11 @@ export default {
     zw,
     setting
   },
+  head(){
+    return{
+      title:'養殖池況'
+    }
+  },
   data() {
     return {
       mapshowedit: false,

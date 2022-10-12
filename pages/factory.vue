@@ -411,6 +411,11 @@ const agent = new https.Agent({
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return {
+      title:"廠域設定",
+    }
+  },
   data() {
     return {
       rules: {

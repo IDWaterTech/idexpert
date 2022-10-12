@@ -327,6 +327,11 @@ export default {
       }
     };
   },
+  head(){
+    return {
+      title:"授權管理",
+    }
+  },
   methods: {
     expandSelect(row, expandedRows) {
       if (expandedRows.length) {

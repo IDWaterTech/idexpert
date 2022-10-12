@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h2 style="color: white">
+    <!-- <h2 style="color: white">
       料表執行
-      <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
-      <v-btn class="mx-2 my-1" to="/feed/order">料量設定</v-btn> -->
-    </h2>
+    </h2> -->
     <v-row align="center" dense>
       <!-- 選擇廠 -->
       <v-col cols="12" sm="2">
@@ -89,7 +87,7 @@
                   @click="combomarkclick(item.combo_name)"
                   label="" dense hide-details inset
                   :value="item.combo_name"
-                  
+
                 ></v-switch>
               </span>
                 <span class="text-h6 font-weight-black"
@@ -288,6 +286,11 @@ import dayjs from "dayjs";
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return {
+      title:"料表執行",
+    }
+  },
   data() {
     return {
       factoryData: [], //廠架構
@@ -506,7 +509,7 @@ export default {
         .then(res => {
           // this.feedData = res.data;
           this.totalData = res.data;
-          
+
           // this.$toast.success(`取得合計成功`, { duration: 2000 });
           console.log("取得合計API:" + res.request.responseURL);
         })
@@ -614,7 +617,7 @@ export default {
         var sub = this.showsub;
         console.log(sub);
         //扣除獨立顯示項目的量
-        
+
         children.forEach(element => {
           //主成份total
           var main_total = (element.main_items.length==0)?0:element.main_items

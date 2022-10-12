@@ -128,6 +128,11 @@ import "element-ui/lib/theme-chalk/index.css";
 export default {
   layout: "emptynologin",
   middleware: "auth",
+  head(){
+    return {
+      title:"設備設定",
+    }
+  },
   data() {
     return {
       maindata: [],
