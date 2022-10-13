@@ -1,7 +1,7 @@
 <template>
 <client-only>
   <v-app>
-    <v-main class="mainbg">
+    <v-main class="papper">
       <v-container fluid class="my-5">
         <nuxt />
       </v-container>
@@ -22,3 +22,11 @@ export default {
   },
 };
 </script>
+<style scoped>
+.papper {
+  background: url('~/assets/bg_blue_papper.jpg')
+    repeat center center fixed !important;
+    background-repeat: repeat !important;
+  background-size: cover;
+}
+</style>
