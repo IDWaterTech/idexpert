@@ -18,28 +18,12 @@
                     <v-divider></v-divider>
                     <v-card-text>
                         <seedlings v-if="modelitems.filter(x=>x.id==settingModel)[0].name=='種苗'"></seedlings>
+                        <feedTemp v-if="modelitems.filter(x=>x.id==settingModel)[0].name=='樣板'"></feedTemp>
                     </v-card-text>
                 </v-card>
             </v-col>
 
-            <v-col sm="6" class="pa-0 pr-1">
-                <v-card tile>
-                    <v-toolbar color="cyan" dark dense>
-                        <v-toolbar-title>模板清單</v-toolbar-title>
-                    </v-toolbar>
-                    <v-list dense>
-                        <!-- <v-subheader>模板清單</v-subheader> -->
-                        <v-list-item-group v-model="template_selected" color="primary">
-                            <v-list-item v-for="item in template_items" :key="item.id">
-                                <v-list-item-content>
-                                    <v-list-item-title v-text="item.text"></v-list-item-title>
-                                    <v-list-item-subtitle v-text="item.date"></v-list-item-subtitle>
-                                </v-list-item-content>
-                            </v-list-item>
-                        </v-list-item-group>
-                    </v-list>
-                </v-card>
-            </v-col>
+           
             <v-col sm="6" class="pa-0">
                 
                 <v-card class="mx-auto" tile min-height="100">
@@ -73,11 +57,12 @@
 </template>
 
 <script>
-import seedlings from "@/pages/breeding/seedlings.vue";
+import seedlings from "@/pages/breeding/seedlings.vue";//種苗
+import feedTemp from "@/pages/breeding/feedTempSetting.vue";//樣板設定
 export default {
     layout: "emptynologin",
     components: {
-        seedlings
+        seedlings,feedTemp
     },
     head(){
     return{
@@ -90,35 +75,14 @@ export default {
             valid:true,
             templatemode:'add',
             template_isdisabled:true,
-            //---
-            template_selected: 1,
-            template_items: [],
             //下拉
             settingModel:1,
-            modelitems:[{id:1,name:'種苗'},{id:2,name:'苗2'}]
+            modelitems:[{id:1,name:'種苗'},{id:2,name:'樣板'}]
         };
     },
     methods: {
-        getTemplateData: function () {
-            var data = [
-                { id: 1, text: "養殖模板A", date: "2020/01/01" },
-                { id: 2, text: "養殖模板B", date: "2020/01/01" },
-                { id: 3, text: "養殖模板C", date: "2020/01/01" }
-            ];
-            this.template_items = data;
-            // var url=`${this.$store.state.mydata.gobal_api.apiUrl}/????????????/`;
-            // await this.$axios
-            //   .get(url,{ params: para },)
-            //   .then(res => {
-            //     this.template_items = res.data;
-            //   })
-            //   .finally(() => {
-            //     /* 不論失敗成功皆會執行 */ this.tableloading = false;
-            //   });
-        }
+        
     },
-    mounted() {
-        this.getTemplateData();
-    },
+   
 };
 </script>
