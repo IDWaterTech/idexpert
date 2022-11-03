@@ -5,6 +5,7 @@
       <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
     <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn> -->
     </h2>
+    <!-- <span style="color:wheat;">{{combo_sorted}}</span> -->
     <v-row align="center">
       <!-- 選擇廠 -->
       <v-col cols="12" md="3">
@@ -139,7 +140,7 @@
           <v-col cols="12" sm="4"
             ><v-autocomplete
               v-model="item.feed_combo_id"
-              :items="combo"
+              :items="combo_sorted"
               dense
               hide-details
               filled
@@ -148,7 +149,23 @@
               item-value="id"
               label="選擇飼料(套餐)"
               @change="setformula_val(item)"
-            ></v-autocomplete
+            >
+            <template v-slot:item="data">
+              {{data.item.name_ch}}
+              <span class="ml-3" style="color:red;" v-if="data.item.is_absoluteTop">
+                <!-- <v-icon color="red">mdi-new-box</v-icon> -->
+                <v-btn class="pa-0"  x-small outlined color="red darken-3" style="color:#C62828 !important;" disabled width="30">new</v-btn>
+                
+              </span>
+              <span class="ml-3" v-else>
+                <!-- <v-chip x-small outlined color="amber darken-3" label v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-chip> -->
+                <v-btn class="pa-0" x-small outlined color="amber darken-3" style="color:#FF8F00 !important;" disabled width="30"  v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-btn>
+              <!-- <v-progress-circular :rotate="360" :value="(data.item.usage_count)?data.item.usage_count:0" color="teal">
+                {{ (data.item.usage_count)?data.item.usage_count:0 }}
+              </v-progress-circular> -->
+            </span>
+            </template>
+            </v-autocomplete
           ></v-col>
           <!-- <div v-if="item.combo"> -->
           <!-- {{item}}
@@ -406,6 +423,51 @@ export default {
       //事件
       eventSetData:[],
     };
+  },
+  computed:{
+    combo_sorted(){
+      // let nowDate =  dayjs(new Date())
+      //   .add(-7, "day")
+      //   .format("YYYY-MM-DD");
+      //   console.log(nowDate);
+      var data = this.combo.sort(function(a,b){return (a.created_time > b.created_time)?1:-1;});
+      let days=-7;
+      var ddd = new Date(Date.now() + days * 24*60*60*1000);
+      //PART 1先做小於指定日期(7天內)的部分
+      var data_part1 = data.filter(x=>new Date(x.created_time)>=ddd).sort(function(a,b){
+        var a1 = new Date(a.created_time);
+        var b1 = new Date(b.created_time);
+        a['is_absoluteTop']= true;
+        b['is_absoluteTop']= true;
+        if (a1 > b1) {  return -1; }
+        if (a1 < b1) { return 1 }
+        if (a1 == b1) { return 0 }
+      });
+      //part 2做計數最大的排上面 先排序usage_count
+      var data_part2 = data.filter(x=>new Date(x.created_time)<ddd).sort(function(a,b){
+        var a1 = a.usage_count;
+        var b1 = b.usage_count;
+        if (a1 > b1) { return -1 }
+        if (a1 < b1) { return 1 }
+        if (a1 == b1) { return 0 }
+      });
+      var data_final = data_part1.concat(data_part2);
+      // //a 是第2個，b 是當前這個, return 1 b(當前值)放到後面 -1不換，相等為0
+      // var result = data.sort(function(a,b){
+      // //   let days=-7;
+      // //  var ddd = new Date(Date.now() + days * 24*60*60*1000);
+      //   var bb = new Date(b.created_time);
+      //   // var aa = new Date(aa.created_time);
+      //   if(bb >= ddd){
+      //     console.log("★★★★★★★★★★★★★★★★",b.created_time);
+      //     //7天內的項目(b會大於ddd)，愈接近現在，數值會愈大
+      //     return 1;
+      //   }else{
+      //     return -1;
+      //   }
+      // });
+      return  data_final;
+    }
   },
   methods: {
     // 飼料表設定-清單
@@ -866,7 +928,8 @@ export default {
     dataclear: async function() {
       this.imptimeidx = null;
       await this.getarchitecture(); //取得廠架構
-    }
+    },
+    
   },
 
   async mounted() {
@@ -882,6 +945,7 @@ export default {
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+    
   }
 };
 </script>
