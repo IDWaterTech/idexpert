@@ -1,29 +1,39 @@
 <template>
     <div>
         <v-btn outlined color="primary" disabled block>MODE:{{templatemode}}</v-btn>
-        <v-row class="mt-2">
-            <v-col cols="12">
+        <v-row class="mt-2" no-gutters >
+            <v-col cols="12" v-if="templatemode!='cycleedit'">
                 <v-form ref="mainform">
-                <v-row dense class="text-center">
-                    <!-- <v-col cols="2"></v-col> -->
-                    <v-spacer></v-spacer>
-                    <v-col cols="5">
-                        <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require" label="樣板名稱(中)" clearable></v-text-field>
-                    </v-col>
-                    <v-col cols="3">
-                        <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require" label="樣板名稱(英)" clearable></v-text-field>
-                    </v-col>
-                    <v-col cols="3">
-                        <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable></v-text-field>
-                    </v-col>
-                    <v-divider vertical></v-divider>
-                    <v-col cols="1">
-                        <v-btn tile icon x-large color="primary" title="儲存樣板" :disabled="!(tempMain.name_ch && tempMain.name_en)" @click="saveTemp">
-                            <v-icon>mdi-content-save</v-icon>
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-form>
+                    <v-row dense class="text-center">
+                        <!-- <v-col cols="2"></v-col> -->
+                        <v-col cols="12"></v-col>
+                        <v-spacer></v-spacer>
+                        <v-col cols="4">
+                            <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require"
+                                label="樣板名稱(中)" clearable></v-text-field>
+                        </v-col>
+                        <v-col cols="3">
+                            <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require"
+                                label="樣板名稱(英)" clearable></v-text-field>
+                        </v-col>
+                        <v-col cols="3">
+                            <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable></v-text-field>
+                        </v-col>
+                        
+                        <v-col cols="1" v-if="templatemode=='add'">
+                            <v-btn tile icon x-large color="primary" title="儲存樣板"
+                                :disabled="!(tempMain.name_ch && tempMain.name_en)" @click="saveTemp">
+                                <v-icon>mdi-content-save</v-icon>
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="1" v-if="templatemode=='edit'">
+                            <v-btn tile icon x-large color="primary" title="儲存編輯"
+                                :disabled="!(tempMain.name_ch && tempMain.name_en)" @click="saveEdit">
+                                <v-icon>mdi-content-save</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-form>
             </v-col>
             <!-- 主要樣版內容 -->
             <v-col cols="12">
@@ -46,7 +56,7 @@
                             </v-col>
                             <v-col>
                                 <v-card :color="mitem.color" dark>
-        
+            
                                     <v-card-title class="text-h6">
                                         {{ mitem.text }}
                                     </v-card-title>
@@ -54,8 +64,7 @@
                                         <!-- 選定模式會出現不同欄位 -->
                                         <v-data-table light :footer-props="footerProps"
                                             :headers="headers.filter(x => x.showmode.includes(templatemode))"
-                                            :items="(mainItems.filter(x => x.phase_id == mitem.id).length == 1) ? mainItems.filter(x => x.phase_id == mitem.id)[0].stepList : []"
-                                           >
+                                            :items="(mainItems.filter(x => x.phase_id == mitem.id).length == 1) ? mainItems.filter(x => x.phase_id == mitem.id)[0].stepList : []">
                                             <template v-slot:top>
                                                 <v-toolbar flat>
                                                     <v-btn small icon color="green"
@@ -63,29 +72,28 @@
                                                         <v-icon>mdi-plus</v-icon>
                                                     </v-btn>
                                                     <v-divider class="mx-4" inset vertical></v-divider>
-        
+            
                                                     <v-spacer></v-spacer>
                                                 </v-toolbar>
                                             </template>
                                             <template v-slot:[`item.actions`]="{ index }">
-                                                <v-btn small icon color="green" title="在下方新增一列"
-                                                    @click="addsubitem(mitem.id,index)">
+                                                <v-btn small icon color="green" title="在下方新增一列" @click="addsubitem(mitem.id,index)">
                                                     <v-icon>mdi-table-row-plus-after</v-icon>
                                                 </v-btn>
                                             </template>
                                             <template v-slot:[`item.udactions`]="{ index }">
-                                                <v-btn small icon color="green" title="編輯">
-                                                    <v-icon>mdi-circle-edit-outline</v-icon>
-                                                </v-btn>
+                                                <!-- <v-btn small icon color="green" title="編輯">
+                                                                                    <v-icon>mdi-circle-edit-outline</v-icon>
+                                                                                </v-btn> -->
                                                 <v-btn small icon color="red" title="刪除" @click="delsubitem(mitem.id, index)">
                                                     <v-icon>mdi-delete-circle-outline</v-icon>
                                                 </v-btn>
                                             </template>
                                         </v-data-table>
-        
+            
                                         <!-- <v-btn :color="item.color" class="mx-0" outlined>
-                                            Button
-                                        </v-btn> -->
+                                                                            Button
+                                                                        </v-btn> -->
                                     </v-card-text>
                                 </v-card>
                             </v-col>
@@ -97,7 +105,7 @@
         <v-dialog v-model="dialog.additem" max-width="500px">
             <v-form ref="additem">
                 <v-card>
-                    <v-card-title>add</v-card-title>
+                    <v-card-title>加入步驟</v-card-title>
                     <v-card-text>
                         <v-autocomplete v-model="stepitem.id" @change="selectStep" clearable dense filled :items="stepdata" item-text="name_ch"
                             item-value="id">
@@ -139,6 +147,47 @@ export default {
         templatemode: {
             type: String,
             default: "add"
+        },
+        passObj:{
+            type: Object,
+            default: function () {
+                return {
+                    tempMain: {
+                        id: undefined,
+                        name_ch: undefined,
+                        name_en: undefined,
+                        remark: undefined,
+                        created_user: undefined,
+                        created_time: undefined,
+                        updated_user: undefined,
+                        updated_time: undefined,
+                    },
+                    tempContent: [
+                        // {
+                        //     phase_id: 1,
+                        //     phase_name: 空池,
+                        //     stepList: [
+                        //         {
+                        //             step_id: 1,
+                        //             step_name: 新增循環
+                        //         },
+                        //         {
+                        //             step_id: 2,
+                        //             step_name: 設備正常
+                        //         },
+                        //         {
+                        //             step_id: 3,
+                        //             step_name: 消毒養殖池
+                        //         },
+                        //         {
+                        //             step_id: 4,
+                        //             step_name: 擺曝氣盤
+                        //         }
+                        //     ],
+                        // }
+                    ]
+                };
+            }
         }
     },
     data() {
@@ -219,19 +268,20 @@ export default {
             },
             //table
             headers: [
-                { text: '新增', value: 'actions', sortable: false, showmode: ['add', 'edit'] },
+                { text: '新增', value: 'actions', sortable: false, showmode: ['add', 'edit','cycleedit'] },
                 { text: "step_id", value: "step_id", groupable: false, showmode: ['add', 'edit'] },
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
-                { text: "項目/動作", value: "step_name", groupable: false, showmode: ['add', 'edit'] },
-                { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit'] },
-                { text: "確認時間", value: "checktime", groupable: false, showmode: ['edit'] },
-                { text: "結果", value: "result", groupable: false, showmode: ['edit'] },
-                { text: "訊息", value: "msg", groupable: false, showmode: ['edit'] },
+                { text: "項目/動作", value: "step_name", groupable: false, showmode: ['add', 'edit','cycleedit'] },
+                { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
+                { text: "執行時間", value: "executed_date", groupable: false, showmode: ['cycleedit'] },
+                { text: "結果", value: "result", groupable: false, showmode: ['edit2'] },
+                { text: "訊息", value: "msg", groupable: false, showmode: ['edit2'] },
                 { text: '編輯', value: 'udactions', sortable: false, showmode: ['add', 'edit'] },
             ],
             mainItems: [{
                 phase_id: 1,
-                phase_item: "空池",
+                phase_name: "空池",
+                executed_date:undefined,
                 stepList: [
                     // { id: 1, stepName: "測試", step_exec: "yahoo", sub_check: "google", checktime: "2022/01/01", result: "no no", msg: "hello" },
                     // { id: 2, stepName: "測試2", step_exec: "yahoo2", sub_check: "google2", checktime: "2022/01/01", result: "no no2", msg: "hello2" }
@@ -252,6 +302,24 @@ export default {
             //step modestepmode
             stepmode:'add',
             stepformedit:{name_ch:undefined,name_en:undefined,remark:undefined,created_user:undefined},//階段項目 for 新增、編輯用
+        }
+    },
+    created(){
+       console.log("created");
+        if(this.templatemode=="add"){
+            debugger;
+        }
+        if(this.templatemode=="edit"){
+            this.tempMain = this.passObj.tempMain;
+            this.mainItems = this.passObj.tempContent;
+            // tempMain :  this.tempMain,
+            //        tempContent: this.mainItems
+        }
+        if(this.templatemode=="cycleedit"){
+            this.tempMain = this.passObj.tempMain;
+            this.mainItems = this.passObj.tempContent;
+            // tempMain :  this.tempMain,
+            //        tempContent: this.mainItems
         }
     },
     methods: {
@@ -288,6 +356,16 @@ export default {
                         .then(res => {
                             if(res.data=='修改成功'){
                                 this.dialog.phaseform = false;
+                                var stepformedit = this.stepformedit;
+                                //同步把畫面上的資料修改成一致
+                                this.mainItems.forEach(element => {
+                                    var step = element.stepList;
+                                    step.filter(x=>x.step_id==id).forEach(stepele => {
+                                        stepele.step_name = stepformedit.name_ch;
+                                    });
+                                });
+                                //this.stepformedit 要把同id所有名稱
+                                this.stepitem.id = undefined;
                                 this.getstepdata();
                                 this.$toast.success("修改成功", { duration: 2000 });
                             }else{
@@ -341,15 +419,71 @@ export default {
                     }
                     this.dialog.phaseform = true;              
         },
-        //儲存樣板
+        //
+        updateouterAction:function(val){
+            this.$emit("action", val);
+        },
+        //儲存編輯
+        saveEdit:async function(){
+            if(this.$refs.mainform.validate()){
+                if(confirm('是否儲存編輯？')==false){
+                    return;
+                }
+                this.tempMain.updated_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                var id = this.tempMain.id;
+                var para ={
+                   tempMain :  this.tempMain,
+                   tempContent: this.mainItems
+                }
+                await this.$axios
+                        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
+                        .then(res => {
+                            if(res.data=='修改成功'){
+                                this.$toast.success("修改成功", { duration: 2000 });
+                                this.updateouterAction('done');
+                            }else{
+                                this.$toast.error("修改樣板失敗:" + res.data, { duration: 2000 });
+                            }
+
+                            console.log("修改樣板API:" + res.request.responseURL);
+                        })
+                        .catch(error => {
+                            this.$toast.error("error:" + error, { duration: 2000 });
+                        })
+                        .finally(() => {
+                        });
+
+            }
+        },
+        //新增樣板
         saveTemp:async function(){
             if(this.$refs.mainform.validate()){
-                this.tempMain.create_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                this.tempMain.created_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
                 var para ={
                    tempMain :  this.tempMain,
                    tempContent: this.mainItems
                 }
                 console.log(para);
+                await this.$axios
+                        .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`, para)
+                        .then(res => {
+                            if(res.data=='新增成功'){
+                                // this.dialog.phaseform = false;
+                                // this.getstepdata();
+                                this.$toast.success("新增成功", { duration: 2000 });
+                                this.updateouterAction('done');
+                            }else{
+                                this.$toast.error("新增樣板失敗:" + res.data, { duration: 2000 });
+                            }
+
+                            console.log("新增樣板API:" + res.request.responseURL);
+                        })
+                        .catch(error => {
+                            this.$toast.error("error:" + error, { duration: 2000 });
+                        })
+                        .finally(() => {
+                        });
+
             }
 
         },
@@ -409,7 +543,7 @@ export default {
                 var itemName = this.items.filter(x=>x.id == phaseid)[0].text;
                 var main_forPush = {
                     phase_id: phaseid,
-                    phase_item:itemName,
+                    phase_name:itemName,
                     stepList:[]
                 };
                 this.mainItems.push(main_forPush);
