@@ -623,13 +623,13 @@ export default {
       ],
       //資料範圍
       datarange: [
-        { level: 1, name: "廠" },
+        { level: 1, name: "場" },
         { level: 2, name: "區" },
         { level: 3, name: "池" }
       ],
       level: 1,
       //treeselect
-      poolid: ["研發一廠_1"],
+      poolid: ["研發一場_1"],
       maindata: [],
       //起訖日
       sdate: dayjs(new Date())
@@ -647,7 +647,7 @@ export default {
         ended_date:undefined,
         stime:"00:00",
         etime:"00:00",
-        factory_id:[],//廠id
+        factory_id:[],//場id
         pond_area_id:[],//區域id
         pond_id:[],//池id
         event_level_id:3,//事件等級
@@ -678,7 +678,7 @@ export default {
   },
   async mounted() {
     this.$refs.calendar.checkChange();
-    //取得整廠架構資料
+    //取得整場架構資料
     await this.getMainData();
     //取得警戒等級
     await this.getEventLevelData();
@@ -903,7 +903,7 @@ export default {
     getMainData: async function() {
       let reqid = this.poolid;
       let getedItem = {};
-      //取得整廠架構資料
+      //取得整場架構資料
       //visible寫死名稱含^=false，寫死池的狀態=無=false
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
@@ -1019,7 +1019,7 @@ export default {
         ended_date:undefined,
         stime:"00:00",
         etime:"00:00",
-        factory_id:[],//廠id
+        factory_id:[],//場id
         pond_area_id:[],//區域id
         pond_id:[],//池id
         event_level_id:3,//事件等級
@@ -1048,7 +1048,7 @@ export default {
         ended_date:this.selectedEvent.end.substr(0,10),
         stime:(this.selectedEvent.timed)?'00:00':this.selectedEvent.start.substr(-8,5),
         etime:(this.selectedEvent.timed)?'00:00':this.selectedEvent.end.substr(-8,5),
-        factory_id: [],//廠id
+        factory_id: [],//場id
         pond_area_id:[],//區域id
         pond_id:[],//池id
         event_level_id:Number(this.selectedEvent.event_level_id),//事件等級
@@ -1073,7 +1073,7 @@ export default {
           var parm = {
             started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
             ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
-            factory_id: (this.edited.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
+            factory_id: (this.edited.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一場_1]
             pond_area_id: (this.edited.level==2)?this.poolidcpd_edited:null,
             pond_id: (this.edited.level==3)?this.poolidcpd_edited:null,
             event_level_id: this.edited.event_level_id,
@@ -1103,7 +1103,7 @@ export default {
           var parm = {
             started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
             ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
-            factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一廠_1]
+            factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一場_1]
             pond_area_id: (this.level==2)?this.poolidcpd_edited:null,//this.edited.poolid
             pond_id: (this.level==3)?this.poolidcpd_edited:null,//this.edited.poolid
             event_level_id: this.edited.event_level_id,

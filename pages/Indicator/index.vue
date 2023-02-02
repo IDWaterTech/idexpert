@@ -56,14 +56,14 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
-        <!-- 選擇廠 -->
+        <!-- 選擇場 -->
         <v-col cols="12" md="2">
           <v-select
             v-model="sel_main"
             :items="maindata"
             item-value="id"
             item-text="name"
-            label="選擇廠"
+            label="選擇場"
             clearable dark dense
           >
           </v-select>
@@ -336,7 +336,7 @@ export default {
     await Promise.all(promiseArray).then(([...data]) => {
       let res = data[0]; // first promise resolved
       this.maindata = res.data;
-      console.log("廠",this.maindata);
+      console.log("場",this.maindata);
 
       //抓all項目
       res = data[1];
@@ -364,7 +364,7 @@ export default {
       let filtermain = [];
       filtermain = this.maindata;
       if (
-        //看有沒有選廠
+        //看有沒有選場
         this.sel_main != undefined &&
         this.sel_main > 0 &&
         this.maindata.length > 0

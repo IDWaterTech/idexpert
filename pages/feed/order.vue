@@ -7,7 +7,7 @@
     </h2>
     <!-- <span style="color:wheat;">{{combo_sorted}}</span> -->
     <v-row align="center">
-      <!-- 選擇廠 -->
+      <!-- 選擇場 -->
       <v-col cols="12" md="3">
         <v-autocomplete
           dark
@@ -217,7 +217,7 @@
           <span v-if="imptimeidx"
             >帶入的資料時間：{{ sdate }}-{{ imptimeidx
             }}<v-btn class="error mx-2" @click="delimpsubmit"
-              >刪除此廠[{{ imptimeidx }}]資料</v-btn
+              >刪除此場[{{ imptimeidx }}]資料</v-btn
             ></span
           >
           <v-spacer></v-spacer>
@@ -402,8 +402,8 @@ export default {
         }
       ],
       has_observe: false,
-      factoryData: [], //廠架構
-      factoryid: "", //廠id
+      factoryData: [], //場架構
+      factoryid: "", //場id
       combo: [],
       //---日曆
       menu_date: false,
@@ -656,7 +656,7 @@ export default {
           //
         });
     },
-    //取得廠架構
+    //取得場架構
     getarchitecture: async function() {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
@@ -666,7 +666,7 @@ export default {
           this.factoryid = res.data[0].id;
           var item = [];
           res.data.forEach(element => {
-            //[{id:1,level:"1",name:一廠,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
+            //[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
             if (element.hasOwnProperty("node")) {
               const factory_id = element.id;
               for (let i = 0; i < element.node.length; i++) {
@@ -690,7 +690,7 @@ export default {
                   }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
                 ele.node
                   .filter(x => x.visible == true)
-                  .map(x => (x.factory_id = factory_id)); //把廠id放入
+                  .map(x => (x.factory_id = factory_id)); //把場id放入
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
 
@@ -710,10 +710,10 @@ export default {
             }
           });
           this.desserts = item;
-          console.log("取得廠架構API:" + res.request.responseURL);
+          console.log("取得場架構API:" + res.request.responseURL);
         })
         .catch(error => {
-          this.$toast.error(`取得廠架構失敗:${error}`, {
+          this.$toast.error(`取得場架構失敗:${error}`, {
             duration: 2000
           });
         })
@@ -732,7 +732,7 @@ export default {
       };
       if (
         confirm(
-          `是否刪除所有資料\n注意：包含已確認執行的資料!!!\n廠：${factory_name}\n時間：${parm.feed_time}`
+          `是否刪除所有資料\n注意：包含已確認執行的資料!!!\n場：${factory_name}\n時間：${parm.feed_time}`
         )
       ) {
         debugger;
@@ -778,7 +778,7 @@ export default {
       //         id: 115, //池id
       //         area_name: "武曲",
       //         pond_name: "A1",
-      //         factory_id: 1, //廠id
+      //         factory_id: 1, //場id
       //         level: "1", //不需要
       //         visible: true,
       //         initial_val: 111, //投餵量
@@ -879,7 +879,7 @@ export default {
       await this.dataclear(); //歸零
       var data = item.data;
       this.imptimeidx = item.time; //time即index
-      this.factoryid = data[0].factory_id; //第1筆資料即為首選廠
+      this.factoryid = data[0].factory_id; //第1筆資料即為首選場
       var desserts = this.desserts;
       
       for (let idx = 0; idx < data.length; idx++) {
@@ -927,7 +927,7 @@ export default {
     //清除資料
     dataclear: async function() {
       this.imptimeidx = null;
-      await this.getarchitecture(); //取得廠架構
+      await this.getarchitecture(); //取得場架構
     },
     
   },
@@ -935,7 +935,7 @@ export default {
   async mounted() {
     await this.eventSetGet();//取得事件清單
     await this.getcombodata(); //取得套餐清單(飼料設定)
-    await this.getarchitecture(); //取得廠架構
+    await this.getarchitecture(); //取得場架構
     //表格group預設是false
     let table = this.$refs.feedtable;
     let keys = Object.keys(table.$vnode.componentInstance.openCache);

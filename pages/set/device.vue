@@ -310,7 +310,7 @@ export default {
             this.poolName = getedItem.name;
             console.log(getedItem);
           }
-          console.log("廠 API:" + res.request.responseURL);
+          console.log("場 API:" + res.request.responseURL);
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });

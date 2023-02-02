@@ -290,7 +290,7 @@ export default {
     getMainData: async function () {
       let reqid = this.poolid;
       let getedItem = {};
-      //取得整廠架構資料
+      //取得整場架構資料
       //visible寫死名稱含^=false，寫死池的狀態=無=false
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
@@ -317,7 +317,7 @@ export default {
     }
   },
   async mounted() {
-    //取得整廠架構資料
+    //取得整場架構資料
     await this.getMainData();
   },
   async created() {

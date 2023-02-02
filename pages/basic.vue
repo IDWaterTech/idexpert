@@ -9,7 +9,7 @@
           <v-container fluid>
             <v-row v-if="showmp && sel_main">
               <v-col cols="12" v-if="sel_main">
-                <img v-img :src="mpurl" width="100%" :alt="maindata[sel_main - 1].name" class="grey lighten-2" />
+                <img v-img :src="mpurl" width="100%"  class="grey lighten-2" />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -17,7 +17,7 @@
                 <v-card class="pa-1 mainbg" tile height="300">
                   <v-row class="mx-1">
                     <v-col cols="12">
-                      <v-select v-model="sel_main" :items="maindata" item-value="id" item-text="name" placeholder="選擇廠"
+                      <v-select v-model="sel_main" :items="maindata" item-value="id" item-text="name" placeholder="選擇場"
                         @change="sel_main > 0 ? '' : (showmp = false)" clearable filled>
                         <v-btn icon color="teal lighten-2" @click="showmpFun" v-if="sel_main" slot="prepend">
                           <v-icon size="30">mdi-image</v-icon>
@@ -69,7 +69,7 @@
                         class="mx-1" dense></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" align-self="center" class="text-center">
-                      <!-- 可能同池名，在不同廠，所以value= name -->
+                      <!-- 可能同池名，在不同場，所以value= name -->
                       <v-btn  tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">確認</v-btn>
                     </v-col>
                   </v-row>
@@ -620,7 +620,7 @@ export default {
       ],
       currenttab: "水質監測",
       tree: [],
-      initiallyOpen: ["研發一廠"],
+      initiallyOpen: ["研發一場"],
       files: {
         html: "mdi-language-html5",
         js: "mdi-nodejs",
@@ -636,10 +636,10 @@ export default {
       },
       items2: [
         {
-          name: "研發 0 廠"
+          name: "研發 0 場"
         },
         {
-          name: "研發 1 廠",
+          name: "研發 1 場",
           pond_area: [
             {
               name: "武曲",
@@ -1045,7 +1045,7 @@ export default {
       // console.log("maindata node count:",this.maindata[0].node.length);
 
       if (
-        //看有沒有選廠
+        //看有沒有選場
         this.sel_main != undefined &&
         this.sel_main > 0 &&
         this.maindata.length > 0
@@ -1069,7 +1069,7 @@ export default {
       let filterarea = _.cloneDeep(this.maindata);
       //filterarea = this.maindata;
 
-      //先篩廠
+      //先篩場
       if (
         this.sel_main != undefined && //非空
         this.sel_main > 0 && //有選到

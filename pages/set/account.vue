@@ -73,7 +73,7 @@
                   </span>
                   <br />
                   <span>
-                    <span>所屬廠別：</span>
+                    <span>所屬場別：</span>
                     <v-chip
                       class="ma-2"
                       label
@@ -317,7 +317,7 @@
                       v-model="addform.factory_id"
                       filled
                       multiple
-                      placeholder="所屬廠別"
+                      placeholder="所屬場別"
                     ></v-autocomplete>
                   </v-col>
                   <v-col cols="12">
@@ -378,7 +378,7 @@
             <v-card-subtitle>{{ edititem.username }}</v-card-subtitle>
             <v-card-text>
               <v-text-field v-model="edititem.value" v-if="edititem.item!='factory_id'"> </v-text-field>
-              <!-- 開放接收哪些廠的通知 -->
+              <!-- 開放接收哪些場的通知 -->
               <v-autocomplete
                       v-if="edititem.item=='factory_id'"
                       v-model="edititem.value"
@@ -533,7 +533,7 @@ export default {
         { text: "單位", value: "department", width: 150 },
         { text: "職位", value: "position", width: 150 },
         { text: "狀態", value: "is_active", width: 150},
-        { text: "所屬廠別", value: "factory_id", width: 150 }
+        { text: "所屬場別", value: "factory_id", width: 150 }
       ],
       addDialog: false,
       valid: true,
@@ -541,7 +541,7 @@ export default {
         require: [v => !!v || "*必要項目"],
         eqpwd: [v => v == this.addform.password || "*密碼不一致"]
       },
-      accColsHide: ["單位", "職位", "狀態","所屬廠別"], //隱藏欄位、或需要特殊建立的欄位
+      accColsHide: ["單位", "職位", "狀態","所屬場別"], //隱藏欄位、或需要特殊建立的欄位
       editDialog: false,
       editedData: {}, //編輯中的資料
       expands: [], //Expand only one line into the current line id
@@ -991,7 +991,7 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getaccList();
     await this.getorg();
-    await this.getmainData(); //get 廠資料
+    await this.getmainData(); //get 場資料
   }
 };
 </script>

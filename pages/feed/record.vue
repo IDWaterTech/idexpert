@@ -4,7 +4,7 @@
       料表執行
     </h2> -->
     <v-row align="center" dense>
-      <!-- 選擇廠 -->
+      <!-- 選擇場 -->
       <v-col cols="12" sm="2">
         <v-autocomplete
           dark
@@ -293,8 +293,8 @@ export default {
   },
   data() {
     return {
-      factoryData: [], //廠架構
-      factoryid: "", //廠id
+      factoryData: [], //場架構
+      factoryid: "", //場id
       //---日曆
       menu_sdate: false,
       sdate: "",
@@ -367,7 +367,7 @@ export default {
       }
       return wbout;
     },
-    //取得廠架構
+    //取得場架構
     getarchitecture: async function() {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
@@ -377,7 +377,7 @@ export default {
           this.factoryid = res.data[0].id;
           //   var item = [];
           //   res.data.forEach(element => {
-          //     //#[{id:1,level:"1",name:一廠,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
+          //     //#[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
           //     if (element.hasOwnProperty("node")) {
           //       const factory_id = element.id;
           //       for (let i = 0; i < element.node.length; i++) {
@@ -394,17 +394,17 @@ export default {
           //           }); //#把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
           //         ele.node
           //           .filter(x => x.visible == true)
-          //           .map(x => (x.factory_id = factory_id)); //把廠id放入
+          //           .map(x => (x.factory_id = factory_id)); //把場id放入
           //         var getdata = ele.node.filter(x => x.visible == true);
           //         item.push(..._.cloneDeep(getdata));
           //       }
           //     }
           // });
           //   this.desserts = item;
-          console.log("取得廠架構API:" + res.request.responseURL);
+          console.log("取得場架構API:" + res.request.responseURL);
         })
         .catch(error => {
-          this.$toast.error(`取得廠架構失敗:${error}`, {
+          this.$toast.error(`取得場架構失敗:${error}`, {
             duration: 2000
           });
         })
@@ -758,7 +758,7 @@ export default {
     }
   },
   async mounted() {
-    await this.getarchitecture(); //取得廠架構
+    await this.getarchitecture(); //取得場架構
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視

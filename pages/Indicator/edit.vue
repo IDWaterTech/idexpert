@@ -55,14 +55,14 @@
           ></v-date-picker>
         </v-menu>
       </v-col>
-      <!-- 選擇廠(必選) -->
+      <!-- 選擇場(必選) -->
       <v-col cols="12" md="2">
         <v-select
           v-model="sel_main"
           :items="maindata"
           item-value="id"
           item-text="name"
-          placeholder="選擇廠(必選)" hide-details
+          placeholder="選擇場(必選)" hide-details
           clearable dark
           class="primary"
         >
@@ -596,11 +596,10 @@ export default {
      }).catch(err => {
         alert("失敗：" + err.message);
       });
-    //抓廠資料
+    //抓場資料
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
       .then(res => {
-        console.log("廠");
         this.maindata = res.data;
         this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
         this.sel_main =
@@ -646,7 +645,7 @@ export default {
       let filtermain = [];
       filtermain = this.maindata;
       if (
-        //看有沒有選廠
+        //看有沒有選場
         this.sel_main != undefined &&
         this.sel_main > 0 &&
         this.maindata.length > 0

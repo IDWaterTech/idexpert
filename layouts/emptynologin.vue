@@ -39,8 +39,8 @@
             v-show="
               ($auth.$state.user &&
                 superaccount.includes($auth.$state.user.email) &&
-                 ['廠域設定','觀察網影像'].includes(item.title)) ||
-                !['廠域設定','觀察網影像'].includes(item.title)
+                 ['場域設定','觀察網影像'].includes(item.title)) ||
+                !['場域設定','觀察網影像'].includes(item.title)
             "
           >
             <v-list-item-icon>

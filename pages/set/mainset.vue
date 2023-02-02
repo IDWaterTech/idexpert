@@ -126,7 +126,7 @@ export default {
       adddia: false,
       level: "", //目前在第幾層
       nowplace: { level: "", name: "" },
-      levelitem: ["廠", "區域", "養殖池"],
+      levelitem: ["場", "區域", "養殖池"],
       addItems: []
       //   tableData: []
     };

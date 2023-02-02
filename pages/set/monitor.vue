@@ -122,7 +122,7 @@
                 ><span style="width:80px;" slot="prepend"
                       >啟用警示</span
                     ></v-switch>
-                  <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬廠別+項目啟用通知警報+養殖池狀態限定(<strong>放養中、預備放苗、集中暫養、放養中(鎖排汙)</strong>)</span>
+                  <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定(<strong>放養中、預備放苗、集中暫養、放養中(鎖排汙)</strong>)</span>
                 </v-col>
               <!-- 原本的min max設定 -->
               <!-- <v-col cols="12" md="5">
@@ -354,7 +354,7 @@
                 ><span style="width:80px;" slot="prepend"
                       >啟用警示</span
                     ></v-switch>
-                  <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬廠別+項目啟用通知警報+養殖池狀態限定(<strong>放養中、預備放苗、集中暫養、放養中(鎖排汙)</strong>)</span>
+                  <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定(<strong>放養中、預備放苗、集中暫養、放養中(鎖排汙)</strong>)</span>
                 </v-col>
                 <!-- 原本的min max設定 -->
                 <!-- <v-col cols="12" md="5">

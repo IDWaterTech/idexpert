@@ -9,7 +9,7 @@
               :items="maindata"
               item-value="id"
               item-text="name"
-              placeholder="選擇廠"
+              placeholder="選擇場"
               clearable dark
               @change="
                 () => {
@@ -210,7 +210,7 @@
                 : "刪除"
             }}-{{
               edititem.class == "main"
-                ? "廠"
+                ? "場"
                 : edititem.class == "area"
                 ? "區域"
                 : "養殖池"
@@ -413,7 +413,7 @@ export default {
   middleware: "auth",
   head(){
     return {
-      title:"廠域設定",
+      title:"場域設定",
     }
   },
   data() {
@@ -438,7 +438,7 @@ export default {
       },
       edititem: {
         type: "add", //add新增還是del刪除
-        class: "", //新增廠、區、池
+        class: "", //新增場、區、池
         value: ""
       },
       edititem_pool: {
@@ -714,8 +714,8 @@ export default {
     },
     delsubmit: async function(location, value) {
       if (confirm(`是否刪除 ${value}`)) {
-        //  location, //main廠、區、水池
-        //  value //研發一廠
+        //  location, //main場、區、水池
+        //  value //研發一場
 
         let id = "";
         let apiUrl = "";
@@ -820,7 +820,7 @@ export default {
       filtermain = this.maindata;
 
       if (
-        //看有沒有選廠
+        //看有沒有選場
         this.sel_main != undefined &&
         this.sel_main > 0 &&
         this.maindata.length > 0
