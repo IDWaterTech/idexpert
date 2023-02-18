@@ -201,6 +201,7 @@
       <!-- has_observation 放置觀察網 -->
       <template v-slot:[`item.has_observation`]="{ item }">
         <v-simple-checkbox v-model="item.has_observation"></v-simple-checkbox>
+        <div title='觀察網飼料量=投餵量*觀察網飼料百分比'>{{ item.observation_feed_pct }}%</div>
         <!-- <span v-if="item.is_executed" style="color:red;">已執行</span> -->
       </template>
       <template v-slot:[`header.has_observation`]="{ header }">
@@ -362,7 +363,7 @@ export default {
           text: "事件",
           value: "feed_event_settings_id",
           align: "center",
-          width: 300,
+          width: 200,
           sortable: false
         },
         {
@@ -422,6 +423,7 @@ export default {
       formula:"",
       //事件
       eventSetData:[],
+      feed_pct_list:[],
     };
   },
   computed:{
@@ -656,8 +658,28 @@ export default {
           //
         });
     },
+    //取得的觀察網飼料百分比
+    getfeedpct:async function(){
+      let pondurl = `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`;
+      await this.$axios
+        .get(pondurl)
+        .then(res=>{
+          if(res.data.length>0){
+            this.feed_pct_list = res.data;
+          }
+        })
+        .catch(error => {
+          this.$toast.error(`取得觀察網飼料百分比失敗:${error}`, {
+            duration: 2000
+          });
+        });
+        
+    },
     //取得場架構
     getarchitecture: async function() {
+      //抓水池的觀察網飼料百分比
+      await this.getfeedpct();
+
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
         .get(url)
@@ -691,6 +713,12 @@ export default {
                 ele.node
                   .filter(x => x.visible == true)
                   .map(x => (x.factory_id = factory_id)); //把場id放入
+                
+                ele.node.filter(x=>x.visible==true)//把飼料百分比放入
+                    .map(x=>(
+                      x.observation_feed_pct = (this.feed_pct_list.filter(y=>y.id==x.id).length==1)?this.feed_pct_list.filter(y=>y.id==x.id)[0].observation_feed_pct:0
+                    ));
+                
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
 
@@ -735,7 +763,6 @@ export default {
           `是否刪除所有資料\n注意：包含已確認執行的資料!!!\n場：${factory_name}\n時間：${parm.feed_time}`
         )
       ) {
-        debugger;
         console.log(parm);
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-batch-delete/`;
         await this.$axios
@@ -881,12 +908,14 @@ export default {
       this.imptimeidx = item.time; //time即index
       this.factoryid = data[0].factory_id; //第1筆資料即為首選場
       var desserts = this.desserts;
-      
+      let thisfeed_pct_list = this.feed_pct_list;
       for (let idx = 0; idx < data.length; idx++) {
         //資料塞進去
         const pond_id = data[idx].pond_id;
         data[idx].is_executed = false;//強制把執行狀態刪除
         var dessitem = desserts.filter(x => x.pond_id == pond_id);
+        //帶入觀察網百分比
+        data[idx]['observation_feed_pct'] = (thisfeed_pct_list.filter(y=>y.id==data[idx]['pond_id']).length==1)?thisfeed_pct_list.filter(y=>y.id==data[idx]['pond_id'])[0].observation_feed_pct:0;
         if (dessitem.length == 0) {
           //沒有這id，塞進去
           desserts.push(data[idx]);
@@ -914,9 +943,9 @@ export default {
         var cnt = data.filter(x => x.factory_id == factory).length;
         tostmsg.push(`${facname}帶入${cnt}筆資料`);
       });
-      console.log(tostmsg);
+      
       this.$toast.success(`${tostmsg.join("<br/>")}`, { duration: 2000 });
-      // this.$toast.success(`帶入${data.length}筆資料`, { duration: 2000 });
+      
       this.desserts = desserts;
       this.importdialog = false;
     },

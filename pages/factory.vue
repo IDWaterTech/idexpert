@@ -149,10 +149,11 @@
       <v-spacer></v-spacer>
     </v-row>
     <v-row>
+      <v-col cols="12"><v-checkbox v-model="sortbyid" dark label="以id排序"></v-checkbox></v-col>
       <v-col
         cols="12"
         sm="3"
-        v-for="item in pooldata"
+        v-for="item in ((sortbyid)?pooldata_sorted:pooldata)"
         :key="item.id"
       >
       <!-- v-for="item in pooldata.filter(
@@ -351,6 +352,37 @@
                   <span style="width:70px;" slot="prepend">感測到水底高度</span>
                 </v-text-field>
               </v-col>
+              <!-- 底面積 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.bottom_area"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  required
+                >
+                  <span style="width:70px;" slot="prepend">底面積</span>
+                </v-text-field>
+              </v-col>
+              <!-- 觀察觀飼料百分比 -->
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.observation_feed_pct"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  required
+                >
+                  <span style="width:70px;" slot="prepend">觀察觀飼料百分比</span>
+                  <span style="width:10px;" slot="append">%</span>
+                </v-text-field>
+              </v-col>
             </v-row>
           </v-card-text>
           <v-card-text>
@@ -449,6 +481,7 @@ export default {
       poolvalid: true,
       mainvalid: true,
       itemname: [
+        //estimated_num初始投放隻數、num_per_unit放養密度
         { name: "id", text: "id", visible: true },
         { name: "name", text: "名稱", visible: true },
         { name: "volume", text: "體積(頓)", visible: true },
@@ -458,8 +491,11 @@ export default {
         { name: "num", text: "小池數(個)", visible: true },
         { name: "aeration_tray_num", text: "曝氣盤數(個)", visible: true },
         { name: "state", text: "狀態", visible: true },
-        { name: "video_url", text: "觀察網影像", visible: true }
-      ]
+        { name: "video_url", text: "觀察網影像", visible: true },
+        { name: "observation_feed_pct", text: "觀察觀飼料百分比", visible: true },
+        { name: "bottom_area", text: "底面積", visible: true }
+      ],
+      sortbyid:false,
     };
   },
   async created() {
@@ -838,6 +874,10 @@ export default {
         });
       });
       return area;
+    },
+    pooldata_sorted:function(){
+     var temp  = _.cloneDeep(this.pooldata); 
+     return temp.sort((a1,b1)=>{return (a1.id<b1.id)?-1:1});
     }
   }
 };
