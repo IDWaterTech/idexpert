@@ -40,6 +40,7 @@ export default {
     internal: {
       // apiUrl: "https://www.idwatertech.com/api", //正式站，統一不要有後斜線
       apiUrl: "https://www.idwatertech.com:8011/api", //測試站
+      apiKbUrl: "https://www.idwatertech.com:8811/api", //知識庫
       apiIIS82: "https://www.idwatertech.com:82",
       apiVideo8443: "https://www.idwatertech.com:8443"
     },

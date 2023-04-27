@@ -14,6 +14,10 @@
         plus IoT technologies to solve three major problems of traditional
         aquaculture.
       </div>
+      <!-- <div>
+        <a href="./kb" target="_blank" style="text-decoration:none; "><v-icon dark>mdi-brain</v-icon></a>
+        
+      </div> -->
     </v-col>
     <v-col cols="12">
       <div v-show="!this.$auth.$state.loggedIn">
@@ -105,6 +109,7 @@
 </template>
 
 <script>
+
 export default {
   layout: "emptynologin",
   methods: {

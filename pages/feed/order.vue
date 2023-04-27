@@ -94,7 +94,7 @@
     <v-data-table
       ref="feedtable"
       :headers="headers"
-      :items="desserts.filter(x => x.factory_id == factoryid)"
+      :items="(showFeeding)?desserts.filter(x => x.factory_id == factoryid && [`放養中`,`放養中(鎖排汙)`].includes(x.state)):desserts.filter(x => x.factory_id == factoryid)"
       item-key="pond_id"
       sort-by="pond_name"
       group-by="area_name"
@@ -222,6 +222,11 @@
             ></span
           >
           <v-spacer></v-spacer>
+          <v-switch
+        v-model="showFeeding"
+        dense hide-details
+        :label="`只顯示放養中`"
+      ></v-switch>
           <div style="width:350px"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(20+5)]，預設為相乘" filled dense hide-details clearable></v-text-field></div>
           <v-divider vertical class="mx-2"></v-divider>
           <v-btn color="primary" icon @click="dataclear"
@@ -402,6 +407,7 @@ export default {
           name: "A2"
         }
       ],
+      showFeeding:false,//顯示養殖中
       has_observe: false,
       factoryData: [], //場架構
       factoryid: "", //場id
@@ -679,7 +685,41 @@ export default {
     getarchitecture: async function() {
       //抓水池的觀察網飼料百分比
       await this.getfeedpct();
-
+      
+      var wc_state=[];
+      var tf_state=[];
+      var zw_state=[];
+      //#region 池狀態
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`)
+        .then(res => {
+          var keys = Object.keys(res.data);
+          for (var key in keys) {
+            key = keys[key];
+            wc_state.push(...res.data[key]);
+          }
+        });
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/tf-state/`)
+        .then(res => {
+          var keys = Object.keys(res.data);
+          for (var key in keys) {
+            key = keys[key];
+            tf_state.push(...res.data[key]);
+          }
+        });
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/zw-state/`)
+        .then(res => {
+          var keys = Object.keys(res.data);
+          for (var key in keys) {
+            key = keys[key];
+            var keys2 = Object.keys(res.data[key]);
+            for (var key2 in keys2) {
+              key2 = keys2[key2];
+              zw_state.push(...res.data[key][key2]);  
+            }
+            
+          }
+        });
+      //#endregion
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
         .get(url)
@@ -718,23 +758,26 @@ export default {
                     .map(x=>(
                       x.observation_feed_pct = (this.feed_pct_list.filter(y=>y.id==x.id).length==1)?this.feed_pct_list.filter(y=>y.id==x.id)[0].observation_feed_pct:0
                     ));
-                
+                //把池狀態放入
+                //wc
+                ele.node.filter(x => x.visible == true && x.area_name=='武曲')
+                  .map(x => (
+                    x.state = (wc_state.filter(y => y.id == x.pond_id).length == 1) ? (wc_state.filter(y => y.id == x.id)[0].state) : ""
+                  ));
+                //tf
+                ele.node.filter(x => x.visible == true && x.area_name=='天府')
+                  .map(x => (
+                    x.state = (tf_state.filter(y => y.id == x.pond_id).length == 1) ? (tf_state.filter(y => y.id == x.id)[0].state) : ""
+                  ));
+                //zw
+                ele.node.filter(x => x.visible == true && x.area_name=='紫微')
+                  .map(x => (
+                    x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
+                  ));
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
 
-                // if(ele.hasOwnProperty("node")){
-                //   debugger;
-                //   item.push(..._.cloneDeep(getdata));
-                // }
               }
-              // element.node.forEach(ele => {
-              //   if(ele.hasOwnProperty("node")){
-              //     ele.node.filter(x=>x.visible==true).map(x=>x.area=ele.name);//.map(x=>x.factory=element.name);
-              //     debugger;
-              //     var getdata = ele.node.filter(x=>x.visible==true);
-              //     item.push(..._.cloneDeep(getdata));
-              //   }
-              // });
             }
           });
           this.desserts = item;

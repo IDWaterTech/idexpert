@@ -71,6 +71,7 @@
           <!-- <nuxt-link class="mx-3" to="/videorecog" style="color:white;text-decoration:none;"><v-icon>mdi-video</v-icon>觀察網影像辨識(測試)</nuxt-link> -->
           <weather></weather>
           <market-price class="hidden-sm-and-down"></market-price>
+          <kb-btn v-if="false"></kb-btn>
           <v-spacer></v-spacer>
           <!-- <v-btn
             icon
@@ -107,7 +108,9 @@
 
 <script>
 import _ from "lodash";
+import kbBtn from '~/components/kbBtn.vue';
 export default {
+  components: { kbBtn },
   // async beforeCreate() {
   //   //登入時判別身份分別導頁
   //   if (this.$auth.$state.loggedIn) {
