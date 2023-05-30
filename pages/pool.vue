@@ -604,41 +604,45 @@
                                   </v-text-field>
                                 </v-col>
                                 <v-col cols="12">
-                                  <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id"
+                                  <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" hide-details
                                     item-text="name_ch" clearable :rules="rules.require">
                                     <span slot="prepend" style="width:80px">選擇種苗</span>
                                   </v-select>
                                 </v-col>
                                 <v-col cols="12">
-                                  <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
+                                  <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username" hide-details
                                     :filter="filterincharge" clearable :rules="rules.require">
                                     <span slot="prepend" style="width:80px">養殖負責</span>
                                     <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                                     <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                                   </v-autocomplete>
                                 </v-col>
+                                <v-col>
+                                  <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch" :rules="rules.require"><span style="width:80px;" class="pa-0 ma-0 text-center" slot="prepend">水源</span></v-select>
+                                  <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense hide-details filled class="mt-5" :rules="rules.require"><span style="width:80px;" class="pa-0 ma-0 text-center" slot="prepend">鹽度(度)</span></v-text-field>
+                                </v-col>
                                 <v-col cols="12">
                                   <v-row>
                                     <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_catty">
+                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_catty" hide-details>
                                         <span slot="prepend" style="width:80px">預計收成斤數(kg)(選)</span>
                                       </v-text-field>
                                     </v-col>
                                     <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate">
+                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" hide-details>
                                         <span slot="prepend" style="width:80px">預計存活率(%)(選)</span>
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
                                 </v-col>
                                 <v-col cols="12">
-                                  <v-text-field filled dense v-model="addparm.remark"><span slot="prepend"
+                                  <v-text-field filled dense v-model="addparm.remark" hide-details><span slot="prepend"
                                       style="width:80px">備註(選)</span>
                                   </v-text-field>
                                 </v-col>
                                 <v-col cols="12">
                                   <!-- 樣板 -->
-                                  <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id"
+                                  <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
                                     clearable @change="tempChange">
                                     <span slot="prepend"  style="width:100px">選擇樣板(選)</span>
                                   </v-autocomplete>
@@ -684,6 +688,14 @@
                           </el-table-column>
                           <!-- id -->
                           <el-table-column label="id" prop="id" align="center"></el-table-column>
+                          <!-- 水源 -->
+                          <el-table-column label="水源" prop="water_source2" align="center">
+                            <template slot-scope="scope">
+                              <span style="margin-left: 10px">
+                                {{  (optData.WaterSource.filter(x=>x.name_en==scope.row.water_source).length==0)?scope.row.water_source:optData.WaterSource.filter(x=>x.name_en==scope.row.water_source)[0].name_ch  }}
+                              </span>
+                            </template>
+                          </el-table-column>
                           <!-- 養殖天數 -->
                           <el-table-column label="養殖天數" prop="days" align="center"></el-table-column>
                           <!-- 名稱/批號 -->
@@ -1027,6 +1039,7 @@ export default {
       passObj:{tempMain:{},tempContent:[]},
       feededitmode:'cycleedit',
       editKey:0,
+      optData:{},//選項
     };
   },
   methods: {
@@ -1443,6 +1456,31 @@ export default {
           this.$toast.error("accList api ERR：" + error, { duration: 2000 });
         });
     },
+    //取得選項-水源、水源鹽度
+    getOptData:async function(){
+      let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
+            await this.$axios.get(url).then(res => {
+                if(res.status==200){
+                    this.optData = res.data;
+                    
+                    //ObservationData
+                    this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+
+                    //BacteriaData
+                    this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                    this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                    this.optData.IsVirusInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                    this.optData.IsBacteriumInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                    
+                    console.log("opt",this.optData);
+                }else{
+                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                }
+            })
+            .catch(error=>{
+                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            });
+    },
     //新增循環
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
@@ -1826,6 +1864,7 @@ export default {
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getWeather(); //氣象
+    await this.getOptData(); //選項
   }
 };
 </script>
