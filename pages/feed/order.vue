@@ -689,6 +689,7 @@ export default {
       var wc_state=[];
       var tf_state=[];
       var zw_state=[];
+      var sp_state=[];
       //#region 池狀態
       await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`)
         .then(res => {
@@ -719,6 +720,21 @@ export default {
             
           }
         });
+        await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/sp-state/`)
+        .then(res => {
+          var keys = Object.keys(res.data);
+          
+          for (var key in keys) {
+            key = keys[key];
+            var keys3 = Object.keys(res.data[key]);
+            for (var key3 in keys3) {
+              key3 = keys3[key3];
+              sp_state.push(res.data[key][key3]);  
+            }
+            
+          }
+        });
+        debugger;
       //#endregion
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
@@ -774,6 +790,12 @@ export default {
                   .map(x => (
                     x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
                   ));
+                //sp
+                ele.node.filter(x => x.visible == true && x.area_name=='救地球')
+                  .map(x => (
+                    x.state = (sp_state.filter(y => y.id == x.pond_id).length == 1) ? (sp_state.filter(y => y.id == x.id)[0].state) : ""
+                  ));
+
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
 
@@ -781,6 +803,7 @@ export default {
             }
           });
           this.desserts = item;
+          console.log("完整資料：",this.desserts);
           console.log("取得場架構API:" + res.request.responseURL);
         })
         .catch(error => {

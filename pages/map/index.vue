@@ -31,6 +31,11 @@
               :key="cmpkey.zw"
               :showedit="mapshowedit"
             ></zw>
+            <sp
+              v-if="tab.title == '救地球'"
+              :key="cmpkey.sp"
+              :showedit="mapshowedit"
+            ></sp>
             <setting
               class="mt-3"
               v-if="tab.title == '狀態設定'"
@@ -47,6 +52,7 @@
 import wc from "@/pages/map/wc.vue";
 import tf from "@/pages/map/tf.vue";
 import zw from "@/pages/map/zw.vue";
+import sp from "@/pages/map/sp.vue";
 import setting from "@/pages/map/setting.vue";
 export default {
   layout: "emptynologin",
@@ -55,6 +61,7 @@ export default {
     wc,
     tf,
     zw,
+    sp,
     setting
   },
   head(){
@@ -85,6 +92,12 @@ export default {
           color: "#E040FB"
         },
         {
+          icon: "mdi-earth",
+          title: "救地球",
+          to: "/map/sp",
+          color: "#E040FB"
+        },
+        {
           icon: "mdi-cog-box",
           title: "狀態設定",
           to: "/map/setting",
@@ -92,7 +105,7 @@ export default {
         }
       ],
       currenttab: "武曲",
-      cmpkey: { wc: 0, tf: 0, zw: 0 }
+      cmpkey: { wc: 0, tf: 0, zw: 0 ,sp: 0}
     };
   },
   methods: {
@@ -101,6 +114,7 @@ export default {
       this.cmpkey.wc += 1;
       this.cmpkey.tf += 1;
       this.cmpkey.zw += 1;
+      this.cmpkey.sp += 1;
     }
   },
   async created() {
