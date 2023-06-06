@@ -2,18 +2,9 @@
   <div>
     <v-row>
       <v-col cols="12"
-        ><h2>{{ title }}</h2>
+        ><h1 class="white--text">{{ title }}</h1>
       </v-col>
     </v-row>
-    <v-select
-      v-model="slt_1"
-      :items="slt_1_items"
-      label="Select"
-      v-on:change="slt1_chg"
-      clearable
-      single-line
-      v-if="false"
-    ></v-select>
     <!-- 外部更新資料必須顯示在DOM裡面才會更新資料，不得已只好放著，但不顯示 -->
     <div v-show="false">{{ defaultitem }}</div>
     <!-- <span v-if= 'chtData_new_1 != undefined && chtData_new_1.rows.length == 0'>查無資料</span> -->
@@ -28,6 +19,8 @@
       :judge-width="true"
       v-show="chtData_new_1.rows.length > 0"
       :mark-line="markLine"
+      :colors="myColors"
+       :after-config="afterConfig"
     ></ve-line>
     <div class="text-center" style="font-size: 1.2em;" v-show="chtData_new_1.rows.length <= 0">查無資料</div>
   </div>
@@ -49,7 +42,7 @@ export default {
       //水質---------------------------------------------------------------------------------------
       set: {
         legendAlias: {},
-        stack: {}
+        stack: {},
       },
       slt_1_items: [], //下拉所有項目
       slt_1: "", //下拉的項目-選到的
@@ -64,20 +57,30 @@ export default {
       },
       chtData_new_1: { columns: [], rows: [] },
       show: false,
+      myColors:['#91c7ae','#ffa1aa','#ff9900','#FFAB91','#fff8b8','#BCAAA4','#8BC34A','cyan','#B388FF'],
+      //#91c7ae default ffa1aa 淺紅  #ff9900 橘 FFAB91 淺橘 fff8b8 淺黃 BCAAA4 淺咖 cyan 亮藍綠 8BC34A 亮綠 #B388FF 淺紫
       chartExtend: {
         legend: {
           selected: this.defaultitem,
           textStyle:{
-            color:'#FFEB3B'
+            color:'#FFEB3B',
+            fontSize:18
           },
-          
+          icon:'roundRect',//round,rec,roundRect
         },
+        splitLine: {
+          lineStyle: {
+            opacity: 0.2,
+          },
+        },
+      
         xAxis:{
-          axisLabel: { color: "#fff" }
+          axisLabel: { color: "#fff" },
+          
         },
         yAxis:{
           axisLabel: { color: "#fff" }
-        }
+        },
       },
       chartEvent: {
         click: function(e) {
@@ -207,6 +210,7 @@ export default {
     this.chartExtend.legend.selected = this.defaultitem; //選到什麼欄位
     //水質----------
     this.chtData_new_1.columns = [...this.chtData_Ora_1.columns]; //設定欄位
+    
     //直接參考，不會動到舊資料
     let array = [];
     // this.chtData_Ora_1.rows.forEach(element => {
@@ -214,6 +218,7 @@ export default {
     // });
     // this.chtData_new_1.rows = array;
     this.chtData_new_1.rows = this.sheetdata;
+    console.log("chtData_new_1:",this.chtData_new_1);
   },
   computed: {
     sheetdata: function() {
@@ -277,6 +282,14 @@ export default {
     }
   },
   methods: {
+    afterConfig (options) {
+      if(options.series.length>0){
+        options.series.forEach(element => {
+          element.lineStyle = {width:4,/*type: 'dashed'*/};
+        });
+      }
+      return options;
+    },
     slt1_chg() {
       if (this.slt_1) {
         this.chtData_new_1.columns = ["default", this.slt_1];
