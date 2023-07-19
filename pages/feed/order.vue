@@ -91,6 +91,11 @@
       <v-spacer></v-spacer>
     </v-row>
     <!-- 表格 -->
+    <!-- {{ factoryid }}<br/>
+    desserts filtered<br/>
+    {{ desserts.filter(x => x.factory_id == factoryid && [`放養中`,`放養中(鎖排汙)`].includes(x.state)) }}<br/>
+    desserts<br/>
+    {{ desserts }} -->
     <v-data-table
       ref="feedtable"
       :headers="headers"
@@ -734,7 +739,7 @@ export default {
             
           }
         });
-        debugger;
+        // debugger;
       //#endregion
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
@@ -766,6 +771,9 @@ export default {
                       (x.has_observation = false),
                       (x.is_executed = false);
                   }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
+
+                
+                
                 ele.node
                   .filter(x => x.visible == true)
                   .map(x => (x.factory_id = factory_id)); //把場id放入
@@ -791,14 +799,20 @@ export default {
                     x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
                   ));
                 //sp
+                // if(ele.node.filter(x => x.visible == true && x.area_name=='救地球').length>0){
+                // }
                 ele.node.filter(x => x.visible == true && x.area_name=='救地球')
                   .map(x => (
                     x.state = (sp_state.filter(y => y.id == x.pond_id).length == 1) ? (sp_state.filter(y => y.id == x.id)[0].state) : ""
                   ));
+                
+                //  if(ele.node.filter(x=>x.area_name=='救地球').length>0){
+                //   debugger;
+                // }
 
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
-
+                  
               }
             }
           });
@@ -860,7 +874,7 @@ export default {
           });
       }
     },
-    //取得帶入的資料
+    //取得帶入的資料-取得料表
     getimptimedata: async function() {
       // this.imptimedata = [
       //   {
@@ -976,6 +990,7 @@ export default {
       var desserts = this.desserts;
       let thisfeed_pct_list = this.feed_pct_list;
       for (let idx = 0; idx < data.length; idx++) {
+        
         //資料塞進去
         const pond_id = data[idx].pond_id;
         data[idx].is_executed = false;//強制把執行狀態刪除
@@ -983,6 +998,7 @@ export default {
         //帶入觀察網百分比
         data[idx]['observation_feed_pct'] = (thisfeed_pct_list.filter(y=>y.id==data[idx]['pond_id']).length==1)?thisfeed_pct_list.filter(y=>y.id==data[idx]['pond_id'])[0].observation_feed_pct:0;
         if (dessitem.length == 0) {
+
           //沒有這id，塞進去
           desserts.push(data[idx]);
         } else {
@@ -994,7 +1010,20 @@ export default {
           //   data[idx].pond_name,
           //   data[idx]
           // );
+          if(data[idx].area_name=='救地球'){
+            // debugger;
+          }
           var deleteidx = desserts.indexOf(dessitem[0]);
+          //有帶入的資料與原本的不同，不能直接刪然後塞上，要補回資料
+          data[idx].feed_event_settings_id = dessitem[0].feed_event_settings_id;
+          data[idx].has_observation = dessitem[0].has_observation;
+          data[idx].is_executed = dessitem[0].is_executed;
+          data[idx].observation_feed_pct = dessitem[0].observation_feed_pct;
+          data[idx].state = dessitem[0].state;
+          data[idx].id = dessitem[0].pond_id;
+          data[idx].level = dessitem[0].level;
+          data[idx].visible = dessitem[0].visible;
+
           desserts.splice(deleteidx, 1);
           desserts.push(data[idx]);
           // desserts.filter(x => x.id == id)[0] = _.cloneDeep(data[idx]);
