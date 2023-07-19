@@ -121,11 +121,11 @@
             >確認</v-btn
           >
         </v-col>
+        <v-col cols="12" md="2" class="white--text">顯示最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;"></el-input-number></v-col>
+        <v-col cols="12" md="2" class="white--text">顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;"></el-input-number></v-col>
       </v-row>
       <v-row>
         <v-col cols="12" class="white--text">
-          顯示最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0"></el-input-number>
-          顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0"></el-input-number>
           <WaterQuality_Vcharts
             :rowsData="item.items"
             xColName="inspected_date"

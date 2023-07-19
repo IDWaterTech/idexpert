@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col cols="12"
-        ><h1 class="white--text">{{ title }}</h1>
+        ><h1 class="white--text">{{ title }}池</h1>
       </v-col>
     </v-row>
     <!-- 外部更新資料必須顯示在DOM裡面才會更新資料，不得已只好放著，但不顯示 -->
