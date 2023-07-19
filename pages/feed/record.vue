@@ -725,7 +725,8 @@ export default {
               // var value = pre + element.feed_amount;
               var value = pre + element.total_amount;
               sub_items[element.name] =
-                Math.round((value + Number.EPSILON) * 1) / 1;
+                Math.round((value + Number.EPSILON) * 100) / 100;
+              console.log("sub_items:",element.name,sub_items[element.name],value);
             });
           }
           const tot =
