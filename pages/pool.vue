@@ -633,6 +633,26 @@
                                         <span slot="prepend" style="width:80px">預計存活率(%)(選)</span>
                                       </v-text-field>
                                     </v-col>
+                                    <v-col cols="6">
+                                      <v-text-field filled dense type="number" v-model.number="addparm.cn" hide-details>
+                                        <span slot="prepend" style="width:80px">目標CN比(選)</span>
+                                      </v-text-field>
+                                    </v-col>
+                                    <v-col cols="6">
+                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" hide-details>
+                                        <span slot="prepend" style="width:80px">預測FCR(選)</span>
+                                      </v-text-field>
+                                    </v-col>
+                                    <v-col cols="6">
+                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_adg" hide-details>
+                                        <span slot="prepend" style="width:80px">預測ADG(選)</span>
+                                      </v-text-field>
+                                    </v-col>
+                                    <v-col cols="6">
+                                      <v-text-field filled dense type="number" v-model.number="addparm.initial_length" hide-details>
+                                        <span slot="prepend" style="width:80px">放養初始長度(選)</span>
+                                      </v-text-field>
+                                    </v-col>
                                   </v-row>
                                 </v-col>
                                 <v-col cols="12">
@@ -704,6 +724,15 @@
                           <el-table-column label="養殖密度" prop="num_per_unit" align="center"></el-table-column>
                           <!-- 預估放養隻數 -->
                           <el-table-column label="預估放養隻數" prop="total" align="center"></el-table-column>
+                          <!-- 目標CN比 -->
+                          <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
+                          <!-- 預測FCR -->
+                          <el-table-column label="預測FCR" prop="estimated_fcr" align="center"></el-table-column>
+                          <!-- 預測ADG -->
+                          <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column>
+                          <!-- 放養初始長度 -->
+                          <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column>
+
                           <el-table-column label="養殖負責" prop="person_in_charge" align="center">
                           </el-table-column>
                           <el-table-column fixed="right" label="操作" width="80">
