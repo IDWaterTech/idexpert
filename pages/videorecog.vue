@@ -70,7 +70,7 @@
 
       <v-col cols="12" v-if="dataClass == '觀察網'">
         <el-table ref="recogtable" style="width:100%" :data="recogData.items" highlight-current-row
-          :header-cell-style="tableHeaderStyle" max-height="500" class="primary" :header-cell-name="cellClass">
+          :header-cell-style="tableHeaderStyle" max-height="600" class="primary" :header-cell-name="cellClass">
           <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
           <!-- @current-change="handleCurrentChange"
           @select="handleSelectionChange" -->
@@ -80,39 +80,20 @@
               {{ scope.row.inspected_date }}
             </div>
           </el-table-column>
-          <el-table-column label="投餌前飼料圖(已辨識)" prop="feed_img_before_bait" align="center">
+          <el-table-column label="觀察網飼料圖(已辨識)" prop="feed_img" align="center">
             <div slot-scope="scope">
-              <img v-img="{ group: scope.row.id }" :src="scope.row.feed_img_before_bait" width="100%" />
-              <!-- <el-image :src="scope.row.feed_img_before_bait"  width="100%">
-                <div slot="error" class="image-slot">
-                  <img :src="images.feedfish" width="64" />
-                </div>
-              </el-image> -->
+              <img v-img="{ group: scope.row.id }" :src="scope.row.feed_img" width="100%" />
             </div>
           </el-table-column>
-          <el-table-column label="投餌後飼料圖(已辨識)" prop="feed_img_after_bait" align="center">
+          <el-table-column label="觀察網蝦子圖(已辨識)" prop="shrimp_img" align="center">
             <div slot-scope="scope">
-              <img v-img="{ group: scope.row.id }" :src="scope.row.feed_img_after_bait" width="100%" />
-
+              <img v-img="{ group: scope.row.id }" :src="scope.row.shrimp_img" width="100%" />
             </div>
           </el-table-column>
-          <el-table-column label="投餌後蝦子圖(已辨識)" prop="shrimp_img_after_bait" align="center">
+          <el-table-column label="面積比例(指標/網子面積比)" align="left">
             <div slot-scope="scope">
-              <img v-img="{ group: scope.row.id }" :src="scope.row.shrimp_img_after_bait" width="100%" />
-            </div>
-          </el-table-column>
-          <el-table-column label="網子面積(cm²)" prop="net_size" align="center"></el-table-column>
-          <el-table-column label="投餌飼料面積(cm²)" align="center">
-            <div slot-scope="scope">
-              前：{{ scope.row.feed_size_before_bait }} <br />
-              後：{{ scope.row.feed_size_after_bait }}
-            </div>
-          </el-table-column>
-          <el-table-column label="飼料比例(投餌後飼料/投餌前飼料)" prop="feed_percentage" align="center">
-          </el-table-column>
-          <el-table-column label="蝦子面積" prop="shrimp_size" align="center">
-            <div slot-scope="scope">
-              {{ scope.row.shrimp_size }}
+              飼料：{{ scope.row.feed_percentage }} <br />
+              蝦子：{{ scope.row.shrimp_percentage }}
             </div>
           </el-table-column>
           <el-table-column label="檢測時間" prop="inspected_date" align="center"></el-table-column>
