@@ -50,6 +50,7 @@
               " dark
               ><v-icon>mdi-delete</v-icon></v-btn
             >
+            <v-btn dark color="info" icon :disabled="!sel_main" @click="showdialog('','ip')"><v-icon>mdi-ip</v-icon></v-btn>
           </v-col>
         </v-row>
 
@@ -430,6 +431,17 @@
         </v-card>
       </v-form>
     </v-dialog>
+    <!-- 場 ip設定 -->
+    <v-dialog v-model="dialog.ip" width="500px">
+      <v-form ref="ipform" v-model="ipvalid" lazy-validation>
+        <v-card>
+          <v-card-title>ip設定</v-card-title>
+          <v-card-text>
+            <span>tttttttttttttttttttttttttttttttttttttttttt</span>
+          </v-card-text>
+        </v-card>
+      </v-form>
+    </v-dialog>
   </div>
 </template>
 
@@ -466,7 +478,8 @@ export default {
       pooldata: [],
       dialog: {
         main: false,
-        pool: false
+        pool: false,
+        ip:false
       },
       edititem: {
         type: "add", //add新增還是del刪除
@@ -478,6 +491,7 @@ export default {
         parm: {}
       },
       poolstat: [],
+      ipvalid:true,
       poolvalid: true,
       mainvalid: true,
       itemname: [
@@ -685,6 +699,7 @@ export default {
               : data == "edit"
               ? this.maindata.filter(x => x.id == this.sel_main)[0].name
               : ""; //add 空 del：帶項目值
+              this.dialog.main = true;
           break;
         case "area":
           this.edititem.id = this.sel_area;
@@ -701,12 +716,15 @@ export default {
               : data == "edit"
               ? this.areadata.filter(x => x.id == this.sel_area)[0].area_no
               : "";
+          this.dialog.main = true;
           break;
-        default:
+        case "ip":
+            this.dialog.ip = true;
+          default:
           break;
       }
 
-      this.dialog.main = true;
+      
     },
     showdialog_pool: function(data) {
       // if (this.$refs.poolform != undefined) {

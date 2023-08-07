@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="my-2">
-            <v-row align="center">
+            <v-row align="center" v-if="false">
                 <!-- <v-col cols="12" md="2">
                     <v-switch
                         v-model="UserData.IsSaved"
@@ -46,7 +46,101 @@
                     <v-icon @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                 </v-col>
             </v-row>
-            
+            <v-row align="center" class="text-center subtitle-1">
+                <v-col cols="12" md="2">
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100">A池<br/>儲存並查詢</v-btn>
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100" @click="setParm('a')">A池參數</v-btn>
+                    <v-autocomplete
+                        :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
+                        v-model="querrySelected"
+                        :items="querryData"
+                        item-value="created_time"
+                        dense filled
+                        hide-details
+                        @mousedown="getQuerry()"
+                        @change="importQuerry()"
+                        clearable solo
+                        class="mt-1"
+                        :disabled="this.$auth.$state.user == null"
+                    >
+                        <template slot="item" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">{{ data.item.created_time.substring( data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="append">
+                            <v-icon :disabled="!this.querrySelected" color="red">mdi-delete</v-icon>
+                            <v-icon :disabled="!this.querrySelected" color="green">mdi-pen</v-icon>
+                        </template>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="2">
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100">B池<br/>儲存並查詢</v-btn>
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100" @click="setParm('b')">B池參數</v-btn>
+                    <v-autocomplete
+                        :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
+                        v-model="querrySelected"
+                        :items="querryData"
+                        item-value="created_time"
+                        dense filled
+                        hide-details
+                        @mousedown="getQuerry()"
+                        @change="importQuerry()"
+                        clearable solo
+                        class="mt-1"
+                        :disabled="this.$auth.$state.user == null"
+                    >
+                        <template slot="item" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="3">
+                    <div class="white--text display-1" v-text="ShowPoolName"></div>
+                    <V-btn class="px-2 subtitle-1" color="orange lighten-1" style="border:1px white solid !important;" large @click="postParm()">查詢</V-btn>
+                    <V-btn class="px-2 subtitle-1" color="orange lighten-1" style="border:1px white solid !important;" large @click="resetParm()">重設</V-btn>
+                </v-col>
+                <v-col cols="12" md="2">
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100">C池<br/>儲存並查詢</v-btn>
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100" @click="setParm('c')">C池參數</v-btn>
+                    <v-autocomplete
+                        :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
+                        v-model="querrySelected"
+                        :items="querryData"
+                        item-value="created_time"
+                        dense filled
+                        hide-details
+                        @mousedown="getQuerry()"
+                        @change="importQuerry()"
+                        clearable solo
+                        class="mt-1"
+                        :disabled="this.$auth.$state.user == null"
+                    >
+                        <template slot="item" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="2">
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100">D池<br/>儲存並查詢</v-btn>
+                    <v-btn class="px-2" color="purple accent-1" large min-width="100" @click="setParm('d')">D池參數</v-btn>
+                    <v-autocomplete
+                        :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
+                        v-model="querrySelected"
+                        :items="querryData"
+                        item-value="created_time"
+                        dense filled
+                        hide-details
+                        @mousedown="getQuerry()"
+                        @change="importQuerry()"
+                        clearable solo
+                        class="mt-1"
+                        :disabled="this.$auth.$state.user == null"
+                    >
+                        <template slot="item" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="1">
+                    <v-icon @click="expandPanel(true)" title="展開" dark>mdi-view-dashboard</v-icon>
+                    <v-icon @click="expandPanel(false)" title="收縮" dark>mdi-view-stream</v-icon>
+                </v-col>
+            </v-row>
            
             
             
@@ -859,79 +953,83 @@ export default {
                     //this.getdata();
             });
         },
-        setParm: async function () {
-            this.BaseParm = {
-                "Factory": "研發一場",
-                "PondArea": "紫微",
-                "Pond": "3-2",
-                "Shape": "Rectangle",
-                //"StartedDate": "2023-05-01",
-                "WaterSource": "Groundwater",
-                "WaterSourceSalinity": 13,
-                "WaterBody": 303,
-                "Density": 200,
-                //"Days": 15
-            };
-            this.BreedingParm = {
-                "CN": 12,
-                // "EstimatedFCR": 1.6,
-                // "EstimatedADG": 0.12,
-                // "InitialLength": 0.01,
-                // "EstimatedSurvivalRate": 90
-            };
-            this.FeedParm = {
-                "Brand": "健丞",
-                "Price": 630,
-                "CrudeProteinPct": 40,
-                "Nitrogen": 16,
-                "SugarSourcePurity": 99.6,
-                "SugarSourceCarbonPct": 42,
-                "FeedCN": 7.8,
-                // "LastFeedInput": 1.255,
-                // "CumulativeFeedAmountInput": 2.525
-            };
-            this.MakeWaterParm = {
-                // "Urea": 30,
-                "UreaEffectiveConcentration": 90,
-                "BleachingPowderEffectiveConcentration": 70,
-                // "Chlorine": 30,
-                "HypoEffectiveConcentration": 95
-            };
-            this.WaterQualityData = {
-                // "Do": 6,
-                // "pH": 7.8,
-                // "Temp": 32,
-                // "Salinity": 35,
-                // "AmmoniaN": 2,
-                // "NO2": 5,
-                // "Mg": 1000,
-                // "Ca": 450,
-                // "Alk": 200,
-                // "WaterColor": "DarkGreen"
-            };
-            this.ObservationData = {
-                // "IsMoultingPeriod": false,
-                // "IntestinalColor": "Black",
-                // "HepatopancreasColor": "Dark",
-                // "MuscleColor": "Turbidity",
-                // "BodyIllnessLocation": "None",
-                // "Moulting": "Normal",
-                // "LeftoverRate": 5,
-                // "DeadShrimpRate": 0.9,
-                // "ShrimpLength": 2.5
-            };
-            this.BacteriaData = {
-                // "Biofloc": 80,
-                // "BacillusSubtilis": 4999,
-                // "VibrioAlginolyticus": 500,
-                // "VibrioCholerae": 500,
-                // "VibrioEnteritidis": 500,
-                // "VibrioVulnificus": 500,
-                // "IsEMSInfected": false,
-                // "IsEHPInfected": false,
-                // "IsVirusInfected": false,
-                // "IsBacteriumInfected": false
-            };
+        setParm: async function (poolbtn = 'a') {
+            if (poolbtn == 'a') {
+                this.BaseParm = {
+                    "Factory": "研發一場",
+                    "PondArea": "紫微",
+                    "Pond": "3-2",
+                    "Shape": "Rectangle",
+                    //"StartedDate": "2023-05-01",
+                    "WaterSource": "Groundwater",
+                    "WaterSourceSalinity": 13,
+                    "WaterBody": 303,
+                    "Density": 200,
+                    //"Days": 15
+                };
+                this.BreedingParm = {
+                    "CN": 12,
+                    // "EstimatedFCR": 1.6,
+                    // "EstimatedADG": 0.12,
+                    // "InitialLength": 0.01,
+                    // "EstimatedSurvivalRate": 90
+                };
+                this.FeedParm = {
+                    "Brand": "健丞",
+                    "Price": 630,
+                    "CrudeProteinPct": 40,
+                    "Nitrogen": 16,
+                    "SugarSourcePurity": 99.6,
+                    "SugarSourceCarbonPct": 42,
+                    "FeedCN": 7.8,
+                    // "LastFeedInput": 1.255,
+                    // "CumulativeFeedAmountInput": 2.525
+                };
+                this.MakeWaterParm = {
+                    // "Urea": 30,
+                    "UreaEffectiveConcentration": 90,
+                    "BleachingPowderEffectiveConcentration": 70,
+                    // "Chlorine": 30,
+                    "HypoEffectiveConcentration": 95
+                };
+                this.WaterQualityData = {
+                    // "Do": 6,
+                    // "pH": 7.8,
+                    // "Temp": 32,
+                    // "Salinity": 35,
+                    // "AmmoniaN": 2,
+                    // "NO2": 5,
+                    // "Mg": 1000,
+                    // "Ca": 450,
+                    // "Alk": 200,
+                    // "WaterColor": "DarkGreen"
+                };
+                this.ObservationData = {
+                    // "IsMoultingPeriod": false,
+                    // "IntestinalColor": "Black",
+                    // "HepatopancreasColor": "Dark",
+                    // "MuscleColor": "Turbidity",
+                    // "BodyIllnessLocation": "None",
+                    // "Moulting": "Normal",
+                    // "LeftoverRate": 5,
+                    // "DeadShrimpRate": 0.9,
+                    // "ShrimpLength": 2.5
+                };
+                this.BacteriaData = {
+                    // "Biofloc": 80,
+                    // "BacillusSubtilis": 4999,
+                    // "VibrioAlginolyticus": 500,
+                    // "VibrioCholerae": 500,
+                    // "VibrioEnteritidis": 500,
+                    // "VibrioVulnificus": 500,
+                    // "IsEMSInfected": false,
+                    // "IsEHPInfected": false,
+                    // "IsVirusInfected": false,
+                    // "IsBacteriumInfected": false
+                };
+                return;
+            }
+            this.$toast.error(`pool:${poolbtn}，未定義`, { duration: 2000 });
         },
         resetParm:async function(){
             this.BaseParm = {};
@@ -1032,6 +1130,16 @@ export default {
         await this.getsuggData();
         await this.getOptData();
         await this.getlightData();
+    },
+    computed: {
+        ShowPoolName(){
+            
+            var Factory = (this.BaseParm["Factory"]==undefined)?'':this.BaseParm["Factory"];
+            var PondArea = (this.BaseParm["PondArea"]==undefined)?'':this.BaseParm["PondArea"];
+            var Pond = (this.BaseParm["Pond"]==undefined)?'':this.BaseParm["Pond"];
+
+             return Factory + "_" + PondArea + "_" + Pond;
+        }
     },
     mounted() {
         
