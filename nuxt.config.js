@@ -310,7 +310,12 @@ export default {
     // [Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.
     extend(config) {
       config.resolve.alias["vue"] = "vue/dist/vue.common";
-    }
+    },
+    //解決exceeds the max of 500KB
+    // ERROR  [BABEL] Note: The code generator has deoptimised the styling of C:\Users\jianwei\Desktop\idexpert\pages\kb.vue as it exceeds the max of 500KB.
+    babel: {
+      compact: true,
+     },
   },
   generate: {
     assetsPublicPath: "./"
