@@ -8,23 +8,37 @@
         v-model="item[active]"
         v-show="item[isShow] || item.hasOwnProperty(isShow)==false"
       >
+      
         <template v-slot:activator>
-          <v-list-item-icon
-            ><v-icon>{{ item[iconName] }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>{{ item[titleName] }}</v-list-item-title>
+          <v-tooltip right>
+            <template v-slot:activator="{ on }">
+              <v-list-item-icon
+                ><v-icon v-on="on">{{ item[iconName] }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{ item[titleName] }}</v-list-item-title>
+            </template>
+            <span>{{ item[titleName] }}</span>
+          </v-tooltip>
+          
         </template>
+      
         <sidelist :myitem="item.children"  :titleName="titleName" :urlName="urlName" :active="active" :isShow="isShow"></sidelist>
       </v-list-group>
       <v-list-item :to="item[urlName]" v-else v-show="item[isShow] || item.hasOwnProperty(isShow)==false">
-        <v-list-item-icon
-          ><v-icon>{{
-            item[iconName] != undefined
-              ? item[iconName]
-              : "mdi-help-circle-outline"
-          }}</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>{{ item[titleName] }}</v-list-item-title>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <v-list-item-icon
+            ><v-icon v-on="on">{{
+              item[iconName] != undefined
+                ? item[iconName]
+                : "mdi-help-circle-outline"
+            }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>{{ item[titleName] }}</v-list-item-title>
+          </template>
+          <span>{{ item[titleName] }}</span>
+        </v-tooltip>
+        
       </v-list-item>
     </div>
   </v-list>
