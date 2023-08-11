@@ -82,7 +82,7 @@
             "
             ><v-icon>mdi-cog-outline</v-icon></v-btn
           > -->
-          <div>
+          <div v-if="false" class="switch-ip">
             <v-switch class="mt-3 mx-1"
               v-model="site" dense
               @change="changeSite"
@@ -208,7 +208,7 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="scss">
 #app {
   background: url('~/assets/bg_blue_papper.jpg')
     repeat center center fixed !important;
@@ -218,5 +218,26 @@ export default {
   background: url('~/assets/bg_blue_papper.jpg')
     repeat center center fixed !important;
   background-size: cover;
+}
+.nuxt-link-active {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  .v-icon {
+    margin-right: 4px;
+  }
+}
+.v-btn__content {
+  .v-icon,.theme--dark.v-image {
+    margin-right: 4px;
+  }
+}
+.switch-ip .v-messages{
+   display: none;
+   height: 0;
+   font-size: 1px;
+}
+.switch-ip .v-input--dense > .v-input__control > .v-input__slot {
+    margin-bottom: 8px;
 }
 </style>
