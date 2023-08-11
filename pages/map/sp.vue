@@ -3,48 +3,51 @@
     <v-row >
       <v-col
         cols="12" v-if="false"
-        class="grey lighten-2 text-center"
+        class="grey lighten-2 text-center road"
         style="font-size:1.2em;"
         >中央走道</v-col
       >
       <v-col cols="12">
-        <v-row>
+        <v-row  class="mx-0">
           <!-- A -->
           <v-col v-for="item in Object.keys(pools).filter(x=>x=='A')" cols="2" :key="item"  class="mx-0">
             <v-row>
               <v-col
-                :class="`${windowWidth < 700 ? 'text-center' : 'text-center mx-3 my-1'}`"
+                :class="`${windowWidth < 700 ? 'text-center block' : 'text-center mx-3 my-1 block'}`"
                 :style="itm.state == '無'
                     ? ''
                     : itm.state.length > 0
-                      ? `background:${getItemColor(itm.state)};border:1px solid;border-radius: 5px;`
+                      ? `background:${getItemColor(itm.state)}`
                       : `background:${getItemColor(itm.state)};`
                   "
                 v-for="(itm, idx) in pools[item]"
                 :key="idx" cols="12"
                   >
                    <mappoolelement
-                  :item="itm"
-                  :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
-                    "
-                  :showSelect="showedit"
-                  :myuser="$auth.$state.user
-                    ? $auth.$state.user.email
-                    : ''
-                    "
-                ></mappoolelement>
+                    :item="itm"
+                    :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
+                      "
+                    :showSelect="showedit"
+                    :myuser="$auth.$state.user
+                      ? $auth.$state.user.email
+                      : ''
+                      "
+                    :successDataID="successDataID"
+                    @editPool="edit($event)"
+                    @saveSuccess="saveDelete($event)"
+                  ></mappoolelement>
                 </v-col>
             </v-row>
           </v-col>
           <!-- B -->
-          <v-col v-for="item in Object.keys(pools).filter(x=>x=='B')" cols="10" :key="item"  class="mx-0 pl-5" >
+          <v-col v-for="item in Object.keys(pools).filter(x=>x=='B')" cols="10" :key="item"  class="mx-0 pl-5 colspan">
             <v-row>
               <v-col
-                :class="`${windowWidth < 700 ? 'text-center' : 'text-center mx-3 my-1'}`"
+                :class="`${windowWidth < 700 ? 'text-center block' : 'text-center mx-3 my-1 block'}`"
                 :style="itm.state == '無'
                     ? ''
                     : itm.state.length > 0
-                      ? `background:${getItemColor(itm.state)};border:1px solid;border-radius: 5px;height:110px`
+                      ? `background:${getItemColor(itm.state)};`
                       : `background:${getItemColor(itm.state)};`
                   "
                 v-for="(itm, idx) in pools[item]"
@@ -59,6 +62,9 @@
                     ? $auth.$state.user.email
                     : ''
                     "
+                  :successDataID="successDataID"
+                  @editPool="edit($event)"
+                  @saveSuccess="saveDelete($event)"
                 ></mappoolelement>
                 </v-col>
             </v-row>
@@ -69,8 +75,7 @@
         </v-col>
       <v-col
         cols="12"
-        class="text-right"
-        style="font-size:1.2em;color:white;"
+        class="text-right last-update"
         >最後更新時間：{{ MaxDate }}</v-col
       >
     </v-row>
@@ -139,31 +144,73 @@ export default {
         ]
       },
       statcolor: [
-        { name: "無", color: "white" },
-        { name: "default", color: "#AAAAAA" }
-        // { name: "放養中", color: "yellow" },
-        // { name: "集中暫養中", color: "#0070C0" },
-        // { name: "尚未洗池", color: "purple" },
-        // { name: "已清洗", color: "red" },
-        // { name: "蓄水中", color: "orange" },
-        // { name: "蓄水完畢", color: "lightgreen" },
-        // { name: "消毒中", color: "green" },
-        // { name: "做水中", color: "#F8CBAD" },
-        // { name: "預備放苗", color: "#00B0F0" },
-        // { name: "空池", color: "grey" },
+        { name: "無", color: "#D3DCE1",id: 1 },
+        { name: "default", color: "#00273E" },
+        { name: "放養中", color: "#F1E78D",id: 4 },
+        { name: "放養中(鎖排汙)", color: "#CBAAE5",id: 32 },
+        { name: " 集中暫養", color: "#8DA0E5",id: 31},
+        { name: "尚未洗池", color: "#E8DDBF",id: 6 },
+        { name: "已清洗", color: "#A8E6DB",id: 7 },
+        { name: "蓄水中", color: "#D3B280",id: 8 },
+        { name: "蓄水完畢", color: "#A5D380",id: 9 },
+        { name: "消毒中", color: "#80D3AB",id: 10 },
+        { name: "做水中", color: "#C5E8E6",id: 11 },
+        { name: "預備放苗", color: "#83C9F0",id: 12 },
+        { name: "空池", color: "#BFDAE8",id: 3 },
+        { name: "養殖審核", color: "#D3808F",id: 33 }
       ],
-      editState: false //編輯池況
+      editState: false, //編輯池況
+      editData: [],
+      successDataID:[]
     };
   },
   watch: {
     windowWidth:function(){
       return window.innerWidth;
+    },
+    successData() {
+      // 全部儲存後，需更改原本的資料以及池況還原
+      // console.log('success',this.successData);
+      if(this.successData.length>0) {
+        let keys = Object.keys(this.pools);
+        let ids = []
+        this.successData.forEach(data=>{ids.push(data.id);});
+        this.successDataID = ids;
+        // console.log('success ids',ids);
+        for(let i=0;i<keys.length;i++) {
+          for(let x=0;x<this.pools[keys[i]].length;x++) {
+            for(let y=0;y<this.successData.length;y++) {
+              if(this.pools[keys[i]][x].id == this.successData[y].id) {
+                this.pools[keys[i]][x].state = this.successData[y].value;
+                let evt = {
+                  item:{
+                    id:this.successData[y].id,
+                    value:this.successData[y].value
+                  },
+                }
+                this.saveDelete(evt);
+              }
+            }
+          }
+        }
+      }
+    },
+    showedit() {
+      // 非編輯狀態，清除原本要更改的池況狀態
+      if(!this.showedit) {
+        this.editData = [];
+        this.successDataID = [];
+      }
     }
   },
   props: {
     showedit: {
       type: Boolean,
       default: false
+    },
+    successData: {
+      type: Array,
+      default: []
     }
   },
   methods: {
@@ -177,7 +224,52 @@ export default {
       } else {
         return this.statcolor.filter(x => x.name == "default")[0].color;
       }
-    }
+    },
+    edit(evt) {
+      // console.log(evt);
+      this.isEdit = true;
+      let isInculde = false;
+      let keys = Object.keys(this.pools)
+        for(let i=0;i<keys.length;i++) {
+          for(let x=0;x<this.pools[keys[i]].length;x++) {
+            if(this.pools[keys[i]][x].id == evt.item.id) {
+              if(this.pools[keys[i]][x].state == evt.value) {
+                this.saveDelete(evt);
+                // this.$emit('saveSuccess',evt);
+              }else {
+                if(this.editData.length>0) {
+                  for(let i=0;i<this.editData.length;i++) {
+                    if(this.editData[i].id == evt.item.id && this.editData[i].value !== evt.value) {
+                      this.editData[i].value = evt.value;
+                      isInculde = true;
+                    }
+                  }
+                }
+                
+                if(!isInculde) {
+                  this.editData.push({
+                    id: evt.item.id,
+                    value: evt.value
+                  });
+                }
+                if(this.editData.length>0) {
+                  this.$emit('editPoolOuter',this.editData);
+                }
+              }
+            }
+
+          }
+        }
+      // console.log(this.editData);
+    },
+    saveDelete(evt) {
+      this.editData = this.editData.filter(x=>{
+        // console.log('tf',evt,x);
+        x.id!==evt.item.id
+      });
+      this.$emit('saveSuccess',evt);
+      // console.log('wc',this.editData);
+    },
   },
 
   async mounted() {
@@ -258,7 +350,7 @@ export default {
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
       .then(res => {
-        this.statcolor = res.data.filter(x => x.name != ""); //不提供保留項
+        // this.statcolor = res.data.filter(x => x.name != ""); //不提供保留項
       })
       .catch(error => {
         alert("error:" + error.message);
@@ -284,12 +376,12 @@ export default {
       let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
       // console.log(dayjs(minDate).format('YYYY-MM-DD HH:mm:ss'),dayjs(maxDate).format('YYYY-MM-DD HH:mm:ss'));
       return dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 td {
   font-size: 1.2em;
   text-align: center;
@@ -299,5 +391,23 @@ td {
 tr {
   height: 50px;
   max-height: 80px;
+}
+.colspan {
+  margin-bottom: -24px;
+  & >.row {
+    justify-content: space-between;
+    height: 100%;
+    margin-left: 16px;
+  }
+}
+@media (max-width: 1000px) {
+  .colspan {
+    & >.row {
+      justify-content: initial;
+    }
+    .block {
+      height: 110px;
+    }
+  }
 }
 </style>

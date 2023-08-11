@@ -5,11 +5,11 @@
         <v-row
           v-for="(item, index) in Object.keys(pools)"
           :key="index"
-          class="mx-1 mainbg"
+          class="mx-1"
         >
           <v-col
             :class="
-              `${windowWidth < 700 ? 'text-center' : 'text-center mx-3 my-1'}`
+              `${windowWidth < 700 ? 'text-center block' : 'text-center mx-3 my-1 block'}`
             "
             :style="
               itm.state == '無'
@@ -17,7 +17,7 @@
                 : itm.state.length > 0
                 ? `background:${getItemColor(
                     itm.state
-                  )};border:1px solid;border-radius: 5px;`
+                  )};`
                 : `background:${getItemColor(itm.state)};`
             "
             v-for="(itm, idx) in pools[item]"
@@ -30,20 +30,21 @@
                 "
                 :showSelect="showedit"
                 :myuser="($auth.$state.user)?$auth.$state.user.email:''"
+                :successDataID="successDataID"
+                @editPool="edit($event)"
+                @saveSuccess="saveDelete($event)"
               ></mappoolelement>
           </v-col>
         </v-row>
       </v-col>
       <v-col
         cols="12"
-        class="grey lighten-2 text-center"
-        style="font-size:1.2em;"
-        >中央走道</v-col
+        class=""
+        ><div class="grey lighten-2 text-center road">中央走道</div></v-col
       >
       <v-col
         cols="12"
-        class="text-right"
-        style="font-size:1.2em;color:white;"
+        class="text-right last-update"
         >最後更新時間：{{ MaxDate }}</v-col
       >
     </v-row>
@@ -55,8 +56,8 @@ import mappoolelement from "@/components/mapPoolElement.vue";
 import dayjs from "dayjs";
 import https from "https";
 export default {
-  layout: "emptynoheaderdrawer",
-  // middleware: "auth",
+  layout: "emptynoheaderdrawer2",
+  middleware: "auth",
   components: {
     mappoolelement
   },
@@ -86,29 +87,28 @@ export default {
           { id: "A5", name: "A5", state: "空池" }
         ]
       },
-      statcolor: [
-        { name: "default", color: "#AAAAAA" }
-        // { name: "放養中", color: "yellow" },
-        // { name: "集中暫養中", color: "#0070C0" },
-        // { name: "尚未洗池", color: "purple" },
-        // { name: "已清洗", color: "red" },
-        // { name: "蓄水中", color: "orange" },
-        // { name: "蓄水完畢", color: "lightgreen" },
-        // { name: "消毒中", color: "green" },
-        // { name: "做水中", color: "#F8CBAD" },
-        // { name: "預備放苗", color: "#00B0F0" },
-        // { name: "空池", color: "grey" }
-      ],
-      editState: false //編輯池況
+      
+      editState: false, //編輯池況
+      editData: [],
+      successDataID:[]
     };
   },
   props: {
     showedit: {
       type: Boolean,
       default: false
+    },
+    statcolor: {
+      type: Array,
+      default: []
+    },
+    successData: {
+      type: Array,
+      default: []
     }
   },
   async mounted() {
+    console.log('wc Mounted')
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
@@ -129,7 +129,8 @@ export default {
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
       .then(res => {
-        this.statcolor = res.data;
+        // console.log('getColor',res.data);
+        // this.statcolor = res.data;
       })
       .catch(error => {
         alert("error:" + error.message);
@@ -137,6 +138,7 @@ export default {
   },
   methods: {
     getItemColor: function(data) {
+      // console.log('getItemColor',data);
       if (data == "") {
         return "white";
       }
@@ -152,7 +154,52 @@ export default {
         ? !this.editState[data]
         : true;
       console.log(this.editState);
-    }
+    },
+    edit(evt) {
+      // console.log(evt);
+      this.isEdit = true;
+      let isInculde = false;
+      let keys = Object.keys(this.pools)
+        for(let i=0;i<keys.length;i++) {
+          for(let x=0;x<this.pools[keys[i]].length;x++) {
+            if(this.pools[keys[i]][x].id == evt.item.id) {
+              if(this.pools[keys[i]][x].state == evt.value) {
+                this.saveDelete(evt);
+                // this.$emit('saveSuccess',evt);
+              }else {
+                if(this.editData.length>0) {
+                  for(let i=0;i<this.editData.length;i++) {
+                    if(this.editData[i].id == evt.item.id && this.editData[i].value !== evt.value) {
+                      this.editData[i].value = evt.value;
+                      isInculde = true;
+                    }
+                  }
+                }
+                
+                if(!isInculde) {
+                  this.editData.push({
+                    id: evt.item.id,
+                    value: evt.value
+                  });
+                }
+                if(this.editData.length>0) {
+                  this.$emit('editPoolOuter',this.editData);
+                }
+              }
+            }
+
+          }
+        }
+      // console.log(this.editData);
+    },
+    saveDelete(evt) {
+      this.editData = this.editData.filter(x=>{
+        // console.log('tf',evt,x);
+        x.id!==evt.item.id
+      });
+      this.$emit('saveSuccess',evt);
+      // console.log('wc',this.editData);
+    },
   },
   computed: {
     MaxDate: function() {
@@ -174,6 +221,42 @@ export default {
       let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
       // console.log(dayjs(minDate).format('YYYY-MM-DD HH:mm:ss'),dayjs(maxDate).format('YYYY-MM-DD HH:mm:ss'));
       return dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+    }
+  },
+  watch: {
+    successData() {
+      // 全部儲存後，需更改原本的資料以及池況還原
+      // console.log('success',this.successData);
+      if(this.successData.length>0) {
+        let keys = Object.keys(this.pools);
+        let ids = []
+        this.successData.forEach(data=>{ids.push(data.id);});
+        this.successDataID = ids;
+        // console.log('success ids',ids);
+        for(let i=0;i<keys.length;i++) {
+          for(let x=0;x<this.pools[keys[i]].length;x++) {
+            for(let y=0;y<this.successData.length;y++) {
+              if(this.pools[keys[i]][x].id == this.successData[y].id) {
+                this.pools[keys[i]][x].state = this.successData[y].value;
+                let evt = {
+                  item:{
+                    id:this.successData[y].id,
+                    value:this.successData[y].value
+                  },
+                }
+                this.saveDelete(evt);
+              }
+            }
+          }
+        }
+      }
+    },
+    showedit() {
+      // 非編輯狀態，清除原本要更改的池況狀態
+      if(!this.showedit) {
+        this.editData = [];
+        this.successDataID = [];
+      }
     }
   }
 };

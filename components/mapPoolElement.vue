@@ -1,22 +1,23 @@
 <template>
-  <div :class="showdotted ? divclass : ''">
+  <div class="input-pool" :class="{'text-center':!showSelect}">
+    <button class="confirm" v-show="showSelect && item.state != '' && selectedItem !== '' && selectedItem !== item.state" @click="selectchecked">
+      <v-icon>mdi-check</v-icon>
+    </button>
+    
     <span
       v-if="item.state.length > 0"
-      :style="item.state == '無' ? 'color:white;' : ''"
-      v-show="item.state != '無' || showSelect"
+      v-show="item.state != '' || showSelect"
       >{{ item.name }}-{{ item.state }}
     </span>
     <br/>
-    <span style="color:grey;" v-if="item.state.length > 0" v-show="showSelect && item.state != ''" :style="item.state == '無' ? 'color:white;' : ''">{{item.updated_time}}</span>
+    <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''">{{item.updated_time}}</span>
     <v-select
       v-model="selectedItem"
       :items="selitem.filter(x => x.name != 'default')"
       item-text="name"
       label="池況"
       v-show="showSelect && item.state != ''"
-      append-outer-icon="mdi-check"
-      @change="changeEvent" dense :dark="item.state == '無'"
-      @click:append-outer="selectchecked"
+      @change="changeEvent" dense
     ></v-select>
   </div>
 </template>
@@ -53,6 +54,10 @@ export default {
     showSelect: {
       type: Boolean,
       default: false
+    },
+    successDataID: {
+      type: Array,
+      default: []
     }
   },
   methods: {
@@ -63,6 +68,7 @@ export default {
       
       console.log("oradata:", this.item);
       console.log("newdata:", this.selectedItem);
+      // console.log("selitem",this.selitem);
       let newItems = this.selitem.filter(x => x.name == this.selectedItem); //抓到修改後的狀態id
       if (newItems.length == 1) {
         const parm = {
@@ -78,8 +84,14 @@ export default {
           })
           .then(res => {
             if (res.data == "修改成功") {
+              let evt={
+                item: this.item,
+                value: this.selectedItem
+              }
               this.item.state = this.selectedItem;
               this.$toast.success(`修改成功`, { duration: 2000 });
+              this.$emit('saveSuccess',evt);
+              this.selectedItem = '';
             } else {
               alert(res.data);
             }
@@ -97,6 +109,16 @@ export default {
       } else {
         this.divclass = "noediteditem";
       }
+      // if(this.selectedItem !== this.item.state && this.selectedItem !== '') {
+      //   this.isEdit = true;
+      // }
+      // if(this.isEdit) {
+        let edit = {
+          item: this.item,
+          value: this.selectedItem
+        }
+        this.$emit('editPool',edit);
+      // }
     }
   },
   computed: {
@@ -109,15 +131,64 @@ export default {
       }
       return true;
     }
+  },
+  watch: {
+    successDataID() {
+      if(this.successDataID.length>0 && this.successDataID.includes(this.item.id)) {
+        // console.log(this.successDataID);
+        this.selectedItem = '';
+      }
+    },
+    showSelect() {
+      if(!this.showSelect) {
+        this.selectedItem ='';
+      }
+    }
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 .editeditem {
   border: 3px red dotted;
+  padding: 4px;
 }
 .noediteditem {
   border: 0px red dotted;
+  text-align: left;
 }
+
+.update-time {
+  font-size: 12px;
+}
+.v-application{
+  .input-pool {
+    text-align: left;
+    .confirm {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      background-color: #006AA6;
+      float: right;
+      box-shadow: 0 0 5px rgba(0,0,0,0.15);
+      transition: 0.3s;
+      &:hover {
+        background-color: lighten($color: #006AA6, $amount: 1.5);
+      }
+      .theme--light.v-icon {
+        color: #fff;
+        font-size: 14px;
+      }
+    }
+    .primary--text {
+        color: #00273E !important;
+        caret-color: #00273E !important;
+    }
+  }
+}
+.v-input {
+  margin-top: 20px;
+}
+
+
 </style>
