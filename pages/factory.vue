@@ -434,11 +434,26 @@
     <!-- 場 ip設定 -->
     <v-dialog v-model="dialog.ip" width="500px">
       <v-form ref="ipform" v-model="ipvalid" lazy-validation>
-        <v-card>
+        <v-card :disabled="editedip_content==undefined">
           <v-card-title>ip設定</v-card-title>
           <v-card-text>
-            <span>tttttttttttttttttttttttttttttttttttttttttt</span>
+            <!-- <span>{{ `${this.selected_ip.factory_name}_${this.selected_ip.pond_area_name}` }}</span> -->
+            <div>
+                  <v-textarea
+                    height="400"
+                    outlined
+                    name="input-7-4"
+                    label=""
+                    v-model="editedip_content"
+                    hide-details
+                  ></v-textarea>  
+                </div>
           </v-card-text>
+          <v-card-actions>
+            <v-text-field v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="updateip">更新</v-btn>
+          </v-card-actions>
         </v-card>
       </v-form>
     </v-dialog>
@@ -448,6 +463,8 @@
 <script>
 import https from "https";
 import _ from "lodash";
+import md5 from "md5";
+import { ifError } from 'assert';
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -510,12 +527,17 @@ export default {
         { name: "bottom_area", text: "底面積", visible: true }
       ],
       sortbyid:false,
+      ipdata:[],
+      selected_ip:{},
+      ipadminpwd:'',
+      editedip_content:''
     };
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getmain();
     await this.getpoolstat(); //取得池狀態清單
+    await this.getipdata();//取得ip設定
   },
   methods: {
     getmain: async function() {
@@ -719,6 +741,11 @@ export default {
           this.dialog.main = true;
           break;
         case "ip":
+            //設定資料到畫面上
+            var selected_name = this.maindata.filter(x => x.id == this.sel_main)[0].name;
+            this.selected_ip = this.ipdata.filter(x=>x.factory_name==selected_name)[0];
+            this.ipadminpwd = "";//reset pwd
+            this.editedip_content = JSON.stringify(this.selected_ip, null, "\t");
             this.dialog.ip = true;
           default:
           break;
@@ -866,6 +893,55 @@ export default {
               this.$toast.error(`尚有參數未填`, { duration: 2000 });
       }
       console.log(this.edititem_pool.parm);
+    },
+    getipdata: async function () {
+      await this.$axios
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`)
+        .then(res => {
+          this.ipdata = res.data;
+          console.log("API ipdata:" + res.request.responseURL);
+
+        })
+        .catch(error => {
+          this.$axios.error("error:" + error, { duration: 2000 });
+          pool = [];
+        })
+        .finally(() => {
+          /* 不論失敗成功皆會執行 */
+        });
+    },
+    updateip: async function(){
+      var input_ipadminpwd = md5(this.ipadminpwd);
+      //idwadmin56651588
+      if(input_ipadminpwd=='0df860f9cad0c35e96feeb0e3cf3619c'){
+        if(confirm('是否確認修改ip設定？')){
+          // this.$toast.success('修改成功,還沒有api', { duration: 2000 });
+          var id = this.selected_ip.id;
+          var parm = this.editedip_content;
+          console.log(parm);
+          await this.$axios
+          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/${id}/`,parm)
+          .then(res => {
+            if(res.data=='修改成功'){
+              this.getipdata();//re get data
+              this.dialog.ip = false;
+              this.$toast.success('修改成功', { duration: 2000 });
+            }else{
+              this.$toast.error('修改失敗'+ res.data, { duration: 5000 });
+            }
+          })
+          .catch(error => {
+            this.$toast.error('修改錯誤'+ error.message, { duration: 2000 });
+          });
+          
+
+        }else{
+          this.$toast.error('取消修改', { duration: 2000 });
+        }
+      }else{
+        this.$toast.error('管理密碼錯誤', { duration: 2000 });
+          }
     }
   },
   computed: {
