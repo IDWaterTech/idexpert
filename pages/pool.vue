@@ -131,7 +131,7 @@
                                               <!--限水位才有資料 -->
                                             </v-card-subtitle>
                                             <v-scale-transition>
-                                              <v-icon v-if="active" color="blue" size="48" v-text="'mdi-close-circle-outline'"></v-icon>
+                                              <v-icon v-if="active" color="blue" size="48" >mdi-close-circle-outline</v-icon>
                                             </v-scale-transition>
                                           </v-card>
                                         </v-slide-item>
@@ -1328,14 +1328,15 @@ export default {
         });
     },
     getshirimpData: async function() {
+      //暫無蝦況api
       //蝦況
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-status/?pond_id=${this.poolid}&is_last=true`
-        )
-        .then(res => {
-          this.shirimpData = res.data;
-        });
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-status/?pond_id=${this.poolid}&is_last=true`
+      //   )
+      //   .then(res => {
+      //     this.shirimpData = res.data;
+      //   });
     },
     getwarnData: async function() {
       //警示區
