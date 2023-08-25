@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row class="fill-height">
-      <v-col cols="12" class="white--text"><h2>重要紀事</h2></v-col>
+      <!-- <v-col cols="12" class="white--text"><h2>重要紀事</h2></v-col> -->
       <v-col cols="12">
         <v-row align-content="center">
           <v-col cols="12" sm="3">
@@ -9,7 +9,7 @@
               auto-select-first
               dark
               dense
-              outlined
+              outlined hide-details
               :items="datarange"
               item-text="name"
               item-value="level"
@@ -28,25 +28,18 @@
               :default-expand-level="1"
               :disable-branch-nodes="true"
               children="node"
+              placeholder="請選擇資料範圍"
               :multiple="true"
               :normalizer="
                 node => {
                   return { children: node.node };
                 }
               "
-              style="font-size:1.2em;"
+              style="font-size:1.3em;"
             >
-              <div slot="value-label" slot-scope="{ node }">
-                {{
-                  `${
-                    node.raw.parent != undefined && node.raw.parent.length > 0
-                      ? node.raw.parent + "_"
-                      : ""
-                  }${node.raw.name}`
-                }}
+              <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
               </div>
-              <div slot="option-label" slot-scope="{ node }">
-                {{ `${node.raw.name}` }}
+              <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}
               </div>
             </treeselect>
           </v-col>
@@ -204,8 +197,8 @@
         </v-row>
       </v-col>
       <!-- 日曆 -->
-      <v-col cols="12">
-        <v-sheet height="64">
+      <v-col style="border-radius: 4px;background-color: white;">
+        <v-sheet height="64" class="pa-1">
           <v-toolbar flat>
             <v-btn
               outlined
@@ -343,15 +336,16 @@
                             :default-expand-level="1"
                             :disable-branch-nodes="true"
                             children="node"
+                            placeholder="請選擇資料範圍"
                             :multiple="true"
                             :normalizer="
                               node => {
                                 return { children: node.node };
                               }
                             "
-                            style="font-size:1.2em;"
+                            style="font-size:1.3em;"
                           >
-                            <div slot="value-label" slot-scope="{ node }">
+                            <!-- <div slot="value-label" slot-scope="{ node }">
                               {{
                                 `${
                                   node.raw.parent != undefined && node.raw.parent.length > 0
@@ -359,6 +353,8 @@
                                     : ""
                                 }${node.raw.name}`
                               }}
+                            </div> -->
+                            <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
                             </div>
                             <div slot="option-label" slot-scope="{ node }">
                               {{ `${node.raw.name}` }}
@@ -480,7 +476,7 @@
             </v-menu>
           </v-toolbar>
         </v-sheet>
-        <v-sheet height="600">
+        <v-sheet height="500" class="pa-1">
           <v-calendar
             ref="calendar"
             v-model="focus"
@@ -506,7 +502,8 @@
                 <v-btn icon @click="openedit('edit')">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title>
+                <v-toolbar-title class="pl-0"><span v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></span></v-toolbar-title>
+                <!-- <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title> -->
                 <v-spacer></v-spacer>
                 <v-btn icon @click="deleteEvent(selectedEvent.id)">
                   <v-icon>mdi-delete</v-icon>
@@ -531,6 +528,7 @@
           </v-menu>
         </v-sheet>
       </v-col>
+      <v-col cols="12" style="height: 32px;"></v-col>
     </v-row>
     <v-card width="100%" min-height="600px" v-if="false">
       <iframe
@@ -629,7 +627,7 @@ export default {
       ],
       level: 1,
       //treeselect
-      poolid: ["研發一場_1"],
+      poolid: [], //可預設場，例：研發一場_1 
       maindata: [],
       //起訖日
       sdate: dayjs(new Date())
@@ -642,7 +640,7 @@ export default {
       edited:{
         mode:"add",//add,edit
         level:1,//範圍
-        poolid:[],//範圍id
+        poolid:[],//範圍id，
         started_date:undefined,
         ended_date:undefined,
         stime:"00:00",
