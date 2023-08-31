@@ -154,6 +154,7 @@ export default {
             }
           }
         }
+        this.getData();
       }
     },
     showedit() {
@@ -185,30 +186,6 @@ export default {
       } else {
         return this.statcolor.filter(x => x.name == "default")[0].color;
       }
-    },
-    getStateData: async function () {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-      //取得水池狀態
-      await this.$axios
-      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/tf-state/`, { httpsAgent: agent })
-      .then(res => {
-        this.pools = res.data;
-        console.log('tf',res.data);
-        // let keys = Object.keys(this.pools)
-        // for(let i=0;i<keys.length;i++) {
-        //   for(let x=0;x<this.pools[keys[i]].length;x++) {
-            
-        //     if(this.pools[keys[i]][x].state == ' 集中暫養') {
-        //       this.pools[keys[i]][x].state = '集中暫養';
-        //     }
-        //   }
-        // }
-      })
-      .catch(error => {
-        alert("error:" + error.message);
-      });
     },
     edit(evt) {
       // console.log(evt);
@@ -246,6 +223,7 @@ export default {
           }
         }
       // console.log(this.editData);
+      this.getData();
     },
     saveDelete(evt) {
       this.editData = this.editData.filter(x=>{
@@ -253,8 +231,32 @@ export default {
         x.id!==evt.item.id
       });
       this.$emit('saveSuccess',evt);
-      this.getStateData();
       // console.log('wc',this.editData);
+    },
+    getData:async function () {
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+        //取得水池狀態
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/tf-state/`, { httpsAgent: agent })
+        .then(res => {
+          this.pools = res.data;
+          console.log('更新撈取資料')
+          // console.log('pool data',this.pools);
+          // let keys = Object.keys(this.pools)
+          // for(let i=0;i<keys.length;i++) {
+          //   for(let x=0;x<this.pools[keys[i]].length;x++) {
+              
+          //     if(this.pools[keys[i]][x].state == ' 集中暫養') {
+          //       this.pools[keys[i]][x].state = '集中暫養';
+          //     }
+          //   }
+          // }
+        })
+        .catch(error => {
+          alert("error:" + error.message);
+        });
     },
   },
 
@@ -267,7 +269,25 @@ export default {
      window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth
     });
-    this.getStateData();
+    //取得水池狀態
+    await this.$axios
+      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/tf-state/`, { httpsAgent: agent })
+      .then(res => {
+        this.pools = res.data;
+        // console.log('pool data',this.pools);
+        // let keys = Object.keys(this.pools)
+        // for(let i=0;i<keys.length;i++) {
+        //   for(let x=0;x<this.pools[keys[i]].length;x++) {
+            
+        //     if(this.pools[keys[i]][x].state == ' 集中暫養') {
+        //       this.pools[keys[i]][x].state = '集中暫養';
+        //     }
+        //   }
+        // }
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
     //取得池況顏色設定
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
@@ -287,7 +307,7 @@ export default {
         alldate.push(
           ...this.pools[row]
             .filter(
-              x => x.state !== "default" && x.state !== ""
+              x => x.state !== "default" && x.state !== "無" && x.state !== ""
             )
             .map(x => {
               return x.updated_time;

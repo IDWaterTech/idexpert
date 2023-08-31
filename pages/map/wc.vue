@@ -116,8 +116,15 @@ export default {
      window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth
     });
-    this.getStateData();
-    
+    //取得水池狀態
+    await this.$axios
+      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`, { httpsAgent: agent })
+      .then(res => {
+        this.pools = res.data;
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
     //取得池況顏色設定
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
@@ -141,20 +148,6 @@ export default {
       } else {
         return this.statcolor.filter(x => x.name == "default")[0].color;
       }
-    },
-    getStateData:async function() {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-      //取得水池狀態
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`, { httpsAgent: agent })
-        .then(res => {
-          this.pools = res.data;
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
     },
     editStateFun: function(data) {
       this.editState[data] = this.editState[data]
@@ -205,7 +198,6 @@ export default {
         x.id!==evt.item.id
       });
       this.$emit('saveSuccess',evt);
-      this.getStateData();
       // console.log('wc',this.editData);
     },
   },
@@ -218,7 +210,7 @@ export default {
         alldate.push(
           ...this.pools[row]
             .filter(
-              x => x.state !== "default" && x.state !== ""
+              x => x.state !== "default" && x.state !== "無" && x.state !== ""
             )
             .map(x => {
               return x.updated_time;

@@ -109,16 +109,12 @@ export default {
       } else {
         this.divclass = "noediteditem";
       }
-      // if(this.selectedItem !== this.item.state && this.selectedItem !== '') {
-      //   this.isEdit = true;
-      // }
-      // if(this.isEdit) {
-        let edit = {
-          item: this.item,
-          value: this.selectedItem
-        }
-        this.$emit('editPool',edit);
-      // }
+      let edit = {
+        item: this.item,
+        value: this.selectedItem
+      }
+      // console.log('emit',edit);
+      this.$emit('editPool',edit);
     }
   },
   computed: {
@@ -162,29 +158,32 @@ export default {
   font-size: 12px;
 }
 .v-application{
-  .input-pool {
-    text-align: left;
-    .confirm {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background-color: #006AA6;
-      float: right;
-      box-shadow: 0 0 5px rgba(0,0,0,0.15);
-      transition: 0.3s;
-      &:hover {
-        background-color: lighten($color: #006AA6, $amount: 1.5);
+  .v-card.map {
+    .input-pool {
+      text-align: left;
+      .confirm {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        background-color: #006AA6;
+        float: right;
+        box-shadow: 0 0 5px rgba(0,0,0,0.15);
+        transition: 0.3s;
+        &:hover {
+          background-color: lighten($color: #006AA6, $amount: 1.5);
+        }
+        .theme--light.v-icon {
+          color: #fff;
+          font-size: 14px;
+        }
       }
-      .theme--light.v-icon {
-        color: #fff;
-        font-size: 14px;
+      .primary--text {
+          color: #00273E !important;
+          caret-color: #00273E !important;
       }
-    }
-    .primary--text {
-        color: #00273E !important;
-        caret-color: #00273E !important;
     }
   }
+  
 }
 .v-input {
   margin-top: 20px;

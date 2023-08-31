@@ -225,16 +225,6 @@ export default {
         return this.statcolor.filter(x => x.name == "default")[0].color;
       }
     },
-    getStateData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/sp-state/`, { httpsAgent: agent })
-        .then(res => {
-          this.pools = res.data;
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
-    },
     edit(evt) {
       // console.log(evt);
       this.isEdit = true;
@@ -278,7 +268,6 @@ export default {
         x.id!==evt.item.id
       });
       this.$emit('saveSuccess',evt);
-      this.getStateData();
       // console.log('wc',this.editData);
     },
   },
@@ -349,7 +338,14 @@ export default {
     //   };
     //   this.pools = pools;
 
-    this.getStateData();
+    await this.$axios
+      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/sp-state/`, { httpsAgent: agent })
+      .then(res => {
+        this.pools = res.data;
+      })
+      .catch(error => {
+        alert("error:" + error.message);
+      });
     //取得池況顏色設定
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
@@ -369,7 +365,7 @@ export default {
         alldate.push(
           ...this.pools[row]
             .filter(
-              x => x.state !== "default" && x.state !== ""
+              x => x.state !== "default" && x.state !== "無" && x.state !== ""
             )
             .map(x => {
               return x.updated_time;
