@@ -888,23 +888,28 @@ export default {
             this.edit = false;
             this.newData = {};
             this.ponds = [];
-            
-            for(let i=0;i<this.originalData.length;i++) {
-                this.ponds.push({pond:[]});
-                let data = [];
-                for(let x=0;x<this.originalData[i].pond.length;x++) {
-                    data.push({
-                        "id": this.originalData[i].pond[x].id,
-                        "name": this.originalData[i].pond[x].name,
-                        "updated_time": this.originalData[i].pond[x].update_time,
-                        "state": this.originalData[i].pond[x].state,
-                        "cols": this.originalData[i].pond[x].cols,
-                        "rows": this.originalData[i].pond[x].rows,
-                        "roadDirection": this.originalData[i].pond[x].roadDirection,
-                    });
-                }
-                this.ponds[i].pond = data;
-            }
+            this.dataPrepare();
+            // for(let i=0;i<this.originalData.length;i++) {
+            //     this.ponds.push({pond:[]});
+            //     let data = [];
+            //     for(let x=0;x<this.originalData[i].pond.length;x++) {
+            //         data.push({
+            //             "id": this.originalData[i].pond[x].id,
+            //             "name": this.originalData[i].pond[x].name,
+            //             "updated_time": this.originalData[i].pond[x].update_time,
+            //             "state": this.originalData[i].pond[x].state,
+            //             "cols": this.originalData[i].pond[x].cols,
+            //             "rows": this.originalData[i].pond[x].rows,
+            //             "roadDirection": this.originalData[i].pond[x].roadDirection,
+            //         });
+            //     }
+            //     this.ponds[i].pond = data;
+            // }
+            // if(!this.isSetting) {
+            //     this.maxCols = 1;
+            // }
+            // this.getMaxCols();
+            // console.log(this.ponds,this.isSetting);
             
         },
         deleteSubRow(pid,bid,rid) {
@@ -996,6 +1001,17 @@ export default {
                         "roadDirection": '',
                     }]
                 }]
+                this.originalData = [{
+                    pond: [{
+                        "id": '',
+                        "name": '',
+                        "updated_time": '',
+                        "state": '',
+                        "cols": 0,
+                        "rows": [],
+                        "roadDirection": '',
+                    }]
+                }];
             }else {
                 if(deleteSet.length>0) {
                     let data=[];
