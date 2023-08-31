@@ -414,7 +414,7 @@
                                                         <v-text-field v-model.number="BacteriaData['VibrioAlginolyticus']" dense hide-details class="mt-0 yellow lighten-3"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">溶藻弧菌(白)(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['VibrioVulnificus']" dense hide-details class="mt-0 yellow lighten-3"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">創傷弧菌(藍)(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['VibrioEnteritidis']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">腸炎弧菌(紫)(CFU)</span></v-text-field>
-                                                        <v-text-field v-model.number="BacteriaData['VibrioVulnificus']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">霍亂弧菌(靛)(CFU)</span></v-text-field>
+                                                        <v-text-field v-model.number="BacteriaData['VibrioCholerae']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">霍亂弧菌(靛)(CFU)</span></v-text-field>
                                                         <v-text-field v-if="false" v-model.number="BacteriaData['IsEMSInfected']" dense hide-details class="mt-0 yellow"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-text-field>
                                                         <v-select v-model="BacteriaData['IsEMSInfected']" clearable :items="optData.IsEMSInfected" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-select>
 
@@ -728,7 +728,7 @@
                                                     <v-text-field v-model="suggData.Material['SugarNO2']" dense hide-details class="mt-0 lime lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降亞硝酸)(kg)</span></v-text-field>
                                                     <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" dense hide-details class="mt-0 lime lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (提高枯草桿菌)(kg)</span></v-text-field>
                                                     <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" dense hide-details class="mt-0 lime lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降紫菌)(kg)</span></v-text-field>
-                                                    <v-text-field v-model="suggData.Material['SugarVibrioVulnificus']" dense hide-details class="mt-0 lime lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降靛菌)(kg)</span></v-text-field>
+                                                    <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" dense hide-details class="mt-0 lime lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降靛菌)(kg)</span></v-text-field>
                                                     <v-text-field v-model="suggData.Material['SugarTotal']" dense hide-details class="mt-0 yellow lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">當日總砂糖量(kg)</span></v-text-field>
                                                     <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" dense hide-details class="mt-0 lime lighten-5"><span style="width:225px;" class="pa-0 ma-0 text-right" slot="prepend">累計砂糖量(kg)</span></v-text-field>
                                                 </v-card-text>
@@ -797,7 +797,7 @@ export default {
             querryDataLst:{"1":[],"2":[],"3":[],"4":[]},//查詢紀錄lst
             querrySelected:"",
             querrySelectedLst:{"1":"","2":"","3":"","4":""},
-            pondNameLst:{1:'研發一場紫微3-2',2:'研發一場武曲A3',3:'研發一場武曲A4',4:'研發一場武曲A5'},
+            pondNameLst:{1:'研發一場武曲A1',2:'研發一場武曲A3',3:'研發一場紫微3-2',4:'研發一場紫微4-6'},
             panel:{panel_row11:[0],panel_row12:[0],panel_row13:[0],panel_row14:[0],
                    panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],
                    panel_row31:[0,1,2],panel_row32:[0,1]},
@@ -898,8 +898,8 @@ export default {
             switch (querrypool) {
                 case "1":
                     allParm.Factory = "研發一場";
-                    allParm.PondArea = "紫微";
-                    allParm.Pond = "3-2";
+                    allParm.PondArea = "武曲";
+                    allParm.Pond = "A1";
                     break;
                     case "2":
                     allParm.Factory = "研發一場";
@@ -908,13 +908,13 @@ export default {
                     break;
                     case "3":
                     allParm.Factory = "研發一場";
-                    allParm.PondArea = "武曲";
-                    allParm.Pond = "A4";
+                    allParm.PondArea = "紫微";
+                    allParm.Pond = "3-2";
                     break;
                     case "4":
                     allParm.Factory = "研發一場";
-                    allParm.PondArea = "武曲";
-                    allParm.Pond = "A5";
+                    allParm.PondArea = "紫微";
+                    allParm.Pond = "4-6";
                     break;
                 default:
                     console.log("not fund,querrypool is =",querrypool,typeof(querrypool));
