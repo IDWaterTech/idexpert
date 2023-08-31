@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h2 style="color: white">
+    <h2 style="color: white" v-if="false">
       料量設定
       <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
     <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn> -->
     </h2>
     <!-- <span style="color:wheat;">{{combo_sorted}}</span> -->
-    <v-row align="center">
+    <v-row align="center" class="mb-1">
       <!-- 選擇場 -->
       <v-col cols="12" md="3">
         <v-autocomplete
-          dark
+          dark hide-details
           filled
           v-model="factoryid"
           :items="factoryData"
@@ -20,7 +20,7 @@
       </v-col>
 
       <v-col cols="12" md="3">
-        <v-btn class="primary mb-3" large @click="showimport"
+        <v-btn class="primary" large @click="showimport"
           ><v-icon>mdi-database-import</v-icon>帶入料表資料</v-btn
         >
         <v-dialog v-model="importdialog" width="400">
@@ -103,7 +103,8 @@
       item-key="pond_id"
       sort-by="pond_name"
       group-by="area_name"
-      class="elevation-1"
+      class="elevation-1 mb-5"
+      height="500"
       :show-group-by="false"
       :footer-props="{
         'items-per-page-options': [-1, 25, 50, 100]
