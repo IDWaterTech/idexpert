@@ -486,10 +486,12 @@ export default {
                 this.nowChange.name = 'road';
                 this.nowChange.state = '';
                 if(this.nowChange.cols==1) this.showDirection();
+                this.isPondName = false;
             }else if(evt=='無') {
                 this.nowChange.id='';
                 this.nowChange.name = '';
                 this.nowChange.state = '';
+                this.isPondName = false;
             }else {
                 // console.log(this.nowChage.id);
                 // this.nowPondName = this.pondData[0].name;
@@ -533,9 +535,9 @@ export default {
             // console.log(this.nowChange);
         },
         selectPond(evt) {
-            // this.isPondName = false;
+            this.isPondName = false;
             this.nowPondName = evt.name;
-            this.ponds.forEach(p=>{
+            this.ponds.forEach((p,pid)=>{
                 p.pond.forEach(b=>{
                     if(b.rows.length>0) {
                         b.rows.forEach(r=>{
@@ -546,7 +548,13 @@ export default {
                     }
                 })
             })
-            // console.log(evt);
+            if(this.isPondName) {
+                if(this.nowChangeObject.id == evt.id) {
+                    this.isPondName = false;
+                }
+            }
+            // console.log('now',this.nowChangeObject.id);
+            // console.log('selectPond',evt);
 
             this.nowChange.id = evt.id;
             this.nowChange.name = evt.name;
