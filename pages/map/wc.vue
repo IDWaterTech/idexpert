@@ -57,7 +57,7 @@ import dayjs from "dayjs";
 import https from "https";
 export default {
   layout: "emptynoheaderdrawer2",
-  middleware: "auth",
+  // middleware: "auth",
   components: {
     mappoolelement
   },
