@@ -82,9 +82,12 @@
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
                   <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
                     <template slot-scope="scope">
-                      <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
+                      <!-- <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
                           scope.row.name
-                      }}</a>
+                      }}</a> -->
+                      <div>{{
+                          scope.row.name
+                      }}</div>
                     </template>
                   </el-table-column>
                   <el-table-column v-for="(item, key) in headers.filter(
