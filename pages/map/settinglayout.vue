@@ -1198,7 +1198,7 @@
         margin-top: -24px;
         &.vertical {
           margin-top: -24px;
-          height: calc(100% + 12px);
+        //   height: calc(100% + 12px);
         }
         // margin-top: 0;
     }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row style="margin-left: 0;margin-right: 0;">
-      <v-col cols="4">
+      <v-col md="4" sm="6">
         <v-card style="height: 100%;">
           <v-list dense style="overflow: hidden;">
             <v-subheader
@@ -97,7 +97,7 @@
           </v-card>
         </v-dialog>
       </v-col>
-      <v-col cols="6">
+      <v-col md="6" sm="6">
         <!-- <v-card> -->
           <div
           :disabled="!(selectedItem != undefined && selectedItem > -1)"
