@@ -108,7 +108,7 @@
                               <div style="width: 100%;height: 100%;" @click="openDialog(pid,bid,rid)">
                                   <div v-if="row.name=='road'" style="width: 100%;z-index: 1000;">走道</div>
                                   <div v-else-if="row.state!==''">{{ row.name }}</div>
-                                  <div v-else>無</div>
+                                  <div v-else>空白</div>
                               </div>
                               <div class="icon-group">
                                   <div class="icons">
@@ -139,7 +139,7 @@
                           </div>
                       </div>
                       <div v-else-if="b.id!==''">{{ b.name }}</div>
-                      <div v-else>無</div>
+                      <div v-else>空白</div>
                   </div>    
               </div>
           </v-row>
@@ -203,7 +203,7 @@
                           return-object>
                       </v-select>
                   </div>
-                  <span v-if="isPondName" class="note">注意：其他池已使用此名稱，按下確認鈕後，原使用此名稱的池會變成 '無' !</span>
+                  <span v-if="isPondName" class="note">注意：其他池已使用此名稱，按下確認鈕後，原使用此名稱的池會變成 '空白' !</span>
                   
                   <v-card-actions>
                       <div class="buttons" style="width:100%;display: flex;align-items: center;justify-content: flex-end;">
@@ -230,7 +230,7 @@
               newData: {},
               addDialog: false,
               nowChangeObject:{},
-              type:['池','走道','無'],
+              type:['池','走道','空白'],
               nowType:'',
               pondData:[],
               nowPondName:'',
@@ -475,7 +475,7 @@
                   if(this.nowChange.name == 'road') {
                       this.nowType = '走道';
                   }else {
-                      this.nowType = '無';
+                      this.nowType = '空白';
                   }
               }
               
@@ -488,7 +488,7 @@
                   if(this.nowChange.cols==1) this.showDirection();
                   this.isPondName = false;
                   this.isDoubleName = {};
-              }else if(evt=='無') {
+              }else if(evt=='空白') {
                   this.nowChange.id='';
                   this.nowChange.name = '';
                   this.nowChange.state = '';
