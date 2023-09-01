@@ -3,7 +3,7 @@
     
         <v-row style="color:#FFF;" justify="center" align="center" >
             <v-col cols="12">
-                <h3>氣像資訊</h3>
+                <h3>氣象資訊</h3>
             </v-col>
             <v-col cols="12">
                 地區:<span>{{location.map(x=>x.name).join()}}</span>_({{ loc.longitude }}/{{ loc.latitude }})<br/>
