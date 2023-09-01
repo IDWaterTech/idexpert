@@ -2,7 +2,7 @@
     <el-popover
       placement="top-start"
       width="400"
-      trigger="hover"
+      
       popper-class="popoverColor"
     >
       <v-row style="color:#FFF;" justify="center" align="center">
