@@ -729,7 +729,8 @@ export default {
               console.log("sub_items:",element.name,sub_items[element.name],value);
             });
           }
-          const tot =
+          //const 2023.09.03突然網頁報錯，調整成var
+          var tot =
             Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
             Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
           tot = Math.round((tot + Number.EPSILON) * 1) / 1;
