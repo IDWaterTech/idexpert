@@ -192,7 +192,7 @@
                           aria-required="請選擇池的名稱">
                       </v-select>
                   </div>
-                  <div v-if="isShowDirection && nowType=='走道'&&!isSub" class="select pond">
+                  <div v-if="isShowDirection && nowType=='走道'&&!isSub&&nowCol==1" class="select pond">
                       <span>走向：</span>
                       <v-select
                           :items="direction"
@@ -634,7 +634,7 @@
                   let isFrontedCol = false;
                   if(bid!==this.ponds[pid].pond.length-1) {
                       //先判斷後半，相加值(pre)是否為相差值(num)
-                      for(let i=this.ponds[pid].pond.length-1;i>bid;i--) {
+                      for(let i=bid+1;i<this.ponds[pid].pond.length;i++) {
                           pre+=this.ponds[pid].pond[i].cols;
                           if(pre!==num) {
                               if(pre>num) {
@@ -657,7 +657,7 @@
                   }else {
                       isFrontedCol = true;
                   }
-                  // console.log('lessNum',lessNum);
+                //   console.log('lessNum',lessNum);
                 //    console.log('front',pre,num,this.ponds[pid],isFrontedCol);
                   // 判斷前半
                   if(isFrontedCol) {
@@ -693,9 +693,8 @@
                           }
                       }
                       this.ponds[pid].pond = data;
-                  }
-                 
-                 
+                    //   console.log('pond',this.ponds[pid]);
+                  }  
               }else {
                   let num = this.nowChangeObject.cols - this.nowChange.cols;
                   this.ponds[pid].pond[bid].cols = this.nowChange.cols;
@@ -1205,7 +1204,7 @@
         // margin-top: 0;
     }
     .center.bottom{
-      margin-top: -64px;
+      margin-top: -56px;
       height: calc(100% + 120px);
     }
     
