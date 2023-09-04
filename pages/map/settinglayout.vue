@@ -579,16 +579,12 @@
               // newObject = this.nowChange;
               // oldObject = this.nowChangeObject
               // console.log('save',this.nowChange,this.ponds[this.nowChageid.bid].pond[this.nowChageid.bid]);
-              if(!this.isSub) {
-                  this.caculateCol();
-              }
               
               this.nowChangeObject.id = this.nowChange.id;
               this.nowChangeObject.name = this.nowChange.name;
               this.nowChangeObject.rows = this.nowChange.rows;
               this.nowChangeObject.state = this.nowChange.state;
               console.log('save block',this.nowChange);
-              
               if(this.isShowDirection) {
                   if(this.nowDirection=='橫向') {
                       this.nowChangeObject.roadDirection = 'horizontal'; 
@@ -605,6 +601,9 @@
               }
               if(this.nowChange.id!==''&&this.nowChange.name!=='road') {
                   this.ponds[this.nowChageid.pid].pond[this.nowChageid.bid].roadDirection = '';
+              }
+              if(!this.isSub) {
+                  this.caculateCol();
               }
               if(this.isPondName) {
                 this.isDoubleName.id = '';
@@ -640,8 +639,8 @@
                           if(pre!==num) {
                               if(pre>num) {
                                   // 相加後大於相差值，代表此欄位數量較多，因此將原欄位數-多出的欄位數
-                              this.ponds[pid].pond[i].cols = pre-num;
-                              break;
+                                this.ponds[pid].pond[i].cols = pre-num;
+                                break;
                               }else {
                                   if(!lessNum.includes(i)) lessNum.push(i);
                                   //判斷前半
@@ -659,26 +658,29 @@
                       isFrontedCol = true;
                   }
                   // console.log('lessNum',lessNum);
-                  
+                //    console.log('front',pre,num,this.ponds[pid],isFrontedCol);
                   // 判斷前半
                   if(isFrontedCol) {
                       if(bid==0) {
-                          
+                        
                       }else {
-                          for(let i=bid-1;i=>0;i--) {
-                              pre+=this.ponds[pid].pond[i].cols;
-                              if(pre!==num) {
-                                  if(pre>num) {
-                                      this.ponds[pid].pond[i].cols = pre-num;
-                                      break;
-                                  }else {
-                                      if(!lessNum.includes(i)) lessNum.push(i);
-                                  }
-                              }else {
-                                  // console.log('pre==max front');
-                                  if(!lessNum.includes(i)) lessNum.push(i);
-                                  break;
-                              }
+                        
+                          for(let i=bid-1;i>=0;i--) {
+                            // console.log(bid,i);
+                            pre+=this.ponds[pid].pond[i].cols;
+                            
+                            if(pre!==num) {
+                                if(pre>num) {
+                                    this.ponds[pid].pond[i].cols = pre-num;
+                                    break;
+                                }else {
+                                    if(!lessNum.includes(i)) lessNum.push(i);
+                                }
+                            }else {
+                                console.log('pre==max front');
+                                if(!lessNum.includes(i)) lessNum.push(i);
+                                break;
+                            }
                           }
                       }
                       

@@ -90,8 +90,34 @@
           </div>
         </v-row>
       </div>
-      <div v-else-if="nowAreaTag=='setting'" style="padding-top: 32px;margin-top: -20px;">
-        <v-row style="width: 100%"
+      <div v-else-if="nowAreaTag=='setting'">
+        <v-row style="margin-bottom: 24px;margin-left: 12px;max-width: 240px;" :style="{marginTop:`${setting=='color'?'-20px':'-32px'}`}">
+          <div
+            class="setting-item"
+            style="font-size: 16px;"
+            :style="setting=='color'?'color:#6c9bcd':'color: rgba(0, 0, 0, 0.54)'"
+            @click="setting='color'">
+            顏色設定    
+        </div>
+        <div class="layout-box">
+            <div v-if="setting=='color'"
+                class="setting-item"
+                style="font-size: 16px;"
+                :style="setting=='layout'?'color:#6c9bcd':'color: rgba(0, 0, 0, 0.54)'"
+                @click="setting='layout'">
+                配置設定
+            </div>
+            <v-select
+                v-if="setting=='layout'"
+                :items="layout"
+                v-model="nowLayout"
+                class="select-area"
+                style="font-size: 16px;width: 120px;margin-top: -4px;max-width:120px"
+            ></v-select>  
+        </div>
+        </v-row>
+        
+        <v-row style="width: 100%;padding-top: 32px;margin-top: -20px;"
           class="mx-0"
           :class="{'parent-row':`${nowAreaTag=='setting'&&setting=='layout'}`}">
           <settingcolor v-if="setting=='color'" class="mx-3" style="width: 100%;"></settingcolor>
@@ -376,7 +402,9 @@ export default {
       areas1:[],
       oldAreaTag:'',
       isLoad: false,
-      isSetting: false
+      isSetting: false,
+      setting:'color',
+      nowLayout: ''
     };
   },
   props: {
@@ -396,18 +424,18 @@ export default {
       type: String,
       default: ''
     },
-    setting: {
-      type: String,
-      default: ''
-    },
     areas:{
       type: Array,
       default: []
     },
-    nowLayout: {
-      type: String,
-      default: ''
+    layout:{
+      type: Array,
+      default: []
     },
+    // nowLayout: {
+    //   type: String,
+    //   default: ''
+    // },
     nowAreaId: {
       type: Object,
       default: {
@@ -501,6 +529,7 @@ export default {
     getLayoutData() {
       // 將地圖資料傳遞給配置設定
       let areaid = null;
+      // this.nowLayout = this.areas[0].name;
       this.areas.forEach(a=>{
         if(a.name == this.nowLayout) {
           areaid = a.id;
@@ -516,6 +545,7 @@ export default {
           }
         }
       })
+      
       console.log('getLayout',this.areas,this.allData);
     },
     editStateFun: function(data) {
@@ -711,6 +741,7 @@ export default {
       this.oldAreaTag=this.nowAreaTag;
       this.getMaxCols();
       console.log('data prepare',this.ponds);
+      this.nowLayout = this.areas[0].name;
       // this.getCenter();
     },     
   },
@@ -794,6 +825,10 @@ export default {
       this.dataPrepare();
       
       // console.log('any change?',this.oldAreaTag,this.nowAreaTag);
+    },
+    areas() {
+      this.setting = 'color';
+      this.getPondData();
     },
     nowLayout() {
       this.getLayoutData();
