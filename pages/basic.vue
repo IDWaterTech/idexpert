@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="basic">
     <v-expansion-panels class="mb-6" tile v-model="mypanel" dark >
       <v-expansion-panel>
         <v-expansion-panel-header expand-icon="mdi-menu-down" class="cardtitle">
@@ -12,13 +12,13 @@
                 <img v-img :src="mpurl" width="100%"  class="grey lighten-2" />
               </v-col>
             </v-row>
-            <v-row no-gutters>
+            <v-row no-gutters style="background-color: #fff;" class="search">
               <v-col cols="12" md="4">
-                <v-card class="pa-1 mainbg" tile height="300">
-                  <v-row class="mx-1">
+                <v-card class="pa-1 mainbg" tile id="left-search" style="height: 100%;">
+                  <v-row class="mx-1 my-3">
                     <v-col cols="12">
                       <v-select v-model="sel_main" :items="maindata" item-value="id" item-text="name" placeholder="選擇場"
-                        @change="sel_main > 0 ? '' : (showmp = false)" clearable filled>
+                        @change="sel_main > 0 ? '' : (showmp = false)" clearable filled class="select_area">
                         <v-btn icon color="teal lighten-2" @click="showmpFun" v-if="sel_main" slot="prepend">
                           <v-icon size="30">mdi-image</v-icon>
                         </v-btn>
@@ -26,7 +26,7 @@
                     </v-col>
                     <v-col cols="12">
                       <v-select v-model="sel_area" :items="areadata" item-value="id" item-text="name" clearable
-                        @change="areachange" label="選擇區域" dense></v-select>
+                        @change="areachange" label="選擇區域" dense style="margin-top: 0px;margin-bottom: 20px;"></v-select>
                     </v-col>
                     <v-col cols="12" sm="6">
                       <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
@@ -68,7 +68,7 @@
                       <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange"
                         class="mx-1" dense></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" align-self="center" class="text-center">
+                    <v-col cols="12" sm="6" align-self="center" style="text-align: right;">
                       <!-- 可能同池名，在不同場，所以value= name -->
                       <v-btn  tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">確認</v-btn>
                     </v-col>
@@ -76,7 +76,7 @@
                 </v-card>
               </v-col>
               <!-- <v-divider vertical></v-divider> -->
-              <v-col cols="12" md="8">
+              <v-col cols="12" md="8" class="my-3">
                 <el-table :data="mainpool.items" style="width: 100%;" max-height="300" show-summary size="mini"
                   :summary-method="getSummaries">
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
@@ -93,11 +93,11 @@
                   <el-table-column v-for="(item, key) in headers.filter(
                     x => x.text != fixedname
                   )" :fixed="item.text == fixedname" :prop="item.value" :label="item.text" :key="key" align="center"
-                    :width="item.text == fixedname ? 70 : 100">
+                    >
                   </el-table-column>
                 </el-table>
                 <v-data-table :headers="headers" :items="mainpool.items" item-key="unit" :footer-props="footerProps"
-                  no-data-text="查無資料" disable-sort :loading="tableloading" height="300px" v-if="false">
+                  no-data-text="查無資料" disable-sort :loading="tableloading" style="height: 100%;width: 100%;" v-if="false">
                 </v-data-table>
               </v-col>
             </v-row>
@@ -1214,8 +1214,25 @@ export default {
 //                  佛祖保佑             永無BUG
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 @import "https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css";
+.basic {
+  .el-table__body-wrapper {
+    height: 100%;
+  }
+  .el-table__empty-block {
+    width: 100%;
+  }
+  .search.row {
+    .col-12 {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .select_area .v-text-field__details {
+      display: none !important;
+   }
+  }
+}
 .papper_blue {
   background: url('~/assets/papper_grape.jpg')
     repeat center center fixed !important;
