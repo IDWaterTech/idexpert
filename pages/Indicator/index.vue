@@ -259,7 +259,7 @@ export default {
         ]
       },
       defitem: [],
-      waterdatacols: {},
+      waterdatacols: [],
       allcols: {},
       waterloading: false, //折線圖，
       item: [{ name: "", items: [] }],
@@ -400,6 +400,7 @@ export default {
             { httpsAgent: agent }
           )
           .then(res => {
+            console.log("ponds-data",res.data);
             this.mainpool.items = res.data;
           })
           .catch(err => {
