@@ -274,7 +274,7 @@
                                                         <v-text-field v-model.number="FeedParm['SugarSourceCarbonPct']" dense hide-details class="mt-0 blue lighten-1" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">砂糖(碳源)含碳量(%)</span></v-text-field>
                                                         <v-text-field v-model.number="FeedParm['FeedCN']" dense hide-details class="mt-0 blue white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">飼料CN比(依照飼料)</span></v-text-field>
                                                         <v-text-field v-model.number="FeedParm['LastFeedInput']" dense hide-details class="mt-0 blue white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">前一餐飼料量(kg)</span></v-text-field>
-                                                        <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" dense hide-details class="mt-0 blue darken-1 white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">累計飼料量(kg)</span></v-text-field>
+                                                        <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" dense hide-details class="mt-0 blue darken-1 white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">累計飼料量(kg)<v-btn class="ml-2" fab x-small color="cyan" @click="addFeedQty"> <v-icon>mdi-plus</v-icon></v-btn></span></v-text-field>
                                                         <v-select v-model="BaseParm['NextFeedIncrementPct']" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0 blue darken-1" dark item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">下餐飼料增加百分比</span></v-select>
                                                     </v-form>
                                                 </v-card-text>
@@ -802,13 +802,6 @@ export default {
                    panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],
                    panel_row31:[0,1,2],panel_row32:[0,1]},
             lightColor:{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
-            // lightData: {
-            //     'Do': {
-            //         'warning': {"rule1":["4.5 <= Do","Do < 5"]},
-            //         'danger': {"rule1":["Do < 4.5"],"rule1":["Do < 4.5"]}
-            //     },
-                
-            // },
             lightData: {
                     Do: {
                         warning: {1: ['4.5 <= Do', 'Do < 5']},
@@ -826,6 +819,13 @@ export default {
         }
     },
     methods: {
+        addFeedQty:function(){
+            if(typeof(this.FeedParm['LastFeedInput'])=='number'){
+                this.FeedParm['CumulativeFeedAmountInput'] += this.FeedParm['LastFeedInput'];
+            }else{
+                return;
+            }
+        },
         setBR:function(msg){
             var newmsg = _.cloneDeep(msg).replaceAll('。','。</br>');
             if(newmsg.slice(-5)=='</br>'){
@@ -994,14 +994,23 @@ export default {
                 this.ObservationData = _.cloneDeep(input_data.ObservationData);
                 this.BacteriaData = _.cloneDeep(input_data.BacteriaData);
                 //reset suggData
+                var output_data = this.querryDataLst[querrypool].filter(x => x.created_time == this.querrySelectedLst[querrypool])[0].output_data;
                 this.suggData = {
-                    "DynamicData": {},
-                    "WaterQuality": [],//ai建議-水質
-                    "Observation": [],//ai建議-觀察網
-                    "Feed": { "feed_amount": {}, "statistics": {}, "status": "" },//ai建議-投餌量
-                    "Material": {},//投料判斷列表
-                    "MakeWater": {}//養殖前期做水添加物
+                    "DynamicData": output_data.DynamicData,
+                    "WaterQuality": output_data.WaterQuality,//ai建議-水質
+                    "Observation": output_data.Observation,//ai建議-觀察網
+                    "Feed": output_data.Feed,//ai建議-投餌量
+                    "Material": output_data.Material,//投料判斷列表
+                    "MakeWater": output_data.MakeWater//養殖前期做水添加物
                 };
+                // this.suggData = {
+                //     "DynamicData": {},
+                //     "WaterQuality": [],//ai建議-水質
+                //     "Observation": [],//ai建議-觀察網
+                //     "Feed": { "feed_amount": {}, "statistics": {}, "status": "" },//ai建議-投餌量
+                //     "Material": {},//投料判斷列表
+                //     "MakeWater": {}//養殖前期做水添加物
+                // };
             }
         },
         importQuerry:async function(){
