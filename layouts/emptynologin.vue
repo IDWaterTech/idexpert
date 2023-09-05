@@ -161,7 +161,7 @@
                     'eason.lin@idwater.com.tw',//奕昇
                     'cf.chien@idwater.com.tw',//靖芳
                   ],
-        site:true,//true 外網 false 內網
+        site:false,//true 外網 false 內網
       };
     },
     async mounted() {

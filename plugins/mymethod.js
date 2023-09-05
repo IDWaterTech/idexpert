@@ -80,6 +80,11 @@ import https from "https";
             }
           },
           getSite:function(){//return external or internal
+            //強迫設定內網
+            localStorage.setItem('site', 'internal');
+            this.$store.commit('mydata/set_api', process.env['internal']);
+            return localStorage.getItem('site');
+
             if(localStorage.getItem('site')==null){
               localStorage.setItem('site', 'internal');
             }
