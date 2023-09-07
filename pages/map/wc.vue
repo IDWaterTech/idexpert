@@ -56,7 +56,7 @@ import mappoolelement from "@/components/mapPoolElement.vue";
 import dayjs from "dayjs";
 import https from "https";
 export default {
-  layout: "emptynoheaderdrawer2",
+  layout: "emptynoheaderdrawer",
   // middleware: "auth",
   components: {
     mappoolelement
@@ -100,7 +100,20 @@ export default {
     },
     statcolor: {
       type: Array,
-      default: []
+      default: [{ name: "無", color: "#D3DCE1",id: 1 },
+        { name: "default", color: "#00273E" },
+        { name: "放養中", color: "#F1E78D",id: 4 },
+        { name: "放養中(鎖排汙)", color: "#CBAAE5",id: 32 },
+        { name: " 集中暫養", color: "#8DA0E5",id: 31},
+        { name: "尚未洗池", color: "#E8DDBF",id: 6 },
+        { name: "已清洗", color: "#A8E6DB",id: 7 },
+        { name: "蓄水中", color: "#D3B280",id: 8 },
+        { name: "蓄水完畢", color: "#A5D380",id: 9 },
+        { name: "消毒中", color: "#80D3AB",id: 10 },
+        { name: "做水中", color: "#C5E8E6",id: 11 },
+        { name: "預備放苗", color: "#83C9F0",id: 12 },
+        { name: "空池", color: "#BFDAE8",id: 3 },
+        { name: "養殖審核", color: "#D3808F",id: 33 }]
     },
     successData: {
       type: Array,
