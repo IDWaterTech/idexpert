@@ -1,51 +1,6 @@
 <template>
     <div>
         <div class="my-2">
-            <v-row align="center" v-if="false">
-                <!-- <v-col cols="12" md="2">
-                    <v-switch
-                        v-model="UserData.IsSaved"
-                        :label="(this.$auth.$state.user == null) ? '儲存本次查詢參數(登入後使用)' : '儲存本次查詢參數'"
-                        color="orange"
-                        hide-details dense dark
-                        :disabled="this.$auth.$state.user == null"
-                    ></v-switch>
-                </v-col> -->
-                <v-col cols="12" md="2">
-                   <v-btn tile color="purple darken-2" style="border:1px white solid !important;" dark @click="postParm(true)" :disabled="this.$auth.$state.user == null">儲存並查詢</v-btn>
-                   <v-btn tile color="purple darken-2" style="border:1px white solid !important;" dark @click="postParm()">查詢</v-btn>
-                   <v-btn tile x-large color="purple darken-2" style="border:1px white solid !important;" dark v-if="false">test</v-btn>
-                </v-col>
-                <v-col cols="12" md="4">
-                    <v-autocomplete
-                        :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
-                        v-model="querrySelected"
-                        :items="querryData"
-                        item-value="created_time"
-                        dense filled
-                        chips hide-details
-                        small-chips
-                        @mousedown="getQuerry()"
-                        @change="importQuerry()"
-                        clearable solo
-                        class="ml-2 my-0"
-                        :disabled="this.$auth.$state.user == null"
-                    >
-                        <template slot="item" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                        <template slot="selection" slot-scope="data">{{ data.item.created_time }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                    </v-autocomplete>
-                </v-col>
-                <v-col cols="12" md="1" v-if="true">
-                    <v-btn tile color="purple darken-2" style="border:1px white solid !important;" dark @click="setParm()">測試參數</v-btn>
-                </v-col>
-                <v-col cols="12" md="1">
-                    <v-btn tile color="purple darken-2" style="border:1px white solid !important;" dark @click="resetParm()">重設</v-btn>
-                </v-col>
-                <v-col cols="12" md="2">
-                    <v-icon @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
-                    <v-icon @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
-                </v-col>
-            </v-row>
             <v-row align="center" class="text-center subtitle-1">
                 <!-- A池 -->
                 <v-col cols="12" md="2">
@@ -65,8 +20,8 @@
                         class="mt-1"
                         :disabled="this.$auth.$state.user == null"
                     >
-                        <template slot="item" slot-scope="data">({{data.item.id}})-{{ data.item.created_time.substring(5,10).replace('-','/') }}-{{ data.item.created_time.substring( data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                        <template slot="selection" slot-scope="data">{{ data.item.created_time.substring( data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
                         <template slot="append">
                             <v-icon :disabled="!this.querrySelectedLst['1']" color="red" @click="delQuerry('1')" title="刪除">mdi-delete</v-icon>
                             <v-icon :disabled="!this.querrySelectedLst['1']" color="green" @click="patchQuerry('1')" title="覆蓋">mdi-pen</v-icon>
@@ -90,45 +45,45 @@
                             class="mt-1"
                             :disabled="this.$auth.$state.user == null"
                         >
-                        <template slot="item" slot-scope="data">({{ data.item.id }})-{{ data.item.created_time.substring(5, 10).replace('-', '/') }}-{{ data.item.created_time.substring(data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                        <template slot="selection" slot-scope="data">{{ data.item.created_time.substring(data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
                         <template slot="append">
                                 <v-icon :disabled="!this.querrySelectedLst['2']" color="red" @click="delQuerry('2')" title="刪除">mdi-delete</v-icon>
                                 <v-icon :disabled="!this.querrySelectedLst['2']" color="green" @click="patchQuerry('2')" title="覆蓋">mdi-pen</v-icon>
                             </template>
                         </v-autocomplete>
                     </v-col>
-                <!--  -->
-                <v-col cols="12" md="3">
-                    <div class="white--text display-1" v-text="ShowPoolName"></div>
-                    <V-btn class="px-2 subtitle-1" color="orange lighten-1" style="border:1px white solid !important;" large @click="postParm()">查詢</V-btn>
-                    <V-btn class="px-2 subtitle-1" color="orange lighten-1" style="border:1px white solid !important;" large @click="resetParm()">重設</V-btn>
-                </v-col>
+                <!-- 中間項目 -->
+                    <v-col cols="12" md="3">
+                        <div class="white--text display-1" v-text="ShowPoolName"></div>
+                        <V-btn class="px-2 subtitle-1" color="orange lighten-1" style="border:1px white solid !important;" large @click="postParm()">查詢</V-btn>
+                        <V-btn class="px-2 subtitle-1" color="orange lighten-1" style="border:1px white solid !important;" large @click="resetParm()">重設</V-btn>
+                    </v-col>
                  <!-- C池 -->
                 <v-col cols="12" md="2">
-                    <v-btn class="px-2 black--text" color="purple accent-1" :disabled="!((BaseParm['Factory'] + BaseParm['PondArea']+ BaseParm['Pond']) == pondNameLst['3'] && (this.$auth.$state.user != null) )" dark large min-width="100" @click="postParm(true)">C池<br/>儲存並查詢</v-btn>
-                    <v-btn class="px-2" color="purple accent-1" large min-width="100" @click="setParm('c')">C池參數</v-btn>
-                    <v-autocomplete
-                        :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
-                        v-model="querrySelectedLst['3']"
-                        :items="querryDataLst['3']"
-                        item-value="created_time"
-                        dense filled
-                        hide-details
-                        @mousedown="getQuerry2('3')"
-                        @change="importQuerry2('3')"
-                        clearable solo
-                        class="mt-1"
-                        :disabled="this.$auth.$state.user == null"
-                    >
-                    <template slot="item" slot-scope="data">({{ data.item.id }})-{{ data.item.created_time.substring(5, 10).replace('-', '/') }}-{{ data.item.created_time.substring(data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                        <template slot="selection" slot-scope="data">{{ data.item.created_time.substring(data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <v-btn class="px-2 black--text" color="purple accent-1" :disabled="!((BaseParm['Factory'] + BaseParm['PondArea'] + BaseParm['Pond']) == pondNameLst['3'] && (this.$auth.$state.user != null))" dark large min-width="100" @click="postParm(true)">C池<br/>儲存並查詢</v-btn>
+                        <v-btn class="px-2" color="purple accent-1" large min-width="100" @click="setParm('c')">C池參數</v-btn>
+                        <v-autocomplete
+                            :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
+                            v-model="querrySelectedLst['3']"
+                            :items="querryDataLst['3']"
+                            item-value="created_time"
+                            dense filled
+                            hide-details
+                            @mousedown="getQuerry2('3')"
+                            @change="importQuerry2('3')"
+                            clearable solo
+                            class="mt-1"
+                            :disabled="this.$auth.$state.user == null"
+                        >
+                        <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                        <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
                         <template slot="append">
                                 <v-icon :disabled="!this.querrySelectedLst['3']" color="red" @click="delQuerry('3')" title="刪除">mdi-delete</v-icon>
                                 <v-icon :disabled="!this.querrySelectedLst['3']" color="green" @click="patchQuerry('3')" title="覆蓋">mdi-pen</v-icon>
-                            </template>
-                    </v-autocomplete>
-                </v-col>
+                        </template>
+                        </v-autocomplete>
+                    </v-col>
                 <!-- D池 -->
                 <v-col cols="12" md="2">
                     <v-btn class="px-2 black--text" color="purple accent-1" :disabled="!((BaseParm['Factory'] + BaseParm['PondArea']+ BaseParm['Pond']) == pondNameLst['4'] && (this.$auth.$state.user != null) )" dark large min-width="100" @click="postParm(true)">D池<br/>儲存並查詢</v-btn>
@@ -146,14 +101,15 @@
                         class="mt-1"
                         :disabled="this.$auth.$state.user == null"
                     >
-                    <template slot="item" slot-scope="data">({{ data.item.id }})-{{ data.item.created_time.substring(5, 10).replace('-', '/') }}-{{ data.item.created_time.substring(data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                        <template slot="selection" slot-scope="data">{{ data.item.created_time.substring(data.item.created_time.length - 8) }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                        <template slot="append">
-                                <v-icon :disabled="!this.querrySelectedLst['4']" color="red" @click="delQuerry('4')" title="刪除">mdi-delete</v-icon>
-                                <v-icon :disabled="!this.querrySelectedLst['4']" color="green" @click="patchQuerry('4')" title="覆蓋">mdi-pen</v-icon>
-                            </template>
+                    <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                    <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                    <template slot="append">
+                            <v-icon :disabled="!this.querrySelectedLst['4']" color="red" @click="delQuerry('4')" title="刪除">mdi-delete</v-icon>
+                            <v-icon :disabled="!this.querrySelectedLst['4']" color="green" @click="patchQuerry('4')" title="覆蓋">mdi-pen</v-icon>
+                    </template>
                     </v-autocomplete>
                 </v-col>
+                <!-- 其他 -->
                 <v-col cols="12" md="1">
                     <v-icon @click="expandPanel(true)" title="展開" dark>mdi-view-dashboard</v-icon>
                     <v-icon @click="expandPanel(false)" title="收縮" dark>mdi-view-stream</v-icon>
@@ -187,9 +143,26 @@
                                                         <v-text-field v-model="BaseParm['Factory']" disabled dense hide-details class="mt-0 blue lighten-5"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖場</span></v-text-field>
                                                         <v-text-field v-model="BaseParm['PondArea']" disabled dense hide-details class="mt-0 blue lighten-5"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖區域</span></v-text-field>
                                                         <v-text-field v-model="BaseParm['Pond']" disabled dense hide-details class="mt-0 blue lighten-3"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖池</span></v-text-field>
-                                                        
+                                                        <v-menu v-model="menu_inspecteddate" :close-on-content-click="false" :nudge-right="40"
+                                                            transition="scale-transition" offset-y min-width="auto">
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <v-text-field v-model="BaseParm['InspectedDate']" class="mt-0 blue lighten-1" dark clearable readonly dense hide-details 
+                                                                    v-bind="attrs" v-on="on"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">資料日期<v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon></span></v-text-field>
+                                                            </template>
+                                                            <v-date-picker v-model="BaseParm['InspectedDate']" locale="zh-tw" no-title @input="
+                                                            menu_inspecteddate = false;
+                                                            "></v-date-picker>
+                                                        </v-menu>
+                                                        <v-text-field
+                                                            v-model="BaseParm['InspectedTime']"
+                                                            value="" dense
+                                                            type="time"
+                                                            prepend-icon="mdi-timeline-clock-outline"
+                                                            @click:prepend="() => (BaseParm['InspectedTime'] = getNowTime())"
+                                                            ><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">資料時間<v-icon @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon></span></v-text-field>
+
                                                         <v-text-field v-if="false" v-model="BaseParm['Shape']" dense hide-details class="mt-0 blue lighten-3"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">水池型狀</span></v-text-field>
-                                                        <v-select v-model="BaseParm['Shape']" clearable :items="optData.Shape" filled dense hide-details class="mt-0 blue lighten-3" item-value="name_en" item-text="name_ch"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">水池型狀</span></v-select>
+                                                        <v-select v-model="BaseParm['Shape']" clearable :items="optData.Shape" filled dense hide-details class="mt-0 blue lighten-3" item-value="name_en" item-text="name_ch"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">水池形狀</span></v-select>
 
                                                         <v-text-field v-if="false" v-model="BaseParm['StartedDate']" dense hide-details class="mt-0 blue lighten-1" dark><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖起始日</span></v-text-field>
                                                         <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
@@ -410,6 +383,7 @@
                                                 <v-card-text class="pa-0 mx-0">
                                                     <v-form ref="BacteriaData">
                                                         <v-text-field v-model.number="BacteriaData['Biofloc']" dense hide-details class="mt-0 yellow lighten-5"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">生物絮團(ml)</span></v-text-field>
+                                                        <v-text-field v-model.number="BacteriaData['TotalPlateCount']" dense hide-details class="mt-0 yellow lighten-5"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">總菌(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['BacillusSubtilis']" dense hide-details class="mt-0 yellow lighten-5"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">枯草桿菌(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['VibrioAlginolyticus']" dense hide-details class="mt-0 yellow lighten-3"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">溶藻弧菌(白)(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['VibrioVulnificus']" dense hide-details class="mt-0 yellow lighten-3"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">創傷弧菌(藍)(CFU)</span></v-text-field>
@@ -773,6 +747,7 @@
 
 <script>
 import nerdamer from 'nerdamer';
+import dayjs from "dayjs";
 import _ from "lodash";
 export default {
     layout: "emptynologin",
@@ -784,7 +759,7 @@ export default {
     data() {
         return {
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
-            BaseParm:{},//養殖基本參數
+            BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
             FeedParm:{},//飼料參數
             MakeWaterParm:{},//做水參數
@@ -815,13 +790,23 @@ export default {
                         critical: {1: ['Temp > 32'], 2: ['Temp < 15']}
                     }
             },
-            menu_startdate:false,
+            menu_startdate:false,//養殖起日
+            rules: { require: [v => !!v || "*必要項目"] },
+            menu_inspecteddate:false,//資料日
         }
     },
     methods: {
+        getNowDate: function() {
+        let mydate = dayjs().format("YYYY-MM-DD");
+        return mydate;
+        },
+        getNowTime: function() {
+        let mytime = dayjs().format("HH:mm");
+        return mytime;
+        },
         addFeedQty:function(){
             if(typeof(this.FeedParm['LastFeedInput'])=='number'){
-                this.FeedParm['CumulativeFeedAmountInput'] += this.FeedParm['LastFeedInput'];
+                this.FeedParm['CumulativeFeedAmountInput'] =(this.FeedParm['CumulativeFeedAmountInput'] + this.FeedParm['LastFeedInput']).toFixed(3);
             }else{
                 return;
             }
@@ -925,6 +910,7 @@ export default {
                 return;
             }
             await this.$axios.get(url, {params:allParm}).then(res => {
+                console.log("query-log API:" + res.request.responseURL);
                 if(res.status==200){
                     this.querryDataLst[querrypool] = res.data;
                 }
@@ -957,11 +943,9 @@ export default {
                     this.querryData = res.data;
                 }
                 else if(res.status == 400){
-                    debugger;
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
                 else{
-                    debugger;
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
 
@@ -986,6 +970,7 @@ export default {
                 });
                 console.log("querrySelectedLst['']:", this.querrySelectedLst[querrypool]);
                 var input_data = this.querryDataLst[querrypool].filter(x => x.created_time == this.querrySelectedLst[querrypool])[0].input_data;
+                console.log("input_data:",input_data);
                 this.BaseParm = _.cloneDeep(input_data.BaseParm);
                 this.BreedingParm = _.cloneDeep(input_data.BreedingParm);
                 this.FeedParm = _.cloneDeep(input_data.FeedParm);
@@ -1072,6 +1057,8 @@ export default {
                 await this.postParm(false,null,true);//isSaved=false,querrypool=null,isPatch=false
                 //再儲存
                     //取參數
+                    this.UserData.Username = (this.$auth.$state.user==null)?"":this.$auth.$state.user.email;
+                    this.UserData.IsSaved = true;
                     var input_data = {
                         'BaseParm': this.BaseParm,
                         'BreedingParm': this.BreedingParm,
@@ -1131,7 +1118,7 @@ export default {
                 'BacteriaData':this.BacteriaData,
                 'UserData':this.UserData
             };
-            //console.log("all參數：",allParm);
+            console.log("all參數：",allParm);
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
             await this.$axios.post(url, allParm).then(res => {
                 if(res.status==200){
@@ -1148,7 +1135,6 @@ export default {
                     }
                     // console.log("suggData:",this.suggData);
                 } else {
-                    debugger;
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
                 console.log("新增API:" + res.request.responseURL);
@@ -1171,7 +1157,6 @@ export default {
                 // pondLst.forEach(element => {
                 //     console.log(pondLst[element]);
                 //     console.log(this.pondNameLst[pondLst[element]]);
-                //     debugger;
                 // });
 
             }
@@ -1191,6 +1176,9 @@ export default {
                     "WaterSourceSalinity": 15,
                     "WaterBody": 123,
                     "Density": 403,
+                    "InspectedDate":this.getNowDate(),
+                    "InspectedTime":this.getNowTime(),
+
                     //"Days": 15
                 };
                 this.BreedingParm = {
@@ -1266,6 +1254,8 @@ export default {
                     "WaterSourceSalinity": 15,
                     "WaterBody": 114,
                     "Density": 515,
+                    "InspectedDate":this.getNowDate(),
+                    "InspectedTime":this.getNowTime(),
                     //"Days": 15
                 };
                 this.BreedingParm = {
@@ -1341,6 +1331,8 @@ export default {
                     "WaterSourceSalinity": 15,
                     "WaterBody": 303,
                     "Density": 223,
+                    "InspectedDate":this.getNowDate(),
+                    "InspectedTime":this.getNowTime(),
                     //"Days": 15
                 };
                 this.BreedingParm = {
@@ -1416,6 +1408,8 @@ export default {
                     "WaterSourceSalinity": 15,
                     "WaterBody": 228,
                     "Density": 296,
+                    "InspectedDate":this.getNowDate(),
+                    "InspectedTime":this.getNowTime(),
                     //"Days": 15
                 };
                 this.BreedingParm = {
@@ -1480,6 +1474,7 @@ export default {
                 };
                 return;
             }
+            
             this.$toast.error(`pool:${poolbtn}，未定義`, { duration: 2000 });
         },
         resetParm:async function(){
