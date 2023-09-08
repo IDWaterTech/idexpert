@@ -1026,6 +1026,7 @@ export default {
           console.log("API:" + res.request.responseURL);
           if(res.data=='欄位資料有誤'){
             this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+            window.location.href='/indicator/index2'
           }else{
             let data2 = _.cloneDeep(res.data);
             // res.data.items.forEach(function(x) {//給折線圖用的資料
@@ -1153,6 +1154,7 @@ export default {
         })
         .catch(err => {
           this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+          // window.location.href='/indicator/index2'
         });
         return result;
     },
