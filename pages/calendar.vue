@@ -782,6 +782,7 @@ export default {
             console.log("飼料表設定-新增 api:", res.request.responseURL);
           })
           .catch(err => {
+
             this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
           });
     },
@@ -955,6 +956,9 @@ export default {
       switch (this.level) {
         case 1:
           parms.factory_id = this.poolidcpd.join();
+          if (parms.factory_id == "") {
+            return;
+          }
           break;
         case 2:
           parms.pond_area_id = this.poolidcpd.join();
@@ -1088,12 +1092,16 @@ export default {
               this.dialog.add = false;
               this.$toast.success(`新增成功`, { duration: 2000 });
             }else{
+              console.log("parm:",parm);
+              console.log("res:",res);
+
               this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
             }
             console.log("event api:", res.request.responseURL);
           })
           .catch(err => {
-            this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
+            console.log("parm:",parm);
+            this.$toast.error(`資料新增錯誤:${err.message}`, { duration: 2000 });
           });
           this.getEventData();//更新畫面資料
          }
