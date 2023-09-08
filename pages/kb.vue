@@ -160,9 +160,8 @@
                                                             prepend-icon="mdi-timeline-clock-outline"
                                                             @click:prepend="() => (BaseParm['InspectedTime'] = getNowTime())"
                                                             ><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">資料時間<v-icon @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon></span></v-text-field>
-
-                                                        <v-text-field v-if="false" v-model="BaseParm['Shape']" dense hide-details class="mt-0 blue lighten-3"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">水池型狀</span></v-text-field>
-                                                        <v-select v-model="BaseParm['Shape']" clearable :items="optData.Shape" filled dense hide-details class="mt-0 blue lighten-3" item-value="name_en" item-text="name_ch"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">水池形狀</span></v-select>
+                                                            <v-text-field v-model.number="BaseParm['PondBottomArea']" type="number" dense hide-details class="mt-0 blue lighten-3"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖池底面積(m2)</span></v-text-field>
+                                                        <v-select v-model="BaseParm['Shape']" clearable :items="optData.Shape" filled dense hide-details class="mt-0 blue lighten-3" item-value="name_en" item-text="name_ch"><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖池形狀</span></v-select>
 
                                                         <v-text-field v-if="false" v-model="BaseParm['StartedDate']" dense hide-details class="mt-0 blue lighten-1" dark><span style="width:150px;" class="pa-0 ma-0 text-center" slot="prepend">養殖起始日</span></v-text-field>
                                                         <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
@@ -341,8 +340,7 @@
                                                 <!-- <v-divider></v-divider> -->
                                                 <v-card-text class="pa-0 mx-0">
                                                     <v-form ref="ObservationData">
-                                                        <v-text-field v-if="false" v-model.number="ObservationData['IsMoultingPeriod']" dense hide-details class="mt-0 yellow lighten-5"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否為脫殼期</span></v-text-field>
-                                                        <v-select v-model="ObservationData['IsMoultingPeriod']" clearable :items="optData.IsMoultingPeriod" filled dense hide-details class="mt-0 yellow lighten-5" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否為脫殼期</span></v-select>
+                                                        <v-select v-model="ObservationData['IsShell']" clearable :items="optData.IsMoultingPeriod" filled dense hide-details class="mt-0 yellow lighten-5" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否脫殼</span></v-select>
 
                                                         <v-text-field v-if="false" v-model="ObservationData['IntestinalColor']" dense hide-details class="mt-0 yellow lighten-5"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">腸線顏色</span></v-text-field>
                                                         <v-select v-model="ObservationData['IntestinalColor']" clearable :items="optData.IntestinalColor" filled dense hide-details class="mt-0 yellow lighten-5" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">腸線顏色</span></v-select>
@@ -353,13 +351,11 @@
                                                         <v-text-field v-if="false" v-model="ObservationData['MuscleColor']" dense hide-details class="mt-0 yellow lighten-3"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">肌肉顏色</span></v-text-field>
                                                         <v-select v-model="ObservationData['MuscleColor']" clearable :items="optData.MuscleColor" filled dense hide-details class="mt-0 yellow lighten-3" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">肌肉顏色</span></v-select>
 
-                                                        <v-text-field v-if="false" v-model="ObservationData['BodyIllnessLocation']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">軀體異色位置</span></v-text-field>
-                                                        <v-select v-model="ObservationData['BodyIllnessLocation']" clearable :items="optData.BodyIllnessLocation" filled dense hide-details class="mt-0 yellow lighten-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">軀體異色位置</span></v-select>
+                                                        <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0 yellow lighten-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦體顏色</span></v-select>
 
-                                                        <v-text-field v-if="false" v-model="ObservationData['Moulting']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦殼狀況</span></v-text-field>
-                                                        <v-select v-model="ObservationData['Moulting']" clearable :items="optData.Moulting" filled dense hide-details class="mt-0 yellow lighten-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦殼狀況</span></v-select>
+                                                        <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0 yellow lighten-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦體形狀</span></v-select>
 
-                                                        <v-text-field v-model.number="ObservationData['LeftoverRate']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">觀察網殘餌量(%)</span></v-text-field>
+                                                        <v-text-field v-model.number="ObservationData['Leftover']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">觀察網殘餌量(g)</span></v-text-field>
                                                         <v-text-field v-model.number="ObservationData['DeadShrimpQty']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">死蝦數量</span></v-text-field>
                                                         <v-text-field v-model.number="ObservationData['ShrimpLength']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦子長度(cm)</span></v-text-field>
                                                         <!-- <v-text-field v-model.number="ObservationData['ObsFeed']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">觀察網投餌量(g)</span></v-text-field> -->
@@ -389,17 +385,19 @@
                                                         <v-text-field v-model.number="BacteriaData['VibrioVulnificus']" dense hide-details class="mt-0 yellow lighten-3"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">創傷弧菌(藍)(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['VibrioEnteritidis']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">腸炎弧菌(紫)(CFU)</span></v-text-field>
                                                         <v-text-field v-model.number="BacteriaData['VibrioCholerae']" dense hide-details class="mt-0 yellow lighten-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">霍亂弧菌(靛)(CFU)</span></v-text-field>
-                                                        <v-text-field v-if="false" v-model.number="BacteriaData['IsEMSInfected']" dense hide-details class="mt-0 yellow"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-text-field>
-                                                        <v-select v-model="BacteriaData['IsEMSInfected']" clearable :items="optData.IsEMSInfected" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-select>
+                                                        
+                                                        <v-select v-model="BacteriaData['IsWSSV']" clearable :items="optData.IsWSSV" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否WSSV感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IsEMSPlasmid']" clearable :items="optData.IsEMSPlasmid" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS(plasmid)感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IsEMSToxin']" clearable :items="optData.IsEMSToxin" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS(toxin)感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IsEHP']" clearable :items="optData.IsEHP" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否EHP感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IsTSV']" clearable :items="optData.IsTSV" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否TSV感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IMNV']" clearable :items="optData.IMNV" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否IMNV感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IsIHHNV']" clearable :items="optData.IsIHHNV" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否IHHNV感染</span></v-select>
 
-                                                        <v-text-field v-if="false" v-model.number="BacteriaData['IsEHPInfected']" dense hide-details class="mt-0 yellow"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否EHP感染</span></v-text-field>
+                                                        <!-- <v-select v-model="BacteriaData['IsEMSInfected']" clearable :items="optData.IsEMSInfected" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-select>
                                                         <v-select v-model="BacteriaData['IsEHPInfected']" clearable :items="optData.IsEHPInfected" filled dense hide-details class="mt-0 yellow" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EHP感染</span></v-select>
-
-                                                        <v-text-field v-if="false" v-model.number="BacteriaData['IsVirusInfected']" dense hide-details class="mt-0 yellow darken-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否病毒性感染</span></v-text-field>
                                                         <v-select v-model="BacteriaData['IsVirusInfected']" clearable :items="optData.IsVirusInfected" filled dense hide-details class="mt-0 yellow darken-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否病毒性感染</span></v-select>
-
-                                                        <v-text-field v-if="false" v-model.number="BacteriaData['IsBacteriumInfected']" dense hide-details class="mt-0 yellow darken-1"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">是否細菌性感染</span></v-text-field>
-                                                        <v-select v-model="BacteriaData['IsBacteriumInfected']" clearable :items="optData.IsBacteriumInfected" filled dense hide-details class="mt-0 yellow darken-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否細菌性感染</span></v-select>
+                                                        <v-select v-model="BacteriaData['IsBacteriumInfected']" clearable :items="optData.IsBacteriumInfected" filled dense hide-details class="mt-0 yellow darken-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否細菌性感染</span></v-select> -->
 
                                                     </v-form>
                                                 </v-card-text>
@@ -857,13 +855,21 @@ export default {
                 this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
             })
             .finally(() => {
+                var isYN = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
                     //ObservationData
                     this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
                     //BacteriaData
-                    this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    this.optData.IsVirusInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
-                    this.optData.IsBacteriumInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
+                    this.optData.IsWSSV = _.cloneDeep(isYN);
+                    this.optData.IsEMSPlasmid = _.cloneDeep(isYN);
+                    this.optData.IsEMSToxin = _.cloneDeep(isYN);
+                    this.optData.IsEHP = _.cloneDeep(isYN);
+                    this.optData.IsTSV = _.cloneDeep(isYN);
+                    this.optData.IsIMNV = _.cloneDeep(isYN);
+                    this.optData.IsIHHNV = _.cloneDeep(isYN);
+                    // this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                    // this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                    // this.optData.IsVirusInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
+                    // this.optData.IsBacteriumInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
                 });
         },
         getQuerry2:async function(querrypool=1,forceReget=false){
