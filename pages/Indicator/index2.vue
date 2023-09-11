@@ -571,7 +571,6 @@
                             :max="num_max"
                           ></el-input-number>
                         </div>
-                        
                       </v-col>
                     </v-row>
                   </v-container>
