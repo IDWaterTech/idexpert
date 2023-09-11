@@ -54,8 +54,8 @@ export default {
       chartExtend: {
         legend: {
           selected: this.defaultitem,
-          itemWidth: 8,
-          itemHeight: 8,
+          itemWidth: 12,
+          itemHeight: 12,
           left: 0,
           textStyle:{
             color:'#00324E',

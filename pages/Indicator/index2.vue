@@ -51,7 +51,8 @@
                   no-data-text="查無資料"
                   label="*指定項目(必選)" hide-details
                   class="select-color"
-                  clearable>
+                  clearable
+                  @change="changeDefItem()">
                   <template v-slot:item="data">{{`　${data.item.name}`}}</template>
                 </v-autocomplete>
               </v-col>
@@ -343,7 +344,7 @@
                   hide-details
                 ></v-autocomplete>
               </v-col>
-              
+              <!-- 查詢 -->
               <div class="align-self-center" style="padding: 12px;">
                 <v-btn
                   tile
@@ -360,8 +361,8 @@
                   >查詢</v-btn
                 >
               </div>
-              <v-col cols="12">
               <!-- 批次刪除Dialog -->
+              <v-col cols="12">
               <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
                 <v-card height="230">
                   <v-card-title>驗證碼</v-card-title>
@@ -380,277 +381,207 @@
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
-            <!-- 編修紀錄 -->
-            <div class="edit">
-              <v-row>
-                <v-col cols="12">
-                  <!-- 編輯項目 -->
-                  <v-dialog v-model="editDialog" max-width="500px" class="indicator-dialog">
-                    <v-card>
-                      <v-card-title>
-                        <span class="text-h5">編輯項目</span>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-container>
-                          <v-row>
-                            <v-col cols="12" md="12">
-                              <v-text-field
-                                v-model="editedItem.id"
-                                disabled dense filled
-                              ><span style="width:50px;" slot="prepend">id</span></v-text-field>
-                              <v-text-field
-                                v-model="editedItem.inspected_date"
-                                disabled dense filled
-                              ><span style="width:50px;" slot="prepend">日期</span></v-text-field>
-                              <!-- <v-text-field
-                                v-model="editedItem.value"
-                                autocomplate="off"
-                                type="number" dense filled
-                              ><span style="width:50px;" slot="prepend">值</span></v-text-field> -->
-                              <div style="display: flex;align-items: center;">
-                                <span style="width:50px;" class="mx-4" slot="prepend">值</span>
-                                <el-input-number
-                                  class="ml-2"
-                                  v-model="editedItem.value"
-                                  size="medium"
-                                  :precision="2"
-                                  :step="0.1"
-                                  :min="num_min"
-                                  :max="num_max"
-                                ></el-input-number>
-                              </div>
-                              
-                            </v-col>
-                          </v-row>
-                        </v-container>
-                      </v-card-text>
-                      <v-card-actions style="justify-self: flex-end;width: 100%;">
-                        <v-spacer></v-spacer>
-                        <v-btn tile @click="editDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
-                          取消
-                        </v-btn>
-                        <v-btn tile @click="editsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
-                          確定
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                  <v-card class="result-card"
-                    :style="{borderRadius:`${isEdit?'4px':'4px 4px 0 0'}`}">
-                    <div class="header-bar">
-                      <h5>編修紀錄</h5>
-                      <v-btn icon @click="isEdit=!isEdit">
-                        <v-icon v-show="isEdit">mdi-triangle-small-down</v-icon>
-                        <v-icon v-show="!isEdit">mdi-triangle-small-up</v-icon>
-                      </v-btn>
-                    </div>
-                    <div v-show="isEdit" class="result-content" style="padding-top: 12px;">
-                      <v-data-table
-                        class="edit-table"
-                        v-model="selected"
-                        :headers="headers"
-                        :items="item2.items" dense
-                        :footer-props="footerProps"
-                        :loading="loading"
-                        :show-select="showselect"
-                        no-data-text="查無資料">
-                        <!-- <template v-slot:[`item2.actions`]="{ aitem }">
-                          <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(aitem.group)" @click="editItem(aitem)" color="success">
-                            mdi-pencil
-                          </v-icon>
-                          <v-icon small @click="delItem(aitem)" :disabled="['feed','pbio'].includes(aitem.group)" color="red">
-                            mdi-delete
-                          </v-icon>
-                        </template> -->
-                        <template v-slot:item.actions="{ item }">
-                          <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
-                            mdi-pencil
-                          </v-icon>
-                          <v-icon small :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)"  color="red">
-                            mdi-delete
-                          </v-icon>
-                        </template>
-                        <template v-slot:top>
-                          <v-toolbar flat>
-                            <v-spacer></v-spacer>
-                            <v-checkbox
-                              v-model="showselect"
-                              label=""
-                              color="red"
-                              hide-details
-                            >
-                            </v-checkbox>
-                            <v-btn class="primary" tile small :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
-                          </v-toolbar>
+            <v-row>
+              <v-col cols="12">
+                <v-card class="result-card">
+                  <div class="header-bar">
+                    <v-tabs v-model="nowTab" show-arrows>
+                      <!-- 上方tab -->
+                      <v-tab
+                          v-for="tab in tabs"
+                          :key="tab"
+                          :href="`#` + tab">
+                      {{ tab }}
+                      </v-tab>
+                      <!-- tab內容 -->
+                      <v-tabs-items v-model="nowTab" touchless>
+                        <v-tab-item 
+                          v-for="tab in tabs"
+                          :key="tab"
+                          :value="tab"
+                          style="margin-bottom: 16px;">
+                          <!-- 編修紀錄 -->
+                          <div v-show="nowTab=='編修紀錄'" class="result-content">
+                            <v-data-table
+                              class="edit-table"
+                              v-model="selected"
+                              :headers="headers"
+                              :items="item2.items" dense
+                              :footer-props="footerProps"
+                              :loading="loading"
+                              :show-select="showselect"
+                              no-data-text="查無資料">
+                              <template v-slot:item.actions="{ item }">
+                                <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
+                                  mdi-pencil
+                                </v-icon>
+                                <v-icon small :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)"  color="red">
+                                  mdi-delete
+                                </v-icon>
+                              </template>
+                              <template v-slot:top>
+                                <v-toolbar flat>
+                                  <v-spacer></v-spacer>
+                                  <v-checkbox
+                                    v-model="showselect"
+                                    label=""
+                                    color="red"
+                                    hide-details
+                                    :disabled="disabledAllDel"
+                                  >
+                                  </v-checkbox>
+                                  <v-btn tile small :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
+                                </v-toolbar>
+                                
+                                <!-- 刪除項目 -->  
+                                <v-dialog v-model="delDialog" max-width="500px" class="indicator-dialog">
+                                  <v-card>
+                                    <v-card-title>
+                                      <span class="text-h5">是否刪除該項目?</span>
+                                    </v-card-title>
+                                    <v-card-text>
+                                      <v-container>
+                                        <v-row>
+                                          <v-col cols="12" md="12">
+                                            <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"> <span style="width: 50px;">id：</span>{{ editedItem.id }}</div>
+                                            <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">時間：</span>{{ editedItem.inspected_date }}</div>
+                                            <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">值：</span>{{ editedItem.value }}</div>
+                                          </v-col>
+                                        </v-row>
+                                      </v-container>
+                                    </v-card-text>
+                                    <v-card-actions style="justify-self: flex-end;width: 100%;">
+                                      <v-spacer></v-spacer>
+                                      <v-btn text @click="delDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
+                                        取消</v-btn>
+                                      <v-btn text @click="delsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
+                                        確定刪除</v-btn>
+                                    </v-card-actions>
+                                  </v-card>
+                                </v-dialog>
+                              </template>
+                            </v-data-table>
+                          </div>
                           
-                          <!-- 刪除項目 -->  
-                          <v-dialog v-model="delDialog" max-width="500px" class="indicator-dialog">
-                            <!-- <v-card>
-                              <v-card-title class="text-h5"> 是否刪除該項目?</v-card-title>
-                              <v-card-text class="text-h5">
-                                id:{{ editedItem.id }}<br />
-                                時間：{{ editedItem.inspected_date }}<br />
-                                值：{{ editedItem.value }}
-                              </v-card-text>
-                              <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn text @click="delDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;"
-                                  >取消</v-btn>
-                                <v-btn text @click="delsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;"
-                                  >確定刪除</v-btn
+                          <!-- 事件紀錄 -->
+                          <div v-show="nowTab=='事件紀錄'" class="result-content event">
+                            <v-data-table
+                              v-if="nowTab == '事件紀錄'"
+                              class="edit-table"
+                              :headers="eventHeaders"
+                              :items="eventTableData" dense
+                              :footer-props="footerProps"
+                              no-data-text="查無資料">
+                              <template v-slot:item.event_level_name="{ item }">
+                                <v-chip
+                                  :color="item.color"
+                                  style="font-size: 12px;"
+                                  dark
                                 >
-                                <v-spacer></v-spacer>
-                              </v-card-actions>
-                            </v-card> -->
-                            <v-card>
-                              <v-card-title>
-                                <span class="text-h5">是否刪除該項目?</span>
-                              </v-card-title>
-                              <v-card-text>
-                                <v-container>
-                                  <v-row>
-                                    <v-col cols="12" md="12">
-                                      <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"> <span style="width: 50px;">id：</span>{{ editedItem.id }}</div><br>
-                                      <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">時間：</span>{{ editedItem.inspected_date }}</div><br>
-                                      <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">值：</span>{{ editedItem.value }}</div>
-                                    </v-col>
-                                  </v-row>
-                                </v-container>
-                              </v-card-text>
-                              <v-card-actions style="justify-self: flex-end;width: 100%;">
-                                <v-spacer></v-spacer>
-                                <v-btn text @click="delDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
-                                  取消</v-btn>
-                                <v-btn text @click="delsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
-                                  確定刪除</v-btn>
-                              </v-card-actions>
-                            </v-card>
-                          </v-dialog>
-                        </template>
-                      </v-data-table>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </div>
-            <!-- 事件紀錄 -->
-            <div class="event">
-              <v-row>
-                <v-col cols="12">
-                  <v-card class="result-card">
-                    <div class="header-bar">
-                      <h5>事件紀錄</h5>
-                      <v-btn icon @click="isEvent=!isEvent">
-                        <v-icon v-show="isEvent">mdi-triangle-small-down</v-icon>
-                        <v-icon v-show="!isEvent">mdi-triangle-small-up</v-icon>
-                      </v-btn>
-                    </div>
-                    <div v-show="isEvent" class="result-content" style="padding-top: 12px;">
-                      <!-- <el-table class="event-table" :data="eventsData" :header-row-style="{ background: '#F4FBFF' }" style="width: 100%;background-color: #F4FBFF;" max-height="300">
-                        <el-table-column label="id" width="50" prop="id" align="center" style="background: #F4FBFF;font-size: 0.75rem;"></el-table-column>
-                        <el-table-column label="事件等級" width="80" prop="event_level_name" align="center" style="background: #F4FBFF;font-size: 0.75rem;">
-                          <template slot-scope="scope">
-                            <v-chip dark :color="scope.row.color">{{scope.row.event_level_name}}</v-chip>
-                          </template>
-
-                        </el-table-column>
-                        <el-table-column label="事件類別" width="80" prop="event_category_name" align="center" style="background: #F4FBFF;font-size: 0.75rem;"></el-table-column>
-                        <el-table-column label="時間" width="200" align="center" style="background: #F4FBFF;font-size: 0.75rem;">
-                          <template slot-scope="scope">
-                            起：{{scope.row.started_date}}<br/>訖：{{scope.row.ended_date}}
-                          </template>
-                        </el-table-column>
-                        <el-table-column label="內容" align="left" style="background: #F4FBFF;font-size: 0.75rem;">
-                          <template slot-scope="scope">
-                            全日事件：{{scope.row.is_all_day?'Yes':'No'}}<br/>
-                            標題：{{scope.row.title}} [最後編輯： {{scope.row.created_user}}]<br/>
-                            內容：<div style="white-space: pre-wrap;">{{scope.row.content}}</div>
-                          </template>
-                        </el-table-column>
-                        <el-table-column label="資料範圍" width="200" align="center" style="background: #F4FBFF;font-size: 0.75rem;">
-                          <template slot-scope="scope">
-                            {{scope.row.items.map(x=>x.name).join()}}
-                          </template>
-                        </el-table-column>
-                      </el-table> -->
-
-                      <v-data-table
-                        class="edit-table"
-                        :headers="eventHeaders"
-                        :items="eventTableData" dense
-                        :footer-props="footerProps"
-                        no-data-text="查無資料">
-                        <template v-slot:item.event_level_name="{ item }">
-                          <v-chip
-                            :color="item.color"
-                            style="font-size: 12px;"
-                            dark
-                          >
-                            {{ item.event_level_name }}
-                          </v-chip>
-                        </template>
-                        <template v-slot:item.time="{ item }">
-                          <div style="width:100%;text-align: left;display: flex;justify-content: center;">
-                            <span v-html="item.time" style="line-height: 24px;"></span>
+                                  {{ item.event_level_name }}
+                                </v-chip>
+                              </template>
+                              <template v-slot:item.time="{ item }">
+                                <div style="width:100%;text-align: left;display: flex;justify-content: center;">
+                                  <span v-html="item.time" style="line-height: 24px;"></span>
+                                </div>
+                              </template>
+                              <template v-slot:item.content="{ item }">
+                                <div style="width:100%;text-align: left;display: flex;justify-content: center;">
+                                  <span v-html="item.content" style="line-height: 24px;"></span>
+                                </div>
+                              </template>
+                              <template v-slot:item.name="{ item }">
+                                <div style="width:100%;text-align: left;display: flex;justify-content: center;">
+                                  <span v-html="item.name" style="line-height: 24px;"></span>
+                                </div>
+                              </template>
+                            </v-data-table>
                           </div>
-                        </template>
-                        <template v-slot:item.content="{ item }">
-                          <div style="width:100%;text-align: left;display: flex;justify-content: center;">
-                            <span v-html="item.content" style="line-height: 24px;"></span>
+                          
+                          <!-- 圖表 -->
+                          <div v-show="nowTab=='圖表'" class="result-content">
+                            <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
+                              <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                              <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                            </v-row>
+                            <v-row style="width: 100%;">
+                              <WaterQuality_Vcharts2
+                                :rowsData="item.items"
+                                xColName="inspected_date"
+                                :defaultitem="{}"
+                                :loading="waterloading"
+                                :title="item.name"
+                                :chartmin="chartmin"
+                                :chartmax="chartmax"
+                                :markdata="markdata"
+                                :isIndicator="true"
+                                style="width: 100%;"
+                              ></WaterQuality_Vcharts2>
+                            </v-row>
                           </div>
-                        </template>
-                        <template v-slot:item.name="{ item }">
-                          <div style="width:100%;text-align: left;display: flex;justify-content: center;">
-                            <span v-html="item.name" style="line-height: 24px;"></span>
-                          </div>
-                        </template>
-                      </v-data-table>
-                      
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </div>
-            <!-- 圖表 -->
-            <div class="charts">
-              <v-row>
-                <v-col cols="12">
-                  <v-card class="result-card">
-                    <div class="header-bar">
-                      <h5 v-if="defitem.length>0">{{ defitem }}</h5>
-                      <h5 v-else>圖表</h5>
-                      <v-btn icon @click="isChart=!isChart">
-                        <v-icon v-show="isChart">mdi-triangle-small-down</v-icon>
-                        <v-icon v-show="!isChart">mdi-triangle-small-up</v-icon>
-                      </v-btn>
-                    </div>
-                    <div v-show="isChart" class="result-content">
-                      <v-row style="width: 100%;justify-content: flex-end;">
-                        <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
-                        <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
-                      </v-row>
-                      <v-row style="width: 100%;">
-                        <WaterQuality_Vcharts2
-                          :rowsData="item.items"
-                          xColName="inspected_date"
-                          :defaultitem="{}"
-                          :loading="waterloading"
-                          :title="item.name"
-                          :chartmin="chartmin"
-                          :chartmax="chartmax"
-                          :markdata="markdata"
-                          :isIndicator="true"
-                          style="width: 100%;"
-                        ></WaterQuality_Vcharts2>
-                      </v-row>
-                    </div>
-                  </v-card>
-                </v-col>
-                
-                
-              </v-row>
-              
-            </div>
+                              
+                        </v-tab-item>
+                      </v-tabs-items>
+                    </v-tabs>
+                  </div>
+                </v-card>
+              </v-col>
+            </v-row>
+          
+            <!-- 編輯項目 -->
+            <v-dialog v-model="editDialog" max-width="500px" class="indicator-dialog">
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">編輯項目</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="editedItem.id"
+                          disabled dense filled
+                          class="edit-disabled"
+                        ><span style="width:50px;" slot="prepend">id</span></v-text-field>
+                        <v-text-field
+                          v-model="editedItem.inspected_date"
+                          disabled dense filled
+                          class="edit-disabled"
+                        ><span style="width:50px;" slot="prepend">日期</span></v-text-field>
+                        <!-- <v-text-field
+                          v-model="editedItem.value"
+                          autocomplate="off"
+                          type="number" dense filled
+                        ><span style="width:50px;" slot="prepend">值</span></v-text-field> -->
+                        <div style="display: flex;align-items: center;">
+                          <span style="width:50px;" slot="prepend">值</span>
+                          <el-input-number
+                            class="ml-2"
+                            v-model="editedItem.value"
+                            size="medium"
+                            :precision="2"
+                            :step="0.1"
+                            :min="num_min"
+                            :max="num_max"
+                          ></el-input-number>
+                        </div>
+                        
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-card-actions style="justify-self: flex-end;width: 100%;">
+                  <v-spacer></v-spacer>
+                  <v-btn tile @click="editDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
+                    取消
+                  </v-btn>
+                  <v-btn tile @click="editsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
+                    確定
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </div>
         </div>
     </v-card>
@@ -675,7 +606,7 @@ export default {
   },
   head(){
     return{
-      title:'指標資料明細'
+      title:'指標資料修改'
     }
   },
   data() {
@@ -732,8 +663,8 @@ export default {
       waterdatacols: [],
       allcols: {},
       waterloading: false, //折線圖，
-      item: [{ name: "", items: [] }],
-      item2: [{ name: "", items: [] }],
+      item: [{ name: "", items: [] }], // 事件
+      item2: [{ name: "", items: [] }], // 圖表
       //---日曆
       menu_startdate: false,
       menu_enddate:false,
@@ -792,11 +723,11 @@ export default {
       rules: { require: [v => !!v || "*必要項目"] },
       //公式
       formula:"",
-      //查詢結果內容收合
-      isEdit: true,
-      isEvent: true,
-      isChart: true,
-      areas: [],
+      //tab
+      tabs: ['編修紀錄','事件紀錄','圖表'],
+      nowTab: '編修紀錄',
+      //編修紀錄checkbox disable判斷
+      disabledAllDel:true
     };
   },
   async created() {
@@ -841,18 +772,8 @@ export default {
       Number(this.req.sel_area) > 0 ? Number(this.req.sel_area) : 0;
     this.sel_pool =
       Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
-    // if (Number(this.req.sel_pool) > 0) {
-    //   //await this.areachange();
-    //   this.areachange();
-    //   this.sel_pool = Number(this.req.sel_pool);
-    // }
-    
 
-    // this.defitem =this.req.defitem != undefined && this.req.defitem.length > 0 ? this.req.defitem : [];
-    
     this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0].name_ch : [];
-    console.log('defitem',this.defitem);
-    console.log('defitem',this.coldata);
     //---
     // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
     await Promise.all(promiseArray).then(([...data]) => {
@@ -875,7 +796,6 @@ export default {
              allitems.push({ header: colsclass });//group name
              allitems.push(...Object.keys(res.data[colsclass]));
       }
-      console.log('sel',Object.keys(this.req).length)
 
       // this.waterdatacols = allitems;
       this.allcols = Object.assign({}, res.data);//{adv:{每日成長量: "每日成長量(cm)",...},...}
@@ -891,7 +811,6 @@ export default {
     areadata: function() {
       let filtermain = [];
       filtermain = this.maindata;
-      console.log('areadata',filtermain,this.sel_main);
       if (
         //看有沒有選場
         this.sel_main != undefined &&
@@ -911,22 +830,18 @@ export default {
           }
         });
       });
-      console.log('area',area);
-      
-      this.areas = area;
       return area;
-    }
+    },
   },
   methods: {
     factoryChange() {
-      console.log('change',this.sel_main,this.areas);
       this.sel_pool = null;
     },
     areachange: async function() {
       var para = {
         id: this.sel_area
       };
-      console.log('sel_area',this.sel_area)
+      console.log('sel_area',this.sel_area);
       if (this.sel_area) {
         //水池基本資料
         await this.$axios
@@ -946,7 +861,15 @@ export default {
         this.mainpool.items = [];
       }
     },
+    changeDefItem() {
+      // 清除項目
+      if(this.defitem==null) {
+        this.defitem=[];
+      }
+    },
     getdata: async function() {
+      // 編修事件的批次修改checkbox
+      this.disabledAllDel = false;
       //mark line 先歸零
       this.markdata.maxline = -999;
       this.markdata.minline = -999;
@@ -1029,11 +952,6 @@ export default {
             window.location.href='/indicator/index2'
           }else{
             let data2 = _.cloneDeep(res.data);
-            // res.data.items.forEach(function(x) {//給折線圖用的資料
-            //   delete x.id; //"刪掉id欄位"
-            //   delete x.updated_user; //"刪掉updated_user欄位"
-            //   delete x.group;//"刪掉group欄位"
-            // });
             this.item = _.cloneDeep(res.data);
             this.item.items.forEach(function(x) {//給折線圖用的資料
               delete x.id; //"刪掉id欄位"
@@ -1062,6 +980,12 @@ export default {
             if ( this.item.items.length>0) {
               this.getLimitData();
             }
+            // 批次刪除，無資料時disable1不可勾選chexkbox
+            if(this.item2.items.length>0) {
+              this.disabledAllDel = false;
+            }else {
+              this.disabledAllDel = true;
+            }
             this.loading = false;
             console.log('item',this.item);
             console.log('item2',this.item2)
@@ -1078,20 +1002,16 @@ export default {
       var result2 = await this.getEventData(2);
       var result3 = await this.getEventData(3);
       this.eventsData = result1.concat(result2,result3);
+
+      // 事件資料整理，要符合表格欄位
       if(this.eventsData.length>0) {
-        this.eventHeaders = [{
-          align: "center",groupable: false,text: "id",value: "id"
-        },{
-          align: "center",groupable: false,text: "事件等級",value: "event_level_name"
-        },{
-          align: "center",groupable: false,text: "事件類別",value: "event_category_name"
-        },{
-          align: "center",groupable: false,text: "時間",value: "time"
-        },{
-          align: "center", groupable: false,text: "內容",value: "content"
-        },{
-          align: "center",groupable: false,text: "資料範圍",value: "name"
-        }]
+        this.eventHeaders = [
+          {align: "center",groupable: false,text: "id",value: "id"},
+          {align: "center",groupable: false,text: "事件等級",value: "event_level_name"},
+          {align: "center",groupable: false,text: "事件類別",value: "event_category_name"},
+          {align: "center",groupable: false,text: "時間",value: "time"},
+          {align: "center", groupable: false,text: "內容",value: "content"},
+          {align: "center",groupable: false,text: "資料範圍",value: "name"}]
       }
       for(let i=0;i<this.eventsData.length;i++) {
         this.eventTableData.push({
@@ -1105,11 +1025,6 @@ export default {
         })
         if(this.eventsData[i].items.length>0) {
           let data = []
-          // this.eventsData[i].items = [{
-          //   name:'研發一場'
-          // },{
-          //   name:'研發二場'
-          // }]
           for(let x=0;x<this.eventsData[i].items.length;x++) {
             data.push(this.eventsData[i].items[x].name);
           }
@@ -1274,8 +1189,6 @@ export default {
      
       //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
       var colitem = this.coldata.filter(x=>x.name_ch==this.defitem);
-      console.log('colitem',colitem);
-      console.log('colitem',this.coldata);
       if (colitem.length == 1) {
         this.num = {}; //清空
         this.num_min =
@@ -1325,7 +1238,6 @@ export default {
           updated_user: updUser,
           data_group: this.editedItem.class
         };
-        console.log("edit data:", data);
         await this.$axios
           .patch(url, data, { httpsAgent: agent })
           .then(res => {
@@ -1393,7 +1305,6 @@ export default {
     },
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
-      console.log('addSubmit')
       if (valid) {
         // let colclass = this.getItemClass(this.defitem);
         var defitemall = this.coldata.filter(x=>x.name_ch==this.defitem)[0];
@@ -1459,7 +1370,19 @@ export default {
           });
       }
     },
-  }
+  },
+  watch: {
+    nowTab() {
+      // console.log('tab change',this.nowTab,this.item);
+      // 圖表不知為何第一次搜尋會無法顯示，因此設定一個時間重新帶入item資料
+      if(this.nowTab == '圖表') {
+        let data = _.cloneDeep(this.item);
+        this.item = {};
+        setTimeout(()=>{this.item = data},500)
+
+      }
+    }
+  } 
 };
 </script>
 
@@ -1479,23 +1402,23 @@ export default {
       color: #A60017 !important;
     }
     .card-title,.content {
-        padding: 12px 24px;
-        .row {
-            margin-left: 0;
-            margin-top: 0;
-            margin-bottom: 24px;
+      padding: 12px 24px;
+      .row {
+        margin-left: 0;
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+      .title {
+        display: flex;
+        align-items: center;
+        .theme--light.v-icon {
+          color: #6c9bcd;
         }
-        .title {
-            display: flex;
-            align-items: center;
-            .theme--light.v-icon {
-              color: #6c9bcd;
-            }
-        }
+      }
     }
     .v-card__title {
-        color: #00273E;
-        font-weight: bold;
+      color: #00273E;
+      font-weight: bold;
     }
     .content {
       .row {
@@ -1515,20 +1438,6 @@ export default {
         }
       }
     }
-    // .select-color.theme--light {
-    //   & .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-    //     border-color: #6c9bcd !important;
-    //   }
-    //   & .theme--light.v-input input, &.theme--light.v-input textarea {
-    //     color: #00273E !important;
-    //   }
-    //   & .theme--light.v-label {
-    //     color: #6c9bcd !important;
-    //   }
-    //   & .v-icon.v-icon {
-    //     color: #6c9bcd;
-    //   }
-    // }
     .search {
       margin-bottom: 24px;
       .caculate {
@@ -1539,7 +1448,7 @@ export default {
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     .v-card.result-card {
-      background-color: #F4FBFF;
+      background-color: #E6F5FA;
       .header-bar {
         width: 100%;
         display: flex;
@@ -1552,30 +1461,50 @@ export default {
       }
       .result-content {
         padding: 0 24px;
-        .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
-          background-color: #F4FBFF !important;
-        }
-        .v-toolbar__content, .v-toolbar__extension {
-          padding: 0;
-          button {
-            height: 36px;
-            border-radius: 4px;
-          }
-          .v-btn--is-elevated {
-            box-shadow: none;
-            background-color: #006AA6 !important;
-            color: #fff;
-          }
-          .theme--light.v-btn.v-btn--disabled {
-            color: #7F98A6 !important;
-          }
+        &.event {
+          margin-top: 24px;
         }
       }
     }
-    
   }
 }
 ::v-deep {
+  .result {
+    .header-bar {
+      .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,.theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
+        background-color: #E6F5FA;
+      }
+      .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
+          background-color: #E6F5FA;
+      }
+      .v-toolbar__content, .v-toolbar__extension {
+        padding: 0;
+        button {
+          height: 36px;
+          border-radius: 4px;
+        }
+        .v-btn--is-elevated {
+          box-shadow: none;
+          background-color: #006AA6;
+          color: #fff;
+        }
+        .theme--light.v-btn.v-btn--disabled {
+          color: #7F98A6;
+        }
+      }
+      .v-tab {
+        font-size: 16px;
+        font-weight: bold;
+        color: #7F98A6 !important;
+      }
+      .v-tab.v-tab--active {
+        color: #006AA6 !important;
+      }
+      .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
+        border-radius: 4px;
+      }
+    }
+  }
   .select-color{
     &.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
       border-color: #6c9bcd;
@@ -1604,19 +1533,25 @@ export default {
     input[type="checkbox"] {
       accent-color: #006AA6;
     }
+    .v-input--selection-controls.v-input--is-disabled:not(.v-input--indeterminate) .v-icon {
+      color: #BFCBD2;
+    }
+  }
+  .edit-disabled {
+    &.theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
+      border-image: none;
+      border: none;
+    }
+    &.theme--light.v-text-field--filled > .v-input__control > .v-input__slot,&.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
+      background: #BFCBD2;
+      color: #7F98A6;
+    }
+    &.v-text-field .v-input__slot {
+      border-radius: 4px;
+    }
   }
 }
-// scrollbar
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: none; 
-}
-::-webkit-scrollbar-thumb {
-  background-color: #BFD9E8;
-}
+
 @media (max-width: 768px) {
   .v-application.v-application--is-ltr {
     .v-card.indicator {
@@ -1629,7 +1564,17 @@ export default {
     }
   }
 }
-      
+// scrollbar
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+::-webkit-scrollbar-track {
+  background: none !important; 
+}
+::-webkit-scrollbar-thumb {
+  background-color: #BFD9E8 !important;
+}     
       
 // div /deep/ .el-input__inner{
 //   border-radius:0px !important;
