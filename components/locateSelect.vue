@@ -21,7 +21,6 @@
               <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}
               </div>
             </treeselect>
-        
     </div>
 </template>
 
@@ -35,6 +34,10 @@ export default {
         isMulti: {
             type: Boolean,
             default: false
+        },
+        defaultSelect:{//預設選定項目
+            type:[String,Array,Object],
+            default:''
         }
     },
     data() {
@@ -73,6 +76,13 @@ export default {
       
     },
     methods: {
+        setDefault:function(){
+            if(this.defaultSelect==''){
+                return;
+            }else{
+                this.dataid = this.defaultSelect;
+            }
+        },
         // 資料改變時，傳出數值
         changeEvent:function(){
             this.$emit('scopeSel_data',this.dataid);
@@ -142,6 +152,9 @@ export default {
         //取得整場架構資料
         await this.getMainData();
     },
+    created() {
+        this.setDefault();//預設項目
+    },
 
 }
 </script>
@@ -154,7 +167,7 @@ export default {
 
 <!-- <template>
     <div>
-        <locate-select :dataScope="'pool'" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
+        <locate-select :dataScope="'area'" defaultSelect="天府_1" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
     </div>
 </template>
 
