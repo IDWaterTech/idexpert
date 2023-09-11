@@ -391,7 +391,12 @@
                           v-for="tab in tabs"
                           :key="tab"
                           :href="`#` + tab">
-                      {{ tab }}
+                          <div class="icons">
+                            <v-icon v-if="tab=='編修紀錄'">mdi-text-box-edit-outline</v-icon>
+                            <v-icon v-if="tab=='事件紀錄'">mdi-calendar-edit-outline</v-icon>
+                            <v-icon v-if="tab=='圖表'">mdi-chart-bell-curve-cumulative</v-icon>
+                          </div>
+                          {{ tab }}
                       </v-tab>
                       <!-- tab內容 -->
                       <v-tabs-items v-model="nowTab" touchless>
@@ -1493,12 +1498,26 @@ export default {
         }
       }
       .v-tab {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
         color: #7F98A6 !important;
+        .icons {
+          margin-right: 4px;
+          i {
+            color: #7F98A6;
+          }
+          
+        }
       }
       .v-tab.v-tab--active {
         color: #006AA6 !important;
+        .icons {
+          margin-right: 4px;
+          i {
+            color: #006AA6;
+          }
+          
+        }
       }
       .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
         border-radius: 4px;
