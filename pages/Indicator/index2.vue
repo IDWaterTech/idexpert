@@ -13,7 +13,7 @@
           <div class="search">
             <v-row>
               <!-- 選擇場(必選) -->
-              <v-col cols="12" md="4" sm="12" class="caculate">
+              <!-- <v-col cols="12" md="4" sm="12" class="caculate">
                 <v-select
                   v-model="sel_main"
                   :items="maindata"
@@ -26,9 +26,9 @@
                   @change="factoryChange"
                 >
                 </v-select>
-              </v-col>
+              </v-col> -->
               <!-- 選擇區域(必選) -->
-              <v-col cols="12" md="4" sm="12" class="caculate">
+              <!-- <v-col cols="12" md="4" sm="12" class="caculate">
                 <v-select
                   v-model="sel_area"
                   :items="areadata"
@@ -40,6 +40,11 @@
                   hide-details
                   class="select-color"
                 ></v-select>
+              </v-col> -->
+              
+              <v-col cols="12" md="8" sm="12" class="caculate caculate-8" style="position: relative;">
+                <locate-select :dataScope="'area'" :defaultSelect="nowArea" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
+                <label v-if="nowArea!==''" class="label-select">*請選擇養殖區域(必選)</label>
               </v-col>
               <!-- 指定項目(必選) -->
               <v-col cols="12" md="4" sm="12" class="caculate">
@@ -731,7 +736,9 @@ export default {
       tabs: ['編修紀錄','事件紀錄','圖表'],
       nowTab: '編修紀錄',
       //編修紀錄checkbox disable判斷
-      disabledAllDel:true
+      disabledAllDel:true,
+      // select
+      nowArea:''
     };
   },
   async created() {
@@ -786,6 +793,7 @@ export default {
       console.log("場",this.maindata);
       if (Number(this.req.sel_pool) > 0) {
         //await this.areachange();
+        this.areadata();
         this.areachange();
         this.sel_pool = Number(this.req.sel_pool);
       }
@@ -812,34 +820,93 @@ export default {
     }
   },
   computed: {
-    areadata: function() {
+    // areadata: function() {
+    //   let filtermain = [];
+    //   filtermain = this.maindata;
+    //   if (
+    //     //看有沒有選場
+    //     this.sel_main != undefined &&
+    //     this.sel_main > 0 &&
+    //     this.maindata.length > 0
+    //   ) {
+    //     filtermain = filtermain.filter(main => main.id == this.sel_main);
+    //   }
+    //   var area = [];
+
+    //   filtermain.forEach(function(x) {
+    //     x.node.forEach(function(y) {
+    //       var yitem = { id: y.id, name: y.name };
+    //       if (area.indexOf(yitem) == -1) {
+    //         //沒找到
+    //         area.push(yitem);
+    //       }
+    //     });
+    //   });
+    //   return area;
+    // },
+  },
+  methods: {
+    get_scopeData:function(evt){
+      console.log(evt);
+      this.areadata(evt);
+    },
+    factoryChange() {
+      this.sel_pool = null;
+    },
+    areadata: function(evt) {
       let filtermain = [];
       filtermain = this.maindata;
+      let areaId;
+      let areaName;
+      if(evt) {
+        areaId = evt.split('_')[1];
+        areaName = evt.split('_')[0];
+      }
+      
+      // if (
+      //   //看有沒有選場
+      //   this.sel_main != undefined &&
+      //   this.sel_main > 0 &&
+      //   this.maindata.length > 0
+      // ) {
+      //   filtermain = filtermain.filter(main => main.id == this.sel_main);
+      // }
+      console.log('filtermain',filtermain);
+      console.log('area',areaId,this.sel_main,this.sel_area )
+      
       if (
         //看有沒有選場
         this.sel_main != undefined &&
         this.sel_main > 0 &&
-        this.maindata.length > 0
+        this.maindata.length > 0 && 
+        this.sel_area > 0 && !evt
       ) {
-        filtermain = filtermain.filter(main => main.id == this.sel_main);
-      }
-      var area = [];
-
-      filtermain.forEach(function(x) {
-        x.node.forEach(function(y) {
-          var yitem = { id: y.id, name: y.name };
-          if (area.indexOf(yitem) == -1) {
-            //沒找到
-            area.push(yitem);
+        filtermain.forEach((x)=>{
+          if(x.id == this.sel_main) {
+            x.node.forEach((y)=> {
+              if(y.id == this.sel_area) {
+                this.nowArea = y.name+'_'+this.sel_area;
+              }
+            });
           }
         });
-      });
-      return area;
-    },
-  },
-  methods: {
-    factoryChange() {
-      this.sel_pool = null;
+        console.log('nowArea',this.nowArea);
+      }else {
+        filtermain.forEach((x)=>{
+          x.node.forEach((y)=> {
+            if(y.name==areaName&&y.id==areaId) {
+              // 如果場或區不與原本的相同，要清空池，因為查詢按鈕要判斷disable
+              if(this.sel_main!==x.id || this.sel_area!==y.id) {
+                this.sel_pool = '';
+              }
+              this.sel_main = x.id
+              this.sel_area = y.id;
+              this.nowArea = y.name+'_'+this.sel_area;
+            }
+          });
+        });
+        this.areachange();
+      }
     },
     areachange: async function() {
       var para = {
@@ -1447,6 +1514,9 @@ export default {
       .caculate {
         max-width: calc((100%  / 3) - (100% / 12) / 3 );
       }
+      .caculate-8 {
+        max-width: calc((100% / 12 * 8) - ((100% / 12) / 1.5));
+      }
     }
     .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -1473,6 +1543,50 @@ export default {
   }
 }
 ::v-deep {
+  .search {
+    .font-size-large {
+      font-size: 16px;
+    }
+    .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .vue-treeselect__control {
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid #6c9bcd;
+      .vue-treeselect__placeholder {
+        color: #00273E;
+        &::before {
+          content: '*'
+        }
+        &::after {
+          content: '(必選)';
+        }
+      }
+      .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+        color: #6c9bcd;
+      }
+      .vue-treeselect__x-container {
+        display: none;
+      }
+    }
+    .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover {
+      border-color: #6c9bcd;
+    }
+    .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused {
+      font-size: 14px;
+      color: #00273E;
+    }
+    .label-select {
+      font-size: 10px;
+      color: #6c9bcd !important;
+      position: absolute;
+      left: 18px;
+      top: 0;
+      
+    }
+  }
   .result {
     .header-bar {
       .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,.theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {

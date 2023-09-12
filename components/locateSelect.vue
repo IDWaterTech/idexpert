@@ -14,13 +14,13 @@
                   return { children: node.node };
                 }
               "
-              style="font-size:1.3em;"
+              class="font-size-large"
             >
-              <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
+              <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
               </div>
               <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}
               </div>
-            </treeselect>
+        </treeselect>
     </div>
 </template>
 
@@ -77,9 +77,10 @@ export default {
     },
     methods: {
         setDefault:function(){
-            if(this.defaultSelect==''){
+            if(this.defaultSelect=='') {
                 return;
             }else{
+                console.log('default select',this.defaultSelect);
                 this.dataid = this.defaultSelect;
             }
         },
@@ -154,12 +155,23 @@ export default {
     },
     created() {
         this.setDefault();//預設項目
+        console.log('default select',this.defaultSelect);
     },
+    watch: {
+        defaultSelect() {
+            // 如該頁連結有帶參數，需要預設值
+            this.setDefault();
+        }
+    }
 
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.font-size-large {
+    font-size:1.3em;
+}
+</style>
 
 <!-- ★★★★★★★★★★★★★使用方式★★★★★★★★★★★★ -->
 <!-- ★★★★★★★★★★★★★使用方式★★★★★★★★★★★★ -->
