@@ -1,6 +1,6 @@
 <template>
   <div class="poollayout" style="padding-top: 20px;">
-    <div v-if="!isLoad">Loading...</div>
+    <div v-if="!isLoad" style="padding-left: 12px;">Loading...</div>
     <div v-else>
       <div v-if="nowAreaTag!=='setting' && ponds.length>0 && isSetting">
         <v-row  v-for="(pond,pid) in ponds" :key="pid" class="mx-0 parent-row" :id="`pid-${pid}`" >
@@ -124,8 +124,9 @@
           <settinglayout v-if="setting=='layout'" class="mx-3" style="width: 100%;" :areas="areas1"></settinglayout>
         </v-row>
       </div>
-      <div v-else-if="ponds.length==0 && isLoad">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
-      <div v-else-if="!isSetting">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
+      <div v-else-if="ponds.length==0 && !$route.query.field" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
+      <div v-else-if="$route.query.field" class="nodata">無資料!</div>
+      <div v-else-if="!isSetting && !$route.query.field" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
     </div>
     
   </div>
@@ -500,7 +501,7 @@ export default {
         pond_area_id: null
 
       }
-      this.isLoad = false;
+      // this.isLoad = false;
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
         .then(res => {
@@ -740,7 +741,7 @@ export default {
       })
       this.oldAreaTag=this.nowAreaTag;
       this.getMaxCols();
-      console.log('data prepare',this.ponds);
+      // console.log('data prepare',this.ponds);
       this.nowLayout = this.areas[0].name;
       // this.getCenter();
     },     
@@ -820,6 +821,7 @@ export default {
     nowAreaTag() {
       // 如果前一個是點選setting後，點選池，需重新撈取資料，避免設定修改未即時呈現
       if(this.oldAreaTag=='setting' && this.oldAreaTag!==this.nowAreaTag) {
+        this.isLoad = false;
         this.getPondData();
       }
       this.dataPrepare();

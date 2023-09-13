@@ -9,7 +9,7 @@
                   </div>
               </v-row>
           </div>
-          <mapcontent :auth="$auth.$state.loggedIn"></mapcontent>
+          <mapcontent :auth="$auth.$state.loggedIn" :field="nowField"></mapcontent>
       </v-card>
     </div>
   </template>
@@ -24,9 +24,24 @@
       },
       data() {
           return {
-              
+            nowField: null
           }
       },
+      created() {
+        console.log('map url',this.$route.query);
+        let reqKey = Object.keys(this.$route.query);
+        if(reqKey=='') {
+            // this.$toast.success('no query', { duration: 2000 });
+            this.nowField = null;
+        }else if(reqKey=='field') {
+            // this.$toast.success('取得field：'+this.$route.query.field, { duration: 2000 });
+            this.nowField = this.$route.query.field;
+        }else {
+            this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+            window.location.href='/map'
+        }
+
+      }
       
   }
   </script>
@@ -34,11 +49,12 @@
   <style lang="scss">
       .v-card.map {
           // padding: 16px;
-          min-height: 80vh;
+          min-height: 84vh;
           // overflow-y: scroll;
           overflow: hidden;
           .card-title {
               padding: 12px 24px;
+              padding-bottom: 0;
               // background-color: #006AA6;
               // color: #fefefe;
               .row {
