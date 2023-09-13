@@ -3,7 +3,7 @@
       <v-card class="map">
           <div class="card-title">
               <v-row>
-                  <div class="title">
+                  <div v-if="nowField==null" class="title">
                       <v-icon>mdi-map-outline</v-icon>
                       <v-card-title>養殖池況</v-card-title>
                   </div>

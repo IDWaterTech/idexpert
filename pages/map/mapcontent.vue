@@ -6,7 +6,7 @@
                 <v-col class="d-flex"
                         cols="12"
                         sm="6">
-                        <v-select :items="fatorys" label="場" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
+                        <v-select :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
                         </v-select>   
                     <!-- <div class="select-field">
                         <locate-select :dataScope="'field'" :defaultSelect="nowField" :isMulti="false" @scopeSel_data="changeFactory($event)"></locate-select>
@@ -475,6 +475,7 @@
     .v-select.v-text-field:not(.v-text-field--single-line) input {
         cursor: pointer;
     }
+    
     .pool-content {
         width: 100%;
         height: 120px;
@@ -595,6 +596,27 @@
             display: none;
         }
     }
+    // 連結帶參數,select disabled
+    .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
+        border-image: none;
+    }
+    .v-input--is-disabled .theme--light.v-label {
+        display: none;
+    }
+    .theme--light.v-text-field.v-input--is-disabled  > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+        border-color: transparent;
+    }
+    .v-select.v-input.v-input--is-disabled > .v-input__control > .v-input__slot {
+        background: #E6EBEE;
+        border-radius: 4px;
+        padding-left: 8px;
+    }
+    .v-input--is-disabled .v-select__selection--comma {
+        color: #7F98A6;
+    }
+    .v-select.v-input--is-disabled:not(.v-input--is-readonly):not(.v-autocomplete) {
+        padding-top: 16px;
+    }
     // locateSelect
     .select-field {
         position: relative;
@@ -642,7 +664,6 @@
         }
     }
 }
-
     
 // scrollbar
 ::-webkit-scrollbar {
