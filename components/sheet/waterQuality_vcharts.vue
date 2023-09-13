@@ -304,7 +304,7 @@ export default {
       this.urldata.sdate = e.value[0];
       if (Object.keys(this.urldata).length == 5) {
         let routeData = this.$router.resolve({
-          path: "indicator",
+          path: "indicator/edit",
           query: this.urldata
         });
         console.log(routeData);
