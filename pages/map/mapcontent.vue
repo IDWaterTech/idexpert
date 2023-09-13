@@ -6,7 +6,7 @@
                 <v-col class="d-flex"
                         cols="12"
                         sm="6">
-                        <v-select :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
+                        <v-select v-if="!isError" :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
                         </v-select>   
                     <!-- <div class="select-field">
                         <locate-select :dataScope="'field'" :defaultSelect="nowField" :isMulti="false" @scopeSel_data="changeFactory($event)"></locate-select>
@@ -72,6 +72,7 @@
   <script>
   import poollayout from "@/pages/map/poolslayout.vue";
   import setting from "~/pages/map/settingcolor.vue";
+import { Doughnut } from 'vue-chartjs';
   export default {
       layout: 'emptynologin',
       middleware: "auth",
@@ -124,6 +125,7 @@
               // 判斷url的參數
               isField: false,
               isLoad: false,
+              isError: false
           }
       },
       props:{
@@ -140,8 +142,23 @@
         this.getFactoryData();
         this.myuser = this.$auth.$state.user ? this.$auth.$state.user.email : '';
         if(!this.auth) {
-        window.location.href='/login';
+            window.location.href='/login';
         }
+        if(this.field!==null) {
+            if(document.getElementsByTagName('header')) {
+                let nav = document.getElementsByTagName('header');
+                let main = document.getElementsByTagName('main');
+                let map = document.getElementsByClassName('map');
+                nav[0].style.display = 'none';
+                main[0].style.paddingTop = '24px';
+                for(let i=0;i<map.length;i++) {
+                    map[i].style.minHeight = '88vh';
+                }
+                // console.log('nav',nav);
+                
+            }
+        }
+        
         console.log('index Created');
       },
       mounted() {
@@ -172,6 +189,7 @@
                     }
                     if(this.field !== null && !isData) {
                         this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+                        this.isError = true;
                         // window.location.href='/map';
                     }else {
                         this.nowFactory = this.fatorys[0];
