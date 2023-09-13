@@ -11,7 +11,7 @@
         </div>
         <div class="content">
           <div class="search">
-            <v-row>
+            <v-row style="margin-bottom: 12px;">
               <!-- 選擇場(必選) -->
               <!-- <v-col cols="12" md="4" sm="12" class="caculate">
                 <v-select
@@ -367,7 +367,7 @@
                 >
               </div>
               <!-- 批次刪除Dialog -->
-              <v-col cols="12">
+              <!-- <v-col cols="12"> -->
               <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
                 <v-card height="230">
                   <v-card-title>驗證碼</v-card-title>
@@ -380,7 +380,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              </v-col>
+              <!-- </v-col> -->
             </v-row>
             <v-divider></v-divider>
           </div>
@@ -421,7 +421,7 @@
                               :loading="loading"
                               :show-select="showselect"
                               no-data-text="查無資料">
-                              <template v-slot:item.actions="{ item }">
+                              <template v-slot:[`item.actions`]="{ item }">
                                 <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
                                   mdi-pencil
                                 </v-icon>
@@ -482,7 +482,7 @@
                               :items="eventTableData" dense
                               :footer-props="footerProps"
                               no-data-text="查無資料">
-                              <template v-slot:item.event_level_name="{ item }">
+                              <template v-slot:[`item.event_level_name`]="{ item }">
                                 <v-chip
                                   :color="item.color"
                                   style="font-size: 12px;"
@@ -491,17 +491,17 @@
                                   {{ item.event_level_name }}
                                 </v-chip>
                               </template>
-                              <template v-slot:item.time="{ item }">
+                              <template v-slot:[`item.time`]="{ item }">
                                 <div style="width:100%;text-align: left;display: flex;justify-content: center;">
                                   <span v-html="item.time" style="line-height: 24px;"></span>
                                 </div>
                               </template>
-                              <template v-slot:item.content="{ item }">
+                              <template v-slot:[`item.content`]="{ item }">
                                 <div style="width:100%;text-align: left;display: flex;justify-content: center;">
                                   <span v-html="item.content" style="line-height: 24px;"></span>
                                 </div>
                               </template>
-                              <template v-slot:item.name="{ item }">
+                              <template v-slot:[`item.name`]="{ item }">
                                 <div style="width:100%;text-align: left;display: flex;justify-content: center;">
                                   <span v-html="item.name" style="line-height: 24px;"></span>
                                 </div>
@@ -1460,7 +1460,7 @@ export default {
 <style lang="scss" scoped>
 .v-application.v-application--is-ltr {
   .v-card.indicator {
-    min-height: 80vh;
+    min-height: 84vh;
     overflow: hidden;
     margin-bottom: 24px;
     * {
@@ -1487,11 +1487,15 @@ export default {
         }
       }
     }
+    .card-title {
+     padding-bottom: 0;
+    }
     .v-card__title {
       color: #00273E;
       font-weight: bold;
     }
     .content {
+      padding-top: 0;
       .row {
         align-items: center;
         .v-input {
