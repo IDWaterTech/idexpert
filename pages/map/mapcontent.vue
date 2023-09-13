@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- <div v-if="!isLoad">Loading...</div> -->
-        <div v-if="auth && isLoad" class="content">
+        <div v-if="isLoad" class="content">
             <v-row>
                 <v-col class="d-flex"
                         cols="12"
@@ -141,7 +141,7 @@ import { Doughnut } from 'vue-chartjs';
         await this._pageCheck(); //驗證頁面是否可檢視
         this.getFactoryData();
         this.myuser = this.$auth.$state.user ? this.$auth.$state.user.email : '';
-        if(!this.auth) {
+        if(!this.auth && this.field==null) {
             window.location.href='/login';
         }
         if(this.field!==null) {
