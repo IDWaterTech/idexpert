@@ -106,7 +106,7 @@
                               v-model="defitem"
                               :items="waterdatacols"
                               item-text="name"
-                              item-value="value"
+                              item-value="name"
                               no-data-text="查無資料"
                               placeholder="指定項目(必選)"
                               dense
