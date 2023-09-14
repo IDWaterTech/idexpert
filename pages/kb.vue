@@ -245,8 +245,8 @@
                                                         <v-text-field v-model.number="FeedParm['SugarSourcePurity']" dense hide-details class="mt-0 blue lighten-1" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">砂糖(碳源)純度(%)</span></v-text-field>
                                                         <v-text-field v-model.number="FeedParm['SugarSourceCarbonPct']" dense hide-details class="mt-0 blue lighten-1" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">砂糖(碳源)含碳量(%)</span></v-text-field>
                                                         <v-text-field v-model.number="FeedParm['FeedCN']" dense hide-details class="mt-0 blue white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">飼料CN比(依照飼料)</span></v-text-field>
-                                                        <v-text-field v-model.number="FeedParm['LastFeedInput']" dense hide-details class="mt-0 blue white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">前一餐飼料量(kg)</span></v-text-field>
-                                                        <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" dense hide-details class="mt-0 blue darken-1 white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">累計飼料量(kg)<v-btn class="ml-2" fab x-small color="cyan" @click="addFeedQty"> <v-icon>mdi-plus</v-icon></v-btn></span></v-text-field>
+                                                        <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0 blue white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">前一餐飼料量(kg)</span></v-text-field>
+                                                        <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 blue darken-1 white--text" dark><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">累計飼料量(kg)<v-btn class="ml-2" fab x-small color="cyan" @click="addFeedQty"> <v-icon>mdi-plus</v-icon></v-btn></span></v-text-field>
                                                         <v-select v-model="BaseParm['NextFeedIncrementPct']" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0 blue darken-1" dark item-value="name_en" item-text="name_ch"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">下餐飼料增加百分比</span></v-select>
                                                     </v-form>
                                                 </v-card-text>
@@ -759,7 +759,7 @@ export default {
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
-            FeedParm:{},//飼料參數
+            FeedParm:{LastFeedInput:0,CumulativeFeedAmountInput:0},//飼料參數
             MakeWaterParm:{},//做水參數
             WaterQualityData:{},//水質資訊
             ObservationData:{},//觀察網資訊
@@ -804,8 +804,12 @@ export default {
         },
         addFeedQty:function(){
             if(typeof(this.FeedParm['LastFeedInput'])=='number'){
-                this.FeedParm['CumulativeFeedAmountInput'] =(this.FeedParm['CumulativeFeedAmountInput'] + this.FeedParm['LastFeedInput']).toFixed(3);
+                this.FeedParm['CumulativeFeedAmountInput'] = (this.FeedParm['CumulativeFeedAmountInput']==undefined)?0:Number(this.FeedParm['CumulativeFeedAmountInput']);
+                var mynumber = Number((this.FeedParm['CumulativeFeedAmountInput'] + this.FeedParm['LastFeedInput']).toFixed(3));
+                // console.log("add",this.FeedParm['CumulativeFeedAmountInput'],this.FeedParm['LastFeedInput'],mynumber);
+                this.FeedParm['CumulativeFeedAmountInput'] = mynumber;
             }else{
+                // console.log(this.FeedParm['LastFeedInput'],typeof(this.FeedParm['LastFeedInput']));
                 return;
             }
         },
@@ -1202,8 +1206,8 @@ export default {
                     "SugarSourcePurity": 99.6,
                     "SugarSourceCarbonPct": 42,
                     "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
+                    "LastFeedInput":0,
+                    "CumulativeFeedAmountInput":0,
                 };
                 this.MakeWaterParm = {
                     // "Urea": 30,
@@ -1279,8 +1283,8 @@ export default {
                     "SugarSourcePurity": 99.6,
                     "SugarSourceCarbonPct": 42,
                     "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
+                    "LastFeedInput": 0,
+                    "CumulativeFeedAmountInput": 0
                 };
                 this.MakeWaterParm = {
                     // "Urea": 30,
@@ -1356,8 +1360,8 @@ export default {
                     "SugarSourcePurity": 99.6,
                     "SugarSourceCarbonPct": 42,
                     "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
+                    "LastFeedInput": 0,
+                    "CumulativeFeedAmountInput": 0
                 };
                 this.MakeWaterParm = {
                     // "Urea": 30,
@@ -1433,8 +1437,8 @@ export default {
                     "SugarSourcePurity": 99.6,
                     "SugarSourceCarbonPct": 42,
                     "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
+                    "LastFeedInput": 0,
+                    "CumulativeFeedAmountInput": 0
                 };
                 this.MakeWaterParm = {
                     // "Urea": 30,
@@ -1485,9 +1489,9 @@ export default {
         },
         resetParm:async function(){
             this.querrySelectedLst={"1":"","2":"","3":"","4":""};
-            this.BaseParm = {};
+            this.BaseParm = {InspectedTime:'',InspectedDate:''};
             this.BreedingParm = {};
-            this.FeedParm={};
+            this.FeedParm={LastFeedInput:0,CumulativeFeedAmountInput:0};
             this.MakeWaterParm={};
             this.WaterQualityData = {};
             this.ObservationData = {};
