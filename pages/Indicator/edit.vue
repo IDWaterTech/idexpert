@@ -486,6 +486,7 @@
                                 <v-chip
                                   :color="item.color"
                                   style="font-size: 12px;"
+                                  :style="{color:item.color=='#00AC'?'white':'#00273E'}"
                                   dark
                                 >
                                   {{ item.event_level_name }}
@@ -497,7 +498,7 @@
                                 </div>
                               </template>
                               <template v-slot:[`item.content`]="{ item }">
-                                <div style="width:100%;text-align: left;display: flex;justify-content: center;">
+                                <div style="text-align: left;display: flex;justify-content: center;">
                                   <span v-html="item.content" style="line-height: 24px;"></span>
                                 </div>
                               </template>
