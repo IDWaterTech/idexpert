@@ -74,10 +74,10 @@
           <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
           <!-- @current-change="handleCurrentChange"
           @select="handleSelectionChange" -->
-          <el-table-column label="資料" align="center">
+          <el-table-column label="資料" align="center" width="100">
             <div slot-scope="scope">
               {{ scope.row.id }}<br />
-              {{ scope.row.inspected_date }}
+              <!-- {{ scope.row.inspected_date }} -->
             </div>
           </el-table-column>
           <el-table-column label="觀察網飼料圖(已辨識)" prop="feed_img" align="center">
@@ -90,13 +90,16 @@
               <img v-img="{ group: scope.row.id }" :src="scope.row.shrimp_img" width="100%" />
             </div>
           </el-table-column>
-          <el-table-column label="面積比例(指標/網子面積比)" align="left">
+          <el-table-column label="辨識資訊" align="left">
             <div slot-scope="scope">
-              飼料：{{ scope.row.feed_percentage }} <br />
-              蝦子：{{ scope.row.shrimp_percentage }}
+              蝦子數量(隻)：{{ scope.row.shrimp_qty }} <br />
+              蝦子重量(g)：{{ scope.row.shrimp_weight }} <br />
+              蝦子長度(cm)：{{ scope.row.shrimp_length }} <br />
+              飼料殘餌率：{{ scope.row.leftover_rate }} <br />
+              檢測時間：{{ scope.row.inspected_date }} <br />
             </div>
           </el-table-column>
-          <el-table-column label="檢測時間" prop="inspected_date" align="center"></el-table-column>
+          <!-- <el-table-column label="檢測時間" prop="inspected_date" align="center"></el-table-column> -->
           <!-- <el-table-column label="循環訖日" prop="ended_date" align="center">
             <template slot-scope="scope">
               <span style="margin-left: 10px">{{
@@ -206,6 +209,7 @@ export default {
             )
             .then(res => {
               this.recogData = res.data;
+              console.log("觀察網資料",res.data);
               if (res.data.items.length == 0) {
                 this.$toast.success(`查無觀察網資料`, { duration: 2000 });
               }
