@@ -1855,4 +1855,3 @@ export default {
 }
 
 </style>
-
