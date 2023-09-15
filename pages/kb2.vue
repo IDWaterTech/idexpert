@@ -438,7 +438,7 @@
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
                                                         <div v-if="suggData.Feed.status!==''" class="suggestion-text">*建議：{{ suggData.Feed.status }}</div>
-                                                                <v-simple-table fixed-header dense height="200px">
+                                                                <v-simple-table fixed-header dense >
                                                                     <thead>
                                                                         <tr style="box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);height: 32px;">
                                                                             <th style="text-align:left;">
@@ -572,7 +572,6 @@
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
-
                                                         <v-text-field v-model="suggData.Material['LastSugarCN']" dense hide-details class="mt-0 "><span class="pa-0 ma-0 text-right" slot="prepend">前餐砂糖量(配合飼料CN比)(kg)</span></v-text-field>
                                                         <v-text-field v-model="suggData.Material['SugarCN']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">下餐砂糖量 (配合飼料CN比)(kg)</span></v-text-field>
                                                         <v-text-field v-model="suggData.Material['SugarAmmoniaN']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降氨氮)(kg)</span></v-text-field>
@@ -584,10 +583,11 @@
                                                         <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計砂糖量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['Lime']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">熟石灰量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" dense hide-details class="mt-0 "><span class="pa-0 ma-0 text-right" slot="prepend">累計熟石灰量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['Lime']" dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">熟石灰量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">累計熟石灰量(kg)</span></v-text-field>
+                                                    </v-card-text>
+                                                    <v-card-text class="pa-3 mx-0">
                                                         <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計菌量(kg)</span></v-text-field>
-                                                        
                                                     </v-card-text>
                                                 </v-card>
                                             </v-expansion-panel-content>
