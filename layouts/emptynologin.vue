@@ -16,7 +16,7 @@
             <v-list-item to="/set/profile">
               
               <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
-                <v-img contain :src="this.$auth.$state.user.picture" ></v-img>
+                <v-img contain :src="this.$auth.$state.user.picture" :title="this.$auth.$state.user.name" ></v-img>
               </v-list-item-avatar>
               <v-list-item-icon v-if="!this.$auth.$state.loggedIn">
                 <v-icon large>mdi-account-circle</v-icon>
