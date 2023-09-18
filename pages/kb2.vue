@@ -1531,7 +1531,6 @@ export default {
             }else {
                 this.lightColor[item] = 'teal';
             }
-            
             return this.lightColor[item];
         }
     },
