@@ -633,8 +633,21 @@
                         </v-col>
                     </v-row>
                 </div>
+                
+            </div>
+            <!-- 移至最上方 -->
+            <div class="fixed-btn">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <button class="btn-primary" @click="goAnchor('top')" v-bind="attrs" v-on="on">
+                            <v-icon>mdi-chevron-double-up</v-icon>
+                        </button>
+                    </template>
+                    <span>回到上方</span>
+                </v-tooltip>
             </div>
         </v-card>
+        
     </div>
 </template>
 
@@ -642,7 +655,6 @@
 import nerdamer from 'nerdamer';
 import dayjs from "dayjs";
 import _ from "lodash";
-import errorVue from '~/layouts/error.vue';
 export default {
     layout: "emptynologin",
     head() {
@@ -690,8 +702,8 @@ export default {
             nowSelectPool: '',// 現在選擇的池
             allData:[], // 場區池架構，為了比對池id
             nowSelectDataLst: [],// 現在選擇的池有的編輯紀錄
-            isSearch: false // 是否有點選查詢，有才顯示編輯按鈕群
-
+            isSearch: false, // 是否有點選查詢，有才顯示編輯按鈕群
+            oldQuerryData: [] // 未儲存時，切換不同池時要還原
         }
     },
     methods: {
@@ -734,12 +746,17 @@ export default {
             }
         },
         goAnchor(selector) {
-            let ele = document.querySelector(selector);
-            let eTop = ele.offsetTop;
-            ele.scrollIntoView({
-                 behavior: "smooth",
-                 top: eTop,
-            });
+            if(selector=='top') {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }else {
+                let ele = document.querySelector(selector);
+                let eTop = ele.offsetTop;
+                ele.scrollIntoView({
+                    behavior: "smooth",
+                    top: eTop,
+                });
+            }
+            
         },
         getAllData: async function () {
             await this.$axios
@@ -1504,11 +1521,11 @@ export default {
             }else{
                 this.lightColor[item] = 'teal';
             }
-            console.log("ruledatastate",checkstate_bool,value,this.lightColor[item]);
+            // console.log("ruledatastate",checkstate_bool,value,this.lightColor[item]);
 
         },
         getColor(item) {
-            console.log(item,this.lightColor[item]);
+            // console.log(item,this.lightColor[item]);
             if(this.WaterQualityData[item]) {
                 this.valueCheck(item,this.WaterQualityData[item]);
             }else {
@@ -1748,6 +1765,22 @@ export default {
                     font-weight: bold;
                 }
                 
+            }
+        }
+        .fixed-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 16px;
+            z-index: 1000;
+            .btn-primary {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                box-shadow: 0 0 20px rgba(0,0,0,0.2);
+                .v-icon.v-icon {
+                    color: #fff !important;
+                    font-size: 1.5rem;
+                }
             }
         }
         
