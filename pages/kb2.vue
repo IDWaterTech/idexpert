@@ -103,8 +103,18 @@
                                         </div>
                                 </div>
                                 <div class="content">
+                                    <!-- 錨點設置 -->
+                                    <v-row>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#basic')"> 養殖基本數據 |</a> 
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#breed')"> 養殖參數 |</a> 
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#feed')"> 飼料參數 |</a> 
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#waterperiod')"> 做水期參數 |</a> 
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#water')"> 水質資訊 |</a> 
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#net')"> 觀察網 |</a> 
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#bacteria')"> 水中菌項資訊 </a>
+                                    </v-row>
                                     <!-- 養殖基本數據 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row11">
+                                    <v-expansion-panels id="basic" accordion multiple v-model="panel.panel_row11">
                                         <v-expansion-panel class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">養殖基本數據</v-expansion-panel-header>
                                             <v-expansion-panel-content>
@@ -157,7 +167,7 @@
                                         </v-expansion-panel>
                                     </v-expansion-panels>
                                     <!-- 養殖參數 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row12">
+                                    <v-expansion-panels id="breed" accordion multiple v-model="panel.panel_row12">
                                         <v-expansion-panel  class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">養殖參數</v-expansion-panel-header>
                                             <v-expansion-panel-content>
@@ -176,7 +186,7 @@
                                         </v-expansion-panel>
                                     </v-expansion-panels>
                                     <!-- 飼料參數 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row13">
+                                    <v-expansion-panels id="feed" accordion multiple v-model="panel.panel_row13">
                                         <v-expansion-panel  class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">飼料參數</v-expansion-panel-header>
                                             <v-expansion-panel-content>
@@ -200,7 +210,7 @@
                                         </v-expansion-panel>
                                     </v-expansion-panels>
                                     <!-- 做水期參數 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row14">
+                                    <v-expansion-panels id="waterperiod" accordion multiple v-model="panel.panel_row14">
                                         <v-expansion-panel  class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">做水期參數</v-expansion-panel-header>
                                             <v-expansion-panel-content>
@@ -219,22 +229,22 @@
                                         </v-expansion-panel>
                                     </v-expansion-panels>
                                     <!-- 水質資訊 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row21">
+                                    <v-expansion-panels id="water" accordion multiple v-model="panel.panel_row21">
                                         <v-expansion-panel  class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">水質資訊</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
                                                         <v-form ref="WaterQualityData">
-                                                            <v-text-field v-model.number="WaterQualityData['Do']" dense hide-details class="mt-0" @blur="valueCheck('Do',WaterQualityData['Do'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['Do']"></v-badge>溶氧Do(ppm)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['pH']" dense hide-details class="mt-0" @blur="valueCheck('pH',WaterQualityData['pH'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['pH']"></v-badge>酸鹼值(pH)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['Temp']" dense hide-details class="mt-0" @blur="valueCheck('Temp',WaterQualityData['Temp'])"><span class="pa-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['Temp']"></v-badge>水溫(°C)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['Salinity']" dense hide-details class="mt-0" @blur="valueCheck('Salinity',WaterQualityData['Salinity'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['Salinity']"></v-badge>鹽度(ppt)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['AmmoniaN']" dense hide-details class="mt-0" @blur="valueCheck('AmmoniaN',WaterQualityData['AmmoniaN'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['AmmoniaN']"></v-badge>氨氮NH3/NH4+(ppm)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['NO2']" dense hide-details class="mt-0" @blur="valueCheck('NO2',WaterQualityData['NO2'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['NO2']"></v-badge>亞硝酸鹽NO2-(ppm)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['Mg']" dense hide-details class="mt-0" @blur="valueCheck('Mg',WaterQualityData['Mg'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['Mg']"></v-badge>鎂離子Mg2+(ppm)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['Ca']" dense hide-details class="mt-0" @blur="valueCheck('Ca',WaterQualityData['Ca'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['Ca']"></v-badge>鈣離子Ca2+(ppm)</span></v-text-field>
-                                                            <v-text-field v-model.number="WaterQualityData['Alk']" dense hide-details class="mt-0" @blur="valueCheck('Alk',WaterQualityData['Alk'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="lightColor['Alk']"></v-badge>鹼度Alk(ppm)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['Do']" dense hide-details class="mt-0" @blur="valueCheck('Do',WaterQualityData['Do'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Do')"></v-badge>溶氧Do(ppm)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['pH']" dense hide-details class="mt-0" @blur="valueCheck('pH',WaterQualityData['pH'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('pH')"></v-badge>酸鹼值(pH)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['Temp']" dense hide-details class="mt-0" @blur="valueCheck('Temp',WaterQualityData['Temp'])"><span class="pa-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Temp')"></v-badge>水溫(°C)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['Salinity']" dense hide-details class="mt-0" @blur="valueCheck('Salinity',WaterQualityData['Salinity'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Salinity')"></v-badge>鹽度(ppt)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['AmmoniaN']" dense hide-details class="mt-0" @blur="valueCheck('AmmoniaN',WaterQualityData['AmmoniaN'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('AmmoniaN')"></v-badge>氨氮NH3/NH4+(ppm)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['NO2']" dense hide-details class="mt-0" @blur="valueCheck('NO2',WaterQualityData['NO2'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('NO2')"></v-badge>亞硝酸鹽NO2-(ppm)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['Mg']" dense hide-details class="mt-0" @blur="valueCheck('Mg',WaterQualityData['Mg'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Mg')"></v-badge>鎂離子Mg2+(ppm)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['Ca']" dense hide-details class="mt-0" @blur="valueCheck('Ca',WaterQualityData['Ca'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Ca')"></v-badge>鈣離子Ca2+(ppm)</span></v-text-field>
+                                                            <v-text-field v-model.number="WaterQualityData['Alk']" dense hide-details class="mt-0" @blur="valueCheck('Alk',WaterQualityData['Alk'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Alk')"></v-badge>鹼度Alk(ppm)</span></v-text-field>
                                                             <v-text-field v-if="false"  dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">水的顏色</span></v-text-field>
                                                             <v-select v-model="WaterQualityData['WaterColor']" clearable :items="optData.WaterColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">水的顏色</span></v-select>
                                                         </v-form>
@@ -244,7 +254,7 @@
                                         </v-expansion-panel>
                                     </v-expansion-panels>
                                     <!-- 觀察網資訊 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row22">
+                                    <v-expansion-panels id="net" accordion multiple v-model="panel.panel_row22">
                                         <v-expansion-panel  class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">觀察網資訊</v-expansion-panel-header>
                                             <v-expansion-panel-content>
@@ -277,7 +287,7 @@
                                         </v-expansion-panel>
                                     </v-expansion-panels>
                                     <!-- 水中菌相資訊 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row23">
+                                    <v-expansion-panels id="bacteria" accordion multiple v-model="panel.panel_row23">
                                         <v-expansion-panel class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">水中菌相資訊</v-expansion-panel-header>
                                             
@@ -326,8 +336,17 @@
                                     </div>
                                 </div>
                                 <div class="content">
+                                    <!-- 錨點設置 -->
+                                    <v-row>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#animate')"> 動態數據資訊 |</a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#aiwater')"> 水質 |</a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#ainet')"> 觀察網 |</a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#aifeed')"> 投餌量 |</a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#aijudge')"> 投料判斷列表 |</a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#aiinput')"> 養殖前期做水添加物</a>
+                                    </v-row>
                                     <!-- 動態數據資訊 -->
-                                    <v-expansion-panels accordion multiple v-model="panel.panel_row24">
+                                    <v-expansion-panels id="animate" accordion multiple v-model="panel.panel_row24">
                                         <v-expansion-panel  class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">動態數據資訊</v-expansion-panel-header>
                                             <v-expansion-panel-content>
@@ -335,19 +354,19 @@
                                                     <!-- <v-card-title class="pa-2">養殖基本數據</v-card-title> -->
                                                     <!-- <v-divider></v-divider> -->
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.DynamicData['FCR']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend"  title="累計飼料量、蝦子長度、水體體積、放養密度">FCR(換肉率)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['ADG']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、養殖天數、養殖起始日">ADG(每日增重量)(g/day)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['BiomassOfShrimp']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(累積料量)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['SurvivalRate']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算存活率，因為需要內存量">存活率(%)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['EstimatedFeedTotal']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預估所需飼料量(g)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['EstimatedProduction']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預估產量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['EstimatedCatchingDate']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="養殖起始日">預計間補日期</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['EstimatedCatchingAmount']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預計間補量</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['FeedAmountInObservation']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">觀察網網上料量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['WeightFeedRate']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">每日體重投餌率(%)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['ShrimpWeight']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">蝦子重量(g)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['Drain']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">排汙量(噸)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.DynamicData['CumulativeDrainAmount']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">累計排汙量(噸)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['FCR']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend"  title="累計飼料量、蝦子長度、水體體積、放養密度">FCR(換肉率)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['ADG']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、養殖天數、養殖起始日">ADG(每日增重量)(g/day)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['BiomassOfShrimp']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(累積料量)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['SurvivalRate']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算存活率，因為需要內存量">存活率(%)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['EstimatedFeedTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預估所需飼料量(g)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['EstimatedProduction']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預估產量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['EstimatedCatchingDate']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="養殖起始日">預計間補日期</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['EstimatedCatchingAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預計間補量</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['FeedAmountInObservation']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">觀察網網上料量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['WeightFeedRate']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">每日體重投餌率(%)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['ShrimpWeight']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">蝦子重量(g)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['Drain']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">排汙量(噸)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.DynamicData['CumulativeDrainAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">累計排汙量(噸)</span></v-text-field>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-expansion-panel-content>
@@ -355,7 +374,7 @@
                                     </v-expansion-panels>
                                     <v-expansion-panels accordion multiple v-model="panel.panel_row31">
                                         <!-- 水質 -->
-                                        <v-expansion-panel  class="my-1">
+                                        <v-expansion-panel id="aiwater" class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">水質</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
@@ -392,7 +411,7 @@
                                             </v-expansion-panel-content>
                                         </v-expansion-panel>
                                         <!-- 觀察網 -->
-                                        <v-expansion-panel  class="my-1">
+                                        <v-expansion-panel id="ainet" class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">觀察網</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
@@ -432,7 +451,7 @@
                                             </v-expansion-panel-content>
                                         </v-expansion-panel>
                                         <!-- 投餌量 -->
-                                        <v-expansion-panel  class="my-1">
+                                        <v-expansion-panel id="aifeed" class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌量</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
@@ -456,43 +475,43 @@
                                                                         <tr style="background-color:#E5F2E0;"><td colspan="3">飼料量</td></tr>
                                                                         <tr>
                                                                             <td>粉料</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td>0號料</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td>1號料</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td>2號料</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                         <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
                                                                         <tr>
                                                                             <td>轉0號料第一餐</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
                                                                             <td></td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td>前一餐飼料量</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td>下一餐飼料量</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td>累計飼料量</td>
-                                                                            <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
+                                                                            <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
                                                                             <td>kg</td>
                                                                         </tr>
                                                                     </tbody>
@@ -517,43 +536,43 @@
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">飼料量</td></tr>
                                                                             <tr>
                                                                                 <td>粉料</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>0號料</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>1號料</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>2號料</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
                                                                             <tr>
                                                                                 <td>轉0號料第一餐</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
                                                                                 <td></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>前一餐飼料量</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>下一餐飼料量</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>累計飼料量</td>
-                                                                                <td><v-text-field dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
                                                                                 <td>kg</td>
                                                                             </tr>
                                                                         </tbody>
@@ -567,41 +586,41 @@
                                     </v-expansion-panels>
                                     <v-expansion-panels accordion multiple v-model="panel.panel_row32">
                                         <!-- 投料判斷列表 -->
-                                        <v-expansion-panel  class="my-1">
+                                        <v-expansion-panel id="aijudge" class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-menu-down">投料判斷列表</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['LastSugarCN']" dense hide-details class="mt-0 "><span class="pa-0 ma-0 text-right" slot="prepend">前餐砂糖量(配合飼料CN比)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarCN']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">下餐砂糖量 (配合飼料CN比)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarAmmoniaN']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降氨氮)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarNO2']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降亞硝酸)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (提高枯草桿菌)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降紫菌)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降靛菌)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarTotal']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">當日總砂糖量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計砂糖量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "><span class="pa-0 ma-0 text-right" slot="prepend">前餐砂糖量(配合飼料CN比)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">下餐砂糖量 (配合飼料CN比)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降氨氮)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降亞硝酸)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (提高枯草桿菌)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降紫菌)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降靛菌)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">當日總砂糖量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計砂糖量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['Lime']" dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">熟石灰量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">累計熟石灰量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">熟石灰量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" disabled dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">累計熟石灰量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計菌量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計菌量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-expansion-panel-content>
                                         </v-expansion-panel>
                                         <!-- 養殖前期做水添加物 -->
-                                        <v-expansion-panel  class="my-1">
+                                        <v-expansion-panel id="aiinput" class="my-1">
                                             <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-menu-down">養殖前期做水添加物</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量(做水)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">漂白粉(30ppm濃度)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">海波(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['Urea']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">尿素(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量(做水)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">漂白粉(30ppm濃度)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">海波(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">尿素(kg)</span></v-text-field>
                                                         <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降紫菌)</span></v-text-field> -->
                                                         <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降靛菌)</span></v-text-field> -->
                                                     </v-card-text>
@@ -623,6 +642,7 @@
 import nerdamer from 'nerdamer';
 import dayjs from "dayjs";
 import _ from "lodash";
+import errorVue from '~/layouts/error.vue';
 export default {
     layout: "emptynologin",
     head() {
@@ -650,7 +670,7 @@ export default {
             panel:{panel_row11:[0],panel_row12:[0],panel_row13:[0],panel_row14:[0],
                    panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],
                    panel_row31:[0,1,2],panel_row32:[0,1]},
-            lightColor:{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
+            lightColor:{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal','Mg':'teal','Ca':'teal','Alk':'teal'},
             lightData: {
                     Do: {
                         warning: {1: ['4.5 <= Do', 'Do < 5']},
@@ -681,6 +701,7 @@ export default {
             if(this.nowSelectPool!==evt) {
                 this.nowSelectPool = evt;
                 this.querrySelected = '';
+                this.isSearch = false;
             }
             this.allData.forEach(f=>{
                 f.node.forEach(a=>{
@@ -704,12 +725,21 @@ export default {
             
             // this.allData.forEach(d=>{d.node.forEach(s=>{s.node.forEach(p=>{if(p.id==evt)this.nowSelectPool=s.name+'_'+p.name})})});
         },
+        // 帶入參數
         getSelectData(evt) {
             console.log('Change Select',evt);
-            this.querrySelected = evt;
+            this.isSearch = false;
             if(evt==null) {
                 this.resetParm();
             }
+        },
+        goAnchor(selector) {
+            let ele = document.querySelector(selector);
+            let eTop = ele.offsetTop;
+            ele.scrollIntoView({
+                 behavior: "smooth",
+                 top: eTop,
+            });
         },
         getAllData: async function () {
             await this.$axios
@@ -1477,6 +1507,16 @@ export default {
             console.log("ruledatastate",checkstate_bool,value,this.lightColor[item]);
 
         },
+        getColor(item) {
+            console.log(item,this.lightColor[item]);
+            if(this.WaterQualityData[item]) {
+                this.valueCheck(item,this.WaterQualityData[item]);
+            }else {
+                this.lightColor[item] = 'teal';
+            }
+            
+            return this.lightColor[item];
+        }
     },
     async created() {
         await this.getsuggData();
@@ -1579,6 +1619,12 @@ export default {
                 }
                 .theme--light.v-btn.v-btn--disabled .v-btn__loading,.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
                     background-color: #BFCBD2 !important;
+                }
+                .tag {
+                    font-size: 0.85rem;
+                    margin-right: 8px;
+                    text-decoration: underline;
+                    color: #006AA6;
                 }
             }
             .result > .row {
@@ -1833,8 +1879,16 @@ export default {
                 border: none;
             }
             .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
-                    padding: 0;
-                }
+                padding: 0;
+            }
+            // disable
+            .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
+                border-image: none;
+                border-color: rgba(0,0,0,0.1);
+            }
+            .theme--light.v-input--is-disabled input, .theme--light.v-input--is-disabled textarea {
+                color: #00273E;
+            }
         }
     }
   }
