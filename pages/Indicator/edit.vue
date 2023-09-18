@@ -1355,7 +1355,8 @@ export default {
       var result;
       try {
         //避免出現其他無法解決符號
-        result = mee.eval(data).toFixed(2);
+        // result = mee.eval(data).toFixed(2);
+        result = eval(data).toFixed(2);
       } catch (error) {
         result = 0;
       }
