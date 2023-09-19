@@ -67,8 +67,8 @@
                 <div class="result">
                     <v-row>
                         <!-- 參數設定 -->
-                        <v-col cols="12" md="6" sm="12">
-                            <v-card class="result-card">
+                        <v-col cols="12" md="6" sm="12" id="params">
+                            <v-card class="result-card" >
                                 <!-- 表頭 -->
                                 <div class="card-title">
                                     <div class="title">
@@ -308,7 +308,7 @@
                                                             <v-select v-model="BacteriaData['IsEMSToxin']" clearable :items="optData.IsEMSToxin" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否EMS(toxin)感染</span></v-select>
                                                             <v-select v-model="BacteriaData['IsEHP']" clearable :items="optData.IsEHP" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否EHP感染</span></v-select>
                                                             <v-select v-model="BacteriaData['IsTSV']" clearable :items="optData.IsTSV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否TSV感染</span></v-select>
-                                                            <v-select v-model="BacteriaData['IMNV']" clearable :items="optData.IMNV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否IMNV感染</span></v-select>
+                                                            <v-select v-model="BacteriaData['IsIMNV']" clearable :items="optData.IsIMNV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否IMNV感染</span></v-select>
                                                             <v-select v-model="BacteriaData['IsIHHNV']" clearable :items="optData.IsIHHNV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否IHHNV感染</span></v-select>
 
                                                             <!-- <v-select v-model="BacteriaData['IsEMSInfected']" clearable :items="optData.IsEMSInfected" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-select>
@@ -326,7 +326,7 @@
                             </v-card>
                         </v-col>
                         <!-- AI 建議 -->
-                        <v-col cols="12" md="6" sm="12">
+                        <v-col cols="12" md="6" sm="12" id="ai">
                             <v-card class="result-card ai-suggestion">
                                 <!-- 表頭 -->
                                 <div class="card-title">
@@ -591,22 +591,22 @@
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "><span class="pa-0 ma-0 text-right" slot="prepend">前餐砂糖量(配合飼料CN比)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">下餐砂糖量 (配合飼料CN比)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降氨氮)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降亞硝酸)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (提高枯草桿菌)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降紫菌)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量 (降靛菌)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">當日總砂糖量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計砂糖量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "><span class="pa-0 ma-0" slot="prepend">前餐砂糖量(配合飼料CN比)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">下餐砂糖量 (配合飼料CN比)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降氨氮)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降亞硝酸)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (提高枯草桿菌)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降紫菌)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降靛菌)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">當日總砂糖量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">累計砂糖量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">熟石灰量(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" disabled dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0 text-right" slot="prepend">累計熟石灰量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="prepend">熟石灰量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" disabled dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="prepend">累計熟石灰量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">累計菌量(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">累計菌量(kg)</span></v-text-field>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-expansion-panel-content>
@@ -617,10 +617,10 @@
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
-                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">砂糖量(做水)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">漂白粉(30ppm濃度)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">海波(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0 text-right" slot="prepend">尿素(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量(做水)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">海波(kg)</span></v-text-field>
+                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">尿素(kg)</span></v-text-field>
                                                         <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降紫菌)</span></v-text-field> -->
                                                         <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降靛菌)</span></v-text-field> -->
                                                     </v-card-text>
@@ -637,14 +637,34 @@
             </div>
             <!-- 移至最上方 -->
             <div class="fixed-btn">
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                        <button class="btn-primary" @click="goAnchor('top')" v-bind="attrs" v-on="on">
-                            <v-icon>mdi-chevron-double-up</v-icon>
-                        </button>
-                    </template>
-                    <span>回到上方</span>
-                </v-tooltip>
+                <div  v-if="windowWidth>768" class="bact-to-top">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-primary" @click="goAnchor('top')" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-chevron-double-up</v-icon>
+                            </button>
+                        </template>
+                        <span>回到上方</span>
+                    </v-tooltip>
+                </div>
+                <div v-else class="to-self">
+                    <v-tooltip left>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-primary" @click="goAnchor('params')" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-pencil</v-icon>
+                            </button>
+                        </template>
+                        <span>回到參數設定</span>
+                    </v-tooltip>
+                    <v-tooltip left>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-primary to-ai" @click="goAnchor('ai')" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-crosshairs-gps</v-icon>
+                            </button>
+                        </template>
+                        <span>回到AI建議</span>
+                    </v-tooltip>
+                </div>
             </div>
         </v-card>
         
@@ -703,7 +723,8 @@ export default {
             allData:[], // 場區池架構，為了比對池id
             nowSelectDataLst: [],// 現在選擇的池有的編輯紀錄
             isSearch: false, // 是否有點選查詢，有才顯示編輯按鈕群
-            oldQuerryData: [] // 未儲存時，切換不同池時要還原
+            oldSelect: '', // 未儲存時，切換不同池時要還原
+            windowWidth: window.innerWidth
         }
     },
     methods: {
@@ -714,6 +735,7 @@ export default {
                 this.nowSelectPool = evt;
                 this.querrySelected = '';
                 this.isSearch = false;
+                this.resetParm();
             }
             this.allData.forEach(f=>{
                 f.node.forEach(a=>{
@@ -729,7 +751,6 @@ export default {
             })
             
             this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
-            
             if(this.nowSelectDataLst==undefined) {
                 this.resetParm();
             }
@@ -744,10 +765,21 @@ export default {
             if(evt==null) {
                 this.resetParm();
             }
+            if(evt!==this.oldSelect) {
+                this.resetParm();
+                this.oldSelect = evt;
+            }
         },
         goAnchor(selector) {
             if(selector=='top') {
                 window.scrollTo({top: 0, behavior: 'smooth'});
+            }else if(selector=='params' || selector=='ai') {
+                let ele = document.getElementById(selector);
+                let eTop = ele.offsetTop;
+                ele.scrollIntoView({
+                    behavior: "smooth",
+                    top: eTop,
+                });
             }else {
                 let ele = document.querySelector(selector);
                 let eTop = ele.offsetTop;
@@ -900,7 +932,6 @@ export default {
                         })
                     }
                     this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
-                    
                     console.log('querryData',this.querryData);
                     console.log('querydatalst',this.querryDataLst);
                     console.log('nowSelectDataLst',this.nowSelectDataLst);
@@ -911,9 +942,9 @@ export default {
                             alldate.push(p.created_time);
                         })
                         let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
-                        
-                        this.getSelectData(dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss"));
-                        
+                        this.querrySelected = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                        this.getSelectData(this.querrySelected);
+                        this.importQuerry();
                     }
                     
                 }
@@ -939,7 +970,7 @@ export default {
             }else{
                 this.isSearch = true;
                 // console.log("querrySelected:",this.querrySelected);
-                var input_data = this.querryData.filter(x=>x.created_time==this.querrySelected)[0].input_data;
+                var input_data = _.cloneDeep(this.querryData.filter(x=>x.created_time==this.querrySelected)[0].input_data);
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = input_data.FeedParm;
@@ -948,7 +979,7 @@ export default {
                 this.ObservationData = input_data.ObservationData;
                 this.BacteriaData = input_data.BacteriaData;
                 //reset suggData
-                var output_data = this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data;
+                var output_data = _.cloneDeep(this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data);
                 console.log('querryDataLst[this.nowSelectPool]',input_data)
                 this.suggData = {
                     "DynamicData": output_data.DynamicData,
@@ -1552,8 +1583,16 @@ export default {
         }
     },
     mounted() {
-        
+        //監控視窗
+        window.addEventListener('resize', () => {
+            this.windowWidth = window.innerWidth
+        });
     },
+    watch: {
+        windowWidth:function(){
+            return window.innerWidth;
+        },
+    }
 }
 </script>
 
@@ -1779,6 +1818,20 @@ export default {
                 .v-icon.v-icon {
                     color: #fff !important;
                     font-size: 1.5rem;
+                }
+            }
+            .to-self {
+                display: flex;
+                flex-direction: column;
+                width: 120px;
+                align-items: flex-end;
+                .btn-primary {
+                    border-radius: 4px 4px 0 0;
+                    // background-color: #BFD9E8;
+                    &.to-ai {
+                        border-radius: 0 0 4px 4px ;
+                        background-color: #2fba95;
+                    }
                 }
             }
         }
