@@ -498,7 +498,7 @@
                                 </div>
                               </template>
                               <template v-slot:[`item.content`]="{ item }">
-                                <div style="text-align: left;display: flex;justify-content: center;">
+                                <div style="text-align: left;display: flex;justify-content: flex-start;">
                                   <span v-html="item.content" style="line-height: 24px;"></span>
                                 </div>
                               </template>
@@ -1037,15 +1037,21 @@ export default {
                   text: cols[key],
                   value: cols[key],
                   align: "center",
+                  width: "20%",
                   groupable: false
                 });
               }
             }
-
+            for(let i=0;i<this.headers.length;i++) {
+              if(this.headers[i].text == 'group') {
+                this.headers[i].width = '10%';
+              }
+            }
             this.headers.push({
               text: "動作",
               value: "actions",
-              sortable: false
+              sortable: false,
+              width: "20%",
             });
             
             this.item2 = data2;
@@ -1078,12 +1084,12 @@ export default {
       // 事件資料整理，要符合表格欄位
       if(this.eventsData.length>0) {
         this.eventHeaders = [
-          {align: "center",groupable: false,text: "id",value: "id"},
-          {align: "center",groupable: false,text: "事件等級",value: "event_level_name"},
-          {align: "center",groupable: false,text: "事件類別",value: "event_category_name"},
-          {align: "center",groupable: false,text: "時間",value: "time"},
-          {align: "center", groupable: false,text: "內容",value: "content"},
-          {align: "center",groupable: false,text: "資料範圍",value: "name"}]
+          {align: "center",groupable: false,text: "id",value: "id",width:"10%"},
+          {align: "center",groupable: false,text: "事件等級",value: "event_level_name",width:"10%"},
+          {align: "center",groupable: false,text: "事件類別",value: "event_category_name",width:"10%"},
+          {align: "center",groupable: false,text: "時間",value: "time",width:"20%"},
+          {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
+          {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
       }
       for(let i=0;i<this.eventsData.length;i++) {
         this.eventTableData.push({
