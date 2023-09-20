@@ -355,7 +355,7 @@
 
                                                         <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0 yellow lighten-1" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦體形狀</span></v-select>
 
-                                                        <v-text-field v-model.number="ObservationData['Leftover']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">觀察網殘餌量(g)</span></v-text-field>
+                                                        <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">觀察網殘餌量(g)</span></v-text-field>
                                                         <v-text-field v-model.number="ObservationData['DeadShrimpQty']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">死蝦數量</span></v-text-field>
                                                         <v-text-field v-model.number="ObservationData['ShrimpLength']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">蝦子長度(cm)</span></v-text-field>
                                                         <!-- <v-text-field v-model.number="ObservationData['ObsFeed']" dense hide-details class="mt-0 yellow darken-1"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">觀察網投餌量(g)</span></v-text-field> -->
@@ -762,7 +762,7 @@ export default {
             FeedParm:{LastFeedInput:0,CumulativeFeedAmountInput:0},//飼料參數
             MakeWaterParm:{},//做水參數
             WaterQualityData:{},//水質資訊
-            ObservationData:{},//觀察網資訊
+            ObservationData:{Leftover:0},//觀察網資訊
             BacteriaData:{},//水中菌相資訊
             suggData: { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {} },//ai建議
             optData:{},//選項
