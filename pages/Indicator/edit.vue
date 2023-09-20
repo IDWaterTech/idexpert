@@ -1096,7 +1096,7 @@ export default {
           id: this.eventsData[i].id,
           event_level_name: this.eventsData[i].event_level_name,
           event_category_name: this.eventsData[i].event_category_name,
-          time: `起：${this.eventsData[i].started_date}<br> 迄：${this.eventsData[i].ended_date}`,
+          time: `起：${this.eventsData[i].started_date}<br> 訖：${this.eventsData[i].ended_date}`,
           content:`全日事件：${this.eventsData[i].is_all_day}<br> 標題：${this.eventsData[i].title}[最後編輯者：${this.eventsData[i].created_user}]<br> 內容：${this.eventsData[i].content}`,
           name: '',
           color: this.eventsData[i].color
