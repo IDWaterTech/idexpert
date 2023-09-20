@@ -4,7 +4,7 @@
       <!-- <v-col cols="12">
         <h2 class="white--text">影像辨識</h2>
       </v-col> -->
-      <v-col cols="12" class="cardtitle">
+      <v-col cols="12" class="cardtitle" id="seach-div">
         <v-row>
           <!-- 養殖池 -->
           <v-col cols="12" sm="3" class="text-center my-5">
@@ -69,8 +69,8 @@
       </v-col>
 
       <v-col cols="12" v-if="dataClass == '觀察網'">
-        <el-table ref="recogtable" style="width:100%" :data="recogData.items" highlight-current-row
-          :header-cell-style="tableHeaderStyle" max-height="600" class="primary" :header-cell-name="cellClass">
+        <el-table ref="recogtable" id="data-div" style="width:100%" :data="recogData.items" highlight-current-row
+          :header-cell-style="tableHeaderStyle" :max-height="tableHeight" class="primary" :header-cell-name="cellClass">
           <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
           <!-- @current-change="handleCurrentChange"
           @select="handleSelectionChange" -->
@@ -176,7 +176,8 @@ export default {
       edate: "",
       //---選定類別
       dataClass: "",
-      dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌盤", "icon": "mdi-bacteria-outline" }]
+      dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌盤", "icon": "mdi-bacteria-outline" }],
+      tableHeight: window.innerHeight - 64 - 80 -64
     };
   },
   methods: {
@@ -304,9 +305,19 @@ export default {
   async mounted() {
     //取得整場架構資料
     await this.getMainData();
+    //監控視窗
+    window.addEventListener('resize', () => {
+      this.tableHeight = window.innerHeight - 64 - 80 -64;
+    });
+    
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+  },
+  watch: {
+    tableHeight:function(){
+        return window.innerHeight - 64 - 80 -64;
+    },
   }
 };
 </script>
