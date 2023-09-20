@@ -1966,6 +1966,12 @@ export default {
             .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
                 padding: 0;
             }
+            #aiwater,#ainet {
+                .v-data-table > .v-data-table__wrapper > table > tbody > tr {
+                    // border-bottom: 1px solid rgba(0,0,0,0.1);
+                    box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
+                }
+            }
             // disable
             .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
                 border-image: none;
