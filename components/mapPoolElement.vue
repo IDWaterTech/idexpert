@@ -7,10 +7,11 @@
     <span
       v-if="item.state.length > 0"
       v-show="item.state != '' || showSelect"
-      >{{ item.name }}-{{ item.state }}
-    </span>
-    <br/>
-    <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''">{{item.updated_time}}</span>
+      >{{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}</span>
+    <span v-if="item.state.includes('(')"><br>( {{ item.state.split('(')[1] }}</span>
+    
+    
+    <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''"><br>{{item.updated_time}}</span>
     <v-select
       v-model="selectedItem"
       :items="selitem.filter(x => x.name != 'default')"

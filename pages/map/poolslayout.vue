@@ -3,7 +3,7 @@
     <div v-if="!isLoad" style="padding-left: 12px;">Loading...</div>
     <div v-else>
       <div v-if="nowAreaTag!=='setting' && ponds.length>0 && isSetting">
-        <v-row  v-for="(pond,pid) in ponds" :key="pid" class="mx-0 parent-row" :id="`pid-${pid}`" >
+        <v-row  v-for="(pond,pid) in ponds" :key="pid" class="mx-0 parent-row" :id="`pid-${pid}`" style="display: flex;align-items: stretch;">
           <div v-for="(b,bid) in pond.pond" :key="bid"
             :class="{'block':b.state!==''&& b.rows.length==0 && b.isSetting,'text-center my-1':windowWidth>=700 && b.name!=='road','road':b.id==''&&b.name=='road','rows-display':b.rows.length>0,'edit-block':showedit}"
             :style="{
