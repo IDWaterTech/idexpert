@@ -1235,7 +1235,7 @@ export default {
                     // "MuscleColor": "Turbidity",
                     // "BodyIllnessLocation": "None",
                     // "Moulting": "Normal",
-                    // "LeftoverRate": 5,
+                     "Leftover": 0,
                     // "DeadShrimpRate": 0.9,
                     // "ShrimpLength": 2.5
                 };
@@ -1312,7 +1312,7 @@ export default {
                     // "MuscleColor": "Turbidity",
                     // "BodyIllnessLocation": "None",
                     // "Moulting": "Normal",
-                    // "LeftoverRate": 5,
+                    "Leftover": 0,
                     // "DeadShrimpRate": 0.9,
                     // "ShrimpLength": 2.5
                 };
@@ -1389,7 +1389,7 @@ export default {
                     // "MuscleColor": "Turbidity",
                     // "BodyIllnessLocation": "None",
                     // "Moulting": "Normal",
-                    // "LeftoverRate": 5,
+                    "Leftover": 0,
                     // "DeadShrimpRate": 0.9,
                     // "ShrimpLength": 2.5
                 };
@@ -1466,7 +1466,7 @@ export default {
                     // "MuscleColor": "Turbidity",
                     // "BodyIllnessLocation": "None",
                     // "Moulting": "Normal",
-                    // "LeftoverRate": 5,
+                    "Leftover": 0,
                     // "DeadShrimpRate": 0.9,
                     // "ShrimpLength": 2.5
                 };
@@ -1494,8 +1494,7 @@ export default {
             this.FeedParm={LastFeedInput:0,CumulativeFeedAmountInput:0};
             this.MakeWaterParm={};
             this.WaterQualityData = {};
-            this.ObservationData = {};
-            this.ObservationData = {};
+            this.ObservationData = {Leftover:0};
             this.BacteriaData={};
             this.suggData = {
                 "DynamicData": {},
