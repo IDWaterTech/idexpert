@@ -78,7 +78,7 @@
                                     <div class="btn-groups" v-if="nowSelectPool!==''&&nowSelectPool!==null">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
-                                                    <button class="btn-primary add" @click="postParm(true)" v-bind="attrs" v-on="on">
+                                                    <button class="btn-add" @click="postParm(true)" v-bind="attrs" v-on="on">
                                                         <v-icon>mdi-plus</v-icon>
                                                     </button>
                                                 </template>
@@ -86,7 +86,7 @@
                                             </v-tooltip>
                                             <v-tooltip bottom v-if="querrySelected!==''&&querrySelected!==null&&isSearch">
                                                 <template v-slot:activator="{ on, attrs }">
-                                                    <button class="btn-primary save" @click="patchQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
+                                                    <button class="btn-add save" @click="patchQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
                                                         <v-icon>mdi-check</v-icon>
                                                     </button>
                                                 </template>
@@ -94,7 +94,7 @@
                                             </v-tooltip>
                                             <v-tooltip bottom v-if="querrySelected!==''&&querrySelected!==null&&isSearch">
                                                 <template v-slot:activator="{ on, attrs }">
-                                                    <button class="btn-primary delete" @click="delQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
+                                                    <button class="btn-add delete" @click="delQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
                                                         <v-icon>mdi-trash-can</v-icon>
                                                     </button>
                                                 </template>
@@ -650,7 +650,7 @@
                 <div v-else class="to-self">
                     <v-tooltip left>
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-primary" @click="goAnchor('params')" v-bind="attrs" v-on="on">
+                            <button class="btn-primary btn-to" @click="goAnchor('params')" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-pencil</v-icon>
                             </button>
                         </template>
@@ -658,7 +658,7 @@
                     </v-tooltip>
                     <v-tooltip left>
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-primary to-ai" @click="goAnchor('ai')" v-bind="attrs" v-on="on">
+                            <button class="btn-primary btn-to to-ai" @click="goAnchor('ai')" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-crosshairs-gps</v-icon>
                             </button>
                         </template>
@@ -1734,10 +1734,17 @@ export default {
                             left: 50%;
                             transform: translate(-50%,-50%);
                         }
-                        &.add {
+                        
+                        &.btn-add {
                             background-color: #00A660;
                             &:hover {
                                 background-color: lighten($color: #00A660, $amount: 3);
+                            }
+                        }
+                        &.save {
+                           background-color: #006AA6;
+                           &:hover {
+                                background-color: lighten($color: #006AA6, $amount: 3);
                             }
                         }
                         &.delete {
@@ -1813,7 +1820,7 @@ export default {
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
-                box-shadow: 0 0 20px rgba(0,0,0,0.2);
+                box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
                 .v-icon.v-icon {
                     color: #fff !important;
                     font-size: 1.5rem;
@@ -1824,12 +1831,12 @@ export default {
                 flex-direction: column;
                 width: 120px;
                 align-items: flex-end;
-                .btn-primary {
-                    border-radius: 4px 4px 0 0;
+                .btn-primary.btn-to {
+                    border-radius: 4px 4px 0 0 !important;
                     // background-color: #BFD9E8;
                     &.to-ai {
-                        border-radius: 0 0 4px 4px ;
-                        background-color: #2fba95;
+                        border-radius: 0 0 4px 4px !important;
+                        background-color: #2fba95 !important;
                     }
                 }
             }
