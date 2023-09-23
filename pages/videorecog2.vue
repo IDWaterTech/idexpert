@@ -64,7 +64,7 @@
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
-            <v-row>
+            <v-row style="margin-bottom: 0;">
               <v-col cols="12">
                 <v-card class="result-card">
                   <!-- 觀察網 -->
@@ -75,7 +75,7 @@
                     :items="recogData.items" dense
                     :hide-default-footer="true"
                     no-data-text="查無資料"
-                    height="48vh"
+                    height="52vh"
                     fixed-header>
                     <template v-slot:[`item.feed_img`]="{ item }">
                       <!-- <img :src="item.feed_img" style="height:200px"> -->
@@ -102,7 +102,7 @@
                     :items="recogData.items" dense
                     :hide-default-footer="true"
                     no-data-text="查無資料"
-                    height="48vh"
+                    height="52vh"
                     fixed-header>
                     <template v-slot:[`item.images`]="{ item }">
                         <img v-img="{ group: item.id }" v-for="(img,i) in item.images" :key="i" :src="img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
@@ -183,7 +183,7 @@ export default {
       dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌盤", "icon": "mdi-bacteria-outline" }],
       tableHeight: window.innerHeight - 64 - 80 -64,
       innerWidth: window.innerWidth,
-      nowPool: '',
+      nowPool: '武曲_A1',
       footerProps: {
         "items-per-page-text": "每頁",
         "items-per-page-options": [25, 50, 75, 100]
@@ -463,7 +463,7 @@ export default {
       }
     }
     .search {
-      margin-bottom: 24px;
+      margin-bottom: 12px;
       .caculate {
         max-width: calc((100%  / 4) - (100% / 12) / 4 );
       }
