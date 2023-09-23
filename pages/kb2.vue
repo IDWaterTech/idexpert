@@ -49,7 +49,7 @@
                                 </v-btn>
                                 <v-btn
                                     tile
-                                    class="btn-primary reset"
+                                    class="btn-secondary reset"
                                     @click="resetParm()">
                                     重設
                                 </v-btn>
@@ -1622,7 +1622,7 @@ export default {
         }
         .reset {
             background-color: transparent;
-            color: #A60017;
+            color: #A60017 !important;
             border: 1px solid #A60017;
             transition: all 0.3s;
             &:hover {
