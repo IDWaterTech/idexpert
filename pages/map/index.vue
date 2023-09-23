@@ -74,19 +74,19 @@
         }
       
       
-      // scrollbar
-      ::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-          background: none; 
-      }
-      ::-webkit-scrollbar-thumb {
-          background-color: #BFD9E8;
-      }
-      // ::-webkit-scrollbar-button {
-      //     border-radius: 4px;
-      //     background: transparent;
-      // }
+    //   // scrollbar
+    //   ::-webkit-scrollbar {
+    //       width: 6px;
+    //       height: 6px;
+    //   }
+    //   ::-webkit-scrollbar-track {
+    //       background: none; 
+    //   }
+    //   ::-webkit-scrollbar-thumb {
+    //       background-color: #BFD9E8;
+    //   }
+    //   // ::-webkit-scrollbar-button {
+    //   //     border-radius: 4px;
+    //   //     background: transparent;
+    //   // }
   </style>

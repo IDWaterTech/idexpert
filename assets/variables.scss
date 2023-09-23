@@ -2,3 +2,83 @@
 //
 // The variables you want to modify
 // $font-size-root: 20px;
+
+// color
+$color-primary: #006AA6;
+$color-primary-75: #408FBC;
+$color-primary-50: #7FB4D2;
+$color-primary-25: #BFD9E8;
+$color-dark: #00324E;
+$color-dark-75: #40657A;
+$color-dark-50: #7F98A6;
+$color-dark-25: #BFCBD2;
+$color-light: #F4FBFF;
+$color-lighten: #E6F5FA;
+$color-accent: #A60017;
+$color-form: #6c9bcd;
+
+//btn
+.btn-primary {
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    background-color: $color-primary !important;
+    color: #fff !important;
+}
+.btn-secondary {
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    color: $color-primary !important;
+    border: 1px solid $color-primary;
+}
+
+// 場區池下拉選單
+::v-deep {
+    .select-template {
+        .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .vue-treeselect__control {
+            border: none;
+            border-radius: 0;
+            border-bottom: 1px solid $color-form;
+            .vue-treeselect__placeholder {
+                color: $color-dark;
+                &::before {
+                content: '*'
+                }
+                &::after {
+                content: '(必選)';
+                }
+            }
+            .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+                color: $color-form;
+            }
+            .vue-treeselect__x-container {
+                display: none;
+            }
+        }
+        .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
+        .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+            border-color: $color-form;
+        }
+        .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
+        .theme--light.v-input input {
+            font-size: 14px;
+            color: $color-dark;
+        }
+    }
+}
+
+// scrollbar
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: none; 
+}
+::-webkit-scrollbar-thumb {
+    background-color: $color-dark-50;
+}
