@@ -108,8 +108,11 @@
                         <img v-img="{ group: item.id }" v-for="(img,i) in item.images" :key="i" :src="img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
                         <span v-if="item.images.length>0"><br>共{{item.images.length}}張</span>
                     </template>
-                    <template v-slot:[`item.is_heated`]="{ item }">
-                      <span>{{ item.is_heated? '有' : '無' }}</span>
+                    <template v-slot:[`item.info`]="{item}">
+                      <span>加熱：</span><span  :style="(item.is_heated)?'color:red;':''">{{ item.is_heated? '有' : '無' }}</span><br/>
+                      <span>水樣稀釋倍率：{{ item.dilution }}</span><br/>
+                      <span>塗盤體積：{{ item.volume }}</span><br/>
+                      <span>檢驗時間：{{ item.inspected_time }}</span>
                     </template>
                     <template v-slot:[`item.class`]="{ item }">
                       <div>
@@ -298,8 +301,9 @@ export default {
                 // this.headers = ['資料','時間','加熱','class','辨識'];
                 this.headers = [
                   {align: "center",groupable: false,text: "資料",value: "id",width:"10%"},
-                  {align: "center",groupable: false,text: "時間",value: "inspected_time",width:"20%" },
-                  {align: "center",groupable: false,text: "加熱",value: "is_heated",width:"10%" },
+                  // {align: "center",groupable: false,text: "時間",value: "inspected_time",width:"20%" },
+                  // {align: "center",groupable: false,text: "加熱",value: "is_heated",width:"10%" },
+                  {align: "left",groupable: false,text: "資訊",value: "info",width:"20%" },
                   {align: "center",groupable: false,text: "class",value: "class",width:"20%", sortable: false},
                   {align: "left",groupable: false,text: "辨識",value: "images",width:"40%", sortable: false}];
                 }
@@ -310,6 +314,8 @@ export default {
                             3. ${d.class3}<br>
                             4. ${d.class4}<br>
                             5. ${d.class2}`,
+                    dilution:d.dilution,
+                    volume:d.volume,
                     images:d.images,
                     id:d.id,
                     inspected_time:d.inspected_time,
