@@ -13,7 +13,7 @@
           <div class="search">
             <v-row style="margin-bottom: 12px;">
               <v-col cols="12" md="3" class="caculate" sm="12" style="position: relative;">
-                <locate-select :dataScope="'pool'" defaultSelect="1" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
                 <label v-if="nowPool!==''" class="label-select">*請選擇養殖區域(必選)</label>
               </v-col>
               <!-- 選擇起日 -->
@@ -53,7 +53,7 @@
                   <v-btn
                     tile
                     @click="getRecog"
-                    :disabled="!(sdate && edate)"
+                    :disabled="(!(sdate && edate))||(poolid==undefined||poolid==''||poolid==null)"
                     class="btn-primary"
                     >查詢</v-btn
                   >
@@ -145,7 +145,7 @@ export default {
   },
   data() {
     return {
-      poolid: 1,
+      poolid: '',
       maindata: [],
       //
       recogData: {
@@ -183,7 +183,7 @@ export default {
       dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌盤", "icon": "mdi-bacteria-outline" }],
       tableHeight: window.innerHeight - 64 - 80 -64,
       innerWidth: window.innerWidth,
-      nowPool: '武曲_A1',
+      nowPool: '',
       footerProps: {
         "items-per-page-text": "每頁",
         "items-per-page-options": [25, 50, 75, 100]
@@ -193,7 +193,7 @@ export default {
   },
   methods: {
     get_scopeData:function(evt){
-      console.log(evt);
+      console.log('pool',evt);
       this.maindata.forEach(f=>{
         f.node.forEach(a=>{
           a.node.forEach(p=>{
