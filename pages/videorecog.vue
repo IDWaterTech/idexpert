@@ -73,9 +73,9 @@
                     class="edit-table"
                     :headers="headers"
                     :items="recogData.items" dense
-                    :hide-default-footer="true"
+                    :footer-props="footerProps"
                     no-data-text="查無資料"
-                    height="52vh"
+                    height="47vh"
                     fixed-header>
                     <template v-slot:[`item.feed_img`]="{ item }">
                       <!-- <img :src="item.feed_img" style="height:200px"> -->
@@ -100,9 +100,9 @@
                     class="edit-table"
                     :headers="headers"
                     :items="recogData.items" dense
-                    :hide-default-footer="true"
+                    :footer-props="footerProps"
                     no-data-text="查無資料"
-                    height="52vh"
+                    height="47vh"
                     fixed-header>
                     <template v-slot:[`item.images`]="{ item }">
                         <img v-img="{ group: item.id }" v-for="(img,i) in item.images" :key="i" :src="img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
@@ -476,6 +476,7 @@ export default {
     }
     .v-card.result-card {
       padding: 24px;
+      padding-bottom: 8px;
       background-color: $color-lighten;
       .theme--light.v-data-table {
         background-color: $color-lighten;
