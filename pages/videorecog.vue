@@ -313,7 +313,7 @@ export default {
                             2. ${d.class2}<br>
                             3. ${d.class3}<br>
                             4. ${d.class4}<br>
-                            5. ${d.class2}`,
+                            5. ${d.class5}`,
                     dilution:d.dilution,
                     volume:d.volume,
                     images:d.images,
