@@ -115,7 +115,7 @@
                       <span>檢驗時間：{{ item.inspected_time }}</span>
                     </template>
                     <template v-slot:[`item.class`]="{ item }">
-                      <div>
+                      <div style="text-align: left;display: flex;justify-content: flex-start;">
                         <span v-html="item.class" style="line-height: 24px;word-break: break-all;" :style="{textAlign:`${innerWidth>599.98?'left':'right'}`}"></span>
                       </div>
                     </template>
