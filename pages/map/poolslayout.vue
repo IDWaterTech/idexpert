@@ -9,6 +9,7 @@
             :style="{
               background: `${b.isSetting==false?'transparent':((b.id==''&& b.state=='')||b.rows.length||(b.id==''&&b.name=='road')>0)?'transparent':getItemColor(b.state)}`,
               minWidth: `${getWidth(b)}`,
+              minHeight: `${b.id==''&& b.state==''&& b.rows.length==0?'48px':'0'}`
             }" 
             style="flex-shrink: 0;"
             class="mx-3">

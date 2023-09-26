@@ -360,7 +360,7 @@
               for(let i=0;i<this.ponds.length;i++) {
                   let data = [];
                   let o = 0;
-                  let n = 0;
+                  let n = 0;//目前加總的欄位數
                   let isPush = false;
                   for(let x=0;x<this.ponds[i].pond.length;x++) {
                       // 池的長度不為最大欄位值，代表傳進來的實際index和各欄index不同，需另外進行判斷，才能知道要在那邊新增或刪除欄
@@ -368,11 +368,12 @@
                       if(this.ponds[i].pond.length!==this.maxCols) {
                           n+=this.ponds[i].pond[x].cols;
                           if(bool) {
-                              data.push(this.ponds[i].pond[x]);
-                              if(index<=n && index>=o && !isPush) {
-                                  data.push({id:'',name:'',state:'',updated_time:'',cols:1,rows:[]});
-                                  isPush = true;
-                              }
+                            // console.log('data push',n,index);
+                            data.push(this.ponds[i].pond[x]);
+                            if(index<n && index>=o && !isPush) {
+                                data.push({id:'',name:'',state:'',updated_time:'',cols:1,rows:[]});
+                                isPush = true;
+                            }
                           }else {
                               // console.log('index n o',index,n,o);
                               if(index<n && index>=o) {
@@ -944,56 +945,57 @@
               this.ponds = [];
               this.originalData = [];
               this.isSetting = false;
+              let areaData = _.cloneDeep(this.areas);
               let deleteSet = [];
-              for(let i=0;i<this.areas.ponds.length;i++) {
+              for(let i=0;i<areaData.ponds.length;i++) {
                   this.ponds.push({pond:[]});
                   this.originalData.push({pond:[]});
                   let data1 = [];
                   let data2 = [];
                   let isSet = false;
-                  for(let x=0;x<this.areas.ponds[i].pond.length;x++) {
-                      if(this.areas.ponds[i].pond[x].isSetting || (this.areas.ponds[i].pond[x].name=='road'&&this.areas.ponds[i].pond[x].id=='')) {
+                  for(let x=0;x<areaData.ponds[i].pond.length;x++) {
+                      if(areaData.ponds[i].pond[x].isSetting || (areaData.ponds[i].pond[x].name=='road'&&areaData.ponds[i].pond[x].id=='')) {
                           this.isSetting = true;
                           isSet = true;
                           data1.push({
-                              "id": this.areas.ponds[i].pond[x].id,
-                              "name": this.areas.ponds[i].pond[x].name,
-                              "updated_time": this.areas.ponds[i].pond[x].update_time,
-                              "state": this.areas.ponds[i].pond[x].state,
-                              "cols": this.areas.ponds[i].pond[x].cols,
-                              "rows": this.areas.ponds[i].pond[x].rows,
-                              "roadDirection": this.areas.ponds[i].pond[x].roadDirection,
+                              "id": areaData.ponds[i].pond[x].id,
+                              "name": areaData.ponds[i].pond[x].name,
+                              "updated_time": areaData.ponds[i].pond[x].update_time,
+                              "state": areaData.ponds[i].pond[x].state,
+                              "cols": areaData.ponds[i].pond[x].cols,
+                              "rows": areaData.ponds[i].pond[x].rows,
+                              "roadDirection": areaData.ponds[i].pond[x].roadDirection,
                           });
                           data2.push({
-                              "id": this.areas.ponds[i].pond[x].id,
-                              "name": this.areas.ponds[i].pond[x].name,
-                              "updated_time": this.areas.ponds[i].pond[x].update_time,
-                              "state": this.areas.ponds[i].pond[x].state,
-                              "cols": this.areas.ponds[i].pond[x].cols,
-                              "rows": this.areas.ponds[i].pond[x].rows,
-                              "roadDirection": this.areas.ponds[i].pond[x].roadDirection,
+                              "id": areaData.ponds[i].pond[x].id,
+                              "name": areaData.ponds[i].pond[x].name,
+                              "updated_time": areaData.ponds[i].pond[x].update_time,
+                              "state": areaData.ponds[i].pond[x].state,
+                              "cols": areaData.ponds[i].pond[x].cols,
+                              "rows": areaData.ponds[i].pond[x].rows,
+                              "roadDirection": areaData.ponds[i].pond[x].roadDirection,
                           });
                       }
                       // 取得池的資料
-                      if(this.areas.ponds[i].pond[x].rows.length>0) {
-                          for(let y=0;y<this.areas.ponds[i].pond[x].rows.length;y++) {
-                              if(this.areas.ponds[i].pond[x].rows[y].isSetting) {
+                      if(areaData.ponds[i].pond[x].rows.length>0) {
+                          for(let y=0;y<areaData.ponds[i].pond[x].rows.length;y++) {
+                              if(areaData.ponds[i].pond[x].rows[y].isSetting) {
                                   this.isSetting = true;
                               }
-                              if(this.areas.ponds[i].pond[x].rows[y].id!==''&& this.areas.ponds[i].pond[x].rows[y].name!=='road') {
+                              if(areaData.ponds[i].pond[x].rows[y].id!==''&& areaData.ponds[i].pond[x].rows[y].name!=='road') {
                                   this.pondData.push({
-                                      id: this.areas.ponds[i].pond[x].rows[y].id,
-                                      name: this.areas.ponds[i].pond[x].rows[y].name,
-                                      state: this.areas.ponds[i].pond[x].rows[y].state
+                                      id: areaData.ponds[i].pond[x].rows[y].id,
+                                      name: areaData.ponds[i].pond[x].rows[y].name,
+                                      state: areaData.ponds[i].pond[x].rows[y].state
                                   })
                               }
                           } 
                       }else {
-                          if(this.areas.ponds[i].pond[x].id!==''&& this.areas.ponds[i].pond[x].name!=='road') {
+                          if(areaData.ponds[i].pond[x].id!==''&& areaData.ponds[i].pond[x].name!=='road') {
                               this.pondData.push({
-                                  id: this.areas.ponds[i].pond[x].id,
-                                  name: this.areas.ponds[i].pond[x].name,
-                                  state: this.areas.ponds[i].pond[x].state
+                                  id: areaData.ponds[i].pond[x].id,
+                                  name: areaData.ponds[i].pond[x].name,
+                                  state: areaData.ponds[i].pond[x].state
                               })
                           }
                       }

@@ -17,17 +17,22 @@
   <script>
   import mapcontent from "~/pages/map/mapcontent.vue";
   export default {
-      layout: 'emptynologin',
+    layout: 'emptynologin',
     //   middleware: "auth",
-      components: {
-        mapcontent
-      },
-      data() {
-          return {
+    components: {
+      mapcontent
+    },
+    head(){
+        return{
+            title:'養殖池況'
+        }
+    },
+    data() {
+        return {
             nowField: null
-          }
+        }
       },
-      created() {
+    created() {
         console.log('map url',this.$route.query);
         let reqKey = Object.keys(this.$route.query);
         if(reqKey=='') {
@@ -41,7 +46,7 @@
             window.location.href='/map'
         }
 
-      }
+    }
       
   }
   </script>
@@ -51,6 +56,7 @@
           // padding: 16px;
           min-height: 84vh;
           // overflow-y: scroll;
+          margin-bottom: 24px;
           overflow: hidden;
           .card-title {
               padding: 12px 24px;
