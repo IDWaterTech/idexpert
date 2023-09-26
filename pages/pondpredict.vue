@@ -31,35 +31,34 @@
                     </v-col>
                 </v-row>
             </div>
-            
-            <div class="result" style="padding: 24px 12px;">
-                <v-row>
-                    <v-col cols="12" md="6" v-if="dataCurrentArrary.length>0">
-                        <div class="current">
+            <div class="result" style="padding: 24px 12px;height: 66vh;overflow-y: scroll;">
+                <v-row style="height: 100%;margin-bottom: 24px;">
+                    <v-col cols="12" md="6">
+                        <div class="current" style="height: 100%;">
                             <div class="title">
                                 Current Data
                             </div>
-                            <div class="content" style="padding-left: 0;border: 1px solid rgba(0,0,0,0.1); width: 100%;height: 100%; border-radius: 4px;">
+                            <div class="pre-content">
                                 <ul>
                                     <li v-for="(item,id) in dataCurrentArrary" :key="id">
                                         {{ item }}
                                     </li>
                                 </ul>
+                                <div v-if="dataCurrentArrary.length==0 && !dataPredict.predictions" class="nodata">
+                                    無資料
+                                </div>
                             </div>
                         </div>
                     </v-col>
-                    <!-- <div v-if="dataCurrentArrary.length==0 && !dataPredict.predictions" class="nodata">
-                        無資料
-                    </div> -->
+                    
                     <v-col cols="12" md="6">
-                        <div class="predict">
+                        <div class="predict"  style="height: 100%;">
                             <div class="title">
                                 Predict Data
                             </div>
-                            <div>
-                        </div>
+                            
                             <!-- <v-progress-circular v-show="predloading" indeterminate size="64"></v-progress-circular> -->
-                            <div class="content" style="padding-left: 0; border: 1px solid rgba(0,0,0,0.1); width: 100%;height: 100%; border-radius: 4px;">
+                            <div class="pre-content">
                                 <v-overlay :value="predloading" :absolute="true">
                                 <v-progress-circular indeterminate size="64"></v-progress-circular>
                                 </v-overlay>
@@ -68,6 +67,9 @@
                                         {{ item }}
                                     </li>
                                 </ul>
+                                <div v-if="dataPredictArray.length==0" class="nodata">
+                                    無資料
+                                </div>
                             </div>
                         </div>
                     </v-col>
@@ -159,7 +161,7 @@ export default {
             // })
             
         }
-    }
+    },
 
 }
 </script>
@@ -199,13 +201,22 @@ export default {
         color: #00273E;
     //   overflow-y: scroll;
     }
-    .nodata {
+    .pre-content {
+        padding-left: 0; 
+        border: 1px solid rgba(0,0,0,0.1); 
         width: 100%;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        text-align: center;
+        height: 100%; 
+        border-radius: 4px;
+        margin-top: 12px;
+    }
+    .nodata {
+        // width: 100%;
+        // position: absolute;
+        // top: 50%;
+        // left: 50%;
+        // transform: translate(-50%,-50%);
+        // text-align: center;
+        padding: 12px;
     }
     .v-select__selection--comma {
     color: #00273E;
