@@ -14,9 +14,15 @@
         >
           <v-list v-if="this.$auth.$state.loggedIn">
             <v-list-item to="/set/profile">
-              
               <v-list-item-avatar v-if="this.$auth.$state.loggedIn" size="36">
-                <v-img contain :src="this.$auth.$state.user.picture" :title="this.$auth.$state.user.name" ></v-img>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-img contain :src="userPicture.picture"  v-bind="attrs" v-on="on"></v-img>
+                        <!-- <img src="../../assets/feedfish.jpg" alt="" v-bind="attrs" v-on="on" height="100"> -->
+                    </template>
+                    <span> {{ this.$auth.$state.user.name }}</span>
+                </v-tooltip>
+                <!-- <v-img contain :src="this.$auth.$state.user.picture" :title="this.$auth.$state.user.name" ></v-img> -->
               </v-list-item-avatar>
               <v-list-item-icon v-if="!this.$auth.$state.loggedIn">
                 <v-icon large>mdi-account-circle</v-icon>
@@ -159,12 +165,14 @@
                     'cf.chien@idwater.com.tw',//靖芳
                   ],
         site:false,//true 外網 false 內網
+        userPicture: this.$auth.$state.user
       };
     },
     async mounted() {
           var sitevalue = this.getSite();//return external or internal
           this.site = (sitevalue == 'external');//判斷內外網路
     },
+    
     computed: {
       listitems:function(){
         var data = this.$store.state.mydata.listitems;
