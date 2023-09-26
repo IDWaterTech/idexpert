@@ -51,12 +51,18 @@
                     <!-- <div v-if="dataCurrentArrary.length==0 && !dataPredict.predictions" class="nodata">
                         無資料
                     </div> -->
-                    <v-col cols="12" md="6" v-if="dataPredictArray.length>0">
+                    <v-col cols="12" md="6">
                         <div class="predict">
                             <div class="title">
                                 Predict Data
                             </div>
+                            <div>
+                        </div>
+                            <!-- <v-progress-circular v-show="predloading" indeterminate size="64"></v-progress-circular> -->
                             <div class="content" style="padding-left: 0; border: 1px solid rgba(0,0,0,0.1); width: 100%;height: 100%; border-radius: 4px;">
+                                <v-overlay :value="predloading" :absolute="true">
+                                <v-progress-circular indeterminate size="64"></v-progress-circular>
+                                </v-overlay>
                                 <ul>
                                     <li v-for="(item,id) in dataPredictArray" :key="id">
                                         {{ item }}
@@ -95,9 +101,11 @@ export default {
                 "at": "2023-09-21T02:50:00Z"
             },
             dataCurrentArrary: [],
-            dataPredict: {"at":"2023-09-21T02:50:00Z","pond_id":"tainfuB2","predictions":[6.65,6.65,6.65,6.65,6.65,6.65,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66],"sensor_id":"do","sensor_type":"do"},
+            dataPredict:{},
+            // dataPredict: {"at":"2023-09-21T02:50:00Z","pond_id":"tainfuB2","predictions":[6.65,6.65,6.65,6.65,6.65,6.65,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66],"sensor_id":"do","sensor_type":"do"},
             // dataCurrentArrary: [6.43,6.54,6.52,6.48,6.72,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64,6.64],
-            dataPredictArray: []
+            dataPredictArray: [],
+            predloading:false,
         }
     },
     methods: {
@@ -109,14 +117,15 @@ export default {
             console.log(evt);
             this.nowSecondary = evt;
             if(evt == 'Do') {
-                this.dataPredict = {"at":"2023-09-21T02:50:00Z","pond_id":"tainfuB2","predictions":[6.65,6.65,6.65,6.65,6.65,6.65,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66],"sensor_id":"do","sensor_type":"do"}
+                // this.dataPredict = {"at":"2023-09-21T02:50:00Z","pond_id":"tainfuB2","predictions":[6.65,6.65,6.65,6.65,6.65,6.65,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66,6.66],"sensor_id":"do","sensor_type":"do"}
                 this.dataCurrent = this.dataCurrentDo;
             }else {
-                this.dataPredict = {"at":"2023-09-21T02:50:00Z","pond_id":"tainfuB2","predictions":[25.86,25.84,25.79,25.78,25.75,25.77,25.7,25.71,25.7,25.68,25.63,25.64,25.66,25.63,25.63,25.62,25.63,25.66,25.65,25.63,25.69,25.7,25.69,25.73],"sensor_id":"temp","sensor_type":"temp"};
+                // this.dataPredict = {"at":"2023-09-21T02:50:00Z","pond_id":"tainfuB2","predictions":[25.86,25.84,25.79,25.78,25.75,25.77,25.7,25.71,25.7,25.68,25.63,25.64,25.66,25.63,25.63,25.62,25.63,25.66,25.65,25.63,25.69,25.7,25.69,25.73],"sensor_id":"temp","sensor_type":"temp"};
                 this.dataCurrent = this.dataCurrentTemp;
             }
         },
-        importQuerry() {
+        importQuerry:async function() {
+            this.predloading = true;
             let url = 'http://34.133.224.181:10181/pond/'+this.nowChoose+'/sensor/'+this.nowSecondary.toLowerCase()+'/prediction';
             let config = {
                 headers: {
@@ -124,7 +133,8 @@ export default {
                 }
             }
             this.dataCurrentArrary = this.dataCurrent.data;
-            this.dataPredictArray = this.dataPredict.predictions;
+            this.dataPredictArray = [];
+            // this.dataPredictArray = this.dataPredict.predictions;
             console.log('url',url);
             this.$axios({
                 method: 'post',
@@ -132,10 +142,14 @@ export default {
                 headers: {'Content-Type': 'application/json'}, 
                 data: JSON.stringify(this.dataCurrent)
             }).then(res => {
-                console.log(res);
-                this.dataCurrentArrary = this.dataCurrent.data;
+                console.log("res:",res.data.predictions);
+                
+                this.dataPredictArray = res.data.predictions;
+                // this.dataCurrentArrary = this.dataCurrent.data;
             }).catch(error => {
-                // this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            }).finally(()=>{
+                this.predloading = false;
             })
             
             // this.$axios.post(url, this.dataCurrent,config).then(res => {
@@ -143,6 +157,7 @@ export default {
             // }).catch(error => {
             //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
             // })
+            
         }
     }
 
