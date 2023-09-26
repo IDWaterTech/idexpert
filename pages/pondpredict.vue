@@ -39,7 +39,12 @@
                                   <v-overlay :value="predloading" :absolute="true">
                                   <v-progress-circular indeterminate size="64"></v-progress-circular>
                                   </v-overlay>
-                                  <ve-line v-if="dataCurrentArrary.length>0 || dataPredictArray.length>0" :data="chartDataCurrent"></ve-line>
+                                  <div v-if="dataCurrentArrary.length>0 || dataPredictArray.length>0" class="min-max" style="display: flex;align-items: center;justify-content: flex-end;">
+                                    <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                                    <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                                  </div>
+                                  
+                                  <ve-line v-if="dataCurrentArrary.length>0 || dataPredictArray.length>0" :data="chartDataCurrent" :settings="set"></ve-line>
                                   <div v-if="dataCurrentArrary.length==0 && dataPredictArray.length==0" class="nodata">
                                       無資料
                                   </div>
@@ -125,7 +130,13 @@
                   columns: [],
                   rows:[]
               },
-              predictColor:['#5AB1EF']
+              predictColor:['#5AB1EF'],
+              chartmin:undefined,
+              chartmax:undefined,
+              set: {
+                legendAlias: {},
+                stack: {},
+              },
           }
       },
       methods: {
@@ -335,6 +346,20 @@
               
           }
       },
+      updated() {
+        //--外部參數資料帶入--
+        this.set.legendAlias = this.dataCurrentArrary.concat(this.dataPredictArray);
+        this.set.max = [this.chartmax];
+        this.set.min = [this.chartmin];
+      },
+      watch: {
+        chartmax() {
+            this.set.max = this.chartmax;
+        },
+        chartmin() {
+            this.set.min = this.chartmin;
+        }
+      }
   
   }
   </script>
