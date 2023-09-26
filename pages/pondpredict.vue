@@ -265,6 +265,12 @@
                   data: JSON.stringify(this.dataCurrent)
               }).then(res => {
                   console.log("res:",res.data.predictions);
+                  this.chartmin = undefined;
+                    this.chartmax = undefined,
+                    this.set =  {
+                        legendAlias: {},
+                        stack: {},
+                    }
                   let date = this.dataCurrent.date;
                   let datePredict = []
                   this.dataCurrentArrary = this.dataCurrent.data;
