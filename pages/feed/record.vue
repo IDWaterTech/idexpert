@@ -227,12 +227,22 @@
                 </div>
               </template>
             </el-table-column>
+            <!-- 觀察網 -->
+            <el-table-column label="是否有觀察網" width="120">
+              <template #default="scope">
+                <div v-if="!scope.row.hasOwnProperty('children')">
+                  <span>{{ `${scope.row.has_observation?'有':'無'}` }}</span>
+                </div>
+              </template>
+            </el-table-column>
+
             <!-- 觀察網(不含糖) -->
             <el-table-column
               prop="observation_total"
               label="觀察網(不含糖)"
               width="120"
             />
+            
             <!-- 餐別 -->
             <el-table-column
               prop="feed_combo_name"
@@ -441,6 +451,7 @@ export default {
             return 0;
           });
           console.log("取得帶入的資料API:" + res.request.responseURL);
+          console.log("取出資料",this.imptimedata);
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -487,6 +498,7 @@ export default {
           this.gettotalData(); //取得合計
           this.$toast.success(`取得料表成功`, { duration: 2000 });
           console.log("取得料表API:" + res.request.responseURL);
+          console.log('取得料表',this.feedData);
         })
         .catch(error => {
           this.$toast.error(`取得料表失敗:${error}`, {
@@ -512,6 +524,7 @@ export default {
 
           // this.$toast.success(`取得合計成功`, { duration: 2000 });
           console.log("取得合計API:" + res.request.responseURL);
+          console.log("取得合計",this.totalData);
         })
         .catch(error => {
           this.$toast.error(`取得合計失敗:${error}`, {
@@ -613,9 +626,11 @@ export default {
         this.feedData
           .filter(x => x.area_name == area_name)
           .map(x => (x.area_name2 = x.pond_name));
+        
         const children = this.feedData.filter(x => x.area_name == area_name);
         var sub = this.showsub;
         console.log(sub);
+        console.log(this.feedData);
         //扣除獨立顯示項目的量
 
         children.forEach(element => {
@@ -654,6 +669,15 @@ export default {
           // observation_total 小數點去掉
           element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 1) / 1;
           element.combomark = false;
+          // has_observation 是否有觀察網
+          let ob_data = {};
+          this.imptimedata.forEach(d=>{d.data.forEach(s=>{
+            if(s.id == element.id) {
+              ob_data = s;
+            }
+          })})
+          console.log('ob_data',ob_data);
+          element.has_observation = ob_data.has_observation;
         });
         //以id排序
         // children.sort(function(a,b){return a.feed_combo_id - b.feed_combo_id})
@@ -666,6 +690,7 @@ export default {
         };
         items.push(item);
       }
+      console.log('data2',item);
       return items.sort();
     },
     //當明餐別合計
