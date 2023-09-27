@@ -183,18 +183,18 @@
             v-for="mfla in item.main_items"
             :key="mfla.id"
             :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : ''"
-            v-html="`${mfla.name}<br/>${mfla.feed_amount}g`"
             :title="`公式：${mfla.formula}`"
           >
+          <span v-html="`${mfla.name}<br/>${mfla.feed_amount}g`"></span>
           </v-col>
           <v-divider vertical></v-divider>
           <v-col
             v-for="fla in item.sub_items"
             :key="fla.id"
             :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : ''"
-            v-html="`${fla.name}<br/>${fla.feed_amount}g`"
             :title="`公式：${fla.formula}`"
           >
+          <span v-html="`${fla.name}<br/>${fla.feed_amount}g`"></span>
           </v-col>
           <v-spacer></v-spacer>
         </v-row>
@@ -637,7 +637,7 @@ export default {
           x.initial_val > 0 &&
           x.factory_id == this.factoryid
       ); //抓有選飼料餐號、填投餵量
-      // console.log(data);
+      // console.log('儲存資料',data);
       var parm = {
         feed_time: `${this.adate} ${this.atime}`,
         created_user: this.$auth.$state.user.email,
@@ -974,6 +974,7 @@ export default {
             return 0;
           });
           console.log("取得帶入的資料API:" + res.request.responseURL);
+          // console.log("取資料",this.imptimedata);
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -984,6 +985,8 @@ export default {
     },
     //設定帶入資料
     settabledata: async function(item) {
+      // console.log('帶入資料',item);
+      console.log('dessert',this.desserts)
       await this.dataclear(); //歸零
       var data = item.data;
       this.imptimeidx = item.time; //time即index
@@ -996,6 +999,7 @@ export default {
         const pond_id = data[idx].pond_id;
         data[idx].is_executed = false;//強制把執行狀態刪除
         var dessitem = desserts.filter(x => x.pond_id == pond_id);
+        var dataitem = data.filter(x => x.pond_id == pond_id);//取代資料
         //帶入觀察網百分比
         data[idx]['observation_feed_pct'] = (thisfeed_pct_list.filter(y=>y.id==data[idx]['pond_id']).length==1)?thisfeed_pct_list.filter(y=>y.id==data[idx]['pond_id'])[0].observation_feed_pct:0;
         if (dessitem.length == 0) {
@@ -1017,7 +1021,7 @@ export default {
           var deleteidx = desserts.indexOf(dessitem[0]);
           //有帶入的資料與原本的不同，不能直接刪然後塞上，要補回資料
           data[idx].feed_event_settings_id = dessitem[0].feed_event_settings_id;
-          data[idx].has_observation = dessitem[0].has_observation;
+          data[idx].has_observation = dataitem[0].has_observation;
           data[idx].is_executed = dessitem[0].is_executed;
           data[idx].observation_feed_pct = dessitem[0].observation_feed_pct;
           data[idx].state = dessitem[0].state;
