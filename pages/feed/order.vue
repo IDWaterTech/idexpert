@@ -311,7 +311,8 @@
             </v-col>
             <v-col cols="12" class="text-center" style="font-size:1.2em">
             <span style="color:red;">若已執行修改後需重新執行</span><br/>
-            <span style="color:red;">✔觀察網 = (主成分*0.03) 跟 (次成分*0) 且 (排除 糖)</span>
+            <!-- <span style="color:red;">✔觀察網 = (主成分*0.03) 跟 (次成分*0) 且 (排除 糖)</span> -->
+            <span style="color:red;">✔觀察網 = (主成分*[觀察網設定百分比]) 跟 (次成分*0) 且 (排除 糖)</span>
               <!-- <v-btn
                 class="primary mb-3"
                 tile small
@@ -974,7 +975,7 @@ export default {
             return 0;
           });
           console.log("取得帶入的資料API:" + res.request.responseURL);
-          // console.log("取資料",this.imptimedata);
+          console.log("取資料",this.imptimedata);
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -1020,14 +1021,14 @@ export default {
           }
           var deleteidx = desserts.indexOf(dessitem[0]);
           //有帶入的資料與原本的不同，不能直接刪然後塞上，要補回資料
-          data[idx].feed_event_settings_id = dessitem[0].feed_event_settings_id;
+          data[idx].feed_event_settings_id = dataitem[0].feed_event_settings_id;
           data[idx].has_observation = dataitem[0].has_observation;
-          data[idx].is_executed = dessitem[0].is_executed;
-          data[idx].observation_feed_pct = dessitem[0].observation_feed_pct;
-          data[idx].state = dessitem[0].state;
-          data[idx].id = dessitem[0].pond_id;
-          data[idx].level = dessitem[0].level;
-          data[idx].visible = dessitem[0].visible;
+          data[idx].is_executed = dataitem[0].is_executed;
+          data[idx].observation_feed_pct = dataitem[0].observation_feed_pct;
+          data[idx].state = dataitem[0].state;
+          data[idx].id = dataitem[0].pond_id;
+          data[idx].level = dataitem[0].level;
+          data[idx].visible = dataitem[0].visible;
 
           desserts.splice(deleteidx, 1);
           desserts.push(data[idx]);
