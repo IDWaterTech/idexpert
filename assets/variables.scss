@@ -16,6 +16,7 @@ $color-light: #F4FBFF;
 $color-lighten: #E6F5FA;
 $color-accent: #A60017;
 $color-form: #6c9bcd;
+$color-green: #00A660;
 
 //btn
 .btn-primary {
@@ -23,6 +24,13 @@ $color-form: #6c9bcd;
     box-shadow: none !important;
     background-color: $color-primary !important;
     color: #fff !important;
+    // &.v-btn--disabled {
+    //   background-color: $color-dark-25;
+    //   color: $color-dark-50;
+    // }
+    &.green {
+      background-color: $color-green !important;
+    }
 }
 .btn-secondary {
     border-radius: 4px !important;
@@ -34,41 +42,103 @@ $color-form: #6c9bcd;
 
 // 場區池下拉選單
 ::v-deep {
-    .select-template {
-        .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .vue-treeselect__control {
-            border: none;
-            border-radius: 0;
-            border-bottom: 1px solid $color-form;
-            .vue-treeselect__placeholder {
+    .search {
+        .select-template {
+            .font-size-large {
+                font-size: 16px;
+              }
+            .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .vue-treeselect__control {
+                border: none;
+                border-radius: 0;
+                border-bottom: 1px solid $color-form;
+                .vue-treeselect__placeholder {
+                    color: $color-dark;
+                    &::before {
+                    content: '*'
+                    }
+                    &::after {
+                    content: '(必選)';
+                    }
+                }
+                .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+                    color: $color-form;
+                }
+                .vue-treeselect__x-container {
+                    display: none;
+                }
+            }
+            .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
+            .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+                border-color: $color-form;
+            }
+            .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
+            .theme--light.v-input input {
+                font-size: 14px;
                 color: $color-dark;
-                &::before {
-                content: '*'
-                }
-                &::after {
-                content: '(必選)';
-                }
             }
-            .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-                color: $color-form;
-            }
-            .vue-treeselect__x-container {
-                display: none;
-            }
-        }
-        .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
-        .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-            border-color: $color-form;
-        }
-        .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
-        .theme--light.v-input input {
-            font-size: 14px;
-            color: $color-dark;
         }
     }
+    
+}
+
+// pages background card
+.v-application.v-application--is-ltr {
+  .v-card.bg-card {
+    min-height: 84vh;
+    overflow: hidden;
+    margin-bottom: 24px;
+    .card-title,.content {
+      padding: 12px 24px;
+      .row {
+        margin-left: 0;
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+      .title {
+        display: flex;
+        align-items: center;
+        .theme--light.v-icon {
+          color: $color-form;
+        }
+      }
+    }
+    .card-title {
+      padding-bottom: 0;
+    }
+    .v-card__title {
+      color: $color-dark;
+      font-weight: bold;
+    }
+    .content {
+      padding-top: 0;
+      .row {
+        align-items: center;
+        .v-input {
+          margin-top: 0;
+          padding-top: 0;
+          &.primary {
+            background-color: transparent !important;;
+          }
+        }
+        .theme--light.v-btn.v-btn--disabled.btn-primary .v-icon {
+          color: $color-dark-25 !important;
+        }
+        .theme--light.v-btn.v-btn--disabled.btn-primary .v-btn__loading,.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
+          background-color: $color-dark-25 !important;
+        }
+        .theme--light.v-btn.v-btn--disabled.btn-secondary {
+          border-color: $color-dark-25;
+        }
+        .theme--light.v-btn.v-btn--disabled.btn-secondary .v-btn__loading,.theme--light.v-btn.v-btn--disabled.btn-secondary.v-btn--has-bg {
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
 }
 
 // scrollbar
