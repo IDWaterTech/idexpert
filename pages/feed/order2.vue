@@ -61,7 +61,7 @@
                   <!-- initial_val投餵量 -->
                   <template v-slot:[`item.initial_val`]="{ item }">
                     <v-row style="margin: 8px 0;">
-                      <v-col cols="12" sm="9" style="padding: 0 16px;">
+                      <v-col cols="12" sm="9" style="padding: 0 8px;">
                         <v-autocomplete
                           v-model="item.feed_combo_id"
                           :items="combo_sorted"
@@ -102,7 +102,7 @@
                           ><span slot="append">g</span>
                         </v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="3" style="padding: 0 16px;">
+                      <v-col cols="12" sm="3" style="padding: 0 8px;">
                         <v-btn tile class="btn-primary btn-secondary" @click="()=>{item.initial_val = formula_eval(item.initial_val, formula);setformula_val(item);}" :disabled="!formula || !item.initial_val">
                           計算
                         </v-btn>
@@ -110,49 +110,49 @@
                       <!-- <v-spacer></v-spacer> -->
                     </v-row>
                   </template>
+                  <!-- 主成分-->
+                  <template v-slot:[`item.main_items`]="{ item }">
+                    <v-row class="ma-1" dense>
+                      <div class="chip" style="display: flex;flex-direction:column">
+                        <v-row style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
+                          <v-chip
+                            v-for="mfla in item.main_items"
+                            :key="mfla.id"
+                            :color="item.color"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : 'color:white;backgroundColor:#408FBC'"
+                            class="main"
+                          >
+                            {{ mfla.name }}： {{ mfla.feed_amount }}g
+                          </v-chip>
+                        </v-row>
+                      </div>
+                    </v-row>
+                  </template>
+                  <!-- 次成分 -->
+                  <template v-slot:[`item.sub_items`]="{ item }">
+                    <v-row class="ma-1" dense>
+                      <div class="chip" style="display: flex;flex-direction:column">
+                        <v-row  style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
+                          <v-chip
+                            v-for="fla in item.sub_items"
+                            :key="fla.id"
+                            :color="item.color"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : 'backgroundColor:#BFCBD2;color: #00324E;'"
+                            class="sub"
+                          >
+                            {{ fla.name }}： {{ fla.feed_amount }}g
+                          </v-chip>
+                        </v-row>
+                      </div>
+                    </v-row>
+                  </template>
                   <!-- feed_combo_id 套餐id-->
-                  <template v-slot:[`item.feed_combo_id`]="{ item }">
+                  <!-- <template v-slot:[`item.feed_combo_id`]="{ item }">
                     <v-row class="ma-1" dense>
                       <v-col cols="12" sm="4">
-                        <!-- <v-autocomplete
-                          v-model="item.feed_combo_id"
-                          :items="combo_sorted"
-                          dense
-                          hide-details
-                          filled
-                          clearable
-                          item-text="name_ch"
-                          item-value="id"
-                          label="選擇飼料(套餐)"
-                          @change="setformula_val(item)"
-                        > -->
-                        <!-- <template v-slot:item="data"> -->
-                          
-                          <!-- {{data.item.name_ch}} -->
-                          <!-- <span class="ml-3" style="color:red;" v-if="data.item.is_absoluteTop"> -->
-                            <!-- <v-icon color="red">mdi-new-box</v-icon> -->
-                            <!-- <v-btn class="pa-0"  x-small outlined color="red darken-3" style="color:#C62828 !important;" disabled width="30">new</v-btn> -->
-                          <!-- </span> -->
-                          <!-- <span class="ml-3" v-else> -->
-
-                            <!-- <v-chip x-small outlined color="amber darken-3" label v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-chip> -->
-                            
-                            <!-- <v-btn class="pa-0" x-small outlined color="amber darken-3" style="color:#FF8F00 !important;" disabled width="30"  v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-btn> -->
-                          
-                            <!-- <v-progress-circular :rotate="360" :value="(data.item.usage_count)?data.item.usage_count:0" color="teal">
-                            {{ (data.item.usage_count)?data.item.usage_count:0 }}
-                          </v-progress-circular> -->
-
-                          <!-- </span> -->
-                        <!-- </template> -->
-                        <!-- </v-autocomplete> -->
                     </v-col>
-                      <!-- <div v-if="item.combo"> -->
-                      <!-- {{item}}
-                        <v-col v-for="mainitems in combo.filter(x=>x.id==item.combo)[0].main_items" :key="mainitems.id">
-                            {{mainitems.name}}
-                        </v-col>
-                      </div> -->
                       <div class="chip" style="display: flex;flex-direction:column">
                         <v-row style="margin-bottom: 0;">
                           <v-chip
@@ -179,27 +179,8 @@
                           </v-chip>
                         </v-row>
                       </div>
-
-                      <!-- <v-col
-                        v-for="mfla in item.main_items"
-                        :key="mfla.id"
-                        :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : ''"
-                        :title="`公式：${mfla.formula}`"
-                      >
-                      <span v-html="`${mfla.name}<br/>${mfla.feed_amount}g`"></span>
-                      </v-col>
-                      <v-divider vertical></v-divider>
-                      <v-col
-                        v-for="fla in item.sub_items"
-                        :key="fla.id"
-                        :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : ''"
-                        :title="`公式：${fla.formula}`"
-                      >
-                      <span v-html="`${fla.name}<br/>${fla.feed_amount}g`"></span>
-                      </v-col> -->
-                      <!-- <v-spacer></v-spacer> -->
                     </v-row>
-                  </template>
+                  </template> -->
                   <!-- 事件 -->
                   <template v-slot:[`item.feed_event_settings_id`]="{item}">
                     <v-autocomplete v-model="item.feed_event_settings_id" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
@@ -227,35 +208,50 @@
                   </template>
                   <!-- top -->
                   <template v-slot:top>
-                    <v-toolbar elevation="1" class="header-bar" :style="{height:`${windowWidth<599.98&&imptimeidx?'80px':'64px'}`}">
+                    <v-toolbar elevation="1" class="header-bar" :style="{height:`${windowWidth<599.98?'88px':'64px'}`}">
                       <v-row :style="{marginBottom:`${windowWidth<599.98?'0':'12px'}`}">
                         <!-- 左側 -->
                         <v-col cols="12" sm="6" style="padding: 8px 12px;">
-                          <div class="header-left">
-                            <span v-if="imptimeidx" style="margin-right: 4px;">資料時間：{{ sdate }}-{{ imptimeidx }}</span>
-                            <v-tooltip bottom v-if="imptimeidx">
-                                <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-add delete" @click="delimpsubmit" v-bind="attrs" v-on="on">
-                                        <v-icon>mdi-trash-can</v-icon>
-                                    </button>
-                                </template>
-                                <span>刪除此場[{{ imptimeidx }}]資料</span>
-                            </v-tooltip>
+                          <div class="header-left" style="max-width: 300px;">
+                            <!-- 計算 -->
+                            <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div>
+                            
                           </div>
                         </v-col>
                         <!-- 右側 -->
                         <v-col cols="12" sm="6" style="padding: 8px 12px;">
                           <div class="header-right" :style="{justifyContent:`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                             <!-- 計算 -->
-                            <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div>
+                            <!-- <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div> -->
                             <!-- windowwidth>958.98 icon+文字 -->
+                            <div class="data-time">
+                              <span style="margin-right: 4px;">資料時間：{{ imptimeidx?sdate+ '-' +imptimeidx:'無' }}</span>
+                              <v-tooltip v-if="imptimeidx" bottom >
+                                  <template v-slot:activator="{ on, attrs }">
+                                      <button class="btn-add delete" 
+                                        @click="delimpsubmit" 
+                                        v-bind="attrs" v-on="on"
+                                        style="width: 24px;height: 24px;"
+                                        >
+                                          <v-icon>mdi-trash-can</v-icon>
+                                      </button>
+                                  </template>
+                                  <span>刪除此場[{{ imptimeidx }}]資料</span>
+                              </v-tooltip>
+                              <button v-else
+                                class="btn-add delete disabled"
+                                style="width: 24px;height: 24px;">
+                                <v-icon>mdi-trash-can</v-icon>
+                              </button>
+                            </div>
+                            
                             <div v-if="windowWidth>959.98" class="btn-groups">
-                              <v-btn class="btn-primary btn-add save" tile @click="showsubmitdig">
-                                <v-icon left >mdi-circle-edit-outline</v-icon>操作
-                              </v-btn>
-                              <v-btn class="btn-primary btn-add" tile @click="showimport"
+                              <v-btn class="btn-primary btn-add save" tile @click="showimport"
                                 ><v-icon left>mdi-database-import</v-icon>匯入
-                                </v-btn>
+                              </v-btn>
+                              <v-btn class="btn-primary btn-add" tile @click="showsubmitdig">
+                                <v-icon left >mdi-circle-edit-outline</v-icon>設定
+                              </v-btn>
                               <v-btn class="btn-primary btn-add clear" tile @click="dataclear">
                                 <v-icon left>mdi-shimmer</v-icon>清除
                               </v-btn>
@@ -264,19 +260,19 @@
                             <div v-else class="btn-groups" style="justify-content: flex-start;">
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-add save" @click="showsubmitdig" v-bind="attrs" v-on="on">
-                                        <v-icon>mdi-circle-edit-outline</v-icon>
-                                    </button>
-                                </template>
-                                <span>操作</span>
-                              </v-tooltip>
-                              <v-tooltip bottom>
-                                <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-add" @click="showimport" v-bind="attrs" v-on="on">
+                                    <button class="btn-add save" @click="showimport" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-database-import</v-icon>
                                     </button>
                                 </template>
                                 <span>匯入</span>
+                              </v-tooltip>
+                              <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <button class="btn-add" @click="showsubmitdig" v-bind="attrs" v-on="on">
+                                        <v-icon>mdi-circle-edit-outline</v-icon>
+                                    </button>
+                                </template>
+                                <span>設定</span>
                               </v-tooltip>
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
@@ -303,7 +299,7 @@
     <!-- 匯入資料 -->
     <v-dialog v-model="importdialog" width="400">
       <v-card class="card-dialog" min-height="350">
-        <v-card-title>帶入料表</v-card-title>
+        <v-card-title>匯入料表</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row align-content="center" class="my-2">
@@ -357,8 +353,8 @@
                 <v-list-item v-for="item in imptimedata" :key="item.time">
                   <v-list-item-content class="text-h5">{{ item.time }}</v-list-item-content>
                   <v-list-item-action
-                    ><v-btn class="btn-secondary btn-add" style="width: 40px;height: 40px;min-width: initial;border-color: #00A660;" @click="settabledata(item)" title="帶入此資料"
-                      ><v-icon style="color: #00A660; font-size: 1.25rem;">mdi-database-export-outline</v-icon></v-btn
+                    ><v-btn class="btn-secondary btn-add" style="width: 40px;height: 40px;min-width: initial;" @click="settabledata(item)" title="帶入此資料"
+                      ><v-icon style="font-size: 1.25rem;">mdi-database-export-outline</v-icon></v-btn
                     >
                   </v-list-item-action>
                 </v-list-item>
@@ -371,7 +367,7 @@
     <!-- 操作 -->
     <v-dialog v-model="submitdig" width="450">
       <v-card min-height="250" class="card-dialog">
-        <v-card-title>操作</v-card-title>
+        <v-card-title>設定</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row class="my-2" justify="center">
@@ -486,21 +482,35 @@ export default {
           text: "投餵量",
           value: "initial_val",
           align: "center",
-          width: 400,
+          width: 300,
           sortable: false
         },
         // { text: "主成份", value: "feedmain", align: "center", width: 200 },
+        // {
+        //   text: "成份",
+        //   value: "feed_combo_id",
+        //   align: "center",
+        //   sortable: false
+        // },
         {
-          text: "成份",
-          value: "feed_combo_id",
-          align: "center",
+          text: "主成份",
+          value: "main_items",
+          align: "left",
+          width: 200,
+          sortable: false
+        },
+        {
+          text: "次成份",
+          value: "sub_items",
+          align: "left",
+          width: 200,
           sortable: false
         },
         {
           text: "事件",
           value: "feed_event_settings_id",
           align: "center",
-          width: 200,
+          width: 150,
           sortable: false
         },
         {
@@ -620,14 +630,14 @@ export default {
     // 飼料表設定-清單
     eventSetGet:async function(){
       await this.$axios
-          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
-          .then(res => {
-            this.eventSetData = res.data;
-            console.log("飼料表設定-清單 api:", res.request.responseURL);
-          })
-          .catch(err => {
-            this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
-          });
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+        .then(res => {
+          this.eventSetData = res.data;
+          console.log("飼料表設定-清單 api:", res.request.responseURL);
+        })
+        .catch(err => {
+          this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
+        });
     },
     //觀察網全選
     has_observe_click: async function() {
@@ -748,6 +758,9 @@ export default {
       .then(res=>{
         if(res.status==200){
           datecount = res.data.data_rows;
+          this.imptimedata = []; //清空取得的帶入資料
+          this.sdate = '';
+          this.stime = '';
         }else{
           datecount = -1;
           errormsg = res.data;
@@ -994,6 +1007,8 @@ export default {
             if (res.data == "刪除成功") {
               this.dataclear(); //清除資料
               this.imptimedata = []; //清空取得的帶入資料
+              this.sdate = '';
+              this.stime = '';
               this.$toast.success(
                 `刪除${factory_name}[${parm.feed_time}]成功`,
                 {
@@ -1116,7 +1131,8 @@ export default {
             return 0;
           });
           console.log("取得帶入的資料API:" + res.request.responseURL);
-          // console.log("取資料",this.imptimedata);
+          console.log("取資料",this.imptimedata);
+          
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -1250,11 +1266,15 @@ export default {
     padding: 12px 24px;
     padding-bottom: 8px;
     background-color: #E6F5FA;
+    .data-time {
+      display: flex;
+      align-items: center;
+    }
     .btn-groups {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      width: 100%;
+      // width: 100%;
       max-width: 280px;
     }
     button {
@@ -1265,6 +1285,7 @@ export default {
       position: relative;
       margin: 4px;
       transition: all 0.3s;
+      padding: 0 10px;
       &:hover {
           background-color: lighten($color: $color-primary, $amount: 3);
       }
@@ -1277,7 +1298,7 @@ export default {
           transform: translate(-50%,-50%);
       }
       &.btn-primary {
-        height: 36px;
+        height: 32px;
         width: initial;
         padding: auto 12px;
         .theme--light.v-icon {
@@ -1314,6 +1335,17 @@ export default {
           &:hover {
               background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
           }
+      }
+      &.disabled {
+        background-color: $color-dark-25 !important;
+        user-select: none;
+        .theme--light.v-icon {
+          color: $color-dark-50 !important;
+        }
+        &:hover {
+          background-color: $color-dark-25 !important;
+        }
+        
       }
       .theme--light.v-data-table {
         background-color: $color-lighten;
