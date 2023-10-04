@@ -276,7 +276,7 @@
                 </v-btn>
               </div>
             </v-row>
-            <v-row>
+            <v-row style="margin-bottom: 12px;">
               <!-- 選擇起日 -->
               <v-col cols="12" md="4" sm="12" class="caculate">
                 <v-menu
@@ -386,7 +386,7 @@
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
-            <v-row>
+            <v-row style="margin-bottom: 0;">
               <v-col cols="12">
                 <v-card class="result-card">
                   <div class="header-bar">
@@ -413,7 +413,7 @@
                           <!-- 編修紀錄 -->
                           <div v-show="nowTab=='編修紀錄'" class="result-content">
                             <v-data-table
-                              class="edit-table"
+                              class="edit-table revise"
                               v-model="selected"
                               :headers="headers"
                               :items="item2.items" dense
@@ -481,7 +481,8 @@
                               :headers="eventHeaders"
                               :items="eventTableData" dense
                               :footer-props="footerProps"
-                              no-data-text="查無資料">
+                              no-data-text="查無資料"
+                              style="min-height: 27vh;">
                               <template v-slot:[`item.event_level_name`]="{ item }">
                                 <v-chip
                                   :color="item.color"
@@ -527,7 +528,7 @@
                                 :chartmax="chartmax"
                                 :markdata="markdata"
                                 :isIndicator="true"
-                                style="width: 100%;"
+                                style="width: 100%;min-height: 26vh;"
                               ></WaterQuality_Vcharts2>
                             </v-row>
                           </div>
@@ -1522,7 +1523,7 @@ export default {
       }
     }
     .search {
-      margin-bottom: 24px;
+      margin-bottom: 12px;
       .caculate {
         max-width: calc((100%  / 3) - (100% / 12) / 3 );
       }
@@ -1670,9 +1671,16 @@ export default {
     }
   }
   .edit-table {
+    & table {
+     min-height: 27vh; 
+    }
+    &.revise table {
+      min-height: 21vh;
+    }
     &.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper),
     &.theme--light.v-data-table tbody tr.v-data-table__selected {
-      background: #BFD9E8;
+      // background: #BFD9E8;
+      background: rgba($color-primary-25,0.3);
     }
     input[type="checkbox"] {
       accent-color: #006AA6;
