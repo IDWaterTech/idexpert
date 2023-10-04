@@ -611,7 +611,7 @@ export default {
   .edit-table {
     &.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper),
     &.theme--light.v-data-table tbody tr.v-data-table__selected {
-      background: $color-primary-25;
+      background: rgba($color-primary-25,0.3);
     }
     input[type="checkbox"] {
       accent-color: $color-primary;
