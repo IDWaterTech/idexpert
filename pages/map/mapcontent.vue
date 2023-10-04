@@ -6,12 +6,13 @@
                 <v-col class="d-flex"
                         cols="12"
                         sm="6">
-                        <v-select v-if="!isError" :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
-                        </v-select>   
-                    <!-- <div class="select-field">
+                    <v-select v-if="!isError && isField" :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
+                    </v-select>   
+                    <div v-if="!isError && !isField" class="select-field">
                         <locate-select :dataScope="'field'" :defaultSelect="nowField" :isMulti="false" @scopeSel_data="changeFactory($event)"></locate-select>
                         <label v-if="nowField!==''" class="label-select">場</label>
-                    </div> -->
+                    </div>
+
                 </v-col>
             </v-row>
             <v-row style="margin-top: 0;">
@@ -180,6 +181,7 @@ import { Doughnut } from 'vue-chartjs';
                     if(this.field!==null) {
                         if(this.fatoryData[i].id==this.field) {
                             this.fatorys.push(this.fatoryData[i].name);
+                            this.nowFactory = this.fatoryData[i].name;
                             isData = true;
                             this.isField = true;
                         }
