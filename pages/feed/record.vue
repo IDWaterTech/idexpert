@@ -539,6 +539,13 @@ export default {
         })
         .then(res => {
           console.log('get record',res);
+          res.data.sort(function(a,b){
+            var a1 = a.time.replace(":","");
+            var b1 = b.time.replace(":","");
+            if(a1 > b1){return 1};
+            if(a1 < b1){return -1};
+            return 0;
+          });
           let newData = [];
           res.data.forEach((d,id)=>{
             newData.push({
@@ -558,13 +565,7 @@ export default {
               this.imptimedata.push(n);
             }
           })
-          res.data.sort(function(a,b){
-            var a1 = a.time.replace(":","");
-            var b1 = b.time.replace(":","");
-            if(a1 > b1){return 1};
-            if(a1 < b1){return -1};
-            return 0;
-          });
+          
           // if(this.sdate && this.stime) {
           //   this.getfeedData();
           // }else {
