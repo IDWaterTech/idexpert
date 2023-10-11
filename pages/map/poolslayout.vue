@@ -716,7 +716,7 @@ export default {
             b.rows.forEach(r=>{
               if(!r.updated_time) {
                 r.updated_time='';
-                r.state = ''
+                // r.state = ''
               }
               if(r.id!==''&&r.state=='') {
                 r.state = '無'
@@ -728,7 +728,7 @@ export default {
           }else {
             if(!b.updated_time) {
               b.updated_time='';
-              b.state = ''
+              // b.state = ''
             }
             if(b.id!==''&&b.state=='') {
               b.state = '無'
@@ -742,7 +742,7 @@ export default {
       })
       this.oldAreaTag=this.nowAreaTag;
       this.getMaxCols();
-      // console.log('data prepare',this.ponds);
+      console.log('data prepare',this.ponds);
       this.nowLayout = this.areas[0].name;
       // this.getCenter();
     },     
