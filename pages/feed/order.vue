@@ -1,253 +1,373 @@
 <template>
   <div>
-    <h2 style="color: white" v-if="false">
-      料量設定
-      <!-- <v-btn class="mx-2 my-1" to="/feed/setting">料表設定</v-btn>
-    <v-btn class="mx-2 my-1" to="/feed/record">料表紀錄</v-btn> -->
-    </h2>
-    <!-- <span style="color:wheat;">{{combo_sorted}}</span> -->
-    <v-row align="center" class="mb-1">
-      <!-- 選擇場 -->
-      <v-col cols="12" md="3">
-        <v-autocomplete
-          dark hide-details
-          filled
-          v-model="factoryid"
-          :items="factoryData"
-          item-text="name"
-          item-value="id"
-        ></v-autocomplete>
-      </v-col>
-
-      <v-col cols="12" md="3">
-        <v-btn class="primary" large @click="showimport"
-          ><v-icon>mdi-database-import</v-icon>帶入料表資料</v-btn
-        >
-        <v-dialog v-model="importdialog" width="400">
-          <v-card min-height="350">
-            <v-card-title>帶入料表</v-card-title>
-            <v-card-text>
-              <v-row align-content="center">
-                <!-- 選擇日期sdate -->
-                <v-col cols="12" sm="8">
-                  <v-menu
-                    v-model="menu_date"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-text-field
-                        v-model="sdate"
-                        label="選擇日期"
-                        filled
-                        dense
-                        prepend-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                        clearable
-                        @click:prepend="() => (sdate = getNowDate())"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="sdate" locale="zh-tw"
-                      no-title
-                      @input="menu_sdate = false"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
-                <!-- 取得料表 -->
-                <v-col cols="12" sm="3" align-self="center">
-                  <v-btn
-                    class="primary"
-                    tile
-                    title="取得料表清單"
-                    @click="getimptimedata"
-                    :disabled="!sdate"
-                    :loading="imploading"
-                    ><v-icon>mdi-reload</v-icon>取得料表</v-btn
-                  >
-                </v-col>
-                <v-col cols="12">
-                  <v-list>
-                    <v-list-item v-for="item in imptimedata" :key="item.time">
-                      <v-list-item-content class="justify-center text-h5">{{ item.time }}</v-list-item-content>
-                      <v-list-item-action
-                        ><v-btn fab color="primary" @click="settabledata(item)" title="帶入此資料"
-                          ><v-icon>mdi-database-export-outline</v-icon></v-btn
-                        >
-                      </v-list-item-action>
-                    </v-list-item>
-                  </v-list>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-dialog>
-      </v-col>
-      <v-spacer></v-spacer>
-    </v-row>
-    <!-- 表格 -->
-    <!-- {{ factoryid }}<br/>
-    desserts filtered<br/>
-    {{ desserts.filter(x => x.factory_id == factoryid && [`放養中`,`放養中(鎖排汙)`].includes(x.state)) }}<br/>
-    desserts<br/>
-    {{ desserts }} -->
-    <v-data-table
-      ref="feedtable"
-      :headers="headers"
-      :items="(showFeeding)?desserts.filter(x => x.factory_id == factoryid && [`放養中`,`放養中(鎖排汙)`].includes(x.state)):desserts.filter(x => x.factory_id == factoryid)"
-      item-key="pond_id"
-      sort-by="pond_name"
-      group-by="area_name"
-      class="elevation-1 mb-5"
-      height="500"
-      :show-group-by="false"
-      :footer-props="{
-        'items-per-page-options': [-1, 25, 50, 100]
-      }"
-    >
-      <!-- group -->
-      <template v-slot:[`group.header`]="{ items, isOpen, toggle }">
-        <th :colspan="headers.length">
-          <v-icon @click="toggle"
-            >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
-          </v-icon>
-          {{ items[0].area_name }}
-        </th>
-      </template>
-      <!-- initial_val投餵量 -->
-      <template v-slot:[`item.initial_val`]="{ item }">
-        <v-row class="">
-          <v-col cols="12" sm="9"
-            ><v-text-field
-              clearable
-              dense
-              filled
-              hide-details
-              placeholder="數值"
-              v-model.number="item.initial_val"
-              type="number"
-              @input="setformula_val(item)"
-              ><span slot="append">g</span>
-            </v-text-field>
-            </v-col
-          >
-          <v-col cols="12" sm="3"><v-btn tile color="primary" @click="()=>{item.initial_val = formula_eval(item.initial_val, formula);setformula_val(item);}" :disabled="!formula || !item.initial_val">計算</v-btn></v-col>
-          <v-spacer></v-spacer>
-        </v-row>
-      </template>
-      <!-- feed_combo_id 套餐id-->
-      <template v-slot:[`item.feed_combo_id`]="{ item }">
-        <v-row class="ma-1" dense>
-          <v-col cols="12" sm="4"
-            ><v-autocomplete
-              v-model="item.feed_combo_id"
-              :items="combo_sorted"
-              dense
-              hide-details
-              filled
-              clearable
-              item-text="name_ch"
-              item-value="id"
-              label="選擇飼料(套餐)"
-              @change="setformula_val(item)"
-            >
-            <template v-slot:item="data">
-              {{data.item.name_ch}}
-              <span class="ml-3" style="color:red;" v-if="data.item.is_absoluteTop">
-                <!-- <v-icon color="red">mdi-new-box</v-icon> -->
-                <v-btn class="pa-0"  x-small outlined color="red darken-3" style="color:#C62828 !important;" disabled width="30">new</v-btn>
-                
-              </span>
-              <span class="ml-3" v-else>
-                <!-- <v-chip x-small outlined color="amber darken-3" label v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-chip> -->
-                <v-btn class="pa-0" x-small outlined color="amber darken-3" style="color:#FF8F00 !important;" disabled width="30"  v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-btn>
-              <!-- <v-progress-circular :rotate="360" :value="(data.item.usage_count)?data.item.usage_count:0" color="teal">
-                {{ (data.item.usage_count)?data.item.usage_count:0 }}
-              </v-progress-circular> -->
-            </span>
-            </template>
-            </v-autocomplete
-          ></v-col>
-          <!-- <div v-if="item.combo"> -->
-          <!-- {{item}}
-            <v-col v-for="mainitems in combo.filter(x=>x.id==item.combo)[0].main_items" :key="mainitems.id">
-                {{mainitems.name}}
+    <v-card class="bg-card" style="margin-bottom: 12px;">
+      <div class="card-title">
+          <v-row style="margin-bottom: 0;">
+              <div class="title">
+                  <v-icon>mdi-file-edit-outline</v-icon>
+                  <v-card-title>料量設定</v-card-title>
+              </div>
+          </v-row>
+      </div>
+      <div class="content">
+        <!-- 搜尋欄 -->
+        <div class="search" style="margin-top: -20px;">
+          <v-row style="margin-bottom: 12px;">
+            <v-col cols="12" md="6">
+              <div class="search-container">
+                <!-- 選擇場 -->
+                <locate-select :dataScope="'field'" defaultSelect="研發一場-YLTCID001_1" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <!-- 放養中 -->
+                <v-checkbox
+                  v-model="showFeeding"
+                  dense hide-details
+                  :label="`只顯示放養中`"
+                  class="checkbox-feed"
+                ></v-checkbox>
+              </div>
             </v-col>
-          </div> -->
-          <v-col
-            v-for="mfla in item.main_items"
-            :key="mfla.id"
-            :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : ''"
-            :title="`公式：${mfla.formula}`"
-          >
-          <span v-html="`${mfla.name}<br/>${mfla.feed_amount}g`"></span>
-          </v-col>
-          <v-divider vertical></v-divider>
-          <v-col
-            v-for="fla in item.sub_items"
-            :key="fla.id"
-            :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : ''"
-            :title="`公式：${fla.formula}`"
-          >
-          <span v-html="`${fla.name}<br/>${fla.feed_amount}g`"></span>
-          </v-col>
-          <v-spacer></v-spacer>
-        </v-row>
-      </template>
-      <!-- 事件 -->
-      <template v-slot:[`item.feed_event_settings_id`]="{item}">
-         <v-autocomplete v-model="item.feed_event_settings_id" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
-         </v-autocomplete>
-      </template>
-      <!-- has_observation 放置觀察網 -->
-      <template v-slot:[`item.has_observation`]="{ item }">
-        <v-simple-checkbox v-model="item.has_observation"></v-simple-checkbox>
-        <div title='觀察網飼料量=投餵量*觀察網飼料百分比'>{{ item.observation_feed_pct }}%</div>
-        <!-- <span v-if="item.is_executed" style="color:red;">已執行</span> -->
-      </template>
-      <template v-slot:[`header.has_observation`]="{ header }">
-        <v-simple-checkbox
-          v-model="has_observe"
-          @click="has_observe_click"
-          title="有輸入完整資料(投餵量、選擇飼料餐號)才會勾選"
-        ></v-simple-checkbox
-        >{{ header.text }}
-      </template>
-      <!-- top -->
-      <template v-slot:top>
-        <v-toolbar elevation="1">
-          <span v-if="imptimeidx"
-            >帶入的資料時間：{{ sdate }}-{{ imptimeidx
-            }}<v-btn class="error mx-2" @click="delimpsubmit"
-              >刪除此場[{{ imptimeidx }}]資料</v-btn
-            ></span
-          >
-          <v-spacer></v-spacer>
-          <v-switch
-        v-model="showFeeding"
-        dense hide-details
-        :label="`只顯示放養中`"
-      ></v-switch>
-          <div style="width:350px"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(20+5)]，預設為相乘" filled dense hide-details clearable></v-text-field></div>
-          <v-divider vertical class="mx-2"></v-divider>
-          <v-btn color="primary" icon @click="dataclear"
-            ><v-icon title="清除資料">mdi-shimmer</v-icon></v-btn
-          >
-          <v-btn color="primary" icon @click="showsubmitdig"
-            ><v-icon title="操作">mdi-circle-edit-outline</v-icon></v-btn
-          >
-          
-        </v-toolbar>
-      </template>
-    </v-data-table>
+          </v-row>
+        </div>
+        <!-- 搜尋結果 -->
+        <div class="result">
+          <v-row style="margin-bottom: 0;">
+            <v-col cols="12">
+              <v-card class="result-card">
+                <v-data-table
+                  ref="feedtable"
+                  :headers="headers"
+                  :items="(showFeeding)?desserts.filter(x => x.factory_id == factoryid && [`放養中`,`放養中(鎖排汙)`].includes(x.state)):desserts.filter(x => x.factory_id == factoryid)"
+                  item-key="pond_id"
+                  sort-by="pond_name"
+                  group-by="area_name"
+                  class="elevation-1"
+                  height="48vh"
+                  :show-group-by="false"
+                  :footer-props="{
+                    'items-per-page-text': '每頁',
+                    'items-per-page-options': [-1, 25, 50, 100]
+                  }"
+                  no-data-text="查無資料"
+                >
+                  <!-- group -->
+                  <template v-slot:[`group.header`]="{ items, isOpen, toggle }">
+                    <th :colspan="headers.length"  style="margin-top: 12px;">
+                      <v-icon @click="toggle"
+                        >{{ isOpen ? "mdi-chevron-up" : "mdi-chevron-down" }}
+                      </v-icon>
+                      {{ items[0].area_name }}
+                    </th>
+                  </template>
+                  <!-- initial_val投餵量 -->
+                  <template v-slot:[`item.initial_val`]="{ item }">
+                    <v-row style="margin: 8px 0;">
+                      <v-col cols="12" sm="9" style="padding: 0 8px;">
+                        <v-autocomplete
+                          v-model="item.feed_combo_id"
+                          :items="combo_sorted"
+                          dense
+                          hide-details
+                          filled
+                          clearable
+                          item-text="name_ch"
+                          item-value="id"
+                          placeholder="選擇飼料(套餐)"
+                          @change="setformula_val(item)"
+                        >
+                        <template v-slot:item="data">
+                          
+                          {{data.item.name_ch}}
+                          <span class="ml-3" style="color:red;" v-if="data.item.is_absoluteTop">
+                            <!-- <v-icon color="red">mdi-new-box</v-icon> -->
+                            <v-btn class="pa-0"  x-small outlined color="red darken-3" style="color:#C62828 !important;" disabled width="30">new</v-btn>
+                          </span>
+                          <span class="ml-3" v-else>
+                            <!-- <v-chip x-small outlined color="amber darken-3" label v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-chip> -->
+                            <v-btn class="pa-0" x-small outlined color="amber darken-3" style="color:#FF8F00 !important;" disabled width="30"  v-if="data.item.usage_count>0">{{data.item.usage_count}}</v-btn>
+                          <!-- <v-progress-circular :rotate="360" :value="(data.item.usage_count)?data.item.usage_count:0" color="teal">
+                            {{ (data.item.usage_count)?data.item.usage_count:0 }}
+                          </v-progress-circular> -->
+                          </span>
+                        </template>
+                        </v-autocomplete>
+                        <v-text-field
+                          clearable
+                          dense
+                          filled
+                          hide-details
+                          placeholder="數值"
+                          v-model.number="item.initial_val"
+                          type="number"
+                          @input="setformula_val(item)"
+                          ><span slot="append">g</span>
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="3" style="padding: 0 8px;">
+                        <v-btn tile class="btn-primary btn-secondary" @click="()=>{item.initial_val = formula_eval(item.initial_val, formula);setformula_val(item);}" :disabled="!formula || !item.initial_val">
+                          計算
+                        </v-btn>
+                      </v-col>
+                      <!-- <v-spacer></v-spacer> -->
+                    </v-row>
+                  </template>
+                  <!-- 主成分-->
+                  <template v-slot:[`item.main_items`]="{ item }">
+                    <v-row class="ma-1" dense>
+                      <div class="chip" style="display: flex;flex-direction:column">
+                        <v-row style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
+                          <v-chip
+                            v-for="mfla in item.main_items"
+                            :key="mfla.id"
+                            :color="item.color"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : 'color:white;backgroundColor:#408FBC'"
+                            class="main"
+                          >
+                            {{ mfla.name }}： {{ mfla.feed_amount }}g
+                          </v-chip>
+                        </v-row>
+                      </div>
+                    </v-row>
+                  </template>
+                  <!-- 次成分 -->
+                  <template v-slot:[`item.sub_items`]="{ item }">
+                    <v-row class="ma-1" dense>
+                      <div class="chip" style="display: flex;flex-direction:column">
+                        <v-row  style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
+                          <v-chip
+                            v-for="fla in item.sub_items"
+                            :key="fla.id"
+                            :color="item.color"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : 'backgroundColor:#BFCBD2;color: #00324E;'"
+                            class="sub"
+                          >
+                            {{ fla.name }}： {{ fla.feed_amount }}g
+                          </v-chip>
+                        </v-row>
+                      </div>
+                    </v-row>
+                  </template>
+                  <!-- feed_combo_id 套餐id-->
+                  <!-- <template v-slot:[`item.feed_combo_id`]="{ item }">
+                    <v-row class="ma-1" dense>
+                      <v-col cols="12" sm="4">
+                    </v-col>
+                      <div class="chip" style="display: flex;flex-direction:column">
+                        <v-row style="margin-bottom: 0;">
+                          <v-chip
+                            v-for="mfla in item.main_items"
+                            :key="mfla.id"
+                            :color="item.color"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : 'color:white;backgroundColor:#408FBC'"
+                            class="main"
+                          >
+                            {{ mfla.name }}： {{ mfla.feed_amount }}g
+                          </v-chip>
+                        </v-row>
+                        <v-row  style="margin-bottom: 0;">
+                          <v-chip
+                            v-for="fla in item.sub_items"
+                            :key="fla.id"
+                            :color="item.color"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : 'backgroundColor:#BFCBD2;color: #00324E;'"
+                            class="sub"
+                          >
+                            {{ fla.name }}： {{ fla.feed_amount }}g
+                          </v-chip>
+                        </v-row>
+                      </div>
+                    </v-row>
+                  </template> -->
+                  <!-- 事件 -->
+                  <template v-slot:[`item.feed_event_settings_id`]="{item}">
+                    <v-autocomplete v-model="item.feed_event_settings_id" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
+                    </v-autocomplete>
+                  </template>
+                  <!-- has_observation 放置觀察網 -->
+                  <template v-slot:[`item.has_observation`]="{ item }">
+                    <div class="observe">
+                      <v-simple-checkbox v-model="item.has_observation"></v-simple-checkbox>
+                      <div title='觀察網飼料量=投餵量*觀察網飼料百分比'>{{ item.observation_feed_pct }}%</div>
+                      <!-- <span v-if="item.is_executed" style="color:red;">已執行</span> -->
+                    </div>
+                  </template>
+                  
+                  <template v-slot:[`header.has_observation`]="{ header }">
+                    <div class="observe">
+                      <v-simple-checkbox
+                        v-model="has_observe"
+                        @click="has_observe_click"
+                        title="有輸入完整資料(投餵量、選擇飼料餐號)才會勾選"
+                      ></v-simple-checkbox
+                      ><span>{{ header.text }}</span>
+                    </div>
+                    
+                  </template>
+                  <!-- top -->
+                  <template v-slot:top>
+                    <v-toolbar elevation="1" class="header-bar" :style="{height:`${windowWidth<599.98?'88px':'64px'}`}">
+                      <v-row :style="{marginBottom:`${windowWidth<599.98?'0':'12px'}`}">
+                        <!-- 左側 -->
+                        <v-col cols="12" sm="6" style="padding: 8px 12px;">
+                          <div class="header-left" style="max-width: 300px;">
+                            <!-- 計算 -->
+                            <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div>
+                            
+                          </div>
+                        </v-col>
+                        <!-- 右側 -->
+                        <v-col cols="12" sm="6" style="padding: 8px 12px;">
+                          <div class="header-right" :style="{justifyContent:`${windowWidth<599.98?'flex-start':'flex-end'}`}">
+                            <!-- 計算 -->
+                            <!-- <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div> -->
+                            <!-- windowwidth>958.98 icon+文字 -->
+                            <div class="data-time">
+                              <span style="margin-right: 4px;">資料時間：{{ imptimeidx?sdate+ '-' +imptimeidx:'無' }}</span>
+                              <v-tooltip v-if="imptimeidx" bottom >
+                                  <template v-slot:activator="{ on, attrs }">
+                                      <button class="btn-add delete" 
+                                        @click="delimpsubmit" 
+                                        v-bind="attrs" v-on="on"
+                                        style="width: 24px;height: 24px;"
+                                        >
+                                          <v-icon>mdi-trash-can</v-icon>
+                                      </button>
+                                  </template>
+                                  <span>刪除此場[{{ imptimeidx }}]資料</span>
+                              </v-tooltip>
+                              <button v-else
+                                class="btn-add delete disabled"
+                                style="width: 24px;height: 24px;">
+                                <v-icon>mdi-trash-can</v-icon>
+                              </button>
+                            </div>
+                            
+                            <div v-if="windowWidth>959.98" class="btn-groups">
+                              <v-btn class="btn-primary btn-add save" tile @click="showimport"
+                                ><v-icon left>mdi-database-import</v-icon>匯入
+                              </v-btn>
+                              <v-btn class="btn-primary btn-add" tile @click="showsubmitdig">
+                                <v-icon left >mdi-circle-edit-outline</v-icon>設定
+                              </v-btn>
+                              <v-btn class="btn-primary btn-add clear" tile @click="dataclear">
+                                <v-icon left>mdi-shimmer</v-icon>清除
+                              </v-btn>
+                            </div>
+                            <!-- windowwidth>958.98 icon+tooltips -->
+                            <div v-else class="btn-groups" style="justify-content: flex-start;">
+                              <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <button class="btn-add save" @click="showimport" v-bind="attrs" v-on="on">
+                                        <v-icon>mdi-database-import</v-icon>
+                                    </button>
+                                </template>
+                                <span>匯入</span>
+                              </v-tooltip>
+                              <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <button class="btn-add" @click="showsubmitdig" v-bind="attrs" v-on="on">
+                                        <v-icon>mdi-circle-edit-outline</v-icon>
+                                    </button>
+                                </template>
+                                <span>設定</span>
+                              </v-tooltip>
+                              <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <button class="btn-add clear" @click="dataclear" v-bind="attrs" v-on="on">
+                                        <v-icon>mdi-shimmer</v-icon>
+                                    </button>
+                                </template>
+                                <span>清除</span>
+                              </v-tooltip>
+                            </div>
+                          </div>
+                        </v-col>
+                      </v-row>
+                    </v-toolbar>
+                    <v-divider></v-divider>
+                  </template>
+                </v-data-table>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+      </div>
+    </v-card>
+    <!-- 匯入資料 -->
+    <v-dialog v-model="importdialog" width="400">
+      <v-card class="card-dialog" min-height="350">
+        <v-card-title>匯入料表</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-row align-content="center" class="my-2">
+            <!-- 選擇日期sdate -->
+            <v-col cols="12" sm="7">
+              <v-menu
+                v-model="menu_date"
+                :close-on-content-click="true"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="sdate"
+                    label="選擇日期"
+                    filled
+                    dense
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    hide-details
+                    v-bind="attrs"
+                    v-on="on"
+                    clearable
+                    @click:prepend="() => (sdate = getNowDate())"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="sdate" locale="zh-tw"
+                  no-title
+                  hide-details
+                  @input="menu_sdate = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- 取得料表 -->
+            <v-col cols="12" sm="5" align-self="center">
+              <v-btn
+                class="btn-primary"
+                tile
+                title="取得料表清單"
+                @click="getimptimedata"
+                :disabled="!sdate"
+                :loading="imploading"
+                ><v-icon>mdi-reload</v-icon>取得料表</v-btn
+              >
+            </v-col>
+            <!-- 料表清單 -->
+            <v-col cols="12">
+              <v-list>
+                <v-list-item v-for="item in imptimedata" :key="item.time">
+                  <v-list-item-content class="text-h5">{{ item.time }}</v-list-item-content>
+                  <v-list-item-action
+                    ><v-btn class="btn-secondary btn-add" style="width: 40px;height: 40px;min-width: initial;" @click="settabledata(item)" title="帶入此資料"
+                      ><v-icon style="font-size: 1.25rem;">mdi-database-export-outline</v-icon></v-btn
+                    >
+                  </v-list-item-action>
+                </v-list-item>
+              </v-list>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- 操作 -->
     <v-dialog v-model="submitdig" width="450">
-      <v-card min-height="250">
-        <v-card-title>操作</v-card-title>
+      <v-card min-height="250" class="card-dialog">
+        <v-card-title>設定</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row class="my-2" justify="center">
@@ -259,8 +379,7 @@
                 :nudge-right="40"
                 transition="scale-transition"
                 offset-y
-                min-width="auto"
-              >
+                min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="adate"
@@ -281,6 +400,7 @@
                   no-title
                   locale="zh-tw"
                   @input="menu_adate = false"
+                  hide-details
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -295,13 +415,14 @@
                 clearable
                 type="time"
                 prepend-icon="mdi-timeline-clock-outline"
+                hide-details
                 @click:prepend="() => (atime = getNowTime())"
               ></v-text-field>
             </v-col>
             <!-- 新增按鈕 -->
             <v-col cols="5">
               <v-btn
-                class="error mb-3"
+                class="btn-primary mb-3"
                 tile
                 :disabled="!atime || !adate"
                 large
@@ -309,10 +430,10 @@
                 >設定此時間{{ atime }}</v-btn
               >
             </v-col>
-            <v-col cols="12" class="text-center" style="font-size:1.2em">
-            <span style="color:red;">若已執行修改後需重新執行</span><br/>
-            <!-- <span style="color:red;">✔觀察網 = (主成分*0.03) 跟 (次成分*0) 且 (排除 糖)</span> -->
-            <span style="color:red;">✔觀察網 = (主成分*[觀察網設定百分比]) 跟 (次成分*0) 且 (排除 糖)</span>
+            <v-col cols="12" style="font-size:1.2em;line-height: 150%;">
+              <span style="color:red;">若已執行修改後需重新執行</span><br/>
+              <!-- <span style="color:red;">✔觀察網 = (主成分*0.03) 跟 (次成分*0) 且 (排除 糖)</span> -->
+              <span style="color:red;">✔觀察網 = (主成分*[觀察網設定百分比]) 跟 (次成分*0) 且 (排除 糖)</span>
               <!-- <v-btn
                 class="primary mb-3"
                 tile small
@@ -365,21 +486,35 @@ export default {
           sortable: false
         },
         // { text: "主成份", value: "feedmain", align: "center", width: 200 },
+        // {
+        //   text: "成份",
+        //   value: "feed_combo_id",
+        //   align: "center",
+        //   sortable: false
+        // },
         {
-          text: "成份",
-          value: "feed_combo_id",
-          align: "center",
+          text: "主成份",
+          value: "main_items",
+          align: "left",
+          width: 200,
+          sortable: false
+        },
+        {
+          text: "次成份",
+          value: "sub_items",
+          align: "left",
+          width: 200,
           sortable: false
         },
         {
           text: "事件",
           value: "feed_event_settings_id",
           align: "center",
-          width: 200,
+          width: 150,
           sortable: false
         },
         {
-          text: "放置觀察網",
+          text: "觀察網",
           value: "has_observation",
           align: "center",
           width: 100,
@@ -437,6 +572,7 @@ export default {
       //事件
       eventSetData:[],
       feed_pct_list:[],
+      windowWidth:window.innerWidth,
     };
   },
   computed:{
@@ -485,17 +621,23 @@ export default {
     }
   },
   methods: {
+    get_scopeData(evt) {
+      console.log('Change Field',evt);
+      console.log('factory data',this.factoryData);
+      let fieldId = evt.split('_')[evt.split('_').length-1];
+      this.factoryid = fieldId;
+    },
     // 飼料表設定-清單
     eventSetGet:async function(){
       await this.$axios
-          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
-          .then(res => {
-            this.eventSetData = res.data;
-            console.log("飼料表設定-清單 api:", res.request.responseURL);
-          })
-          .catch(err => {
-            this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
-          });
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+        .then(res => {
+          this.eventSetData = res.data;
+          console.log("飼料表設定-清單 api:", res.request.responseURL);
+        })
+        .catch(err => {
+          this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
+        });
     },
     //觀察網全選
     has_observe_click: async function() {
@@ -616,6 +758,9 @@ export default {
       .then(res=>{
         if(res.status==200){
           datecount = res.data.data_rows;
+          this.imptimedata = []; //清空取得的帶入資料
+          this.sdate = '';
+          this.stime = '';
         }else{
           datecount = -1;
           errormsg = res.data;
@@ -629,7 +774,7 @@ export default {
         this.$toast.error(`發生錯誤：${errormsg}`,{duration:2000});
           return
       }
-      if(datecount>0 && confirm(`當日已有資料是否覆蓋資料，原資料${datecount}筆將被刪除`)==false){
+      if(datecount>0 && confirm(`當日已有資料是否覆蓋資料，原資料${datecount}筆將被刪除`)==false) {
         return;
       }
       var data = this.desserts.filter(
@@ -645,31 +790,39 @@ export default {
         data: data
       };
       console.log("parm", parm);
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
-      await this.$axios
-        .post(url, parm)
-        .then(res => {
-          if (res.data == "新增成功") {
-            this.dataclear(); //清除資料
-            this.submitdig = false;//關閉dialog
-            this.$toast.success(`新增成功`, {
+      // 有資料再進行新增
+      if(data.length>0) {
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
+        await this.$axios
+          .post(url, parm)
+          .then(res => {
+            if (res.data == "新增成功") {
+              this.dataclear(); //清除資料
+              this.submitdig = false;//關閉dialog
+              this.$toast.success(`新增成功`, {
+                duration: 2000
+              });
+            } else {
+              this.$toast.success(`新增失敗:${res.data}`, {
+                duration: 2000
+              });
+            }
+            console.log("新增API:" + res.request.responseURL);
+          })
+          .catch(error => {
+            this.$toast.error(`新增失敗:${error}`, {
               duration: 2000
             });
-          } else {
-            this.$toast.success(`新增失敗:${res.data}`, {
-              duration: 2000
-            });
-          }
-          console.log("新增API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`新增失敗:${error}`, {
-            duration: 2000
+          })
+          .finally(() => {
+            //
           });
-        })
-        .finally(() => {
-          //
+      }else {
+        this.$toast.success(`新增失敗:請先設定養殖池的料量`, {
+          duration: 2000
         });
+      }
+      
     },
     //取得的觀察網飼料百分比
     getfeedpct:async function(){
@@ -819,6 +972,7 @@ export default {
             }
           });
           this.desserts = item;
+          this.has_observe = false;
           console.log("完整資料：",this.desserts);
           console.log("取得場架構API:" + res.request.responseURL);
         })
@@ -853,6 +1007,8 @@ export default {
             if (res.data == "刪除成功") {
               this.dataclear(); //清除資料
               this.imptimedata = []; //清空取得的帶入資料
+              this.sdate = '';
+              this.stime = '';
               this.$toast.success(
                 `刪除${factory_name}[${parm.feed_time}]成功`,
                 {
@@ -976,6 +1132,7 @@ export default {
           });
           console.log("取得帶入的資料API:" + res.request.responseURL);
           console.log("取資料",this.imptimedata);
+          
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -989,7 +1146,7 @@ export default {
       // console.log('帶入資料',item);
       console.log('dessert',this.desserts)
       await this.dataclear(); //歸零
-      var data = item.data;
+      var data = _.cloneDeep(item.data);
       this.imptimeidx = item.time; //time即index
       this.factoryid = data[0].factory_id; //第1筆資料即為首選場
       var desserts = this.desserts;
@@ -1072,12 +1229,317 @@ export default {
     keys.forEach(x => {
       table.$vnode.componentInstance.openCache[x] = false;
     });
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth;
+    });
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
     
+  },
+  watch: {
+    windowWidth() {
+      this.windowWidth = window.innerWidth;
+    }
   }
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.v-application--is-ltr {
+  .search {
+    .search-container {
+      display: flex;
+      align-items: center;
+    }
+    .checkbox-feed {
+      flex: 1;
+      .v-input--selection-controls__input {
+        margin-right: 4px;
+      }
+    }
+  }
+  .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .v-card.result-card {
+    padding: 12px 24px;
+    padding-bottom: 8px;
+    background-color: #E6F5FA;
+    .data-time {
+      display: flex;
+      align-items: center;
+    }
+    .btn-groups {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      // width: 100%;
+      max-width: 280px;
+    }
+    button {
+      width: 24px;
+      height: 24px;
+      background-color: $color-primary;
+      border-radius: 4px;
+      position: relative;
+      margin: 4px;
+      transition: all 0.3s;
+      padding: 0 10px;
+      &:hover {
+          background-color: lighten($color: $color-primary, $amount: 3);
+      }
+      .theme--light.v-icon {
+          font-size: 1rem;
+          color: #fff;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+      }
+      &.btn-primary {
+        height: 32px;
+        width: initial;
+        padding: auto 12px;
+        .theme--light.v-icon {
+          font-size: 1rem;
+          color: #fff;
+          position: relative;
+          transform: none;
+          top: initial;
+          left: initial;
+          margin-right: 4px;
+        }
+      }
+      
+      &.btn-add {
+          background-color: $color-green !important;
+          &:hover {
+              background-color: lighten($color: $color-green, $amount: 3) !important;
+          }
+      }
+      &.save {
+          background-color: $color-primary !important;
+          &:hover {
+              background-color: lighten($color: $color-primary, $amount: 3) !important;
+          }
+      }
+      &.delete {
+          background-color: $color-accent !important;
+          &:hover {
+              background-color: lighten($color: rgba($color-accent,0.9), $amount: 3) !important;
+          }
+      }
+      &.clear {
+          background-color: #67BEDA !important;
+          &:hover {
+              background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
+          }
+      }
+      &.disabled {
+        background-color: $color-dark-25 !important;
+        user-select: none;
+        .theme--light.v-icon {
+          color: $color-dark-50 !important;
+        }
+        &:hover {
+          background-color: $color-dark-25 !important;
+        }
+        
+      }
+      .theme--light.v-data-table {
+        background-color: $color-lighten;
+      }
+      .result-content {
+        padding: 0 24px;
+
+      }
+    }
+  }
+}
+.v-application .elevation-1{
+  box-shadow: none !important;
+  // & table {
+  //   min-height: 48vh;
+  // }
+}
+.v-application--is-ltr .v-input--selection-controls__input {
+  margin-right: 0;
+}
+::v-deep {
+  .search {
+    .select-template {
+      flex: 1;
+      margin-right: 16px;
+      .font-size-large {
+        font-size: 16px;
+      }
+      .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .vue-treeselect__control {
+        border: none;
+        border-radius: 0;
+        border-bottom: 1px solid $color-form;
+        .vue-treeselect__placeholder {
+          color: $color-dark;
+          &::before {
+          content: '*'
+          }
+          &::after {
+          content: '(必選)';
+          }
+        }
+        .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+          color: $color-form;
+        }
+        .vue-treeselect__x-container {
+          display: none;
+        }
+      }
+      .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
+      .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+        border-color: $color-form;
+      }
+      .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
+      .theme--light.v-input input {
+        font-size: 14px;
+        color: $color-dark;
+      }
+    }
+  }
+  .result {
+    margin-top: -8px;
+    
+    // .v-data-table__wrapper {
+      // height: 40vh;
+      // overflow: scroll;
+    // }
+    .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
+      background: transparent;
+    }
+    .theme--light.v-card {
+      background-color: $color-lighten;
+    }
+    .theme--light.v-data-table,.theme--light.v-data-table thead th {
+      background: $color-lighten;
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table > thead > tr:last-child > th {
+      border-bottom: none;
+    }
+    .theme--light.v-data-table tbody {
+      border-radius: 4px;
+      color: $color-dark;
+    }
+    .theme--light.v-data-table .v-row-group__header {
+      background: $color-primary-25;
+      border-radius: 4px 4px 0 0 !important;
+      margin-bottom: 4px;
+      th {
+        border-radius: 4px 4px 0 0 !important;
+      }
+      button {
+        background-color: transparent;
+      }
+      
+      .mdi:before {
+        color: $color-dark;
+      }
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+      background: rgba($color-primary-25,0.3);
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.v-row-group__header:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+      background: $color-primary-25;
+    }
+    .v-text-field--outlined.v-input--dense.v-text-field--outlined > .v-input__control > .v-input__slot,
+    .v-text-field--filled.v-input--dense.v-text-field--single-line > .v-input__control > .v-input__slot {
+      min-height: 36px;
+    }
+    .theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
+      background: transparent;
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table .observe {
+      display: flex;
+      align-items: center;
+    }
+
+    // header
+    .header-bar {
+      background-color: $color-lighten;
+      .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,
+      .theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
+        background-color: $color-lighten;
+      }
+      .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
+          background-color: $color-lighten;
+      }
+      .v-toolbar__content, .v-toolbar__extension {
+        padding: 0;
+        button {
+          // height: 36px;
+          border-radius: 4px;
+        }
+        .v-btn--is-elevated {
+          box-shadow: none;
+          background-color: $color-primary;
+          color: #fff;
+        }
+        .theme--light.v-btn.v-btn--disabled {
+          color: $color-dark-50;
+        }
+      }
+      .v-tab {
+        font-size: 18px;
+        font-weight: bold;
+        color: $color-dark-50 !important;
+        .icons {
+          margin-right: 4px;
+          i {
+            color: $color-dark-50;
+          }
+          
+        }
+      }
+      .v-tab.v-tab--active {
+        color: $color-primary !important;
+        .icons {
+          margin-right: 4px;
+          i {
+            color: $color-primary;
+          }
+          
+        }
+      }
+      .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
+        border-radius: 4px;
+      }
+      
+      // top
+      .header-right,.header-left {
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+      // .header-right {
+        // justify-content: flex-end;
+      // }
+      .caculator {
+        width: 100%;
+        // max-width: 300px;
+        margin: 4px;
+        .theme--light.v-text-field--outlined:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot fieldset {
+          color: $color-form;
+        }
+      }
+    }
+  }
+  .v-card.card-dialog {
+    .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
+      background: transparent;
+    }
+  }  
+}
+
+</style>

@@ -1,291 +1,349 @@
 <template>
   <div>
-    <!-- <h2 style="color: white">
-      料表執行
-    </h2> -->
-    <v-row align="center" dense>
-      <!-- 選擇場 -->
-      <v-col cols="12" sm="2">
-        <v-autocomplete
-          dark
-          filled
-          v-model="factoryid"
-          :items="factoryData"
-          item-text="name"
-          item-value="id"
-        ></v-autocomplete>
-      </v-col>
-      <!-- 選擇日期sdate -->
-      <v-col cols="12" sm="3">
-        <v-menu
-          v-model="menu_sdate"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="sdate"
-              label="選擇日期"
-              filled
-              dense
-              dark
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-              @change="getimptimedata"
-              @click:clear="
-                () => {
-                  (totalData = {}), (imptimedata = []);
-                }
-              "
-              clearable
-              @click:prepend="() => ((sdate = getNowDate()), getimptimedata())"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="sdate" locale="zh-tw"
-            @change="getimptimedata" no-title
-            @input="menu_sdate = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
-      <!-- 選擇時間點imptimedata -->
-      <v-col cols="12" sm="3">
-        <v-autocomplete
-          v-model="stime"
-          dark
-          filled
-          item-text="time"
-          item-value="time"
-          :loading="stime_loading"
-          :items="imptimedata"
-          placeholder="選擇資料時間"
-          :no-data-text="`${stime_loading?'資料載入中':'查無資料'}`"
-          @change="getfeedData"
-        ></v-autocomplete>
-      </v-col>
-      <v-col cols="12" sm="8"></v-col>
-      <!-- 當日餐別明細 -->
-      <v-col cols="12">
-        <v-card min-width="300">
-          <v-card-title>當日餐別明細</v-card-title>
-          <v-card-text class="mt-3">
-            <v-row>
-              <v-col
-                cols="12"
-                v-for="item in comboTotal"
-                :key="item.combo_name"
-              >
-              <span>
-                <v-switch
-                  v-model="combomark"
-                  color="#FFD600"
-                  @click="combomarkclick(item.combo_name)"
-                  label="" dense hide-details inset
-                  :value="item.combo_name"
-
-                ></v-switch>
-              </span>
-                <span class="text-h6 font-weight-black"
-                  >{{ item.combo_name }}：</span
-                >
-                <v-chip
-                  class="ma-2"
-                  color="brown lighten-1"
-                  text-color="white"
-                  label
-                  v-for="chp in Object.keys(item.main_items)"
-                  :key="chp"
-                >
-                  {{ `${chp}：${item.main_items[chp]} g` }}
-                </v-chip>
-                <v-chip
-                  class="ma-2"
-                  color="cyan"
-                  text-color="white"
-                  label
-                  v-for="chp in Object.keys(item.sub_items)"
-                  :key="chp"
-                >
-                  {{ `${chp}：${item.sub_items[chp]} g` }}
-                </v-chip>
-                <v-chip class="ma-2" color="red lighten-1" label outlined>
-                  {{ `合計：${item.total} g` }}
-                </v-chip>
-                <v-divider></v-divider>
-              </v-col>
-
-              <v-col v-if="comboTotal.length == 0" class="text-center">
-                <h2>查無資料</h2>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <!-- 料表 -->
-      <v-col cols="12" class="mb-8">
-        <el-card>
-          <v-row>
-            <!-- 獨立拉出資料 -->
-            <v-col cols="12" sm="2" align-self="center" >
-              <span>獨立顯示子成份項目</span>
+    <v-card class="bg-card" style="margin-bottom: 24px;">
+      <div class="card-title">
+        <v-row style="margin-bottom: 0;">
+          <div class="title">
+            <v-icon>mdi-file-check-outline</v-icon>
+            <v-card-title>料表執行</v-card-title>
+          </div>
+        </v-row>
+      </div>
+      <div class="content">
+        <div class="search" style="margin-top: -20px;">
+          <v-row style="margin-bottom: 0;">
+            <v-col cols="12" md="2">
+              <!-- 選擇場 -->
+              <div class="search-container">
+                <locate-select :dataScope="'field'" defaultSelect="研發一場-YLTCID001_1" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+              </div>
             </v-col>
-            <v-col cols="12" sm="5">
+            <!-- 選擇日期sdate -->
+            <v-col cols="12" md="2">
+              <v-menu
+                v-model="menu_sdate"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="sdate"
+                    label="選擇日期"
+                    filled
+                    dense
+                    hide-details
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    @change="getimptimedata"
+                    @click:clear="
+                      () => {
+                        (totalData = {}), (imptimedata = []),(feedData = []),(stime = '');
+                      }
+                    "
+                    clearable
+                    @click:prepend="() => ((sdate = getNowDate()), getimptimedata())"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="sdate" locale="zh-tw"
+                  @change="getimptimedata" no-title
+                  @input="menu_sdate = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- 選擇時間點imptimedata -->
+            <v-col cols="12" md="2">
               <v-autocomplete
-                v-model="showsub"
-                multiple
-                chips
-                clearable
-                no-data-text="無項目"
-                :items="sub_allitems"
-                filled
-                placeholder="獨立顯示子成份項目"
+                v-model="stime"
+                dense filled
+                item-text="time"
+                item-value="time"
+                
+                :items="imptimedata"
+                label="選擇資料時間"
+                hide-details
+                solo
+                :no-data-text="`${stime_loading?'資料載入中':'查無資料'}`"
+                :disabled = "!sdate"
+                @change="getfeedData"
               ></v-autocomplete>
             </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="12" sm="2"
-              >
-              <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
-              <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
-              <v-btn icon @click="cellsize = 1.2"><v-icon>mdi-format-color-text</v-icon></v-btn>
-              <v-btn
-                tile
-                small
-                class="success"
-                @click="downloadcsv"
-                :block="$vuetify.breakpoint.name == 'xs'"
-                >下載檔案</v-btn
-              ></v-col
-            >
-            <v-col cols="12" sm="2"
-              ><v-btn
-                :block="$vuetify.breakpoint.name == 'xs'"
-                class="primary"
-                tile
-                small
-                @click="execsubmit"
-                :disabled="multipleSelection.length == 0"
-                >執行</v-btn
-              >
+          </v-row>
+        </div>
+        <div class="result">
+          <v-row style="margin-bottom: 0;">
+            <v-col cols="12">
+              <!-- 當日餐別明細 -->
+              <v-expansion-panels accordion multiple v-model="mealDetails" class="result-card">
+                <v-expansion-panel class="my-1">
+                    <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-triangle-small-down">當日餐別明細</v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <v-data-table
+                        ref="feedtable"
+                        :headers="detailHeaders"
+                        :items="comboTotal"
+                        class="elevation-1"
+                        no-data-text="查無資料"
+                        :footer-props="{
+                          'items-per-page-text': '每頁',
+                          'items-per-page-options': [-1, 25, 50, 100]
+                        }"
+                      >
+                      
+                      <template v-slot:[`item.combomark`]="{ item }">
+                        <v-switch
+                          v-model="item.combomark"
+                          color="#f5d564"
+                          @click="combomarkclick(item.combo_name,item.combomark)"
+                          label="" dense hide-details inset
+                          
+                        ></v-switch>
+                      </template>
+                      <template v-slot:[`item.combo_name`]="{ item }">
+                        <span>{{ item.combo_name }}</span>
+                      </template>
+                      <template v-slot:[`item.total`]="{ item }">
+                        <span>{{ item.total }}g</span>
+                      </template>
+                      <!-- <template v-slot:[`item.feed_combo_id`]="{ item }">
+                        <v-row class="ma-1" dense>
+                          <div class="chip" style="display: flex;flex-direction:column">
+                            <v-row style="margin-bottom: 0;">
+                              <v-chip
+                                v-for="(mfla,mid) in item.main_items"
+                                :key="mid"
+                                style="font-size: 12px;margin: 2px;color: #fff;"
+                                color="#408FBC"
+                                class="main"
+                              >
+                                {{ mid }}： {{ mfla }}g
+                              </v-chip>
+                            </v-row>
+                            <v-row  style="margin-bottom: 0;">
+                              <v-chip
+                                v-for="(fla,fid) in item.sub_items"
+                                :key="fid"
+                                style="font-size: 12px;margin: 2px;color: #00324E;"
+                                color="#BFCBD2"
+                                class="sub"
+                              >
+                                {{ fid }}： {{ fla }}g
+                              </v-chip>
+                            </v-row>
+                          </div>
+                        </v-row>
+                      </template> -->
+                      <template v-slot:[`item.main_items`]="{ item }">
+                        <v-row class="ma-1" dense>
+                          <div class="chip" style="display: flex;flex-direction:column">
+                            <v-row style="margin-bottom: 0;">
+                              <v-chip
+                                v-for="(mfla,mid) in item.main_items"
+                                :key="mid"
+                                style="font-size: 12px;margin: 2px;color: #fff;"
+                                color="#408FBC"
+                                class="main"
+                              >
+                                {{ mid }}： {{ mfla }}g
+                              </v-chip>
+                            </v-row>
+                          </div>
+                        </v-row>
+                      </template>
+                      <template v-slot:[`item.sub_items`]="{ item }">
+                        <v-row class="ma-1" dense>
+                          <div class="chip" style="display: flex;flex-direction:column">
+                            <v-row  style="margin-bottom: 0;">
+                              <v-chip
+                                v-for="(fla,fid) in item.sub_items"
+                                :key="fid"
+                                style="font-size: 12px;margin: 2px;color: #00324E;"
+                                color="#BFCBD2"
+                                class="sub"
+                              >
+                                {{ fid }}： {{ fla }}g
+                              </v-chip>
+                            </v-row>
+                          </div>
+                        </v-row>
+                      </template>
+                    </v-data-table>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+              <!-- 料表 -->
+              <v-card class="result-card" >
+                <!-- 表頭 -->
+                <div class="card-title">
+                  <div class="title">
+                    <v-row style="margin-right: 12px;margin-left: 12px;margin-bottom: 12px;">
+                      <v-col cols="12" md="6">
+                        <v-autocomplete
+                          v-model="showsub"
+                          multiple
+                          chips
+                          clearable
+                          no-data-text="無項目"
+                          :items="sub_allitems"
+                          filled
+                          hide-details
+                          label="獨立顯示子成份項目"
+                          class="items"
+                          :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"
+                        ></v-autocomplete>
+                      </v-col>
+                      <v-col cols="12" md="6"
+                        :style="{'padding-top':`${windowWidth>960?'0':'12px'}`}">
+                        <div class="right"
+                          style="display: flex;align-items: center;"
+                          :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}"
+                        >
+                          <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
+                          <v-btn icon @click="cellsize = 1"><v-icon>mdi-format-color-text</v-icon></v-btn>
+                          <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
+                          <v-btn
+                            tile
+                            class="btn-primary"
+                            @click="downloadcsv"
+                            style="margin: 0 4px;"
+                            :disabled="feedData.length==0"
+                            >下載</v-btn>
+                          <v-btn
+                            class="btn-primary green"
+                            tile
+                            @click="execsubmit"
+                            :disabled="multipleSelection.length == 0"
+                            style="margin: 0 4px;"
+                            >執行</v-btn>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </div>
+                <!-- 清單 -->
+                <div class="result-list">
+                  <el-table
+                    id="outTable"
+                    ref="mutitable"
+                    :data="feedData2"
+                    :row-style="isTagColor"
+                    row-key="id"
+                    default-expand-all
+                    @selection-change="handleSelectionChange"
+                    @select-all="selectall"
+                    :cell-style="cellStyle"
+                    :key="mutitablekey"
+                  >
+                    <!-- 減少一欄佔空間所以用area_name2解決 -->
+                    <el-table-column
+                      prop="area_name2"
+                      label="區域"
+                      sortable
+                      :sort-by="['area_name2']"
+                      fixed="left"
+                    >
+                      <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
+                    </el-table-column>
+                    <!-- <el-table-column
+                      prop="pond_name"
+                      label="養殖池"
+                      sortable
+                      width="100"
+                    /> -->
+                    <!-- 總量(主+次) -->
+                    <el-table-column
+                      prop="feed_total"
+                      label="總量(主+次)"
+                      width="100"
+                    />
+                    <!-- 獨立項目 -->
+                    <el-table-column label="獨立項目" v-if="showsub.length > 0" width="200">
+                      <template #default="scope">
+                        <div v-if="scope.row.hasOwnProperty('sub_items')">
+                          <v-chip
+                            class="item-chip"
+                            label
+                            
+                            v-for="(sub, idx) in scope.row.sub_items.filter(x =>
+                              showsub.includes(x.name)
+                            )"
+                            :key="idx"
+                          >
+                            <span :style="`font-size:${cellsize}em`">{{ `${sub.name.substr(0,1)}：${Math.round((sub.feed_amount + Number.EPSILON) * 1) / 1}` }}</span>
+                          </v-chip>
+                        </div>
+                      </template>
+                    </el-table-column>
+                    <!-- 觀察網 -->
+                    <el-table-column label="是否有觀察網" width="120">
+                      <template #default="scope">
+                        <div v-if="!scope.row.hasOwnProperty('children')">
+                          <span>{{ `${scope.row.has_observation?'有':'無'}` }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <!-- 觀察網(不含糖) -->
+                    <el-table-column
+                      prop="observation_total"
+                      label="觀察網(不含糖)"
+                      width="120"
+                    />
+                    
+                    <!-- 餐別 -->
+                    <el-table-column
+                      prop="feed_combo_name"
+                      label="餐別"
+                      min-width="150"
+                    />
+                    <el-table-column
+                      prop="executed_user"
+                      label="執行人員"
+                    />
+                    <el-table-column
+                      align="center"
+                      type="selection"
+                      :selectable="checkSelectable"
+                      width="55"
+                      fixed="right"
+                    >
+                    </el-table-column>
+                    <!-- 本來要弄button按鈕，目前不需要 -->
+                    <el-table-column align="right" v-if="false" style="justify-content: center;">
+                      <!-- <template #header>
+                      <el-input
+                        v-model="search"
+                        size="small"
+                        placeholder="Type to search"
+                      />
+                    </template> -->
+                      <template #default="scope">
+                        <el-button
+                          size="small"
+                          @click="handleEdit(scope.$index, scope.row)"
+                          v-if="!scope.row.hasOwnProperty('children')"
+                          :disabled="scope.row.is_executed"
+                          >{{ scope.row.is_executed ? "已執行" : "執行" }}</el-button
+                        >
+                      </template>
+                    </el-table-column>
+                    <!-- <el-table-column prop="id" label="ID" width="180"> </el-table-column> -->
+                    <template slot="empty">
+                      <span>查無資料</span>
+                    </template>
+                  </el-table>
+                </div>
+              </v-card>
             </v-col>
           </v-row>
-          <el-table
-            id="outTable"
-            ref="mutitable"
-            :data="feedData2"
-            :row-style="isTagColor"
-            row-key="id"
-            default-expand-all
-            @selection-change="handleSelectionChange"
-            @select-all="selectall"
-            :cell-style="cellStyle"
-            :key="mutitablekey"
-          >
-            <!-- 減少一欄佔空間所以用area_name2解決 -->
-            <el-table-column
-              prop="area_name2"
-              label="區域"
-              sortable
-              :sort-by="['area_name2']"
-              fixed="left"
-              width="100"
-            >
-              <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
-            </el-table-column>
-            <!-- <el-table-column
-              prop="pond_name"
-              label="養殖池"
-              sortable
-              width="100"
-            /> -->
-            <!-- 總量(主+次) -->
-            <el-table-column
-              prop="feed_total"
-              label="總量(主+次)"
-              width="100"
-            />
-            <!-- 獨立項目 -->
-            <el-table-column label="獨立項目" v-if="showsub.length > 0" width="200">
-              <template #default="scope">
-                <div v-if="scope.row.hasOwnProperty('sub_items')">
-                  <v-chip
-                    class="mx-2"
-                    color="purple"
-                    label
-                    outlined
-                    v-for="(sub, idx) in scope.row.sub_items.filter(x =>
-                      showsub.includes(x.name)
-                    )"
-                    :key="idx"
-                  >
-                    <span :style="`font-size:${cellsize}em`">{{ `${sub.name.substr(0,1)}:${Math.round((sub.feed_amount + Number.EPSILON) * 1) / 1}` }}</span>
-                  </v-chip>
-                </div>
-              </template>
-            </el-table-column>
-            <!-- 觀察網 -->
-            <el-table-column label="是否有觀察網" width="120">
-              <template #default="scope">
-                <div v-if="!scope.row.hasOwnProperty('children')">
-                  <span>{{ `${scope.row.has_observation?'有':'無'}` }}</span>
-                </div>
-              </template>
-            </el-table-column>
-
-            <!-- 觀察網(不含糖) -->
-            <el-table-column
-              prop="observation_total"
-              label="觀察網(不含糖)"
-              width="120"
-            />
-            
-            <!-- 餐別 -->
-            <el-table-column
-              prop="feed_combo_name"
-              label="餐別"
-              min-width="150"
-            />
-            <el-table-column
-              prop="executed_user"
-              label="執行人員"
-              width="180"
-            />
-            <el-table-column
-              align="center"
-              type="selection"
-              :selectable="checkSelectable"
-              width="55"
-              fixed="right"
-            >
-            </el-table-column>
-            <!-- 本來要弄button按鈕，目前不需要 -->
-            <el-table-column align="right" v-if="false">
-              <!-- <template #header>
-              <el-input
-                v-model="search"
-                size="small"
-                placeholder="Type to search"
-              />
-            </template> -->
-              <template #default="scope">
-                <el-button
-                  size="small"
-                  @click="handleEdit(scope.$index, scope.row)"
-                  v-if="!scope.row.hasOwnProperty('children')"
-                  :disabled="scope.row.is_executed"
-                  >{{ scope.row.is_executed ? "已執行" : "執行" }}</el-button
-                >
-              </template>
-            </el-table-column>
-            <!-- <el-table-column prop="id" label="ID" width="180"> </el-table-column> -->
-          </el-table>
-        </el-card>
-      </v-col>
-    </v-row>
+        </div>
+      </div>
+    </v-card> 
   </div>
 </template>
 
@@ -304,7 +362,7 @@ export default {
   data() {
     return {
       factoryData: [], //場架構
-      factoryid: "", //場id
+      factoryid: "1", //場id
       //---日曆
       menu_sdate: false,
       sdate: "",
@@ -322,30 +380,68 @@ export default {
       //餐別合計
       totalData: [],
       //table cell size
-      cellsize:1.2,
+      cellsize:1,
       //餐別mark
       combomark:[],
       mutitablekey:false,
+      mealDetails: [0],
+      // 表格title
+      detailHeaders:[
+        { text: "", value: "combomark", align: "right", width: 80,sortable: false },
+        { text: "套餐",align: "start",value: "combo_name",width: 200,sortable: false},
+        // { text: "成分",align: "start",value: "feed_combo_id",width: 200,sortable: false},
+        { text: "主成分",align: "start",value: "main_items",width: 200,sortable: false},
+        { text: "次成分",align: "start",value: "sub_items",width: 200,sortable: false},
+        { text: "合計",value: "total",align: "center",width: 200,sortable: false},],
+      feedHeaders:[{ text: "區域",align: "start",sortable: false},
+        {text: "養殖池",align: "start",value: "pond_name2",width: 100,sortable: false},
+        { text: "總量(主+次)",align: "start",value: "feed_total",width: 100,sortable: false},
+        { text: "獨立項目",align: "start",value: "sub_items",width: 200,sortable: false},
+        { text: "是否有觀察網",value: "has_observation",align: "center",width: 120,sortable: false},
+        { text: "是否有觀察網",value: "has_observation",align: "center",width: 200,sortable: false},
+        { text: "觀察網(不含糖)",value: "observation_total",align: "center",width: 200,sortable: false},
+        { text: "餐別",value: "feed_combo_name",align: "center",width: 200,sortable: false},
+        { text: "執行人員",value: "executed_user",align: "center",width: 200,sortable: false},
+        { text: "",value: "is_executed",align: "center",width: 50,sortable: false}],
+      windowWidth: window.innerWidth
     };
   },
   methods: {
-    combomarkclick:function(data){
+    get_scopeData(evt) {
+      console.log('Change Field',evt);
+      // console.log('factory data',this.factoryData);
+      let fieldId = evt.split('_')[evt.split('_').length-1];
+      this.factoryid = fieldId;
+      this.getimptimedata();
+    },
+    combomarkclick:function(data,bool){
+      if(bool) {
+        if(!this.combomark.includes(data)) {
+          this.combomark.push(data);
+        }
+      }else {
+        if(this.combomark.includes(data)) {
+          let index = this.combomark.indexOf(data);
+          this.combomark.splice(index,1);
+        }
+      }
       if(this.feedData2.length>0){
         this.feedData2.forEach(element=>{
           element.children.forEach (ele2 =>{
             ele2.combomark = this.combomark.includes(ele2.feed_combo_name);
           },this)
-        },this
-        );
+        },this);
       }
       this.mutitablekey = !this.mutitablekey;
+      
+      // console.log(data,this.combomark,this.feedData2);
     },
     isTagColor:function(row){
       if(row.row.combomark==true){
-      return {
-        backgroundColor: "#FFD600",
-        color: "#827717",
-      }
+        return {
+          backgroundColor: "#f5d564",
+          color: "#827717",
+        }
       }
     },
     downloadcsv: function() {
@@ -424,9 +520,9 @@ export default {
     },
     //取得帶入的資料
     getimptimedata: async function() {
-
+      console.log('stime',this.stime);
       this.feedData = []; //清空表格資料
-      this.stime = "";
+      // this.stime = "";
       this.stime_loading = true;//loading
       if (!this.sdate) {
         this.imptimedata = [];
@@ -442,7 +538,26 @@ export default {
           params: para
         })
         .then(res => {
-          this.imptimedata = res.data;
+          console.log('get record',res);
+          let newData = [];
+          res.data.forEach((d,id)=>{
+            newData.push({
+              time: d.time,
+              data: new Array()
+            })
+            d.data.forEach(s=>{
+              if(s.factory_id == this.factoryid) {
+                newData[id].data.push(s);
+              }
+            })
+          })
+          // this.imptimedata = res.data;
+          this.imptimedata = [];
+          newData.forEach(n=>{
+            if(n.data.length>0) {
+              this.imptimedata.push(n);
+            }
+          })
           res.data.sort(function(a,b){
             var a1 = a.time.replace(":","");
             var b1 = b.time.replace(":","");
@@ -450,8 +565,14 @@ export default {
             if(a1 < b1){return -1};
             return 0;
           });
+          // if(this.sdate && this.stime) {
+          //   this.getfeedData();
+          // }else {
+            this.stime = ''
+            this.gettotalData();
+          // }
           console.log("取得帶入的資料API:" + res.request.responseURL);
-          console.log("取出資料",this.imptimedata);
+          // console.log("取出資料",this.imptimedata);
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -461,7 +582,8 @@ export default {
         });
     },
     //取得料表
-    getfeedData: async function() {
+    getfeedData: async function(bool) {
+      console.log('getFeedData',bool);
       this.combomark=[];
       // this.feedData = [
       //   {
@@ -496,7 +618,12 @@ export default {
         .then(res => {
           this.feedData = res.data;
           this.gettotalData(); //取得合計
-          this.$toast.success(`取得料表成功`, { duration: 2000 });
+
+          // 點選執行成功後，不顯示取得料表成功，太多資訊
+          if(bool!==true) {
+            this.$toast.success(`取得料表成功`, { duration: 2000 });
+          }
+          
           console.log("取得料表API:" + res.request.responseURL);
           console.log('取得料表',this.feedData);
         })
@@ -540,14 +667,18 @@ export default {
         id: this.multipleSelection.map(x => x.id),
         is_executed: true
       };
-      console.log(parm);
+      // console.log(parm);
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`;
       await this.$axios
         .post(url, parm)
         .then(res => {
           if (res.data == "修改成功") {
-            this.feedData = []; //清空表格資料
-            this.stime = "";
+            // this.feedData = []; //清空表格資料
+            // this.stime = "";
+
+            // 原本是清空資料，怪怪der，因此更改為重新撈取資料(因為要執行者和是否執行的資訊)
+            this. getfeedData(true);
+
             this.$toast.success(`執行成功：${parm.id.length}筆`, {
               duration: 2000
             });
@@ -629,11 +760,13 @@ export default {
         
         const children = this.feedData.filter(x => x.area_name == area_name);
         var sub = this.showsub;
-        console.log(sub);
-        console.log(this.feedData);
+        // console.log(sub);
+        // console.log('feedData',this.feedData);
+        // console.log('combo',this.combomark);
         //扣除獨立顯示項目的量
 
         children.forEach(element => {
+          
           //主成份total
           var main_total = (element.main_items.length==0)?0:element.main_items
             .map(x => x.feed_amount)
@@ -669,6 +802,12 @@ export default {
           // observation_total 小數點去掉
           element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 1) / 1;
           element.combomark = false;
+          // tag 
+          for(let i=0;i<this.combomark.length;i++) {
+            if(element.feed_combo_name == this.combomark[i]) {
+              element.combomark = true;
+            } 
+          }
           // has_observation 是否有觀察網
           let ob_data = {};
           this.imptimedata.forEach(d=>{d.data.forEach(s=>{
@@ -676,7 +815,7 @@ export default {
               ob_data = s;
             }
           })})
-          console.log('ob_data',ob_data);
+          // console.log('ob_data',ob_data);
           element.has_observation = ob_data.has_observation;
         });
         //以id排序
@@ -690,7 +829,7 @@ export default {
         };
         items.push(item);
       }
-      console.log('data2',item);
+      console.log('data2',items);
       return items.sort();
     },
     //當明餐別合計
@@ -758,12 +897,13 @@ export default {
           var tot =
             Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
             Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
-          tot = Math.round((tot + Number.EPSILON) * 1) / 1;
-          combo_result.push({
+            tot = Math.round((tot + Number.EPSILON) * 1) / 1;
+            combo_result.push({
             combo_name: combo_name,
             main_items: main_items,
             sub_items: sub_items,
-            total: tot
+            total: tot,
+            combomark: false
           });
         }
         return combo_result;
@@ -786,13 +926,335 @@ export default {
   },
   async mounted() {
     await this.getarchitecture(); //取得場架構
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth;
+    });
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+  },
+  watch: {
+    windowWidth() {
+      this.windowWidth = window.innerWidth;
+    },
+    // 獨立項目造成表格錯位，因此需要另外監測data變換時，doLayout(官方提供的)，另fixed相鄰的欄位不設定寬度，即可解決
+    // doLayout() 对 Table 进行重新布局。当 Table 或元素由隐藏切换为显示时，需要调用此方法。參考：https://blog.csdn.net/NMGWAP/article/details/126026337
+    feedData2: {
+      handler() {
+        this.$nextTick(()=>{
+          this.$refs.mutitable.doLayout();
+        })
+      },
+      deep: true
+    }
   }
 };
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
+.v-application--is-ltr {
+  .v-sheet.result-card.v-card:not(.v-sheet--outlined),.v-expansion-panel::before {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .v-card.result-card {
+    padding: 12px;
+    padding-bottom: 8px;
+    background-color: #E6F5FA;
+    .card-title {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 0 !important;
+      .title {
+        // border-bottom: 1px solid rgba(0,0,0,0.1);
+        width: 100%;
+        .col-12 {
+          padding: 0;
+        }
+        .v-icon.v-icon {
+            font-size: 1rem;
+        }
+        .theme--light.v-icon {
+            color: #006AA6;
+        }
+        .v-card__title {
+            color: #006AA6;
+            font-size: 1rem;
+            padding: 8px;
+        }
+        // .right {
+        //   padding: 0 12px;
+        // }
+      }
+    }
+    .content {
+      min-height: 39vh;
+    }
+    .result-list {
+      padding: 0 12px 12px;
+      min-height: 21vh;
+    }
+    
+  }
+}
+.v-application.v-application--is-ltr .v-card.bg-card .content .title .theme--light.v-icon {
+ font-size: 1.25rem;
+}
+.v-application.v-application--is-ltr .v-card.bg-card .content .title .theme--light.v-icon.mdi-format-color-text {
+  padding-top: 6px;
+  font-size: 1.35rem;
+}
+::v-deep {
+  .search {
+    // locateselect
+    .select-template {
+      flex: 1;
+      margin-right: 16px;
+      .font-size-large {
+        font-size: 16px;
+      }
+      .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .vue-treeselect__control {
+        border: none;
+        border-radius: 0;
+        border-bottom: 1px solid $color-form;
+        .vue-treeselect__placeholder {
+          color: $color-dark;
+          &::before {
+            content: '*'
+          }
+          &::after {
+            content: '(必選)';
+          }
+        }
+        .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+          color: $color-form;
+        }
+        .vue-treeselect__x-container {
+          display: none;
+        }
+      }
+      .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
+      .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+        border-color: $color-form;
+      }
+      .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
+      .theme--light.v-input input {
+        font-size: 14px;
+        color: $color-dark;
+      }
+    }
+    // 搜尋欄
+    .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
+      background: transparent;
+    }
+    .v-text-field--filled.v-input--dense > .v-input__control > .v-input__slot,.v-text-field--filled > .v-input__control > .v-input__slot {
+      min-height: 36px;
+    }
+    .v-text-field--filled:not(.v-text-field--single-line) input {
+      margin-top: 0;
+    }
+    .v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
+      margin-top: 4px;
+    }
+    .v-text-field input {
+      padding: 0;
+    }
+    .v-text-field > .v-input__control > .v-input__slot > .v-text-field__slot {
+      align-items: center;
+    }
+    .v-text-field--filled.v-input--dense .v-label {
+      top: 8px;
+    }
+    .v-text-field--filled.v-input--dense .v-label.v-label--active {
+      top: 0;
+      color: $color-form;
+    }
+    
+    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
+        box-shadow: none;
+        border: 1px solid $color-form;
+    }
+    .theme--light.v-icon {
+      color: $color-form;
+    }
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+      border-color: $color-form;
+    }
+    .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__append-inner,
+    .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__prepend-outer {
+      margin-top: 8px;
+    }
+  }
+  .result {
+    // 當日餐點明細
+    .theme--light.v-expansion-panels {
+      margin-bottom: 16px;
+    }
+    .theme--light.v-expansion-panels .v-expansion-panel {
+      background-color: $color-lighten;
+      color: $color-dark;
+      padding: 12px 8px;
+    }
+    .theme--light.v-expansion-panels .v-expansion-panel-header {
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      margin: 0 12px;
+      width: calc(100% - 24px);
+    }
+    .theme--light.v-expansion-panels .v-expansion-panel-header,.v-expansion-panel--active > .v-expansion-panel-header {
+      font-weight: bold;
+      .v-expansion-panel-header__icon .v-icon {
+        color: $color-dark;
+      }
+    }
+    .theme--light.v-data-table {
+      background-color: transparent;
+      box-shadow: none !important;
+    }
+    .v-expansion-panel-content__wrap {
+      padding: 0 12px 16px;
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+      background: rgba($color-primary-25,0.3);
+    }
+    .v-data-table > .v-data-table__wrapper > table > thead > tr > th {
+      font-size: 0.8rem;
+    }
+    // 料表
+    .right .theme--light.v-icon {
+      color: $color-primary;
+    }
+    .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,
+    .theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
+      background: $color-lighten;
+    }
+    .theme--light.v-label {
+      font-size: 15px;
+    }
+    .theme--light.v-label.v-label--active {
+      color: $color-form;
+    }
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+      border-color: $color-form;
+    }
+    .v-select.v-select--chips:not(.v-text-field--single-line).v-text-field--enclosed .v-select__selections {
+      min-height: 36px;
+    }
+    .v-text-field--filled > .v-input__control > .v-input__slot {
+      min-height: 48px;
+    }
+    .v-text-field--filled .v-label.v-label--active {
+      top: 12px;
+    }
+    .el-table, .el-table__expanded-cell,.el-table tr,.el-table th.el-table__cell {
+      background: $color-lighten;
+      background-color: $color-lighten;
+    }
+    .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf {
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .el-table .el-table__header-wrapper td.el-table__cell, .el-table th.el-table__cell.is-leaf {
+      border-bottom: 1px solid transparent;
+    }
+    // .el-table .el-table__fixed-header-wrapper th.el-table__cell.is-leaf {
+    //   border-bottom: 1px solid transparent;
+    // }
+    .el-table .cell {
+      padding: 0 16px;
+    }
+    .el-table thead {
+      color: rgba(0,0,0,0.6);
+      font-size: 0.8rem;
+    }
+    .el-table tr.el-table__row--level-0 {
+      font-size: 0.65rem;
+      height: 40px;
+      font-weight: bold;
+      color: $color-dark;
+      
+      & td {
+        background-color: $color-primary-25;
+        padding: 0 16px;
+      }
+      & td:nth-child(1) {
+        border-radius: 4px 0 0 0;
+      }
+      & td:last-child {
+        border-radius: 0 4px 0 0;
+      }
+      & i::before {
+        color: $color-dark;
+        font-weight: bold;
+        font-size: 1rem;
+      }
+    }
+    .el-table__row.el-table__row--level-1 .cell {
+      // font-size: 0.875rem;
+      // min-height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 8px;
+    }
+    .el-table__body tr.el-table__row.el-table__row--level-1.hover-row>td.el-table__cell {
+      background-color: rgba($color-primary-25,0.3);
+    }
+    .el-checkbox.is-disabled {
+      display: none;
+    }
+    .el-table-column--selection .cell {
+      justify-content: center;
+    }
+    .items {
+      .v-chip.v-size--default {
+        height: 24px;
+        background-color: $color-primary-25;
+        color: $color-dark;
+        span {
+          font-size: 0.8rem;
+        }
+      }
+    }
+    .v-chip.v-chip--outlined.v-chip.v-chip,.v-chip.v-chip.v-chip.item-chip {
+      height: 24px;
+      margin: 4px 2px;
+      // border-color: $color-primary;
+      // color: $color-primary;
+      background-color: $color-primary-25;
+      color: $color-dark;
+      border-color: transparent;
+      span {
+        font-size: 0.8rem;
+      }
+    }
+    .v-chip--label {
+      border-radius: 12px !important;
+    }
+    .el-table__empty-block {
+      width: 100%;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    .el-table__expand-icon {
+      transform: rotate(0deg);
+      transition: all 0.3s;
+      &:active {
+        // content: "";
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: rgba(0,0,0,0.12);
+      }
+    }
+    .el-icon-arrow-right:before {
+      content: "\e6df";
+    }
+    .el-table__expand-icon--expanded .el-icon-arrow-right:before {
+      content: "\e6e1";
+    }
+    
+  }
+}
 
 </style>
