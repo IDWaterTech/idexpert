@@ -310,6 +310,7 @@
               })
               // this.col = Array.from({length:this.maxCols},(v,i)=>i);
               this.getCenter();
+              this.detectCols();
               return this.maxCols;
           },
           getWidth(data) {
@@ -940,122 +941,147 @@
               }
           },
           dataPrepare() {
-              // 所有的池資料
-              this.pondData = [];
-              this.ponds = [];
-              this.originalData = [];
-              this.isSetting = false;
-              let areaData = _.cloneDeep(this.areas);
-              let deleteSet = [];
-              for(let i=0;i<areaData.ponds.length;i++) {
-                  this.ponds.push({pond:[]});
-                  this.originalData.push({pond:[]});
-                  let data1 = [];
-                  let data2 = [];
-                  let isSet = false;
-                  for(let x=0;x<areaData.ponds[i].pond.length;x++) {
-                      if(areaData.ponds[i].pond[x].isSetting || (areaData.ponds[i].pond[x].name=='road'&&areaData.ponds[i].pond[x].id=='')) {
-                          this.isSetting = true;
-                          isSet = true;
-                          data1.push({
-                              "id": areaData.ponds[i].pond[x].id,
-                              "name": areaData.ponds[i].pond[x].name,
-                              "updated_time": areaData.ponds[i].pond[x].update_time,
-                              "state": areaData.ponds[i].pond[x].state,
-                              "cols": areaData.ponds[i].pond[x].cols,
-                              "rows": areaData.ponds[i].pond[x].rows,
-                              "roadDirection": areaData.ponds[i].pond[x].roadDirection,
-                          });
-                          data2.push({
-                              "id": areaData.ponds[i].pond[x].id,
-                              "name": areaData.ponds[i].pond[x].name,
-                              "updated_time": areaData.ponds[i].pond[x].update_time,
-                              "state": areaData.ponds[i].pond[x].state,
-                              "cols": areaData.ponds[i].pond[x].cols,
-                              "rows": areaData.ponds[i].pond[x].rows,
-                              "roadDirection": areaData.ponds[i].pond[x].roadDirection,
-                          });
-                      }
-                      // 取得池的資料
-                      if(areaData.ponds[i].pond[x].rows.length>0) {
-                          for(let y=0;y<areaData.ponds[i].pond[x].rows.length;y++) {
-                              if(areaData.ponds[i].pond[x].rows[y].isSetting) {
-                                  this.isSetting = true;
-                              }
-                              if(areaData.ponds[i].pond[x].rows[y].id!==''&& areaData.ponds[i].pond[x].rows[y].name!=='road') {
-                                  this.pondData.push({
-                                      id: areaData.ponds[i].pond[x].rows[y].id,
-                                      name: areaData.ponds[i].pond[x].rows[y].name,
-                                      state: areaData.ponds[i].pond[x].rows[y].state
-                                  })
-                              }
-                          } 
-                      }else {
-                          if(areaData.ponds[i].pond[x].id!==''&& areaData.ponds[i].pond[x].name!=='road') {
-                              this.pondData.push({
-                                  id: areaData.ponds[i].pond[x].id,
-                                  name: areaData.ponds[i].pond[x].name,
-                                  state: areaData.ponds[i].pond[x].state
-                              })
-                          }
-                      }
-                  }
-                  if(isSet) {
-                     this.ponds[i].pond = data1;
-                     this.originalData[i].pond = data2; 
-                  }else {
-                      deleteSet.push(i);
-                  }
-              }
-              if(!this.isSetting) {
-                  this.ponds = [{
-                      pond: [{
-                          "id": '',
-                          "name": '',
-                          "updated_time": '',
-                          "state": '',
-                          "cols": 0,
-                          "rows": [],
-                          "roadDirection": '',
-                      }]
-                  }]
-                  this.originalData = [{
-                      pond: [{
-                          "id": '',
-                          "name": '',
-                          "updated_time": '',
-                          "state": '',
-                          "cols": 0,
-                          "rows": [],
-                          "roadDirection": '',
-                      }]
-                  }];
-              }else {
-                  if(deleteSet.length>0) {
-                      let data=[];
-                      for(let i=0;i<this.ponds.length;i++) {
-                          if(!deleteSet.includes(i)) {
-                              data.push(this.ponds[i]);
-                          } 
-                      }
-                      this.ponds = data;
-                      this.originalData = data;
-                  }
-              }
-              // console.log('pond',this.ponds)
+            // 所有的池資料
+            this.pondData = [];
+            this.ponds = [];
+            this.originalData = [];
+            this.isSetting = false;
+            let areaData = _.cloneDeep(this.areas);
+            let deleteSet = [];
+            for(let i=0;i<areaData.ponds.length;i++) {
+                this.ponds.push({pond:[]});
+                this.originalData.push({pond:[]});
+                let data1 = [];
+                let data2 = [];
+                let isSet = false;
+                for(let x=0;x<areaData.ponds[i].pond.length;x++) {
+                    if(areaData.ponds[i].pond[x].isSetting || (areaData.ponds[i].pond[x].name=='road'&&areaData.ponds[i].pond[x].id=='')) {
+                        this.isSetting = true;
+                        isSet = true;
+                        data1.push({
+                            "id": areaData.ponds[i].pond[x].id,
+                            "name": areaData.ponds[i].pond[x].name,
+                            "updated_time": areaData.ponds[i].pond[x].update_time,
+                            "state": areaData.ponds[i].pond[x].state,
+                            "cols": areaData.ponds[i].pond[x].cols,
+                            "rows": areaData.ponds[i].pond[x].rows,
+                            "roadDirection": areaData.ponds[i].pond[x].roadDirection,
+                        });
+                        data2.push({
+                            "id": areaData.ponds[i].pond[x].id,
+                            "name": areaData.ponds[i].pond[x].name,
+                            "updated_time": areaData.ponds[i].pond[x].update_time,
+                            "state": areaData.ponds[i].pond[x].state,
+                            "cols": areaData.ponds[i].pond[x].cols,
+                            "rows": areaData.ponds[i].pond[x].rows,
+                            "roadDirection": areaData.ponds[i].pond[x].roadDirection,
+                        });
+                    }
+                    // 取得池的資料
+                    if(areaData.ponds[i].pond[x].rows.length>0) {
+                        for(let y=0;y<areaData.ponds[i].pond[x].rows.length;y++) {
+                            if(areaData.ponds[i].pond[x].rows[y].isSetting) {
+                                this.isSetting = true;
+                            }
+                            if(areaData.ponds[i].pond[x].rows[y].id!==''&& areaData.ponds[i].pond[x].rows[y].name!=='road') {
+                                this.pondData.push({
+                                    id: areaData.ponds[i].pond[x].rows[y].id,
+                                    name: areaData.ponds[i].pond[x].rows[y].name,
+                                    state: areaData.ponds[i].pond[x].rows[y].state
+                                })
+                            }
+                        } 
+                    }else {
+                        if(areaData.ponds[i].pond[x].id!==''&& areaData.ponds[i].pond[x].name!=='road') {
+                            this.pondData.push({
+                                id: areaData.ponds[i].pond[x].id,
+                                name: areaData.ponds[i].pond[x].name,
+                                state: areaData.ponds[i].pond[x].state
+                            })
+                        }
+                    }
+                }
+                if(isSet) {
+                    this.ponds[i].pond = data1;
+                    this.originalData[i].pond = data2; 
+                }else {
+                    deleteSet.push(i);
+                }
+            }
+            if(!this.isSetting) {
+                this.ponds = [{
+                    pond: [{
+                        "id": '',
+                        "name": '',
+                        "updated_time": '',
+                        "state": '',
+                        "cols": 0,
+                        "rows": [],
+                        "roadDirection": '',
+                    }]
+                }]
+                this.originalData = [{
+                    pond: [{
+                        "id": '',
+                        "name": '',
+                        "updated_time": '',
+                        "state": '',
+                        "cols": 0,
+                        "rows": [],
+                        "roadDirection": '',
+                    }]
+                }];
+            }else {
+                if(deleteSet.length>0) {
+                    let data=[];
+                    for(let i=0;i<this.ponds.length;i++) {
+                        if(!deleteSet.includes(i)) {
+                            data.push(this.ponds[i]);
+                        } 
+                    }
+                    this.ponds = data;
+                    this.originalData = data;
+                }
+            }
+            // console.log('pond',this.ponds)
           },
+          detectCols() {
+            // console.log('MaxCols',this.maxCols);
+            for(let i=0;i<this.ponds.length;i++) {
+                let cols = 0;
+                for(let x=0;x<this.ponds[i].pond.length;x++) {
+                    if(this.ponds[i].pond[x].cols!==0){
+                        cols+=this.ponds[i].pond[x].cols;
+                    }
+                }
+                // console.log('col',cols);
+                if(cols<this.maxCols) {
+                    for(let y=0;y<this.maxCols-cols;y++) {
+                        this.ponds[i].pond.push({
+                            "id": '',
+                            "name": '',
+                            "updated_time": '',
+                            "state": '',
+                            "cols": 1,
+                            "rows": [],
+                            "roadDirection": '',
+                        })
+                    }
+                }
+            }
+          }
       },
       watch: {
-          areas() {
-              this.dataPrepare();
-              this.getMaxCols();
-          },
-          maxCols() {
-              this.col = Array.from({ length: this.maxCols}, (num, i) => i+1);
-          },
-          ponds() {
-              this.getMaxCols();
-          }
+        areas() {
+            this.dataPrepare();
+            this.getMaxCols();
+        },
+        maxCols() {
+            this.col = Array.from({ length: this.maxCols}, (num, i) => i+1);
+        },
+        ponds() {
+            this.getMaxCols();
+        }
       }
   }
   </script>

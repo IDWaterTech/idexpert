@@ -714,9 +714,9 @@ export default {
         p.pond.forEach(b=>{
           if(b.rows>0) {
             b.rows.forEach(r=>{
-              if(!r.updated_time) {
+              if(!r.updated_time && r.id=='') {
                 r.updated_time='';
-                // r.state = ''
+                r.state = ''
               }
               if(r.id!==''&&r.state=='') {
                 r.state = '無'
@@ -726,9 +726,9 @@ export default {
               }
             })
           }else {
-            if(!b.updated_time) {
+            if(!b.updated_time && b.id=='') {
               b.updated_time='';
-              // b.state = ''
+              b.state = ''
             }
             if(b.id!==''&&b.state=='') {
               b.state = '無'
