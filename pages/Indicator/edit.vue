@@ -172,8 +172,8 @@
                           <v-col
                             cols="12"
                             md="6"
-                            v-for="item in mainpool.items"
-                            :key="item.id"
+                            v-for="(item,id) in mainpool.items"
+                            :key="'pool-'+id"
                           >
                             {{ item.name}}
                             <el-input-number
@@ -198,8 +198,8 @@
                           class="ma-2"
                           color="indigo darken-3"
                           outlined
-                          v-for="item in addData"
-                          :key="item.name"
+                          v-for="(item,id) in addData"
+                          :key="'add-'+id"
                         >
                           <v-icon left>
                             mdi-new-box
@@ -214,7 +214,7 @@
                           color="indigo darken-3"
                           outlined
                           v-for="(key, index) in Object.keys(num)"
-                          :key="index"
+                          :key="'object-'+index"
                           v-show="typeof num[key] == 'number'"
                         >
                           <div v-if="typeof num[key] == 'number'">
@@ -393,8 +393,8 @@
                     <v-tabs v-model="nowTab" show-arrows>
                       <!-- 上方tab -->
                       <v-tab
-                          v-for="tab in tabs"
-                          :key="tab"
+                          v-for="(tab,tid) in tabs"
+                          :key="'tabs-'+tid"
                           :href="`#` + tab">
                           <div class="icons">
                             <v-icon v-if="tab=='編修紀錄'">mdi-text-box-edit-outline</v-icon>
@@ -406,8 +406,8 @@
                       <!-- tab內容 -->
                       <v-tabs-items v-model="nowTab" touchless>
                         <v-tab-item 
-                          v-for="tab in tabs"
-                          :key="tab"
+                          v-for="(tab,tid) in tabs"
+                          :key="'tab-'+tid"
                           :value="tab"
                           style="margin-bottom: 16px;">
                           <!-- 編修紀錄 -->
@@ -504,7 +504,7 @@
                                 </div>
                               </template>
                               <template v-slot:[`item.name`]="{ item }">
-                                <div style="width:100%;text-align: left;display: flex;justify-content: center;">
+                                <div style="width:100%;text-align: left;display: flex;justify-content: flex-start;">
                                   <span v-html="item.name" style="line-height: 24px;"></span>
                                 </div>
                               </template>
@@ -858,11 +858,21 @@ export default {
     areadata: function(evt) {
       let filtermain = [];
       filtermain = this.maindata;
+      console.log('select evt',evt);
+      console.log(this.nowArea)
       let areaId;
       let areaName;
       if(evt) {
-        areaId = evt.split('_')[1];
-        areaName = evt.split('_')[0];
+        areaId = evt.split('_')[evt.split('_').length-1];
+        if(evt.split('_').length>2) {
+          for(let i=0;i<evt.split('_').length-1;i++) {
+            areaName += evt.split('_')[i];
+          }
+        }else {
+          areaName = evt.split('_')[0];
+        }
+        
+        
       }
       
       // if (
@@ -874,8 +884,7 @@ export default {
       //   filtermain = filtermain.filter(main => main.id == this.sel_main);
       // }
       console.log('filtermain',filtermain);
-      console.log('area',areaId,this.sel_main,this.sel_area )
-      
+      console.log('area',this.sel_main,this.sel_area )
       if (
         //看有沒有選場
         this.sel_main != undefined &&
@@ -896,7 +905,7 @@ export default {
       }else {
         filtermain.forEach((x)=>{
           x.node.forEach((y)=> {
-            if(y.name==areaName&&y.id==areaId) {
+            if(y.name == areaName && y.id==areaId) {
               // 如果場或區不與原本的相同，要清空池，因為查詢按鈕要判斷disable
               if(this.sel_main!==x.id || this.sel_area!==y.id) {
                 this.sel_pool = '';
@@ -1077,49 +1086,21 @@ export default {
 
       //抓事件資料
       this.eventsData.splice(0,this.eventsData.length);
-      var result1 = await this.getEventData(1);
-      var result2 = await this.getEventData(2);
-      var result3 = await this.getEventData(3);
-      this.eventsData = result1.concat(result2,result3);
+      this.getEventData(1);
+      // var result1 = await this.getEventData(1);
+      // var result2 = await this.getEventData(2);
+      // var result3 = await this.getEventData(3);
+      // this.eventsData = result1.concat(result2,result3);
 
-      // 事件資料整理，要符合表格欄位
-      if(this.eventsData.length>0) {
-        this.eventHeaders = [
-          {align: "center",groupable: false,text: "id",value: "id",width:"10%"},
-          {align: "center",groupable: false,text: "事件等級",value: "event_level_name",width:"10%"},
-          {align: "center",groupable: false,text: "事件類別",value: "event_category_name",width:"10%"},
-          {align: "center",groupable: false,text: "時間",value: "time",width:"20%"},
-          {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
-          {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
-      }
-      for(let i=0;i<this.eventsData.length;i++) {
-        this.eventTableData.push({
-          id: this.eventsData[i].id,
-          event_level_name: this.eventsData[i].event_level_name,
-          event_category_name: this.eventsData[i].event_category_name,
-          time: `起：${this.eventsData[i].started_date}<br> 訖：${this.eventsData[i].ended_date}`,
-          content:`全日事件：${this.eventsData[i].is_all_day}<br> 標題：${this.eventsData[i].title}[最後編輯者：${this.eventsData[i].created_user}]<br> 內容：${this.eventsData[i].content}`,
-          name: '',
-          color: this.eventsData[i].color
-        })
-        if(this.eventsData[i].items.length>0) {
-          let data = []
-          for(let x=0;x<this.eventsData[i].items.length;x++) {
-            data.push(this.eventsData[i].items[x].name);
-          }
-          this.eventTableData[i].name = data.toString().replace(',','<br>');
-        }
-      }
-      console.log("event data:",this.eventsData);
-      console.log("event table:",this.eventTableData);
+      
     },
     //抓事件資料
-    getEventData: async function(level=1) {
+    getEventData(level) {
       var parms = {};
       var poolidcpd = [];
       var result =[];
       
-      this.eventsData.splice(0,this.eventsData.length);
+      // this.eventsData.splice(0,this.eventsData.length);
       // started_date=2022-01-01&ended_date=2022-01-04
       parms.started_date = this.sdate;
       parms.ended_date = this.edate;
@@ -1137,12 +1118,63 @@ export default {
           parms.pond_id = poolidcpd.join();
           break;
       }
-      await this.$axios
+      this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`, {
           params: parms
         })
         .then(res => {
           result = res.data;
+          // console.log(level,this.eventsData);
+          // console.log('result',result);
+          // 因為會有重複抓取問題，需剔除重複id
+          let newEvent = [];
+          this.eventsData.forEach(d=>{
+            if(!newEvent.includes(d.id)) {
+              newEvent.push(d.id);
+            }
+          })
+          result.forEach(r=>{
+            if(!newEvent.includes(r.id)) {
+              this.eventsData.push(r);
+              newEvent.push(r.id);
+            }
+          })
+          if(level==1) {
+            this.getEventData(2);
+          }else if(level==2) {
+            this.getEventData(3);
+          }else {
+            // 事件資料整理，要符合表格欄位
+            if(this.eventsData.length>0) {
+              this.eventHeaders = [
+                {align: "center",groupable: false,text: "id",value: "id",width:"10%"},
+                {align: "center",groupable: false,text: "事件等級",value: "event_level_name",width:"10%"},
+                {align: "center",groupable: false,text: "事件類別",value: "event_category_name",width:"10%"},
+                {align: "center",groupable: false,text: "時間",value: "time",width:"20%"},
+                {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
+                {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
+            }
+            for(let i=0;i<this.eventsData.length;i++) {
+              this.eventTableData.push({
+                id: this.eventsData[i].id,
+                event_level_name: this.eventsData[i].event_level_name,
+                event_category_name: this.eventsData[i].event_category_name,
+                time: `起：${this.eventsData[i].started_date}<br> 訖：${this.eventsData[i].ended_date}`,
+                content:`全日事件：${this.eventsData[i].is_all_day}<br> 標題：${this.eventsData[i].title}[最後編輯者：${this.eventsData[i].created_user}]<br> 內容：${this.eventsData[i].content}`,
+                name: '',
+                color: this.eventsData[i].color
+              })
+              if(this.eventsData[i].items.length>0) {
+                let data = []
+                for(let x=0;x<this.eventsData[i].items.length;x++) {
+                  data.push(this.eventsData[i].items[x].name);
+                }
+                this.eventTableData[i].name = data.toString().replace(',','<br>');
+              }
+            }
+            console.log("event data:",this.eventsData);
+            console.log("event table:",this.eventTableData);
+          }
           console.log("event api:", res.request.responseURL);
           
         })
