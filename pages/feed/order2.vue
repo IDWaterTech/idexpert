@@ -1412,10 +1412,10 @@ export default {
   .result {
     margin-top: -8px;
     
-    .v-data-table__wrapper {
+    // .v-data-table__wrapper {
       // height: 40vh;
       // overflow: scroll;
-    }
+    // }
     .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
       background: transparent;
     }
@@ -1522,9 +1522,9 @@ export default {
         align-items: center;
         width: 100%;
       }
-      .header-right {
+      // .header-right {
         // justify-content: flex-end;
-      }
+      // }
       .caculator {
         width: 100%;
         // max-width: 300px;
