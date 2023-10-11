@@ -82,10 +82,10 @@
                   <!-- headers{ text: "name", value: "name", groupable: false }, -->
                   <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
                     <template slot-scope="scope">
-                      <!-- <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
+                      <a v-if="$store.state.mydata.gobal_api.apiUrl.includes(':8011')" :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
                           scope.row.name
-                      }}</a> -->
-                      <div>{{
+                      }}</a>
+                      <div v-else>{{
                           scope.row.name
                       }}</div>
                     </template>
