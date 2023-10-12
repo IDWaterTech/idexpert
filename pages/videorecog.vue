@@ -119,6 +119,11 @@
                         <span v-html="item.class" style="line-height: 24px;word-break: break-all;" :style="{textAlign:`${innerWidth>599.98?'left':'right'}`}"></span>
                       </div>
                     </template>
+                    <template v-slot:[`item.action`]="{item}">
+                      <button class="btn-add delete" style="width: 24px;height: 24px;" @click="delitem('bacteria',item.id)">
+                          <v-icon color="white">mdi-trash-can</v-icon>
+                      </button>
+                    </template>
                   </v-data-table>
                 </v-card>
                 
@@ -195,6 +200,35 @@ export default {
     };
   },
   methods: {
+    delitem:async function(item,itemid){
+      switch (item) {
+        case 'bacteria'://菌
+          if(confirm(`是否確定刪除[${itemid}]資料？`)){
+            var url = `${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/${itemid}/`;
+            await this.$axios.delete(url)
+              .then(res => {
+                if (res.data == "刪除成功") {
+                  this.getRecog();//re get data;
+                  this.$toast.success(`刪除菌盤成功`, { duration: 2000 });
+                } else {
+                  debugger;
+                  this.$toast.error(`刪除菌盤失敗，${res.data}`, { duration: 2000 });
+                }
+              }).catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+              })
+              .finally(() => {
+              });
+          }else{
+            this.$toast.success(`取消刪除`, { duration: 2000 });
+          }
+        // this.$toast.error(`刪除菌盤資料:${error.message}`, { duration: 2000 });
+          break;
+      
+        default:
+          break;
+      }
+    },
     get_scopeData:function(evt){
       console.log('pool',evt);
       this.maindata.forEach(f=>{
@@ -249,9 +283,10 @@ export default {
               }else {
                 this.headers = [
                   {align: "center",groupable: false,text: "資料",value: "id",width:"10%"},
-                  {align: "center",groupable: false,text: "觀察網飼料圖(已辨識)",value: "feed_img",width:"30%", sortable: false },
-                  {align: "center",groupable: false,text: "觀察網蝦子圖(已辨識)",value: "shrimp_img",width:"30%", sortable: false },
-                  {align: "center",groupable: false,text: "辨識資訊",value: "shrimp",width:"30%"}];
+                  {align: "center",groupable: false,text: "觀察網飼料圖(已辨識)",value: "feed_img",width:"25%", sortable: false },
+                  {align: "center",groupable: false,text: "觀察網蝦子圖(已辨識)",value: "shrimp_img",width:"25%", sortable: false },
+                  {align: "center",groupable: false,text: "辨識資訊",value: "shrimp",width:"30%"},
+                  {align: "center",groupable: false,text: "操作",value: "action",width:"10%", sortable: false}];
                 res.data.items.forEach(d=>{
                   this.recogData.items.push({
                     shrimp:`蝦子數量(隻)：${d.shrimp_qty}<br> 
@@ -305,7 +340,8 @@ export default {
                   // {align: "center",groupable: false,text: "加熱",value: "is_heated",width:"10%" },
                   {align: "left",groupable: false,text: "資訊",value: "info",width:"20%" },
                   {align: "center",groupable: false,text: "class",value: "class",width:"20%", sortable: false},
-                  {align: "left",groupable: false,text: "辨識",value: "images",width:"40%", sortable: false}];
+                  {align: "left",groupable: false,text: "辨識",value: "images",width:"40%", sortable: false},
+                  {align: "center",groupable: false,text: "操作",value: "action",width:"10%"}];
                 }
                 res.data.items.forEach(d=>{
                   this.recogData.items.push({
@@ -637,7 +673,84 @@ export default {
     }
   }
 }
+button {
+      width: 24px;
+      height: 24px;
+      background-color: $color-primary;
+      border-radius: 4px;
+      position: relative;
+      margin: 4px;
+      transition: all 0.3s;
+      padding: 0 10px;
+      &:hover {
+          background-color: lighten($color: $color-primary, $amount: 3);
+      }
+      .theme--light.v-icon {
+          font-size: 1rem;
+          color: #fff;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+      }
+      &.btn-primary {
+        height: 32px;
+        width: initial;
+        padding: auto 12px;
+        .theme--light.v-icon {
+          font-size: 1rem;
+          color: #fff;
+          position: relative;
+          transform: none;
+          top: initial;
+          left: initial;
+          margin-right: 4px;
+        }
+      }
+      
+      &.btn-add {
+          background-color: $color-green !important;
+          &:hover {
+              background-color: lighten($color: $color-green, $amount: 3) !important;
+          }
+      }
+      &.save {
+          background-color: $color-primary !important;
+          &:hover {
+              background-color: lighten($color: $color-primary, $amount: 3) !important;
+          }
+      }
+      &.delete {
+          background-color: $color-accent !important;
+          &:hover {
+              background-color: lighten($color: rgba($color-accent,0.9), $amount: 3) !important;
+          }
+      }
+      &.clear {
+          background-color: #67BEDA !important;
+          &:hover {
+              background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
+          }
+      }
+      &.disabled {
+        background-color: $color-dark-25 !important;
+        user-select: none;
+        .theme--light.v-icon {
+          color: $color-dark-50 !important;
+        }
+        &:hover {
+          background-color: $color-dark-25 !important;
+        }
+        
+      }
+      .theme--light.v-data-table {
+        background-color: $color-lighten;
+      }
+      .result-content {
+        padding: 0 24px;
 
+      }
+    }
 @media (max-width: 768px) {
   .v-application.v-application--is-ltr {
     .v-card.video {
