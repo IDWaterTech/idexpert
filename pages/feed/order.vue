@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-card class="bg-card" style="margin-bottom: 12px;">
+    <v-card 
+      class="bg-card" 
+      style="margin-bottom: 12px;"
+      :style="{'minHeight':`${windowHeight>880?'88vh':'84vh'}`}">
       <div class="card-title">
           <v-row style="margin-bottom: 0;">
               <div class="title">
@@ -32,7 +35,7 @@
         <div class="result">
           <v-row style="margin-bottom: 0;">
             <v-col cols="12">
-              <v-card class="result-card">
+              <v-card class="result-card" style="height: 100%">
                 <v-data-table
                   ref="feedtable"
                   :headers="headers"
@@ -41,7 +44,7 @@
                   sort-by="pond_name"
                   group-by="area_name"
                   class="elevation-1"
-                  height="48vh"
+                  :height="`${windowHeight>880?'56vh':'48vh'}`"
                   :show-group-by="false"
                   :footer-props="{
                     'items-per-page-text': '每頁',
@@ -573,6 +576,7 @@ export default {
       eventSetData:[],
       feed_pct_list:[],
       windowWidth:window.innerWidth,
+      windowHeight:window.innerHeight,
     };
   },
   computed:{
@@ -1132,7 +1136,6 @@ export default {
           });
           console.log("取得帶入的資料API:" + res.request.responseURL);
           console.log("取資料",this.imptimedata);
-          
         })
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -1143,7 +1146,7 @@ export default {
     },
     //設定帶入資料
     settabledata: async function(item) {
-      // console.log('帶入資料',item);
+      console.log('帶入資料',item);
       console.log('dessert',this.desserts)
       await this.dataclear(); //歸零
       var data = _.cloneDeep(item.data);
@@ -1152,7 +1155,6 @@ export default {
       var desserts = this.desserts;
       let thisfeed_pct_list = this.feed_pct_list;
       for (let idx = 0; idx < data.length; idx++) {
-        
         //資料塞進去
         const pond_id = data[idx].pond_id;
         data[idx].is_executed = false;//強制把執行狀態刪除
@@ -1180,12 +1182,13 @@ export default {
           //有帶入的資料與原本的不同，不能直接刪然後塞上，要補回資料
           data[idx].feed_event_settings_id = dataitem[0].feed_event_settings_id;
           data[idx].has_observation = dataitem[0].has_observation;
-          data[idx].is_executed = dataitem[0].is_executed;
           data[idx].observation_feed_pct = dataitem[0].observation_feed_pct;
-          data[idx].state = dataitem[0].state;
-          data[idx].id = dataitem[0].pond_id;
-          data[idx].level = dataitem[0].level;
-          data[idx].visible = dataitem[0].visible;
+          
+          data[idx].is_executed = dessitem[0].is_executed;
+          data[idx].state = dessitem[0].state;
+          data[idx].id = dessitem[0].pond_id;
+          data[idx].level = dessitem[0].level;
+          data[idx].visible = dessitem[0].visible;
 
           desserts.splice(deleteidx, 1);
           desserts.push(data[idx]);
@@ -1203,7 +1206,6 @@ export default {
       });
       
       this.$toast.success(`${tostmsg.join("<br/>")}`, { duration: 2000 });
-      
       this.desserts = desserts;
       this.importdialog = false;
     },
@@ -1216,7 +1218,6 @@ export default {
       this.imptimeidx = null;
       await this.getarchitecture(); //取得場架構
     },
-    
   },
 
   async mounted() {
@@ -1231,15 +1232,18 @@ export default {
     });
     window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
     });
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
-    
   },
   watch: {
     windowWidth() {
       this.windowWidth = window.innerWidth;
+    },
+    windowHeight() {
+      this.windowWidth = window.innerHeight;
     }
   }
 };
