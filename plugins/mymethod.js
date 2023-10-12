@@ -68,7 +68,7 @@ import https from "https";
                   let accPagelstNew= getallpath(accPagelst).map((x)=>{return x.toLowerCase();});
                   //排除根目錄、個人頁、登入頁
                   urlpath = (urlpath.substr(-1)=='/')?urlpath.substr(0,urlpath.length-1):urlpath;
-                  var isallowPath =(accPagelstNew.filter(x=>x == urlpath.toLowerCase()).length == 1) || ["/","/set/profile","/login"].includes(urlpath);
+                  var isallowPath =(accPagelstNew.filter(x=>x == urlpath.toLowerCase()).length == 1) || ["","/","/set/profile","/login"].includes(urlpath);
                   console.log(`是否允許進入頁面:${isallowPath}[${urlpath}]`);
                   if (isallowPath == false) {
                     this.$router.push({ name: "pagefail" });
