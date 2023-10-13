@@ -369,7 +369,15 @@
                                     
                                     <v-expansion-panels accordion multiple v-model="panel.panel_row31">
                                         <v-expansion-panel id="aiwater" class="my-1">
-                                            <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">警示</v-expansion-panel-header>
+                                            <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">
+                                                <div style="display: flex;align-items: center;">
+                                                    <div class="circle" v-if="suggData.WaterQuality.length+suggData.Observation.length>0">
+                                                        <span>{{ suggData.WaterQuality.length+suggData.Observation.length }}</span>
+                                                    </div>
+                                                    
+                                                    警示
+                                                </div>
+                                            </v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                     
@@ -391,21 +399,21 @@
                                                                 </thead>
     
                                                                 <tbody>
-                                                                    <tr style="background-color:#E5F2E0;"><td colspan="3">水質</td></tr>
-                                                                    <tr v-if="suggData.WaterQuality.length==0" style="box-shadow: none;height: 24px;width:100%;text-align: center;padding: 4px;"><td colspan="3" style="color: #aaa;">暫無資料</td></tr>
+                                                                    <tr v-if="suggData.WaterQuality.length>0" style="background-color:#E6B8BE;font-weight: bold;"><td colspan="3">水質</td></tr>
+                                                                    <!-- <tr v-if="suggData.WaterQuality.length==0" style="box-shadow: none;height: 24px;width:100%;text-align: center;padding: 4px;"><td colspan="3" style="color: #aaa;">暫無資料</td></tr> -->
                                                                     <tr
                                                                     v-for="item in suggData.WaterQuality"
-                                                                    :key="item.id"
+                                                                    :key="'water-'+item.id"
                                                                     >
                                                                         <td v-html="setBR(item.status)"></td>
                                                                         <td>{{ item.factor }}</td>
                                                                         <td>{{ item.result }}</td>
                                                                     </tr>
-                                                                    <tr style="background-color:#E5F2E0;"><td colspan="3">觀察網</td></tr>
-                                                                    <tr v-if="suggData.Observation.length==0" style="box-shadow: none;height: 24px;width:100%;text-align: center;padding: 4px;"><td colspan="3" style="color: #aaa;">暫無資料</td></tr>
+                                                                    <tr v-if="suggData.Observation.length>0" style="background-color:#E6B8BE;font-weight: bold;"><td colspan="3">觀察網</td></tr>
+                                                                    <!-- <tr v-if="suggData.Observation.length==0" style="box-shadow: none;height: 24px;width:100%;text-align: center;padding: 4px;"><td colspan="3" style="color: #aaa;">暫無資料</td></tr> -->
                                                                     <tr
                                                                     v-for="item in suggData.Observation"
-                                                                    :key="item.id"
+                                                                    :key="'Obser-'+item.id"
                                                                     >
                                                                     <td v-html="setBR(item.status)"></td>
                                                                     <td>{{ item.factor }}</td>
@@ -928,8 +936,8 @@ export default {
         getsuggData:async function(){
             this.suggData = {
                 DynamicData: {},
-                WaterQuality: [{ id: 1, status: "water正常", factor: "無", result: "無" }],//ai建議-水質
-                Observation: [{ id: 1, status: "obs正常", factor: "無", result: "無" },],//ai建議-觀察網
+                WaterQuality: [],//ai建議-水質
+                Observation: [],//ai建議-觀察網
                 Feed: { feed_amount: {}, statistics: {}, status: "" },//ai建議-投餌量
                 Material: {},//投料判斷列表
                 MakeWater: {}//養殖前期做水添加物
@@ -2086,6 +2094,24 @@ export default {
 }
 .v-expansion-panel-content>>> .v-expansion-panel-content__wrap {
   padding: 0 !important;
+}
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: $color-accent;
+    position: relative;
+    margin-right: 4px;
+    span {
+        color: #fff !important;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        font-size: 12px;
+    }
+    
+
 }
 
 </style>
