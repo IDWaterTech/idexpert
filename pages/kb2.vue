@@ -50,7 +50,7 @@
                                 <v-btn
                                     tile
                                     class="btn-secondary reset"
-                                    @click="resetParm()">
+                                    @click="resetParm();getSelectData(null)">
                                     重設
                                 </v-btn>
                             </div>
@@ -844,6 +844,8 @@ export default {
             this.isSearch = false;
             if(evt==null) {
                 this.resetParm();
+                this.querrySelected = evt;
+                this.oldSelect = null;
             }
             if(evt!==this.oldSelect) {
                 this.resetParm();
