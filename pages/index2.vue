@@ -2,19 +2,26 @@
   <div>
     <!-- <v-card class="bg-card" style="min-height: 85vh;"> -->
     <!-- 底圖裝飾 -->
-    <div class="background"></div>
-    <div class="background mirro"></div>
+    <!-- <div class="background"></div>
+    <div class="background mirro"></div> -->
+    <!-- <div class="background-circle"></div> -->
+    <!-- <video src="https://css-tricks-post-videos.s3.us-east-1.amazonaws.com/708209935.mp4" autoplay loop playsinline muted></video> -->
+    <div v-if="windowHeight<windowWidth" class="video">
+      <img  src='../assets/maps.gif' id='selector'/>
+      <div class="overlay"></div>
+    </div>
+    
     <!-- 內容 -->
     <div class="wrapper">
-      <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1200px;">
+      <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;">
         <!-- 主標 -->
         <v-col cols="12" md="12">
-          <div class="welcome" style="padding: 24px;">
+          <!-- <div class="welcome" style="padding: 24px;">
             <h2 class="text-center" style="color: #eee;">歡迎使用 IDWater 專家系統</h2>
-          </div>
+          </div> -->
         </v-col>
         <!-- Menu -->
-        <v-col cols="12" lg="3" md="4" sm="6" xs="12" v-for="menu in menuList" :key="menu.id">
+        <v-col cols="12" lg="2" md="4" sm="6" xs="12" v-for="menu in menuList" :key="menu.id">
           <!-- 彩色版 v-for menu要增加mid -->
           <!-- <v-card class="menu-card" 
             @click="openChild(menu.id,'',true)"
@@ -70,7 +77,10 @@ export default {
   data() {
     return {
       menuList: [],
-      bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',]
+      bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
+      videoUrl: '../assets/video.mp4',
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     }
   },
   async created() {
@@ -146,6 +156,14 @@ export default {
               }
             })
             this.menuList = data;
+            this.menuList.push({
+              disabled: false,
+              icon: "mdi-database-edit-outline",
+              id: 99999,
+              is_drop_down: false,
+              name: "知識庫鷹眼",
+              url: "/kb"
+            })
           }
           console.log('menuList',this.menuList)
         });
@@ -184,10 +202,55 @@ export default {
       this.menuList = data;
     }
   },
+  mounted() {
+    //監控視窗
+    window.addEventListener('resize', () => {
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
+    });
+    
+  },
+  watch: {
+    windowHeight(){
+        return window.innerHeight;
+    },
+    windowWidth() {
+      return window.innerWidth;
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+#selector {
+    // background-image:url('../assets/maps.gif');
+    // background-size:100%;
+    // background-repeat: repeat-y;
+    // background-attachment: fixed;
+    // height:100%;
+    width:100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.overlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--linear-gradient-dark, linear-gradient(179deg, #00324E 0.78%, #40657A 197.21%));
+  opacity: 0.8;
+  // backdrop-filter: blur(6px);
+}
+video {
+  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
 .wrapper {
   width: 100%;
   // height: calc(100vh - 112px);
@@ -208,7 +271,7 @@ export default {
 }
 .menu-card.v-sheet.v-card {
   transition: all 0.3s;
-  padding: 24px 24px 48px;
+  padding: 24px 12px 48px;
   cursor: pointer;
   // height: 100%;
   border-bottom: 6px solid $color-primary;
@@ -268,6 +331,7 @@ export default {
     // position: relative;
     border-bottom: 6px solid $color-dark-75;
     overflow: hidden;
+    opacity: 0.9;
     * {
       color: $color-dark-50;
     }
@@ -401,6 +465,26 @@ export default {
         list-style: none;
       }
     }
+  }
+}
+.background-circle {
+  width: 160vw;
+    height: 160vw;
+    border-radius: 54vw;
+    background-color: rgba(244, 251, 255, 0.02);
+    transform: translateX(-50%);
+    position: fixed;
+    top: 90vh;
+    left: -30vw;
+    animation: rotate-1906d359 10s infinite linear;
+    transition: all 1s;
+}
+@keyframes rotate {
+  0%{
+    transform: rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
   }
 }
 </style>
