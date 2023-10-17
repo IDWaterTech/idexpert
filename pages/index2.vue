@@ -44,7 +44,7 @@
                     :key="child.id"
                     v-ripple="{ class: `ripple-color` }"
                   >
-                      <v-tooltip v-if="child.disabled" left>
+                      <v-tooltip v-if="child.disabled" right>
                         <template v-slot:activator="{ on, attrs }">
                           <v-list-item-title  v-bind="attrs" v-on="on" class="disabled" @click="openChild(menu.id,child.id,true)">{{ child.name }}</v-list-item-title>
                         </template>
@@ -219,7 +219,7 @@ export default {
   background-color: #E6F1F7;
   transition: all 0.3s;
   &:not(.v-sheet--outlined) {
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
     transition: all 0.3s;
   }
   &:focus {
@@ -229,16 +229,19 @@ export default {
   }
   
   .menu-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
     transition: all 0.3s;
   }
+  .title-icon {
+    font-size: 1.5rem;
+  }
   &:hover {
-    margin-top: -8px;
+    margin-top: -12px;
     border-bottom: 6px solid lighten($color-primary,5);
     // background-color: rgba($color-primary-25,0.5);
     background-color: #fefefe;
     &:not(.v-sheet--outlined) {
-      box-shadow: 0 5px 10px rgba(0,0,0,0.15), 0px 0px 10px 0px rgba(255,255,255,0.4);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.15), 0px 0px 20px 0px rgba(255,255,255,0.4);
     }
     .title-icon {
       // background-color: rgba($color-primary,0.1);
@@ -249,7 +252,7 @@ export default {
     }
     
     .menu-title {
-      font-size: 1.05rem;
+      font-size: 1.2rem;
     }
   }
   &.v-card--link:before {
@@ -260,10 +263,10 @@ export default {
   }
   &.disabled {
     // background-color: rgba($color-dark-25,0.3);
-    background-color: #EFF2F3;
+    background-color: #CFD8DD;
     cursor: not-allowed;
     // position: relative;
-    border-bottom: 6px solid $color-dark-50;
+    border-bottom: 6px solid $color-dark-75;
     overflow: hidden;
     * {
       color: $color-dark-50;
@@ -273,7 +276,8 @@ export default {
     }
     &:after {
       content: '';
-      color: $color-light;
+      background-color: rgba(0,0,0,0.2);
+      color: rgba($color-light,0);
       position: absolute;
       width: 100%;
       height: 100%;
@@ -307,7 +311,7 @@ export default {
         font-weight: bold;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.3);
+        background-color: rgba(0,0,0,0.5);
         position: absolute;
         top: 50%;
         left: 50%;
@@ -317,7 +321,7 @@ export default {
         justify-content: center;
       }
       .menu-title {
-        font-size: 1rem;
+        font-size: 1.1rem;
       }
     }
     &:focus,&:hover {
@@ -352,6 +356,7 @@ export default {
     background-color: rgba(255,255,255,0.4);
     border-radius: 50%;
     color: $color-primary-75;
+    font-size: 1.2rem;
   }
   .text {
     margin: 12px;
