@@ -5,11 +5,12 @@
     <!-- <div class="background"></div>
     <div class="background mirro"></div> -->
     <!-- <div class="background-circle"></div> -->
-    <!-- <video src="https://css-tricks-post-videos.s3.us-east-1.amazonaws.com/708209935.mp4" autoplay loop playsinline muted></video> -->
-    <div v-if="windowHeight<windowWidth" class="video">
+    <video src="~/assets/video.mp4" autoplay loop playsinline muted></video>
+    <div class="overlay"></div>
+    <!-- <div v-if="windowHeight<windowWidth" class="video">
       <img  src='../assets/maps.gif' id='selector'/>
       <div class="overlay"></div>
-    </div>
+    </div> -->
     
     <!-- 內容 -->
     <div class="wrapper">
@@ -78,7 +79,7 @@ export default {
     return {
       menuList: [],
       bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
-      videoUrl: '../assets/video.mp4',
+      videoUrl: 'video.mp4',
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
     }
@@ -241,7 +242,7 @@ export default {
   height: 100%;
   background: var(--linear-gradient-dark, linear-gradient(179deg, #00324E 0.78%, #40657A 197.21%));
   opacity: 0.8;
-  // backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 video {
   object-fit: cover;
@@ -279,10 +280,11 @@ video {
   position: relative;
   // background-color: rgba($color-primary,0.1);
   // background-color: #E6F1F7;
-  background-color: #E6F1F7;
+  background-color: rgba(#E6F1F7,0.8);
   transition: all 0.3s;
+  backdrop-filter: blur(6px);
   &:not(.v-sheet--outlined) {
-    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
     transition: all 0.3s;
   }
   &:focus {
@@ -326,17 +328,17 @@ video {
   }
   &.disabled {
     // background-color: rgba($color-dark-25,0.3);
-    background-color: #CFD8DD;
+    background-color: rgba(#CFD8DD,0.8);
     cursor: not-allowed;
     // position: relative;
     border-bottom: 6px solid $color-dark-75;
     overflow: hidden;
-    opacity: 0.9;
+    // opacity: 0.9;
     * {
       color: $color-dark-50;
     }
     &:not(.v-sheet--outlined) {
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
     &:after {
       content: '';

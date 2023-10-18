@@ -42,5 +42,8 @@
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.1"
+  },
+  "overrides": {
+    "webpack-dev-middleware": "5.0.0"
   }
 }
