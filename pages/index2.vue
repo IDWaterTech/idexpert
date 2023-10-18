@@ -328,7 +328,7 @@ video {
   }
   &.disabled {
     // background-color: rgba($color-dark-25,0.3);
-    background-color: rgba(#CFD8DD,0.7);
+    background-color: rgba(#CFD8DD,0.8);
     cursor: not-allowed;
     // position: relative;
     border-bottom: 6px solid $color-dark-75;
