@@ -449,7 +449,7 @@ video {
           }
           &.disabled {
             background-color: transparent !important;;
-            color: $color-dark-25;
+            color: rgba($color-dark-50,0.8);
             cursor: not-allowed;
           }
         }
