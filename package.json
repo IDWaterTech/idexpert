@@ -41,7 +41,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.12.1"
+    "@nuxtjs/vuetify": "^1.12.1",
+    "vue-particles": "^1.0.9"
   },
   "overrides": {
     "webpack-dev-middleware": "5.0.0"
