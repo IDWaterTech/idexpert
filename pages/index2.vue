@@ -328,7 +328,7 @@ video {
   }
   &.disabled {
     // background-color: rgba($color-dark-25,0.3);
-    background-color: rgba(#CFD8DD,0.8);
+    background-color: rgba(#CFD8DD,0.7);
     cursor: not-allowed;
     // position: relative;
     border-bottom: 6px solid $color-dark-75;
@@ -342,7 +342,7 @@ video {
     }
     &:after {
       content: '';
-      background-color: rgba(0,0,0,0.2);
+      background-color: rgba(0,0,0,0.3);
       color: rgba($color-light,0);
       position: absolute;
       width: 100%;
@@ -443,12 +443,13 @@ video {
             border-radius: 4px;
             font-weight: bold;
             &.disabled {
-              background-color: transparent;
+              background-color: transparent !important;;
               font-weight: 400;
             }
           }
           &.disabled {
-            color: $color-dark-50;
+            background-color: transparent !important;;
+            color: $color-dark-25;
             cursor: not-allowed;
           }
         }
