@@ -5,7 +5,7 @@
     <!-- <div class="background"></div>
     <div class="background mirro"></div> -->
     <!-- <div class="background-circle"></div> -->
-    <video src="~/assets/video.mp4" autoplay loop playsinline muted></video>
+    <video src="~/static/video.mp4" autoplay loop playsinline muted></video>
     <div class="overlay"></div>
     <!-- <div v-if="windowHeight<windowWidth" class="video">
       <img  src='../assets/maps.gif' id='selector'/>
@@ -79,7 +79,6 @@ export default {
     return {
       menuList: [],
       bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
-      videoUrl: 'video.mp4',
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
     }
