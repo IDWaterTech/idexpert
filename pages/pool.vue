@@ -610,6 +610,19 @@
                                   </v-select>
                                 </v-col>
                                 <v-col cols="12">
+                                  <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
+                                transition="scale-transition" offset-y min-width="auto">
+                                <template v-slot:activator="{ on, attrs }">
+                                  <v-text-field v-model="addparm.stocked_date" label="放苗日" :rules="rules.require"
+                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                              () => (addparm.stocked_date = getNowDate())
+                                                            "></v-text-field>
+                                </template>
+                                <v-date-picker v-model="addparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
+                                </v-date-picker>
+                              </v-menu>
+                                </v-col>
+                                <v-col cols="12">
                                   <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username" hide-details
                                     :filter="filterincharge" clearable :rules="rules.require">
                                     <span slot="prepend" style="width:80px">養殖負責</span>
@@ -624,13 +637,13 @@
                                 <v-col cols="12">
                                   <v-row>
                                     <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_catty" hide-details>
-                                        <span slot="prepend" style="width:80px">預計收成斤數(kg)(選)</span>
+                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_weight" hide-details>
+                                        <span slot="prepend" style="width:80px">預估收成個體重(g)(選)</span>
                                       </v-text-field>
                                     </v-col>
                                     <v-col cols="6">
                                       <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" hide-details>
-                                        <span slot="prepend" style="width:80px">預計存活率(%)(選)</span>
+                                        <span slot="prepend" style="width:80px">預估存活率(%)(選)</span>
                                       </v-text-field>
                                     </v-col>
                                     <v-col cols="6">
@@ -640,17 +653,17 @@
                                     </v-col>
                                     <v-col cols="6">
                                       <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" hide-details>
-                                        <span slot="prepend" style="width:80px">預測FCR(選)</span>
+                                        <span slot="prepend" style="width:80px">預估FCR(選)</span>
                                       </v-text-field>
                                     </v-col>
-                                    <v-col cols="6">
+                                    <!-- <v-col cols="6">
                                       <v-text-field filled dense type="number" v-model.number="addparm.estimated_adg" hide-details>
                                         <span slot="prepend" style="width:80px">預測ADG(選)</span>
                                       </v-text-field>
-                                    </v-col>
+                                    </v-col> -->
                                     <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.initial_length" hide-details>
-                                        <span slot="prepend" style="width:80px">放養初始長度(選)</span>
+                                      <v-text-field filled dense type="number" v-model.number="addparm.initial_weight" hide-details>
+                                        <span slot="prepend" style="width:80px">放養初始重量(選)</span>
                                       </v-text-field>
                                     </v-col>
                                   </v-row>
@@ -661,8 +674,8 @@
                                   </v-text-field>
                                 </v-col>
                                 <v-col cols="12">
-                                  <!-- 樣板 -->
-                                  <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                                  <!-- 樣板 先暫時拿掉-->
+                                  <v-autocomplete disabled v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
                                     clearable @change="tempChange">
                                     <span slot="prepend"  style="width:100px">選擇樣板(選)</span>
                                   </v-autocomplete>
@@ -671,7 +684,7 @@
                             </v-card-text>
                             <v-card-actions>
                               <v-spacer></v-spacer>
-                              <v-btn tile color="primary" @click="submitadd">確認</v-btn>
+                              <v-btn tile color="primary" @click="submitadd">確認新增</v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-form>
@@ -694,6 +707,13 @@
                         <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
                           @current-change="handleCurrentChange" :header-cell-style="tableHeaderStyle" height="300" class="primary"
                           @select="handleSelectionChange" :header-cell-name="cellClass">
+                          <!-- 名稱/批號 -->
+                          <!-- <el-table-column label="名稱/批號" prop="name" align="center"></el-table-column> -->
+                          <el-table-column label="[id]名稱/批號" prop="name" align="center">
+                            <template slot-scope="scope">
+                              <span>{{ `[${scope.row.id}]` }}<br/>{{ scope.row.name }}</span>
+                            </template>
+                          </el-table-column>
                           <!-- 循環起日 -->
                           <el-table-column label="循環起日" prop="started_date" align="center"></el-table-column>
                           <!-- 循環訖日 -->
@@ -716,22 +736,24 @@
                               </span>
                             </template>
                           </el-table-column>
+                          <!-- 鹽度 -->
+                          <el-table-column label="鹽度" prop="water_source_salinity" align="center"></el-table-column>
                           <!-- 養殖天數 -->
                           <el-table-column label="養殖天數" prop="days" align="center"></el-table-column>
-                          <!-- 名稱/批號 -->
-                          <el-table-column label="名稱/批號" prop="name" align="center"></el-table-column>
                           <!-- 養殖密度 -->
                           <el-table-column label="養殖密度" prop="num_per_unit" align="center"></el-table-column>
                           <!-- 預估放養隻數 -->
                           <el-table-column label="預估放養隻數" prop="total" align="center"></el-table-column>
                           <!-- 目標CN比 -->
                           <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
-                          <!-- 預測FCR -->
-                          <el-table-column label="預測FCR" prop="estimated_fcr" align="center"></el-table-column>
+                          <!-- 預估FCR -->
+                          <el-table-column label="預估FCR" prop="estimated_fcr" align="center"></el-table-column>
                           <!-- 預測ADG -->
-                          <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column>
+                          <!-- <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column> -->
                           <!-- 放養初始長度 -->
-                          <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column>
+                          <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
+                          <!-- 放養初始重量 -->
+                          <el-table-column label="放養初始重量" prop="initial_weight" align="center"></el-table-column>
 
                           <el-table-column label="養殖負責" prop="person_in_charge" align="center">
                           </el-table-column>
@@ -763,7 +785,6 @@
                       </v-card-title>
                       <v-divider></v-divider>
                       <v-card-text>
-                        
                         <FeedTemplate v-if="(feededitmode=='cycleedit' && passObj.tempContent.length>0)" :key="editKey" :templatemode="feededitmode" :passObj="passObj"></FeedTemplate>
                       </v-card-text>
                     </v-card>
@@ -972,15 +993,18 @@ export default {
       addDialog: false,
       addvalid: false,
       menu_adddate: false,
+      menu_stockeddate:false,
       add_volume: undefined,
       addparm: {
         started_date: undefined,//開始日期，有ended_date結束日期，但新增不需使用
+        stocked_date:undefined, //放苗日
         name: undefined,//名稱或批號
         num_per_unit: undefined,//放養密度
         estimated_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
-        estimated_harvest_catty:undefined,//預計收成斤數
-        estimated_survival_rate:undefined,//預計存活率
+        //estimated_harvest_catty:undefined,//預計收成斤數
+        estimated_harvest_weight:undefined,//預估收成個體重
+        estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
       },
@@ -1528,10 +1552,10 @@ export default {
       this.addparm['tempMain'] = tempMain;
       this.addparm['tempContent'] = tempContent;
       let parm = Object.assign({},this.addparm);
-      // debugger;
       // return;
       delete parm.estimated_num;//刪除初始放苗量
       console.log(parm);
+      // debugger;
       // return;
       var valid = this.$refs.cycleform.validate();
         if(valid){
@@ -1677,7 +1701,6 @@ export default {
       if (selection.length != 0) {
         this.$refs.circletable.toggleRowSelection(row);
       }
-      
     },
     handleCurrentChange: async function(val) {
       //清除
@@ -1687,20 +1710,21 @@ export default {
       if(this.circleData.filter(x=>x.id==val.id).length==1){
         var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
         var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
+        tempMain = (tempMain==undefined)?{}:[];
+        tempContent= (tempContent==undefined)?{}:[];
         this.passObj["tempMain"] = tempMain;
         this.passObj["tempContent"] = tempContent;
-
       }
-      return;
+      // return;
       //下面不做，之前有做事件紀錄
-      if (val != null) {
-        this.cirid = val.id; //循環id
-        await this.getDetectData();
-      } else {
-        this.cirid = undefined;
-      }
-      // this.currentRow = val;
-      await this.geteventData();//取得事件紀錄清單
+      // if (val != null) {
+      //   this.cirid = val.id; //循環id
+      //   await this.getDetectData();
+      // } else {
+      //   this.cirid = undefined;
+      // }
+      // // this.currentRow = val;
+      // await this.geteventData();//取得事件紀錄清單
     },
     //依項目回傳主要類別是什麼
     getItemClass: async function(item) {
