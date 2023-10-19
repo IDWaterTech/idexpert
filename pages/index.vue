@@ -1,151 +1,492 @@
 <template>
-  <v-row justify="center" align="center" class="text-center mb-5"  style="color:white;">
-    <v-col cols="12">
-      <h1>歡迎使用 IDWater 專家系統</h1>
-      <h1>WelCome IDWater Expert System</h1>
-    </v-col>
-    <v-col cols="12" class="text-justify px-16">
-      <h2>關於-ABOUT</h2>
-      <div class="headline">
-        我們正在通過人工智能和物聯網技術建設環境可持續的智能養蝦場，以解決傳統水產養殖的三大問題。
-      </div>
-      <div class="headline">
-        We are building environmentally sustainable smart shrimp farms with AI
-        plus IoT technologies to solve three major problems of traditional
-        aquaculture.
-      </div>
-      <!-- <div>
-        <a href="./kb" target="_blank" style="text-decoration:none; "><v-icon dark>mdi-brain</v-icon></a>
-        
-      </div> -->
-    </v-col>
-    <v-col cols="12">
-      <div v-show="!this.$auth.$state.loggedIn">
-            <!-- <v-btn
-          dark
-          large tile
-          style="border:0px;"
-          @click="loginGoogle"
-          :style="{ background: '#4284f4' }"
-          color="primary"
-          >歡迎使用本系統Login</v-btn
-        > -->
-        <v-btn
-                    dark
-                    large tile
-                    style="border:0px;"
-                    @click="loginGoogle"
-                    :style="{ background: '#4284f4' }"
-                    color="error" 
-                    ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
-                  >
-          </div>
-    </v-col>
-    <!-- <v-col cols="12"><nuxt-link to="basic" class="headline">Enter</nuxt-link></v-col> -->
-    <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" tile dark color="primary" class="papper_item">
-        <!-- <v-card-title class="blue" style="color:black">紅樹林破壞-Mangrove destruction</v-card-title> -->
-        <v-card-text class="blue" style="color:black;font-size: 1.2em;">紅樹林破壞-Mangrove destruction</v-card-text>
-        <v-divider class="mx-4"></v-divider>
-        <v-card-text style="font-size:1.2em;">
-          <div align="center">
-            <img src="~/assets/Mangrove.png"  height="200px"/>
-          </div>
-          <div>
-            農民開發紅樹林區來建造蝦塘。但每次疾病爆發時，池塘都會被廢棄。事實上，根據環境正義基金會的數據，對蝦養殖佔全球紅樹林損失的 38%（每年高達 10,000 公頃）。
-          </div>
-          <div>
-            Farmers develop mangrove areas to build shrimp ponds. But every time
-            when a disease outbreak, the ponds would be abandoned. In fact,
-            shrimp farming is accounted for 38% of global mangrove loss (up to
-            10,000 hectares each year) according to data from the Environmental
-            Justice Foundation.
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" tile dark color="primary" class="papper_item">
-        <!-- <v-card-title class="blue" style="color:black">水污染-Water pollution</v-card-title> -->
-        <v-card-text class="blue" style="color:black;font-size: 1.2em;">水污染-Water pollution</v-card-text>
-        <v-divider class="mx-4"></v-divider>
-        <v-card-text style="font-size:1.2em;">
-          <div align="center">
-            <img src="~/assets/gomi_grease_trap_pit.png"  height="200px"/>
-          </div>
-          <div>
-            養蝦會產生含有氮和磷的高污染水。2018年，中國政府因水質不達標關閉了4萬個蝦池。
-          </div>
-          <div>
-            Shrimp farming generates high polluted water which contains nitrogen
-            and phosphorus. In 2018, the Chinese government shut down 40,000
-            shrimp ponds due to violating water not following the standard.
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4" class="text-justify">
-      <v-card min-height="550px" tile dark color="primary" class="papper_item">
-        <!-- <v-card-title class="blue" style="color:black">食品安全-Food safety</v-card-title> -->
-        <v-card-text class="blue" style="color:black;font-size: 1.2em;">食品安全-Food safety</v-card-text>
-        <v-divider class="mx-4"></v-divider>
-        <v-card-text style="font-size:1.2em;">
-          <div align="center">
-            <img src="~/assets/foodsafety.png"  height="200px"/>
-          </div>
-          <div>
-            30 億人依賴海鮮作為蛋白質的主要來源。然而，在水產養殖中濫用抗生素來對抗疾病。
-          </div>
-          <div>
-            3 Billion people are relying on seafood as a primary source of
-            protein. However, Antibiotics have been abused in aquaculture to
-            fight against the diseases.
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-col>
+  <div>
+    <!-- <v-card class="bg-card" style="min-height: 85vh;"> -->
+    <!-- 底圖裝飾 -->
+    <!-- <div class="background"></div>
+    <div class="background mirro"></div> -->
+    <!-- <div class="background-circle"></div> -->
+    <video src="~/static/video.mp4" autoplay loop playsinline muted></video>
+    <div class="overlay"></div>
+    <!-- <div v-if="windowHeight<windowWidth" class="video">
+      <img  src='../assets/maps.gif' id='selector'/>
+      <div class="overlay"></div>
+    </div> -->
     
-  </v-row>
+    <!-- 內容 -->
+    <div class="wrapper">
+      <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;">
+        <!-- 主標 -->
+        <v-col cols="12" md="12">
+          <!-- <div class="welcome" style="padding: 24px;">
+            <h2 class="text-center" style="color: #eee;">歡迎使用 IDWater 專家系統</h2>
+          </div> -->
+        </v-col>
+        <!-- Menu -->
+        <v-col cols="12" lg="2" md="4" sm="6" xs="12" v-for="menu in menuList" :key="menu.id">
+          <!-- 彩色版 v-for menu要增加mid -->
+          <!-- <v-card class="menu-card" 
+            @click="openChild(menu.id,'',true)"
+            :style="{'backgroundColor':`${bgc[mid]}`}"
+            :ripple="{ class: `ripple-color` }"> -->
+
+          <!-- 主色版 -->
+          <v-card class="menu-card" 
+            @click="openChild(menu.id,'',true)"
+            :class="{'disabled':menu.disabled}">
+            <div class="menu-content"
+              :style="{'flexDirection':`${menu.children && menu.isOpen?'row':'column'}`,
+                      'alignItems':`${menu.children && menu.isOpen?'flex-start':'center'}`}">
+              <v-icon class="title-icon">{{menu.icon}}</v-icon>
+              <div class="text">
+                <div class="menu-title" 
+                  @click="openChild(menu.id,'',false)">
+                  {{ menu.name }}
+                  
+                  <v-icon v-if="menu.children && !menu.isOpen">mdi-chevron-down</v-icon>
+                  <v-icon v-if="menu.children && menu.isOpen">mdi-chevron-up</v-icon>
+                </div>
+                <!-- 子層 -->
+                <v-list v-if="menu.children && menu.isOpen">
+                  <v-list-item
+                    v-for="child in menu.children"
+                    :key="child.id"
+                    v-ripple="{ class: `ripple-color` }"
+                  >
+                      <v-tooltip v-if="child.disabled" right>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-list-item-title  v-bind="attrs" v-on="on" class="disabled" @click="openChild(menu.id,child.id,true)">{{ child.name }}</v-list-item-title>
+                        </template>
+                        <span> 尚未開通此服務</span>
+                    </v-tooltip>
+                    <v-list-item-title v-if="!child.disabled" :class="{'disabled':child.disabled}" @click="openChild(menu.id,child.id,true)">{{ child.name }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+      
+    <!-- </v-card> -->
+  </div>
 </template>
 
 <script>
-
 export default {
-  layout: "emptynologin",
-  methods: {
-    async loginGoogle() {
-      try {
-        await this.$auth.loginWith("google", {
-          params: { prompt: "select_account" }
-        });
-      } catch (err) {
-        console.log(err);
-        this.$toast.error("登入發生錯誤!:" + err, {
-          duration: 5000
-        });
-      }
+  layout: "emptynologin2",
+  data() {
+    return {
+      menuList: [],
+      bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     }
   },
   async created() {
-    await this._pageCheck();//驗證頁面是否可檢視
+    if(this.$auth.$state.loggedIn) {
+      // await this._pageCheck();
+      await this.getAllMenu();
+    }else {
+      window.location.href='/login';
+    }
   },
-};
+  methods: {
+    // 所有menu
+    async getAllMenu() {
+      let accheader = { account: this.$auth.$state.user.email };
+      const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
+      await this.$axios
+        .get(url, {
+          headers: accheader
+        })
+        .then(async res => {
+          console.log(res);
+          if(res.status==200) {
+            this.menuList = res.data;
+            // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
+            // 有子層的父層增加isOpen參數，用來開合子層
+            this.menuList.forEach(m=>{
+              m.disabled = false;
+              if(m.children) {
+                m.isOpen = false;
+                m.children.forEach(child=>{
+                  child.disabled = false;
+                })
+              }
+            })
+            await this.getOwnMenu();
+          }
+          console.log("api：" + res.request.responseURL);
+        });
+    },
+    // 自身帳號menu，用來比對所有menu，自身沒有的要加上disabled
+    async getOwnMenu() {
+      let accheader = { account: this.$auth.$state.user.email };
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`, {
+          headers: accheader
+        }) 
+        .then(res => {
+          console.log(res);
+          if(res.status==200) {
+            let ownId = [];
+            let data = _.cloneDeep(this.menuList);
+            this.menuList = [];
+            // 測試子層disabled用(飼料表->料量設定)
+            // res.data[2].children.splice(1,1);
+            res.data.forEach(own => {
+              ownId.push(own.id);
+              if(own.children) {
+                own.children.forEach(oc=>{
+                  ownId.push(oc.id);
+                })
+              }
+            });
+            data.forEach(m=>{
+              if(!ownId.includes(m.id)){
+                m.disabled = true;
+              }
+              if(m.children) {
+                m.children.forEach(mc=>{
+                  if(!ownId.includes(mc.id)) {
+                    mc.disabled = true;
+                  }
+                })
+              }
+            })
+            this.menuList = data;
+            this.menuList.push({
+              disabled: false,
+              icon: "mdi-database-edit-outline",
+              id: 99999,
+              is_drop_down: false,
+              name: "知識庫鷹眼",
+              url: "/kb"
+            })
+          }
+          console.log('menuList',this.menuList)
+        });
+    },
+    // id=第一層menu,cid=子層,bool=是否去連結
+    openChild(id,cid,bool) {
+      // 只變動true/false，變動太小導致v-if沒有渲染，因此清空menuList重新導入
+      let data = _.cloneDeep(this.menuList);
+      this.menuList = [];
+
+      data.forEach(m=>{
+        if(cid=='') {
+          if(m.id==id && m.children && !bool && !m.disabled) {
+            // 有子層開合父層，點選動作做在title上，避免子層disabled時點選後，menu關閉
+            m.isOpen = !m.isOpen;
+          }else {
+            // 無子層直接到點選的頁面
+            if(m.id==id && bool && !m.disabled) {
+              this.$router.push(m.url);
+            }
+          }
+        }else {
+          if(bool && m.children && m.id==id && !m.disabled) {
+            m.children.forEach(c=>{
+              if(c.id==cid) {
+                if(!c.disabled) {
+                  // this.$router.push(c.url);
+                  window.location.href = c.url;
+                  // m.isOpen = true; 
+                }
+              }
+            })
+          }
+        }
+      })
+      this.menuList = data;
+    }
+  },
+  mounted() {
+    //監控視窗
+    window.addEventListener('resize', () => {
+      this.windowHeight = window.innerHeight;
+      this.windowWidth = window.innerWidth;
+    });
+    
+  },
+  watch: {
+    windowHeight(){
+        return window.innerHeight;
+    },
+    windowWidth() {
+      return window.innerWidth;
+    }
+  }
+}
 </script>
 
-<style scoped>
-.questionTitle{
-  background-color: #055394;
-  color: white;
+<style lang="scss" scoped>
+#selector {
+    // background-image:url('../assets/maps.gif');
+    // background-size:100%;
+    // background-repeat: repeat-y;
+    // background-attachment: fixed;
+    // height:100%;
+    width:100%;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
-.papper_item {
-  background: url('~/assets/papper_grape.jpg')
-    repeat center center fixed !important;
-  background-size: cover;
+.overlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--linear-gradient-dark, linear-gradient(179deg, #00324E 0.78%, #40657A 197.21%));
+  opacity: 0.5;
+  backdrop-filter: blur(6px);
 }
-.papper_blue {
-  background: url('~/assets/papper_blue.jpg')
-    repeat center center fixed !important;
-  background-size: cover;
+video {
+  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
-
+.wrapper {
+  width: 100%;
+  // height: calc(100vh - 112px);
+  position: relative;
+}
+.background {
+  width: 100%;
+  height: 30vh;
+  background-color: rgba($color-light,0.1);
+  width: calc(100% + 36px);
+  position: fixed;
+  left: -12px;
+  bottom: -15vh;
+  transform: rotate(-3deg);
+  &.mirro {
+    transform: rotate(3deg);
+  }
+}
+.menu-card.v-sheet.v-card {
+  transition: all 0.3s;
+  padding: 24px 12px 48px;
+  cursor: pointer;
+  // height: 100%;
+  border-bottom: 6px solid $color-primary;
+  margin-top: 0;
+  position: relative;
+  // background-color: rgba($color-primary,0.1);
+  // background-color: #E6F1F7;
+  background-color: rgba(#E6F1F7,0.8);
+  transition: all 0.3s;
+  backdrop-filter: blur(6px);
+  &:not(.v-sheet--outlined) {
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    transition: all 0.3s;
+  }
+  &:focus {
+    // background-color: rgba($color-primary,0.1);
+    // background-color: #E6F1F7;
+    background-color: #E6F1F7;
+  }
+  
+  .menu-title {
+    font-size: 1.1rem;
+    transition: all 0.3s;
+  }
+  .title-icon {
+    font-size: 1.5rem;
+  }
+  &:hover {
+    margin-top: -12px;
+    border-bottom: 6px solid lighten($color-primary,5);
+    // background-color: rgba($color-primary-25,0.5);
+    background-color: #fefefe;
+    &:not(.v-sheet--outlined) {
+      box-shadow: 0 5px 10px rgba(0,0,0,0.15), 0px 0px 20px 0px rgba(255,255,255,0.4);
+    }
+    .title-icon {
+      // background-color: rgba($color-primary,0.1);
+      // background-color: #E6F1F7;
+      // background-color: #CCE1ED;
+      color: lighten($color-primary,5);
+      font-size: 2rem;
+    }
+    
+    .menu-title {
+      font-size: 1.2rem;
+    }
+  }
+  &.v-card--link:before {
+    background: none;
+  }
+  &.v-card--link:focus:before {
+    background-color: transparent;
+  }
+  &.disabled {
+    // background-color: rgba($color-dark-25,0.3);
+    background-color: rgba(#CFD8DD,0.8);
+    cursor: not-allowed;
+    // position: relative;
+    border-bottom: 6px solid $color-dark-75;
+    overflow: hidden;
+    // opacity: 0.9;
+    * {
+      color: $color-dark-50;
+    }
+    &:not(.v-sheet--outlined) {
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+    &:after {
+      content: '';
+      background-color: rgba(0,0,0,0.3);
+      color: rgba($color-light,0);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      transition: all 0.3s;
+    }
+    &:hover {
+      margin-top: 0;
+      // background-color: rgba($color-dark-25,0.3);
+      // background-color: #EFF2F3;
+      // width: 100%;
+      // height: 100%;
+      background-color: rgba(0,0,0,0.1);
+      // position: relative;
+      &:not(.v-sheet--outlined) {
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      }
+      .title-icon {
+        background-color: rgba(255,255,255,0.4);
+        color: $color-dark-50;
+        font-size: 1.5rem;
+      }
+      &:before {
+        background-color: transparent;
+      }
+      &:after {
+        content: '尚未開通此服務';
+        color: $color-light;
+        font-weight: bold;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .menu-title {
+        font-size: 1.1rem;
+      }
+    }
+    &:focus,&:hover {
+      // background-color: rgba($color-dark-25,0.3);
+      background-color: #EFF2F3;
+      // opacity: 0.8;
+    }
+    &:before {
+      content:'';
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: transparent;
+    }
+  }
+}
+.ripple-color {
+  background-color: $color-primary-25;
+}
+.menu-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .title-icon {
+    margin: 12px;
+    width: 40px;
+    height: 40px;
+    // background-color: rgba($color-primary-25,0.5);
+    background-color: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    color: $color-primary-75;
+    font-size: 1.2rem;
+  }
+  .text {
+    margin: 12px;
+    * {
+      color: $color-dark;
+    }
+    .theme--light.v-list {
+      background: transparent;
+      .v-list-item {
+        padding: 0;
+        min-height: 24px;
+        transition: all 0.3s;
+        .v-list-item__title{
+          padding: 4px;
+          transition: all 0.3s;
+          &:hover {
+            background-color: $color-primary-25;
+            border-radius: 4px;
+            font-weight: bold;
+            &.disabled {
+              background-color: transparent !important;;
+              font-weight: 400;
+            }
+          }
+          &.disabled {
+            background-color: transparent !important;;
+            color: rgba($color-dark-50,0.8);
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+    .menu-title {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+    .children {
+      margin: 12px;
+      margin-left: 0;
+      li {
+        list-style: none;
+      }
+    }
+  }
+}
+.background-circle {
+  width: 160vw;
+    height: 160vw;
+    border-radius: 54vw;
+    background-color: rgba(244, 251, 255, 0.02);
+    transform: translateX(-50%);
+    position: fixed;
+    top: 90vh;
+    left: -30vw;
+    animation: rotate-1906d359 10s infinite linear;
+    transition: all 1s;
+}
+@keyframes rotate {
+  0%{
+    transform: rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+}
 </style>

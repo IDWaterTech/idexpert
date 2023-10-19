@@ -1,23 +1,50 @@
 <template>
-  <v-container>
-    <!-- <h1 style="color:lightblue;">登入</h1> -->
-    <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
-    <v-tabs centered grow icons-and-text v-if="false">
-      <v-tab class="primary--text" :href="'#tab-2'">
-        第三方登入<v-icon>mdi-google</v-icon>
-      </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tabs" class="papper">
-      <v-tab-item :value="'tab-2'" class="text-center mt-5">
-        <v-row>
-          <v-spacer></v-spacer>
-          <v-col cols="12" sm="5">
-            <v-row>
-                <!-- 本地登入 -->
-                <v-col cols="12">
-                   <v-form ref="formjwt" v-model="validjwt" lazy-validation>
+  <div style="position: relative;width: 100%;height: 100%;">
+    <!-- <v-container style="height: 100%;"> -->
+      <!-- <h1 style="color:lightblue;">登入</h1> -->
+      <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
+      <v-tabs centered grow icons-and-text v-if="false">
+        <v-tab class="primary--text" :href="'#tab-2'">
+          第三方登入<v-icon>mdi-google</v-icon>
+        </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tabs" style="background-color: transparent;height: 100%;position: relative;">
+        <v-tab-item :value="'tab-2'" class="text-center mt-5">
+          <!-- <v-row> -->
+            <!-- <img class="tech-bg" src="../assets/login_bg.png"> -->
+            <vue-particles
+                color="#dedede"
+                :particleOpacity="0.7"
+                :particlesNumber="80"
+                shapeType="circle"
+                :particleSize="4"
+                linesColor="#dedede"
+                :linesWidth="1"
+                :lineLinked="true"
+                :lineOpacity="0.4"
+                :linesDistance="150"
+                :moveSpeed="2.5"
+                :hoverEffect="true"
+                hoverMode="grab"
+                :clickEffect="true"
+                clickMode="push"
+                style="position: absolute;width: 100%;height: 100%;"
+              >
+              </vue-particles>
+            <v-card  class="login">
+              <div class="card-title">
+                  <div class="title">
+                      <img src="../assets/logo.jpg" style="max-height: 120px;" />
+                      <h3>專家系統</h3>
+                  </div>
+              </div>
+              <div class="content">
+                <v-row>
+                  <!-- 帳密輸入 -->
+                  <!-- <v-col cols="12">
+                    <v-form ref="formjwt" v-model="validjwt" lazy-validation>
                       <div>
-                          <v-text-field dark
+                          <v-text-field
                           v-model="loginjwt.username"
                           :rules="rules.require"
                           label="使用者名稱"
@@ -25,7 +52,7 @@
                         ></v-text-field>
                       </div>
                       <div>
-                        <v-text-field dark
+                        <v-text-field
                           v-model="loginjwt.password"
                           :rules="rules.require"
                           label="密碼"
@@ -34,61 +61,65 @@
                       </div>
                       <div>
                         
-                        <v-btn color="primary" block dark
+                        <v-btn color="primary" block
                         large tile @click="loginJWT" disabled
                         style="border:0px;"><v-icon size="24">mdi-water-outline</v-icon>{{`　本地登入(開發測試中)`}}</v-btn>
                       </div>
                     </v-form>
-                </v-col>
-                <!-- Google登入 -->
-                <v-col cols="12">
-                  <v-btn
-                    dark
-                    large tile
-                    style="border:0px;"
-                    @click="loginGoogle"
-                    :style="{ background: '#4284f4' }"
-                    color="error" block
-                    ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
-                  >
-                </v-col>
-            </v-row>
-           
-          </v-col>
-         <v-spacer></v-spacer>
-        </v-row>
-      </v-tab-item>
-    </v-tabs-items>
-    <!-- <v-tabs v-model="tabs" centered grow icons-and-text>
-      <v-tab class="primary--text" :href="'#tab-1'" v-if="false">
-        本地登入<v-icon>mdi-home-circle-outline</v-icon>
-      </v-tab>
-      <v-tab class="primary--text" :href="'#tab-2'">
-        第三方登入<v-icon>mdi-google</v-icon>
-      </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tabs">
-      <v-tab-item :value="'tab-1'"  v-if="false">
-        <UserAuthForm buttonText="Login" :submitForm="loginUser" />
-      </v-tab-item>
-      <v-tab-item :value="'tab-2'"  class="text-center mt-5">
-        <br />
-        <v-btn
-          dark
-          style="border:0px;"
-          @click="loginGoogle"
-          :style="{ background: '#4284f4' }"
-          >以Google登入</v-btn
-        >
-      </v-tab-item>
-    </v-tabs-items> -->
-  </v-container>
+                  </v-col> -->
+                  
+                  <!-- Google登入 -->
+                  <v-col cols="12">
+                    <v-btn
+                      dark
+                      large tile
+                      style="border:0px;height: 40px;"
+                      @click="loginGoogle"
+                      :style="{ background: '#4284f4' }"
+                      color="error" block
+                      class="google-btn"
+                      ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
+                    >
+                  </v-col>
+              </v-row>
+              </div>
+            </v-card>
+          <!-- </v-row> -->
+        </v-tab-item>
+      </v-tabs-items>
+      <!-- <v-tabs v-model="tabs" centered grow icons-and-text>
+        <v-tab class="primary--text" :href="'#tab-1'" v-if="false">
+          本地登入<v-icon>mdi-home-circle-outline</v-icon>
+        </v-tab>
+        <v-tab class="primary--text" :href="'#tab-2'">
+          第三方登入<v-icon>mdi-google</v-icon>
+        </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tabs">
+        <v-tab-item :value="'tab-1'"  v-if="false">
+          <UserAuthForm buttonText="Login" :submitForm="loginUser" />
+        </v-tab-item>
+        <v-tab-item :value="'tab-2'"  class="text-center mt-5">
+          <br />
+          <v-btn
+            dark
+            style="border:0px;"
+            @click="loginGoogle"
+            :style="{ background: '#4284f4' }"
+            >以Google登入</v-btn
+          >
+        </v-tab-item>
+      </v-tabs-items> -->
+    <!-- </v-container> -->
+  </div>
+  
 </template>
 <script>
 import UserAuthForm from "@/components/UserAuthForm";
 
 export default {
-  layout: "emptynologin",
+  // layout: "emptynologin",
+  layout: "emptychangebg",
   data() {
     return {
       tabs: "tab-2",
@@ -98,6 +129,8 @@ export default {
         password:'',//idw12345
       },
       validjwt:true,
+      innerWidth: window.innerWidth,
+      innerHeight: window.innerHeight
     };
   },
   components: {
@@ -214,4 +247,62 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.v-application.v-application--is-ltr {
+  .tech-bg {
+    // max-height: 480px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 80%;
+    margin-left: -24px;
+  }
+  .v-card.login {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    overflow: hidden;
+    margin-bottom: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.10), 0px 0px 10px 0px rgba(255,255,255,0.4);
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 48px;
+      .title {
+        color: #006AA6;
+        h3 {
+          margin-top: -12px;
+        }
+      }
+    }
+    .content {
+      margin-bottom: 32px;
+      .google-btn {
+        border-radius: 4px;
+      }
+    }
+  }
+}
+@media (max-width: 959.98px) {
+  .v-application.v-application--is-ltr {
+    .tech-bg {
+      width: 90%;
+    }
+  }
+}
+@media (max-width: 768px) {
+  .v-application.v-application--is-ltr {
+    .tech-bg {
+      display: none;
+    }
+  }
+}
+</style>
