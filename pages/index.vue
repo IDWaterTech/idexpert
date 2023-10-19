@@ -85,7 +85,7 @@ export default {
   },
   async created() {
     if(this.$auth.$state.loggedIn) {
-      // await this._pageCheck();
+      await this._pageCheck();
       await this.getAllMenu();
     }else {
       window.location.href='/login';
