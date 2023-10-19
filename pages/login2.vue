@@ -1,96 +1,118 @@
 <template>
-  <v-container style="height: 100%;">
-    <!-- <h1 style="color:lightblue;">登入</h1> -->
-    <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
-    <v-tabs centered grow icons-and-text v-if="false">
-      <v-tab class="primary--text" :href="'#tab-2'">
-        第三方登入<v-icon>mdi-google</v-icon>
-      </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tabs" style="background-color: transparent;height: 100%;position: relative;">
-      <v-tab-item :value="'tab-2'" class="text-center mt-5">
-        <!-- <v-row> -->
-          <img class="tech-bg" src="../assets/login_bg.png">
-          <v-card  class="login">
-            <div class="card-title">
-                <div class="title">
-                    <img src="../assets/logo.jpg" style="max-height: 120px;" />
-                    <h3>專家系統</h3>
-                </div>
-            </div>
-            <div class="content">
-              <v-row>
-                <!-- 帳密輸入 -->
-                <!-- <v-col cols="12">
-                  <v-form ref="formjwt" v-model="validjwt" lazy-validation>
-                    <div>
+  <div style="position: relative;width: 100%;height: 100%;">
+    <!-- <v-container style="height: 100%;"> -->
+      <!-- <h1 style="color:lightblue;">登入</h1> -->
+      <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
+      <v-tabs centered grow icons-and-text v-if="false">
+        <v-tab class="primary--text" :href="'#tab-2'">
+          第三方登入<v-icon>mdi-google</v-icon>
+        </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tabs" style="background-color: transparent;height: 100%;position: relative;">
+        <v-tab-item :value="'tab-2'" class="text-center mt-5">
+          <!-- <v-row> -->
+            <!-- <img class="tech-bg" src="../assets/login_bg.png"> -->
+            <vue-particles
+                color="#dedede"
+                :particleOpacity="0.7"
+                :particlesNumber="80"
+                shapeType="circle"
+                :particleSize="4"
+                linesColor="#dedede"
+                :linesWidth="1"
+                :lineLinked="true"
+                :lineOpacity="0.4"
+                :linesDistance="150"
+                :moveSpeed="2.5"
+                :hoverEffect="true"
+                hoverMode="grab"
+                :clickEffect="true"
+                clickMode="push"
+                style="position: absolute;width: 100%;height: 100%;"
+              >
+              </vue-particles>
+            <v-card  class="login">
+              <div class="card-title">
+                  <div class="title">
+                      <img src="../assets/logo.jpg" style="max-height: 120px;" />
+                      <h3>專家系統</h3>
+                  </div>
+              </div>
+              <div class="content">
+                <v-row>
+                  <!-- 帳密輸入 -->
+                  <!-- <v-col cols="12">
+                    <v-form ref="formjwt" v-model="validjwt" lazy-validation>
+                      <div>
+                          <v-text-field
+                          v-model="loginjwt.username"
+                          :rules="rules.require"
+                          label="使用者名稱"
+                          required filled dense clearable disabled
+                        ></v-text-field>
+                      </div>
+                      <div>
                         <v-text-field
-                        v-model="loginjwt.username"
-                        :rules="rules.require"
-                        label="使用者名稱"
-                        required filled dense clearable disabled
-                      ></v-text-field>
-                    </div>
-                    <div>
-                      <v-text-field
-                        v-model="loginjwt.password"
-                        :rules="rules.require"
-                        label="密碼"
-                        required filled dense clearable disabled
-                      ></v-text-field>
-                    </div>
-                    <div>
-                      
-                      <v-btn color="primary" block
-                      large tile @click="loginJWT" disabled
-                      style="border:0px;"><v-icon size="24">mdi-water-outline</v-icon>{{`　本地登入(開發測試中)`}}</v-btn>
-                    </div>
-                  </v-form>
-                </v-col> -->
-                
-                <!-- Google登入 -->
-                <v-col cols="12">
-                  <v-btn
-                    dark
-                    large tile
-                    style="border:0px;height: 40px;"
-                    @click="loginGoogle"
-                    :style="{ background: '#4284f4' }"
-                    color="error" block
-                    class="google-btn"
-                    ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
-                  >
-                </v-col>
-            </v-row>
-            </div>
-          </v-card>
-        <!-- </v-row> -->
-      </v-tab-item>
-    </v-tabs-items>
-    <!-- <v-tabs v-model="tabs" centered grow icons-and-text>
-      <v-tab class="primary--text" :href="'#tab-1'" v-if="false">
-        本地登入<v-icon>mdi-home-circle-outline</v-icon>
-      </v-tab>
-      <v-tab class="primary--text" :href="'#tab-2'">
-        第三方登入<v-icon>mdi-google</v-icon>
-      </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tabs">
-      <v-tab-item :value="'tab-1'"  v-if="false">
-        <UserAuthForm buttonText="Login" :submitForm="loginUser" />
-      </v-tab-item>
-      <v-tab-item :value="'tab-2'"  class="text-center mt-5">
-        <br />
-        <v-btn
-          dark
-          style="border:0px;"
-          @click="loginGoogle"
-          :style="{ background: '#4284f4' }"
-          >以Google登入</v-btn
-        >
-      </v-tab-item>
-    </v-tabs-items> -->
-  </v-container>
+                          v-model="loginjwt.password"
+                          :rules="rules.require"
+                          label="密碼"
+                          required filled dense clearable disabled
+                        ></v-text-field>
+                      </div>
+                      <div>
+                        
+                        <v-btn color="primary" block
+                        large tile @click="loginJWT" disabled
+                        style="border:0px;"><v-icon size="24">mdi-water-outline</v-icon>{{`　本地登入(開發測試中)`}}</v-btn>
+                      </div>
+                    </v-form>
+                  </v-col> -->
+                  
+                  <!-- Google登入 -->
+                  <v-col cols="12">
+                    <v-btn
+                      dark
+                      large tile
+                      style="border:0px;height: 40px;"
+                      @click="loginGoogle"
+                      :style="{ background: '#4284f4' }"
+                      color="error" block
+                      class="google-btn"
+                      ><v-icon size="24">mdi-google</v-icon>{{`　以Google登入`}}</v-btn
+                    >
+                  </v-col>
+              </v-row>
+              </div>
+            </v-card>
+          <!-- </v-row> -->
+        </v-tab-item>
+      </v-tabs-items>
+      <!-- <v-tabs v-model="tabs" centered grow icons-and-text>
+        <v-tab class="primary--text" :href="'#tab-1'" v-if="false">
+          本地登入<v-icon>mdi-home-circle-outline</v-icon>
+        </v-tab>
+        <v-tab class="primary--text" :href="'#tab-2'">
+          第三方登入<v-icon>mdi-google</v-icon>
+        </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tabs">
+        <v-tab-item :value="'tab-1'"  v-if="false">
+          <UserAuthForm buttonText="Login" :submitForm="loginUser" />
+        </v-tab-item>
+        <v-tab-item :value="'tab-2'"  class="text-center mt-5">
+          <br />
+          <v-btn
+            dark
+            style="border:0px;"
+            @click="loginGoogle"
+            :style="{ background: '#4284f4' }"
+            >以Google登入</v-btn
+          >
+        </v-tab-item>
+      </v-tabs-items> -->
+    <!-- </v-container> -->
+  </div>
+  
 </template>
 <script>
 import UserAuthForm from "@/components/UserAuthForm";
