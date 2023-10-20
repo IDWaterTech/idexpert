@@ -163,7 +163,14 @@ export default {
               is_drop_down: false,
               name: "知識庫鷹眼",
               url: "/kb"
-            })
+            },{
+              disabled: false,
+              icon: "mdi-briefcase-eye-outline",
+              id: 77777,
+              is_drop_down: false,
+              name: "預測模式",
+              url: "/pondpredict"
+            },)
           }
           console.log('menuList',this.menuList)
         });
