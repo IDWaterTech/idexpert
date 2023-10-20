@@ -1226,10 +1226,14 @@ export default {
     await this.getarchitecture(); //取得場架構
     //表格group預設是false
     let table = this.$refs.feedtable;
-    let keys = Object.keys(table.$vnode.componentInstance.openCache);
-    keys.forEach(x => {
-      table.$vnode.componentInstance.openCache[x] = false;
-    });
+    // 表格尚未準備好時換頁，造成vnode undefined，因為此時table為undefined，因此需要另外判斷，避免錯誤
+    if(table) {
+      let keys = Object.keys(table.$vnode.componentInstance.openCache);
+      keys.forEach(x => {
+        table.$vnode.componentInstance.openCache[x] = false;
+      });
+    }
+    
     window.addEventListener('resize', () => {
       this.windowWidth = window.innerWidth;
       this.windowHeight = window.innerHeight;
