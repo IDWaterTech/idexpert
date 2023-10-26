@@ -10,6 +10,7 @@
                 </v-row>
             </div>
             <div class="content">
+                <!-- 搜尋 -->
                 <div class="search">
                     <v-row class="my-0">
                         <!-- 選擇池 -->
@@ -68,7 +69,7 @@
                         <!-- 參數設定 -->
                         <v-col cols="12" md="6" sm="12" id="params">
                             <v-card class="result-card" >
-                                <!-- 表頭 -->
+                                <!-- 表頭標題+按鈕群 -->
                                 <div class="card-title">
                                     <div class="title">
                                         <v-icon>mdi-pencil</v-icon>
@@ -145,9 +146,17 @@
                                                                 <v-text-field v-model.number="FeedParm['SugarSourcePurity']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖(碳源)純度(%)</span></v-text-field>
                                                                 <v-text-field v-model.number="FeedParm['SugarSourceCarbonPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖(碳源)含碳量(%)</span></v-text-field>
                                                                 <v-text-field v-model.number="FeedParm['FeedCN']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">飼料CN比(依照飼料)</span></v-text-field>
-                                                                <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">前一餐飼料量(g)</span></v-text-field>
+                                                                <!-- <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">前一餐飼料量(g)</span></v-text-field> -->
+                                                                <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上一餐飼料量(g)</span></v-text-field>
+                                                                <div class="date-time-picker">
+                                                                    <span>上一餐時間</span>
+                                                                    <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" />
+                                                                </div>
+                                                                <!-- <v-text-field v-model.number="FeedParm['LastFeedDatetime']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上一餐時間</span></v-text-field> -->
+                                                                <v-text-field v-model.number="FeedParm['LastFeedOfDay']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">當日飼料量(g)</span></v-text-field>
                                                                 <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 sum-field" append-outer-icon="mdi-plus" @click:append-outer="addFeedQty()"><span class="pa-0 ma-0" slot="prepend">累計飼料量(kg)</span></v-text-field>
-                                                                <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">下餐飼料增加百分比</span></v-select>
+                                                                <!-- <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">下餐飼料增加百分比</span></v-select> -->
+                                                                <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span></v-select>
                                                             </v-form>
                                                         </v-card-text>
                                                     </v-card>
@@ -173,6 +182,7 @@
                                                                 <v-text-field v-model.number="WaterQualityData['Alk']" type="number" dense hide-details class="mt-0" @blur="valueCheck('Alk',WaterQualityData['Alk'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Alk')"></v-badge>鹼度Alk(ppm)</span></v-text-field>
                                                                 <v-text-field v-if="false"  dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">水的顏色</span></v-text-field>
                                                                 <v-select v-model="WaterQualityData['WaterColor']" clearable :items="optData.WaterColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">水的顏色</span></v-select>
+                                                                <v-text-field v-model.number="WaterQualityData['LastTemp']" type="number" dense hide-details class="mt-0"><span class="pa-0" slot="prepend">上一餐水溫(°C)</span></v-text-field>
                                                             </v-form>
                                                         </v-card-text>
                                                     </v-card>
@@ -205,6 +215,18 @@
                                                                 <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">觀察網殘餌量(g)</span></v-text-field>
                                                                 <v-text-field v-model.number="ObservationData['DeadShrimpQty']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">死蝦數量</span></v-text-field>
                                                                 <v-text-field v-model.number="ObservationData['ShrimpLength']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">蝦子長度(cm)</span></v-text-field>
+                                                                <v-text-field v-model.number="ObservationData['ShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">蝦子重量(g)</span></v-text-field>
+                                                                <div class="date-time-picker">
+                                                                    <span>打樣時間</span>
+                                                                    <a-date-picker v-model="ObservationData['SamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" />
+                                                                </div>
+                                                                <!-- <v-text-field v-model.number="ObservationData['SamplingDatetime']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">打樣時間</span></v-text-field> -->
+                                                                <v-text-field v-model.number="ObservationData['LastShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上次蝦子重量(g)</span></v-text-field>
+                                                                <div class="date-time-picker">
+                                                                    <span>上次打樣時間</span>
+                                                                    <a-date-picker v-model="ObservationData['LastSamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" />
+                                                                </div>
+                                                                <!-- <v-text-field v-model.number="ObservationData['LastSamplingDatetime']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上次打樣時間</span></v-text-field> -->
                                                                 <!-- <v-text-field v-model.number="ObservationData['ObsFeed']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">觀察網投餌量(g)</span></v-text-field> -->
                                                             </v-form>
                                                         </v-card-text>
@@ -274,10 +296,12 @@
                                                         <v-card-text class="pa-3 mx-0">
                                                             <v-form ref="BreedingParm">
                                                                 <v-text-field v-model.number="BreedingParm['CN']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">目標CN比</span></v-text-field>
-                                                                <v-text-field v-model.number="BreedingParm['EstimatedFCR']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預測FCR</span></v-text-field>
-                                                                <v-text-field v-model.number="BreedingParm['EstimatedADG']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預測ADG</span></v-text-field>
-                                                                <v-text-field v-model.number="BreedingParm['InitialLength']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養初始長度(cm)</span></v-text-field>
-                                                                <v-text-field v-model.number="BreedingParm['EstimatedSurvivalRate']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估存活率(%)</span></v-text-field>
+                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedFCR']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預測FCR</span></v-text-field> -->
+                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedADG']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預測ADG</span></v-text-field> -->
+                                                                <!-- <v-text-field v-model.number="BreedingParm['InitialLength']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養初始長度(cm)</span></v-text-field> -->
+                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedSurvivalRate']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估存活率(%)</span></v-text-field> -->
+                                                                <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養初始重量(g)</span></v-text-field>
+                                                                <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估間補個體重(g)</span></v-text-field>
                                                             </v-form>
                                                         </v-card-text>
                                                     </v-card>
@@ -321,13 +345,25 @@
                                                                 <v-text-field v-model.number="BacteriaData['VibrioEnteritidis']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">腸炎弧菌(紫)(CFU)</span></v-text-field>
                                                                 <v-text-field v-model.number="BacteriaData['VibrioCholerae']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">霍亂弧菌(靛)(CFU)</span></v-text-field>
                                                                 
-                                                                <v-select v-model="BacteriaData['IsWSSV']" clearable :items="optData.IsWSSV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否WSSV感染</span></v-select>
+                                                                <v-select
+                                                                    v-model="bacteriaSelect"
+                                                                    :items="bacteriaAll"
+                                                                    :menu-props="{ maxHeight: '400' }"
+                                                                    multiple
+                                                                    clearable
+                                                                    @change="select($event)"
+                                                                    filled dense hide-details class="mt-0"
+                                                                    >
+                                                                    <span class="pa-0 ma-0" slot="prepend">疾病感染</span>
+                                                                    
+                                                                </v-select>
+                                                                <!-- <v-select v-model="BacteriaData['IsWSSV']" clearable :items="optData.IsWSSV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否WSSV感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsEMSPlasmid']" clearable :items="optData.IsEMSPlasmid" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否EMS(plasmid)感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsEMSToxin']" clearable :items="optData.IsEMSToxin" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否EMS(toxin)感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsEHP']" clearable :items="optData.IsEHP" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否EHP感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsTSV']" clearable :items="optData.IsTSV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否TSV感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsIMNV']" clearable :items="optData.IsIMNV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否IMNV感染</span></v-select>
-                                                                <v-select v-model="BacteriaData['IsIHHNV']" clearable :items="optData.IsIHHNV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否IHHNV感染</span></v-select>
+                                                                <v-select v-model="BacteriaData['IsIHHNV']" clearable :items="optData.IsIHHNV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否IHHNV感染</span></v-select> -->
 
                                                                 <!-- <v-select v-model="BacteriaData['IsEMSInfected']" clearable :items="optData.IsEMSInfected" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EMS感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsEHPInfected']" clearable :items="optData.IsEHPInfected" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span style="width:120px;" class="pa-0 ma-0 text-center" slot="prepend">是否EHP感染</span></v-select>
@@ -553,13 +589,14 @@
                                                                                 <td>g</td>
                                                                             </tr>
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
-                                                                            <tr>
+                                                                            <!-- <tr>
                                                                                 <td>轉0號料第一餐</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
                                                                                 <td></td>
-                                                                            </tr>
+                                                                            </tr> -->
                                                                             <tr>
-                                                                                <td>前一餐飼料量</td>
+                                                                                <!-- <td>前一餐飼料量</td> -->
+                                                                                <td>上一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
                                                                                 <td>g</td>
                                                                             </tr>
@@ -680,7 +717,8 @@
                                                         <v-card-text class="pa-3 mx-0">
                                                             <v-text-field v-model="suggData.DynamicData['FCR']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend"  title="累計飼料量、蝦子長度、水體體積、放養密度">FCR(換肉率)</span></v-text-field>
                                                             <v-text-field v-model="suggData.DynamicData['ADG']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、養殖天數、養殖起始日">ADG(每日增重量)(g/day)</span></v-text-field>
-                                                            <v-text-field v-model="suggData.DynamicData['BiomassOfShrimp']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(累積料量)(kg)</span></v-text-field>
+                                                            <!-- <v-text-field v-model="suggData.DynamicData['BiomassOfShrimp']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(累積料量)(kg)</span></v-text-field> -->
+                                                            <v-text-field v-model="suggData.DynamicData['Biomass']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(體重投餌率)(kg)</span></v-text-field>
                                                             <v-text-field v-model="suggData.DynamicData['SurvivalRate']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算存活率，因為需要內存量">存活率(%)</span></v-text-field>
                                                             <!-- <v-text-field v-model="suggData.DynamicData['EstimatedFeedTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預估所需飼料量(g)</span></v-text-field> -->
                                                             <!-- <v-text-field v-model="suggData.DynamicData['EstimatedProduction']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="尚無法計算">預估產量(kg)</span></v-text-field> -->
@@ -815,9 +853,19 @@ export default {
             oldSelect: '', // 未儲存時，切換不同池時要還原
             windowWidth: window.innerWidth,
             windowHeight:window.innerHeight,
+            // 是否感染
+            bacteriaAll:['IsWSSV','IsEMSPlasmid','IsEMSToxin','IsEHP','IsTSV','IsIMNV','IsIHHNV'],
+            bacteriaSelect:[],
+            bacteriaDataObject:{}
         }
     },
     methods: {
+        onChange(value,dateString) {
+            console.log(value,dateString);
+        },
+        onOk(value) {
+            console.log(value);
+        },
         // locateSelect
         async get_scopeData(evt) {
             console.log('select pool',evt);
@@ -1063,13 +1111,33 @@ export default {
                 this.isSearch = true;
                 // console.log("querrySelected:",this.querrySelected);
                 var input_data = _.cloneDeep(this.querryData.filter(x=>x.created_time==this.querrySelected)[0].input_data);
+                console.log('import',input_data)
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = input_data.FeedParm;
+                if(this.FeedParm['LastFeedDatetime']) {
+                    this.FeedParm['LastFeedDatetime'] = this.$moment(new Date(this.FeedParm['LastFeedDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                }
+                
                 this.MakeWaterParm = input_data.MakeWaterParm;
                 this.WaterQualityData = input_data.WaterQualityData;
                 this.ObservationData = input_data.ObservationData;
+                if(this.ObservationData['SamplingDatetime']) {
+                    this.ObservationData['SamplingDatetime'] = this.$moment(new Date(this.ObservationData['SamplingDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                }
+                if(this.ObservationData['LastSamplingDatetime']) {
+                    this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(this.ObservationData['LastSamplingDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                }
                 this.BacteriaData = input_data.BacteriaData;
+                console.log(input_data.BacteriaData.DiseaseInfection);
+                this.bacteriaSelect = [];
+                this.bacteriaDataObject = input_data.BacteriaData.DiseaseInfection;
+                for(let i=0;i<this.bacteriaAll.length;i++) {
+                    if(input_data.BacteriaData.DiseaseInfection[this.bacteriaAll[i]]==1) {
+                        this.bacteriaSelect.push(this.bacteriaAll[i]);
+                    }
+                }
+                
                 //reset suggData
                 var output_data = _.cloneDeep(this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data);
                 console.log('querryDataLst[this.nowSelectPool]',input_data)
@@ -1141,6 +1209,8 @@ export default {
                         'BacteriaData': this.BacteriaData,
                         'UserData': this.UserData
                     };
+                    // console.log('bacteriaDataObject',this.bacteriaDataObject)
+                    input_data.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
                     var output_data = this.suggData;
                     var allParm = {
                         input_data:input_data,
@@ -1192,6 +1262,8 @@ export default {
                 'BacteriaData':this.BacteriaData,
                 'UserData':this.UserData
             };
+            // console.log('bacteriaDataObject',this.bacteriaDataObject)
+            allParm.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
             console.log("all參數：",allParm);
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
             await this.$axios.post(url, allParm).then(res => {
@@ -1561,6 +1633,7 @@ export default {
             this.WaterQualityData = {};
             this.ObservationData = {Leftover:0};
             this.BacteriaData={};
+            this.bacteriaSelect = [];
             this.suggData = {
                 "DynamicData": {},
                 "WaterQuality": [],//ai建議-水質
@@ -1654,14 +1727,29 @@ export default {
                 this.lightColor[item] = 'teal';
             }
             return this.lightColor[item];
+        },
+        select(evt) {
+            console.log(this.bacteriaSelect);
+            console.log(this.BacteriaData);
+            for(let i=0;i<this.bacteriaAll.length;i++) {
+                if(this.bacteriaSelect.includes(this.bacteriaAll[i])) {
+                    this.bacteriaDataObject[this.bacteriaAll[i]] = 1;
+                }else {
+                    this.bacteriaDataObject[this.bacteriaAll[i]] = 0;
+                }
+            }
         }
     },
     async created() {
+        for(let i=0;i<this.bacteriaAll.length;i++) {
+            this.bacteriaDataObject[this.bacteriaAll[i]] = 0;            
+        }
         await this.getsuggData();
         await this.getOptData();
         await this.getlightData();
         await this.getAllData();
         await this.getQuerry();
+        
         // this.resetParm();
     },
     computed: {
@@ -2074,6 +2162,30 @@ export default {
             //     height: 16px;
             //     min-width: 16px;
             // }
+            .date-time-picker {
+                display: flex;
+                align-items: center;
+                & > span {
+                    flex: 1;
+                }
+            }
+            .ant-calendar-picker-input.ant-input {
+                border: none;
+                background-color: transparent;
+                border-bottom: 1px solid black;
+                border-radius: 0;
+                margin-left: 4px;
+                margin-right: 4px;
+            }
+            .ant-calendar-picker:hover {
+                border-color: $color-form;
+            } 
+            .ant-calendar-picker-clear {
+                background: $color-lighten;
+            }
+            .ant-calendar-picker-icon {
+                display: none;
+            }
         }
     }
     .v-card.result-card.ai-suggestion {
