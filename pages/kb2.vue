@@ -174,6 +174,7 @@
                                                                 <v-text-field v-model.number="WaterQualityData['Do']" type="number" dense hide-details class="mt-0" @blur="valueCheck('Do',WaterQualityData['Do'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Do')"></v-badge>溶氧Do(ppm)</span></v-text-field>
                                                                 <v-text-field v-model.number="WaterQualityData['pH']" type="number" dense hide-details class="mt-0" @blur="valueCheck('pH',WaterQualityData['pH'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('pH')"></v-badge>酸鹼值(pH)</span></v-text-field>
                                                                 <v-text-field v-model.number="WaterQualityData['Temp']" type="number" dense hide-details class="mt-0" @blur="valueCheck('Temp',WaterQualityData['Temp'])"><span class="pa-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Temp')"></v-badge>水溫(°C)</span></v-text-field>
+                                                                <v-text-field v-model.number="WaterQualityData['LastTemp']" type="number" dense hide-details class="mt-0" @blur="valueCheck('LastTemp',WaterQualityData['LastTemp'])"><span class="pa-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('LastTemp')"></v-badge>上一餐水溫(°C)</span></v-text-field>
                                                                 <v-text-field v-model.number="WaterQualityData['Salinity']" type="number" dense hide-details class="mt-0" @blur="valueCheck('Salinity',WaterQualityData['Salinity'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Salinity')"></v-badge>鹽度(ppt)</span></v-text-field>
                                                                 <v-text-field v-model.number="WaterQualityData['AmmoniaN']" type="number" dense hide-details class="mt-0" @blur="valueCheck('AmmoniaN',WaterQualityData['AmmoniaN'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('AmmoniaN')"></v-badge>氨氮NH3/NH4+(ppm)</span></v-text-field>
                                                                 <v-text-field v-model.number="WaterQualityData['NO2']" type="number" dense hide-details class="mt-0" @blur="valueCheck('NO2',WaterQualityData['NO2'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('NO2')"></v-badge>亞硝酸鹽NO2-(ppm)</span></v-text-field>
@@ -182,7 +183,7 @@
                                                                 <v-text-field v-model.number="WaterQualityData['Alk']" type="number" dense hide-details class="mt-0" @blur="valueCheck('Alk',WaterQualityData['Alk'])"><span class="pa-0 ma-0" slot="prepend"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Alk')"></v-badge>鹼度Alk(ppm)</span></v-text-field>
                                                                 <v-text-field v-if="false"  dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">水的顏色</span></v-text-field>
                                                                 <v-select v-model="WaterQualityData['WaterColor']" clearable :items="optData.WaterColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">水的顏色</span></v-select>
-                                                                <v-text-field v-model.number="WaterQualityData['LastTemp']" type="number" dense hide-details class="mt-0"><span class="pa-0" slot="prepend">上一餐水溫(°C)</span></v-text-field>
+                                                                
                                                             </v-form>
                                                         </v-card-text>
                                                     </v-card>
@@ -351,11 +352,29 @@
                                                                     :menu-props="{ maxHeight: '400' }"
                                                                     multiple
                                                                     clearable
+                                                                    item-value="bacteriaAll"
                                                                     @change="select($event)"
                                                                     filled dense hide-details class="mt-0"
                                                                     >
                                                                     <span class="pa-0 ma-0" slot="prepend">疾病感染</span>
-                                                                    
+                                                                    <template
+                                                                        v-slot:item="{ item }">
+                                                                        <v-icon 
+                                                                            v-if="bacteriaSelect.includes(item)" 
+                                                                            color="primary" 
+                                                                            class="mr-3">
+                                                                            mdi-checkbox-marked
+                                                                        </v-icon>
+                                                                        <v-icon v-else class="mr-3">
+                                                                            mdi-checkbox-blank-outline
+                                                                        </v-icon>
+                                                                        {{ item.split('Is')[1] }}
+                                                                    </template>
+                                                                    <template
+                                                                        v-slot:selection="{ item }">
+                                                                        
+                                                                        {{ item.split('Is')[1] }},
+                                                                    </template>
                                                                 </v-select>
                                                                 <!-- <v-select v-model="BacteriaData['IsWSSV']" clearable :items="optData.IsWSSV" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否WSSV感染</span></v-select>
                                                                 <v-select v-model="BacteriaData['IsEMSPlasmid']" clearable :items="optData.IsEMSPlasmid" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否EMS(plasmid)感染</span></v-select>
@@ -829,7 +848,7 @@ export default {
             panel:{panel_row11:[0],panel_row12:[0],panel_row13:[0],panel_row14:[0],
                    panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],
                    panel_row31:[0,1,2],panel_row32:[0,1]},
-            lightColor:{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal','Mg':'teal','Ca':'teal','Alk':'teal'},
+            lightColor:{'Do':'teal','pH':'teal','Temp':'teal','LastTemp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal','Mg':'teal','Ca':'teal','Alk':'teal'},
             lightData: {
                     Do: {
                         warning: {1: ['4.5 <= Do', 'Do < 5']},
@@ -841,7 +860,11 @@ export default {
                     Temp: {
                         warning: {1: ['15 <= Temp', 'Temp < 22']},
                         critical: {1: ['Temp > 32'], 2: ['Temp < 15']}
-                    }
+                    },
+                    LastTemp: {
+                        warning: {1: ['15 <= LastTemp', 'LastTemp < 22']},
+                        critical: {1: ['LastTemp > 32'], 2: ['LastTemp < 15']}
+                    },
             },
             menu_startdate:false,//養殖起日
             rules: { require: [v => !!v || "*必要項目"] },
@@ -982,6 +1005,11 @@ export default {
             await this.$axios.get(url).then(res => {
                 if(res.status==200){
                     this.lightData = res.data;
+                    console.log(this.lightData['Temp'])
+                    this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
+                    this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
+                    this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
+                    this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
                     //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
                     this.lightColor = Object.keys(res.data).reduce((a, v) => ({ ...a, [v]: 'teal'}), {}); 
                     console.log("get lightData ok");
@@ -1680,6 +1708,7 @@ export default {
                 
                 return;
             }
+            // console.log(item,this.lightData[item]);
             var checkstate = ['warning','critical'];
             var checkstate_bool = [false,false];
             for(var ruledatastate in checkstate){
