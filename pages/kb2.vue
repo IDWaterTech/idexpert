@@ -41,13 +41,13 @@
                         <!-- 查詢/重設 -->
                         <v-col cols="12" md="3" sm="12">
                             <div class="btn-groups">
-                                <v-btn
+                                <!-- <v-btn
                                     tile
                                     :disabled="querrySelected==''||querrySelected==null"
                                     @click="importQuerry()"
                                     class="btn-primary">
                                     查詢
-                                </v-btn>
+                                </v-btn> -->
                                 <v-btn
                                     tile
                                     class="btn-secondary reset"
@@ -931,6 +931,9 @@ export default {
             if(evt!==this.oldSelect) {
                 this.resetParm();
                 this.oldSelect = evt;
+                if(evt!==null) {
+                    this.importQuerry()
+                }
             }
         },
         goAnchor(selector) {
