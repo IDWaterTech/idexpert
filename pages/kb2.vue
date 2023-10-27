@@ -2208,6 +2208,7 @@ export default {
                 border-radius: 0;
                 margin-left: 4px;
                 margin-right: 4px;
+                color: rgba(0,0,0,0.87);
             }
             .ant-calendar-picker:hover {
                 border-color: $color-form;
