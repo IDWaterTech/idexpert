@@ -149,7 +149,7 @@
                                                                 <!-- <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">前一餐飼料量(g)</span></v-text-field> -->
                                                                 <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上一餐飼料量(g)</span></v-text-field>
                                                                 <div class="date-time-picker">
-                                                                    <span>上一餐時間</span>
+                                                                    <span style="font-size: 16px">上一餐時間</span>
                                                                     <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" />
                                                                 </div>
                                                                 <!-- <v-text-field v-model.number="FeedParm['LastFeedDatetime']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上一餐時間</span></v-text-field> -->
@@ -218,13 +218,13 @@
                                                                 <v-text-field v-model.number="ObservationData['ShrimpLength']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">蝦子長度(cm)</span></v-text-field>
                                                                 <v-text-field v-model.number="ObservationData['ShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">蝦子重量(g)</span></v-text-field>
                                                                 <div class="date-time-picker">
-                                                                    <span>打樣時間</span>
+                                                                    <span style="font-size: 16px">打樣時間</span>
                                                                     <a-date-picker v-model="ObservationData['SamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" />
                                                                 </div>
                                                                 <!-- <v-text-field v-model.number="ObservationData['SamplingDatetime']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">打樣時間</span></v-text-field> -->
                                                                 <v-text-field v-model.number="ObservationData['LastShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上次蝦子重量(g)</span></v-text-field>
                                                                 <div class="date-time-picker">
-                                                                    <span>上次打樣時間</span>
+                                                                    <span style="font-size: 16px">上次打樣時間</span>
                                                                     <a-date-picker v-model="ObservationData['LastSamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" />
                                                                 </div>
                                                                 <!-- <v-text-field v-model.number="ObservationData['LastSamplingDatetime']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上次打樣時間</span></v-text-field> -->
