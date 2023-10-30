@@ -1601,10 +1601,10 @@
                                                             <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">當日總砂糖量(kg)</span></v-text-field>
                                                             <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">累計砂糖量(kg)</span></v-text-field> -->
                                                         </v-card-text>
-                                                        <v-card-text class="pa-3 mx-0">
+                                                        <v-card-text class="pa-3 mx-0" style="padding-top: 0 !important;padding-bottom: 0 !important;">
                                                             <v-row class="item-row">
                                                                 <v-col cols=12 md="6" sm="6">
-                                                                    <v-row class="item-row item">
+                                                                    <v-row class="item-row item" style="background-color:#E5F2E0;">
                                                                         <v-col cols="6" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">熟石灰量</span>
                                                                         </v-col>
@@ -1615,7 +1615,7 @@
                                                                     <!-- <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="prepend">熟石灰量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
                                                                 </v-col>
                                                                 <v-col cols=12 md="6" sm="6">
-                                                                    <v-row class="item-row item">
+                                                                    <v-row class="item-row item" style="background-color:#E5F2E0;">
                                                                         <v-col cols="6" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">累計熟石灰量</span>
                                                                         </v-col>
