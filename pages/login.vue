@@ -279,7 +279,9 @@ export default {
       .title {
         color: #006AA6;
         h3 {
-          margin-top: -12px;
+          // margin-top: -12px;
+          color: $color-primary;
+          font-weight: bold;
         }
       }
     }
