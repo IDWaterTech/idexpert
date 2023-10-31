@@ -678,7 +678,7 @@
                                                                                     :items="bacteriaAll"
                                                                                     :menu-props="{ maxHeight: '400' }"
                                                                                     multiple
-                                                                                    
+                                                                                    chips
                                                                                     item-value="bacteriaAll"
                                                                                     @change="select($event)"
                                                                                     filled dense hide-details class="mt-0"
@@ -699,8 +699,17 @@
                                                                                     </template>
                                                                                     <template
                                                                                         v-slot:selection="{ item }">
+                                                                                        <!-- {{ item.split('Is')[1] }} -->
+                                                                                        <v-chip
+                                                                                            style="font-size: 12px;margin: 2px;color: #fff;"
+                                                                                            color="#408FBC"
+                                                                                            class="main"
+                                                                                            close
+                                                                                            @click:close="select(item,true)"
+                                                                                        >
+                                                                                        {{ item.split('Is')[1] }}
+                                                                                        </v-chip>
                                                                                         
-                                                                                        {{ item.split('Is')[1] }},
                                                                                     </template>
                                                                                 </v-select>
                                                                             </v-col>
@@ -3058,9 +3067,13 @@ export default {
             }
             return this.lightColor[item];
         },
-        select(evt) {
+        select(evt,bool=false) {
             console.log(this.bacteriaSelect);
             console.log(this.BacteriaData);
+            if(bool) {
+                var index = this.bacteriaSelect.indexOf(evt);
+                this.bacteriaSelect.splice(index,1);
+            }
             for(let i=0;i<this.bacteriaAll.length;i++) {
                 if(this.bacteriaSelect.includes(this.bacteriaAll[i])) {
                     this.bacteriaDataObject[this.bacteriaAll[i]] = 1;
@@ -3068,6 +3081,7 @@ export default {
                     this.bacteriaDataObject[this.bacteriaAll[i]] = 0;
                 }
             }
+            
         },
         openDialog(title,item) {
             this.alertDialog = true;
@@ -3760,6 +3774,8 @@ export default {
 }
 #params,#ai {
     padding-top: 4px;
+    padding-right: 12px;
+    padding-left: 0;
 }
 // scrollbar
 ::-webkit-scrollbar {
