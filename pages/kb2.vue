@@ -18,7 +18,7 @@
                             <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
                         </v-col>
                         <!-- 選擇參數 -->
-                        <v-col cols="12" md="2" sm="12">
+                        <v-col cols="12" md="3" sm="12">
                             <v-autocomplete
                                 :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
                                 v-model="querrySelected"
@@ -30,8 +30,11 @@
                                 class="mt-1"
                                 :disabled="this.$auth.$state.user == null || nowSelectPool==''"
                                 @change="getSelectData($event)">
-                                <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
-                                <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                                <!-- <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
+                                <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template> -->
+                                <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}</template>
+                                <template slot="selection" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}</template>
+                                
                                 <!-- <template slot="append">
                                     <v-icon :disabled="!this.querrySelectedLst['1']" color="red" @click="delQuerry('1')" title="刪除">mdi-delete</v-icon>
                                     <v-icon :disabled="!this.querrySelectedLst['1']" color="green" @click="patchQuerry('1')" title="覆蓋">mdi-pen</v-icon>
@@ -39,7 +42,7 @@
                             </v-autocomplete>
                         </v-col>
                         <!-- 查詢/重設 -->
-                        <v-col cols="12" md="3" sm="12">
+                        <v-col cols="12" md="2" sm="12">
                             <div class="btn-groups">
                                 <!-- <v-btn
                                     tile
@@ -47,6 +50,13 @@
                                     @click="importQuerry()"
                                     class="btn-primary">
                                     查詢
+                                </v-btn> -->
+                                <!-- <v-btn
+                                    tile
+                                    :disabled="querrySelected==''||querrySelected==null"
+                                    @click="importQuerry()"
+                                    class="btn-primary">
+                                    帶入數據
                                 </v-btn> -->
                                 <v-btn
                                     tile
@@ -2284,6 +2294,9 @@ export default {
                 this.FeedParm = input_data.FeedParm;
                 if(this.FeedParm['LastFeedDatetime']) {
                     this.FeedParm['LastFeedDatetime'] = this.$moment(new Date(this.FeedParm['LastFeedDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                }
+                if(this.FeedParm['CumulativeFeedAmountInput']) {}else {
+                    this.FeedParm['CumulativeFeedAmountInput'] = 0;
                 }
                 
                 this.MakeWaterParm = input_data.MakeWaterParm;
