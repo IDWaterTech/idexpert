@@ -1,10 +1,10 @@
 import Vue from "vue";
-import { message, Table, Tag,Divider,Icon } from "ant-design-vue";
+import { message, Table, Tag,Divider,Icon,Tooltip} from "ant-design-vue";
 import { DatePicker } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import moment from 'moment'
 import 'moment/locale/zh-cn'
-const components = [Table, Tag,Divider,Icon,DatePicker];
+const components = [Table, Tag,Divider,Icon,DatePicker,Tooltip];
 
 Vue.prototype.$message = message;
 moment.locale('zh-cn')
