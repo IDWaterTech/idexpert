@@ -213,13 +213,14 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">上一餐飼料量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number"  dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="FeedParm['LastFeedInput']&&typeof(FeedParm['LastFeedInput'])=='number'?((FeedParm['LastFeedInput']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上一餐飼料量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
                                                                     </v-col>
-                                                                    <v-col cols=12 md="6" sm="6">
+                                                                    <!-- <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <div class="date-time-picker">
@@ -233,21 +234,22 @@
                                                                                 </div>
                                                                                     
                                                                             </v-col>
-                                                                        </v-row>
+                                                                        </v-row> -->
                                                                             
 
                                                                         <!-- <div class="date-time-picker">
                                                                             <span style="font-size: 16px;margin-right: 9px;">上一餐時間</span>
                                                                             <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: 0 !important;width: calc(100% - 9px)" />
                                                                         </div> -->
-                                                                    </v-col>
+                                                                    <!-- </v-col> -->
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">當日飼料量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="FeedParm['LastFeedOfDay']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="FeedParm['LastFeedOfDay']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="FeedParm['LastFeedOfDay']&&typeof(FeedParm['LastFeedOfDay'])=='number'?((FeedParm['LastFeedOfDay']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['LastFeedOfDay']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">當日飼料量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -257,9 +259,10 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">累計飼料量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                                 
-                                                                                <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 sum-field" append-outer-icon="mdi-plus" @click:append-outer="addFeedQty()"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                                <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 sum-field" append-outer-icon="mdi-plus" @click:append-outer="addFeedQty()"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="FeedParm['CumulativeFeedAmountInput']&&typeof(FeedParm['CumulativeFeedAmountInput'])=='number'?((FeedParm['CumulativeFeedAmountInput']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                                 <!-- <v-text-field 
                                                                                     v-model.number="FeedParm['CumulativeFeedAmountInput']" 
                                                                                     type="number" dense hide-details 
@@ -286,6 +289,30 @@
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span></v-select> -->
+                                                                    </v-col>
+                                                                </v-row>
+                                                                <v-row class="item-row">
+                                                                    <v-col cols=12 md="12" sm="12">
+                                                                        <v-row class="item-row item"> 
+                                                                            <v-col cols="12" md="3" sm="3">
+                                                                                <div class="date-time-picker">
+                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;">上一餐時間</span>
+                                                                                </div>
+                                                                                    
+                                                                            </v-col> 
+                                                                            <v-col cols="12" md="9" sm="9">
+                                                                                <div class="date-time-picker">
+                                                                                    <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                </div>
+                                                                                    
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                            
+
+                                                                        <!-- <div class="date-time-picker">
+                                                                            <span style="font-size: 16px;margin-right: 9px;">上一餐時間</span>
+                                                                            <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: 0 !important;width: calc(100% - 9px)" />
+                                                                        </div> -->
                                                                     </v-col>
                                                                 </v-row>
                                                             </v-form>
@@ -746,7 +773,7 @@
                                                                         </v-select> -->
                                                                     </v-col>
                                                                 </v-row>
-                                                                <v-row class="item-row">
+                                                                <!-- <v-row class="item-row">
                                                                     <v-col cols=12 md="12" sm="12">
                                                                         <span class="pa-0 ma-1" slot="prepend">感染紀錄</span>
                                                                         <v-simple-table fixed-header dense height="80px">
@@ -765,18 +792,12 @@
                                                                                         :key="'record-'+item.id">
                                                                                         <td>{{item.time}}</td>
                                                                                         <td>{{ item.record }}</td>
-                                                                                        <!-- <td>{{ item.factor }}</td>
-                                                                                        <td>{{ item.result }}</td> -->
                                                                                     </tr>
                                                                                 </tbody>
-                                                                                <!-- <tbody v-else>
-                                                                                    <span style="width: 100%;text-align: center;padding-top: 16px;font-size: 0.8rem;">暫無資料</span>
-                                                                                    
-                                                                                </tbody> -->
                                                                             </template>
                                                                         </v-simple-table>
                                                                     </v-col>
-                                                                </v-row>
+                                                                </v-row> -->
                                                             <!-- </v-form> -->
                                                         </v-card-text>
                                                     </v-card>
@@ -866,8 +887,9 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">觀察網殘餌量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="ObservationData['Leftover']&&typeof(ObservationData['Leftover'])=='number'?((ObservationData['Leftover']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">觀察網殘餌量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -899,8 +921,9 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">蝦子重量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="ObservationData['ShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="ObservationData['ShrimpWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="ObservationData['ShrimpWeight']&&typeof(ObservationData['ShrimpWeight'])=='number'?((ObservationData['ShrimpWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="ObservationData['ShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">蝦子重量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -911,8 +934,9 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">上次蝦子重量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="ObservationData['LastShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="ObservationData['LastShrimpWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="ObservationData['LastShrimpWeight']&&typeof(ObservationData['LastShrimpWeight'])=='number'?((ObservationData['LastShrimpWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="ObservationData['LastShrimpWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">上次蝦子重量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -930,7 +954,7 @@
                                                                             </v-col> 
                                                                             <v-col cols="12" md="9" sm="9">
                                                                                 <div class="date-time-picker">
-                                                                                    <a-date-picker v-model="ObservationData['SamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px)" />
+                                                                                    <a-date-picker v-model="ObservationData['SamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
                                                                                 </div>
                                                                                     
                                                                             </v-col>
@@ -952,7 +976,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="9" sm="9">
                                                                                 <div class="date-time-picker">
-                                                                                    <a-date-picker v-model="ObservationData['LastSamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk"  style="min-width: none;width: calc(100% - 9px)" />
+                                                                                    <a-date-picker v-model="ObservationData['LastSamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk"  style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
                                                                                 </div>
                                                                             </v-col>
                                                                         </v-row>
@@ -1233,8 +1257,9 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">放養初始重量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="BreedingParm['InitialWeight']&&typeof(BreedingParm['InitialWeight'])=='number'?((BreedingParm['InitialWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養初始重量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -1244,8 +1269,9 @@
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">預估間補個體重</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="6" sm="6">
-                                                                                <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                            <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                                <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <a-tooltip placement="topLeft" :title="BreedingParm['EstimatedHarvestWeight']&&typeof(BreedingParm['EstimatedHarvestWeight'])=='number'?((BreedingParm['EstimatedHarvestWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估間補個體重</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -1541,22 +1567,22 @@
                                                                             <tr>
                                                                                 <td>粉料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
-                                                                                <td>g</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>0號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
-                                                                                <td>g</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>1號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
-                                                                                <td>g</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>2號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
-                                                                                <td>g</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
                                                                             <!-- <tr>
@@ -1568,17 +1594,17 @@
                                                                                 <!-- <td>前一餐飼料量</td> -->
                                                                                 <td>上一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
-                                                                                <td>g</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>下一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
-                                                                                <td>g</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>累計飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
-                                                                                <td>kg</td>
+                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </v-simple-table>
@@ -1603,43 +1629,43 @@
                                                                                 <tr>
                                                                                     <td>粉料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
-                                                                                    <td>g</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>0號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
-                                                                                    <td>g</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>1號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
-                                                                                    <td>g</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>2號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
-                                                                                    <td>g</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
                                                                                 <tr>
                                                                                     <td>轉0號料第一餐</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
-                                                                                    <td></td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.ZeroFeedFirstMeal&&typeof(suggData.Feed.statistics.ZeroFeedFirstMeal)=='number'?((suggData.Feed.statistics.ZeroFeedFirstMeal/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>前一餐飼料量</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
-                                                                                    <td>g</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>下一餐飼料量</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
-                                                                                    <td>g</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>累計飼料量</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
-                                                                                    <td>kg</td>
+                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                             </tbody>
                                                                         </template>
@@ -1661,8 +1687,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">前餐砂糖量(配合飼料CN比)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['LastSugarCN']&&typeof(suggData.Material['LastSugarCN'])=='number'?((suggData.Material['LastSugarCN']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "><span class="pa-0 ma-0" slot="prepend">前餐砂糖量(配合飼料CN比)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1672,8 +1699,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">下餐砂糖量 (配合飼料CN比)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarCN']&&typeof(suggData.Material['SugarCN'])=='number'?((suggData.Material['SugarCN']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">下餐砂糖量 (配合飼料CN比)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1683,8 +1711,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">砂糖量 (降氨氮)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarAmmoniaN']&&typeof(suggData.Material['SugarAmmoniaN'])=='number'?((suggData.Material['SugarAmmoniaN']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降氨氮)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1694,8 +1723,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">砂糖量 (降亞硝酸)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarNO2']&&typeof(suggData.Material['SugarNO2'])=='number'?((suggData.Material['SugarNO2']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降亞硝酸)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1705,8 +1735,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">砂糖量 (提高枯草桿菌)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarBacillusSubtilis']&&typeof(suggData.Material['SugarBacillusSubtilis'])=='number'?((suggData.Material['SugarBacillusSubtilis']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (提高枯草桿菌)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1716,8 +1747,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">砂糖量 (降紫菌)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarVibrioEnteritidis']&&typeof(suggData.Material['SugarVibrioEnteritidis'])=='number'?((suggData.Material['SugarVibrioEnteritidis']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降紫菌)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1727,8 +1759,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">砂糖量 (降靛菌)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarVibrioCholerae']&&typeof(suggData.Material['SugarVibrioCholerae'])=='number'?((suggData.Material['SugarVibrioCholerae']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降靛菌)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1738,8 +1771,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">當日總砂糖量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['SugarTotal']&&typeof(suggData.Material['SugarTotal'])=='number'?((suggData.Material['SugarTotal']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarTotal']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">當日總砂糖量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1749,8 +1783,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">累計砂糖量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['CumulativeSugarAmount']&&typeof(suggData.Material['CumulativeSugarAmount'])=='number'?((suggData.Material['CumulativeSugarAmount']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['CumulativeSugarAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">累計砂糖量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1773,8 +1808,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">熟石灰量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['Lime']&&typeof(suggData.Material['Lime'])=='number'?((suggData.Material['Lime']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="prepend">熟石灰量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1784,8 +1820,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">累計熟石灰量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" disabled dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" disabled dense hide-details class="mt-0 " style="background-color:#E5F2E0;"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['CumulativeLimeAmount']&&typeof(suggData.Material['CumulativeLimeAmount'])=='number'?((suggData.Material['CumulativeLimeAmount']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['CumulativeLimeAmount']" disabled dense hide-details class="mt-0 " style="background-color:#E5F2E0;"><span class="pa-0 ma-0" slot="prepend">累計熟石灰量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1801,8 +1838,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">累計菌量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.Material['CumulativeBacteriaAmount']&&typeof(suggData.Material['CumulativeBacteriaAmount'])=='number'?((suggData.Material['CumulativeBacteriaAmount']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.Material['CumulativeBacteriaAmount']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">累計菌量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1840,8 +1878,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend" title="蝦子長度、養殖天數、養殖起始日">ADG(每日增重量)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.DynamicData['ADG']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g/day</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.DynamicData['ADG']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.DynamicData['ADG']&&typeof(suggData.DynamicData['ADG'])=='number'?((suggData.DynamicData['ADG']/ 1000).toFixed(2)+'kg/day'):'0kg/day'"><span class="pa-0 ma-0">g/day</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.DynamicData['ADG']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、養殖天數、養殖起始日">ADG(每日增重量)</span><span class="pa-0 ma-0" slot="append">g/day</span></v-text-field> -->
@@ -1851,8 +1890,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(體重投餌率)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.DynamicData['Biomass']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.DynamicData['Biomass']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.DynamicData['Biomass']&&typeof(suggData.DynamicData['Biomass'])=='number'?((suggData.DynamicData['Biomass']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.DynamicData['Biomass']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(體重投餌率)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1884,8 +1924,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">觀察網網上料量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.DynamicData['FeedAmountInObservation']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.DynamicData['FeedAmountInObservation']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.DynamicData['FeedAmountInObservation']&&typeof(suggData.DynamicData['FeedAmountInObservation'])=='number'?((suggData.DynamicData['FeedAmountInObservation']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.DynamicData['FeedAmountInObservation']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">觀察網網上料量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -1906,8 +1947,9 @@
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend" title="蝦子長度">蝦子重量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6">
-                                                                            <v-text-field v-model="suggData.DynamicData['ShrimpWeight']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.DynamicData['ShrimpWeight']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.DynamicData['ShrimpWeight']&&typeof(suggData.DynamicData['ShrimpWeight'])=='number'?((suggData.DynamicData['ShrimpWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.DynamicData['ShrimpWeight']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">蝦子重量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
@@ -1946,8 +1988,9 @@
                                                                     <v-col cols="12" md="6" sm="6">
                                                                         <span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span>
                                                                     </v-col>
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['SugarMakeWater']&&typeof(suggData.MakeWater['SugarMakeWater'])=='number'?((suggData.MakeWater['SugarMakeWater']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                     </v-col>
                                                                 </v-row>    
                                                                 <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1957,8 +2000,9 @@
                                                                     <v-col cols="12" md="6" sm="6">
                                                                         <span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span>
                                                                     </v-col>
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['BleachingPowder']&&typeof(suggData.MakeWater['BleachingPowder'])=='number'?((suggData.MakeWater['BleachingPowder']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                     </v-col>
                                                                 </v-row>
                                                                 <!-- <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1968,8 +2012,9 @@
                                                                     <v-col cols="12" md="6" sm="6">
                                                                         <span class="pa-0 ma-0" slot="prepend">海波</span>
                                                                     </v-col>
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['Hypo']&&typeof(suggData.MakeWater['Hypo'])=='number'?((suggData.MakeWater['Hypo']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                     </v-col>
                                                                 </v-row>
                                                                 <!-- <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">海波</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -1979,8 +2024,9 @@
                                                                     <v-col cols="12" md="6" sm="6">
                                                                         <span class="pa-0 ma-0" slot="prepend">尿素</span>
                                                                     </v-col>
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">kg</span></v-text-field>
+                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['Urea']&&typeof(suggData.MakeWater['Urea'])=='number'?((suggData.MakeWater['Urea']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                     </v-col>
                                                                 </v-row>
                                                                 <!-- <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">尿素</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
@@ -2539,15 +2585,27 @@ export default {
                     var input_data = {
                         'BaseParm': this.BaseParm,
                         'BreedingParm': this.BreedingParm,
-                        'FeedParm': this.FeedParm,
+                        'FeedParm': _.cloneDeep(this.FeedParm),
                         'MakeWaterParm': this.MakeWaterParm,
                         'WaterQualityData': this.WaterQualityData,
-                        'ObservationData': this.ObservationData,
+                        'ObservationData': _.cloneDeep(this.ObservationData),
                         'BacteriaData': this.BacteriaData,
                         'UserData': this.UserData
                     };
                     // console.log('bacteriaDataObject',this.bacteriaDataObject)
                     input_data.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
+                    if(input_data.FeedParm['LastFeedDatetime']) {
+                        let maxDate = new Date(this.FeedParm['LastFeedDatetime']);
+                        input_data.FeedParm['LastFeedDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                    }
+                    if(input_data.ObservationData['SamplingDatetime']) {
+                        let maxDate = new Date(this.ObservationData['SamplingDatetime']);
+                        input_data.ObservationData['SamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                    }
+                    if(input_data.ObservationData['LastSamplingDatetime']) {
+                        let maxDate = new Date(this.ObservationData['LastSamplingDatetime']);
+                        input_data.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                    }
                     var output_data = this.suggData;
                     var allParm = {
                         input_data:input_data,
@@ -2589,18 +2647,31 @@ export default {
             // console.log("水中菌相資訊 BacteriaData",this.BacteriaData);
             // console.log("使用者相關資訊 UserData",this.UserData);
             this.UserData.Username = (isSaved)?this.$auth.$state.user.email:"";
+            
             var allParm = {
                 'BaseParm':this.BaseParm,
                 'BreedingParm':this.BreedingParm,
-                'FeedParm':this.FeedParm,
+                'FeedParm':_.cloneDeep(this.FeedParm),
                 'MakeWaterParm':this.MakeWaterParm,
                 'WaterQualityData':this.WaterQualityData,
-                'ObservationData':this.ObservationData,
+                'ObservationData':_.cloneDeep(this.ObservationData),
                 'BacteriaData':this.BacteriaData,
                 'UserData':this.UserData
             };
             // console.log('bacteriaDataObject',this.bacteriaDataObject)
             allParm.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
+            if(allParm.FeedParm['LastFeedDatetime']) {
+                let maxDate = new Date(this.FeedParm['LastFeedDatetime']);
+                allParm.FeedParm['LastFeedDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+            }
+            if(allParm.ObservationData['SamplingDatetime']) {
+                let maxDate = new Date(this.ObservationData['SamplingDatetime']);
+                allParm.ObservationData['SamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+            }
+            if(allParm.ObservationData['LastSamplingDatetime']) {
+                let maxDate = new Date(this.ObservationData['LastSamplingDatetime']);
+                allParm.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+            }
             console.log("all參數：",allParm);
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
             await this.$axios.post(url, allParm).then(res => {
@@ -3116,7 +3187,7 @@ export default {
             var Pond = (this.BaseParm["Pond"]==undefined)?'':this.BaseParm["Pond"];
 
              return Factory + "_" + PondArea + "_" + Pond;
-        }
+        },
     },
     mounted() {
         //監控視窗
@@ -3629,6 +3700,7 @@ export default {
                 // margin-left: 20px;
                 // margin-right: 4px;
                 color: rgba(0,0,0,0.87);
+                padding: 4px;
             }
             .ant-calendar-picker:hover {
                 border-color: $color-form;
