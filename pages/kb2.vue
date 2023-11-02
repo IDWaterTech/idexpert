@@ -1690,7 +1690,7 @@
                                             </v-expansion-panel>
                                             <!-- 投料判斷列表 -->
                                             <v-expansion-panel id="aijudge" class="my-1">
-                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-menu-down">投料判斷列表</v-expansion-panel-header>
+                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投料判斷列表</v-expansion-panel-header>
                                                 <v-expansion-panel-content>
                                                     <v-card tile>
                                                         <v-card-text class="pa-3 mx-0">
@@ -1991,7 +1991,7 @@
                                             
                                         <!-- 養殖前期做水添加物 -->
                                         <v-expansion-panel id="aiinput" class="my-1">
-                                            <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-menu-down">養殖前期做水添加物</v-expansion-panel-header>
+                                            <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">養殖前期做水添加物</v-expansion-panel-header>
                                             <v-expansion-panel-content>
                                                 <v-card tile>
                                                     <v-card-text class="pa-3 mx-0">
