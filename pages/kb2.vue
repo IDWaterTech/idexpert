@@ -178,7 +178,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="6" sm="6">
-                                                                                <span class="pa-0 ma-0 text-center" slot="prepend">含氮量(%)</span>
+                                                                                <span class="pa-0 ma-0 text-center" slot="prepend">含氮量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <v-text-field v-model.number="FeedParm['Nitrogen']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
