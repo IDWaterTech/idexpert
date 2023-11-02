@@ -144,7 +144,8 @@
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#bacteria')"> 水中菌項資訊 </a> -->
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#feed')"> 飼料參數 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#water')"> 水質資訊 |</a> 
-                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#bacteria')"> 水中菌項資訊 </a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#bacteria')"> 水中菌項資訊 |</a>
+                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#bacteriaDisease')"> 傳染病 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#net')"> 觀察網資訊 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#basic')"> 養殖基本數據 |</a> 
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#breed')"> 養殖參數 |</a> 
@@ -174,6 +175,18 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['CrudeProteinPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">粗蛋白含量</span><span class="pa-0 ma-0" slot="append">%</span></v-text-field> -->
                                                                     </v-col>
+                                                                    <v-col cols=12 md="6" sm="6">
+                                                                        <v-row class="item-row item"> 
+                                                                            <v-col cols="12" md="6" sm="6">
+                                                                                <span class="pa-0 ma-0 text-center" slot="prepend">含氮量(%)</span>
+                                                                            </v-col>
+                                                                            <v-col cols="12" md="6" sm="6">
+                                                                                <v-text-field v-model.number="FeedParm['Nitrogen']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                        <!-- <v-text-field v-model.number="FeedParm['Nitrogen']" dense hide-details class="mt-0 blue lighten-3"><span style="width:200px;" class="pa-0 ma-0 text-center" slot="prepend">含氮量(%)</span></v-text-field> -->
+                                                                    </v-col>
+                                                                    
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="6" sm="6">
@@ -686,7 +699,7 @@
                                             </v-expansion-panel>
                                         </v-expansion-panels>
                                         <!-- 傳染病 -->
-                                        <v-expansion-panels id="bacteria" accordion multiple v-model="panel.panel_row25">
+                                        <v-expansion-panels id="bacteriaDisease" accordion multiple v-model="panel.panel_row25">
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">傳染病</v-expansion-panel-header>
                                                 <v-expansion-panel-content>
@@ -3172,10 +3185,10 @@ export default {
         
         if(document.getElementsByClassName('ant-calendar-picker')) {
             let calendar = document.getElementsByClassName('ant-calendar-picker');
-            console.log('calendar',calendar)
+            // console.log('calendar',calendar);
             for(let i=0;i<calendar.length;i++) {
                 calendar[i].style.minWidth='0';
-                console.log('calendar',calendar[i].style.minWidth)
+                // console.log('calendar',calendar[i].style.minWidth);
             }
         }
         // this.resetParm();
