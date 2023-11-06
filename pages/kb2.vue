@@ -1,6 +1,7 @@
 <template>
     <div>
-        <v-card class="kb" :style="{'minHeight':`${windowHeight>880?'90vh':'87vh'}`}">
+        <v-card class="kb" 
+            :style="{'minHeight':`${windowHeight>880?'90vh':'87vh'}`}">
             <div class="card-title">
                 <v-row style="margin-bottom: 0;">
                     <!-- <div class="title">
@@ -12,13 +13,19 @@
             <div class="content">
                 <!-- 搜尋 -->
                 <div class="search">
-                    <v-row class="my-0">
+                    <v-row class="my-0" 
+                    :style="{'height':`${windowWidth<959.58?'200px':'initial'}`,
+                            'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
+                            'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
+                            'marginBottom':`${windowWidth<959.58?'8px':'0'}`}">
                         <!-- 選擇池 -->
-                        <v-col cols="12" md="2" sm="12">
+                        <v-col cols="12" md="2" sm="12"
+                            :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
                         </v-col>
                         <!-- 選擇參數 -->
-                        <v-col cols="12" md="3" sm="12">
+                        <v-col cols="12" md="3" sm="12"
+                        :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <v-autocomplete
                                 :label="(this.$auth.$state.user == null) ? '帶入儲存參數(登入後使用)' : '帶入儲存參數'"
                                 v-model="querrySelected"
@@ -42,7 +49,8 @@
                             </v-autocomplete>
                         </v-col>
                         <!-- 查詢/重設 -->
-                        <v-col cols="12" md="2" sm="12">
+                        <v-col cols="12" md="2" sm="12"
+                        :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <div class="btn-groups">
                                 <!-- <v-btn
                                     tile
@@ -67,18 +75,78 @@
                             </div>
                         </v-col>
                         <!-- 控制項 - result版面收合 -->
-                        <v-col cols="12" md="5" style="display: flex;justify-content: flex-end;">
+                        <v-col cols="12" md="5" style="display: flex;justify-content: flex-end;"
+                        :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
                             <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
+                        </v-col>
+                        <!-- AI 建議 -->
+                        <v-col cols="12" md="6" sm="12" id="ai"  v-show="windowWidth< 959.98&&isSearch"  style="padding-right: 0px;">
+                            <div class="result" style="padding-right: 0px;padding-left: 4px;">
+                                <v-card class="result-card ai-suggestion" style="padding-top: 8px;">
+                                    <div class="content">
+                                        <div class="table-content" style="height: 280px;overflow: hidden;">
+                                            <v-expansion-panels accordion multiple v-model="panel.panel_row30" id="aiwatermin">
+                                                <v-expansion-panel  class="my-1">
+                                                    <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">
+                                                        <div style="display: flex;align-items: center;">
+                                                            <div class="circle" v-if="suggData.WaterQuality.length+suggData.Observation.length>0">
+                                                                <span>{{ suggData.WaterQuality.length+suggData.Observation.length }}</span>
+                                                            </div>
+                                                            
+                                                            警示
+                                                        </div>
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <v-card tile>
+                                                            <v-card-text class="pa-3 mx-0" style="padding-right: 4px !important;">
+                                                                <v-simple-table fixed-header dense height="200px">
+                                                                    <template v-slot:default>
+
+                                                                        <tbody>
+                                                                            <tr v-if="suggData.WaterQuality.length>0" style="background-color:#E6B8BE;font-weight: bold;"><td colspan="3">水質</td></tr>
+                                                                            <tr
+                                                                            v-for="item in suggData.WaterQuality"
+                                                                            :key="'water-'+item.id"
+                                                                            >
+                                                                                <td v-html="setBR(item.status)"></td>
+                                                                                <td><div class="alertOpen" style="cursor: pointer;" @click="openDialog('水質',item)"><v-icon>mdi-dots-vertical-circle-outline</v-icon></div></td>
+
+                                                                            </tr>
+                                                                            <tr v-if="suggData.Observation.length>0" style="background-color:#E6B8BE;font-weight: bold;"><td colspan="3">觀察網</td></tr>
+
+                                                                            <tr
+                                                                            v-for="item in suggData.Observation"
+                                                                            :key="'Obser-'+item.id"
+                                                                            >
+                                                                            <td v-html="setBR(item.status)"></td>
+                                                                            <td><div class="alertOpen" style="cursor: pointer;" @click="openDialog('觀察網',item)"><v-icon>mdi-dots-vertical-circle-outline</v-icon></div></td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </template>
+                                                                </v-simple-table>
+                                                            </v-card-text>
+                                                        </v-card>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+                                            </v-expansion-panels>
+                                        </div>
+                                    </div>
+                                </v-card>
+                            </div>    
                         </v-col>
                     </v-row>   
                 </div>
                 <!-- 查詢結果 -->
-                <div class="result">
+                <div class="result" style="position: relative;"
+                    :style="{'height':`${windowWidth<959.58?'62vh':'initial'}`,
+                            'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
+                            'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
+                            'marginTop':`${windowWidth<959.58&&isSearch?'12px':'4px'}`}">
                     <v-row style="margin-bottom: 0;">
                         <!-- 參數設定 -->
                         <v-col cols="12" md="6" sm="12" id="params">
-                            <v-card class="result-card">
+                            <v-card class="result-card column">
                                 <!-- 表頭標題+按鈕群 -->
                                 <div class="card-title"
                                     :class="{'next-line':windowWidth<425 && (nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null)}">
@@ -276,6 +344,7 @@
                                                                                 
                                                                                 <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 sum-field" append-outer-icon="mdi-plus" @click:append-outer="addFeedQty()"></v-text-field>
                                                                                 <a-tooltip placement="topLeft" :title="FeedParm['CumulativeFeedAmountInput']&&typeof(FeedParm['CumulativeFeedAmountInput'])=='number'?((FeedParm['CumulativeFeedAmountInput']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
+                                                                                <!-- <v-btn class="btn-icon" @click="addFeedQty()"><v-icon>mdi-plus</v-icon></v-btn> -->
                                                                                 <!-- <v-text-field 
                                                                                     v-model.number="FeedParm['CumulativeFeedAmountInput']" 
                                                                                     type="number" dense hide-details 
@@ -1406,7 +1475,7 @@
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#aifeed')"> 投餌量 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#aijudge')"> 投料判斷列表 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#aiinput')"> 養殖前期做水添加物</a> -->
-                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#aiwater')"> 警示 |</a>
+                                        <a v-if="windowWidth>959.58" href="javascript:void(0)" class="tag" @click="goAnchor('#aiwater')"> 警示 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#aifeed')"> 投餌量 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#aijudge')"> 投料判斷列表 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#animate')"> 動態數據資訊 |</a>
@@ -1416,21 +1485,19 @@
                                          :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
                                                 'height':`${windowWidth>959.58?'49vh':'100%'}`}">
                                         <!-- 警示(水質+觀察網) -->
-                                        <v-expansion-panels accordion multiple v-model="panel.panel_row31">
-                                            <v-expansion-panel id="aiwater" class="my-1">
+                                        <v-expansion-panels v-if="windowWidth>959.98" accordion multiple v-model="panel.panel_row30" id="aiwater">
+                                            <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">
                                                     <div style="display: flex;align-items: center;">
                                                         <div class="circle" v-if="suggData.WaterQuality.length+suggData.Observation.length>0">
                                                             <span>{{ suggData.WaterQuality.length+suggData.Observation.length }}</span>
                                                         </div>
-                                                        
                                                         警示
                                                     </div>
                                                 </v-expansion-panel-header>
                                                 <v-expansion-panel-content>
                                                     <v-card tile>
-                        
-                                                        <v-card-text class="pa-3 mx-0">
+                                                        <v-card-text class="pa-3 mx-0" style="padding-right: 4px !important;">
                                                             <v-simple-table fixed-header dense height="200px">
                                                                 <template v-slot:default>
                                                                     <!-- <thead>
@@ -1554,12 +1621,15 @@
                                                 </v-expansion-panel-content>
                                             </v-expansion-panel> -->
                                             
-                                            <!-- 投餌量 -->
-                                            <v-expansion-panel id="aifeed" class="my-1">
+                                            
+                                        </v-expansion-panels>
+                                        <!-- 投餌量 -->
+                                        <v-expansion-panels accordion multiple v-model="panel.panel_row31" id="aifeed">
+                                            <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌量</v-expansion-panel-header>
                                                 <v-expansion-panel-content>
                                                     <v-card tile>
-                                                        <v-card-text class="pa-3 mx-0">
+                                                        <v-card-text class="pa-3 mx-0" style="padding-right: 4px !important;">
                                                             <div v-if="suggData.Feed.status!==''" class="suggestion-text">*建議：{{ suggData.Feed.status }}</div>
                                                                     <v-simple-table fixed-header dense >
                                                                         <thead>
@@ -1580,22 +1650,22 @@
                                                                             <tr>
                                                                                 <td>粉料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>0號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>1號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>2號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
                                                                             <!-- <tr>
@@ -1607,17 +1677,17 @@
                                                                                 <!-- <td>前一餐飼料量</td> -->
                                                                                 <td>上一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>下一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td>累計飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
-                                                                                <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </v-simple-table>
@@ -1642,43 +1712,43 @@
                                                                                 <tr>
                                                                                     <td>粉料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>0號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>1號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>2號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
                                                                                 <tr>
                                                                                     <td>轉0號料第一餐</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.ZeroFeedFirstMeal&&typeof(suggData.Feed.statistics.ZeroFeedFirstMeal)=='number'?((suggData.Feed.statistics.ZeroFeedFirstMeal/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.ZeroFeedFirstMeal&&typeof(suggData.Feed.statistics.ZeroFeedFirstMeal)=='number'?((suggData.Feed.statistics.ZeroFeedFirstMeal/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>前一餐飼料量</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>下一餐飼料量</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>累計飼料量</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
-                                                                                    <td><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
+                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                             </tbody>
                                                                         </template>
@@ -1688,8 +1758,10 @@
                                                     </v-card>
                                                 </v-expansion-panel-content>
                                             </v-expansion-panel>
-                                            <!-- 投料判斷列表 -->
-                                            <v-expansion-panel id="aijudge" class="my-1">
+                                        </v-expansion-panels>
+                                        <!-- 投料判斷列表 -->
+                                        <v-expansion-panels accordion multiple v-model="panel.panel_row32" id="aijudge">
+                                            <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投料判斷列表</v-expansion-panel-header>
                                                 <v-expansion-panel-content>
                                                     <v-card tile>
@@ -1987,74 +2059,74 @@
                                                 </v-expansion-panel-content>
                                             </v-expansion-panel>
                                         </v-expansion-panels>
-                                        <v-expansion-panels accordion multiple v-model="panel.panel_row32">
+                                        <v-expansion-panels accordion multiple v-model="panel.panel_row33">
                                             
-                                        <!-- 養殖前期做水添加物 -->
-                                        <v-expansion-panel id="aiinput" class="my-1">
-                                            <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">養殖前期做水添加物</v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                <v-card tile>
-                                                    <v-card-text class="pa-3 mx-0">
-                                                        <v-row class="item-row">
-                                                            <v-col cols=12 md="6" sm="6">
-                                                                <v-row class="item-row item">
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span>
-                                                                    </v-col>
-                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
-                                                                        <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"></v-text-field>
-                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['SugarMakeWater']&&typeof(suggData.MakeWater['SugarMakeWater'])=='number'?((suggData.MakeWater['SugarMakeWater']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
-                                                                    </v-col>
-                                                                </v-row>    
-                                                                <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
-                                                            </v-col>
-                                                            <v-col cols=12 md="6" sm="6">
-                                                                <v-row class="item-row item">
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span>
-                                                                    </v-col>
-                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
-                                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"></v-text-field>
-                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['BleachingPowder']&&typeof(suggData.MakeWater['BleachingPowder'])=='number'?((suggData.MakeWater['BleachingPowder']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
-                                                                    </v-col>
-                                                                </v-row>
-                                                                <!-- <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
-                                                            </v-col>
-                                                            <v-col cols=12 md="6" sm="6">
-                                                                <v-row class="item-row item">
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <span class="pa-0 ma-0" slot="prepend">海波</span>
-                                                                    </v-col>
-                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
-                                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"></v-text-field>
-                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['Hypo']&&typeof(suggData.MakeWater['Hypo'])=='number'?((suggData.MakeWater['Hypo']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
-                                                                    </v-col>
-                                                                </v-row>
-                                                                <!-- <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">海波</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
-                                                            </v-col>
-                                                            <v-col cols=12 md="6" sm="6">
-                                                                <v-row class="item-row item">
-                                                                    <v-col cols="12" md="6" sm="6">
-                                                                        <span class="pa-0 ma-0" slot="prepend">尿素</span>
-                                                                    </v-col>
-                                                                    <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
-                                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"></v-text-field>
-                                                                        <a-tooltip placement="topLeft" :title="suggData.MakeWater['Urea']&&typeof(suggData.MakeWater['Urea'])=='number'?((suggData.MakeWater['Urea']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
-                                                                    </v-col>
-                                                                </v-row>
-                                                                <!-- <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">尿素</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
-                                                            </v-col>
-                                                        </v-row>
-                                                        <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量(做水)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">海波(kg)</span></v-text-field>
-                                                        <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">尿素(kg)</span></v-text-field> -->
-                                                        <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降紫菌)</span></v-text-field> -->
-                                                        <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降靛菌)</span></v-text-field> -->
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
+                                            <!-- 養殖前期做水添加物 -->
+                                            <v-expansion-panel id="aiinput" class="my-1">
+                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">養殖前期做水添加物</v-expansion-panel-header>
+                                                <v-expansion-panel-content>
+                                                    <v-card tile>
+                                                        <v-card-text class="pa-3 mx-0">
+                                                            <v-row class="item-row">
+                                                                <v-col cols=12 md="6" sm="6">
+                                                                    <v-row class="item-row item">
+                                                                        <v-col cols="12" md="6" sm="6">
+                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span>
+                                                                        </v-col>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.MakeWater['SugarMakeWater']&&typeof(suggData.MakeWater['SugarMakeWater'])=='number'?((suggData.MakeWater['SugarMakeWater']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
+                                                                        </v-col>
+                                                                    </v-row>    
+                                                                    <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
+                                                                </v-col>
+                                                                <v-col cols=12 md="6" sm="6">
+                                                                    <v-row class="item-row item">
+                                                                        <v-col cols="12" md="6" sm="6">
+                                                                            <span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span>
+                                                                        </v-col>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.MakeWater['BleachingPowder']&&typeof(suggData.MakeWater['BleachingPowder'])=='number'?((suggData.MakeWater['BleachingPowder']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    <!-- <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
+                                                                </v-col>
+                                                                <v-col cols=12 md="6" sm="6">
+                                                                    <v-row class="item-row item">
+                                                                        <v-col cols="12" md="6" sm="6">
+                                                                            <span class="pa-0 ma-0" slot="prepend">海波</span>
+                                                                        </v-col>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.MakeWater['Hypo']&&typeof(suggData.MakeWater['Hypo'])=='number'?((suggData.MakeWater['Hypo']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    <!-- <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">海波</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
+                                                                </v-col>
+                                                                <v-col cols=12 md="6" sm="6">
+                                                                    <v-row class="item-row item">
+                                                                        <v-col cols="12" md="6" sm="6">
+                                                                            <span class="pa-0 ma-0" slot="prepend">尿素</span>
+                                                                        </v-col>
+                                                                        <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
+                                                                            <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"></v-text-field>
+                                                                            <a-tooltip placement="topLeft" :title="suggData.MakeWater['Urea']&&typeof(suggData.MakeWater['Urea'])=='number'?((suggData.MakeWater['Urea']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
+                                                                        </v-col>
+                                                                    </v-row>
+                                                                    <!-- <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">尿素</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
+                                                                </v-col>
+                                                            </v-row>
+                                                            <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量(做水)(kg)</span></v-text-field>
+                                                            <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)(kg)</span></v-text-field>
+                                                            <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">海波(kg)</span></v-text-field>
+                                                            <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">尿素(kg)</span></v-text-field> -->
+                                                            <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降紫菌)</span></v-text-field> -->
+                                                            <!-- <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" dense hide-details class="mt-0"><span class="pa-0 ma-0 text-center" slot="prepend">砂糖量 (降靛菌)</span></v-text-field> -->
+                                                        </v-card-text>
+                                                    </v-card>
+                                                </v-expansion-panel-content>
+                                            </v-expansion-panel>
                                         </v-expansion-panels>
                                     </div>
                                     
@@ -2088,7 +2160,7 @@
                     </v-tooltip>
                     <v-tooltip left>
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-primary btn-to to-ai" @click="goAnchor('ai')" v-bind="attrs" v-on="on">
+                            <button class="btn-primary btn-to to-ai" @click="if(windowWidth>959.58){goAnchor('#ai')}else{goAnchor('#aifeed')}" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-crosshairs-gps</v-icon>
                             </button>
                         </template>
@@ -2189,7 +2261,7 @@ export default {
             pondNameLst:{1:'研發一場武曲A1',2:'研發一場武曲A3',3:'研發一場紫微3-2',4:'研發一場紫微4-6'},
             panel:{panel_row11:[0],panel_row12:[0],panel_row13:[0],panel_row14:[0],
                    panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],panel_row25:[0],
-                   panel_row31:[0,1,2],panel_row32:[0,1]},
+                   panel_row30:[0],panel_row31:[0],panel_row32:[0],panel_row33:[0,1]},
             lightColor:{'Do':'teal','pH':'teal','Temp':'teal','LastTemp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal','Mg':'teal','Ca':'teal','Alk':'teal'},
             lightData: {
                     Do: {
@@ -2285,7 +2357,7 @@ export default {
                 this.resetParm();
                 this.oldSelect = evt;
                 if(evt!==null) {
-                    this.importQuerry()
+                    this.importQuerry();
                 }
             }
         },
@@ -2479,7 +2551,12 @@ export default {
                         this.getSelectData(this.querrySelected);
                         this.importQuerry();
                     }
-                    
+                    if(this.windowWidth<959.58) {
+                        setTimeout(()=>{
+                            this.goAnchor('#aiwatermin');
+                        },100)
+                    }
+                        
                 }
                 else if(res.status == 400){
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
@@ -2536,7 +2613,7 @@ export default {
                 
                 //reset suggData
                 var output_data = _.cloneDeep(this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data);
-                console.log('querryDataLst[this.nowSelectPool]',input_data)
+                console.log('querryDataLst[this.nowSelectPool]',output_data)
                 this.suggData = {
                     "DynamicData": output_data.DynamicData,
                     "WaterQuality": output_data.WaterQuality,//ai建議-水質
@@ -2545,6 +2622,11 @@ export default {
                     "Material": output_data.Material,//投料判斷列表
                     "MakeWater": output_data.MakeWater//養殖前期做水添加物
                 };
+                if(this.windowWidth<959.58) {
+                    setTimeout(()=>{
+                        this.goAnchor('#aiwatermin');
+                    },100)
+                }
             }
             
             return;
@@ -3070,13 +3152,13 @@ export default {
                 this.panel = {
                     panel_row11: [0], panel_row12: [0], panel_row13: [0], panel_row14: [0],
                     panel_row21: [0], panel_row22: [0], panel_row23: [0], panel_row24: [0],panel_row25: [0],
-                    panel_row31: [0, 1, 2], panel_row32: [0, 1]
+                    panel_row30: [0], panel_row31: [0],panel_row32: [0], panel_row33: [0, 1]
                 };
             }else{
                 this.panel = {
                     panel_row11: [], panel_row12: [], panel_row13: [], panel_row14: [],
                     panel_row21: [], panel_row22: [], panel_row23: [], panel_row24: [],panel_row24: [],
-                    panel_row31: [], panel_row32: []
+                    panel_row30: [], panel_row31: [],panel_row32: [], panel_row33: []
                 };
             }
         },
@@ -3259,7 +3341,7 @@ export default {
             }
         }
         .card-title,.content {
-            padding: 12px 24px;
+            padding: 12px;
             .row {
                 margin-left: 0;
                 margin-top: 0;
@@ -3318,13 +3400,14 @@ export default {
         .v-card.result-card {
             background-color: #E6F5FA;
             box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
+            margin: 0 2px;
             .theme--light.v-card {
                 background-color: #E6F5FA;
             }
             .card-title {
                 display: flex;
                 align-items: center;
-                padding: 4px 24px;
+                padding: 4px 16px;
                 &.next-line {
                     flex-direction: column;
                     .title {
@@ -3418,10 +3501,11 @@ export default {
                 }
             }
             .content {
-                padding: 12px 24px;
+                padding: 12px;
                 padding-bottom: 8px;
                 .v-card__text {
                     padding: 8px;
+                    padding-left: 4px !important;
                 }
                 .row.item-row {
                     margin-bottom: 8px;
@@ -3468,6 +3552,13 @@ export default {
                     }
                     
                 }
+
+                .btn-icon {
+                    border-radius: 50%;
+                    & .v-icon {
+                        color: #fff !important;
+                    }
+                }
                 .alertOpen {
                     .v-icon.v-icon {
                         color: $color-primary;
@@ -3479,6 +3570,7 @@ export default {
                 .theme--light.v-expansion-panels .v-expansion-panel-header {
                     background-color: #BFD9E8;
                     font-weight: bold;
+                    padding: 12px 8px !important;
                     .v-expansion-panel-header__icon .v-icon {
                         color: #00273E;
                     }
@@ -3541,6 +3633,7 @@ export default {
                 height: 40px;
                 border-radius: 50%;
                 box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
+                margin: 0;
                 .v-icon.v-icon {
                     color: #fff !important;
                     font-size: 1.5rem;
@@ -3732,6 +3825,7 @@ export default {
             // }
             .v-data-table--fixed-header > .v-data-table__wrapper {
                 border-radius: 4px;
+                overflow-x: hidden;
             }
         }
     }
@@ -3859,8 +3953,11 @@ export default {
 }
 #params,#ai {
     padding-top: 4px;
-    padding-right: 12px;
+    padding-right: 8px;
     padding-left: 0;
+}
+#ai {
+    padding-right: 12px;
 }
 // scrollbar
 ::-webkit-scrollbar {
@@ -3876,34 +3973,54 @@ export default {
 @media (max-width:960px) {
     .v-application.v-application--is-ltr {
         .v-card.kb {
-            .v-card.result-card {
-                .content {
-                    .table-content {
-                        height: inherit !important;
-                        overflow-y: inherit !important;
-                    }
+            .card-title,.content,.v-card.result-card .card-title,.v-card.result-card .content {
+                padding: 4px 8px;
+            }
+            .content .search > .row {
+                margin-left: -4px;
+                margin-right: 0;
+            }
+            .v-card.result-card .content {
+                .v-card__text {
+                    padding-bottom: 0px !important;
                 }
             }
+            
+            // .v-card.result-card {
+            //     .content {
+            //         .table-content {
+            //             height: inherit !important;
+            //             overflow-y: inherit !important;
+            //         }
+            //     }
+            // }
+        }
+    }
+    // #params,#ai {
+    //     padding-top: 4px;
+    //     padding-right: 0;
+    // }
+}
+@media (max-width:425px) {
+    .v-application.v-application--is-ltr {
+        .v-card.kb {
+            .v-card.result-card {
+                &.column {
+                    .card-title {
+                        flex-direction: column; 
+                        .btn-groups {
+                            justify-content: flex-start;
+                        }
+                        .title {
+                            border-bottom: none;
+                        }
+                    }
+                }
+
+            }
+            
         }
     }
 }
-// @media (max-width:425px) {
-//     .v-application.v-application--is-ltr {
-//         .v-card.kb {
-//             .v-card.result-card {
-//                 .card-title {
-//                     flex-direction: column;
-//                     .title {
-//                         border-bottom: none;
-//                     }
-//                     .btn-groups {
-//                         justify-content: flex-start;
-//                     }
-//                 }
-//             }
-            
-//         }
-//     }
-// }
 
 </style>
