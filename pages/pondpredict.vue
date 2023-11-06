@@ -5,7 +5,7 @@
                 <v-row>
                     <div class="title">
                         <v-icon>mdi-briefcase-eye-outline</v-icon>
-                        <v-card-title>預測模式</v-card-title>
+                        <v-card-title>模型預測</v-card-title>
                     </div>
                 </v-row>
             </div>

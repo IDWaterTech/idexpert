@@ -168,7 +168,7 @@ export default {
               icon: "mdi-briefcase-eye-outline",
               id: 77777,
               is_drop_down: false,
-              name: "預測模式",
+              name: "模型預測",
               url: "/pondpredict"
             },)
           }
