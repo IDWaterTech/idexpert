@@ -48,7 +48,7 @@
                                 </template> -->
                             </v-autocomplete>
                         </v-col>
-                        <!-- 查詢/重設 -->
+                        <!-- 查詢/清空 -->
                         <v-col cols="12" md="2" sm="12"
                         :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <div class="btn-groups">
@@ -70,7 +70,15 @@
                                     tile
                                     class="btn-secondary reset"
                                     @click="resetParm();getSelectData(null)">
-                                    重設
+                                    清空
+                                </v-btn>
+                                <v-btn
+                                    fab dark x-small
+                                    color="blue-grey"
+                                    @click="importBasicData();">
+                                    <v-icon>
+                                        mdi-database-import
+                                    </v-icon>
                                 </v-btn>
                             </div>
                         </v-col>
@@ -326,7 +334,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="6" sm="6">
-                                                                                <span class="pa-0 ma-0" slot="prepend">當日飼料量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend">當日總飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="FeedParm['LastFeedOfDay']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -2341,7 +2349,7 @@ export default {
                 this.resetParm();
             }
             console.log('nowSelectDataLst',this.nowSelectDataLst);
-            
+            this.importBasicData();//帶入數據
             // this.allData.forEach(d=>{d.node.forEach(s=>{s.node.forEach(p=>{if(p.id==evt)this.nowSelectPool=s.name+'_'+p.name})})});
         },
         // 帶入參數
@@ -2573,14 +2581,19 @@ export default {
             });
 
         },
-        importQuerry:async function(){
-            if(this.querrySelected==null){
+        importQuerry:async function(_input_data = null){
+            if(this.querrySelected==null && _input_data == null){
                 this.resetParm();
                 return;
             }else{
                 this.isSearch = true;
                 // console.log("querrySelected:",this.querrySelected);
-                var input_data = _.cloneDeep(this.querryData.filter(x=>x.created_time==this.querrySelected)[0].input_data);
+                var input_data = {};
+                if(_input_data==null){
+                    input_data = _.cloneDeep(this.querryData.filter(x=>x.created_time==this.querrySelected)[0].input_data);
+                }else{
+                    input_data = _input_data;
+                }
                 console.log('import',input_data)
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
@@ -2602,17 +2615,23 @@ export default {
                     this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(this.ObservationData['LastSamplingDatetime']), 'YYYY-MM-DD HH:mm:ss');
                 }
                 this.BacteriaData = input_data.BacteriaData;
-                console.log(input_data.BacteriaData.DiseaseInfection);
+                console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
+                
                 this.bacteriaSelect = [];
                 this.bacteriaDataObject = input_data.BacteriaData.DiseaseInfection;
                 for(let i=0;i<this.bacteriaAll.length;i++) {
-                    if(input_data.BacteriaData.DiseaseInfection[this.bacteriaAll[i]]==1) {
+                    if(input_data.BacteriaData.DiseaseInfection != undefined && input_data.BacteriaData.DiseaseInfection[this.bacteriaAll[i]]==1) {
                         this.bacteriaSelect.push(this.bacteriaAll[i]);
                     }
                 }
-                
                 //reset suggData
-                var output_data = _.cloneDeep(this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data);
+                //suggData: { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {} },//ai建議
+                var output_data = { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {} };
+                if(_input_data==null){
+                    output_data = _.cloneDeep(this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data);
+                }else{
+                    
+                }
                 console.log('querryDataLst[this.nowSelectPool]',output_data)
                 this.suggData = {
                     "DynamicData": output_data.DynamicData,
@@ -3145,6 +3164,33 @@ export default {
                 "Material": {},//投料判斷列表
                 "MakeWater": {}//養殖前期做水添加物
             };
+        },
+        importBasicData:async function(){//帶入數據
+            if(this.nowSelectPool==""){
+                this.$toast.error(`請先選擇養殖池`, { duration: 2000 });
+                return;
+            }
+            var parm ={
+                inspected_date:this.getNowDate(),
+                inspected_time: this.getNowTime(),
+                pond_id : this.nowSelectPool    
+            };
+            // console.log("importBasicData parm:" , parm);
+            let url =`${this.$store.state.mydata.gobal_api.apiUrl}/kb/required-data/`;
+            await this.$axios.get(url, {params:parm}).then(res => {
+                if (res.status == 200) {
+                    this.importQuerry(res.data);//導入資料
+                    this.$toast.success(`取得基本資料成功`, { duration: 2000 });
+                } else {
+                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                }
+                console.log("取得基本資料API:" + res.request.responseURL);
+            }).catch(error => {
+                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            })
+            .finally(() => {
+                    //this.getdata();
+            });
         },
         expandPanel:async function(exand=True){
             this.nowExpand = exand;
