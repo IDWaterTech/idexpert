@@ -66,20 +66,28 @@
                                     class="btn-primary">
                                     帶入數據
                                 </v-btn> -->
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <button class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default" @click="importBasicData();" v-bind="attrs" v-on="on">
+                                            基本資料
+                                        </button>
+                                    </template>
+                                    <span>帶入基本資料</span>
+                                </v-tooltip>
                                 <v-btn
                                     tile
                                     class="btn-secondary reset"
                                     @click="resetParm();getSelectData(null)">
                                     清空
                                 </v-btn>
-                                <v-btn
+                                <!-- <v-btn
                                     fab dark x-small
                                     color="blue-grey"
                                     @click="importBasicData();">
                                     <v-icon>
                                         mdi-database-import
                                     </v-icon>
-                                </v-btn>
+                                </v-btn> -->
                             </div>
                         </v-col>
                         <!-- 控制項 - result版面收合 -->
@@ -88,7 +96,7 @@
                             <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
                             <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                         </v-col>
-                        <!-- AI 建議 -->
+                        <!-- AI 建議 警示 windowWidth<959.58 固定在上方 -->
                         <v-col cols="12" md="6" sm="12" id="ai"  v-show="windowWidth< 959.98&&isSearch"  style="padding-right: 0px;">
                             <div class="result" style="padding-right: 0px;padding-left: 4px;">
                                 <v-card class="result-card ai-suggestion" style="padding-top: 8px;">
@@ -2330,6 +2338,7 @@ export default {
                 this.querrySelected = '';
                 this.isSearch = false;
                 this.resetParm();
+                this.importBasicData();//帶入數據
             }
             this.allData.forEach(f=>{
                 f.node.forEach(a=>{
@@ -2349,7 +2358,7 @@ export default {
                 this.resetParm();
             }
             console.log('nowSelectDataLst',this.nowSelectDataLst);
-            this.importBasicData();//帶入數據
+            // this.importBasicData();//帶入數據
             // this.allData.forEach(d=>{d.node.forEach(s=>{s.node.forEach(p=>{if(p.id==evt)this.nowSelectPool=s.name+'_'+p.name})})});
         },
         // 帶入參數
@@ -3169,6 +3178,8 @@ export default {
             if(this.nowSelectPool==""){
                 this.$toast.error(`請先選擇養殖池`, { duration: 2000 });
                 return;
+            }else {
+                this.getSelectData(null);
             }
             var parm ={
                 inspected_date:this.getNowDate(),
@@ -3373,6 +3384,7 @@ export default {
             background-color: #006AA6;
             color: #fff;
             transition: all 0.3s;
+            
             &:hover {
                 background-color: lighten($color: #006AA6, $amount: 2);
             }
