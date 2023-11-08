@@ -14,13 +14,14 @@
                 <!-- 搜尋 -->
                 <div class="search">
                     <v-row class="my-0" 
-                    :style="{'height':`${windowWidth<959.58?'200px':'initial'}`,
+                        :style="{'height':`${windowWidth<959.58?'260px':'initial'}`,
                             'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
                             'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
-                            'marginBottom':`${windowWidth<959.58?'8px':'0'}`}">
+                            'display':`${windowWidth<959.58?'initial':'flex'}`}">
                         <!-- 選擇池 -->
                         <v-col cols="12" md="2" sm="12"
-                            :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
+                            :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`,
+                                    'marginTop':`${windowWidth>959.58?'0':'-16px'}`}">
                             <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
                         </v-col>
                         <!-- 選擇參數 -->
@@ -48,9 +49,10 @@
                                 </template> -->
                             </v-autocomplete>
                         </v-col>
-                        <!-- 查詢/清空 -->
-                        <v-col cols="12" md="2" sm="12"
-                        :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
+                        <!-- 查詢/清空/控制項 - result版面收合 -->
+                        <v-col cols="12" md="7" sm="12"
+                            :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
+                            style="display: flex;justify-content: space-between;align-items: center;">
                             <div class="btn-groups">
                                 <!-- <v-btn
                                     tile
@@ -88,17 +90,24 @@
                                         mdi-database-import
                                     </v-icon>
                                 </v-btn> -->
+                                
+                                
+                            </div>
+                            <!-- 控制項 - result版面收合 -->
+                            <div class="control">
+                                <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
+                                <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                             </div>
                         </v-col>
                         <!-- 控制項 - result版面收合 -->
-                        <v-col cols="12" md="5" style="display: flex;justify-content: flex-end;"
+                        <!-- <v-col v-if="windowWidth>959.58" cols="12" md="4" style="display: flex;justify-content: flex-end;"
                         :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
                             <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
-                        </v-col>
+                        </v-col> -->
                         <!-- AI 建議 警示 windowWidth<959.58 固定在上方 -->
-                        <v-col cols="12" md="6" sm="12" id="ai"  v-show="windowWidth< 959.98&&isSearch"  style="padding-right: 0px;">
-                            <div class="result" style="padding-right: 0px;padding-left: 4px;">
+                        <v-col cols="12" md="6" sm="12" id="ai"  v-show="windowWidth< 959.98&&isSearch"  style="padding-right: 0px;padding-left: 0;padding-bottom: 8px;">
+                            <div class="result" style="padding-right: 0px;">
                                 <v-card class="result-card ai-suggestion" style="padding-top: 8px;">
                                     <div class="content">
                                         <div class="table-content" style="height: 280px;overflow: hidden;">
@@ -158,7 +167,7 @@
                     :style="{'height':`${windowWidth<959.58?'62vh':'initial'}`,
                             'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
                             'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
-                            'marginTop':`${windowWidth<959.58&&isSearch?'12px':'4px'}`}">
+                            'marginTop':`${windowWidth<959.58&&isSearch?'8px':'4px'}`}">
                     <v-row style="margin-bottom: 0;">
                         <!-- 參數設定 -->
                         <v-col cols="12" md="6" sm="12" id="params">
@@ -2590,7 +2599,7 @@ export default {
             });
 
         },
-        importQuerry:async function(_input_data = null){
+        importQuerry:async function(_input_data = null,bool=false){
             if(this.querrySelected==null && _input_data == null){
                 this.resetParm();
                 return;
@@ -2650,7 +2659,7 @@ export default {
                     "Material": output_data.Material,//投料判斷列表
                     "MakeWater": output_data.MakeWater//養殖前期做水添加物
                 };
-                if(this.windowWidth<959.58) {
+                if(this.windowWidth<959.58 && !bool) {
                     setTimeout(()=>{
                         this.goAnchor('#aiwatermin');
                     },100)
@@ -3190,7 +3199,7 @@ export default {
             let url =`${this.$store.state.mydata.gobal_api.apiUrl}/kb/required-data/`;
             await this.$axios.get(url, {params:parm}).then(res => {
                 if (res.status == 200) {
-                    this.importQuerry(res.data);//導入資料
+                    this.importQuerry(res.data,true);//導入資料
                     this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
@@ -3721,6 +3730,9 @@ export default {
     // locateSelect
     .font-size-large {
       font-size: 16px;
+    }
+    .vue-treeselect__menu {
+        max-height: 200px !important;
     }
     .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
       padding-left: 0;
