@@ -5,10 +5,11 @@
             <v-col cols="12">
                 <h3 style="color:white;">氣象資訊</h3>
             </v-col>
-            <v-col cols="12" justify="center" align="center">
+            <v-col cols="12" justify="center">
               {{ toggle_weather }}_{{ toggle_weather2 }}<br/>
               <v-btn-toggle
-                  v-model="toggle_weather2" color="primary" @change="changeloc(toggle_weather)"
+                  v-model="toggle_weather2" color="primary" @change="changeloc(toggle_weather)" mandatory
+                  class="field-toggle"
                 >
                 <v-btn :value="1">研發<br/>一場</v-btn>
                 <v-btn :value="2">彰化<br/>芳苑</v-btn>
@@ -223,11 +224,28 @@ created() {
 };
 </script>
 
-<style >
+<style lang="scss">
 .popoverColor{
   background-color: #3F6D9E !important;
 }
 .popoverColor .popper_arrow::after{
   border-bottom-color: #3F6D9E !important;
+}
+.theme--dark.field-toggle.v-btn-toggle:not(.v-btn-toggle--group) {
+  border-radius: 4px;
+  overflow: hidden;
+  background: $color-dark;
+}
+.theme--dark.v-btn.v-btn--has-bg {
+  background-color: $color-dark;
+  // color: $color-dark;
+}
+.theme--dark.v-btn--active::before {
+  opacity: 0.4;
+  background-color: $color-primary-25;
+  // border-radius: 2px 0 0 2px;
+}
+::v-deep {
+  
 }
 </style>
