@@ -19,69 +19,340 @@ $color-form: #6c9bcd;
 $color-green: #00A660;
 
 //btn
+.btn-primary,.btn-secondary {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  margin: 2px;
+  &.btn-small {
+    height: 28px;
+    min-width: 48px;
+    font-size: 0.8rem;
+    padding: 0 8px;
+  }
+}
 .btn-primary {
-    border-radius: 4px !important;
-    box-shadow: none !important;
     background-color: $color-primary !important;
     color: #fff !important;
-    // &.v-btn--disabled {
-    //   background-color: $color-dark-25;
-    //   color: $color-dark-50;
-    // }
     &.green {
       background-color: $color-green !important;
     }
+    &.disabled {
+      background-color: $color-dark-25 !important;
+      color: $color-dark-50 !important;
+      pointer-events: none;
+    }
 }
 .btn-secondary {
-    border-radius: 4px !important;
-    box-shadow: none !important;
-    background-color: transparent !important;
+  background-color: transparent !important;
+  color: $color-primary !important;
+  border: 1px solid $color-primary;
+  & .v-icon {
     color: $color-primary !important;
+  }
+  &.green {
+    color: $color-green !important;
     border: 1px solid $color-primary;
+    & .v-icon {
+      color: $color-green !important;
+    }
+  }
+  &.disabled {
+    border: 1px solid $color-dark-25;
+    color: $color-dark-50 !important;
+    pointer-events: none;
+  }
+  &.delete {
+    border-color: $color-accent !important;
+    color: $color-accent !important;
+    & .v-icon {
+      color: $color-accent !important;
+    }
+  }
 }
 
+.btn-icon,.btn-icon-secondary {
+  width: 24px !important;
+  height: 24px !important;
+  box-shadow: none !important;
+  border-radius: 4px;
+  position: relative;
+  margin: 4px;
+  transition: all 0.3s;
+  padding: 0 10px;
+  min-height: 0 !important;
+  min-width: 24px !important;
+  padding: 0 !important;
+  margin: 2px;
+  .theme--light.v-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 1rem;
+  }
+}
+.btn-icon {
+  background-color: $color-primary !important;
+  &:hover {
+      background-color: lighten($color: $color-primary, $amount: 3) !important;
+  }
+  .theme--light.v-icon {
+    color: #fff !important;
+  }
+  &.delete {
+    background-color: $color-accent !important;
+    &:hover {
+      background-color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
+    }
+  }
+  &.disabled {
+    background-color: $color-dark-25 !important;
+    pointer-events: none;
+    .theme--light.v-icon {
+      color: $color-dark-50 !important;
+    }
+  }
+  &.just-icon {
+    background-color: transparent !important;
+    .theme--light.v-icon {
+      color: $color-primary !important;
+    }
+    &:hover {
+      background-color: $color-primary-25 !important;
+    }
+    &.disabled {
+      pointer-events: none;
+      .theme--light.v-icon {
+        color: $color-dark-50 !important;
+      }
+    }
+  }
+}
+.btn-icon-secondary {
+  border: 1px solid $color-primary !important;
+  background-color: transparent !important;
+  .theme--light.v-icon {
+    color: $color-primary !important;
+  }
+  &.delete {
+    border: 1px solid $color-accent !important;
+    .theme--light.v-icon {
+      color: $color-accent !important;
+    }
+    &:hover {
+      background-color: rgba($color-accent, 0.1) !important;
+    }
+  }
+}
 // 場區池下拉選單
 ::v-deep {
-    .search {
-        .select-template {
-            .font-size-large {
-                font-size: 16px;
-              }
-            .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
-                padding-left: 0;
-                padding-right: 0;
-            }
-            .vue-treeselect__control {
-                border: none;
-                border-radius: 0;
-                border-bottom: 1px solid $color-form;
-                .vue-treeselect__placeholder {
-                    color: $color-dark;
-                    &::before {
-                    content: '*'
-                    }
-                    &::after {
-                    content: '(必選)';
-                    }
-                }
-                .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-                    color: $color-form;
-                }
-                .vue-treeselect__x-container {
-                    display: none;
-                }
-            }
-            .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
-            .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-                border-color: $color-form;
-            }
-            .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
-            .theme--light.v-input input {
-                font-size: 14px;
-                color: $color-dark;
-            }
-        }
+  // locateselect
+  .select-template {
+    flex: 1;
+    margin-right: 16px;
+    .font-size-large {
+      font-size: 16px;
     }
+    .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .vue-treeselect__control {
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid $color-form;
+      .vue-treeselect__placeholder {
+        color: $color-dark;
+        &::before {
+          content: '*'
+        }
+        &::after {
+          content: '(必選)';
+        }
+      }
+      .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+        color: $color-form;
+      }
+      .vue-treeselect__x-container {
+        display: none;
+      }
+      // 多選的chips
+      .vue-treeselect__multi-value-item {
+        background-color: $color-primary-75;
+        color: #fff;
+        border-radius: 20px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+        cursor: default;
+        
+        &:hover {
+          background-color: rgba($color-primary-75,0.9);
+        }
+        .font-size-large {
+          font-size: 12px;
+        }
+      }
+      .vue-treeselect__multi-value-label {
+        pointer-events: none;
+      }
+      .vue-treeselect__value-remove {
+        border: none;
+        color: $color-primary-75;
+        background-color: #fff;
+        display: inline-block;
+        border-radius: 50%;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+        &:hover {
+          background-color: rgba(#fff,0.8);
+        }
+      }
+      .vue-treeselect svg {
+        fill: #fff;
+      }
+    }
+    .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+      border-color: $color-form;
+    }
+    .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
+    .theme--light.v-input input {
+      font-size: 14px;
+      color: $color-dark;
+    }
+    &.disabled {
+      pointer-events: none;
+      .vue-treeselect__control {
+        border-bottom: 1px solid $color-dark-25;
+        .vue-treeselect__placeholder {
+          color: $color-dark;
+        }
+        .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+          color: $color-dark-25;
+        }
+      }
+      .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
+      .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+        border-color: $color-dark-25;
+      }
+      .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
+      .theme--light.v-input input,.vue-treeselect__single-value {
+        color: $color-dark-50;
+      }
+    }
+    &.error {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      .vue-treeselect__control .vue-treeselect__placeholder {
+        color: #ff5252;
+      }
+      .vue-treeselect__control .vue-treeselect__control-arrow {
+        color: #ff5252;
+      }
+      &::after {
+        content: ' *必要項目';
+        color: #ff5252;
+        font-size: 12px;
+        padding: 0 12px;
+      }
+    }
+  }
+  .search {
+    
+    // 搜尋欄
+    .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
+      background: transparent;
+    }
+    .v-text-field--filled.v-input--dense > .v-input__control > .v-input__slot,.v-text-field--filled > .v-input__control > .v-input__slot {
+      min-height: 36px;
+    }
+    .v-text-field--filled:not(.v-text-field--single-line) input {
+      margin-top: 0;
+    }
+    .v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
+      margin-top: 4px;
+    }
+    .v-text-field input {
+      // padding: 0;
+    }
+    .v-text-field > .v-input__control > .v-input__slot > .v-text-field__slot {
+      align-items: center;
+    }
+    .v-text-field--filled.v-input--dense .v-label {
+      top: 8px;
+    }
+    .v-text-field--filled.v-input--dense .v-label.v-label--active {
+      top: 0;
+      color: $color-form;
+    }
+    
+    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
+        box-shadow: none;
+        border: 1px solid $color-form;
+    }
+    .theme--light.v-icon {
+      color: $color-form;
+    }
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+      border-color: $color-form;
+    }
+    .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__append-inner,
+    .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__prepend-outer {
+      margin-top: 8px;
+    }
+  }
+  // dialog
+  .v-dialog {
+    .v-sheet.v-card.custom-dialog {
+      border-radius: 4px 0 0 4px;
+      .v-card__title.add-title {
+        color: $color-dark;
+        font-weight: bold;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        font-size: 1.1rem;
+      }
+      .card-title {
+        display: flex;
+        align-items: center;
+        padding: 0;
+        margin: 12px 16px;
+        .title {
+          width: 100%;
+          .v-card__title {
+            font-size: 1rem;
+            padding: 0;
+            font-weight: bold;
+            color: $color-dark;
+          }
+        }
+        .chevron {
+          .v-icon {
+            color: $color-dark;
+          }
+        }
+      }
+      
+      .v-card__title + .v-card__text {
+        padding-bottom: 0;
+        padding-top: 0;
+      }
+      .v-card__text {
+        padding-top: 0;
+        padding-bottom: 0;
+        padding: 8px 16px;
+      }
+      .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+        padding: 0;
+      }
+      .basic {
+        padding: 0 12px;
+      }
+    }
+    
+  }
     
 }
 
@@ -92,7 +363,7 @@ $color-green: #00A660;
     overflow: hidden;
     margin-bottom: 24px;
     .card-title,.content {
-      padding: 12px 24px;
+      padding: 12px;
       .row {
         margin-left: 0;
         margin-top: 0;
@@ -141,6 +412,18 @@ $color-green: #00A660;
   }
 }
 
+// result card
+.v-card.result-card {
+  background-color: #E6F5FA;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
+  .theme--light.v-card {
+      background-color: #E6F5FA;
+  }
+  .card-title {
+    display: flex;
+    align-items: center;
+  }
+}
 // scrollbar
 ::-webkit-scrollbar {
     width: 6px;
