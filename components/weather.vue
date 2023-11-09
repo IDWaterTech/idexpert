@@ -6,15 +6,15 @@
                 <h3 style="color:white;">氣象資訊</h3>
             </v-col>
             <v-col cols="12" justify="center">
-              {{ toggle_weather }}_{{ toggle_weather2 }}<br/>
+              <!-- {{ toggle_weather }}_{{ toggle_weather2 }}<br/> -->
               <v-btn-toggle
-                  v-model="toggle_weather2" color="primary" @change="changeloc(toggle_weather)" mandatory
+                  v-model="toggle_weather" color="primary" @change="changeloc(toggle_weather)"
                   class="field-toggle"
                 >
-                <v-btn :value="1">研發<br/>一場</v-btn>
-                <v-btn :value="2">彰化<br/>芳苑</v-btn>
-                <v-btn :value="3">台南<br/>北門</v-btn>
-                <v-btn :value="4">高雄<br/>湖內</v-btn>
+                <v-btn :value="1" :class="{'v-btn--active':toggle_weather==1}">研發<br/>一場</v-btn>
+                <v-btn :value="2" :class="{'v-btn--active':toggle_weather==2}">彰化<br/>芳苑</v-btn>
+                <v-btn :value="3" :class="{'v-btn--active':toggle_weather==3}">台南<br/>北門</v-btn>
+                <v-btn :value="4" :class="{'v-btn--active':toggle_weather==4}">高雄<br/>湖內</v-btn>
               </v-btn-toggle>
             </v-col>
             <v-col cols="12">
