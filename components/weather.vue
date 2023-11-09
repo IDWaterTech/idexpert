@@ -116,28 +116,28 @@ methods: {
   changeloc:function(locid){
     var lonlat = {longitude: "121.82030882702146",latitude: "24.83616577553079"};
     switch (locid) {
-      case "1"://研發一場
-      lonlat = {
-                longitude: "121.82030882702146",
-                latitude: "24.83616577553079"
-              };
+      case 1://研發一場
+        lonlat = {
+                  longitude: "121.82030882702146",
+                  latitude: "24.83616577553079"
+                };
               // console.log("研發一場");
         break;
-      case "2"://彰化芳苑
-      lonlat = {
-          longitude:'120.4107148',
-          latitude:'23.9968415'
-        };
+      case 2://彰化芳苑
+        lonlat = {
+            longitude:'120.4107148',
+            latitude:'23.9968415'
+          };
         // console.log("彰化芳苑");
         break;
-        case "3"://台南北門
-      lonlat = {
-          longitude:'120.1141738',
-          latitude:'23.2772886'
-        };
+      case 3://台南北門
+        lonlat = {
+            longitude:'120.1141738',
+            latitude:'23.2772886'
+          };
         // console.log("台南北門");
         break;
-        case "4"://高雄湖內
+      case 4://高雄湖內
           lonlat = {
               longitude:'120.2328442',
               latitude:'22.8913011'
@@ -159,7 +159,7 @@ methods: {
       console.log("★★★localStorage is NULL");
     }else if(isChangeloc == false){
       console.log("★★★localStorage:",localStorage.getItem('locationWeather'));
-      this.toggle_weather = localStorage.getItem('locationWeather');//先設定值
+      this.toggle_weather = parseInt(localStorage.getItem('locationWeather'));//先設定值，取出來是文字要先轉換成數值區域才會改變
       this.changeloc(this.toggle_weather);//跳去抓經緯度資料，再從那邊導回來時不走此處，避免無限遞回
       return;
     }
