@@ -357,6 +357,7 @@
         this.set.legendAlias = this.dataCurrentArrary.concat(this.dataPredictArray);
         this.set.max = [this.chartmax];
         this.set.min = [this.chartmin];
+        this.set.area = true;
       },
       watch: {
         chartmax() {
@@ -373,7 +374,7 @@
   <style lang="scss" scoped>
   .v-card.predict {
       // padding: 16px;
-      min-height: 84vh;
+      min-height: 85vh;
       // overflow-y: scroll;
       margin-bottom: 24px;
       overflow: hidden;
