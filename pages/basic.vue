@@ -193,7 +193,7 @@
             <v-row v-if="waterdata.length < 1 && waterloading == false">
               <v-spacer></v-spacer>
               <v-col cols="4" class="mt-5 text-center">
-                <h2>無資料</h2>
+                <h2 style="color:#fff;font-weight: bold;">無資料</h2>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
@@ -230,7 +230,34 @@
                   :items="envdata.map(x => x['name'])" v-if="allcols.env" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
+              </v-col>
+              <!-- <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
                   <v-btn small>
@@ -243,7 +270,7 @@
                     <v-icon>mdi-view-column</v-icon>
                   </v-btn>
                 </v-btn-toggle>
-              </v-col>
+              </v-col> -->
             </v-row>
             <v-row>
               <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in envdata"
@@ -261,7 +288,7 @@
             <v-row v-if="envdata.length < 1 && envloading == false">
               <v-spacer></v-spacer>
               <v-col cols="4" class="mt-5 text-center">
-                <h2>無資料</h2>
+                <h2 style="color:#fff;font-weight: bold;">無資料</h2>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
@@ -298,7 +325,7 @@
                   :items="feeddata.map(x => x['name'])" v-if="allcols.feed" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <!-- <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
                   <v-btn small>
@@ -311,6 +338,33 @@
                     <v-icon>mdi-view-column</v-icon>
                   </v-btn>
                 </v-btn-toggle>
+              </v-col> -->
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
               </v-col>
             </v-row>
             <v-row>
@@ -329,7 +383,7 @@
             <v-row v-if="feeddata.length < 1 && feedloading == false">
               <v-spacer></v-spacer>
               <v-col cols="4" class="mt-5 text-center">
-                <h2>無資料</h2>
+                <h2 style="color:#fff;font-weight: bold;">無資料</h2>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
@@ -366,7 +420,34 @@
                   :items="obsdata.map(x => x['name'])" v-if="allcols" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
+              </v-col>
+              <!-- <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
                   <v-btn small>
@@ -379,7 +460,7 @@
                     <v-icon>mdi-view-column</v-icon>
                   </v-btn>
                 </v-btn-toggle>
-              </v-col>
+              </v-col> -->
             </v-row>
             <v-row>
               <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in obsdata"
@@ -397,7 +478,7 @@
             <v-row v-if="obsdata.length < 1 && obsloading == false">
               <v-spacer></v-spacer>
               <v-col cols="4" class="mt-5 text-center">
-                <h2>無資料</h2>
+                <h2 style="color:#fff;font-weight: bold;">無資料</h2>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
@@ -434,7 +515,34 @@
                   :items="advdata.map(x => x['name'])" v-if="allcols.adv" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
+              </v-col>
+              <!-- <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
                   <v-btn small>
@@ -447,7 +555,7 @@
                     <v-icon>mdi-view-column</v-icon>
                   </v-btn>
                 </v-btn-toggle>
-              </v-col>
+              </v-col> -->
             </v-row>
             <v-row>
               <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in advdata"
@@ -465,7 +573,7 @@
             <v-row v-if="advdata.length < 1 && advloading == false">
               <v-spacer></v-spacer>
               <v-col cols="4" class="mt-5 text-center">
-                <h2>無資料</h2>
+                <h2 style="color:#fff;font-weight: bold;">無資料</h2>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
@@ -502,7 +610,34 @@
                   :items="pbiodata.map(x => x['name'])" v-if="allcols.pbio" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
+              </v-col>
+              <!-- <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
                   <v-btn small>
@@ -515,7 +650,7 @@
                     <v-icon>mdi-view-column</v-icon>
                   </v-btn>
                 </v-btn-toggle>
-              </v-col>
+              </v-col> -->
             </v-row>
             <v-row>
               <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in pbiodata"
@@ -534,7 +669,7 @@
             <v-row v-if="pbiodata.length < 1 && pbioloading == false">
               <v-spacer></v-spacer>
               <v-col cols="4" class="mt-5 text-center">
-                <h2>無資料</h2>
+                <h2 style="color:#fff;font-weight: bold;">無資料</h2>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
@@ -561,7 +696,34 @@
                   :items="materialdata.map(x => x['name'])" v-if="allcols.breeding_material" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="3">
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
+              </v-col>
+              <!-- <v-col cols="12" md="3">
                 顯示：{{ colstyle + 1 }}欄式
                 <v-btn-toggle v-model="colstyle" dense mandatory>
                   <v-btn small>
@@ -574,7 +736,7 @@
                     <v-icon>mdi-view-column</v-icon>
                   </v-btn>
                 </v-btn-toggle>
-              </v-col>
+              </v-col> -->
             </v-row>
             <v-row>
               <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in materialdata"
