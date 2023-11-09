@@ -1,12 +1,23 @@
 <template>
   <el-popover placement="top-start" width="300" popper-class="popoverColor">
     
-        <v-row style="color:#FFF;" justify="center" align="center" >
+        <v-row style="color:#FFF;" justify="center" align="center" dense >
             <v-col cols="12">
-                <h3>氣象資訊</h3>
+                <h3 style="color:white;">氣象資訊</h3>
+            </v-col>
+            <v-col cols="12" justify="center" align="center">
+              {{ toggle_weather }}_{{ toggle_weather2 }}<br/>
+              <v-btn-toggle
+                  v-model="toggle_weather2" color="primary" @change="changeloc(toggle_weather)"
+                >
+                <v-btn :value="1">研發<br/>一場</v-btn>
+                <v-btn :value="2">彰化<br/>芳苑</v-btn>
+                <v-btn :value="3">台南<br/>北門</v-btn>
+                <v-btn :value="4">高雄<br/>湖內</v-btn>
+              </v-btn-toggle>
             </v-col>
             <v-col cols="12">
-                地區:<span>{{location.map(x=>x.name).join()}}</span>_({{ loc.longitude }}/{{ loc.latitude }})<br/>
+                地區:<span>{{location.map(x=>x.name).join()}}</span><br/>  <!--  _({{ loc.longitude }}/{{ loc.latitude }}) -->
                 天氣概況：{{weatherdata.weather[0].main}}<br/>
                 說明：{{weatherdata.weather[0].description}}
             </v-col>
@@ -41,7 +52,7 @@
               風向<br/>{{`${weatherdata.wind.deg}`}}
             </v-col>
             <v-col cols="12" sm="4">
-              {{`陣風: ${weatherdata.wind.gust} meter/sec`}}
+              {{`陣風: ${weatherdata.wind.gust} meter/sec`}},localStorage:{{ localData }}
             </v-col>
             <!-- <v-col cols="12" sm="4">
               {{`雲量: ${weatherdata.clouds.all} %`}}
@@ -92,15 +103,67 @@ data() {
                   icon: "04d",
                   id: 0,
                   main: "Clouds"
-        }]
-     
-    }
+        }],
+    },
+    toggle_weather2:"4",
+    toggle_weather:(localStorage.getItem('locationWeather')==null)?"":localStorage.getItem('locationWeather'),
     //艾滴科技：24.83616577553079, 121.82030882702146
+    localData:''
   };
 },
 methods: {
-  getWeather: async function() {
-    navigator.geolocation.getCurrentPosition(
+  changeloc:function(locid){
+    var lonlat = {longitude: "121.82030882702146",latitude: "24.83616577553079"};
+    switch (locid) {
+      case "1"://研發一場
+      lonlat = {
+                longitude: "121.82030882702146",
+                latitude: "24.83616577553079"
+              };
+              // console.log("研發一場");
+        break;
+      case "2"://彰化芳苑
+      lonlat = {
+          longitude:'120.4107148',
+          latitude:'23.9968415'
+        };
+        // console.log("彰化芳苑");
+        break;
+        case "3"://台南北門
+      lonlat = {
+          longitude:'120.1141738',
+          latitude:'23.2772886'
+        };
+        // console.log("台南北門");
+        break;
+        case "4"://高雄湖內
+          lonlat = {
+              longitude:'120.2328442',
+              latitude:'22.8913011'
+            };
+            // console.log("高雄湖內");
+        break;
+      default:
+        break;
+    }
+    this.loc = lonlat;
+    localStorage.setItem('locationWeather', this.toggle_weather);
+    console.log('toggle_weather:',this.toggle_weather);
+    this.getWeather(true);
+  },
+  getWeather: async function(isChangeloc = false) {
+    console.log("★★★localStorage in:",localStorage.getItem('locationWeather'));
+    if(localStorage.getItem('locationWeather')==null){
+      localStorage.setItem('locationWeather', '');
+      console.log("★★★localStorage is NULL");
+    }else if(isChangeloc == false){
+      console.log("★★★localStorage:",localStorage.getItem('locationWeather'));
+      this.toggle_weather = localStorage.getItem('locationWeather');//先設定值
+      this.changeloc(this.toggle_weather);//跳去抓經緯度資料，再從那邊導回來時不走此處，避免無限遞回
+      return;
+    }
+    if(this.toggle_weather == ""){//沒按按鈕，抓定位或預設
+      navigator.geolocation.getCurrentPosition(
       pos => {
         this.gettingLocation = false;
         this.loc.longitude = pos.coords.longitude;
@@ -109,11 +172,13 @@ methods: {
       err => {
         this.gettingLocation = false;
         this.errorStr = err.message;
-        //預設在公司
+        //預設在頭城研發一場
         this.loc.longitude = "121.82030882702146";
         this.loc.latitude = "24.83616577553079";
       }
     );
+    }
+    
     var parm ={
          longitude: this.loc.longitude,
          latitude: this.loc.latitude,
@@ -130,6 +195,7 @@ methods: {
       //   this.weatherdata.rain.h_1 = weadata.rain.1h;
         console.log("weather api：" + res.request.responseURL);
       });
+    // console.log("this.loc:",this.loc);
     await this.getLocation();
   },
   getLocation:async function(){
