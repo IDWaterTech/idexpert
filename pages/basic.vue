@@ -120,7 +120,7 @@
               <v-col cols="12" md="1" align-self="center">
                 <v-btn tile color="primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
               </v-col>
-              <v-col cols="12" md="4" align-self="center">
+              <v-col cols="12" md="3" align-self="center">
                 <v-select v-model="defitem" clearable multiple filled deletable-chips chips dense hide-details
                   placeholder="指定項目" :items="Object.keys(allcols.water)" v-if="allcols.water"
                   :disabled="waterloading == true">
@@ -139,24 +139,38 @@
                   }
                 ">主要觀測項目</v-btn>
               </v-col>
+              
               <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && waterloading == false">
                 <v-select v-model="defPool.水質" clearable multiple chips placeholder="顯示養殖池"
                   :items="waterdata.map(x => x['name'])" v-if="allcols.water" no-data-text="查無資料">
                 </v-select>
               </v-col>
-              <v-col cols="12" md="2">
-                顯示：{{ colstyle + 1 }}欄式
-                <v-btn-toggle v-model="colstyle" mandatory>
-                  <v-btn small>
-                    <v-icon>mdi-square-medium</v-icon>
-                  </v-btn>
-                  <v-btn small>
-                    <v-icon>mdi-pause</v-icon>
-                  </v-btn>
-                  <v-btn small>
-                    <v-icon>mdi-view-column</v-icon>
-                  </v-btn>
-                </v-btn-toggle>
+              <v-col cols="12" md="3" style="display: flex;align-items: center;width: 100%;justify-content: space-between;">
+                <div class="chart-toggle" style="display: flex;align-items: center;">
+                  區塊顯示
+                  <v-switch
+                    v-model="chartToggle"
+                    dark
+                    label="" dense hide-details inset
+                    style="margin-top: 0;margin-left: 8px;"
+                  ></v-switch>
+                </div>
+                
+                <div class="change-row" style="display: flex;flex-direction: column;">
+                    顯示：{{ colstyle + 1 }}欄式
+                    <v-btn-toggle v-model="colstyle" mandatory>
+                      <v-btn small>
+                        <v-icon>mdi-square-medium</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-pause</v-icon>
+                      </v-btn>
+                      <v-btn small>
+                        <v-icon>mdi-view-column</v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                </div>
+                
               </v-col>
             </v-row>
             <v-row>
@@ -168,7 +182,7 @@
                   defPool.水質.includes(item.name) || defPool.水質.length == 0
                 ">
                 <!-- defitem -->
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
                   :defaultitem="defalutItemList" :loading="waterloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -236,7 +250,7 @@
                 :key="item.id" v-show="
                   defPool.環境.includes(item.name) || defPool.環境.length == 0
                 ">
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
                   :defaultitem="defalutItemList_env" :loading="envloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -304,7 +318,7 @@
                 :key="item.id" v-show="
                   defPool.飼料.includes(item.name) || defPool.飼料.length == 0
                 ">
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
                   :defaultitem="defalutItemList_feed" :loading="feedloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -372,7 +386,7 @@
                 :key="item.id" v-show="
                   defPool.觀察.includes(item.name) || defPool.觀察.length == 0
                 ">
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
                   :defaultitem="defalutItemList_obs" :loading="obsloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -440,7 +454,7 @@
                 :key="item.id" v-show="
                   defPool.進階.includes(item.name) || defPool.進階.length == 0
                 ">
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
                   :defaultitem="defalutItemList_adv" :loading="advloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -509,7 +523,7 @@
                   defPool.益生菌.includes(item.name) ||
                   defPool.益生菌.length == 0
                 ">
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
                   :defaultitem="defalutItemList_pbio" :loading="pbioloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -568,7 +582,7 @@
                   defPool.用料.includes(item.name) ||
                   defPool.用料.length == 0
                 ">
-                <WaterQuality_Vcharts :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
+                <WaterQuality_Vcharts :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
                   :defaultitem="defalutItemList_material" :loading="materialloading" :title="item.name" :urldata="{
                     sel_main: sel_main,
                     sel_area: sel_area,
@@ -605,6 +619,7 @@ export default {
   },
   data() {
     return {
+      chartToggle:true,
       mypanel: 0,
       sel_main: "",
       sel_area: "",

@@ -20,7 +20,7 @@
       v-show="chtData_new_1.rows.length > 0"
       :mark-line="markLine"
       :colors="myColors"
-       :after-config="afterConfig"
+      :after-config="afterConfig"
     ></ve-line>
     <div class="text-center" style="font-size: 1.2em;" v-show="chtData_new_1.rows.length <= 0">查無資料</div>
   </div>
@@ -94,7 +94,7 @@ export default {
           var para = { sdate: e.value[0], defitem: e.seriesName };
           console.log(para);
         }
-      }
+      },
     };
   },
   // props: ["sheetid", "defaultitem"],
@@ -185,16 +185,27 @@ export default {
       };
       }
     },
+    chartToggle: {
+      type: Boolean,
+      default: true
+    }
   },
   created() {
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
     // this.chtData_new_1.columns = [...this.chtData_Ora_1.columns]; //設定欄位
+    // this.set.area = this.chartToggle;
   },
   updated() {
+    // this.chtData_new_1= { columns: [], rows: [] };
     //--外部參數資料帶入--
     this.set.legendAlias = this.legendAliasOut;
     this.set.max = [this.chartmax];
     this.set.min = [this.chartmin];
+    this.set.area = this.chartToggle;
+    if(!this.chartToggle) {
+      this.set.area = undefined;
+    }
+    
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
     var temp = this.rowsData.length > 0 ? Object.keys(this.rowsData[0]) : "";
