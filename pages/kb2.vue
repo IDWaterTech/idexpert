@@ -3200,6 +3200,7 @@ export default {
             await this.$axios.get(url, {params:parm}).then(res => {
                 if (res.status == 200) {
                     this.importQuerry(res.data,true);//導入資料
+                    this.postParm(false,null,true);//查詢ai回饋資訊
                     this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
