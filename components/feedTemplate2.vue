@@ -2,7 +2,7 @@
     <div>
         <v-row class="mt-2" no-gutters >
             <!-- 主要樣版內容 -->
-            <v-col cols="12"  style="padding-left: 12px;"><b>資料架構(!!!!最後要上要記得清除!!!!)：</b>[{ "phase_id": 1, "phase_name": "空池", "stepList": [ <br>&nbsp;&nbsp;&nbsp;{ "step_id": 23, "step_name": "新增循環", "execute_time": "2023-10-25 10:12:12", "isConfirm": true,},<br>&nbsp;&nbsp; { "step_id": "23_01", "step_name": "其他", "msg": "i am msg 1.", "execute_time": "", "isConfirm": false},]}]<br><br></v-col>
+            <v-col cols="12"  style="padding-left: 12px;"><b>資料架構(!!!!最後要上要記得清除!!!!)：</b>[{ "phase_id": 1, "phase_name": "空池", "stepList": [ <br>&nbsp;&nbsp;&nbsp;{ "step_id": 23, "sort_id": 23, "step_name": "新增循環", "execute_time": "2023-10-25 10:12:12", confirm_time: '',executor:'',confirm:''},<br>&nbsp;&nbsp; { "step_id": 40,"sort_id": "23_01", "step_name": "其他", "msg": "i am msg 1.", "execute_time": "", "confirm_time": '',executor:'',confirm:''},]}]<br><br></v-col>
             <v-col cols="12">
                 <!-- {{ tempMain }}<br>
                 {{ mainItems }} -->
@@ -57,9 +57,13 @@
                                     </div>
                                     <!-- 內容 -->
                                     <div v-if="status[id].open" class="content">
-                                        <v-data-table light :footer-props="footerProps"
+                                        <v-data-table light 
                                             :headers="headers"
-                                            :items="mitem.stepList">
+                                            :items="mitem.stepList"
+                                            
+                                            hide-default-footer
+                                            disable-pagination
+                                            style="max-height: 300px;overflow-y: scroll;">
                                             <!-- 新增 -->
                                             <template v-slot:[`item.actions`]="{ index }">
                                                 <v-tooltip bottom>
@@ -77,17 +81,18 @@
                                                     <v-icon>mdi-table-row-plus-after</v-icon>
                                                 </v-btn> -->
                                             </template>
+                                            
                                             <!-- 執行/確認 -->
                                             <template v-slot:[`item.executed_actions`]="{ index }">
                                                 <v-btn class="btn-secondary btn-small"
                                                     :class="{'disabled':mitem.stepList[index].execute_disabled}"
                                                     @click="execute(id,index)">
-                                                    {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].isConfirm?'已執行':'取消':'執行' }}
+                                                    {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].confirm_time!==''?'已執行':'取消':'執行' }}
                                                 </v-btn>
                                                 <v-btn class="btn-primary btn-small"
-                                                    :class="`${mitem.stepList[index].execute_time&&!mitem.stepList[index].isConfirm?'':'disabled'}`"
+                                                    :class="`${mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].confirm_time==''?'':'disabled'}`"
                                                     @click="executeConfirm(id,index)">
-                                                    {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].isConfirm?'已確認':'確認' }}
+                                                    {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].confirm_time!==''?'已確認':'確認' }}
                                                 </v-btn>
                                             </template>
                                             <!-- 刪除 -->
@@ -109,8 +114,9 @@
                                                 </v-btn> -->
                                             </template>
                                         </v-data-table>
-                                        <span><b>資料整理(!!!!最後要上要記得清除!!!!)</b></span>
-                                        <div class="list" v-for="step in mitem.stepList" :key="'step_'+step.step_id">
+                                        <span><b>最上方資料結構中的stepList資料整理(!!!!最後要上要記得清除!!!!)</b></span>
+                                        <span class="error-text"><b>Note:新增/刪除 其他 需重新給api資料 因sort_id會變更</b></span>
+                                        <div class="list" v-for="step in mitem.stepList" :key="'step_'+step.sort_id">
                                             {{ step }}
                                         </div>
                                     </div>
@@ -222,6 +228,10 @@ export default {
         nowExpand: {
             type: Boolean,
             default: true
+        },
+        accdata: {
+            type: Array,
+            default: []
         }
     },
     data() {
@@ -302,11 +312,13 @@ export default {
                 { text: '新增', value: 'actions', sortable: false,width:"5%"},
                 // { text: "step_id", value: "step_id", groupable: false, showmode: ['add', 'edit'] },
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
-                { text: "項目", value: "step_name", groupable: false, sortable: false,width:"20%"},
+                { text: "項目", value: "step_name", groupable: false, sortable: false,width:"10%"},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%"},
                 { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%"},
-                { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"30%"},
+                { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%"},
+                { text: '執行員', value: 'executor_name', sortable: false,width:"10%"},
+                { text: '確認員', value: 'confirm_name', sortable: false,width:"10%"},
                 { text: '刪除', value: 'udactions', sortable: false,width:"5%"},
             ],
             mainItems: [{
@@ -350,6 +362,7 @@ export default {
        this.tempMain = this.passObj.tempMain;
        this.mainItems = this.passObj.tempContent;
        this.mainItems.forEach(m=>m.open=this.nowExpand);
+    //    console.log(this.accdata);
        this.sortData();
     },
     methods: {
@@ -373,14 +386,14 @@ export default {
                     if(s.step_name=='其他') {
                         step.forEach(tt=>{
                             // 其他的項目比對同一隸屬的id，將項目放進step中
-                            if(tt.id == parseInt(s.step_id.split('_')[0])) {
+                            if(tt.id == parseInt(s.sort_id.split('_')[0])) {
                                 tt.step.push(s);
                             }
                         })
                     }else {
                         // 非其他的項目新增隸屬的結構
                         step.push({
-                            id: s.step_id,
+                            id: s.sort_id,
                             step: new Array(),
                         })
                     }
@@ -388,7 +401,7 @@ export default {
                 // 項目排序
                 step.forEach(t=>{
                     t.step.sort(function(a, b) {
-                        return parseInt(a.step_id.split('_')[1]) - parseInt(b.step_id.split('_')[1]);
+                        return parseInt(a.sort_id.split('_')[1]) - parseInt(b.sort_id.split('_')[1]);
                     });
                 })
                 // 重新帶入stepList中的資料，因為排序有異動
@@ -396,7 +409,7 @@ export default {
                     if(s.step_name!=='其他') {
                         list.push(s);
                         step.forEach(tt=>{
-                            if(tt.id == s.step_id) {
+                            if(tt.id == s.sort_id) {
                                 tt.step.forEach(z=>list.push(z));
                             }
                         })
@@ -441,8 +454,8 @@ export default {
                         // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
                         // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
                         if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
-                            if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].execute_time&&
-                            this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].execute_time!=='') {
+                            if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].confirm_time&&
+                            this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].confirm_time!=='') {
                                 i.color = this.status[id].color;
                             }else {
                                 i.color = '#BFCBD2'
@@ -473,18 +486,23 @@ export default {
                 m.stepList.forEach((s,sid)=>{
                     // 判斷現在的sid是否為0，如為0要額外判斷前一狀態的最後一項
                     if(sid!==0) {
-                        if(s.isConfirm) {
+                        if(s.confirm_time!=='') {
                             s.execute_disabled = true;
                         }else {
                             if((m.stepList[sid-1].execute_time&&m.stepList[sid-1].execute_time!=='') || (s.execute_time&&s.execute_time!=='')) {
-                                s.execute_disabled = false;
+                                if(m.stepList[sid-1].confirm_time=='') {
+                                    s.execute_disabled = true;
+                                }else {
+                                    s.execute_disabled = false;
+                                }
+                                
                                 
                             }else {
                                 s.execute_disabled = true;
                             }
                         }
                     }else {
-                        if(s.isConfirm) {
+                        if(s.confirm_time!=='') {
                             s.execute_disabled = true;
                         }else {
                             if(mid !==0 ) {
@@ -492,7 +510,11 @@ export default {
                                 this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].execute_time!=='') || 
                                 (this.mainItems[mid].stepList[this.mainItems[mid].stepList.length-1].execute_time && 
                                 this.mainItems[mid].stepList[this.mainItems[mid].stepList.length-1].execute_time!=='')) {
-                                    s.execute_disabled = false;
+                                    if(this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].confirm_time=='') {
+                                        s.execute_disabled = true;
+                                    }else {
+                                        s.execute_disabled = false;
+                                    }
                                 }else{
                                     s.execute_disabled = true;
                                 }
@@ -570,11 +592,12 @@ export default {
                     // }
 
                     // 判斷現在狀態是否為取消狀態，是的話，額外存取，並更改disabled
-                    if(s.execute_time && s.execute_time!=='' && !s.isConfirm) {
+                    if(s.execute_time && s.execute_time!=='' && s.confirm_time=='') {
                         cancelId.push({
                             id: mid,
                             index: sid
                         })
+                        console.log('cancel',cancelId);
                     }
                 })
             })
@@ -582,12 +605,32 @@ export default {
                 cancelId.forEach((cancel,cid)=>{
                     if(cid !== (cancelId.length-1)) {
                         this.mainItems[cancel.id].stepList[cancel.index].execute_disabled = true;
+                    }else {
+                        this.mainItems[cancel.id].stepList[cancel.index].execute_disabled = false;
                     }
 
                  })
             }
             
-            // this.sortData();
+            this.executorData();
+        },
+        // 執行人員/確認人員的比對轉換
+        executorData() {
+            this.mainItems.forEach(m=>{
+                m.stepList.forEach(s=>{
+                    if(s.executor!=='') {
+                        // console.log(this.accdata.filter(x=>x.username==s.executor));
+                        s.executor_name = this.accdata.filter(x=>x.username==s.executor)[0].position+'-'+this.accdata.filter(x=>x.username==s.executor)[0].account_name;
+                    }else {
+                        s.executor_name = '';
+                    }
+                    if(s.confirm!=='') {
+                        s.confirm_name = this.accdata.filter(x=>x.username==s.confirm)[0].position+'-'+this.accdata.filter(x=>x.username==s.confirm)[0].account_name;
+                    }else {
+                        s.confirm_name = '';
+                    }
+                })
+            })
         },
 
         /* 其他項目 */
@@ -608,17 +651,21 @@ export default {
         // 新增其他項目確認!!送出step項目
         submitstep:async function(){
             var valid = this.$refs.addform.validate();
-            console.log('valid form',valid);
+            const updUser = this.$auth.$state.user.email;
+            // console.log('valid form',valid);
             if(valid) {
+                let datas = _.cloneDeep(this.mainItems);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
                 let stepId = [];// 因會有其他的排序id問題，必須要另外存取(主要是新增的項目下)
                 let other = _.cloneDeep(this.addStep);// 不能直接用addStep，如果重新開dialog新增會清空會連動影響
                 other.forEach(step=>{
-                    step.step_id = '';
+                    step.sort_id = '';
                     step.msg = step.msg;
                     step.step_name = '其他';
-                    step.isConfirm = false;
+                    step.confirm_time='';
+                    step.executor = '';
+                    step.confirm = '';
                 })
-                this.mainItems.forEach((item,id)=>{
+                datas.forEach((item,id)=>{
                     stepId.push({
                         "phase_id": item.phase_id,
                         "phase_name": item.phase_name,
@@ -627,7 +674,7 @@ export default {
                         "newest": item.newest,
                         "stepList": new Array(),
                     })
-                    let step=[]; // 存取其他的項目{id:'隸屬的step_id',step:'隸屬此id下的其他'}
+                    let step=[]; // 存取其他的項目{id:'隸屬的sort_id',step:'隸屬此id下的其他'}
                     let list=[]; // 因有排序問題另外存取再取代原資料
                     if(item.phase_id == this.stepitem.phase_id) {
                         item.stepList.forEach((s,sid)=>{
@@ -635,27 +682,31 @@ export default {
                             if(s.step_name!=='其他') {
                                 if(this.stepitem.addidx==sid) {
                                     step.push({
-                                        id: s.step_id,
+                                        id: s.sort_id,
                                         step: new Array(),
                                     })
                                     other.forEach(a=>{
                                         // 如果新增的項目在最後項，需要比對下一個狀態是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
-                                        if((this.mainItems[id].stepList.length-1)==sid) {
-                                            if(this.mainItems[id+1] && this.mainItems[id+1].newest && this.mainItems[id+1].newest!=='') {
+                                        if((datas[id].stepList.length-1)==sid) {
+                                            if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
                                                 // step.isConfirm = true;
                                                 a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                if(this.mainItems[id+1].stepList[0].isConfirm) {
-                                                    a.isConfirm = true;
+                                                a.executor = updUser; 
+                                                if(datas[id+1].stepList[0].confirm_time!=='') {
+                                                    a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                    a.confirm = updUser;
                                                 }
                                             }                                                    
                                         }else {
                                             // 如果新增的項目不在最後項，需要比對下一個項目是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
-                                            if(this.mainItems[id].stepList[sid+1].execute_time &&
-                                                this.mainItems[id].stepList[sid+1].execute_time!=='') {
+                                            if(datas[id].stepList[sid+1].execute_time &&
+                                                datas[id].stepList[sid+1].execute_time!=='') {
                                                     // step.isConfirm = true;
                                                     a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                    if(this.mainItems[id].stepList[sid+1].isConfirm) {
-                                                        a.isConfirm = true;
+                                                    a.executor = updUser; 
+                                                    if(datas[id].stepList[sid+1].confirm_time!=='') {
+                                                        a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                        a.confirm = updUser;
                                                     }
                                             }
                                         }
@@ -663,7 +714,7 @@ export default {
                                     })
                                 }else {
                                     step.push({
-                                        id: s.step_id,
+                                        id: s.sort_id,
                                         step: new Array(),
                                     })
                                 }
@@ -672,24 +723,28 @@ export default {
                                 step.forEach(tt=>{
                                     // 如index剛好為新增的index下，要將此其他後續接新增的其他，並判斷是否執行和確認
                                     if(this.stepitem.addidx==sid) {
-                                        if(tt.id == parseInt(s.step_id.split('_')[0])) {
+                                        if(tt.id == parseInt(s.sort_id.split('_')[0])) {
                                             tt.step.push(s);
                                             other.forEach(a=>{
-                                                if((this.mainItems[id].stepList.length-1)==sid) {
-                                                    if(this.mainItems[id+1] && this.mainItems[id+1].newest && this.mainItems[id+1].newest!=='') {
+                                                if((datas[id].stepList.length-1)==sid) {
+                                                    if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
                                                         // step.isConfirm = true;
                                                         a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                        if(this.mainItems[id+1].stepList[0].isConfirm) {
-                                                            a.isConfirm = true;
+                                                        a.executor = updUser; 
+                                                        if(datas[id+1].stepList[0].confirm_time!=='') {
+                                                            a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                            a.confirm = updUser;
                                                         }
                                                     }                                                    
                                                 }else {
-                                                    if(this.mainItems[id].stepList[sid+1].execute_time &&
-                                                        this.mainItems[id].stepList[sid+1].execute_time!=='') {
+                                                    if(datas[id].stepList[sid+1].execute_time &&
+                                                        datas[id].stepList[sid+1].execute_time!=='') {
                                                             // step.isConfirm = true;
                                                             a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                            if(this.mainItems[id].stepList[sid+1].isConfirm) {
-                                                                a.isConfirm = true;
+                                                            a.executor = updUser; 
+                                                            if(datas[id].stepList[sid+1].confirm_time!=='') {
+                                                                a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                                a.confirm = updUser;
                                                             }
                                                      }
                                                 }
@@ -698,7 +753,7 @@ export default {
                                         }
                                     }else {
                                         // 非index的新增，直接比對是哪個id項目push進去即可
-                                        if(tt.id == parseInt(s.step_id.split('_')[0])) {
+                                        if(tt.id == parseInt(s.sort_id.split('_')[0])) {
                                             tt.step.push(s);
                                         }
                                     }
@@ -718,7 +773,7 @@ export default {
                                 }else {
                                     stepid = tid+1;
                                 }
-                                tt.step_id = step.id+'_'+stepid;
+                                tt.sort_id = step.id+'_'+stepid;
                             })
                         })
                         // 因為項目有順序，因此依照項目順序及旗下的其他項目依序push
@@ -726,7 +781,7 @@ export default {
                             if(s.step_name!=='其他') {
                                 list.push(s);
                                 step.forEach(tt=>{
-                                    if(tt.id == s.step_id) {
+                                    if(tt.id == s.sort_id) {
                                         if(tt.step.length>0) {
                                             tt.step.forEach(z=>list.push(z));
                                         }
@@ -741,11 +796,18 @@ export default {
                         stepId[id] = item;
                     }
                 })
-                this.mainItems = stepId;
+                datas = stepId;
                 // console.log('data',this.mainItems);
-                // 要重新給dateData，因為新加入的其他項目時間有更新
-                this.dateData();
-                this.dialog.additem = false;
+                
+                
+                // 串api成功 
+                if(true) {
+                    // 要重新給dateData，因為新加入的其他項目時間有更新
+                    this.mainItems = datas;
+                    this.dateData();
+                    this.dialog.additem = false;
+                }
+                
             }
             // this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
             // this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
@@ -811,7 +873,8 @@ export default {
             if (confirm(`是否刪除 ${sub_item.step_name}：${sub_item.msg} ？`)) {
                 // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
                 let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
-                this.mainItems.forEach((item,id)=>{
+                let datas = _.cloneDeep(this.mainItems);
+                datas.forEach((item,id)=>{
                     stepId.push({
                         "phase_id": item.phase_id,
                         "phase_name": item.phase_name,
@@ -827,14 +890,14 @@ export default {
                         item.stepList.forEach((s,sid)=>{
                             if(s.step_name!=='其他') {
                                 step.push({
-                                    id: s.step_id,
+                                    id: s.sort_id,
                                     step: new Array(),
                                 })
                             }else {
                                 if(sid!==index) {
                                     step.forEach(tt=>{
                                     // 其他的項目比對同一隸屬的id，將項目放進step中
-                                    if(tt.id == parseInt(s.step_id.split('_')[0])) {
+                                    if(tt.id == parseInt(s.sort_id.split('_')[0])) {
                                         tt.step.push(s);
                                     }
                                 })
@@ -849,14 +912,14 @@ export default {
                                 }else {
                                     stepid = tid+1;
                                 }
-                                tt.step_id = step.id+'_'+stepid;
+                                tt.sort_id = step.id+'_'+stepid;
                             })
                         })
                         item.stepList.forEach(s=>{
                             if(s.step_name!=='其他') {
                                 list.push(s);
                                 step.forEach(tt=>{
-                                    if(tt.id == s.step_id){
+                                    if(tt.id == s.sort_id){
                                         tt.step.forEach(z=>list.push(z));
                                     }
                                 })
@@ -869,9 +932,15 @@ export default {
                     }
 
                 })
-                this.mainItems = stepId;
-                // 刪除後，可能會影響最新執行的日期及disabled及狀態顏色，因此要重新整理資料
-                this.dateData();
+                datas = stepId;
+
+                if(true) {
+                    // 重新送出id
+                    this.mainItems = datas;
+                    // 刪除後，可能會影響最新執行的日期及disabled及狀態顏色，因此要重新整理資料
+                    this.dateData();
+                }
+                
             }
         },
 
@@ -882,7 +951,8 @@ export default {
             // 已執行(isConfirm)->不可作動
             // 取消(execute_time && execute_time!=='')-> 退回執行(刪除execute_time)
             // 執行 => 串api後撈取execute_time
-            if(!this.mainItems[id].stepList[index].isConfirm) {
+            const updUser = this.$auth.$state.user.email;
+            if(!this.mainItems[id].stepList[index].confirm_time!=='') {
                 if(this.mainItems[id].stepList[index].execute_time && this.mainItems[id].stepList[index].execute_time!=='') {
                     if (confirm(`取消執行 ${this.mainItems[id].stepList[index].step_name=='其他'?this.mainItems[id].stepList[index].step_name+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name} ？`)) {
                         let items = _.cloneDeep(this.mainItems);
@@ -894,14 +964,14 @@ export default {
                                 if(index!==items[i].stepList.length-1) {
                                     for(let x=index;x<items[i].stepList.length;x++) {
                                         items[i].stepList[x].execute_time = '';
-                                        items[i].stepList[x].isConfirm = false;
+                                        items[i].stepList[x].confirm_time='';
                                     }
                                 }
                                 
                             }else {
                                 items[i].stepList.forEach(x=>{
                                     x.execute_time = '';
-                                    x.isConfirm = false;
+                                    x.confirm_time='';
                                 })
                             }
                         }
@@ -918,6 +988,7 @@ export default {
                     if (confirm(`確認已執行 ${this.mainItems[id].stepList[index].step_name=='其他'?this.mainItems[id].stepList[index].step_name+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name} ？`)) {
                         
                         this.mainItems[id].stepList[index].execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                        this.mainItems[id].stepList[index].executor = updUser;
                         this.dateData();
                     }
                 }
@@ -925,22 +996,27 @@ export default {
         },
         // 確認鈕
         executeConfirm(id,index) {
+            const updUser = this.$auth.$state.user.email;
+            // console.log('Confirm',updUser);
             // 確認
             if (confirm(`已確認 ${this.mainItems[id].stepList[index].step_name=='其他'?this.mainItems[id].stepList[index].step_name+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name} 之前的項目已執行 ？`)) {
-                this.mainItems[id].stepList[index].isConfirm = true;
+                this.mainItems[id].stepList[index].confirm_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                this.mainItems[id].stepList[index].confirm = updUser;
                 // 確認前面的均一起確認
                 for(let i=0;i<=id;i++) {
                     if(i!==id) {
                         this.mainItems[i].stepList.forEach(x=>{
                             if(x.execute_time&&x.execute_time!=='') {
-                                x.isConfirm = true;
+                                x.confirm_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                x.confirm = updUser;
                             }
                         })
                     }else {
                         if(index !== 0) {
                             for(let x=0;x<index;x++) {
                                 if(this.mainItems[i].stepList[x].execute_time&&this.mainItems[i].stepList[x].execute_time!=='') {
-                                   this.mainItems[i].stepList[x].isConfirm = true; 
+                                   this.mainItems[i].stepList[x].confirm_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                   this.mainItems[i].stepList[x].confirm = updUser;
                                 }
                                 
                             }
@@ -949,8 +1025,8 @@ export default {
                     }
                     
                 }
-                // 日期顏色只有執行影響，確認均不影響，只需重新判定執行鈕的disabled狀態
-                this.disabledData();
+                
+                this.colorData();
             }
             
         },
@@ -1091,7 +1167,7 @@ export default {
             console.log(`會在第${psubidx+1}插入`,this.stepitem.name_ch);
             
             var pushitem = {
-                step_id : this.stepitem.id,//項目原始id
+                sort_id : this.stepitem.id,//項目原始id
                 // sort:undefined,
                 step_name : this.stepitem.name_ch,
                 step_exec:undefined,//執行/確認人員
@@ -1127,7 +1203,7 @@ export default {
         },
         // 養殖歷程中的狀態面板收合
         nowExpand() {
-            console.log('expand',this.nowExpand);
+            // console.log('expand',this.nowExpand);
             let data = _.cloneDeep(this.mainItems);
             this.status.forEach(m=>{
                 m.open = this.nowExpand;
@@ -1136,7 +1212,7 @@ export default {
             this.mainItems = data;
             
             console.log('mainItems',this.mainItems);
-        }
+        },
     },
 }
 </script>

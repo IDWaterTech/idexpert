@@ -422,12 +422,20 @@
                               :show-select="showselect"
                               no-data-text="查無資料">
                               <template v-slot:[`item.actions`]="{ item }">
-                                <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
+                                <button class="btn-icon" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
+                                    <v-icon>mdi-pencil</v-icon>
+                                </button>
+                                
+                                <button class="btn-icon delete" :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)">
+                                    <v-icon>mdi-trash-can</v-icon>
+                                </button>
+                                
+                                <!-- <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
                                   mdi-pencil
                                 </v-icon>
                                 <v-icon small :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)"  color="red">
                                   mdi-delete
-                                </v-icon>
+                                </v-icon> -->
                               </template>
                               <template v-slot:top>
                                 <v-toolbar flat>

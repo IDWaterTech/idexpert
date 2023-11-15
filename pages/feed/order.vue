@@ -231,7 +231,7 @@
                               <span style="margin-right: 4px;">資料時間：{{ imptimeidx?sdate+ '-' +imptimeidx:'無' }}</span>
                               <v-tooltip v-if="imptimeidx" bottom >
                                   <template v-slot:activator="{ on, attrs }">
-                                      <button class="btn-add delete" 
+                                      <button class="btn-icon just-icon delete" 
                                         @click="delimpsubmit" 
                                         v-bind="attrs" v-on="on"
                                         style="width: 24px;height: 24px;"
@@ -249,13 +249,13 @@
                             </div>
                             
                             <div v-if="windowWidth>959.98" class="btn-groups">
-                              <v-btn class="btn-primary btn-add save" tile @click="showimport"
+                              <v-btn class="btn-primary" tile @click="showimport"
                                 ><v-icon left>mdi-database-import</v-icon>匯入
                               </v-btn>
-                              <v-btn class="btn-primary btn-add" tile @click="showsubmitdig">
+                              <v-btn class="btn-primary green" tile @click="showsubmitdig">
                                 <v-icon left >mdi-circle-edit-outline</v-icon>設定
                               </v-btn>
-                              <v-btn class="btn-primary btn-add clear" tile @click="dataclear">
+                              <v-btn class="btn-primary clear" tile @click="dataclear">
                                 <v-icon left>mdi-shimmer</v-icon>清除
                               </v-btn>
                             </div>
@@ -263,7 +263,7 @@
                             <div v-else class="btn-groups" style="justify-content: flex-start;">
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-add save" @click="showimport" v-bind="attrs" v-on="on">
+                                    <button class="btn-icon" @click="showimport" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-database-import</v-icon>
                                     </button>
                                 </template>
@@ -271,7 +271,7 @@
                               </v-tooltip>
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-add" @click="showsubmitdig" v-bind="attrs" v-on="on">
+                                    <button class="btn-icon green" @click="showsubmitdig" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-circle-edit-outline</v-icon>
                                     </button>
                                 </template>
@@ -279,7 +279,7 @@
                               </v-tooltip>
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-add clear" @click="dataclear" v-bind="attrs" v-on="on">
+                                    <button class="btn-icon clear" @click="dataclear" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-shimmer</v-icon>
                                     </button>
                                 </template>
@@ -301,7 +301,7 @@
     </v-card>
     <!-- 匯入資料 -->
     <v-dialog v-model="importdialog" width="400">
-      <v-card class="card-dialog" min-height="350">
+      <v-card class="card-dialog custom-dialog" min-height="350">
         <v-card-title>匯入料表</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -347,7 +347,7 @@
                 @click="getimptimedata"
                 :disabled="!sdate"
                 :loading="imploading"
-                ><v-icon>mdi-reload</v-icon>取得料表</v-btn
+                ><v-icon style="color: #fff;">mdi-reload</v-icon>取得料表</v-btn
               >
             </v-col>
             <!-- 料表清單 -->
@@ -369,7 +369,7 @@
     </v-dialog>
     <!-- 操作 -->
     <v-dialog v-model="submitdig" width="450">
-      <v-card min-height="250" class="card-dialog">
+      <v-card min-height="250" class="card-dialog  custom-dialog">
         <v-card-title>設定</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -1286,74 +1286,8 @@ export default {
       max-width: 280px;
     }
     button {
-      width: 24px;
-      height: 24px;
-      background-color: $color-primary;
-      border-radius: 4px;
-      position: relative;
-      margin: 4px;
-      transition: all 0.3s;
-      padding: 0 10px;
-      &:hover {
-          background-color: lighten($color: $color-primary, $amount: 3);
-      }
-      .theme--light.v-icon {
-          font-size: 1rem;
-          color: #fff;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%,-50%);
-      }
-      &.btn-primary {
-        height: 32px;
-        width: initial;
-        padding: auto 12px;
-        .theme--light.v-icon {
-          font-size: 1rem;
-          color: #fff;
-          position: relative;
-          transform: none;
-          top: initial;
-          left: initial;
-          margin-right: 4px;
-        }
-      }
-      
-      &.btn-add {
-          background-color: $color-green !important;
-          &:hover {
-              background-color: lighten($color: $color-green, $amount: 3) !important;
-          }
-      }
-      &.save {
-          background-color: $color-primary !important;
-          &:hover {
-              background-color: lighten($color: $color-primary, $amount: 3) !important;
-          }
-      }
-      &.delete {
-          background-color: $color-accent !important;
-          &:hover {
-              background-color: lighten($color: rgba($color-accent,0.9), $amount: 3) !important;
-          }
-      }
-      &.clear {
-          background-color: #67BEDA !important;
-          &:hover {
-              background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
-          }
-      }
-      &.disabled {
-        background-color: $color-dark-25 !important;
-        user-select: none;
-        .theme--light.v-icon {
-          color: $color-dark-50 !important;
-        }
-        &:hover {
-          background-color: $color-dark-25 !important;
-        }
-        
+      &.v-btn:not(.v-btn--round).v-size--default {
+        padding: 0 12px;
       }
       .theme--light.v-data-table {
         background-color: $color-lighten;
@@ -1375,48 +1309,6 @@ export default {
   margin-right: 0;
 }
 ::v-deep {
-  .search {
-    .select-template {
-      flex: 1;
-      margin-right: 16px;
-      .font-size-large {
-        font-size: 16px;
-      }
-      .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
-        padding-left: 0;
-        padding-right: 0;
-      }
-      .vue-treeselect__control {
-        border: none;
-        border-radius: 0;
-        border-bottom: 1px solid $color-form;
-        .vue-treeselect__placeholder {
-          color: $color-dark;
-          &::before {
-          content: '*'
-          }
-          &::after {
-          content: '(必選)';
-          }
-        }
-        .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-          color: $color-form;
-        }
-        .vue-treeselect__x-container {
-          display: none;
-        }
-      }
-      .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover,
-      .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-        border-color: $color-form;
-      }
-      .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused,
-      .theme--light.v-input input {
-        font-size: 14px;
-        color: $color-dark;
-      }
-    }
-  }
   .result {
     margin-top: -8px;
     
@@ -1476,6 +1368,7 @@ export default {
     // header
     .header-bar {
       background-color: $color-lighten;
+      padding: 12px 0 !important;
       .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,
       .theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
         background-color: $color-lighten;
@@ -1497,6 +1390,9 @@ export default {
         .theme--light.v-btn.v-btn--disabled {
           color: $color-dark-50;
         }
+      }
+      .v-toolbar__content {
+        width: 100%;
       }
       .v-tab {
         font-size: 18px;
@@ -1543,11 +1439,11 @@ export default {
       }
     }
   }
-  .v-card.card-dialog {
-    .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
-      background: transparent;
-    }
-  }  
+  // .v-card.card-dialog {
+  //   .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
+  //     background: transparent;
+  //   }
+  // }  
 }
 
 </style>

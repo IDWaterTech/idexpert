@@ -4,7 +4,7 @@
       <div class="content" style="padding-top:12px">
         <!-- 搜尋 -->
         <div class="search">
-          <v-row style="margin-bottom: 0;align-items: center;">
+          <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
             <v-col cols="12" md="8" style="padding: 0;">
               <v-row style="margin-bottom: 0;align-items: center;">
                 <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
@@ -54,13 +54,13 @@
             <!-- 按鈕-新增/執行 -->
             <v-col cols="12" md="4" style="padding: 0;">
               <v-row style="margin-bottom: 0;align-items: center;">
-                <v-col cols="12" style="padding: 0;padding-right: 24px;">
+                <v-col cols="12" style="padding: 0;padding-right: 8px;">
                   <div class="btn-groups">
-                    <v-btn tile class="btn-secondary" @click="showadd" style="padding: 0 8px;">
+                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
                     </v-btn>
-                    <v-btn tile class="btn-secondary green" style="padding: 0 8px;" @click="mutiExecuteDialog">
+                    <v-btn v-if="false" tile class="btn-secondary green" style="padding: 0 8px;" @click="mutiExecuteDialog">
                       <v-icon>mdi-check</v-icon>
                       批次執行
                     </v-btn>
@@ -91,7 +91,7 @@
               <div v-show="resultListOpen" class="content">
                 <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
                    height="62vh"
-                  @cell-click="clickRow"
+                  @cell-click="clickRow($event,false)"
                   @select="handleSelectionChange" :header-cell-name="cellClass">
                   <!-- 名稱/批號 -->
                   <!-- <el-table-column label="名稱/批號" prop="name" align="center"></el-table-column> -->
@@ -143,14 +143,23 @@
 
                   <el-table-column label="養殖負責" prop="person_in_charge" align="center">
                   </el-table-column>
-                  <el-table-column fixed="right" label="操作" width="80">
+                  <el-table-column fixed="right" label="操作" width="120" align="center">
+                    
                     <template slot-scope="scope">
                       <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
                       <!-- <v-btn color="primary" outlined small @click="delcircle(scope.row)" :disabled="scope.row.ended_date != null">
                         刪除</v-btn> -->
                       <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-add delete" @click="delcircle(scope.row)" v-bind="attrs" v-on="on">
+                            <button class="btn-icon" @click="editCircle(scope.row)" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-pencil</v-icon>
+                            </button>
+                        </template>
+                      <span>修改</span>
+                      </v-tooltip>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-icon delete" @click="delcircle(scope.row);" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-trash-can</v-icon>
                             </button>
                         </template>
@@ -185,11 +194,9 @@
                       <v-icon v-if="!resultCycleOpen">mdi-triangle-small-down</v-icon>
                     </div>
                   </div>
-                  
-                  
               </div> 
               <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
-                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand"></FeedTemplate2>
+                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata"></FeedTemplate2>
               </div>
             </v-card>
           </div>
@@ -203,6 +210,7 @@
           <v-card-title class="add-title" style="display: block;width: 100%;">
             <div style="display: inline-block;">
               新增-養殖循環
+              <span class="error-text">Note:目前無法新增，因多池資料結構有更改</span>
             </div>
             <div class="add" style="float: right;display: inline-block;">
               <v-btn  class="btn-secondary close"
@@ -213,6 +221,53 @@
               </v-btn>
             </div>
           </v-card-title>
+          <!-- 選擇池 -->
+          <div class="card-title">
+            <div class="title">
+                <v-card-title>選擇池</v-card-title>
+            </div>
+            <!-- <div class="chevron" >
+              <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
+              <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
+            </div> -->
+          </div>
+          <div v-if="addChooseOpen" class="basic" style="padding-left: 8px;">
+            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              <!-- {{ addparm.pool_id }} -->
+              <!-- <locate-select 
+                class="select-template"
+                v-model="addparm.pool_id"
+                :dataScope="'pool'" 
+                :isMulti="true" 
+                @scopeSel_data="get_selectData($event)" 
+                ></locate-select> -->
+                <treeselect
+                    @input="changeEvent"
+                    v-model="dataid"
+                    :options="maindataScope"
+                    :default-expand-level="1"
+                    :disable-branch-nodes="true"
+                    children="node"
+                    placeholder="請選擇養殖池"
+                    multiple
+                    :rules="rules.length"
+                    :normalizer="
+                      node => {
+                        return { children: node.node };
+                      }
+                    "
+                    class="select-template font-size-large"
+                    :class="{'error':isDataidError}"
+                  >
+                  <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
+                  <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}</div>
+                </treeselect>
+              
+            </v-card-text>
+            <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
+            <span  class="error-text" style="padding-left: 8px;"><b>Note:需撈取出可新增循環的池，資料架構與/api/architecture相同</b><br></span>
+            <!-- <span style="padding-left: 8px;color: red"><b>Note:多池選擇下，體積水量可能會不同數值，影響初始放苗數，待討論</b><br></span> -->
+          </div>
           <!-- 基本資料 -->
           <div class="card-title" @click="addbasicDataOpen = !addbasicDataOpen" style="cursor: pointer">
               <div class="title">
@@ -225,30 +280,38 @@
           </div>
           <div v-show="addbasicDataOpen" class="basic">
             <v-card-text style="display: flex;align-items: center;">
-              <v-text-field v-model="addparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="padding-top: 0;">
-              </v-text-field>
-              <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
-                transition="scale-transition" offset-y min-width="auto">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field v-model="addparm.started_date" label="選擇起日" :rules="rules.require"
-                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
-                                              () => (addparm.started_date = getNowDate())
-                                            " style="padding-top: 0;"></v-text-field>
-                </template>
-                <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
-                </v-date-picker>
-              </v-menu>
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col  cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-text-field v-model="addparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" disabled  style="margin-right: 4px;padding-top: 0;">
+                  </v-text-field>
+                </v-col>
+                <v-col  cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="addparm.started_date" label="選擇起日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (addparm.started_date = getNowDate())
+                                                " style="padding-top: 0;"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+              
+              
             </v-card-text>
             <v-card-text>
               <v-row align="center">
                 <!-- 體積 -->
-                <v-col cols="3">
+                <!-- <v-col cols="3">
                   <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
                     autocomplete="off"></v-text-field>
                 </v-col>
-                <v-col cols="1" class="text-center">X</v-col>
+                <v-col cols="1" class="text-center">X</v-col> -->
                 <!-- 密度 -->
-                <v-col cols="3">
+                <!-- <v-col cols="3">
                   <v-text-field v-model.number="addparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     @change="
                               () => {
@@ -257,23 +320,23 @@
                               }
                             " autocomplete="off"></v-text-field>
                 </v-col>
-                <v-col cols="1" class="text-center">=</v-col>
+                <v-col cols="1" class="text-center">=</v-col> -->
                 <!-- 初始放苗量(估計) -->
-                <v-col cols="4">
+                <!-- <v-col cols="4">
                   <v-text-field v-model="addparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
                     disabled autocomplete="off">
                   </v-text-field>
-                </v-col>
+                </v-col> -->
               </v-row>
             </v-card-text>
             <v-card-text style="display: flex;align-items: center;">
               <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 12px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
                     item-text="name_ch" clearable :rules="rules.require" label="選擇種苗">
                   </v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 12px;">
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
                   <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -290,10 +353,10 @@
             </v-card-text>
             <v-card-text style="display: flex;align-items: center;">
               <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 12px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 12px;">
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
                   <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"></v-text-field>
                 </v-col>
               </v-row>
@@ -327,7 +390,7 @@
             </v-card-text>
             <v-card-text>
               <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
-                clearable @change="tempChange" label="選擇樣板(選)">
+                @change="tempChange" label="選擇樣板">
               </v-autocomplete>
             </v-card-text>
             <!-- <v-col cols="12"> -->
@@ -337,53 +400,120 @@
               </v-autocomplete> -->
             <!-- </v-col> -->
           </div>
-          <!-- 選擇池 -->
-          <div class="card-title" style="cursor: pointer;">
+          <!-- 輸入池密度 -->
+          <div v-if="dataid.length>0" class="card-title">
             <div class="title">
-                <v-card-title>選擇池</v-card-title>
+                <v-card-title>輸入各池密度</v-card-title>
+                <div v-if="volumeError" class="error-text">*請確實輸入養殖池密度</div>
             </div>
             <!-- <div class="chevron" >
               <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
               <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
             </div> -->
           </div>
-          <div v-if="addChooseOpen" class="basic" style="padding-left: 12px;">
-            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
-              <!-- {{ addparm.pool_id }} -->
-              <!-- <locate-select 
-                class="select-template"
-                v-model="addparm.pool_id"
-                :dataScope="'pool'" 
-                :isMulti="true" 
-                @scopeSel_data="get_selectData($event)" 
-                ></locate-select> -->
-                <treeselect
-                    @input="changeEvent"
-                    v-model="addparm.dataid"
-                    :options="maindataScope"
-                    :default-expand-level="1"
-                    :disable-branch-nodes="true"
-                    children="node"
-                    placeholder="請選擇養殖池"
-                    multiple
-                    :rules="rules.length"
-                    :normalizer="
-                      node => {
-                        return { children: node.node };
-                      }
-                    "
-                    class="select-template font-size-large"
-                    :class="{'error':isDataidError}"
-                  >
-                  <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
-                  <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}</div>
-                </treeselect>
+          <div v-if="dataid.length>0" class="basic" style="padding-left: 8px;">
+            <v-card-text style="padding-top: 0;display: flex;align-items: center;">
+              <v-row style="margin-bottom: 12px;border-bottom: 1px solid rgba(0,0,0,0.1);align-items: center;padding: 0 8px 8px;">
+                <v-col cols="3" style="padding: 0">
+                  <span style="color:#40657A;font-weight: bold;display: inline-block;">
+                    統一密度：
+                  </span>
+                </v-col>
+                <v-col cols="9" style="padding: 0;">
+                  <div class="volume" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+                    <el-input-number
+                      class="ml-2"
+                      v-model="all_num_per_unit"
+                      size="mini"
+                      :precision="2"
+                      :step="0.1"
+                      :min="0"
+                      prop="number"
+                    ></el-input-number>
+                    <div class="btn-groups" style="margin-left: 8px;">
+                      <v-btn class="btn-secondary" :class="{'disabled':all_num_per_unit==undefined}" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
+                      <v-btn class="btn-secondary delete" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
               
             </v-card-text>
-            <span style="padding-left: 12px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
-            <span style="padding-left: 12px;"><b>Note:需撈取出可新增循環的池，資料架構與/api/architecture相同</b><br></span>
-            <span style="padding-left: 12px;color: red"><b>Note:多池選擇下，體積水量可能會不同數值，影響初始放苗數，待討論</b><br></span>
+            <v-card-text style="padding-top: 0;">
+              <v-row>
+                <!-- <div class="pond" style="padding: 8px 0;width: 100%;border-bottom: 1px solid rgba(0,0,0,0.1);display: inline-block;"> -->
+                  <v-col cols="12" md="6" sm="6" v-for="pond in dataVolumn" :key="'volume'+pond.id" style="padding: 0;padding-bottom: 8px;">
+                    <span style="color:#40657A;margin-left: 8px;font-weight: bold;">
+                      {{ pond.name }}
+                    </span>
+                    
+                    <div class="volume" style="display: flex;flex-direction: column;align-items: flex-start;">
+                      <el-input-number
+                        :id="pond.name"
+                        :ref="pond.name"
+                        class="ml-2"
+                        v-model="pond.num_per_unit"
+                        size="mini"
+                        :precision="2"
+                        :step="0.1"
+                        :min="0"
+                        prop="number"
+                        @change="
+                              () => {
+                                pond.estimated_num =
+                                pond.volume * pond.num_per_unit;
+                              }
+                            "
+                      ></el-input-number>
+                      <span style="font-size: 0.85rem;margin-left: 8px;">初始放苗量：{{ pond.estimated_num }}</span>
+                    </div>
+                  </v-col>
+                <!-- </div> -->
+              </v-row>
+              <!-- <div class="pond" v-for="pond in dataVolumn" :key="'volume'+pond.id" style="padding: 8px 0;width: 100%;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                {{ pond.name }}
+                <el-input-number
+                  :id="pond.name"
+                  :ref="pond.name"
+                  class="ml-2"
+                  v-model="pond.num_per_unit"
+                  size="mini"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0"
+                  prop="number"
+                ></el-input-number> -->
+                <!-- <v-row align="center">
+
+                  <v-col cols="3">
+                    <v-text-field v-model="pond.volume" label="體積(水量)" type="number" disabled
+                      autocomplete="off"></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="text-center">X</v-col>
+
+                  <v-col cols="3">
+                    <v-text-field v-model.number="pond.num_per_unit" label="密度" type="number" :rules="rules.require"
+                      @change="
+                                () => {
+                                  pond.estimated_num =
+                                    add_volume * pond.num_per_unit;
+                                }
+                              " autocomplete="off"></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="text-center">=</v-col>
+
+                  <v-col cols="4">
+                    <v-text-field v-model="pond.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                      disabled autocomplete="off">
+                    </v-text-field>
+                  </v-col>
+                </v-row> -->
+              <!-- </div>  -->
+              
+            </v-card-text>
+          
           </div>
+          
           <v-card-actions style="padding: 24px 12px;">
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="cancelDialog">取消</v-btn>
@@ -501,7 +631,182 @@
               <v-spacer></v-spacer>
               <!-- <v-btn  v-if="nowTab == '執行'" class="btn-secondary" @click="mutiExecuteStep(false)">上一步</v-btn> -->
               <!-- <v-btn class="btn-secondary" @click="mutiExecute = false">取消</v-btn> -->
-              <v-btn class="btn-primary" @click="mutiExecuteStep()">{{ nowTab=='執行'?'執行':'確認' }}</v-btn>
+              <v-btn class="btn-primary" @click="opencapDialog">{{ nowTab=='執行'?'執行':'確認' }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 批次執行的驗證碼 -->
+    <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
+      <v-card height="230">
+        <v-card-title>驗證碼</v-card-title>
+        <v-card-text>
+          <recaptcha />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn tile @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+     <!-- 編輯循環清單的dialog -->
+     <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
+      <v-form v-model="editvalid" ref="editform">
+        <v-card style="min-height:80vh" class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              修改循環
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn class="btn-secondary close"
+                      title="取消" 
+                      @click="editDialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <!-- 基本資料 -->
+          <div class="card-title" style="cursor: pointer">
+            <!-- <div class="title">
+                <v-card-title>基本資料設定</v-card-title>
+            </div>
+            <div class="chevron" >
+              <v-icon v-if="addbasicDataOpen">mdi-triangle-small-up</v-icon>
+              <v-icon v-if="!addbasicDataOpen">mdi-triangle-small-down</v-icon>
+            </div> -->
+          </div>
+          <div class="basic">
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row  style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-text-field v-model="editparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="margin-right: 4px;padding-top: 0;" disabled>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (editparm.started_date = getNowDate())
+                                                " style="padding-top: 0;"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+              
+              
+            </v-card-text>
+            <!-- 水體/密度/放養數 -->
+            <v-card-text>
+              <v-row align="center">
+                <!-- 體積 -->
+                <v-col cols="3">
+                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
+                    autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">X</v-col>
+                <!-- 密度 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    @change="
+                              () => {
+                                editparm.estimated_num =
+                                  add_volume * editparm.num_per_unit;
+                              }
+                            " autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">=</v-col>
+                <!-- 初始放苗量(估計) -->
+                <v-col cols="4">
+                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="editparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
+                    item-text="name_ch" clearable :rules="rules.require" label="選擇種苗">
+                  </v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.stocked_date" label="放苗日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (editparm.stocked_date = getNowDate())
+                                                "></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"></v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>    
+            <v-card-text style="display: flex;">
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="editparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)">
+              </v-text-field>
+            </v-card-text>      
+            <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="editparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
+                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
+                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+              </v-autocomplete>
+            </v-card-text>
+            <v-card-text>
+              <v-text-field filled dense v-model="editparm.remark" hide-details label="備註(選)">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-autocomplete v-model="editparm.tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                clearable @change="tempChange" label="選擇樣板(選)" disabled>
+              </v-autocomplete>
+            </v-card-text>
+            <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
+            <span class="error-text" style="margin-left: 8px;">Note:撈不出此資料樣板資訊</span>
+            <!-- <v-col cols="12"> -->
+              <!-- 樣板 先暫時拿掉-->
+              <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                clearable @change="tempChange" label="選擇樣板(選)">
+              </v-autocomplete> -->
+            <!-- </v-col> -->
+          </div>
+          
+          
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="cancelEdit()">取消</v-btn>
+            <v-btn class="btn-primary" @click="submitEdit">修改</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -627,9 +932,12 @@ export default {
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
-        pool_id: [],
-        dataid: [],// 多選
+        
       },
+      dataid: [],// 多選
+      dataVolumn:[],
+      allPondsData:[],
+      volumeError: false,
       isDataidError: false,
       //種苗
       SeedlingData:[],
@@ -736,7 +1044,7 @@ export default {
         item: '新增循環',
         item_id: 23,
         execute_time: '',
-        isConfirm: false,
+        confirm_time: '',
         msg:''
       },{
         pond_id: 51,
@@ -745,7 +1053,7 @@ export default {
         item: '養殖審核1',
         item_id: 27,
         execute_time: '',
-        isConfirm: false,
+        confirm_time: '',
         msg:''
         
       }],
@@ -756,13 +1064,34 @@ export default {
         item: '設備正常',
         item_id: 24,
         execute_time: '2023-10-25 11:22:11',
-        isConfirm: false,
+        confirm_time: '',
         msg:''
       },],
       addPoolData:[],
-      dataid: undefined,
+      // dataid: undefined,
       // 養殖歷程收合
       nowExpand: true, 
+      // 編輯循環清單
+      editDialog: false,
+      editvalid: false,
+      editparm: {
+        started_date: undefined,//開始日期，有ended_date結束日期，但新增不需使用
+        stocked_date:undefined, //放苗日
+        name: undefined,//名稱或批號
+        num_per_unit: undefined,//放養密度
+        estimated_num: 0, //放養隻數，改由後端算，但這裡是畫面呈現用
+        seedling_id:undefined,//種苗id
+        //estimated_harvest_catty:undefined,//預計收成斤數
+        estimated_harvest_weight:undefined,//預估收成個體重
+        estimated_survival_rate:70,//預計存活率
+        remark:"",//備註
+        person_in_charge:undefined,//負責人
+        pool_id: [],
+        // dataid: [],// 多選
+      },
+      editperson_in_charge: '',
+      captchaDialog: false,//批次執行驗證
+      all_num_per_unit: undefined, //統一密度
     };
   },
   methods: {
@@ -865,6 +1194,11 @@ export default {
         });
     },
     delcircle: async function(data) {
+      this.clickRow(data,true);
+      // this.resultCycleOpen = false;
+      setTimeout(()=>{
+        this.resultListOpen = true;
+      },200)
       await this.$confirm(
         `將永久删除該循環所有紀錄(包含事件紀錄、養殖歷程), 是否繼續?`,
         "警告",
@@ -885,6 +1219,8 @@ export default {
               if (res.data == "刪除成功") {
                 this.getCircleData();
                 this.$toast.success("刪除成功", { duration: 2000 });
+                this.currentDataId = null;
+                this.resultCycleOpen = false;
               } else {
                 this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
               }
@@ -901,59 +1237,67 @@ export default {
           this.$toast.error("已取消删除" + err, { duration: 2000 });
         });
     },
-    setNestedDisabled: function(obj, name) {
-      //全部都設成disabled
-      obj.forEach((itm, index) => {
-        // console.log(itm.name);//所有node(含leaf)的名稱
-        itm.parent = itm.hasOwnProperty("parent")
-          ? itm.parent + "_" + name
-          : name;
-        const nodelst = ["1", "2"];
-        if (nodelst.filter(x => x == itm.level) > 0) {
-          itm.id = itm.name + "_" + itm.id;
-        }
-        if (itm.visible == false) {
-          //隱藏走道用
-          delete obj[index];
-          return obj; //不用再找有無node
-        }
-        if (itm.hasOwnProperty("node")) {
-          this.setNestedDisabled(itm.node, itm.name);
-        }
-      });
-      return obj;
-    },
+    // setNestedDisabled: function(obj, name) {
+    //   //全部都設成disabled
+    //   obj.forEach((itm, index) => {
+    //     // console.log(itm.name);//所有node(含leaf)的名稱
+    //     itm.parent = itm.hasOwnProperty("parent")
+    //       ? itm.parent + "_" + name
+    //       : name;
+    //     const nodelst = ["1", "2"];
+    //     if (nodelst.filter(x => x == itm.level) > 0) {
+    //       itm.id = itm.name + "_" + itm.id;
+    //     }
+    //     if (itm.visible == false) {
+    //       //隱藏走道用
+    //       delete obj[index];
+    //       return obj; //不用再找有無node
+    //     }
+    //     if (itm.hasOwnProperty("node")) {
+    //       this.setNestedDisabled(itm.node, itm.name);
+    //     }
+    //   });
+    //   return obj;
+    // },
     mainchange: async function() {
       //取得循環資料
       await this.getCircleData();
     },
     getMainData: async function() {
-      let reqid = this.req.id;
-      let getedItem = {};
-      //取得整場架構資料
-      //visible寫死名稱含^=false，寫死池的狀態=無=false
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
         .then(res => {
-          this.maindata = res.data;
-          var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-          this.maindata = data;
+            this.maindata = res.data;
+            var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+            this.maindata = data;
         });
-      //用id抓到name
-      this.maindata.forEach(x => {
-        x.node.forEach(y => {
-          var item = y.node.filter(z => z.id == reqid);
-          if (item.length == 1) {
-            getedItem = item[0];
-            return;
-          }
-        });
-      });
-      //把區域名稱加進去
-      if (getedItem.hasOwnProperty("name")) {
-        this.poolName = getedItem.name;
-        console.log(getedItem);
-      }
+      // let reqid = this.req.id;
+      // let getedItem = {};
+      // //取得整場架構資料
+      // //visible寫死名稱含^=false，寫死池的狀態=無=false
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+      //   .then(res => {
+      //     this.maindata = res.data;
+      //     var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      //     this.maindata = data;
+      //   });
+      // //用id抓到name
+      // this.maindata.forEach(x => {
+      //   x.node.forEach(y => {
+      //     var item = y.node.filter(z => z.id == reqid);
+      //     if (item.length == 1) {
+      //       getedItem = item[0];
+      //       return;
+      //     }
+      //   });
+      // });
+      // //把區域名稱加進去
+      // if (getedItem.hasOwnProperty("name")) {
+      //   this.poolName = getedItem.name;
+      //   console.log(getedItem);
+      // }
+      
     },
     //取得項目子清單
     getItemData: async function() {
@@ -1096,7 +1440,7 @@ export default {
         });
       this.warnLoading = false;
     },
-    showadd: async function() {
+    showadd: async function(bool=false) {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
@@ -1107,8 +1451,9 @@ export default {
       // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
       if (this.$refs.cycleform != undefined) {
         this.$refs.cycleform.reset();
-        this.addparm.dataid = [];
+        this.dataid = [];
         this.isDataidError = false;
+        this.volumeError = false;
       }
       // if (this.poolid == undefined) {
       //   this.$toast.info(`失敗：請先選擇養殖池`, {
@@ -1121,14 +1466,24 @@ export default {
       // 新增循環的池選擇
       var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
       this.addPoolData = data;
+
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
         .then(res => {
+          this.allPondsData = _.cloneDeep(res.data);
           var items = res.data.filter(x => x.id == this.poolid);
           if (items.length == 1) {
-            this.addDialog = true;
+            if(!bool) {
+              this.addDialog = true; 
+            }
+            let date = dayjs().format("YYYY-MM-DD").split('-');
+            this.addparm.name = '';
+            date.forEach(x=>this.addparm.name+=x);
+            this.addparm.name = this.addparm.name+'_{pool}'
             this.add_volume = items[0].volume;
             this.addparm.estimated_survival_rate = 70;
+            this.tempSelect = this.template_items[0].id;
+            this.dataVolumn = [];
 
             // 關掉Dialog再開啟不會重置scrollbar位置 
             setTimeout(()=>{
@@ -1278,37 +1633,88 @@ export default {
     //新增循環
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
-      this.addparm.created_user = updUser;
-      this.addparm.pond_id = parseInt(this.poolid); //需要int
-      //樣板資料
-      var tempMain = {};
-      var tempContent = [];
-      if(this.tempSelect!=undefined){
-        var id = this.tempSelect;
-        var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
-        tempMain = temp.tempMain;
-        tempContent = temp.tempContent;
-      }
-      this.addparm['tempMain'] = tempMain;
-      this.addparm['tempContent'] = tempContent;
-      let parm = Object.assign({},this.addparm);
+      
+      let param = [];
+      this.volumeError = false;
+      this.dataid.forEach(i=>{
+        let par = _.cloneDeep(this.addparm);
+        par.created_user = updUser;
+        par.pond_id = parseInt(i); //需要int
+        
+        //樣板資料
+        var tempMain = {};
+        var tempContent = [];
+        if(this.tempSelect!=undefined){
+          var id = this.tempSelect;
+          var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
+          tempMain = temp.tempMain;
+          tempContent = temp.tempContent;
+        }
+        par['tempMain'] = tempMain;
+        par['tempContent'] = tempContent;
+        delete par.estimated_num;//刪除初始放苗量
+        this.dataVolumn.forEach(d=>{
+          if(d.id==i) {
+            par.num_per_unit = d.num_per_unit;
+            par.name = par.name.replace('pool',d.name);
+          }
+          if(!d.num_per_unit||d.num_per_unit==null||d.num_per_unit=='') {
+            this.volumeError = true;
+          }
+        })
+        param.push(par);
+
+      })
+
+      
+      // let param = _.cloneDeep(this.addparm);
+      // param.created_user = updUser;
+      // param.pond_id = parseInt(this.dataid[0]); //需要int
+        
+      // //樣板資料
+      // var tempMain = {};
+      // var tempContent = [];
+      // if(this.tempSelect!=undefined){
+      //   var id = this.tempSelect;
+      //   var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
+      //   tempMain = temp.tempMain;
+      //   tempContent = temp.tempContent;
+      // }
+      // param['tempMain'] = tempMain;
+      // param['tempContent'] = tempContent;
+      // delete param.estimated_num;//刪除初始放苗量
+      // this.dataVolumn.forEach(d=>{
+      //   if(d.id==this.dataid[0]) {
+      //     param.num_per_unit = d.num_per_unit;
+      //     param.name = param.name.replace('pool',d.name);
+      //   }
+      //   if(!d.num_per_unit||d.num_per_unit==null) {
+      //     this.volumeError = true;
+      //   }
+      // })
+
+      
+      // let parm = Object.assign({},this.addparm);
       // return;
-      delete parm.estimated_num;//刪除初始放苗量
-      console.log(parm);
+      
+      console.log('>>>>>Submit Data',param);
       // debugger;
       // return;
+
       var valid = this.$refs.cycleform.validate();
       console.log('valid',valid);
-      if(this.addparm.dataid.length>0) {
+      if(this.dataid.length>0) {
         this.isDataidError = false;
       }else {
         this.isDataidError = true;
       }
-      if(valid && !this.isDataidError) {
+
+      if(valid && !this.isDataidError && !this.volumeError) {
+        // alert('submit data：'+ JSON.stringify(param));
         await this.$axios
           .post(
             `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
-            parm
+            param
           )
           .then(res=>{
             if (res.data == "新增成功") {
@@ -1483,212 +1889,284 @@ export default {
       // await this.geteventData();//取得事件紀錄清單
     },
     // 循環清單點擊
-    clickRow(val) {
+    clickRow(val,bool=false) {
       console.log('click',val);
-      if(val.id==this.currentDataId) {
-        // 與原本點選的相同，取消點選
+      if(!bool) {
+        if(val.id==this.currentDataId) {
+          // 與原本點選的相同，取消點選
+          let data = _.cloneDeep(this.circleData);
+          this.circleData = [];
+          this.circleData = data;
+          this.currentDataId = null;
+        }else {
+          //清除
+          this.$refs.circletable.clearSelection();
+          // this.eventData = []; //清除事件紀錄清單
+          this.$refs.circletable.toggleRowSelection();
+          // this.$refs.circletable.setCurrentRow(val);
+          if(this.circleData.filter(x=>x.id==val.id).length==1) {
+            var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
+            var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
+            console.log('Circle Data',this.circleData);
+
+            // tempMain = (tempMain==undefined)?{}:[];
+            // tempContent = (tempContent==undefined)?{}:[];
+
+            tempMain = {
+              "id": 30,
+              "name_ch": "樣板A",
+              "name_en": "template_a",
+              "remark": "this is a test",
+              "created_user": "jeff",
+              "created_time": "2022-12-27 15:17:05",
+              "updated_user": "jianwei.wen@idwater.com.tw",
+              "updated_time": "2023-10-26 08:49:03"
+            }
+            tempContent = [
+            {
+              "phase_id": 1,
+              "phase_name": "空池",
+              "stepList": [
+                  {
+                      "step_id": 23,
+                      "step_name": "新增循環",
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":23
+                      // "execute_time": '2023-10-25 10:12:12',
+                      // confirm_time: '',
+                  },
+                  {
+                      "step_id": 40,
+                      "step_name": "其他",
+                      // isConfirm:false,
+                      "msg":'i am msg 2.',
+                      // "execute_time": '2023-10-25 10:25:12',
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":'23_02'
+                  },
+                  {
+                      "step_id": 41,
+                      "step_name": "其他",
+                      // isConfirm:false,
+                      "msg":'i am msg 1.',
+                      // "execute_time": '2023-10-25 10:20:12',
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":'23_01'
+                  },
+                  {
+                      "step_id": 24,
+                      "step_name": "設備正常",
+                      // "execute_time": '2023-10-31 10:30:12',
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":24
+                  },
+                  {
+                      "step_id": 25,
+                      "step_name": "消毒養殖池",
+                      // "execute_time": '2023-10-31 10:50:12',
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":25
+                  },
+                  {
+                      "step_id": 26,
+                      "step_name": "擺曝氣盤",
+                      // "execute_time": '2023-11-01 01:50:12',
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":26
+                  }
+                ]
+              },
+              {
+                "phase_id": 2,
+                "phase_name": "養殖審核",
+                "stepList": [
+                  {
+                      "step_id": 27,
+                      "step_name": "養殖審核1",
+                      // "execute_time": '2023-11-01 01:50:12',
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":27
+                  },
+                  {
+                      "step_id": 28,
+                      "step_name": "養殖審核2",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":28
+                  },
+                  {
+                      "step_id": 29,
+                      "step_name": "養殖審核4",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":29
+                  }
+                ]
+              },
+              {
+                "phase_id": 3,
+                "phase_name": "備池",
+                "stepList": [
+                  {
+                      "step_id": 30,
+                      "step_name": "備池1",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":30
+                  },
+                  {
+                      "step_id": 31,
+                      "step_name": "備池2",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":31
+                  }
+                ]
+              },
+              {
+                "phase_id": 4,
+                "phase_name": "蓄水",
+                "stepList": [
+                  {
+                      "step_id": 32,
+                      "step_name": "蓄水1",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":32
+                  },
+                  {
+                      "step_id": 33,
+                      "step_name": "蓄水2",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":33
+                  }
+                ]
+              },
+              {
+                "phase_id": 5,
+                "phase_name": "做水",
+                "stepList": [
+                  {
+                      "step_id": 34,
+                      "step_name": "做水1",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":34
+                  },
+                  {
+                      "step_id": 35,
+                      "step_name": "做水2",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":35
+                  }
+                ]
+              },
+              {
+                "phase_id": 6,
+                "phase_name": "放養中",
+                "stepList": [
+                  {
+                      "step_id": 36,
+                      "step_name": "放養中1",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":36
+                  },
+                  {
+                      "step_id": 37,
+                      "step_name": "放養中2",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":37
+                  }
+                ]
+              },
+              {
+                "phase_id": 7,
+                "phase_name": "清池",
+                "stepList": [
+                  {
+                      "step_id": 38,
+                      "step_name": "清池1",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":38
+                  },
+                  {
+                      "step_id": 39,
+                      "step_name": "清池2",
+                      "execute_time": '',
+                      "confirm_time": '',
+                      "executor":'',
+                      "confirm":'',
+                      "sort_id":39
+                  }
+                ]
+              },
+            ]
+
+            this.passObj["tempMain"] = tempMain;
+            this.passObj["tempContent"] = tempContent;
+            this.resultListOpen = false;
+            this.resultCycleOpen = true;
+            this.currentDataId = val.id;
+          }
+          // this.currentDataId = val.id;
+        }
+      }else {
         let data = _.cloneDeep(this.circleData);
+        this.$refs.circletable.clearSelection();
         this.circleData = [];
         this.circleData = data;
-        this.currentDataId = null;
-      }else {
-        //清除
-        this.$refs.circletable.clearSelection();
-        // this.eventData = []; //清除事件紀錄清單
-        this.$refs.circletable.toggleRowSelection();
-        // this.$refs.circletable.setCurrentRow(val);
-        if(this.circleData.filter(x=>x.id==val.id).length==1) {
-          var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
-          var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
-          tempMain = (tempMain==undefined)?{}:[];
-          tempContent = (tempContent==undefined)?{}:[];
-          tempMain = {
-            "id": 30,
-            "name_ch": "樣板A",
-            "name_en": "template_a",
-            "remark": "this is a test",
-            "created_user": "jeff",
-            "created_time": "2022-12-27 15:17:05",
-            "updated_user": "jianwei.wen@idwater.com.tw",
-            "updated_time": "2023-10-26 08:49:03"
-          }
-          tempContent = [
-          {
-            "phase_id": 1,
-            "phase_name": "空池",
-            "stepList": [
-                {
-                    "step_id": 23,
-                    "step_name": "新增循環",
-                    isConfirm:false,
-                    // "execute_time": '2023-10-25 10:12:12',
-                    // "isConfirm": true,
-                },
-                {
-                    "step_id": '23_02',
-                    "step_name": "其他",
-                    // isConfirm:false,
-                    "msg":'i am msg 2.',
-                    // "execute_time": '2023-10-25 10:25:12',
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": '23_01',
-                    "step_name": "其他",
-                    // isConfirm:false,
-                    "msg":'i am msg 1.',
-                    // "execute_time": '2023-10-25 10:20:12',
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 24,
-                    "step_name": "設備正常",
-                    // "execute_time": '2023-10-31 10:30:12',
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 25,
-                    "step_name": "消毒養殖池",
-                    // "execute_time": '2023-10-31 10:50:12',
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 26,
-                    "step_name": "擺曝氣盤",
-                    // "execute_time": '2023-11-01 01:50:12',
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-            {
-              "phase_id": 2,
-              "phase_name": "養殖審核",
-              "stepList": [
-                {
-                    "step_id": 27,
-                    "step_name": "養殖審核1",
-                    // "execute_time": '2023-11-01 01:50:12',
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 28,
-                    "step_name": "養殖審核2",
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 29,
-                    "step_name": "養殖審核4",
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-            {
-              "phase_id": 3,
-              "phase_name": "備池",
-              "stepList": [
-                {
-                    "step_id": 30,
-                    "step_name": "備池1",
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 31,
-                    "step_name": "備池2",
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-            {
-              "phase_id": 4,
-              "phase_name": "蓄水",
-              "stepList": [
-                {
-                    "step_id": 32,
-                    "step_name": "蓄水1",
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 33,
-                    "step_name": "蓄水2",
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-            {
-              "phase_id": 5,
-              "phase_name": "做水",
-              "stepList": [
-                {
-                    "step_id": 34,
-                    "step_name": "做水1",
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 35,
-                    "step_name": "做水2",
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-            {
-              "phase_id": 6,
-              "phase_name": "放養中",
-              "stepList": [
-                {
-                    "step_id": 36,
-                    "step_name": "放養中1",
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 37,
-                    "step_name": "放養中2",
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-            {
-              "phase_id": 7,
-              "phase_name": "清池",
-              "stepList": [
-                {
-                    "step_id": 38,
-                    "step_name": "清池1",
-                    "execute_time": '',
-                    "isConfirm": false,
-                },
-                {
-                    "step_id": 39,
-                    "step_name": "清池2",
-                    "execute_time": '',
-                    "isConfirm": false,
-                }
-              ]
-            },
-          ]
-          this.passObj["tempMain"] = tempMain;
-          this.passObj["tempContent"] = tempContent;
-          this.resultListOpen = false;
-          this.resultCycleOpen = true;
-          this.currentDataId = val.id;
-        }
-        // this.currentDataId = val.id;
+        // this.currentDataId = null;
+        this.clickRow(val,false);
+        
       }
+      
     },
     //依項目回傳主要類別是什麼
     getItemClass: async function(item) {
@@ -1876,7 +2354,7 @@ export default {
         item: '新增循環',
         item_id: 23,
         execute_time: '',
-        isConfirm: false,
+        confirm_time: '',
         msg:''
       },{
         pond_id: 51,
@@ -1885,7 +2363,7 @@ export default {
         item: '養殖審核1',
         item_id: 27,
         execute_time: '',
-        isConfirm: false,
+        confirm_time: '',
         msg:''
         
       }];
@@ -1896,9 +2374,28 @@ export default {
         item: '設備正常',
         item_id: 24,
         execute_time: '2023-10-25 11:22:11',
-        isConfirm: false,
+        confirm_time: '',
         msg:''
       },];
+    },
+    opencapDialog:async function(){
+      this.captchaDialog = true;
+    },
+    captchacheck:async function(){
+      const token = await this.$recaptcha.getResponse();
+      var parm = {token:token};
+        await this.$axios
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm}
+        )
+        .then(res => {
+          var resdata = JSON.parse(res.data);
+          if(resdata.success){
+            this.captchaDialog=false;
+            this.mutiExecuteStep();
+          }
+        });
+      await this.$recaptcha.reset();
     },
     // 批次執行
     mutiExecuteStep() {
@@ -1960,15 +2457,14 @@ export default {
       }
     },
     // 新增循環的池選擇
-    setNestedDisabled: function (obj, name, onlyshowlevel = 1) {
+    setNestedDisabled: function (obj, name) {
         //全部都設成disabled
         var deleteindex = [];
         var objj = obj;
         objj.forEach((itm, index) => {
-            // console.log(itm.name);//所有node(含leaf)的名稱
-            itm.parent =
-                itm != undefined && itm.hasOwnProperty("parent")
-                    ? itm.parent + "_" + name
+            // console.log(itm.parent);//所有node(含leaf)的名稱
+            itm.parent = itm.hasOwnProperty("parent")
+                    ? itm.parent
                     : name;
             const nodelst = ["1", "2"]; //第1、2層
             if (nodelst.filter(x => x == itm.level) > 0) {
@@ -1977,9 +2473,10 @@ export default {
             if (itm.visible == false) {
                 //visible的不顯示
                 deleteindex.push(index);
+                
             }
             if (itm.hasOwnProperty("node")) {
-                this.setNestedDisabled(itm.node, itm.name, onlyshowlevel);
+                this.setNestedDisabled(itm.node, itm.name);
             }
         });
         // for (let i = 0; i < deleteindex.length; i++) {
@@ -1990,6 +2487,7 @@ export default {
         for (var i = deleteindex.length - 1; i >= 0; i--) {
             objj.splice(deleteindex[i], 1);
         }
+        console.log(objj);
         return objj;
     },
     //新增循環的池選擇，計算資料範圍
@@ -2011,12 +2509,119 @@ export default {
     // 新增循環的池選擇，資料改變時，傳出數值
     changeEvent:function(){
 
-      console.log('dataid',this.dataid)
-      if(this.addparm.dataid.length>0) {
+      // console.log('dataid',this.dataid)
+      if(this.dataid.length>0) {
         this.isDataidError = false;
+        // this.dataVolumn = [];
+        let id = [];
+        let datas = _.cloneDeep(this.dataVolumn);
+        let volume = [];
+        
+        datas.forEach(v=>{
+          id.push(v.id);
+          if(this.dataid.includes(v.id)) {
+            volume.push(v);
+          }
+        })
+
+        this.dataid.forEach(data=>{
+          if(!id.includes(data)) {
+            let name = '';
+            this.maindata.forEach(m=>m.node.forEach(a=>a.node.forEach(p=>{
+              if(p.id==data) {
+                name = a.name+'_'+p.name;
+              }
+            })))
+            
+            volume.push({
+              id: data,
+              name: name,
+              volume: this.allPondsData.filter(x => x.id == data)[0].volume,
+              num_per_unit: undefined,
+              estimated_num: undefined
+            });
+          }
+        })
+        this.dataVolumn = volume;
       }
       this.$emit('scopeSel_data',this.dataid);
     },
+    // 循環清單編輯
+    editCircle(data) {
+      // this.editperson_in_charge = '';
+
+      // 不打開養殖歷程
+      this.clickRow(data,true);
+      // 取得水體積
+      this.showadd(true);
+      let getData = _.cloneDeep(data);
+      // 預估放苗
+      getData.estimated_num = getData.total;
+      // 預估存活要為數值
+      getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
+      this.editDialog = true;
+      console.log('>>>>edit',getData);
+      setTimeout(()=>{
+        this.resultListOpen = true;
+        // this.resultCycleOpen = false;
+        // this.currentDataId = null;
+        this.editparm = getData;
+        this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+        if(document.getElementsByClassName('v-dialog--active')) {
+          document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+        }
+      },200)
+      
+      // console.log(this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge}));
+      
+    },
+    cancelEdit() {
+      this.editDialog = false;
+    },
+    async submitEdit() {
+      let parm = _.cloneDeep(this.editparm);
+      parm.person_in_charge = this.editperson_in_charge;
+      delete parm.estimated_num;//刪除初始放苗量
+      console.log('>>>edit',parm);
+      if(this.$refs.editform.validate()){
+        await this.$axios
+            .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${this.editparm.id}/`, parm)
+            .then(res => {
+                if(res.data=='修改成功'){
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    this.editDialog = false;
+                    this.getCircleData();
+                    // this.updateouterAction('done');
+                }else{
+                    this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+                }
+
+                console.log("修改API:" + res.request.responseURL);
+            })
+            .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+            })
+            .finally(() => {
+            });
+
+      }
+    },
+    calcutorPerUnit(bool) {
+      if(this.dataVolumn.length>0) {
+        if(bool) {
+          this.dataVolumn.forEach(x=>{
+            x.num_per_unit = this.all_num_per_unit;
+            x.estimated_num =  x.volume*this.all_num_per_unit;
+          })
+        }else {
+          this.dataVolumn.forEach(x=>{
+            x.num_per_unit = undefined;
+            x.estimated_num =  undefined;
+          })
+          this.all_num_per_unit = undefined;
+        }
+      }
+    }
   },
   async mounted() {
    
@@ -2048,6 +2653,15 @@ export default {
   watch: {
     resultListOpen: {
       // 開合面板循環清單的刪除會跑版 
+      handler() {
+        this.$nextTick(()=>{
+          this.$refs.circletable.doLayout();
+        })
+      },
+      deep: true
+    },
+    editDialog: {
+      // 編輯循環清單的會跑版 
       handler() {
         this.$nextTick(()=>{
           this.$refs.circletable.doLayout();
@@ -2289,6 +2903,10 @@ export default {
   }
   .v-text-field.v-input--dense:not(.v-text-field--outlined) input {
     padding: 4px 0;
+  }
+  .v-autocomplete.v-text-field--enclosed:not(.v-text-field--solo):not(.v-text-field--single-line):not(.v-text-field--outlined).v-input--dense .v-select__slot > input {
+    margin-top: 0;
+    padding-top: 0;
   }
 }
 

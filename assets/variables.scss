@@ -41,6 +41,12 @@ $color-green: #00A660;
       color: $color-dark-50 !important;
       pointer-events: none;
     }
+    &.clear {
+      background-color: #67BEDA !important;
+      &:hover {
+          background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
+      }
+    }
 }
 .btn-secondary {
   background-color: transparent !important;
@@ -112,6 +118,18 @@ $color-green: #00A660;
       color: $color-dark-50 !important;
     }
   }
+  &.green {
+    background-color: $color-green !important;
+    &:hover {
+      background-color: lighten($color: rgba($color-green,0.8), $amount: 3) !important;
+    }
+  }
+  &.clear {
+    background-color: #67BEDA !important;
+    &:hover {
+      background-color: lighten($color: rgba(#67BEDA,0.8), $amount: 3) !important;
+    }
+  }
   &.just-icon {
     background-color: transparent !important;
     .theme--light.v-icon {
@@ -124,6 +142,20 @@ $color-green: #00A660;
       pointer-events: none;
       .theme--light.v-icon {
         color: $color-dark-50 !important;
+      }
+    }
+    &.delete {
+      .theme--light.v-icon {
+        color: $color-accent !important;
+        font-size: 24px;
+      }
+      
+      &:hover {
+        background-color: rgba(#A60017,0.1) !important;
+        .theme--light.v-icon {
+          color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
+        }
+        
       }
     }
   }
@@ -144,12 +176,17 @@ $color-green: #00A660;
     }
   }
 }
+.btn-toggles {
+  .theme--dark.v-btn.v-btn--has-bg {
+    background-color: $color-dark;
+  }
+}
 // 場區池下拉選單
 ::v-deep {
   // locateselect
   .select-template {
     flex: 1;
-    margin-right: 16px;
+    // margin-right: 16px;
     .font-size-large {
       font-size: 16px;
     }
@@ -260,8 +297,8 @@ $color-green: #00A660;
       }
     }
   }
-  .search {
-    
+  // 搜尋、Dialog、多選 輸入框式樣
+  .search,.mutiselect,.v-dialog .v-sheet.v-card.custom-dialog {
     // 搜尋欄
     .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
       background: transparent;
@@ -353,7 +390,76 @@ $color-green: #00A660;
     }
     
   }
-    
+  // header是tab (indecator basic)
+  .result {
+    .header-bar {
+      .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,.theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
+        background-color: #E6F5FA;
+      }
+      .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
+          background-color: #E6F5FA;
+      }
+      .v-toolbar__content, .v-toolbar__extension {
+        padding: 0;
+        button {
+          height: 36px;
+          border-radius: 4px;
+        }
+        .v-btn--is-elevated {
+          box-shadow: none;
+          background-color: #006AA6;
+          color: #fff;
+        }
+        .theme--light.v-btn.v-btn--disabled {
+          color: #7F98A6;
+        }
+      }
+      .v-tab {
+        font-size: 18px;
+        font-weight: bold;
+        color: #7F98A6 !important;
+        .icons {
+          margin-right: 4px;
+          i {
+            color: #7F98A6;
+          }
+          
+        }
+      }
+      .v-tab.v-tab--active {
+        color: #006AA6 !important;
+        .icons {
+          margin-right: 4px;
+          i {
+            color: #006AA6;
+          }
+          
+        }
+      }
+      .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
+        border-radius: 4px;
+      }
+    }
+  }
+  // 多選chips 
+  .mutiselect {
+    .theme--light.v-chip:not(.v-chip--active) {
+      background-color: $color-primary-75;
+      margin: 2px;
+    }
+    .theme--light.v-chip {
+      color: #fff;
+    }
+    .theme--light.v-icon {
+      color: #fff;
+      &.mdi-menu-down,&.mdi-menu-up,&.mdi-close {
+        color: $color-form;
+      }
+    }
+    .v-text-field--filled.v-input--dense.v-text-field--single-line > .v-input__control > .v-input__slot {
+      padding: 0;
+    }
+  }
 }
 
 // pages background card
@@ -423,6 +529,21 @@ $color-green: #00A660;
     display: flex;
     align-items: center;
   }
+  // 標題是tab
+  .header-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    h5 {
+      width: 100%;
+    }
+  }
+}
+.error-text {
+  color: red;
+  font-size: 0.85rem;
 }
 // scrollbar
 ::-webkit-scrollbar {
