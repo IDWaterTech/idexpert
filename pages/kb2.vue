@@ -1036,7 +1036,7 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="ObservationData['DeadShrimpQty']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">死蝦數量</span></v-text-field> -->
                                                                     </v-col>
-                                                                    <v-col cols=12 md="6" sm="6">
+                                                                    <v-col v-if="false" cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="6" sm="6">
                                                                                 <span class="pa-0 ma-0" slot="prepend">蝦子長度</span>
