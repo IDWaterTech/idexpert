@@ -1171,7 +1171,7 @@ export default {
                 for(let i=0;i<=id;i++) {
                     if(i!==id) {
                         this.mainItems[i].stepList.forEach(x=>{
-                            if(x.execute_time&&x.execute_time!=='') {
+                            if(x.execute_time&&x.execute_time!=='' && x.confirm_time=='') {
                                 x.confirm_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                 x.confirm = updUser;
                             }
@@ -1179,7 +1179,7 @@ export default {
                     }else {
                         if(index !== 0) {
                             for(let x=0;x<index;x++) {
-                                if(this.mainItems[i].stepList[x].execute_time&&this.mainItems[i].stepList[x].execute_time!=='') {
+                                if(this.mainItems[i].stepList[x].execute_time&&this.mainItems[i].stepList[x].execute_time!=='' && this.mainItems[i].stepList[x].confirm_time=='') {
                                    this.mainItems[i].stepList[x].confirm_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                    this.mainItems[i].stepList[x].confirm = updUser;
                                 }
