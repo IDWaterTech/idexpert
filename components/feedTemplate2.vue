@@ -1,6 +1,39 @@
 <template>
     <div>
         <v-row class="mt-2" no-gutters >
+            <v-col cols="12" v-if="templatemode!='cycleedit'">
+                <v-form ref="mainform">
+                    <v-row dense class="text-center">
+                        <!-- <v-col cols="2"></v-col> -->
+                        <v-col cols="12"></v-col>
+                        <v-spacer></v-spacer>
+                        <v-col cols="4">
+                            <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require"
+                                label="樣板名稱(中)" clearable></v-text-field>
+                        </v-col>
+                        <v-col cols="3">
+                            <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require"
+                                label="樣板名稱(英)" clearable></v-text-field>
+                        </v-col>
+                        <v-col cols="3">
+                            <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable></v-text-field>
+                        </v-col>
+                        
+                        <v-col cols="1" v-if="templatemode=='add'">
+                            <v-btn tile icon x-large color="primary" title="儲存樣板"
+                                :disabled="!(tempMain.name_ch && tempMain.name_en)" @click="saveTemp">
+                                <v-icon>mdi-content-save</v-icon>
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="1" v-if="templatemode=='edit'">
+                            <v-btn tile icon x-large color="primary" title="儲存編輯"
+                                :disabled="!(tempMain.name_ch && tempMain.name_en)" @click="saveEdit">
+                                <v-icon>mdi-content-save</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-form>
+            </v-col>
             <!-- 主要樣版內容 -->
             <v-col cols="12"  style="padding-left: 12px;"><b>資料架構(!!!!最後要上要記得清除!!!!)：</b>[{ "phase_id": 1, "phase_name": "空池", "stepList": [ <br>&nbsp;&nbsp;&nbsp;{ "step_id": 23, "sort_id": 23, "step_name": "新增循環", "execute_time": "2023-10-25 10:12:12", confirm_time: '',executor:'',confirm:''},<br>&nbsp;&nbsp; { "step_id": 40,"sort_id": "23_01", "step_name": "其他", "msg": "i am msg 1.", "execute_time": "", "confirm_time": '',executor:'',confirm:''},]}]<br><br></v-col>
             <v-col cols="12">
@@ -33,11 +66,11 @@
                             <!-- 時間軸：因有顏色變換，無法使用偽元素 -->
                             <div class="circle-line">
                                 <div v-if="mitem.phase_name!=='清池'" class="line"
-                                    :style="{'borderColor':`${mitem.newest&&mitem.newest!==''?mitem.color:'#BFCBD2'}`,
-                                            'borderStyle':`${mitem.newest&&mitem.newest!==''?'solid':'dashed'}`,
+                                    :style="{'borderColor':`${templatemode=='cycleedit'?(mitem.newest&&mitem.newest!==''?mitem.color:'#BFCBD2'):status[id].color}`,
+                                            'borderStyle':`${(mitem.newest&&mitem.newest!=='')||templatemode!=='cycleedit'?'solid':'dashed'}`,
                                             'top':`${windowWidth<834?'0':'16px'}`,}"></div>
                                 <div class="circle"
-                                    :style="{'borderColor':mitem.color}"></div>
+                                    :style="{'borderColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"></div>
                             </div>
                             <!-- 表格 -->
                             <div class="content" style="width: 100%;padding: 12px 24px;">
@@ -45,7 +78,7 @@
                                 <v-card class="result-card item-card">
                                     <!-- 表頭 -->
                                     <div class="card-title"
-                                        :style="{'backgroundColor':mitem.color}"
+                                        :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"
                                         @click="status[id].open = !status[id].open" >
                                         <div class="title">
                                             <v-card-title>{{ mitem.phase_name }}</v-card-title>
@@ -58,12 +91,30 @@
                                     <!-- 內容 -->
                                     <div v-if="status[id].open" class="content">
                                         <v-data-table light 
-                                            :headers="headers"
+                                            :headers="headers.filter(x => x.showmode.includes(templatemode))"
                                             :items="mitem.stepList"
-                                            
+                                            no-data-text=""
                                             hide-default-footer
                                             disable-pagination
                                             style="max-height: 300px;overflow-y: scroll;">
+                                            <!-- <template v-slot:[`column.udactions`]="{ column }">
+                                                <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
+                                            </template> -->
+                                            <template v-for="header in headers" v-slot:[`header.${header.value}`]>
+                                                <div v-if="header.text=='刪除'" class="tool" :key="header.value" style="display: flex;align-items: center;">
+                                                    {{ header.text }}
+                                                    <v-tooltip bottom>
+                                                        <template v-slot:activator="{ on }">
+                                                            <v-btn class="btn-icon just-icon" v-on="on">
+                                                                <v-icon>mdi-information-outline</v-icon>
+                                                            </v-btn>
+                                                        </template>
+                                                        <span>僅可刪除『其他』項目</span>
+                                                    </v-tooltip>
+                                                </div>
+                                                
+                                                <span v-else :key="header.value">{{ header.text }}</span>
+                                            </template>
                                             <!-- 新增 -->
                                             <template v-slot:[`item.actions`]="{ index }">
                                                 <v-tooltip bottom>
@@ -81,7 +132,18 @@
                                                     <v-icon>mdi-table-row-plus-after</v-icon>
                                                 </v-btn> -->
                                             </template>
-                                            
+                                            <!-- 執行 -->
+                                            <template v-slot:[`item.executor_name`]="{ item }">
+                                               {{ item.executor_name }} 
+                                               <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
+                                               <!-- {{ dateFormat(item.execute_time) }} -->
+                                            </template>
+                                            <!-- 確認 -->
+                                            <template v-slot:[`item.confirm_name`]="{ item }">
+                                               {{ item.confirm_name }} 
+                                               <span v-if="item.confirm_time&&item.confirm_time!==''" v-text="dateFormat(item.confirm_time)"></span>
+                                               <!-- {{ dateFormat(item.execute_time) }} -->
+                                            </template>
                                             <!-- 執行/確認 -->
                                             <template v-slot:[`item.executed_actions`]="{ index }">
                                                 <v-btn class="btn-secondary btn-small"
@@ -101,22 +163,29 @@
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn  class="btn-icon delete"
                                                              title="刪除" 
-                                                             @click="delsubitem(mitem.phase_id, index)" 
+                                                             @click="if(mitem.stepList[index].step_name=='其他'&&templatemode=='cycleedit'){delsubitem(mitem.phase_id, index)}" 
                                                              v-bind="attrs" v-on="on"
-                                                             :class="{'disabled':mitem.stepList[index].step_name!=='其他'}">
+                                                             :class="{'disabled':mitem.stepList[index].step_name!=='其他'&&templatemode=='cycleedit'}">
                                                             <v-icon>mdi-trash-can</v-icon>
                                                         </v-btn>
                                                     </template>
-                                                    <span>刪除</span>
+                                                    <span v-if="mitem.stepList[index].step_name!=='其他'&&templatemode=='cycleedit'">僅可刪除『其他』項目</span>
+                                                    <span v-else>刪除</span>
                                                 </v-tooltip>
                                                 <!-- <v-btn class="btn-icon delete" title="刪除" @click="delsubitem(mitem.id, index)">
                                                     <v-icon>mdi-trash-can</v-icon>
                                                 </v-btn> -->
                                             </template>
                                         </v-data-table>
+                                        <div v-if="templatemode=='add' && mitem.stepList.length==0" class="add-step">
+                                            <v-btn class="btn-primary" @click="addsubitem(mitem.phase_id, (mainItems.filter(x => x.phase_id == mitem.phase_id).length > 0) ? mainItems.filter(x => x.phase_id == mitem.phase_id)[0].stepList.length-1 : 0)">
+                                                <v-icon>mdi-plus</v-icon>
+                                                新增項目
+                                            </v-btn>
+                                        </div>
                                         <span><b>最上方資料結構中的stepList資料整理(!!!!最後要上要記得清除!!!!)</b></span>
                                         <span class="error-text"><b>Note:新增/刪除 其他 需重新給api資料 因sort_id會變更</b></span>
-                                        <div class="list" v-for="step in mitem.stepList" :key="'step_'+step.sort_id">
+                                        <div class="list" v-for="(step,i) in mitem.stepList" :key="'step_'+i">
                                             {{ step }}
                                         </div>
                                     </div>
@@ -133,7 +202,7 @@
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
                         <div style="display: inline-block;">
-                        新增其他項目 
+                            <span>新增</span><span v-if="templatemode=='cycleedit'">其他</span><span>項目</span> 
                         </div>
                         <div class="add" style="float: right;display: inline-block;">
                             <v-tooltip bottom>
@@ -151,7 +220,7 @@
                             </v-tooltip>
                         </div>
                     </v-card-title>
-                    <div class="basic">
+                    <div class="basic" v-if="templatemode=='cycleedit'">
                         <v-card-text v-for="(add,id) in addStep" :key="'add_'+id" style="display: flex;flex-direction: column;padding: 8px 16px;"
                             >
                             <!-- <div class="minus" style="width: 100%;">
@@ -185,6 +254,13 @@
                                     <span>刪除</span>
                                 </v-tooltip>
                             </div>
+                        </v-card-text>
+                    </div>
+                    <div class="basic" v-else>
+                        <v-card-text>
+                            <v-text-field v-model="stepformedit.name_ch" filled dense :rules="rules.requireStepCn" label="階段名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.name_en" filled dense :rules="rules.requireStepEn" label="階段名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.remark" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
                         </v-card-text>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
@@ -237,69 +313,55 @@ export default {
     data() {
         return {
             items: [
-                // {
-                //     id: 0,
-                //     order: 0,
-                //     color: 'red',
-                //     icon: 'mdi-star',
-                //     text: '開始'
-                // },
-                // {
-                //     id: 1,
-                //     order: 1,
-                //     color: 'indigo lighten-1',
-                //     icon: 'mdi-star',
-                //     text: '空池'
-                // },
-                // {
-                //     id: 2,
-                //     order: 2,
-                //     color: 'purple darken-1',
-                //     icon: 'mdi-book-variant',
-                //     text: '養殖審核'
-                // },
-                // {
-                //     id: 3,
-                //     order: 3,
-                //     color: 'green lighten-1',
-                //     icon: 'mdi-airballoon',
-                //     text: '備池'
-                // },
-                // {
-                //     id: 4,
-                //     order: 4,
-                //     color: 'indigo',
-                //     icon: 'mdi-gate-buffer',
-                //     text: '蓄水'
-                // },
-                // {
-                //     id: 5,
-                //     order: 5,
-                //     color: 'indigo',
-                //     icon: 'mdi-buffer',
-                //     text: '做水'
-                // },
-                // {
-                //     id: 6,
-                //     order: 6,
-                //     color: 'red lighten-2',
-                //     icon: 'mdi-buffer',
-                //     text: '放養中'
-                // },
-                // {
-                //     id: 7,
-                //     order: 7,
-                //     color: 'indigo',
-                //     icon: 'mdi-buffer',
-                //     text: '清池'
-                // },
-                // {
-                //     id: 8,
-                //     order: 8,
-                //     color: 'red',
-                //     icon: 'mdi-star',
-                //     text: '結束'
-                // },
+                {
+                    id: 1,
+                    order: 1,
+                    color: 'indigo lighten-1',
+                    icon: 'mdi-star',
+                    text: '空池'
+                },
+                {
+                    id: 2,
+                    order: 2,
+                    color: 'purple darken-1',
+                    icon: 'mdi-book-variant',
+                    text: '養殖審核'
+                },
+                {
+                    id: 3,
+                    order: 3,
+                    color: 'green lighten-1',
+                    icon: 'mdi-airballoon',
+                    text: '備池'
+                },
+                {
+                    id: 4,
+                    order: 4,
+                    color: 'indigo',
+                    icon: 'mdi-gate-buffer',
+                    text: '蓄水'
+                },
+                {
+                    id: 5,
+                    order: 5,
+                    color: 'indigo',
+                    icon: 'mdi-buffer',
+                    text: '做水'
+                },
+                {
+                    id: 6,
+                    order: 6,
+                    color: 'red lighten-2',
+                    icon: 'mdi-buffer',
+                    text: '放養中'
+                },
+                {
+                    id: 7,
+                    order: 7,
+                    color: 'indigo',
+                    icon: 'mdi-buffer',
+                    text: '清池'
+                },
             ],
             //主要項目
             tempMain:{
@@ -309,17 +371,17 @@ export default {
             },
             //table
             headers: [
-                { text: '新增', value: 'actions', sortable: false,width:"5%"},
+                { text: '新增', value: 'actions', sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
                 // { text: "step_id", value: "step_id", groupable: false, showmode: ['add', 'edit'] },
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
-                { text: "項目", value: "step_name", groupable: false, sortable: false,width:"10%"},
+                { text: "項目", value: "step_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit','cycleedit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
-                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%"},
-                { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%"},
-                { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%"},
-                { text: '執行員', value: 'executor_name', sortable: false,width:"10%"},
-                { text: '確認員', value: 'confirm_name', sortable: false,width:"10%"},
-                { text: '刪除', value: 'udactions', sortable: false,width:"5%"},
+                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                { text: '執行員', value: 'executor_name', sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: '確認員', value: 'confirm_name', sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: '刪除', value: 'udactions', sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
             ],
             mainItems: [{
                 phase_id: 1,
@@ -352,6 +414,8 @@ export default {
             addStep:[{msg:''}],
             rules: {
                 require: [v => !!v || "*必要項目"],
+                requireStepEn: [v => !!v || "*必要項目",v => v !=='others' || "*Cannot Enter ' Others '"],
+                requireStepCn: [v => !!v || "*必要項目",v => v!=='其他' || "*不可輸入'其他'"],
             },
             addvalid: false,
             
@@ -359,11 +423,34 @@ export default {
     },
     created(){
        console.log("created");
-       this.tempMain = this.passObj.tempMain;
-       this.mainItems = this.passObj.tempContent;
-       this.mainItems.forEach(m=>m.open=this.nowExpand);
-    //    console.log(this.accdata);
-       this.sortData();
+        if(this.templatemode=="add"){
+            this.mainItems = [];
+            this.items.forEach(data=>{
+                this.mainItems.push({
+                    phase_id: data.id,
+                    phase_name: data.text,
+                    stepList: new Array()
+                })
+            })
+        }
+        if(this.templatemode=="edit"){
+            this.tempMain = this.passObj.tempMain;
+            this.mainItems = this.passObj.tempContent;
+            // tempMain :  this.tempMain,
+            //        tempContent: this.mainItems
+        }
+        if(this.templatemode=="cycleedit"){
+            // this.tempMain = this.passObj.tempMain;
+            // this.mainItems = this.passObj.tempContent;
+            this.tempMain = this.passObj.tempMain;
+            this.mainItems = this.passObj.tempContent;
+            this.mainItems.forEach(m=>m.open=this.nowExpand);
+            //    console.log(this.accdata);
+            if(this.templatemode == 'cycleedit') {
+                this.sortData()
+            };
+        }
+       
     },
     methods: {
         /* 資料整理 */
@@ -646,167 +733,236 @@ export default {
             if (this.$refs.addform != undefined) {
                 this.$refs.addform.reset();
             }
-            this.addStep = [{msg:''}]
+            this.addStep = [{msg:''}];
+            console.log('step add',this.mainItems);
         },
         // 新增其他項目確認!!送出step項目
         submitstep:async function(){
             var valid = this.$refs.addform.validate();
             const updUser = this.$auth.$state.user.email;
-            // console.log('valid form',valid);
+            console.log('valid form',valid);
             if(valid) {
-                let datas = _.cloneDeep(this.mainItems);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
-                let stepId = [];// 因會有其他的排序id問題，必須要另外存取(主要是新增的項目下)
-                let other = _.cloneDeep(this.addStep);// 不能直接用addStep，如果重新開dialog新增會清空會連動影響
-                other.forEach(step=>{
-                    step.sort_id = '';
-                    step.msg = step.msg;
-                    step.step_name = '其他';
-                    step.confirm_time='';
-                    step.executor = '';
-                    step.confirm = '';
-                })
-                datas.forEach((item,id)=>{
-                    stepId.push({
-                        "phase_id": item.phase_id,
-                        "phase_name": item.phase_name,
-                        "open": item.open,
-                        "color": item.color,
-                        "newest": item.newest,
-                        "stepList": new Array(),
+                if(this.templatemode=='cycleedit') {
+                    let datas = _.cloneDeep(this.mainItems);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
+                    let stepId = [];// 因會有其他的排序id問題，必須要另外存取(主要是新增的項目下)
+                    let other = _.cloneDeep(this.addStep);// 不能直接用addStep，如果重新開dialog新增會清空會連動影響
+                    other.forEach(step=>{
+                        step.sort_id = '';
+                        step.msg = step.msg;
+                        step.step_name = '其他';
+                        step.confirm_time='';
+                        step.executor = '';
+                        step.confirm = '';
                     })
-                    let step=[]; // 存取其他的項目{id:'隸屬的sort_id',step:'隸屬此id下的其他'}
-                    let list=[]; // 因有排序問題另外存取再取代原資料
-                    if(item.phase_id == this.stepitem.phase_id) {
-                        item.stepList.forEach((s,sid)=>{
-                            // 非其他的項目，自動新增一個資料，主要用來存取他底下的其他項目
-                            if(s.step_name!=='其他') {
-                                if(this.stepitem.addidx==sid) {
-                                    step.push({
-                                        id: s.sort_id,
-                                        step: new Array(),
-                                    })
-                                    other.forEach(a=>{
-                                        // 如果新增的項目在最後項，需要比對下一個狀態是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
-                                        if((datas[id].stepList.length-1)==sid) {
-                                            if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
-                                                // step.isConfirm = true;
-                                                a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                a.executor = updUser; 
-                                                if(datas[id+1].stepList[0].confirm_time!=='') {
-                                                    a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                    a.confirm = updUser;
-                                                }
-                                            }                                                    
-                                        }else {
-                                            // 如果新增的項目不在最後項，需要比對下一個項目是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
-                                            if(datas[id].stepList[sid+1].execute_time &&
-                                                datas[id].stepList[sid+1].execute_time!=='') {
+                    datas.forEach((item,id)=>{
+                        stepId.push({
+                            "phase_id": item.phase_id,
+                            "phase_name": item.phase_name,
+                            "open": item.open,
+                            "color": item.color,
+                            "newest": item.newest,
+                            "stepList": new Array(),
+                        })
+                        let step=[]; // 存取其他的項目{id:'隸屬的sort_id',step:'隸屬此id下的其他'}
+                        let list=[]; // 因有排序問題另外存取再取代原資料
+                        if(item.phase_id == this.stepitem.phase_id) {
+                            item.stepList.forEach((s,sid)=>{
+                                // 非其他的項目，自動新增一個資料，主要用來存取他底下的其他項目
+                                if(s.step_name!=='其他') {
+                                    if(this.stepitem.addidx==sid) {
+                                        step.push({
+                                            id: s.sort_id,
+                                            step: new Array(),
+                                        })
+                                        other.forEach(a=>{
+                                            // 如果新增的項目在最後項，需要比對下一個狀態是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
+                                            if((datas[id].stepList.length-1)==sid) {
+                                                if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
                                                     // step.isConfirm = true;
                                                     a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                     a.executor = updUser; 
-                                                    if(datas[id].stepList[sid+1].confirm_time!=='') {
+                                                    if(datas[id+1].stepList[0].confirm_time!=='') {
                                                         a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                         a.confirm = updUser;
                                                     }
-                                            }
-                                        }
-                                        step[step.length-1].step.push(a);
-                                    })
-                                }else {
-                                    step.push({
-                                        id: s.sort_id,
-                                        step: new Array(),
-                                    })
-                                }
-                            }else {
-                                // 其他的項目，比對隸屬的項目
-                                step.forEach(tt=>{
-                                    // 如index剛好為新增的index下，要將此其他後續接新增的其他，並判斷是否執行和確認
-                                    if(this.stepitem.addidx==sid) {
-                                        if(tt.id == parseInt(s.sort_id.split('_')[0])) {
-                                            tt.step.push(s);
-                                            other.forEach(a=>{
-                                                if((datas[id].stepList.length-1)==sid) {
-                                                    if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
+                                                }                                                    
+                                            }else {
+                                                // 如果新增的項目不在最後項，需要比對下一個項目是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
+                                                if(datas[id].stepList[sid+1].execute_time &&
+                                                    datas[id].stepList[sid+1].execute_time!=='') {
                                                         // step.isConfirm = true;
                                                         a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                         a.executor = updUser; 
-                                                        if(datas[id+1].stepList[0].confirm_time!=='') {
+                                                        if(datas[id].stepList[sid+1].confirm_time!=='') {
                                                             a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                             a.confirm = updUser;
                                                         }
-                                                    }                                                    
-                                                }else {
-                                                    if(datas[id].stepList[sid+1].execute_time &&
-                                                        datas[id].stepList[sid+1].execute_time!=='') {
+                                                }
+                                            }
+                                            step[step.length-1].step.push(a);
+                                        })
+                                    }else {
+                                        step.push({
+                                            id: s.sort_id,
+                                            step: new Array(),
+                                        })
+                                    }
+                                }else {
+                                    // 其他的項目，比對隸屬的項目
+                                    step.forEach(tt=>{
+                                        // 如index剛好為新增的index下，要將此其他後續接新增的其他，並判斷是否執行和確認
+                                        if(this.stepitem.addidx==sid) {
+                                            if(tt.id == parseInt(s.sort_id.split('_')[0])) {
+                                                tt.step.push(s);
+                                                other.forEach(a=>{
+                                                    if((datas[id].stepList.length-1)==sid) {
+                                                        if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
                                                             // step.isConfirm = true;
                                                             a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                             a.executor = updUser; 
-                                                            if(datas[id].stepList[sid+1].confirm_time!=='') {
+                                                            if(datas[id+1].stepList[0].confirm_time!=='') {
                                                                 a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                                 a.confirm = updUser;
                                                             }
-                                                     }
-                                                }
-                                                tt.step.push(a);
-                                            })
-                                        }
-                                    }else {
-                                        // 非index的新增，直接比對是哪個id項目push進去即可
-                                        if(tt.id == parseInt(s.sort_id.split('_')[0])) {
-                                            tt.step.push(s);
-                                        }
-                                    }
-                                    
-                                })
-                            }
-                                
-                            
-                        })
-                        // console.log('Step',step);
-                        // 因為有新增其他項目，必須重新給id
-                        step.forEach(step=>{
-                            step.step.forEach((tt,tid)=>{
-                                let stepid = '';
-                                if((tid+1)<10) {
-                                    stepid = '0'+(tid+1);
-                                }else {
-                                    stepid = tid+1;
-                                }
-                                tt.sort_id = step.id+'_'+stepid;
-                            })
-                        })
-                        // 因為項目有順序，因此依照項目順序及旗下的其他項目依序push
-                        item.stepList.forEach(s=>{
-                            if(s.step_name!=='其他') {
-                                list.push(s);
-                                step.forEach(tt=>{
-                                    if(tt.id == s.sort_id) {
-                                        if(tt.step.length>0) {
-                                            tt.step.forEach(z=>list.push(z));
+                                                        }                                                    
+                                                    }else {
+                                                        if(datas[id].stepList[sid+1].execute_time &&
+                                                            datas[id].stepList[sid+1].execute_time!=='') {
+                                                                // step.isConfirm = true;
+                                                                a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                                a.executor = updUser; 
+                                                                if(datas[id].stepList[sid+1].confirm_time!=='') {
+                                                                    a.confirm_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                                    a.confirm = updUser;
+                                                                }
+                                                        }
+                                                    }
+                                                    tt.step.push(a);
+                                                })
+                                            }
+                                        }else {
+                                            // 非index的新增，直接比對是哪個id項目push進去即可
+                                            if(tt.id == parseInt(s.sort_id.split('_')[0])) {
+                                                tt.step.push(s);
+                                            }
                                         }
                                         
+                                    })
+                                }
+                                    
+                                
+                            })
+                            // console.log('Step',step);
+                            // 因為有新增其他項目，必須重新給id
+                            step.forEach(step=>{
+                                step.step.forEach((tt,tid)=>{
+                                    let stepid = '';
+                                    if((tid+1)<10) {
+                                        stepid = '0'+(tid+1);
+                                    }else {
+                                        stepid = tid+1;
                                     }
+                                    tt.sort_id = step.id+'_'+stepid;
                                 })
-                            }
-                        })
-                        stepId[id].stepList = list;
-                    }else {
-                        // 非新增項目，不影響排序直接用原本的資料
-                        stepId[id] = item;
+                            })
+                            // 因為項目有順序，因此依照項目順序及旗下的其他項目依序push
+                            item.stepList.forEach(s=>{
+                                if(s.step_name!=='其他') {
+                                    list.push(s);
+                                    step.forEach(tt=>{
+                                        if(tt.id == s.sort_id) {
+                                            if(tt.step.length>0) {
+                                                tt.step.forEach(z=>list.push(z));
+                                            }
+                                            
+                                        }
+                                    })
+                                }
+                            })
+                            stepId[id].stepList = list;
+                        }else {
+                            // 非新增項目，不影響排序直接用原本的資料
+                            stepId[id] = item;
+                        }
+                    })
+                    datas = stepId;
+                    // console.log('data',this.mainItems);
+                    
+                    
+                    // 串api成功 
+                    if(true) {
+                        // 要重新給dateData，因為新加入的其他項目時間有更新
+                        this.mainItems = datas;
+                        this.dateData();
+                        this.dialog.additem = false;
                     }
-                })
-                datas = stepId;
-                // console.log('data',this.mainItems);
-                
-                
-                // 串api成功 
-                if(true) {
-                    // 要重新給dateData，因為新加入的其他項目時間有更新
-                    this.mainItems = datas;
-                    this.dateData();
-                    this.dialog.additem = false;
+                }else {
+                    this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                    this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                    switch (this.templatemode) {
+                        case 'add':
+                            console.log('step add',this.mainItems,this.stepformedit);
+                            // this.mainItems.forEach((m)=>{
+                            //     if(m.phase_id == this.stepitem.phase_id) {
+                            //         m.stepList.push({
+                            //             step_name: this.stepformedit.name_ch
+                            //         })
+                            //     }
+                            // })
+                            await this.$axios
+                                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
+                                .then(res => {
+                                    if(res.data=='新增成功'){
+                                        this.dialog.additem = false;
+                                        this.dialog.phaseform = false;
+                                        this.getstepdata();
+                                        this.$toast.success("新增成功", { duration: 2000 });
+                                    }else{
+                                        this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
+                                    }
+
+                                    console.log("新增步驟API:" + res.request.responseURL);
+                                })
+                                .catch(error => {
+                                    this.$toast.error("error:" + error, { duration: 2000 });
+                                })
+                                .finally(() => {
+                                });
+                            break;
+                        case 'edit':
+                            var id = this.stepitem.id;
+                            await this.$axios
+                            .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
+                                .then(res => {
+                                    if(res.data=='修改成功'){
+                                        this.dialog.phaseform = false;
+                                        var stepformedit = this.stepformedit;
+                                        //同步把畫面上的資料修改成一致
+                                        this.mainItems.forEach(element => {
+                                            var step = element.stepList;
+                                            step.filter(x=>x.step_id==id).forEach(stepele => {
+                                                stepele.step_name = stepformedit.name_ch;
+                                            });
+                                        });
+                                        //this.stepformedit 要把同id所有名稱
+                                        this.stepitem.id = undefined;
+                                        this.getstepdata();
+                                        this.$toast.success("修改成功", { duration: 2000 });
+                                    }else{
+                                        this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+                                    }
+
+                                    console.log("修改步驟API:" + res.request.responseURL);
+                                })
+                                .catch(error => {
+                                    this.$toast.error("error:" + error, { duration: 2000 });
+                                })
+                                .finally(() => {
+                                });
+                            break;
+                    }
                 }
+                
                 
             }
             // this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
@@ -870,78 +1026,83 @@ export default {
         delsubitem: function (phase_id, index) {
             console.log('delete',phase_id, index);
             var sub_item = this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList[index];
-            if (confirm(`是否刪除 ${sub_item.step_name}：${sub_item.msg} ？`)) {
-                // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
-                let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
-                let datas = _.cloneDeep(this.mainItems);
-                datas.forEach((item,id)=>{
-                    stepId.push({
-                        "phase_id": item.phase_id,
-                        "phase_name": item.phase_name,
-                        "open": item.open,
-                        "color": item.color,
-                        "newest": item.newest,
-                        "stepList": new Array(),
-                    })
-                    if(item.phase_id == phase_id) {
-                        // item.stepList.splice(index,1);
-                        let step=[];
-                        let list=[];
-                        item.stepList.forEach((s,sid)=>{
-                            if(s.step_name!=='其他') {
-                                step.push({
-                                    id: s.sort_id,
-                                    step: new Array(),
-                                })
-                            }else {
-                                if(sid!==index) {
-                                    step.forEach(tt=>{
-                                    // 其他的項目比對同一隸屬的id，將項目放進step中
-                                    if(tt.id == parseInt(s.sort_id.split('_')[0])) {
-                                        tt.step.push(s);
-                                    }
-                                })
-                                }
-                            }
+            if(this.templatemode == 'cycleedit') {
+                if (confirm(`是否刪除 ${sub_item.step_name}：${sub_item.msg} ？`)) {
+                    // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
+                    let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
+                    let datas = _.cloneDeep(this.mainItems);
+                    datas.forEach((item,id)=>{
+                        stepId.push({
+                            "phase_id": item.phase_id,
+                            "phase_name": item.phase_name,
+                            "open": item.open,
+                            "color": item.color,
+                            "newest": item.newest,
+                            "stepList": new Array(),
                         })
-                        step.forEach(step=>{
-                            step.step.forEach((tt,tid)=>{
-                                let stepid = '';
-                                if((tid+1)<10) {
-                                    stepid = '0'+(tid+1);
+                        if(item.phase_id == phase_id) {
+                            // item.stepList.splice(index,1);
+                            let step=[];
+                            let list=[];
+                            item.stepList.forEach((s,sid)=>{
+                                if(s.step_name!=='其他') {
+                                    step.push({
+                                        id: s.sort_id,
+                                        step: new Array(),
+                                    })
                                 }else {
-                                    stepid = tid+1;
-                                }
-                                tt.sort_id = step.id+'_'+stepid;
-                            })
-                        })
-                        item.stepList.forEach(s=>{
-                            if(s.step_name!=='其他') {
-                                list.push(s);
-                                step.forEach(tt=>{
-                                    if(tt.id == s.sort_id){
-                                        tt.step.forEach(z=>list.push(z));
+                                    if(sid!==index) {
+                                        step.forEach(tt=>{
+                                        // 其他的項目比對同一隸屬的id，將項目放進step中
+                                        if(tt.id == parseInt(s.sort_id.split('_')[0])) {
+                                            tt.step.push(s);
+                                        }
+                                    })
                                     }
+                                }
+                            })
+                            step.forEach(step=>{
+                                step.step.forEach((tt,tid)=>{
+                                    let stepid = '';
+                                    if((tid+1)<10) {
+                                        stepid = '0'+(tid+1);
+                                    }else {
+                                        stepid = tid+1;
+                                    }
+                                    tt.sort_id = step.id+'_'+stepid;
                                 })
-                            }
-                        })
-                        stepId[id].stepList = list;
+                            })
+                            item.stepList.forEach(s=>{
+                                if(s.step_name!=='其他') {
+                                    list.push(s);
+                                    step.forEach(tt=>{
+                                        if(tt.id == s.sort_id){
+                                            tt.step.forEach(z=>list.push(z));
+                                        }
+                                    })
+                                }
+                            })
+                            stepId[id].stepList = list;
 
-                    }else {
-                        stepId[id].stepList = item.stepList;
+                        }else {
+                            stepId[id].stepList = item.stepList;
+                        }
+
+                    })
+                    datas = stepId;
+
+                    if(true) {
+                        // 重新送出id
+                        this.mainItems = datas;
+                        // 刪除後，可能會影響最新執行的日期及disabled及狀態顏色，因此要重新整理資料
+                        this.dateData();
                     }
-
-                })
-                datas = stepId;
-
-                if(true) {
-                    // 重新送出id
-                    this.mainItems = datas;
-                    // 刪除後，可能會影響最新執行的日期及disabled及狀態顏色，因此要重新整理資料
-                    this.dateData();
+                    
                 }
-                
+            }else {
+                this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
             }
+            
         },
 
         /* 執行/確認 */
@@ -993,6 +1154,10 @@ export default {
                     }
                 }
             }
+        },
+        dateFormat(time) {
+            // console.log('time',dayjs( new Date(time)).format("MM-DD HH:mm"));
+            return dayjs( new Date(time)).format("MM-DD HH:mm");
         },
         // 確認鈕
         executeConfirm(id,index) {
@@ -1327,6 +1492,11 @@ export default {
             }
         }      
     } 
+}
+.add-step {
+    text-align: center;
+    margin-top: -24px;
+    padding-bottom: 24px;
 }
 ::v-deep {
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {

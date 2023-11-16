@@ -110,6 +110,15 @@ $color-green: #00A660;
     &:hover {
       background-color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
     }
+    &.disabled {
+      pointer-events: inherit;
+      &:hover {
+        background-color: $color-dark-25 !important;
+        .theme--light.v-icon {
+          color: $color-dark-50 !important;
+        }
+      }
+    }
   }
   &.disabled {
     background-color: $color-dark-25 !important;

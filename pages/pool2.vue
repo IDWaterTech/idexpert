@@ -196,7 +196,7 @@
                   </div>
               </div> 
               <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
-                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata"></FeedTemplate2>
+                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'"></FeedTemplate2>
               </div>
             </v-card>
           </div>
@@ -299,8 +299,6 @@
                   </v-menu>
                 </v-col>
               </v-row>
-              
-              
             </v-card-text>
             <v-card-text>
               <v-row align="center">
@@ -2487,7 +2485,7 @@ export default {
         for (var i = deleteindex.length - 1; i >= 0; i--) {
             objj.splice(deleteindex[i], 1);
         }
-        console.log(objj);
+        // console.log(objj);
         return objj;
     },
     //新增循環的池選擇，計算資料範圍
