@@ -150,7 +150,8 @@
                             養殖池
                           </div>
                           <div class="content" style="padding: 0;">
-                            {{ total.pool }} 個
+                            <!-- {{ total.pool }} 個 -->
+                            <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=" 隻" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -166,7 +167,8 @@
                             小池數
                           </div>
                           <div class="content" style="padding: 0;">
-                            {{ total.pond }} 個
+                            <!-- {{ total.pond }} 個 -->
+                            <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=" 隻" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -181,7 +183,7 @@
                             預估放養
                           </div>
                           <div class="content" style="padding: 0;">
-                            <number-count-up v-if="showPredict" :endVal="total.predict" suffix=" 隻" :myReady="onReady"></number-count-up>
+                            <number-count-up v-if="showPredict" :id="'num3'" :endVal="total.predict" suffix=" 隻" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -1204,10 +1206,18 @@ export default {
   methods: {
      onReady: function (instance,CountUp) {
             const that = this;
-            that.endVal = this.total.predict;
+            // console.log(instance.el,CountUp);
+            if(instance.el == document.getElementById('num3')) {
+              that.endVal = this.total.predict;
+            }else if(instance.el == document.getElementById('num2')) {
+              that.endVal = this.total.pond;
+            }else if(instance.el == document.getElementById('num1')) {
+              that.endVal = this.total.pool;
+            }
+            // that.endVal = this.total.predict;
             instance.update(that.endVal);
             // instance.update(that.endVal);
-        },
+    },
     get_scopeData:function(evt){
       console.log(evt);
       console.log('main',this.maindata);

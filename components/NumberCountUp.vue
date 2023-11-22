@@ -4,6 +4,7 @@
       :delay="delay"
       :endVal="endVal"
       :options="options"
+      :id="id"
       @ready="myReady"
     />
   </div>
@@ -35,6 +36,10 @@ export default {
                 instance.update(that.endVal + 100);
                 // instance.update(this.endVal + 100);
             }
+        },
+        id: {
+            type: String,
+            default: ''
         }
     },
     data() {
