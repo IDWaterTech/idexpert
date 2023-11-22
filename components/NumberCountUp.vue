@@ -71,3 +71,22 @@ export default {
     color: #4d63bc;
 }
 </style>
+
+<!-- ********************************* -->
+<!-- 使用方式 -->
+<!--
+頁面引用 
+    <number-count-up :value="total.predict" suffix="隻" :myReady="onReady"></number-count-up>
+
+外部引用一定要加入function
+methods: {
+     onReady: function (instance,CountUp) {
+            const that = this;
+            that.endVal = this.total.predict;  //此處需要帶入value的值
+            instance.update(that.endVal + 100);
+            // instance.update(that.endVal);
+        },
+    }
+
+
+ -->
