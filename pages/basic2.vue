@@ -178,10 +178,11 @@
                         </div>
                         <div class="total-text">
                           <div class="title">
-                            預估放樣
+                            預估放養
                           </div>
                           <div class="content" style="padding: 0;">
-                            {{ total.predict }} 隻
+                            <!-- {{ total.predict }}  -->
+                            <number-count-up :value="total.predict" suffix="隻" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -1201,6 +1202,12 @@ export default {
     };
   },
   methods: {
+     onReady: function (instance,CountUp) {
+            const that = this;
+            that.endVal = this.total.predict;
+            instance.update(that.endVal + 100);
+            // instance.update(that.endVal);
+        },
     get_scopeData:function(evt){
       console.log(evt);
       console.log('main',this.maindata);
@@ -1742,6 +1749,7 @@ export default {
     window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth;
     });
+    // this.rndKey = Math.round( (Math.random()*100) );
   },
   watch: {
       windowWidth:function(){
