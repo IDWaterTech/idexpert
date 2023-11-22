@@ -67,7 +67,7 @@ export default {
           left: 0,
           textStyle:{
             color:'#00324E',
-            fontSize:16
+            fontSize:17
           },
           icon:'roundRect',//round,rec,roundRect
         },
