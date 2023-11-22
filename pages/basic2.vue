@@ -15,10 +15,10 @@
             <v-row style="margin-bottom: 4px;align-items: center;">
               <!-- 選擇場區 -->
               <v-col cols="12" md="4" sm="12" style="position: relative;">
-                <locate-select class="select-template" :dataScope="'area'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;closepanel();" style="margin-right: 0;"></locate-select>
+                <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;closepanel();" style="margin-right: 0;"></locate-select>
               </v-col>
               <!-- 選擇起始日 -->
-              <v-col cols="12" md="4" sm="12">
+              <v-col cols="12" md="3" sm="12">
                 <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
                   transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
@@ -39,7 +39,7 @@
                 </v-menu>
               </v-col>
               <!-- 選擇迄日 -->
-              <v-col cols="12" md="4" sm="12">
+              <v-col cols="12" md="3" sm="12">
                 <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
                   transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
@@ -59,11 +59,18 @@
                   "></v-date-picker>
                 </v-menu>
               </v-col>
+              <v-col v-if="sel_main&&windowWidth>959.98 " cols="12" sm="1">
+                <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
+                  class="mx-1" dense hide-details></v-text-field>
+              </v-col>
               <!-- 查詢/小螢幕布局圖 -->
-              <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center" style="display: flex;flex-direction: row;align-items: center;justify-content: space-between;">
-                <button icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend" style="display: flex;align-items: center;font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;">
+              <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center" style="display: flex;flex-direction: row;align-items: center;">
+                <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
+                  class="mx-1" dense hide-details style="max-width: 120px;"></v-text-field>
+                <button icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend" style="display: flex;align-items: center;font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;text-align: left;">
                   <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
                 </button>
+                
                 <!-- 可能同池名，在不同場，所以value= name -->
                 <!-- <v-btn tile class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel();resultListOpen = false">查詢</v-btn> -->
                 
@@ -184,7 +191,7 @@
                 </v-col>
                 <!-- 養殖池 -->
                 <v-col cols="12" md="9" style="margin-bottom: 4px;padding-top: 0;padding-right: 0;padding-bottom: 0;">
-                  <v-card class="result-card pool-detail" style="height: calc(100% - 12px);position: absolute;width: calc(100% / 12 * 9 - 12px);"
+                  <v-card class="result-card pool-detail" style="height: calc(100% - 14px);position: absolute;width: calc(100% / 12 * 9 - 12px);"
                     :style="{'position':`${windowWidth>959.98?'absolute':'initial'}`,
                               'width':`${windowWidth>959.98?'calc(100% / 12 * 9 - 12px)':'100%'}`}">
                     <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
@@ -196,7 +203,7 @@
                         <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
                       </div> -->
                     </div>
-                    <div v-if="resultListOpen" class="content" style="padding: 12px;">
+                    <div v-if="resultListOpen" class="content" style="padding: 0 12px;">
                       <v-row style="margin-bottom: 0;">
                         <v-col cols="12">
                           <el-table :data="mainpool.items" style="width: 100%;" max-height="200" show-summary size="mini"
@@ -258,17 +265,7 @@
                                       placeholder="指定項目" :items="Object.keys(allcols.water)" v-if="allcols.water"
                                       :disabled="waterloading == true">
                                     </v-select>
-                                    <div  v-if="windowWidth<959.98" class="spector" @click="
-                                      () => {
-                                        this.defitem = [
-                                          '亞硝酸鹽濃度',
-                                          '氨氮濃度',
-                                          '水溫',
-                                          '溶氧濃度',
-                                          '酸鹼濃度'
-                                        ];
-                                      }
-                                    " style="padding-top: 4px;">主要觀測項目
+                                    <div  v-if="windowWidth<959.98" class="spector" @click="setDefitem" style="padding-top: 4px;">主要觀測項目
 
                                     </div>
                                   </v-col>
@@ -305,17 +302,7 @@
                                   </v-col>
                                   <!-- 主要觀測項目 -->
                                   <v-col v-if="windowWidth>959.98" cols="6" md="6" sm="4" align-self="center" style="padding-top: 0;">
-                                    <div class="spector" @click="
-                                      () => {
-                                        this.defitem = [
-                                          '亞硝酸鹽濃度',
-                                          '氨氮濃度',
-                                          '水溫',
-                                          '溶氧濃度',
-                                          '酸鹼濃度'
-                                        ];
-                                      }
-                                    ">主要觀測項目
+                                    <div class="spector" @click="setDefitem">主要觀測項目
 
                                     </div>
                                     <!-- <v-btn rounded block color="primary" @click="
@@ -364,7 +351,7 @@
                                     :key="item.id" v-show="
                                       defPool.水質.includes(item.name) || defPool.水質.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <!-- defitem -->
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
                                       :defaultitem="defalutItemList" :loading="waterloading" :title="item.name" :urldata="{
@@ -378,7 +365,7 @@
                                 <v-row v-if="waterdata.length < 1 && waterloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -483,7 +470,7 @@
                                     :key="item.id" v-show="
                                       defPool.環境.includes(item.name) || defPool.環境.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
                                       :defaultitem="defalutItemList_env" :loading="envloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -495,7 +482,7 @@
                                 <v-row v-if="envdata.length < 1 && envloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -587,7 +574,7 @@
                                     :key="item.id" v-show="
                                       defPool.飼料.includes(item.name) || defPool.飼料.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
                                       :defaultitem="defalutItemList_feed" :loading="feedloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -599,7 +586,7 @@
                                 <v-row v-if="feeddata.length < 1 && feedloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -690,7 +677,7 @@
                                     :key="item.id" v-show="
                                       defPool.觀察.includes(item.name) || defPool.觀察.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
                                       :defaultitem="defalutItemList_obs" :loading="obsloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -702,7 +689,7 @@
                                 <v-row v-if="obsdata.length < 1 && obsloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -792,7 +779,7 @@
                                     :key="item.id" v-show="
                                       defPool.進階.includes(item.name) || defPool.進階.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
                                       :defaultitem="defalutItemList_adv" :loading="advloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -804,7 +791,7 @@
                                 <v-row v-if="advdata.length < 1 && advloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -895,7 +882,7 @@
                                       defPool.益生菌.includes(item.name) ||
                                       defPool.益生菌.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
                                       :defaultitem="defalutItemList_pbio" :loading="pbioloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -907,7 +894,7 @@
                                 <v-row v-if="pbiodata.length < 1 && pbioloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -998,7 +985,7 @@
                                       defPool.用料.includes(item.name) ||
                                       defPool.用料.length == 0
                                     ">
-                                    <h3 class="pool-name">{{ item.name }}池</h3>
+                                    <h1 class="pool-name">{{ item.name }}池</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
                                       :defaultitem="defalutItemList_material" :loading="materialloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -1011,7 +998,7 @@
                                 <v-row v-if="materialdata.length < 1 && materialloading == false" style="margin-bottom: 0;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
-                                    <h5>暫無資料</h5>
+                                    <h4>暫無資料</h4>
                                   </v-col>
                                   <v-spacer></v-spacer>
                                 </v-row>
@@ -1210,6 +1197,7 @@ export default {
       },
       resultListOpen: true,
       windowWidth: window.innerWidth,
+      defaultPool: undefined,
     };
   },
   methods: {
@@ -1556,6 +1544,15 @@ export default {
       
       
     },
+    setDefitem() {
+      this.defitem = [
+        '亞硝酸鹽濃度',
+        '氨氮濃度',
+        '溫度',
+        '溶氧濃度',
+        '酸鹼值'
+      ];
+    }
   },
   async created() {
     // await this._pageCheck(); //驗證頁面是否可檢視
@@ -1567,6 +1564,13 @@ export default {
       .then(res => {
         this.maindata = res.data;
         this.sel_main = undefined;
+        this.defaultPool = '';
+        if(this.maindata.length>0) {
+          this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
+        }else {
+          this.defaultPool = '';
+        }
+        console.log(this.defaultPool);
       });
     //get all cols
     await this.$axios
@@ -1646,6 +1650,10 @@ export default {
     },
     defalutItemList: function () {
       var item = _.cloneDeep(this.allcols.water);
+      if(!item) {
+        return {};
+      }
+      console.log('defaultItemList',item)
       for (const [key, value] of Object.entries(item)) {
         if (this.defitem && this.defitem.length > 0) {
           // item[key] = this.defitem == key ? true : false;
@@ -1792,17 +1800,23 @@ export default {
   box-shadow: none !important;
 }
 
+.v-sheet.result-card.pool-detail.v-card:not(.v-sheet--outlined) {
+  // box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+}
 .v-card.dashboard {
   // padding: 24px;
   padding: 8px 12px;
-  border-bottom: 4px solid $color-primary;
+  // border-bottom: 4px solid $color-primary;
+  border-left: 4px solid $color-primary;
   display: flex;
   align-items: center;
   margin-bottom: 12px;
+  background-color: rgba($color-primary,0.08);
   .icon {
     width: 40px;
     height: 40px;
-    background-color: rgba($color-primary,0.1);
+    // background-color: rgba($color-primary,0.1);
     text-align: center;
     padding-top: 8px;
     margin-right: 24px;
@@ -1811,18 +1825,22 @@ export default {
     }
   }
   &.pond {
-    border-bottom: 4px solid #92CF90;
+    // border-bottom: 4px solid #92CF90;
+    border-left: 4px solid #92CF90;
+    background-color: rgba(#92CF90,0.07);
     .icon {
-      background-color: rgba(#92CF90,0.1);
+      // background-color: rgba(#92CF90,0.1);
     }
     .v-icon {
       color: #92CF90;
     }
   }
   &.predict {
-    border-bottom: 4px solid #E8956F;
+    // border-bottom: 4px solid #E8956F;
+    border-left: 4px solid #E8956F;
+    background-color: rgba(#E8956F,0.07);
     .icon {
-      background-color: rgba(#E8956F,0.1);
+      // background-color: rgba(#E8956F,0.1);
     }
   }
   .total-text {

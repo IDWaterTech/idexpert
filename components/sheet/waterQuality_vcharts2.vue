@@ -49,7 +49,15 @@ export default {
       },
       chtData_new_1: { columns: [], rows: [] },
       show: false,
-      myColors:['#91c7ae','#ffa1aa','#ff9900','#FFAB91','#fff8b8','#BCAAA4','#8BC34A','cyan','#B388FF'],
+      myColors:['#EB9F9F','#E3BFA6','#E9DCAE','#B0D0C1','#B1C2EB','#BEA5DF','#E19BC1','#B4D7DE','#D7E7C2'],
+      // myColors:['#91c7ae','#829BDC','#A991C7','#E29090','#F1E78D','#F0C675','#D66DA6','#74B2BF','#A6E4D9'],
+      // myColors:[{colorStops:[{
+      //   offset: 0,
+      //   color: 'rgba(#91c7ae,0.1)'
+      // },{
+      //   offset: 1,
+      //   color: 'rgba(#91c7ae,0.6)'
+      // }]}],
       //#91c7ae default ffa1aa 淺紅  #ff9900 橘 FFAB91 淺橘 fff8b8 淺黃 BCAAA4 淺咖 cyan 亮藍綠 8BC34A 亮綠 #B388FF 淺紫
       chartExtend: {
         legend: {
@@ -59,7 +67,7 @@ export default {
           left: 0,
           textStyle:{
             color:'#00324E',
-            fontSize:14
+            fontSize:16
           },
           icon:'roundRect',//round,rec,roundRect
         },
@@ -181,6 +189,10 @@ export default {
       };
       }
     },
+    chartToggle: {
+      type: Boolean,
+      default: true
+    }
   },
   created() {
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
@@ -191,6 +203,10 @@ export default {
     this.set.legendAlias = this.legendAliasOut;
     this.set.max = [this.chartmax];
     this.set.min = [this.chartmin];
+    this.set.area = this.chartToggle;
+    if(!this.chartToggle) {
+      this.set.area = undefined;
+    }
     this.slt_1_items = Object.keys(this.legendAliasOut); //取得主要欄位
     // this.chtData_Ora_1.columns = [this.xColName].concat(this.slt_1_items); //設定欄位
     var temp = this.rowsData.length > 0 ? Object.keys(this.rowsData[0]) : "";
