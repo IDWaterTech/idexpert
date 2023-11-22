@@ -181,8 +181,7 @@
                             預估放養
                           </div>
                           <div class="content" style="padding: 0;">
-                            <!-- {{ total.predict }}  -->
-                            <number-count-up :value="total.predict" suffix="隻" :myReady="onReady"></number-count-up>
+                            <number-count-up v-if="showPredict" :endVal="total.predict" suffix=" 隻" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -1199,13 +1198,14 @@ export default {
       resultListOpen: true,
       windowWidth: window.innerWidth,
       defaultPool: undefined,
+      showPredict: true,
     };
   },
   methods: {
      onReady: function (instance,CountUp) {
             const that = this;
             that.endVal = this.total.predict;
-            instance.update(that.endVal + 100);
+            instance.update(that.endVal);
             // instance.update(that.endVal);
         },
     get_scopeData:function(evt){
@@ -1228,6 +1228,7 @@ export default {
             }
           })
         })
+        this.showPredict = false;
         this.areachange();
       }
     },
@@ -1516,6 +1517,7 @@ export default {
             }
             if(column.label == '預估放養隻數') {
               this.total.predict = sums[index];
+              this.showPredict = true;
             }
             sums[index] +=
               " " + itemunit.filter(x => x.name == column.label)[0].unit;
@@ -1528,7 +1530,6 @@ export default {
         }
         this.total.pool = data.length;
       });
-
       return sums;
     },
     totalSum(values,bool) {
@@ -1900,6 +1901,10 @@ export default {
 }
 
 ::v-deep {
+  .iCountUp {
+    font-size: 1.2rem !important;
+    color: $color-dark;
+  }
   // 養殖池table
   .el-table,.el-table tr,.el-table th.el-table__cell,.el-table__footer-wrapper tbody td.el-table__cell,
   .el-table__fixed-footer-wrapper tbody td.el-table__cell {
