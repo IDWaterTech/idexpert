@@ -1653,7 +1653,6 @@ export default {
       }
       //return this.maindata;
       return filterarea;
-
       //return obj;
     },
     defalutItemList: function () {
