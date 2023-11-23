@@ -6,7 +6,7 @@
     <v-tabs v-model="tablindex" background-color="cardtitle" center-active dark>
       <v-tab :href="`#廠商設定`">廠商設定</v-tab>
       <v-tab :href="`#成份設定`">成份設定</v-tab>
-      <v-tab :href="`#飼料設定(套餐)`">飼料設定(套餐)</v-tab>
+      <v-tab :href="`#套餐設定`">套餐設定</v-tab>
     </v-tabs>
     <!-- tabe的主要內容 -->
     <v-tabs-items v-model="tablindex">
@@ -585,7 +585,7 @@
         </v-row>
       </v-tab-item>
       <!-- 飼料資訊(套餐) -->
-      <v-tab-item value="飼料設定(套餐)" class="tabitmbg">
+      <v-tab-item value="套餐設定" class="tabitmbg">
         <v-row class="mx-3 my-3 mt-3">
           <v-spacer></v-spacer>
           <v-col cols="12" sm="10" class="my-2">
@@ -597,7 +597,7 @@
               item-text="name_ch"
               item-value="id"
               dense
-              label="選擇飼料(套餐)"
+              label="選擇套餐"
               filled
               clearable
               @change="comboselect"
@@ -609,7 +609,7 @@
               <v-toolbar flat color="lightblue" dark>
                 <v-icon class="mx-2">mdi-food</v-icon>
                 <v-toolbar-title class="font-weight-light">
-                  飼料資訊(套餐){{
+                  套餐資訊{{
                     combo.filter(x => x.id == comboidx).length > 0
                       ? "：" + combo.filter(x => x.id == comboidx)[0].name_ch
                       : ""
@@ -668,7 +668,7 @@
                     :rules="rules.require"
                     counter maxlength="50"
                     ><span slot="prepend" style="width:100px;"
-                      >飼料名稱</span
+                      >套餐名稱</span
                     ></v-text-field
                   >
                   <v-text-field
@@ -680,7 +680,7 @@
                     counter maxlength="50"
                     :disabled="combomode == 'edit'"
                     ><span slot="prepend" style="width:100px;"
-                      >飼料名稱(英)</span
+                      >套餐名稱(英)</span
                     ></v-text-field
                   >
                   <v-text-field
@@ -888,7 +888,7 @@ export default {
   middleware: "auth",
   head(){
     return {
-      title:"料表設定",
+      title:"飼料設定",
     }
   },
   data() {
