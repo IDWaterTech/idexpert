@@ -38,7 +38,7 @@
                   <v-date-picker v-model="edate" @input="menu_enddate = false" locale="zh-tw" no-title></v-date-picker>
                 </v-menu>
               </v-col>
-              <!-- 選擇類別 觀察網/菌盤 -->
+              <!-- 選擇類別 觀察網/菌相 -->
               <v-col cols="12" md="3" sm="12" align-self="center"  class="caculate">
                 <v-radio-group class="my-1" row v-model="dataClass" mandatory @change="()=>{recogData={}}" hide-details>
                   <v-radio v-for="(item, i) in dataClassList" :label="item.name" :value="item.name" :key="i">
@@ -96,7 +96,7 @@
 
                   <!-- 菌盤 -->
                   <v-data-table
-                    v-if="dataClass == '菌盤'"
+                    v-if="dataClass == '菌相'"
                     class="edit-table"
                     :headers="headers"
                     :items="recogData.items" dense
@@ -188,7 +188,7 @@ export default {
       edate: "",
       //---選定類別
       dataClass: "",
-      dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌盤", "icon": "mdi-bacteria-outline" }],
+      dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌相", "icon": "mdi-bacteria-outline" }],
       tableHeight: window.innerHeight - 64 - 80 -64,
       innerWidth: window.innerWidth,
       nowPool: '',
@@ -209,10 +209,10 @@ export default {
               .then(res => {
                 if (res.data == "刪除成功") {
                   this.getRecog();//re get data;
-                  this.$toast.success(`刪除菌盤成功`, { duration: 2000 });
+                  this.$toast.success(`刪除菌相成功`, { duration: 2000 });
                 } else {
                   debugger;
-                  this.$toast.error(`刪除菌盤失敗，${res.data}`, { duration: 2000 });
+                  this.$toast.error(`刪除菌相失敗，${res.data}`, { duration: 2000 });
                 }
               }).catch(error => {
                 this.$toast.error("error:" + error, { duration: 2000 });
@@ -306,7 +306,7 @@ export default {
               this.$toast.error(`取得觀察網資料失敗:${error.message}`, { duration: 2000 });
             });
           break;
-        case "菌盤":
+        case "菌相":
           var parm = {
             started_date: this.sdate,
             ended_date: this.edate,
@@ -318,7 +318,7 @@ export default {
               { params: parm }
             )
             .then(res => {
-              console.log("菌盤資料",res.data);
+              console.log("菌相資料",res.data);
               this.headers = [];
               this.recogData = {
                 id: res.data.id,
@@ -331,7 +331,7 @@ export default {
               // res.data.items[0].images.push('https://www.idwatertech.com:8011/media/observation/20230913190000_1_2/feed_result.jpg');
               //  this.recogData = res.data;
               if (res.data.items.length == 0) {
-                this.$toast.success(`查無菌盤資料`, { duration: 2000 });
+                this.$toast.success(`查無菌相資料`, { duration: 2000 });
               }else {
                 // this.headers = ['資料','時間','加熱','class','辨識'];
                 this.headers = [
@@ -358,10 +358,10 @@ export default {
                     is_heated:d.is_heated
                   })
                 })
-                console.log("菌盤api：",res.request.responseURL);
+                console.log("菌相api：",res.request.responseURL);
             })
             .catch(error => {
-              this.$toast.error(`取得菌盤資料失敗:${error.message}`, { duration: 2000 });
+              this.$toast.error(`取得菌相資料失敗:${error.message}`, { duration: 2000 });
             });
           break;
         default:
