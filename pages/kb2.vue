@@ -409,7 +409,7 @@
                                                                             </v-col> 
                                                                             <v-col cols="12" md="10" sm="10">
                                                                                 <div class="date-time-picker">
-                                                                                    <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                    <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
                                                                                 </div>
                                                                                     
                                                                             </v-col>
@@ -1110,7 +1110,7 @@
                                                                             </v-col> 
                                                                             <v-col cols="12" md="10" sm="10">
                                                                                 <div class="date-time-picker">
-                                                                                    <a-date-picker v-model="ObservationData['SamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                    <a-date-picker v-model="ObservationData['SamplingDatetime']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
                                                                                 </div>
                                                                                     
                                                                             </v-col>
@@ -1132,7 +1132,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="10" sm="10">
                                                                                 <div class="date-time-picker">
-                                                                                    <a-date-picker v-model="ObservationData['LastSamplingDatetime']" value="null" show-time placeholder="" @change="onChange" @ok="onOk"  style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                    <a-date-picker v-model="ObservationData['LastSamplingDatetime']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk"  style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
                                                                                 </div>
                                                                             </v-col>
                                                                         </v-row>
