@@ -1912,7 +1912,7 @@ export default {
 ::v-deep {
   .iCountUp {
     font-size: 1.2rem !important;
-    color: $color-dark;
+    color: $color-dark !important;
   }
   // 養殖池table
   .el-table,.el-table tr,.el-table th.el-table__cell,.el-table__footer-wrapper tbody td.el-table__cell,
