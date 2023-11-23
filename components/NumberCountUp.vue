@@ -44,7 +44,7 @@ export default {
     },
     data() {
         return {
-            delay: 200, //幾秒之後開始跳數字(1000=1sec)
+            delay: -1, //幾秒之後開始跳數字(1000=1sec);設置為-1就不會延遲跳數字
             endVal: this.value,
             options: {
                 useEasing: true,
