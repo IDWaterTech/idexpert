@@ -260,7 +260,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的飼料粗蛋白參數">粗蛋白含量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的飼料粗蛋白參數->砂糖量(做水)、尿素、前餐砂糖量、下餐砂糖量">粗蛋白含量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="FeedParm['CrudeProteinPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
@@ -283,7 +283,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖純度參數">砂糖(碳源)純度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖純度參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">砂糖(碳源)純度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="FeedParm['SugarSourcePurity']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
@@ -294,7 +294,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖含碳量參數">砂糖(碳源)含碳量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖含碳量參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">砂糖(碳源)含碳量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="FeedParm['SugarSourceCarbonPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
@@ -317,7 +317,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中飼料的投餵量">上一餐飼料量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中飼料的投餵量->0號料、1號料、2號料、上一餐飼料量">上一餐飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="FeedParm['LastFeedInput']" type="number"  dense hide-details class="mt-0"></v-text-field>
@@ -363,7 +363,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="養殖起始日~資料日期時間內所有飼料量的總和">累計飼料量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="養殖起始日~資料日期時間內所有飼料量的總和->FCR(換肉率)">累計飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 
@@ -403,7 +403,7 @@
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
-                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去一天最後一筆的飼料投餵時間">上一餐時間</span>
+                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去一天最後一筆的飼料投餵時間->內存量(體重投餌率)、存活率、預計間補日期、0號料">上一餐時間</span>
                                                                                 </div>
                                                                                     
                                                                             </v-col> 
@@ -463,7 +463,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4" style="display: flex;align-items: center;" :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的酸鹼值資料"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('pH')"></v-badge>酸鹼值</span><span style="font-size: 12px;" :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">(pH)</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的酸鹼值資料->熟石灰量"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('pH')"></v-badge>酸鹼值</span><span style="font-size: 12px;" :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">(pH)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="WaterQualityData['pH']" type="number" dense hide-details class="mt-0" @blur="valueCheck('pH',WaterQualityData['pH'])"></v-text-field>
@@ -473,7 +473,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0" slot="prepend" title="過去一天最後一筆的水溫資料"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Temp')"></v-badge>水溫</span>
+                                                                                <span class="pa-0" slot="prepend" title="過去一天最後一筆的水溫資料->粉料、砂糖量(做水)、尿素"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('Temp')"></v-badge>水溫</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="WaterQualityData['Temp']" type="number" dense hide-details class="mt-0" @blur="valueCheck('Temp',WaterQualityData['Temp'])"><span slot="append">°C</span></v-text-field>
@@ -483,7 +483,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0" slot="prepend" title="以上一餐時間為基準，過去一天最後一筆的水溫資料"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('LastTemp')"></v-badge>上一餐水溫</span>
+                                                                                <span class="pa-0" slot="prepend" title="以上一餐時間為基準，過去一天最後一筆的水溫資料->內存量(體重投餌率)、存活率"><v-badge title="紅：危險值，橘：警告值，綠：正常值" inline :color="getColor('LastTemp')"></v-badge>上一餐水溫</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="WaterQualityData['LastTemp']" type="number" dense hide-details class="mt-0" @blur="valueCheck('LastTemp',WaterQualityData['LastTemp'])"><span slot="append">°C</span></v-text-field>
@@ -553,7 +553,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4" style="display: flex;align-items: center;" :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的氨氮資料">氨氮</span><span style="font-size: 12px;">NH<sub>3</sub>/NH<sub>4</sub>+</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的氨氮資料->砂糖量(降氨氮)">氨氮</span><span style="font-size: 12px;">NH<sub>3</sub>/NH<sub>4</sub>+</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="WaterQualityData['AmmoniaN']" type="number" dense hide-details class="mt-0" @blur="valueCheck('AmmoniaN',WaterQualityData['AmmoniaN'])"><span slot="append">ppm</span></v-text-field>
@@ -634,7 +634,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的枯草桿菌(bacillus_subtilis)">枯草桿菌</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的枯草桿菌(bacillus_subtilis)->砂糖量(提高枯草桿菌)">枯草桿菌</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BacteriaData['BacillusSubtilis']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">CFU/mL</span></v-text-field>
@@ -656,7 +656,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的創傷弧菌(藍菌)(vibrio_vulnificus)">創傷弧菌(藍)</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的創傷弧菌(藍菌)(vibrio_vulnificus)->砂糖量(降靛菌)">創傷弧菌(藍)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BacteriaData['VibrioVulnificus']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">CFU/mL</span></v-text-field>
@@ -667,7 +667,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的腸炎弧菌(紫菌)(vibrio_enteritidis)">腸炎弧菌(紫)</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的腸炎弧菌(紫菌)(vibrio_enteritidis)->砂糖量(降紫菌)">腸炎弧菌(紫)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BacteriaData['VibrioEnteritidis']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">CFU/mL</span></v-text-field>
@@ -961,12 +961,12 @@
                                                                                 <span  class="pa-0 ma-0" slot="prepend">腸線顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <div class="input-chips" @click="chipsOpen('IntestinalColor')">
+                                                                                <!-- <div class="input-chips" @click="chipsOpen('IntestinalColor')">
                                                                                     <v-chip v-for="(item,id) in optData.IntestinalColor" :key="'IntestinalColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div>
-                                                                                <!-- <v-select v-model="ObservationData['IntestinalColor']" clearable :items="optData.IntestinalColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
+                                                                                </div> -->
+                                                                                <v-select v-model="ObservationData['IntestinalColor']" clearable :items="optData.IntestinalColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-if="false" v-model="ObservationData['IntestinalColor']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">腸線顏色</span></v-text-field> -->
@@ -978,12 +978,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">肝胰臟顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <div class="input-chips" @click="chipsOpen('HepatopancreasColor')">
+                                                                                <!-- <div class="input-chips" @click="chipsOpen('HepatopancreasColor')">
                                                                                     <v-chip v-for="(item,id) in optData.HepatopancreasColor" :key="'HepatopancreasColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div>
-                                                                                <!-- <v-select v-model="ObservationData['HepatopancreasColor']" clearable :items="optData.HepatopancreasColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
+                                                                                </div> -->
+                                                                                <v-select v-model="ObservationData['HepatopancreasColor']" clearable :items="optData.HepatopancreasColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-if="false" v-model="ObservationData['HepatopancreasColor']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">肝胰臟顏色</span></v-text-field> -->
@@ -995,12 +995,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">肌肉顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <div class="input-chips" @click="chipsOpen('MuscleColor')">
+                                                                                <!-- <div class="input-chips" @click="chipsOpen('MuscleColor')">
                                                                                     <v-chip v-for="(item,id) in optData.MuscleColor" :key="'MuscleColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div>
-                                                                                <!-- <v-select v-model="ObservationData['MuscleColor']" clearable :items="optData.MuscleColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
+                                                                                </div> -->
+                                                                                <v-select v-model="ObservationData['MuscleColor']" clearable :items="optData.MuscleColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-if="false" v-model="ObservationData['MuscleColor']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">肌肉顏色</span></v-text-field> -->
@@ -1012,12 +1012,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">蝦體顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <div class="input-chips" @click="chipsOpen('BodyColor')">
+                                                                                <!-- <div class="input-chips" @click="chipsOpen('BodyColor')">
                                                                                     <v-chip v-for="(item,id) in optData.BodyColor" :key="'BodyColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div>
-                                                                                <!-- <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
+                                                                                </div> -->
+                                                                                <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">蝦體顏色</span></v-select> -->
@@ -1028,12 +1028,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">蝦體形狀</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <div class="input-chips" @click="chipsOpen('BodyShape')">
+                                                                                <!-- <div class="input-chips" @click="chipsOpen('BodyShape')">
                                                                                     <v-chip v-for="(item,id) in optData.BodyShape" :key="'BodyShape'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div>
-                                                                                <!-- <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
+                                                                                </div> -->
+                                                                                <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">蝦體形狀</span></v-select> -->
@@ -1041,7 +1041,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料殘餘量(feed_surplus)">觀察網殘餌量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料殘餘量(feed_surplus)->0號料、1號料、2號料">觀察網殘餌量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1075,7 +1075,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去90天最後一筆打樣到的蝦子重量(avg_weight)">蝦子重量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去90天最後一筆打樣到的蝦子重量(avg_weight)->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、觀察網網上料量、每日體重投餌率、蝦子重量、粉料、0號料、1號料、2號料">蝦子重量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="ObservationData['ShrimpWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1088,7 +1088,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去90天倒數第二筆打樣到的蝦子重量(avg_weight)">上次蝦子重量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去90天倒數第二筆打樣到的蝦子重量(avg_weight)->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次蝦子重量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="ObservationData['LastShrimpWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1104,7 +1104,7 @@
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
-                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天最後一筆打樣到的蝦子重量的時間">打樣時間</span>
+                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天最後一筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">打樣時間</span>
                                                                                 </div>
                                                                                     
                                                                             </v-col> 
@@ -1127,7 +1127,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
-                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天倒數第二筆打樣到的蝦子重量的時間">上次打樣時間</span>
+                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天倒數第二筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次打樣時間</span>
                                                                                 </div>
                                                                             </v-col>
                                                                             <v-col cols="12" md="10" sm="10">
@@ -1248,7 +1248,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">養殖池底面積</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="->觀察網網上料量、0號料、1號料、2號料">養殖池底面積</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BaseParm['PondBottomArea']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">m<sup>2</sup></span></v-text-field>
@@ -1311,7 +1311,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">水體體積</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="->存活率、粉料、0號料、砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(提高枯草桿菌)、砂糖量(降紫菌)、砂糖量(降靛菌)、熟石灰量、砂糖量(做水)、漂白粉(30ppm濃度)、海波、尿素">水體體積</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BaseParm['WaterBody']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">m<sup>3</sup></span></v-text-field>
@@ -1322,7 +1322,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">放養密度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="->存活率、粉料、0號料、砂糖量(做水)、尿素">放養密度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BaseParm['Density']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append" style="width: 48px;">隻/噸水</span></v-text-field>
@@ -1333,7 +1333,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="養殖循環開始日期~資料日期時間">養殖天數</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="養殖循環開始日期~資料日期時間->粉料">養殖天數</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BaseParm['Days']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1400,7 +1400,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">目標CN比</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="->前餐砂糖量(配合飼料CN比)、下餐砂糖量(配合飼料CN比)、砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)">目標CN比</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="BreedingParm['CN']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1411,7 +1411,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">放養初始重量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="->砂糖量(做水)、尿素">放養初始重量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1459,7 +1459,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="成分產編 = '尿素' & 參數英文名稱 = 'effective concentration'">尿素有效濃度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="成分產編 = '尿素' & 參數英文名稱 = 'effective concentration'->砂糖量(做水)、尿素">尿素有效濃度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="MakeWaterParm['UreaEffectiveConcentration']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
@@ -1470,7 +1470,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="成分產編 = '漂白粉' & 參數英文名稱 = 'effective concentration'">漂白粉有效濃度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="成分產編 = '漂白粉' & 參數英文名稱 = 'effective concentration'->漂白粉(30ppm濃度)">漂白粉有效濃度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="MakeWaterParm['BleachingPowderEffectiveConcentration']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
@@ -1481,7 +1481,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的餘氯資料">水體餘氯</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的餘氯資料->海波">水體餘氯</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="MakeWaterParm['Chlorine']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">ppm</span></v-text-field>
@@ -1492,7 +1492,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="成分產編 = '硫代硫酸鈉' & 參數英文名稱 = 'effective concentration'">海波有效濃度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="成分產編 = '硫代硫酸鈉' & 參數英文名稱 = 'effective concentration'->海波">海波有效濃度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="MakeWaterParm['HypoEffectiveConcentration']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
