@@ -1179,8 +1179,6 @@
                                                 </v-expansion-panel-content>
                                             </v-expansion-panel>
                                         </v-expansion-panels>
-                                    
-                                        
                                         <!-- 養殖基本數據 -->
                                         <v-expansion-panels id="basic" accordion multiple v-model="panel.panel_row11">
                                             <v-expansion-panel class="my-1">
