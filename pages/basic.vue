@@ -1529,6 +1529,9 @@ export default {
               this.total.predict = sums[index];
               this.showPredict = true;
             }
+            if(column.label == '深度(m)') {
+              sums[index] = sums[index].toFixed(2);
+            }
             sums[index] +=
               " " + itemunit.filter(x => x.name == column.label)[0].unit;
           } else {
