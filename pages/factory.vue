@@ -434,7 +434,7 @@
     <!-- 場 ip設定 -->
     <v-dialog v-model="dialog.ip" width="500px">
       <v-form ref="ipform" v-model="ipvalid" lazy-validation>
-        <v-card :disabled="editedip_content==undefined">
+        <v-card >
           <v-card-title>ip設定</v-card-title>
           <v-card-text>
             <!-- <span>{{ `${this.selected_ip.factory_name}_${this.selected_ip.pond_area_name}` }}</span> -->
@@ -446,7 +446,9 @@
                     label=""
                     v-model="editedip_content"
                     hide-details
-                  ></v-textarea>  
+                    placeholder='{"factory_name": "案場名稱-XXXXID001","version": 1.0}'
+                  >
+                </v-textarea>  
                 </div>
           </v-card-text>
           <v-card-actions>
@@ -464,7 +466,6 @@
 import https from "https";
 import _ from "lodash";
 import md5 from "md5";
-import { ifError } from 'assert';
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -916,12 +917,31 @@ export default {
       //idwadmin56651588
       if(input_ipadminpwd=='0df860f9cad0c35e96feeb0e3cf3619c'){
         if(confirm('是否確認修改ip設定？')){
-          // this.$toast.success('修改成功,還沒有api', { duration: 2000 });
-          var id = this.selected_ip.id;
+          const apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`;
           var parm = this.editedip_content;
-          console.log(parm);
+          //新增 找不到之前新增的id
+          if(this.selected_ip==undefined){
+            await this.$axios
+            .post(apiurl,parm)
+            .then(res => {
+              console.log("API:" + res.request.responseURL);
+              if (res.data == "新增成功") {
+                this.getipdata();//re get data
+                this.dialog.ip = false; //close dialog
+                this.$toast.success(`新增成功`, { duration: 2000 });
+              } else {
+                 this.$toast.error(`新增失敗:${res.data}`, { duration: 3000 });
+              }
+            })
+            .catch(error => {
+              this.$axios.error("error:" + error, { duration: 2000 });
+            });
+            return;
+          }
+          //修改
+          var id = this.selected_ip.id;
           await this.$axios
-          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/${id}/`,parm)
+          .patch(`${apiurl}${id}/`,parm)
           .then(res => {
             if(res.data=='修改成功'){
               this.getipdata();//re get data
@@ -932,7 +952,7 @@ export default {
             }
           })
           .catch(error => {
-            this.$toast.error('修改錯誤'+ error.message, { duration: 2000 });
+            this.$toast.error('error:'+ error.message, { duration: 2000 });
           });
           
 
