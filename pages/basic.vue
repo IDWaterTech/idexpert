@@ -151,7 +151,7 @@
                           </div>
                           <div class="content" style="padding: 0;">
                             <!-- {{ total.pool }} 個 -->
-                            <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=" 隻" :myReady="onReady"></number-count-up>
+                            <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=" 池" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -168,7 +168,7 @@
                           </div>
                           <div class="content" style="padding: 0;">
                             <!-- {{ total.pond }} 個 -->
-                            <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=" 隻" :myReady="onReady"></number-count-up>
+                            <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=" 個" :myReady="onReady"></number-count-up>
                           </div>
                         </div>
                       </v-card>
@@ -1602,6 +1602,7 @@ export default {
   },
   computed: {
     mpurl: function () {
+      console.log(this.sel_main);
       return this.sel_main && this.showmp
         ? `/factory_${this.sel_main}.jpg?lazy`
         : "/factory_err.jpg?lazy";
