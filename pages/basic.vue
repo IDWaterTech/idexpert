@@ -1918,9 +1918,12 @@ export default {
     color: $color-dark !important;
   }
   // 養殖池table
-  .el-table,.el-table tr,.el-table th.el-table__cell,.el-table__footer-wrapper tbody td.el-table__cell,
-  .el-table__fixed-footer-wrapper tbody td.el-table__cell {
+  .el-table,.el-table tr,.el-table th.el-table__cell {
     background-color: #fff;
+  }
+  .el-table__footer-wrapper tbody td.el-table__cell,
+  .el-table__fixed-footer-wrapper tbody td.el-table__cell {
+    background-color: #f5f7fa;
   }
   .el-table__body tr.hover-row>td.el-table__cell {
     background-color: rgba($color-primary,0.1);
