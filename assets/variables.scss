@@ -111,7 +111,7 @@ $color-green: #00A660;
       background-color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
     }
     &.disabled {
-      pointer-events: inherit;
+      pointer-events: none;
       &:hover {
         background-color: $color-dark-25 !important;
         .theme--light.v-icon {
@@ -120,13 +120,7 @@ $color-green: #00A660;
       }
     }
   }
-  &.disabled {
-    background-color: $color-dark-25 !important;
-    pointer-events: none;
-    .theme--light.v-icon {
-      color: $color-dark-50 !important;
-    }
-  }
+ 
   &.green {
     background-color: $color-green !important;
     &:hover {
@@ -137,6 +131,13 @@ $color-green: #00A660;
     background-color: #67BEDA !important;
     &:hover {
       background-color: lighten($color: rgba(#67BEDA,0.8), $amount: 3) !important;
+    }
+  }
+  &.disabled {
+    background-color: $color-dark-25 !important;
+    pointer-events: none;
+    .theme--light.v-icon {
+      color: $color-dark-50 !important;
     }
   }
   &.just-icon {
@@ -416,6 +417,9 @@ $color-green: #00A660;
       .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
         background-color: #E6F5FA;
       }
+      .v-tabs-slider-wrapper {
+        display: none;
+      }
       .v-tab {
         // font-size: 18px;
         font-size: 1rem !important;
@@ -561,7 +565,7 @@ $color-green: #00A660;
     }
     .v-tab {
       // font-size: 18px;
-      font-size: 1rem !important;
+      font-size: 1.1rem !important;
       font-weight: bold;
       color: #7F98A6 !important;
       .icons {
@@ -574,6 +578,7 @@ $color-green: #00A660;
     }
     .v-tab.v-tab--active {
       color: #006AA6 !important;
+      border-bottom: 2px solid $color-primary;
       .icons {
         margin-right: 4px;
         i {

@@ -16,7 +16,7 @@
                       :dataScope="'pool'" 
                       :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:'49'" 
                       :isMulti="false"
-                      @scopeSel_data="get_scopeData($event)"
+                      @scopeSel_data="get_scopeData($event);getCircleData()"
                       ></locate-select>
                   </div>
                 </v-col>
@@ -28,7 +28,7 @@
                       <v-text-field v-model="started_date" label="選擇起日" filled hide-details prepend-icon="mdi-calendar" readonly
                         dense v-bind="attrs" v-on="on" @click:prepend="() => (started_date = getNowDate())"></v-text-field>
                     </template>
-                    <v-date-picker v-model="started_date" no-title locale="zh-tw" @input="menu_startdate = false">
+                    <v-date-picker v-model="started_date" no-title locale="zh-tw" :max="ended_date" @input="menu_startdate = false;;getCircleData()">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
@@ -40,15 +40,15 @@
                       <v-text-field v-model="ended_date" label="選擇訖日" filled hide-details prepend-icon="mdi-calendar" readonly
                         dense v-bind="attrs" v-on="on" @click:prepend="() => (ended_date = getNowDate())"></v-text-field>
                     </template>
-                    <v-date-picker v-model="ended_date" no-title locale="zh-tw" @input="menu_enddate = false"></v-date-picker>
+                    <v-date-picker v-model="ended_date" no-title locale="zh-tw" :min="started_date" @input="menu_enddate = false;getCircleData()"></v-date-picker>
                   </v-menu>
                 </v-col>
                 <!-- 按鈕-查詢 -->
-                <v-col cols="12" md="3">
+                <!-- <v-col cols="12" md="3">
                   <v-btn tile class="btn-primary" @click="getCircleData">
                     查詢
                   </v-btn>
-                </v-col>
+                </v-col> -->
               </v-row>
             </v-col>
             <!-- 按鈕-新增/執行 -->
@@ -91,7 +91,7 @@
               <div v-show="resultListOpen" class="content">
                 <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
                    height="62vh"
-                  @cell-click="clickRow($event,false)"
+                  @cell-click="clickRow"
                   @select="handleSelectionChange" :header-cell-name="cellClass">
                   <!-- 名稱/批號 -->
                   <!-- <el-table-column label="名稱/批號" prop="name" align="center"></el-table-column> -->
@@ -196,7 +196,7 @@
                   </div>
               </div> 
               <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
-                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'"></FeedTemplate2>
+                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" @getTemp="getTemp(currentDataId)"></FeedTemplate2>
               </div>
             </v-card>
           </div>
@@ -210,7 +210,7 @@
           <v-card-title class="add-title" style="display: block;width: 100%;">
             <div style="display: inline-block;">
               新增-養殖循環
-              <span class="error-text">Note:目前無法新增，因多池資料結構有更改</span>
+              <!-- <span class="error-text">Note:目前無法新增，因多池資料結構有更改</span> -->
             </div>
             <div class="add" style="float: right;display: inline-block;">
               <v-btn  class="btn-secondary close"
@@ -264,8 +264,8 @@
                 </treeselect>
               
             </v-card-text>
-            <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
-            <span  class="error-text" style="padding-left: 8px;"><b>Note:需撈取出可新增循環的池，資料架構與/api/architecture相同</b><br></span>
+            <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
+            <span  class="error-text" style="padding-left: 8px;"><b>Note:需撈取出可新增循環的池，資料架構與/api/architecture相同</b><br></span> -->
             <!-- <span style="padding-left: 8px;color: red"><b>Note:多池選擇下，體積水量可能會不同數值，影響初始放苗數，待討論</b><br></span> -->
           </div>
           <!-- 基本資料 -->
@@ -370,7 +370,13 @@
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" label="預估FCR(選)">
               </v-text-field>
-            </v-card-text>      
+            </v-card-text>
+            <!-- <v-card-text style="display: flex;align-items: center;"> -->
+               <!-- 放養初始長度 -->
+               <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
+              <!-- <v-text-field filled dense type="number" v-model.number="addparm.initial_length" label="放養初始長度(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>       -->
             <v-card-text style="display: flex;align-items: center;">
               <v-text-field filled dense type="number" v-model.number="addparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
               </v-text-field>
@@ -387,7 +393,7 @@
               </v-text-field>
             </v-card-text>
             <v-card-text>
-              <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
                 @change="tempChange" label="選擇樣板">
               </v-autocomplete>
             </v-card-text>
@@ -734,7 +740,7 @@
                   </v-select>
                 </v-col>
                 <v-col cols="6" style="padding: 0;padding-right: 8px;">
-                  <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
+                  <v-menu v-model="menu_stockeddate_edit" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="editparm.stocked_date" label="放苗日" :rules="rules.require"
@@ -742,7 +748,7 @@
                                                   () => (editparm.stocked_date = getNowDate())
                                                 "></v-text-field>
                     </template>
-                    <v-date-picker v-model="editparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
+                    <v-date-picker v-model="editparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate_edit = false">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
@@ -769,7 +775,11 @@
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)">
               </v-text-field>
-            </v-card-text>      
+            </v-card-text>    
+            <!-- <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="editparm.initial_length" label="放養初始重量(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>   -->
             <v-card-text style="display: flex;align-items: center;">
               <v-text-field filled dense type="number" v-model.number="editparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
               </v-text-field>
@@ -786,12 +796,12 @@
               </v-text-field>
             </v-card-text>
             <v-card-text>
-              <v-autocomplete v-model="editparm.tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+              <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
                 clearable @change="tempChange" label="選擇樣板(選)" disabled>
               </v-autocomplete>
             </v-card-text>
-            <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
-            <span class="error-text" style="margin-left: 8px;">Note:撈不出此資料樣板資訊</span>
+            <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
+            <span class="error-text" style="margin-left: 8px;">Note:撈不出此資料樣板資訊</span> -->
             <!-- <v-col cols="12"> -->
               <!-- 樣板 先暫時拿掉-->
               <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
@@ -917,12 +927,13 @@ export default {
       addvalid: false,
       menu_adddate: false,
       menu_stockeddate:false,
+      menu_stockeddate_edit:false,
       add_volume: undefined,
       addparm: {
         started_date: undefined,//開始日期，有ended_date結束日期，但新增不需使用
         stocked_date:undefined, //放苗日
         name: undefined,//名稱或批號
-        num_per_unit: undefined,//放養密度
+        // num_per_unit: undefined,//放養密度
         estimated_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
@@ -930,6 +941,8 @@ export default {
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
+        temp_id: undefined,//樣板
+        multi_data:[],//多池
         
       },
       dataid: [],// 多選
@@ -1192,8 +1205,6 @@ export default {
         });
     },
     delcircle: async function(data) {
-      this.clickRow(data,true);
-      // this.resultCycleOpen = false;
       setTimeout(()=>{
         this.resultListOpen = true;
       },200)
@@ -1368,7 +1379,6 @@ export default {
           //   "updated_time": "2023-10-19 08:24:58",
           //   "total": 31080,
           //   "days": 5
-
           // })
           console.log(res.data);
           console.log("循環資料 api",res.request.responseURL);
@@ -1443,6 +1453,7 @@ export default {
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
       this.addparm.estimated_num = undefined;
+      this.all_num_per_unit = undefined;
       if (this.$refs.logform != undefined) {
         this.$refs.logform.reset();
       }
@@ -1461,10 +1472,66 @@ export default {
       // }
       //
 
-      // 新增循環的池選擇
-      var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-      this.addPoolData = data;
+      
+      await this.getCycleData();
+      await this.getPondData(bool);
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
+      //   .then(res => {
+      //     this.allPondsData = _.cloneDeep(res.data);
+      //     var items = res.data.filter(x => x.id == this.poolid);
+      //     if (items.length == 1) {
+      //       if(!bool) {
+      //         this.addDialog = true; 
+      //       }
+      //       let date = dayjs().format("YYYY-MM-DD").split('-');
+      //       this.addparm.name = '';
+      //       date.forEach(x=>this.addparm.name+=x);
+      //       this.addparm.name = this.addparm.name+'_{pool}'
+      //       this.add_volume = items[0].volume;
+      //       this.addparm.estimated_survival_rate = 70;
+      //       this.tempSelect = this.template_items[0].id;
+      //       this.dataVolumn = [];
 
+      //       // 關掉Dialog再開啟不會重置scrollbar位置 
+      //       setTimeout(()=>{
+      //         if(document.getElementsByClassName('v-dialog--active')) {
+      //           document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+      //         }
+      //       },100)
+      //     } else {
+      //       this.$toast.success(
+      //         `失敗：無法取得體積資料，池id:${this.poolid}}`,
+      //         {
+      //           duration: 2000
+      //         }
+      //       );
+      //     }
+      //   })
+      //   .finally(() => {
+      //     /* 不論失敗成功皆會執行 */
+      //   });
+    },
+    getCycleData: async function() {
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
+        .then(res=>{
+          if(res.status==200) {
+            console.log('可新增循環的池',res);
+            // 新增循環的池選擇
+            var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
+            this.addPoolData = data;
+          }else {
+            var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+            this.addPoolData = data;
+          }
+          
+        })
+        .finally(()=>{
+
+        })
+    },
+    getPondData: async function(bool=false) {
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
         .then(res => {
@@ -1474,13 +1541,17 @@ export default {
             if(!bool) {
               this.addDialog = true; 
             }
-            let date = dayjs().format("YYYY-MM-DD").split('-');
+            let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+            let date1 = date[0].split('-').concat(date[1].split(':'));
+            // date1
+            console.log('date',date1);
             this.addparm.name = '';
-            date.forEach(x=>this.addparm.name+=x);
+            date1.forEach(x=>this.addparm.name+=x);
             this.addparm.name = this.addparm.name+'_{pool}'
             this.add_volume = items[0].volume;
             this.addparm.estimated_survival_rate = 70;
             this.tempSelect = this.template_items[0].id;
+            this.addparm.temp_id = this.template_items[0].id;
             this.dataVolumn = [];
 
             // 關掉Dialog再開啟不會重置scrollbar位置 
@@ -1632,37 +1703,23 @@ export default {
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
       
-      let param = [];
+      let param = {};
       this.volumeError = false;
-      this.dataid.forEach(i=>{
-        let par = _.cloneDeep(this.addparm);
-        par.created_user = updUser;
-        par.pond_id = parseInt(i); //需要int
-        
-        //樣板資料
-        var tempMain = {};
-        var tempContent = [];
-        if(this.tempSelect!=undefined){
-          var id = this.tempSelect;
-          var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
-          tempMain = temp.tempMain;
-          tempContent = temp.tempContent;
-        }
-        par['tempMain'] = tempMain;
-        par['tempContent'] = tempContent;
-        delete par.estimated_num;//刪除初始放苗量
-        this.dataVolumn.forEach(d=>{
-          if(d.id==i) {
-            par.num_per_unit = d.num_per_unit;
-            par.name = par.name.replace('pool',d.name);
-          }
-          if(!d.num_per_unit||d.num_per_unit==null||d.num_per_unit=='') {
-            this.volumeError = true;
-          }
-        })
-        param.push(par);
+      this.addparm.multi_data=[];
 
+      param = _.cloneDeep(this.addparm);
+      param.created_user = updUser;
+      
+      this.dataVolumn.forEach(d=>{
+        param.multi_data.push({
+          pond_id: d.id,
+          num_per_unit: d.num_per_unit,
+          name: param.name.replace('pool',d.name)
+        })
       })
+      delete param.estimated_num;
+      delete param.name;
+      delete param.num_per_unit;
 
       
       // let param = _.cloneDeep(this.addparm);
@@ -1887,9 +1944,9 @@ export default {
       // await this.geteventData();//取得事件紀錄清單
     },
     // 循環清單點擊
-    clickRow(val,bool=false) {
-      console.log('click',val);
-      if(!bool) {
+    async clickRow(val, column, event) {
+      console.log('click',val, column, event);
+      if(column.label !== '操作') {
         if(val.id==this.currentDataId) {
           // 與原本點選的相同，取消點選
           let data = _.cloneDeep(this.circleData);
@@ -1904,268 +1961,321 @@ export default {
           // this.$refs.circletable.setCurrentRow(val);
           if(this.circleData.filter(x=>x.id==val.id).length==1) {
             var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
-            var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
-            console.log('Circle Data',this.circleData);
+            // var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
+            // var tempContent = await this.getTemp(val.id);
 
             // tempMain = (tempMain==undefined)?{}:[];
             // tempContent = (tempContent==undefined)?{}:[];
 
-            tempMain = {
-              "id": 30,
-              "name_ch": "樣板A",
-              "name_en": "template_a",
-              "remark": "this is a test",
-              "created_user": "jeff",
-              "created_time": "2022-12-27 15:17:05",
-              "updated_user": "jianwei.wen@idwater.com.tw",
-              "updated_time": "2023-10-26 08:49:03"
-            }
-            tempContent = [
-            {
-              "phase_id": 1,
-              "phase_name": "空池",
-              "stepList": [
-                  {
-                      "step_id": 23,
-                      "step_name": "新增循環",
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":23
-                      // "execute_time": '2023-10-25 10:12:12',
-                      // confirm_time: '',
-                  },
-                  {
-                      "step_id": 40,
-                      "step_name": "其他",
-                      // isConfirm:false,
-                      "msg":'i am msg 2.',
-                      // "execute_time": '2023-10-25 10:25:12',
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":'23_02'
-                  },
-                  {
-                      "step_id": 41,
-                      "step_name": "其他",
-                      // isConfirm:false,
-                      "msg":'i am msg 1.',
-                      // "execute_time": '2023-10-25 10:20:12',
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":'23_01'
-                  },
-                  {
-                      "step_id": 24,
-                      "step_name": "設備正常",
-                      // "execute_time": '2023-10-31 10:30:12',
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":24
-                  },
-                  {
-                      "step_id": 25,
-                      "step_name": "消毒養殖池",
-                      // "execute_time": '2023-10-31 10:50:12',
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":25
-                  },
-                  {
-                      "step_id": 26,
-                      "step_name": "擺曝氣盤",
-                      // "execute_time": '2023-11-01 01:50:12',
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":26
-                  }
-                ]
-              },
-              {
-                "phase_id": 2,
-                "phase_name": "養殖審核",
-                "stepList": [
-                  {
-                      "step_id": 27,
-                      "step_name": "養殖審核1",
-                      // "execute_time": '2023-11-01 01:50:12',
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":27
-                  },
-                  {
-                      "step_id": 28,
-                      "step_name": "養殖審核2",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":28
-                  },
-                  {
-                      "step_id": 29,
-                      "step_name": "養殖審核4",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":29
-                  }
-                ]
-              },
-              {
-                "phase_id": 3,
-                "phase_name": "備池",
-                "stepList": [
-                  {
-                      "step_id": 30,
-                      "step_name": "備池1",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":30
-                  },
-                  {
-                      "step_id": 31,
-                      "step_name": "備池2",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":31
-                  }
-                ]
-              },
-              {
-                "phase_id": 4,
-                "phase_name": "蓄水",
-                "stepList": [
-                  {
-                      "step_id": 32,
-                      "step_name": "蓄水1",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":32
-                  },
-                  {
-                      "step_id": 33,
-                      "step_name": "蓄水2",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":33
-                  }
-                ]
-              },
-              {
-                "phase_id": 5,
-                "phase_name": "做水",
-                "stepList": [
-                  {
-                      "step_id": 34,
-                      "step_name": "做水1",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":34
-                  },
-                  {
-                      "step_id": 35,
-                      "step_name": "做水2",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":35
-                  }
-                ]
-              },
-              {
-                "phase_id": 6,
-                "phase_name": "放養中",
-                "stepList": [
-                  {
-                      "step_id": 36,
-                      "step_name": "放養中1",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":36
-                  },
-                  {
-                      "step_id": 37,
-                      "step_name": "放養中2",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":37
-                  }
-                ]
-              },
-              {
-                "phase_id": 7,
-                "phase_name": "清池",
-                "stepList": [
-                  {
-                      "step_id": 38,
-                      "step_name": "清池1",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":38
-                  },
-                  {
-                      "step_id": 39,
-                      "step_name": "清池2",
-                      "execute_time": '',
-                      "confirm_time": '',
-                      "executor":'',
-                      "confirm":'',
-                      "sort_id":39
-                  }
-                ]
-              },
-            ]
-
-            this.passObj["tempMain"] = tempMain;
-            this.passObj["tempContent"] = tempContent;
-            this.resultListOpen = false;
-            this.resultCycleOpen = true;
-            this.currentDataId = val.id;
+            // tempMain = {
+            //   "id": 30,
+            //   "name_ch": "樣板A",
+            //   "name_en": "template_a",
+            //   "remark": "this is a test",
+            //   "created_user": "jeff",
+            //   "created_time": "2022-12-27 15:17:05",
+            //   "updated_user": "jianwei.wen@idwater.com.tw",
+            //   "updated_time": "2023-10-26 08:49:03"
+            // }
+            
+              // tempContent = [
+              // {
+              //   "phase_id": 1,
+              //   "phase_name": "空池",
+              //   "stepList": [
+              //       {
+              //           "step_id": 23,
+              //           "step_name": "新增循環",
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":23
+              //           // "execute_time": '2023-10-25 10:12:12',
+              //           // confirm_time: '',
+              //       },
+              //       {
+              //           "step_id": 40,
+              //           "step_name": "其他",
+              //           // isConfirm:false,
+              //           "msg":'i am msg 2.',
+              //           // "execute_time": '2023-10-25 10:25:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":'23_02'
+              //       },
+              //       {
+              //           "step_id": 41,
+              //           "step_name": "其他",
+              //           // isConfirm:false,
+              //           "msg":'i am msg 1.',
+              //           // "execute_time": '2023-10-25 10:20:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":'23_01'
+              //       },
+              //       {
+              //           "step_id": 24,
+              //           "step_name": "設備正常",
+              //           // "execute_time": '2023-10-31 10:30:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":24
+              //       },
+              //       {
+              //           "step_id": 25,
+              //           "step_name": "消毒養殖池",
+              //           // "execute_time": '2023-10-31 10:50:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":25
+              //       },
+              //       {
+              //           "step_id": 26,
+              //           "step_name": "擺曝氣盤",
+              //           // "execute_time": '2023-11-01 01:50:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":26
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 2,
+              //     "phase_name": "養殖審核",
+              //     "stepList": [
+              //       {
+              //           "step_id": 27,
+              //           "step_name": "養殖審核1",
+              //           // "execute_time": '2023-11-01 01:50:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":27
+              //       },
+              //       {
+              //           "step_id": 28,
+              //           "step_name": "養殖審核2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":28
+              //       },
+              //       {
+              //           "step_id": 29,
+              //           "step_name": "養殖審核4",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":29
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 3,
+              //     "phase_name": "備池",
+              //     "stepList": [
+              //       {
+              //           "step_id": 30,
+              //           "step_name": "備池1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":30
+              //       },
+              //       {
+              //           "step_id": 31,
+              //           "step_name": "備池2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":31
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 4,
+              //     "phase_name": "蓄水",
+              //     "stepList": [
+              //       {
+              //           "step_id": 32,
+              //           "step_name": "蓄水1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":32
+              //       },
+              //       {
+              //           "step_id": 33,
+              //           "step_name": "蓄水2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":33
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 5,
+              //     "phase_name": "做水",
+              //     "stepList": [
+              //       {
+              //           "step_id": 34,
+              //           "step_name": "做水1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":34
+              //       },
+              //       {
+              //           "step_id": 35,
+              //           "step_name": "做水2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":35
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 6,
+              //     "phase_name": "放養中",
+              //     "stepList": [
+              //       {
+              //           "step_id": 36,
+              //           "step_name": "放養中1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":36
+              //       },
+              //       {
+              //           "step_id": 37,
+              //           "step_name": "放養中2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":37
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 7,
+              //     "phase_name": "清池",
+              //     "stepList": [
+              //       {
+              //           "step_id": 38,
+              //           "step_name": "清池1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":38
+              //       },
+              //       {
+              //           "step_id": 39,
+              //           "step_name": "清池2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":39
+              //       }
+              //     ]
+              //   },
+              // ]
+            
+            
+            console.log(tempMain);
+            // this.passObj["tempMain"] = tempMain;
+            // this.passObj["tempContent"] = await this.getTemp(val.id);
+            this.getTemp(val.id);
+            
           }
           // this.currentDataId = val.id;
         }
-      }else {
-        let data = _.cloneDeep(this.circleData);
-        this.$refs.circletable.clearSelection();
-        this.circleData = [];
-        this.circleData = data;
-        // this.currentDataId = null;
-        this.clickRow(val,false);
-        
       }
+        
+      
       
     },
+    getTemp(id) {
+      let para={breeding_record_id:id}
+      this.$axios
+      .get(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`,
+            { params: para },
+            { httpsAgent: agent }
+          )
+          .then(res => {
+            console.log('get temp',res);
+            res.data.forEach(data=>{
+              // if(data.phase_name_ch!=='空池') {
+                data.stepList.forEach(async step=>{
+                  if(step.step_name_ch !== '其他' && step.seq_id=='1') {
+                    step.seq_id = step.step_id.toString();
+                    await this.reviseSeqid(step);
+                  }
+                })
+              // }
+              
+            })
+            this.passObj["tempContent"] = [];
+            // this.passObj["tempContent"] = res.data;
+            res.data.forEach(d=>{
+              // if(d.phase_name_ch!=='空池') {
+                this.passObj["tempContent"].push(d);
+              // }
+            })
+            this.resultListOpen = false;
+            this.resultCycleOpen = true;
+            this.currentDataId = id;
+            // return res.data;
+          })
+          .finally(() => {
+            /* 不論失敗成功皆會執行 */ 
+          });
+    },
+    async reviseSeqid(step) {
+      step.updated_user = this.$auth.$state.user.name;
+      await this.$axios
+        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
+            .then(res => {
+                if(res.data=='修改成功'){
+                    // this.$emit('getTemp');
+                    // this.$toast.success("更新成功!",{ duration: 2000 });
+                }
+                
+            })
+            .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+            })
+            .finally(() => {
+            });
+    },
+    // async openCycle(val) {
+    //   await this.getTemp(val.id);
+    // },
     //依項目回傳主要類別是什麼
     getItemClass: async function(item) {
       let colclass = "";
@@ -2313,6 +2423,7 @@ export default {
     //樣版清單
     getTemplateData: async function () {
       this.tempSelect = undefined;
+      this.addparm.temp_id = undefined;
       var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
       await this.$axios
         .get(url)
@@ -2327,10 +2438,11 @@ export default {
     },
     // 選擇樣板
     tempChange: function () {
-      if (this.tempSelect != undefined) {
+      if (this.addparm.temp_id != undefined) {
         this.editmode = 'edit';
         this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
-        var myMain = this.template_items.filter(x => x.id == this.tempSelect)[0];
+        // var myMain = this.template_items.filter(x => x.id == this.tempSelect)[0];
+
         //本來要show passObj 裡面的東西
         // var temp = this.template_all.filter(x => x.tempMain == myMain)[0];
         // this.passObj = temp; 
@@ -2547,9 +2659,6 @@ export default {
     // 循環清單編輯
     editCircle(data) {
       // this.editperson_in_charge = '';
-
-      // 不打開養殖歷程
-      this.clickRow(data,true);
       // 取得水體積
       this.showadd(true);
       let getData = _.cloneDeep(data);
@@ -2660,6 +2769,15 @@ export default {
     },
     editDialog: {
       // 編輯循環清單的會跑版 
+      handler() {
+        this.$nextTick(()=>{
+          this.$refs.circletable.doLayout();
+        })
+      },
+      deep: true
+    },
+    circleData: {
+      // 切換場區循環清單的會跑版 
       handler() {
         this.$nextTick(()=>{
           this.$refs.circletable.doLayout();
