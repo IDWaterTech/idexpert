@@ -57,15 +57,18 @@ $color-green: #00A660;
   }
   &.green {
     color: $color-green !important;
-    border: 1px solid $color-primary;
+    border: 1px solid $color-green!important;
     & .v-icon {
       color: $color-green !important;
     }
   }
   &.disabled {
-    border: 1px solid $color-dark-25;
+    border: 1px solid $color-dark-25 !important;
     color: $color-dark-50 !important;
     pointer-events: none;
+    & .v-icon {
+      color: $color-dark-50 !important;
+    }
   }
   &.delete {
     border-color: $color-accent !important;
@@ -305,6 +308,12 @@ $color-green: #00A660;
         font-size: 12px;
         padding: 0 12px;
       }
+    }
+    .v-chip.v-size--default {
+      height: 24px;
+    }
+    .v-chip {
+      padding: 0 8px;
     }
   }
   // 搜尋、Dialog、多選 輸入框式樣

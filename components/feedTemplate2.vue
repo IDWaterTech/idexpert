@@ -69,11 +69,11 @@
                             <!-- 時間軸：因有顏色變換，無法使用偽元素 -->
                             <div class="circle-line">
                                 <div v-if="id !== (mainItems.length-1)" class="line"
-                                    :style="{'borderColor':`${templatemode=='cycleedit'?(mitem.newest&&mitem.newest!==''?mitem.color:'#BFCBD2'):status[id].color}`,
+                                    :style="{'borderColor':`${templatemode=='cycleedit'?(mitem.newest&&mitem.newest!==''?mitem.color:'#BFCBD2'):status.filter(x=>x.id==mitem.phase_id)[0].color}`,
                                             'borderStyle':`${(mitem.newest&&mitem.newest!=='')||templatemode!=='cycleedit'?'solid':'dashed'}`,
                                             'top':`${windowWidth<834?'0':'16px'}`,}"></div>
                                 <div class="circle"
-                                    :style="{'borderColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"></div>
+                                    :style="{'borderColor':`${templatemode=='cycleedit'?mitem.color:status.filter(x=>x.id==mitem.phase_id)[0].color}`}"></div>
                             </div>
                             <!-- 表格 -->
                             <div class="content" style="width: 100%;padding: 12px 24px;">
@@ -81,7 +81,7 @@
                                 <v-card class="result-card item-card">
                                     <!-- 表頭 -->
                                     <div class="card-title"
-                                        :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"
+                                        :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status.filter(x=>x.id==mitem.phase_id)[0].color}`}"
                                         @click="status[id].open = !status[id].open" >
                                         <div class="title">
                                             <v-card-title>{{ templatemode=='cycleedit'?mitem.phase_name_ch:mitem.phase_name }}</v-card-title>
@@ -358,13 +358,13 @@ export default {
     data() {
         return {
             items: [
-                {
-                    id: 1,
-                    order: 1,
-                    color: 'indigo lighten-1',
-                    icon: 'mdi-star',
-                    text: '空池'
-                },
+                // {
+                //     id: 1,
+                //     order: 1,
+                //     color: 'indigo lighten-1',
+                //     icon: 'mdi-star',
+                //     text: '空池'
+                // },
                 {
                     id: 2,
                     order: 2,
@@ -456,8 +456,8 @@ export default {
             windowWidth: window.innerWidth,
             // 各狀態顏色
             status:[
-                {color:'#B1DBF0',open:true},
-                {color:'#DD97A4',open:true},{color:'#92CDEE',open:true},{color:'#DBC5A4',open:true},{color:'#C5E8E6',open:true},{color:'#ECE499',open:true},{color:'#8BE3D3',open:true}],
+                // {color:'#B1DBF0',open:true,id:1},
+                {color:'#DD97A4',open:true,id:2},{color:'#92CDEE',open:true,id:3},{color:'#DBC5A4',open:true,id:4},{color:'#C5E8E6',open:true,id:5},{color:'#ECE499',open:true,id:7},{color:'#8BE3D3',open:true,id:8}],
             // 新增其他
             addStep:[{msg:''}],
             rules: {

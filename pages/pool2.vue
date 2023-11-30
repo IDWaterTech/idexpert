@@ -179,6 +179,7 @@
               <div class="card-title" style="cursor: pointer;margin: 8px" @click="resultCycleOpen = !resultCycleOpen" >
                   <div class="title">
                       <v-card-title>養殖歷程</v-card-title>
+                      <span style="font-size: 14px;">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
                   </div>
                   <div class="btn-groups">
                     <div class="open">
@@ -2230,22 +2231,22 @@ export default {
           .then(res => {
             console.log('get temp',res);
             res.data.forEach(data=>{
-              // if(data.phase_name_ch!=='空池') {
+              if(data.phase_name_ch!=='空池') {
                 data.stepList.forEach(async step=>{
                   if(step.step_name_ch !== '其他' && step.seq_id=='1') {
                     step.seq_id = step.step_id.toString();
                     await this.reviseSeqid(step);
                   }
                 })
-              // }
+              }
               
             })
             this.passObj["tempContent"] = [];
             // this.passObj["tempContent"] = res.data;
             res.data.forEach(d=>{
-              // if(d.phase_name_ch!=='空池') {
+              if(d.phase_name_ch!=='空池') {
                 this.passObj["tempContent"].push(d);
-              // }
+              }
             })
             this.resultListOpen = false;
             this.resultCycleOpen = true;
