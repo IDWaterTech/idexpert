@@ -1,894 +1,825 @@
 <template>
   <div>
-    <!-- <v-card elevation="1" outlined tile min-height="200"> -->
-    <v-row no-gutters justify="center" dense>
-      <!-- 主功能：查詢、新增循環 功能按鈕 要加底色在這primary -->
-      <v-col cols="12" sm="12"> 
-        <v-row class="pa-0">
-          <!-- 養殖池(下拉) -->
-          <v-col cols="12" sm="12">
-            <!-- <v-span v-if="$route.query.id!=undefined"  style="color:white;">
-              <v-chip class="mx-0 py-0 px-3" color="white" label large  text-color="white" outlined >
-                {{getNodeName(poolid)}}
-              </v-chip>
-              </v-span> -->
-            <!-- <div class="circle">
-                      <span class="circletitle">{{ poolName }}</span>
-                    </div> -->
-            <!-- <span class="circletitle headline my-5 text-center">{{
-                      poolName
-                      }}</span> -->
-            <treeselect v-if="$route.query.id==undefined" v-model="poolid" :options="maindata" :default-expand-level="1" placeholder="養殖池"
-              :disable-branch-nodes="true" children="node" :normalizer="
-                        node => {
-                          return { children: node.node };
-                        }
-                      " @input="mainchange" style="font-size:1.2em;">
-              <div slot="value-label" slot-scope="{ node }">
-                {{ `${node.raw.parent}_${node.raw.name}` }}
-              </div>
-              <div slot="option-label" slot-scope="{ node }">
-                {{ `${node.raw.name}` }}
-              </div>
-            </treeselect>
-            
-          </v-col>
-          
-        
-        </v-row>
-      </v-col>
-
-
-
-      <!-- 下方tabs -->
-      <v-col cols="12" class="mt-0 mb-5">
-        <v-tabs dark background-color="rgb(0, 0, 0, 0)" show-arrows vertical>
-          <v-tabs-slider color="teal lighten-3"></v-tabs-slider>
-          <!-- <v-chip class="mx-0 py-0 px-3" color="white" label large  text-color="blue" outlined >
-                {{getNodeName(poolid)}}
-              </v-chip> -->
-            <span class="mx-0 py-0 px-3 headline" style="color:lime;"> {{getNodeName(poolid)}}</span>
-          <v-tab v-for="(tab, idx) in tabs" dark :key="idx" :href="`#` + tab.name" style="font-size:0.8em;">
-            {{ tab.name }}
-          </v-tab>
-          <v-tab-item :value="'即時數據'">
-            <!-- <v-overlay :value="materialloading" :absolute="true">
-              <v-progress-circular indeterminate size="64"></v-progress-circular>
-            </v-overlay> -->
-            <v-card flat tile class="papper">
-              <v-card-text>
-                <v-row>
-                  <!-- 數據(24H) -->
-                  <v-col cols="12" sm="12" class="pr-0 pt-0">
-                    <v-row>
-                      <!-- 數據(24H) -->
-                      <v-col cols="12" sm="12" style="min-height:300px;">
-                        <v-card min-height="300px" elevation="3" tile dark color="primary">
-                          <v-card-title class="py-1 cardtitle" v-if="false">
-                            數據(24H)
-                          </v-card-title>
-                          <v-divider v-if="false"></v-divider>
-                          <v-card-text class="pa-0">
-                            <v-tabs v-model="currentItem" background-color="primary">
-                              <v-tab v-for="(item, index) in tabitems" :key="index" :href="'#tab-' + item" class="primary">
-                                {{ item }}
-                              </v-tab>
-                              <v-tabs-items v-model="currentItem" class="primary">
-                                <v-tab-item :value="'tab-' + tabitems[0]">
-                                  <v-overlay :value="detectloading" :absolute="true">
-                                    <v-progress-circular indeterminate size="64"></v-progress-circular>
-                                  </v-overlay>
-                                  <v-row>
-                                    <v-col cols="12">
-                                      <div class="text-center mt-5" v-if="detectData.length == 0">
-                                        <h2>查無資料</h2>
-                                      </div>
-                                      <v-slide-group v-model="slidemodel" :show-arrows="'always'">
-                                        <v-slide-item v-for="(item, index) in detectData" :key="index" v-slot="{ active, toggle }">
-                                          <v-card elevation="3" class="mx-1 mt-1 text-center" @click="toggle" :min-width="150"
-                                            :max-width="200">
-                                            <v-card-text class="justify-center">
-                                              <span class="font-weight-bold">{{ `${item.name_ch}:${ item.value }` }}</span>
-                                            </v-card-text>
-                                            <div style="height:120px;" class="px-2">
-                                              <!-- 車速圖 -->
-                                              <vue-speedometer :value="parseFloat(item.value)" :needleHeightRatio="0.7" :minValue="item.min"
-                                                :maxValue="item.max" :customSegmentStops="[
-                                                          item.min,
-                                                          item.critical_min,
-                                                          item.warning_min,
-                                                          item.warning_max,
-                                                          item.critical_max,
-                                                          item.max
-                                                        ]" :segmentColors="[
-                                                          '#F197B3',
-                                                          '#FFEC8B',
-                                                          '#89E0B6',
-                                                          '#FFEC8B',
-                                                          '#F197B3'
-                                                        ]" :needleTransitionDuration="3333" needleTransition="easeElastic" :ringWidth="20"
-                                                :width="180" :forceRender="true" v-if="
-                                                          item.name_en != 'water_level_percentage'
-                                                        "></vue-speedometer>
-                                              <!-- 水球圖 -->
-                                              <v-card-text v-if="
-                                                          item.name_en == 'water_level_percentage'
-                                                        ">
-                                                <waterball :value="parseFloat(item.value) / 100"></waterball>
-                                              </v-card-text>
-                                            </div>
-                                            <v-divider></v-divider>
-                                            <v-card-subtitle class=" py-2 px-2">
-                                              共：{{ item.rows }}筆
-                                              <!-- <span v-if="
-                                                          item.name_en == 'water_level_percentage'
-                                                        ">
-                                                <br />{{ `警戒上限：${item.critical_max}%`
-                                                }}<br />
-                                                {{ `警戒下限：${item.critical_min}%` }}
-                                                <br />{{ item.last_time }}</span> -->
-                    
-                                              <!--限水位才有資料 -->
-                                            </v-card-subtitle>
-                                            <v-scale-transition>
-                                              <v-icon v-if="active" color="blue" size="48" >mdi-close-circle-outline</v-icon>
-                                            </v-scale-transition>
-                                          </v-card>
-                                        </v-slide-item>
-                                      </v-slide-group>
-                                    </v-col>
-                                    <v-spacer></v-spacer>
-                                  </v-row>
-                                </v-tab-item>
-                                <!-- 計算數據 -->
-                                <!-- <v-tab-item :value="'tab-' + tabitems[1]">
-                                  <v-row>
-                                    <v-col class="text-center mt-5">
-                                      <h2>建置中</h2>
-                                    </v-col>
-                                  </v-row>
-                                </v-tab-item> -->
-                                <!-- <v-tab-item :value="'tab-' + tabitems[2]">
-                                        <v-row>
-                                          <v-col class="text-center mt-5"><h2>建置中</h2></v-col>
-                                        </v-row>
-                                      </v-tab-item> -->
-                              </v-tabs-items>
-                            </v-tabs>
-                          </v-card-text>
-                        </v-card>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                  <v-col cols="12" sm="7" class="pt-0 pr-0">
-                    <v-card class="pa-0 ma-0" min-height="300px" elevation="3" tile dark color="primary">
-                      <v-card-title class="py-1 ma-0 primary">養殖池資訊
-                          <v-spacer></v-spacer>
-                          <v-btn icon :disabled="true"><v-icon>mdi-reload</v-icon></v-btn>
-                      </v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <v-row class="mt-1 text-center px-2" >
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>總飼料量<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>套餐<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>最近投餵時間<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>最近打樣日期<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>最近打樣-克數<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>最近打樣-水溫<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>ADG<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>最近打樣-內存量/理論投餵量<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>丞載量(KG)<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>達每噸水3 Kg需耗時（天）<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>放養量（隻)<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>存活率<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>假定FCR<br/>開發中</v-card-text></v-card>
-                          <v-card class="light-blue darken-4" width="100" tile><v-card-text>累計投餵量<br/>開發中</v-card-text></v-card>
-                        </v-row>
-                        
-                      </v-card-text>
-                      </v-card>
-                  </v-col>
-                  <!-- 氣象 -->
-                  <v-col cols="12" sm="3" class="py-0">
-                    <v-card class="pa-0" min-height="300px" elevation="3" tile dark color="primary">
-                      <v-card-title class="py-1 primary">氣象<v-img max-width="25"
-                          :src="`http://openweathermap.org/img/w/${weatherdata.weather[0].icon}.png`"></v-img>{{weatherdata.weather[0].main}}
-                          <v-spacer></v-spacer>
-                          <v-btn icon @click="getWeather"><v-icon>mdi-reload</v-icon></v-btn>
-                      </v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <v-row style="color:#FFF;" justify="center" align="center" dense>
-                          <v-col cols="12">
-                            地區:<span>{{location.map(x=>x.name).join()}}</span><br/>
-                            <!-- 天氣概況：{{weatherdata.weather[0].main}}_ -->
-                            說明：{{weatherdata.weather[0].description}}
-                          </v-col>
-                          <v-col cols="12" sm="12">
-                            溫度：{{`${weatherdata.main.temp} °C`}}{{`(${weatherdata.main.temp_min}~${weatherdata.main.temp_max})`}}<br />
-                            體感溫度：{{`${weatherdata.main.feels_like} °C`}}<br />
-                            濕度：{{`${weatherdata.main.humidity} %`}}<br />
-                            氣壓：{{`${weatherdata.main.pressure} hPa`}}<br />
-                            海平面氣壓：{{`${weatherdata.main.sea_level} hPa`}}<br/>
-                            地面大氣壓：{{`${weatherdata.main.grnd_level} hPa`}}<br />
-                            <!-- 風速：{{`${weatherdata.wind.speed}`}}m/h<br /> -->
-                            <!-- 風向：{{`${weatherdata.wind.deg}`}}<br /> -->
-                            <!-- 陣風：{{`${weatherdata.wind.gust} m/s`}}<br /> -->
-                            <!-- 雲量：{{`${weatherdata.clouds.all} %`}} -->
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <!-- 警示區 -->
-                  <v-col cols="12" sm="2" class="">
-                    <!-- 水平置中要加這個 align-self="center" -->
-                    <v-row>
-                    <v-col cols="12" sm="12" style="min-height:300px;border:0px dashed red;" class="py-0 px-0">
-                      <v-card min-height="300px" elevation="3" tile dark color="primary">
-                        <v-card-title class="py-1 primary" title="(24小時內且目前有啟用警示項目最新一列資料)" >
-                          警示區
-                          <v-spacer></v-spacer>
-                          <span class="subtitle-2">更新時間：{{
-                            warnDataDt.length == 0 ? "00:00:00" : ""
-                          }}{{ warnDataDt }}</span>
-                          <v-btn :loading="warnLoading" :disabled="!poolid || warnLoading" class=" white--text" icon
-                          @click="getwarnData">
-                          <v-icon dark>
-                            mdi-reload
-                          </v-icon>
-                        </v-btn>
-                      </v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text class="mb-0">
-                          <!-- <span class="mt-0" style="font-size: 1em;color:#C62828;">(24小時內且目前有啟用警示項目最新一列資料)</span> -->
-                          <v-sheet class="overflow-y-auto mainbg" min-height="100px" max-height="100" v-if="warnData.length != 0">
-                            <v-card-text>
-                              <!-- <v-chip-group column dark> -->
-                              <!-- @click="showwarning(item)" 拿掉處理的視窗-->
-                              <v-chip class="mr-1" v-for="item in warnData" :key="item.id" :color="
-                                      item.warning_level.toLowerCase() == 'critical'
-                                        ? `red`
-                                        : `orange`
-                                    ">{{
-                                `${item.inspected_time.match(/[^\s]*$/)[0]}-[等級：${
-                                item.warning_level
-                                }]：${item.warning_content}`
-                                }}
-                              </v-chip>
-                              <!-- </v-chip-group> -->
-                            </v-card-text>
-                          </v-sheet>
-                          <div class="text-center my-5 white--text h1" v-if="warnData.length == 0">
-                            暫無警示
-                          </div>
-                        </v-card-text>
-                      </v-card>
-                      <!-- <span class="subtitle">警示資料時間：{{ warnDataDt }}</span>
-                          <v-btn
-                            :loading="warnLoading"
-                            :disabled="warnLoading"
-                            color="green"
-                            class="ma-2 white--text"
-                            icon
-                            @click="getwarnData"
-                            v-if="poolid"
-                          >
-                            <v-icon dark>
-                              mdi-reload
-                            </v-icon>
-                          </v-btn> -->
-                      <v-dialog v-model="warnDialog" max-width="500px">
-                        <v-form ref="warnform" v-model="warnvalid" lazy-validation>
-                          <v-card>
-                            <v-card-title>警示等級：「{{ warnDataSel.warning_level }}」</v-card-title>
-                            <v-divider></v-divider>
-                            <v-card-text>
-                              <v-row dense>
-                                <v-col cols="12">警示時間：{{ warnDataSel.inspected_time }}</v-col>
-                                <v-col cols="12">警示內容：{{ warnDataSel.warning_content }}</v-col>
-                                <v-col cols="12">警示來源(資料/設備 層面)：{{
-                                  warnDataSel.warning_resource
-                                  }}</v-col>
-                                <v-col cols="12">警示建立者：{{ warnDataSel.created_user }}</v-col>
-                              </v-row>
-                            </v-card-text>
-                            <v-divider></v-divider>
-                            <v-card-text>
-                              <v-row dense>
-                                <v-col cols="12">
-                                  <v-text-field dense v-model="warnDataSel.maintenance_user" clearable filled :rules="rules.require">
-                                    <span style="width:100px;" slot="prepend" @click="
-                                            warnDataSel.maintenance_user = $auth.$state.user.name
-                                          ">
-                                      <v-tooltip bottom><template v-slot:activator="{ on, attrs }"><span v-bind="attrs" v-on="on"
-                                            style="color:darkblue;">最後處理人員</span></template><span>點擊可直接帶入登入者姓名</span></v-tooltip>
-                                    </span>
-                                  </v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-text-field dense v-model="warnDataSel.warning_reason" clearable filled :rules="rules.require"><span
-                                      style="width:100px;" slot="prepend">判定原因</span></v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-textarea clearable filled v-model="warnDataSel.handling_method" auto-grow row="2" row-height="20"
-                                    clear-icon="mdi-close-circle" :rules="rules.require"><span style="width:100px;"
-                                      slot="prepend">處理方式</span></v-textarea>
-                                  <!-- <v-text-field dense clearable
-                                      ><span style="width:100px;" slot="prepend" 
-                                        >處理方式</span
-                                      ></v-text-field
-                                    > -->
-                                </v-col>
-                              </v-row>
-                            </v-card-text>
-                            <v-divider></v-divider>
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <v-btn color="primary" @click="warnsubmit(false)" tile>暫存</v-btn>
-                            </v-card-actions>
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <v-switch v-model="warnDataSel.is_add_to_event_log" :label="`結案時一併加入重要紀事`" dense color="error"></v-switch>
-                              <v-btn color="error" @click="warnsubmit(true)" tile>結案</v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-form>
-                      </v-dialog>
-                    </v-col>
-                  </v-row>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <!--  數據圖 -->
-                  <v-col cols="12" sm="12" class="px-0" style="min-height:200px;" v-if="false">
-                    <v-card min-height="500px" elevation="3" tile dark color="primary">
-                      <v-card-title class="py-2 cardtitle">
-                        數據圖
-                      </v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <v-row>
-                          <!-- 選擇起日 -->
-                          <v-col cols="12" sm="2">
-                            <v-menu v-model="menu_chart_startdate" :close-on-content-click="false" :nudge-right="40"
-                              transition="scale-transition" offset-y min-width="auto">
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-text-field v-model="chart_started_date" label="選擇起日" prepend-icon="mdi-calendar" readonly dark dense
-                                  v-bind="attrs" v-on="on" @click:prepend="
-                                            () => (chart_started_date = getNowDate())
-                                          "></v-text-field>
-                              </template>
-                              <v-date-picker v-model="chart_started_date" locale="zh-tw" no-title @input="menu_startdate = false">
-                              </v-date-picker>
-                            </v-menu>
-                          </v-col>
-                          <!-- 選擇訖日 -->
-                          <v-col cols="12" sm="2">
-                            <v-menu v-model="menu_chart_enddate" :close-on-content-click="false" :nudge-right="40"
-                              transition="scale-transition" offset-y min-width="auto">
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-text-field v-model="chart_ended_date" label="選擇訖日" prepend-icon="mdi-calendar" readonly dark dense
-                                  v-bind="attrs" v-on="on" @click:prepend="
-                                            () => (chart_ended_date = getNowDate())
-                                          "></v-text-field>
-                              </template>
-                              <v-date-picker v-model="chart_ended_date" no-title locale="zh-tw" @input="menu_chart_enddate = false">
-                              </v-date-picker>
-                            </v-menu>
-                          </v-col>
-                          <!-- 指定項目 -->
-                          <v-col cols="12" sm="2">
-                            <v-autocomplete v-model="defitem" :items="waterdatacols" no-data-text="查無資料" placeholder="指定項目" clearable
-                              dark dense></v-autocomplete>
-                          </v-col>
-                          <!-- 確認鈕 -->
-                          <v-col cols="12" md="1">
-                            <v-btn tile dark color="cardtitle" @click="getdata" :disabled="
-                                        poolid &&
-                                        defitem &&
-                                        defitem != undefined &&
-                                        defitem.length > 0
-                                          ? false
-                                          : true
-                                      ">確認</v-btn>
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                      <v-card-text>
-                        <v-row>
-                          <v-col cols="12">
-                            顯示最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0"></el-input-number>
-                            顯示最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0"></el-input-number>
-                            <WaterQuality_Vcharts :rowsData="item.items" xColName="inspected_date" :defaultitem="{}"
-                              :loading="waterloading" :title="item.name" :chartmin="chartmin" :chartmax="chartmax" :markdata="markdata">
-                            </WaterQuality_Vcharts>
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-tab-item>
-          <v-tab-item :value="'觀察網'" v-if="false">
-            <v-card flat tile class="papper">
-              <v-card-text>
-            <v-row>
-              <!--觀察網(蝦況) -->
-              <v-col cols="12" sm="12" class="px-0">
-                <v-card min-height="300px" elevation="3" tile dark color="primary">
-                  <v-card-title class="py-2 cardtitle">
-                    觀察網(蝦況)
-                    <v-spacer></v-spacer>
-                    <v-icon @click="showdialog_imgdialog" :disabled="!poolid">mdi-image-plus</v-icon>
-                  </v-card-title>
-                  <v-divider></v-divider>
-                  <v-card-title>
-                    <div v-if="shirimpData.length > 0">
-                      <v-row>
-                        <v-col cols="12" lg="6" v-for="(item, index) in shirimpData[0].item" :key="index" class="py-1">
-                          <v-btn block color="#64B5F6" outlined style="font-size:0.8em;">
-                            {{ `${item.name_ch}:${item.value}` }}
-                          </v-btn>
-                          <!-- <v-chip class="ma-2" color="#64B5F6" label outlined>
-                                {{ item.name_ch }}：{{ item.value }}
-                              </v-chip> -->
-                        </v-col>
-                        <v-col cols="12" sm="12" class="text-center">
-                          <h5>
-                            {{ shirimpData[0].inspected_time }}
-                          </h5>
-                          <!-- 圖：{{shirimpData[0].image_url}}<br/> -->
-                        </v-col>
-                        <v-col cols="12" sm="12">
-                          <img v-img :src="shirimpData[0].image_url" v-if="shirimpData[0].image_url" width="100%" height="300px" />
-                        </v-col>
-                      </v-row>
-                    </div>
-                    <div class="text-center my-2" v-else>
-                      查無資料
-                    </div>
-                  </v-card-title>
-                </v-card>
-                <v-dialog v-model="imgdialog" max-width="500px">
-                  <v-form ref="imgform" v-model="imgvalid" lazy-validation>
-                    <v-card>
-                      <!-- style="background-color:#64B5F6;color:white;" -->
-                      <v-card-title>觀察網(蝦況)</v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <!-- 日期時間 -->
-                        <v-row>
-                          <v-col cols="12" md="6">
-                            <v-menu v-model="menu_imgdate" :close-on-content-click="false" :nudge-right="40"
-                              transition="scale-transition" offset-y min-width="auto">
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-text-field v-model="imgdata.imgdate" label="選擇日期(必選)" prepend-icon="mdi-calendar" readonly
-                                  v-bind="attrs" v-on="on" :rules="rules.require" @click:prepend="
-                                            () => (imgdata.imgdate = getNowDate())
-                                          "></v-text-field>
-                              </template>
-                              <v-date-picker v-model="imgdata.imgdate" locale="zh-tw" no-title @input="menu_imgdate = false">
-                              </v-date-picker>
-                            </v-menu>
-                          </v-col>
-                          <v-col cols="12" md="6">
-                            <v-text-field label="時間(必選)" v-model="imgdata.imgtime" value="" type="time"
-                              prepend-icon="mdi-timeline-clock-outline" @click:prepend="
-                                        () => (imgdata.imgtime = getNowTime())
-                                      " :rules="rules.require"></v-text-field>
-                          </v-col>
-                        </v-row>
-                        <v-file-input v-model="imgfiles" :rules="rules.filesize" accept="image/*" show-size placeholder="請選擇欲上傳圖片檔"
-                          prepend-icon="mdi-camera" label="蝦況圖片(必選)" @change="chgimgurl"></v-file-input>
-                        <img v-img :key="imgurlkey" :src="showimgurl" v-if="showimgurl !== ''" width="100%" />
-                        <!-- <v-img v-img :key="imgurlkey" :src="showimgurl" v-if="showimgurl!==''" width="100%"></v-img> -->
-                      </v-card-text>
-                      <v-card-text>
-                        <div v-for="(item, index) in imgdata.item" :key="index">
-                          <v-row>
-                            <v-col cols="12" sm="6">
-                              {{ item.name }}
-                            </v-col>
-                            <v-col cols="12" sm="6">
-                              <el-input-number :id="item.name" :ref="item.name" class="ml-2" v-model="
-                                          imgdata.item.filter(x => x.name == item.name)[0]
-                                            .value
-                                        " size="mini" :precision="2" :step="1" :min="num_min" :max="num_max"></el-input-number>
-                            </v-col>
-                          </v-row>
-                        </div>
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn tile color="primary" @click="submit_imgdialog" :disabled="false">上傳</v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-form>
-                </v-dialog>
-              </v-col>
-            </v-row>
-            </v-card-text>  
-            </v-card>
-          </v-tab-item>
-          <v-tab-item :value="'養殖循環'">
-            <v-card flat tile class="papper">
-              <v-card-title>
-                <v-row>
-                  <!-- 選擇起日 -->
-                  <v-col cols="12" md="2" class="text-center">
-                    <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
-                      offset-y min-width="auto">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field v-model="started_date" label="選擇起日" filled hide-details prepend-icon="mdi-calendar" readonly dark
-                          dense v-bind="attrs" v-on="on" @click:prepend="() => (started_date = getNowDate())"></v-text-field>
-                      </template>
-                      <v-date-picker v-model="started_date" no-title locale="zh-tw" @input="menu_startdate = false">
-                      </v-date-picker>
-                    </v-menu>
-                  </v-col>
-                  <!-- 選擇訖日 -->
-                  <v-col cols="12" md="2" class="text-center">
-                    <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
-                      offset-y min-width="auto">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field v-model="ended_date" label="選擇訖日" filled hide-details prepend-icon="mdi-calendar" readonly dark
-                          dense v-bind="attrs" v-on="on" @click:prepend="() => (ended_date = getNowDate())"></v-text-field>
-                      </template>
-                      <v-date-picker v-model="ended_date" no-title locale="zh-tw" @input="menu_enddate = false"></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                  <!-- 按鈕-查詢 -->
-                  <!-- 按鈕-新增循環 -->
-                  <v-col cols="12" md="2">
-                    <v-row>
-                      <v-col cols="12" sm="6">
-                        <v-btn tile class="mt-2" color="cardtitle" dark @click="getCircleData" :block="$vuetify.breakpoint.mobile">查詢
-                        </v-btn>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-btn dark color="cardtitle" tile class="mt-2" @click="showadd" :block="$vuetify.breakpoint.mobile">
-                          <v-icon>mdi-plus</v-icon>新增循環
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                
-                  <!-- 新增循環的dialog -->
-                  <v-col cols="12" sm="5" class="text-center mt-3" hidden>
-                    <v-col cols="12" sm="12">
-                      <v-dialog v-model="addDialog" max-width="500px">
-                        <v-form v-model="addvalid" ref="cycleform">
-                          <v-card>
-                            <v-card-title>新增-養殖循環</v-card-title>
-                            <v-card-text>
-                              <v-text-field v-model="addparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off">
-                              </v-text-field>
-                              <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
-                                transition="scale-transition" offset-y min-width="auto">
-                                <template v-slot:activator="{ on, attrs }">
-                                  <v-text-field v-model="addparm.started_date" label="選擇起日" :rules="rules.require"
-                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
-                                                              () => (addparm.started_date = getNowDate())
-                                                            "></v-text-field>
-                                </template>
-                                <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
-                                </v-date-picker>
-                              </v-menu>
-                            </v-card-text>
-                            <v-card-text>
-                              <v-row align="center">
-                                <!-- 體積 -->
-                                <v-col cols="3">
-                                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
-                                    background-color="blue-grey lighten-4" autocomplete="off"></v-text-field>
-                                </v-col>
-                                <v-col cols="1" class="text-center">X</v-col>
-                                <!-- 密度 -->
-                                <v-col cols="3">
-                                  <v-text-field v-model.number="addparm.num_per_unit" label="密度" type="number" :rules="rules.require"
-                                    @change="
-                                                              () => {
-                                                                addparm.estimated_num =
-                                                                  add_volume * addparm.num_per_unit;
-                                                              }
-                                                            " autocomplete="off"></v-text-field>
-                                </v-col>
-                                <v-col cols="1" class="text-center">=</v-col>
-                                <!-- 初始放苗量(估計) -->
-                                <v-col cols="4">
-                                  <v-text-field v-model="addparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
-                                    disabled background-color="blue-grey lighten-4" autocomplete="off">
-                                  </v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" hide-details
-                                    item-text="name_ch" clearable :rules="rules.require">
-                                    <span slot="prepend" style="width:80px">選擇種苗</span>
-                                  </v-select>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
-                                transition="scale-transition" offset-y min-width="auto">
-                                <template v-slot:activator="{ on, attrs }">
-                                  <v-text-field v-model="addparm.stocked_date" label="放苗日" :rules="rules.require"
-                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
-                                                              () => (addparm.stocked_date = getNowDate())
-                                                            "></v-text-field>
-                                </template>
-                                <v-date-picker v-model="addparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
-                                </v-date-picker>
-                              </v-menu>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username" hide-details
-                                    :filter="filterincharge" clearable :rules="rules.require">
-                                    <span slot="prepend" style="width:80px">養殖負責</span>
-                                    <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-                                    <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-                                  </v-autocomplete>
-                                </v-col>
-                                <v-col>
-                                  <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch" :rules="rules.require"><span style="width:80px;" class="pa-0 ma-0 text-center" slot="prepend">水源</span></v-select>
-                                  <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense hide-details filled class="mt-5" :rules="rules.require"><span style="width:80px;" class="pa-0 ma-0 text-center" slot="prepend">鹽度(度)</span></v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-row>
-                                    <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_weight" hide-details>
-                                        <span slot="prepend" style="width:80px">預估收成個體重(g)(選)</span>
-                                      </v-text-field>
-                                    </v-col>
-                                    <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" hide-details>
-                                        <span slot="prepend" style="width:80px">預估存活率(%)(選)</span>
-                                      </v-text-field>
-                                    </v-col>
-                                    <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.cn" hide-details>
-                                        <span slot="prepend" style="width:80px">目標CN比(選)</span>
-                                      </v-text-field>
-                                    </v-col>
-                                    <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" hide-details>
-                                        <span slot="prepend" style="width:80px">預估FCR(選)</span>
-                                      </v-text-field>
-                                    </v-col>
-                                    <!-- <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.estimated_adg" hide-details>
-                                        <span slot="prepend" style="width:80px">預測ADG(選)</span>
-                                      </v-text-field>
-                                    </v-col> -->
-                                    <v-col cols="6">
-                                      <v-text-field filled dense type="number" v-model.number="addparm.initial_weight" hide-details>
-                                        <span slot="prepend" style="width:80px">放養初始重量(選)</span>
-                                      </v-text-field>
-                                    </v-col>
-                                  </v-row>
-                                </v-col>
-                                <v-col cols="12">
-                                  <v-text-field filled dense v-model="addparm.remark" hide-details><span slot="prepend"
-                                      style="width:80px">備註(選)</span>
-                                  </v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                  <!-- 樣板 先暫時拿掉-->
-                                  <v-autocomplete disabled v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
-                                    clearable @change="tempChange">
-                                    <span slot="prepend"  style="width:100px">選擇樣板(選)</span>
-                                  </v-autocomplete>
-                                </v-col>
-                              </v-row>
-                            </v-card-text>
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <v-btn tile color="primary" @click="submitadd">確認新增</v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-form>
-                      </v-dialog>
-                    </v-col>
-                  </v-col>
-                </v-row>
-              </v-card-title>
-              <v-card-text>
-            <v-row>
-               <!-- 循環清單 -->
-              <v-col cols="12" sm="12" class="px-0">
-                <v-row>
-                  <!-- 循環清單 -->
-                  <v-col cols="12" sm="12">
-                    <v-card  flat dark tile class="primary">
-                      <v-card-title class="py-2 cardtitle">循環清單</v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
-                          @current-change="handleCurrentChange" :header-cell-style="tableHeaderStyle" height="300" class="primary"
-                          @select="handleSelectionChange" :header-cell-name="cellClass">
-                          <!-- 名稱/批號 -->
-                          <!-- <el-table-column label="名稱/批號" prop="name" align="center"></el-table-column> -->
-                          <el-table-column label="[id]名稱/批號" prop="name" align="center">
-                            <template slot-scope="scope">
-                              <span>{{ `[${scope.row.id}]` }}<br/>{{ scope.row.name }}</span>
-                            </template>
-                          </el-table-column>
-                          <!-- 循環起日 -->
-                          <el-table-column label="循環起日" prop="started_date" align="center"></el-table-column>
-                          <!-- 循環訖日 -->
-                          <el-table-column label="循環訖日" prop="ended_date" align="center">
-                            <template slot-scope="scope">
-                              <span style="margin-left: 10px">{{
-                                scope.row.ended_date == null || scope.row.ended_date == ""
-                                ? `執行中`
-                                : scope.row.ended_date
-                                }}</span>
-                            </template>
-                          </el-table-column>
-                          <!-- id -->
-                          <el-table-column label="id" prop="id" align="center"></el-table-column>
-                          <!-- 水源 -->
-                          <el-table-column label="水源" prop="water_source2" align="center">
-                            <template slot-scope="scope">
-                              <span style="margin-left: 10px">
-                                {{  (optData.WaterSource.filter(x=>x.name_en==scope.row.water_source).length==0)?scope.row.water_source:optData.WaterSource.filter(x=>x.name_en==scope.row.water_source)[0].name_ch  }}
-                              </span>
-                            </template>
-                          </el-table-column>
-                          <!-- 鹽度 -->
-                          <el-table-column label="鹽度" prop="water_source_salinity" align="center"></el-table-column>
-                          <!-- 養殖天數 -->
-                          <el-table-column label="養殖天數" prop="days" align="center"></el-table-column>
-                          <!-- 養殖密度 -->
-                          <el-table-column label="養殖密度" prop="num_per_unit" align="center"></el-table-column>
-                          <!-- 預估放養隻數 -->
-                          <el-table-column label="預估放養隻數" prop="total" align="center"></el-table-column>
-                          <!-- 目標CN比 -->
-                          <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
-                          <!-- 預估FCR -->
-                          <el-table-column label="預估FCR" prop="estimated_fcr" align="center"></el-table-column>
-                          <!-- 預測ADG -->
-                          <!-- <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column> -->
-                          <!-- 放養初始長度 -->
-                          <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
-                          <!-- 放養初始重量 -->
-                          <el-table-column label="放養初始重量" prop="initial_weight" align="center"></el-table-column>
-
-                          <el-table-column label="養殖負責" prop="person_in_charge" align="center">
-                          </el-table-column>
-                          <el-table-column fixed="right" label="操作" width="80">
-                            <template slot-scope="scope">
-                              <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
-                              <v-btn color="primary" outlined small @click="delcircle(scope.row)" :disabled="scope.row.ended_date != null">
-                                刪除</v-btn>
-                            </template>
-                          </el-table-column>
-                        </el-table>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <!-- 養殖歷程 -->
-              <v-col cols="12" sm="12" class="px-0">
-                <!-- 養殖歷程 -->
-                <v-row class="mb-10">
-                  <v-col cols="12">
-                    <v-card elevation="3" tile dark class="primary">
-                      <v-card-title class="py-2 cardtitle"><span>養殖歷程</span>
-                        <v-spacer></v-spacer><span>
-                          <v-btn :disabled="true" icon title="養殖歷程設定" to="" target="_blank">
-                            <v-icon>mdi-cog</v-icon>
-                          </v-btn>
-                        </span>
-                      </v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <FeedTemplate v-if="(feededitmode=='cycleedit' && passObj.tempContent.length>0)" :key="editKey" :templatemode="feededitmode" :passObj="passObj"></FeedTemplate>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-col>
+    <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
+      <div class="content" style="padding-top:12px">
+        <!-- 搜尋 -->
+        <div class="search">
+          <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
+            <v-col cols="12" md="8" style="padding: 0;">
+              <v-row style="margin-bottom: 0;align-items: center;">
+                <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
+                  <!-- 選擇池 -->
+                  <div class="search-container">
+                    <locate-select 
+                      class="select-template"
+                      :class="{'disabled':$route.query.id&&$route.query.id!==''}" 
+                      :dataScope="'pool'" 
+                      :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:'49'" 
+                      :isMulti="false"
+                      @scopeSel_data="get_scopeData($event);getCircleData()"
+                      ></locate-select>
+                  </div>
+                </v-col>
+                <!-- 選擇起日 -->
+                <v-col cols="12" md="3" class="text-center" style="padding-bottom: 0;">
+                  <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
+                    offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="started_date" label="選擇起日" filled hide-details prepend-icon="mdi-calendar" readonly
+                        dense v-bind="attrs" v-on="on" @click:prepend="() => (started_date = getNowDate())"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="started_date" no-title locale="zh-tw" :max="ended_date" @input="menu_startdate = false;;getCircleData()">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+                <!-- 選擇訖日 -->
+                <v-col cols="12" md="3" class="text-center" style="padding-bottom: 0;">
+                  <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
+                    offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="ended_date" label="選擇訖日" filled hide-details prepend-icon="mdi-calendar" readonly
+                        dense v-bind="attrs" v-on="on" @click:prepend="() => (ended_date = getNowDate())"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="ended_date" no-title locale="zh-tw" :min="started_date" @input="menu_enddate = false;getCircleData()"></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <!-- 按鈕-查詢 -->
+                <!-- <v-col cols="12" md="3">
+                  <v-btn tile class="btn-primary" @click="getCircleData">
+                    查詢
+                  </v-btn>
+                </v-col> -->
               </v-row>
-          </v-card-text>
-            </v-card>
-            </v-tab-item>
-          <v-tab-item :value="'事件'" v-if="false">
-            <v-card flat tile class="papper">
-              <v-card-text>
-            <!-- 事件紀錄 -->
-            <v-row>
-              <v-col cols="12">
-                <v-card elevation="3" tile dark class="primary">
-                  <v-card-title class="py-2 cardtitle">事件紀錄
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon class="mx-3" dark v-bind="attrs" v-on="on" @click="geteventData" :disabled="!poolid || !cirid">
-                          mdi-reload
-                        </v-icon>
-                      </template>
-                      <span>立即重新取得事件紀錄</span>
-                    </v-tooltip>
-                  </v-card-title>
-          
-                  <v-divider></v-divider>
-                  <v-card-title>
-                    <v-btn class="info" tile :disabled="!poolid || !cirid" @click="showlogDialog">新增紀錄<v-icon>mdi-plus</v-icon>
+            </v-col>
+            <!-- 按鈕-新增/執行 -->
+            <v-col cols="12" md="4" style="padding: 0;">
+              <v-row style="margin-bottom: 0;align-items: center;">
+                <v-col cols="12" style="padding: 0;padding-right: 8px;">
+                  <div class="btn-groups">
+                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;">
+                      <v-icon>mdi-plus</v-icon>
+                      新增循環
                     </v-btn>
-                    <v-dialog v-model="logDialog" max-width="500px">
-                      <v-form ref="logform" v-model="logvalid" lazy-validation>
-                        <v-card>
-                          <v-card-title>新增紀錄</v-card-title>
-                          <v-card-text>
-                            <v-row>
-                              <!-- 事件類型 -->
-                              <v-col cols="12">
-                                {{ logData.event_category_id }}
-                                <v-autocomplete v-model="logData.event_category_id" :items="eventCategory" item-text="name_ch"
-                                  item-value="id" dense filled clearable :rules="rules.require"><span style="width:80px;"
-                                    slot="prepend">事件類型</span></v-autocomplete>
-                              </v-col>
-                              <!-- 標題 -->
-                              <v-col cols="12">
-                                <v-text-field autocomplete="off" v-model="logData.title" :rules="rules.require" clearable filled
-                                  dense>
-                                  <span style="width:80px;" slot="prepend">標題</span>
-                                </v-text-field>
-                              </v-col>
-                              <!-- 內容 -->
-                              <v-col cols="12">
-                                <v-textarea autocomplete="off" v-model="logData.content" :rules="rules.require" clearable filled
-                                  dense auto-grow row="2" row-height="20">
-                                  <span style="width:80px;" slot="prepend">內容</span>
-                                </v-textarea>
-                              </v-col>
-                            </v-row>
-                          </v-card-text>
-                          <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="primary" tile @click="submitlog">新增</v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-form>
-                    </v-dialog>
-                  </v-card-title>
-                  <v-card-title>
-                    <el-table ref="eventtable" style="width:100%" :data="eventData" class="primary"
-                      :header-cell-style="tableHeaderStyle" height="250">
-                      <template slot="empty">
-                        <span>
-                          <v-btn tile color="info0" @click="geteventData" :disabled="!poolid || !cirid">暫無資料，手動重新整理<v-icon
-                              class="mx-3" @click="geteventData">
-                              mdi-reload
-                            </v-icon>
-                          </v-btn>
-                        </span>
-                      </template>
-                      <el-table-column label="時間" prop="created_time" align="center"></el-table-column>
-                      <el-table-column label="分類" prop="event_category" align="center"></el-table-column>
-                      <el-table-column label="標題" prop="title" align="center"></el-table-column>
-                      <el-table-column label="內容" prop="content" align="center"></el-table-column>
-                      <el-table-column label="資料建立人員" prop="created_user" align="center"></el-table-column>
-                      <el-table-column fixed="right" label="操作" width="150">
-                        <template slot-scope="scope">
-                          <v-btn color="primary" outlined small :disabled="scope.row.ended_date != null"
-                            @click="dellog(scope.row)">刪除</v-btn>
-                          <!-- @click="delcircle(scope.row)" -->
+                    <v-btn v-if="false" tile class="btn-secondary green" style="padding: 0 8px;" @click="mutiExecuteDialog">
+                      <v-icon>mdi-check</v-icon>
+                      批次執行
+                    </v-btn>
+                  </div>
+                </v-col>
+              </v-row>
+              
+            </v-col>
+            
+          </v-row>
+        </div>
+        <!-- 結果 -->
+        <div class="result" style="padding: 0;padding-top: 4px;">
+          <!-- 循環清單 -->
+          <div class="result-list">
+            <v-card class="result-card" >
+              <!-- 表頭 -->
+              <div class="card-title"  @click="resultListOpen = !resultListOpen" style="cursor: pointer;margin: 8px;">
+                  <div class="title">
+                      <v-card-title>循環清單</v-card-title>
+                  </div>
+                  <div class="chevron">
+                    <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
+                    <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
+                  </div>
+              </div>
+              <!-- 清單 -->
+              <div v-show="resultListOpen" class="content">
+                <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
+                   height="62vh"
+                  @cell-click="clickRow"
+                  @select="handleSelectionChange" :header-cell-name="cellClass">
+                  <!-- 名稱/批號 -->
+                  <!-- <el-table-column label="名稱/批號" prop="name" align="center"></el-table-column> -->
+                  <el-table-column label="[id]名稱/批號" prop="name" align="center">
+                    <template slot-scope="scope">
+                      <span>{{ `[${scope.row.id}]` }}<br/>{{ scope.row.name }}</span>
+                    </template>
+                  </el-table-column>
+                  <!-- 循環起日 -->
+                  <el-table-column label="循環起日" prop="started_date" align="center"></el-table-column>
+                  <!-- 循環訖日 -->
+                  <el-table-column label="循環訖日" prop="ended_date" align="center">
+                    <template slot-scope="scope">
+                      <span style="margin-left: 10px">{{
+                        scope.row.ended_date == null || scope.row.ended_date == ""
+                        ? `執行中`
+                        : scope.row.ended_date
+                        }}</span>
+                    </template>
+                  </el-table-column>
+                  <!-- id 名稱批號有id 重複資訊 先拿掉 -->
+                  <!-- <el-table-column label="id" prop="id" align="center"></el-table-column> -->
+                  <!-- 水源 -->
+                  <el-table-column label="水源" prop="water_source2" align="center">
+                    <template slot-scope="scope">
+                      <span style="margin-left: 10px">
+                        {{  (optData.WaterSource.filter(x=>x.name_en==scope.row.water_source).length==0)?scope.row.water_source:optData.WaterSource.filter(x=>x.name_en==scope.row.water_source)[0].name_ch  }}
+                      </span>
+                    </template>
+                  </el-table-column>
+                  <!-- 鹽度 -->
+                  <el-table-column label="鹽度" prop="water_source_salinity" align="center"></el-table-column>
+                  <!-- 養殖天數 -->
+                  <el-table-column label="養殖天數" prop="days" align="center"></el-table-column>
+                  <!-- 養殖密度 -->
+                  <el-table-column label="養殖密度" prop="num_per_unit" align="center"></el-table-column>
+                  <!-- 預估放養隻數 -->
+                  <el-table-column label="預估放養隻數" prop="total" align="center"></el-table-column>
+                  <!-- 目標CN比 -->
+                  <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
+                  <!-- 預估FCR -->
+                  <el-table-column label="預估FCR" prop="estimated_fcr" align="center"></el-table-column>
+                  <!-- 預測ADG -->
+                  <!-- <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column> -->
+                  <!-- 放養初始長度 -->
+                  <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
+                  <!-- 放養初始重量 -->
+                  <el-table-column label="放養初始重量" prop="initial_weight" align="center"></el-table-column>
+
+                  <el-table-column label="養殖負責" prop="person_in_charge" align="center">
+                  </el-table-column>
+                  <el-table-column fixed="right" label="操作" width="120" align="center">
+                    
+                    <template slot-scope="scope">
+                      <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
+                      <!-- <v-btn color="primary" outlined small @click="delcircle(scope.row)" :disabled="scope.row.ended_date != null">
+                        刪除</v-btn> -->
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-icon" @click="editCircle(scope.row)" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-pencil</v-icon>
+                            </button>
                         </template>
-                      </el-table-column>
-                    </el-table>
-                  </v-card-title>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          </v-card>
-          </v-tab-item>
-        </v-tabs>
-      </v-col>
-    </v-row>
+                      <span>修改</span>
+                      </v-tooltip>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-icon delete" @click="delcircle(scope.row);" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-trash-can</v-icon>
+                            </button>
+                        </template>
+                        <span>刪除</span>
+                      </v-tooltip>
+                    </template>
+                    
+                  </el-table-column>
+                </el-table>
+              </div>
+            </v-card>                                   
+          </div>
+          <!-- 養殖歷程 -->
+          <div class="result-list">
+            <v-card v-if="currentDataId!==null && currentDataId!==''" class="result-card" >
+              <!-- 表頭 -->
+              <div class="card-title" style="cursor: pointer;margin: 8px" @click="resultCycleOpen = !resultCycleOpen" >
+                  <div class="title">
+                      <v-card-title>養殖歷程</v-card-title>
+                      <span style="font-size: 14px;">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
+                  </div>
+                  <div class="btn-groups">
+                    <div class="open">
+                      <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;resultCycleOpen = !resultCycleOpen">
+                        <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
+                      </v-btn>
+                      <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;resultCycleOpen = !resultCycleOpen">
+                        <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
+                      </v-btn>
+                    </div>
+                    <div class="chevron">
+                      <v-icon v-if="resultCycleOpen">mdi-triangle-small-up</v-icon>
+                      <v-icon v-if="!resultCycleOpen">mdi-triangle-small-down</v-icon>
+                    </div>
+                  </div>
+              </div> 
+              <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
+                <FeedTemplate :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" @getTemp="getTemp(currentDataId)"></FeedTemplate>
+              </div>
+            </v-card>
+          </div>
+        </div>
+      </div>
+    </v-card>
+    <!-- 新增循環的dialog -->
+    <v-dialog id="addDialog" v-model="addDialog" max-width="500px">
+      <v-form v-model="addvalid" ref="cycleform">
+        <v-card style="min-height:80vh" class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              新增-養殖循環
+              <!-- <span class="error-text">Note:目前無法新增，因多池資料結構有更改</span> -->
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="addDialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <!-- 選擇池 -->
+          <div class="card-title">
+            <div class="title">
+                <v-card-title>選擇池</v-card-title>
+            </div>
+            <!-- <div class="chevron" >
+              <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
+              <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
+            </div> -->
+          </div>
+          <div v-if="addChooseOpen" class="basic" style="padding-left: 8px;">
+            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              <!-- {{ addparm.pool_id }} -->
+              <!-- <locate-select 
+                class="select-template"
+                v-model="addparm.pool_id"
+                :dataScope="'pool'" 
+                :isMulti="true" 
+                @scopeSel_data="get_selectData($event)" 
+                ></locate-select> -->
+                <treeselect
+                    @input="changeEvent"
+                    v-model="dataid"
+                    :options="maindataScope"
+                    :default-expand-level="1"
+                    :disable-branch-nodes="true"
+                    children="node"
+                    placeholder="請選擇養殖池"
+                    multiple
+                    :rules="rules.length"
+                    :normalizer="
+                      node => {
+                        return { children: node.node };
+                      }
+                    "
+                    class="select-template font-size-large"
+                    :class="{'error':isDataidError}"
+                  >
+                  <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
+                  <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}</div>
+                </treeselect>
+              
+            </v-card-text>
+            <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
+            <span  class="error-text" style="padding-left: 8px;"><b>Note:需撈取出可新增循環的池，資料架構與/api/architecture相同</b><br></span> -->
+            <!-- <span style="padding-left: 8px;color: red"><b>Note:多池選擇下，體積水量可能會不同數值，影響初始放苗數，待討論</b><br></span> -->
+          </div>
+          <!-- 基本資料 -->
+          <div class="card-title" @click="addbasicDataOpen = !addbasicDataOpen" style="cursor: pointer">
+              <div class="title">
+                  <v-card-title>基本資料設定</v-card-title>
+              </div>
+              <div class="chevron" >
+                <v-icon v-if="addbasicDataOpen">mdi-triangle-small-up</v-icon>
+                <v-icon v-if="!addbasicDataOpen">mdi-triangle-small-down</v-icon>
+              </div>
+          </div>
+          <div v-show="addbasicDataOpen" class="basic">
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col  cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-text-field v-model="addparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" disabled  style="margin-right: 4px;padding-top: 0;">
+                  </v-text-field>
+                </v-col>
+                <v-col  cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="addparm.started_date" label="選擇起日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (addparm.started_date = getNowDate())
+                                                " style="padding-top: 0;"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text>
+              <v-row align="center">
+                <!-- 體積 -->
+                <!-- <v-col cols="3">
+                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
+                    autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">X</v-col> -->
+                <!-- 密度 -->
+                <!-- <v-col cols="3">
+                  <v-text-field v-model.number="addparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    @change="
+                              () => {
+                                addparm.estimated_num =
+                                  add_volume * addparm.num_per_unit;
+                              }
+                            " autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">=</v-col> -->
+                <!-- 初始放苗量(估計) -->
+                <!-- <v-col cols="4">
+                  <v-text-field v-model="addparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off">
+                  </v-text-field>
+                </v-col> -->
+              </v-row>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
+                    item-text="name_ch" clearable :rules="rules.require" label="選擇種苗">
+                  </v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="addparm.stocked_date" label="放苗日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (addparm.stocked_date = getNowDate())
+                                                "></v-text-field>
+                    </template>
+                    <v-date-picker v-model="addparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"></v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>    
+            <v-card-text style="display: flex;">
+              <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" label="預估存活率(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="addparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" label="預估FCR(選)">
+              </v-text-field>
+            </v-card-text>
+            <!-- <v-card-text style="display: flex;align-items: center;"> -->
+               <!-- 放養初始長度 -->
+               <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
+              <!-- <v-text-field filled dense type="number" v-model.number="addparm.initial_length" label="放養初始長度(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>       -->
+            <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="addparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
+                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
+                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+              </v-autocomplete>
+            </v-card-text>
+            <v-card-text>
+              <v-text-field filled dense v-model="addparm.remark" hide-details label="備註(選)">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                @change="tempChange" label="選擇樣板">
+              </v-autocomplete>
+            </v-card-text>
+            <!-- <v-col cols="12"> -->
+              <!-- 樣板 先暫時拿掉-->
+              <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                clearable @change="tempChange" label="選擇樣板(選)">
+              </v-autocomplete> -->
+            <!-- </v-col> -->
+          </div>
+          <!-- 輸入池密度 -->
+          <div v-if="dataid.length>0" class="card-title">
+            <div class="title">
+                <v-card-title>輸入各池密度</v-card-title>
+                <div v-if="volumeError" class="error-text">*請確實輸入養殖池密度</div>
+            </div>
+            <!-- <div class="chevron" >
+              <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
+              <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
+            </div> -->
+          </div>
+          <div v-if="dataid.length>0" class="basic" style="padding-left: 8px;">
+            <v-card-text style="padding-top: 0;display: flex;align-items: center;">
+              <v-row style="margin-bottom: 12px;border-bottom: 1px solid rgba(0,0,0,0.1);align-items: center;padding: 0 8px 8px;">
+                <v-col cols="3" style="padding: 0">
+                  <span style="color:#40657A;font-weight: bold;display: inline-block;">
+                    統一密度：
+                  </span>
+                </v-col>
+                <v-col cols="9" style="padding: 0;">
+                  <div class="volume" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+                    <el-input-number
+                      class="ml-2"
+                      v-model="all_num_per_unit"
+                      size="mini"
+                      :precision="2"
+                      :step="0.1"
+                      :min="0"
+                      prop="number"
+                    ></el-input-number>
+                    <div class="btn-groups" style="margin-left: 8px;">
+                      <v-btn class="btn-secondary" :class="{'disabled':all_num_per_unit==undefined}" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
+                      <v-btn class="btn-secondary delete" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
+              
+            </v-card-text>
+            <v-card-text style="padding-top: 0;">
+              <v-row>
+                <!-- <div class="pond" style="padding: 8px 0;width: 100%;border-bottom: 1px solid rgba(0,0,0,0.1);display: inline-block;"> -->
+                  <v-col cols="12" md="6" sm="6" v-for="pond in dataVolumn" :key="'volume'+pond.id" style="padding: 0;padding-bottom: 8px;">
+                    <span style="color:#40657A;margin-left: 8px;font-weight: bold;">
+                      {{ pond.name }}
+                    </span>
+                    
+                    <div class="volume" style="display: flex;flex-direction: column;align-items: flex-start;">
+                      <el-input-number
+                        :id="pond.name"
+                        :ref="pond.name"
+                        class="ml-2"
+                        v-model="pond.num_per_unit"
+                        size="mini"
+                        :precision="2"
+                        :step="0.1"
+                        :min="0"
+                        prop="number"
+                        @change="
+                              () => {
+                                pond.estimated_num =
+                                pond.volume * pond.num_per_unit;
+                              }
+                            "
+                      ></el-input-number>
+                      <span style="font-size: 0.85rem;margin-left: 8px;">初始放苗量：{{ pond.estimated_num }}</span>
+                    </div>
+                  </v-col>
+                <!-- </div> -->
+              </v-row>
+              <!-- <div class="pond" v-for="pond in dataVolumn" :key="'volume'+pond.id" style="padding: 8px 0;width: 100%;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                {{ pond.name }}
+                <el-input-number
+                  :id="pond.name"
+                  :ref="pond.name"
+                  class="ml-2"
+                  v-model="pond.num_per_unit"
+                  size="mini"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0"
+                  prop="number"
+                ></el-input-number> -->
+                <!-- <v-row align="center">
+
+                  <v-col cols="3">
+                    <v-text-field v-model="pond.volume" label="體積(水量)" type="number" disabled
+                      autocomplete="off"></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="text-center">X</v-col>
+
+                  <v-col cols="3">
+                    <v-text-field v-model.number="pond.num_per_unit" label="密度" type="number" :rules="rules.require"
+                      @change="
+                                () => {
+                                  pond.estimated_num =
+                                    add_volume * pond.num_per_unit;
+                                }
+                              " autocomplete="off"></v-text-field>
+                  </v-col>
+                  <v-col cols="1" class="text-center">=</v-col>
+
+                  <v-col cols="4">
+                    <v-text-field v-model="pond.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                      disabled autocomplete="off">
+                    </v-text-field>
+                  </v-col>
+                </v-row> -->
+              <!-- </div>  -->
+              
+            </v-card-text>
+          
+          </div>
+          
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="cancelDialog">取消</v-btn>
+            <v-btn class="btn-primary" @click="submitadd">新增</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 批次執行的dialog -->
+    <v-dialog v-model="mutiExecute" max-width="500px">
+      <v-form v-model="executevalid" ref="executeform">
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+              <div style="display: inline-block;">
+              批次執行
+              </div>
+              <div class="add" style="float: right;display: inline-block;">
+                <v-btn  class="btn-secondary close"
+                        title="取消" 
+                        @click="mutiExecute = false" 
+                        style="border: none;min-width: 0;padding: 0 4px;">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </div>
+          </v-card-title>
+          <div class="basic" style="min-height: 300px;">
+            <v-card-text  style="display: flex;align-items: center;padding: 8px 16px;">
+              <div class="search-container">
+                <locate-select
+                  class="select-template"
+                  :dataScope="'area'" 
+                  :defaultSelect="nowExeArea" 
+                  :isMulti="false" 
+                  @scopeSel_data="get_scopeExecuteData($event)" 
+                  style="margin-right: 0;"
+                  ></locate-select>
+              </div>
+            </v-card-text>
+            <v-card-text v-if="nowExeArea && nowExeArea !== ''"  style="display: flex;align-items: center;padding: 8px 16px;">
+              <div class="search-container" style="width: 100%;">
+                <v-tabs v-model="nowTab" show-arrows>
+                  <!-- 上方tab -->
+                  <v-tab
+                      v-for="(tab,tid) in executeTabs"
+                      :key="'tabs-'+tid"
+                      :href="`#` + tab">
+                      {{ tab }}
+                  </v-tab>
+                  <!-- tab內容 -->
+                  <v-tabs-items v-model="nowTab" touchless>
+                    <v-tab-item 
+                      v-for="(tab,tid) in executeTabs"
+                      :key="'tab-'+tid"
+                      :value="tab"
+                      style="margin-bottom: 16px;margin-top: 16px;">
+                      <!-- 執行 -->
+                      <div v-show="nowTab=='執行'" class="result-content">
+                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
+                          <div v-for="item in mutiExecuteData" :key="item.pond_id" class="list" style="display: flex;align-items: center;">
+                            <v-checkbox
+                              v-model="item.checked"
+                              dense hide-details
+                              :label="item.pond_name"
+                            ></v-checkbox>
+                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
+                            <!-- <div class="execute">
+                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
+                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
+                            </div> -->
+                          </div>
+                          <div v-if="mutiExecuteData.length==0">無資料</div>
+                      </div>
+                      
+                      <!-- 確認 -->
+                      <div v-show="nowTab=='確認'" class="result-content">
+                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
+                          <div v-for="item in mutiConfirmData" :key="item.pond_id" class="list" style="display: flex;align-items: center;">
+                            <v-checkbox
+                              v-model="item.checked"
+                              dense hide-details
+                              :label="item.pond_name"
+                            ></v-checkbox>
+                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
+                            <!-- <div class="execute">
+                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
+                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
+                            </div> -->
+                          </div>
+                          <div v-if="mutiConfirmData.length==0">無資料</div>
+                        <!-- </v-card-text> -->
+                      </div>
+                      
+                    </v-tab-item>
+                  </v-tabs-items>
+                </v-tabs>
+              </div>
+            </v-card-text>
+            <br>
+            <v-card-text  style="padding: 8px 16px;">
+              <b>Note:資料撈取(!!!!最後要上要記得清除!!!!)</b><br>
+              <span>撈取正在循環的池，每按執行/確認後，因步驟會改變，需重新撈取資料</span><br><br>
+              <div v-if="nowTab == '執行'">
+                <span>各池 執行撈取第一個 尚未執行(execute_time = " ")的步驟</span><br><br>
+                <hr><br>
+                <span v-for="item in mutiExecuteData" :key="'exe_'+item.pond_id">{{ item }}<br></span>
+              </div>
+              <div v-else>
+                <span>各池 確認撈取第一個 已執行(execute_time != " ") 未確認(isConfirm=false)的步驟</span><br><br>
+                <hr><br>
+                <span v-for="item in mutiConfirmData" :key="'con_'+item.pond_id">{{ item }}<br></span>
+              </div>
+            </v-card-text>
+          </div>
+          <v-card-actions style="padding: 24px 12px;">
+              <v-spacer></v-spacer>
+              <!-- <v-btn  v-if="nowTab == '執行'" class="btn-secondary" @click="mutiExecuteStep(false)">上一步</v-btn> -->
+              <!-- <v-btn class="btn-secondary" @click="mutiExecute = false">取消</v-btn> -->
+              <v-btn class="btn-primary" @click="opencapDialog">{{ nowTab=='執行'?'執行':'確認' }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 批次執行的驗證碼 -->
+    <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
+      <v-card height="230">
+        <v-card-title>驗證碼</v-card-title>
+        <v-card-text>
+          <recaptcha />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn tile @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+     <!-- 編輯循環清單的dialog -->
+     <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
+      <v-form v-model="editvalid" ref="editform">
+        <v-card style="min-height:80vh" class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              修改循環
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn class="btn-secondary close"
+                      title="取消" 
+                      @click="editDialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <!-- 基本資料 -->
+          <div class="card-title" style="cursor: pointer">
+            <!-- <div class="title">
+                <v-card-title>基本資料設定</v-card-title>
+            </div>
+            <div class="chevron" >
+              <v-icon v-if="addbasicDataOpen">mdi-triangle-small-up</v-icon>
+              <v-icon v-if="!addbasicDataOpen">mdi-triangle-small-down</v-icon>
+            </div> -->
+          </div>
+          <div class="basic">
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row  style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-text-field v-model="editparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="margin-right: 4px;padding-top: 0;" disabled>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (editparm.started_date = getNowDate())
+                                                " style="padding-top: 0;"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+              
+              
+            </v-card-text>
+            <!-- 水體/密度/放養數 -->
+            <v-card-text>
+              <v-row align="center">
+                <!-- 體積 -->
+                <v-col cols="3">
+                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
+                    autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">X</v-col>
+                <!-- 密度 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    @change="
+                              () => {
+                                editparm.estimated_num =
+                                  add_volume * editparm.num_per_unit;
+                              }
+                            " autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">=</v-col>
+                <!-- 初始放苗量(估計) -->
+                <v-col cols="4">
+                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="editparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
+                    item-text="name_ch" clearable :rules="rules.require" label="選擇種苗">
+                  </v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_stockeddate_edit" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.stocked_date" label="放苗日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (editparm.stocked_date = getNowDate())
+                                                "></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate_edit = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"></v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>    
+            <v-card-text style="display: flex;">
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="editparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)">
+              </v-text-field>
+            </v-card-text>    
+            <!-- <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="editparm.initial_length" label="放養初始重量(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>   -->
+            <v-card-text style="display: flex;align-items: center;">
+              <v-text-field filled dense type="number" v-model.number="editparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
+                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
+                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+              </v-autocomplete>
+            </v-card-text>
+            <v-card-text>
+              <v-text-field filled dense v-model="editparm.remark" hide-details label="備註(選)">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                clearable @change="tempChange" label="選擇樣板(選)" disabled>
+              </v-autocomplete>
+            </v-card-text>
+            <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
+            <span class="error-text" style="margin-left: 8px;">Note:撈不出此資料樣板資訊</span> -->
+            <!-- <v-col cols="12"> -->
+              <!-- 樣板 先暫時拿掉-->
+              <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+                clearable @change="tempChange" label="選擇樣板(選)">
+              </v-autocomplete> -->
+            <!-- </v-col> -->
+          </div>
+          
+          
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="cancelEdit()">取消</v-btn>
+            <v-btn class="btn-primary" @click="submitEdit">修改</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
   </div>
 </template>
 
@@ -900,6 +831,7 @@ import "element-ui/lib/theme-chalk/index.css";
 import waterball from "~/components/waterball.vue";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import https from "https";
+import FeedTemplate from '~/components/feedTemplate.vue';
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -910,7 +842,8 @@ export default {
   layout: "emptynologin",
   middleware: "auth",
   components: {
-    WaterQuality_Vcharts
+    WaterQuality_Vcharts,
+    FeedTemplate
   },
   head(){
     return {
@@ -932,9 +865,10 @@ export default {
         filesize: [
           value => !value || value.size < 2000000 || "檔案大小必須小於 2 MB!",
           v => !!v || "*必要項目"
-        ]
+        ],
       },
       poolid: this.$route.query.id,
+      nowPool: '',
       cirid: undefined, //循環id
       poolName: "",
       maindata: [],
@@ -994,12 +928,13 @@ export default {
       addvalid: false,
       menu_adddate: false,
       menu_stockeddate:false,
+      menu_stockeddate_edit:false,
       add_volume: undefined,
       addparm: {
         started_date: undefined,//開始日期，有ended_date結束日期，但新增不需使用
         stocked_date:undefined, //放苗日
         name: undefined,//名稱或批號
-        num_per_unit: undefined,//放養密度
+        // num_per_unit: undefined,//放養密度
         estimated_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
@@ -1007,7 +942,15 @@ export default {
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
+        temp_id: undefined,//樣板
+        multi_data:[],//多池
+        
       },
+      dataid: [],// 多選
+      dataVolumn:[],
+      allPondsData:[],
+      volumeError: false,
+      isDataidError: false,
       //種苗
       SeedlingData:[],
       //蝦況
@@ -1092,7 +1035,75 @@ export default {
       passObj:{tempMain:{},tempContent:[]},
       feededitmode:'cycleedit',
       editKey:0,
-      optData:{},//選項
+      optData:{WaterSource:[{ "name_en": "Groundwater", "name_ch": "地下水" }, { "name_en": "Seawater", "name_ch": "海水" }]},//選項
+      // 收合板控制
+      resultListOpen: true,
+      resultCycleOpen: true,
+      addbasicDataOpen: true,
+      addChooseOpen: true,
+      // 紀錄當前顯示歷程的id，清除點選用
+      currentDataId: null,
+      // 批次執行
+      mutiExecute: false,
+      executevalid: false,
+      executeTabs: ['執行','確認'],
+      nowTab: '執行',
+      nowExeArea: '',
+      mutiExecuteData:[{
+        pond_id: 50,
+        pond_name: 'A2',
+        status: '空池',
+        item: '新增循環',
+        item_id: 23,
+        execute_time: '',
+        confirm_time: '',
+        msg:''
+      },{
+        pond_id: 51,
+        pond_name: 'A3',
+        status: '養殖審核',
+        item: '養殖審核1',
+        item_id: 27,
+        execute_time: '',
+        confirm_time: '',
+        msg:''
+        
+      }],
+      mutiConfirmData:[{
+        pond_id: 49,
+        pond_name: 'A1',
+        status: '空池',
+        item: '設備正常',
+        item_id: 24,
+        execute_time: '2023-10-25 11:22:11',
+        confirm_time: '',
+        msg:''
+      },],
+      addPoolData:[],
+      // dataid: undefined,
+      // 養殖歷程收合
+      nowExpand: true, 
+      // 編輯循環清單
+      editDialog: false,
+      editvalid: false,
+      editparm: {
+        started_date: undefined,//開始日期，有ended_date結束日期，但新增不需使用
+        stocked_date:undefined, //放苗日
+        name: undefined,//名稱或批號
+        num_per_unit: undefined,//放養密度
+        estimated_num: 0, //放養隻數，改由後端算，但這裡是畫面呈現用
+        seedling_id:undefined,//種苗id
+        //estimated_harvest_catty:undefined,//預計收成斤數
+        estimated_harvest_weight:undefined,//預估收成個體重
+        estimated_survival_rate:70,//預計存活率
+        remark:"",//備註
+        person_in_charge:undefined,//負責人
+        pool_id: [],
+        // dataid: [],// 多選
+      },
+      editperson_in_charge: '',
+      captchaDialog: false,//批次執行驗證
+      all_num_per_unit: undefined, //統一密度
     };
   },
   methods: {
@@ -1103,8 +1114,22 @@ export default {
         var area_list = this.maindata.flatMap(x=>x.node);
         var poolName = area_list.flatMap(x=>x.node).filter(x=>x.id==this_id)[0].name;
         var poolParent = area_list.flatMap(x=>x.node).filter(x=>x.id==this_id)[0].parent;
-        return `${poolParent} ${poolName}`;
+        this.nowPool = poolParent+'_'+poolName;
+        return `${poolParent}_${poolName}`;
       }
+    },
+    get_scopeData(evt) {
+      console.log('change pool',evt)
+      this.poolid = evt;
+    },
+    get_selectData(evt) {
+      // console.log(evt);
+      this.addparm.pool_id = evt;
+    },
+    // 批次執行選區
+    get_scopeExecuteData(evt) {
+      console.log(evt);
+      this.nowExeArea = evt;
     },
     //負責人搜尋
     filterincharge:function(item, queryText, itemText){
@@ -1181,6 +1206,9 @@ export default {
         });
     },
     delcircle: async function(data) {
+      setTimeout(()=>{
+        this.resultListOpen = true;
+      },200)
       await this.$confirm(
         `將永久删除該循環所有紀錄(包含事件紀錄、養殖歷程), 是否繼續?`,
         "警告",
@@ -1201,6 +1229,8 @@ export default {
               if (res.data == "刪除成功") {
                 this.getCircleData();
                 this.$toast.success("刪除成功", { duration: 2000 });
+                this.currentDataId = null;
+                this.resultCycleOpen = false;
               } else {
                 this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
               }
@@ -1217,59 +1247,67 @@ export default {
           this.$toast.error("已取消删除" + err, { duration: 2000 });
         });
     },
-    setNestedDisabled: function(obj, name) {
-      //全部都設成disabled
-      obj.forEach((itm, index) => {
-        // console.log(itm.name);//所有node(含leaf)的名稱
-        itm.parent = itm.hasOwnProperty("parent")
-          ? itm.parent + "_" + name
-          : name;
-        const nodelst = ["1", "2"];
-        if (nodelst.filter(x => x == itm.level) > 0) {
-          itm.id = itm.name + "_" + itm.id;
-        }
-        if (itm.visible == false) {
-          //隱藏走道用
-          delete obj[index];
-          return obj; //不用再找有無node
-        }
-        if (itm.hasOwnProperty("node")) {
-          this.setNestedDisabled(itm.node, itm.name);
-        }
-      });
-      return obj;
-    },
+    // setNestedDisabled: function(obj, name) {
+    //   //全部都設成disabled
+    //   obj.forEach((itm, index) => {
+    //     // console.log(itm.name);//所有node(含leaf)的名稱
+    //     itm.parent = itm.hasOwnProperty("parent")
+    //       ? itm.parent + "_" + name
+    //       : name;
+    //     const nodelst = ["1", "2"];
+    //     if (nodelst.filter(x => x == itm.level) > 0) {
+    //       itm.id = itm.name + "_" + itm.id;
+    //     }
+    //     if (itm.visible == false) {
+    //       //隱藏走道用
+    //       delete obj[index];
+    //       return obj; //不用再找有無node
+    //     }
+    //     if (itm.hasOwnProperty("node")) {
+    //       this.setNestedDisabled(itm.node, itm.name);
+    //     }
+    //   });
+    //   return obj;
+    // },
     mainchange: async function() {
       //取得循環資料
       await this.getCircleData();
     },
     getMainData: async function() {
-      let reqid = this.req.id;
-      let getedItem = {};
-      //取得整場架構資料
-      //visible寫死名稱含^=false，寫死池的狀態=無=false
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
         .then(res => {
-          this.maindata = res.data;
-          var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-          this.maindata = data;
+            this.maindata = res.data;
+            var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+            this.maindata = data;
         });
-      //用id抓到name
-      this.maindata.forEach(x => {
-        x.node.forEach(y => {
-          var item = y.node.filter(z => z.id == reqid);
-          if (item.length == 1) {
-            getedItem = item[0];
-            return;
-          }
-        });
-      });
-      //把區域名稱加進去
-      if (getedItem.hasOwnProperty("name")) {
-        this.poolName = getedItem.name;
-        console.log(getedItem);
-      }
+      // let reqid = this.req.id;
+      // let getedItem = {};
+      // //取得整場架構資料
+      // //visible寫死名稱含^=false，寫死池的狀態=無=false
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+      //   .then(res => {
+      //     this.maindata = res.data;
+      //     var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      //     this.maindata = data;
+      //   });
+      // //用id抓到name
+      // this.maindata.forEach(x => {
+      //   x.node.forEach(y => {
+      //     var item = y.node.filter(z => z.id == reqid);
+      //     if (item.length == 1) {
+      //       getedItem = item[0];
+      //       return;
+      //     }
+      //   });
+      // });
+      // //把區域名稱加進去
+      // if (getedItem.hasOwnProperty("name")) {
+      //   this.poolName = getedItem.name;
+      //   console.log(getedItem);
+      // }
+      
     },
     //取得項目子清單
     getItemData: async function() {
@@ -1316,11 +1354,42 @@ export default {
         )
         .then(res => {
           this.circleData = res.data;
+          // this.circleData.push({
+            
+          //   "id": 99999,
+          //   "name": "1112",
+          //   "num_per_unit": 222,
+          //   "started_date": "2023-10-19",
+          //   "ended_date": null,
+          //   "stocked_date": "2023-10-02",
+          //   "water_source": "Seawater",
+          //   "water_source_salinity": 1,
+          //   "cn": 0,
+          //   "initial_weight": 0,
+          //   "estimated_survival_rate": "70.0%",
+          //   "estimated_fcr": 0,
+          //   "estimated_harvest_weight": 0,
+          //   "remark": "",
+          //   "pond_id": 1,
+          //   "seedling_id": 5,
+          //   "seedling_name": "A-2苗",
+          //   "person_in_charge": "技術部-李遠菖",
+          //   "created_user": "技術部-溫健偉",
+          //   "created_time": "2023-10-19 08:24:58",
+          //   "updated_user": "技術部-溫健偉",
+          //   "updated_time": "2023-10-19 08:24:58",
+          //   "total": 31080,
+          //   "days": 5
+          // })
+          console.log(res.data);
           console.log("循環資料 api",res.request.responseURL);
           if (this.circleData.length > 0) {
             this.getwarnData();
             // this.getDetectData();
             this.getshirimpData();
+            this.resultListOpen = true;
+            this.resultCycleOpen = false;
+            this.currentDataId = null;
           }
         })
         .catch(error=>{
@@ -1380,25 +1449,118 @@ export default {
         });
       this.warnLoading = false;
     },
-    showadd: async function() {
+    showadd: async function(bool=false) {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
       this.addparm.estimated_num = undefined;
-      if (this.poolid == undefined) {
-        this.$toast.info(`失敗：請先選擇養殖池`, {
-          duration: 2000
-        });
-        return;
+      this.all_num_per_unit = undefined;
+      if (this.$refs.logform != undefined) {
+        this.$refs.logform.reset();
       }
+      // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
+      if (this.$refs.cycleform != undefined) {
+        this.$refs.cycleform.reset();
+        this.dataid = [];
+        this.isDataidError = false;
+        this.volumeError = false;
+      }
+      // if (this.poolid == undefined) {
+      //   this.$toast.info(`失敗：請先選擇養殖池`, {
+      //     duration: 2000
+      //   });
+      //   return;
+      // }
       //
+
+      
+      await this.getCycleData();
+      await this.getPondData(bool);
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
+      //   .then(res => {
+      //     this.allPondsData = _.cloneDeep(res.data);
+      //     var items = res.data.filter(x => x.id == this.poolid);
+      //     if (items.length == 1) {
+      //       if(!bool) {
+      //         this.addDialog = true; 
+      //       }
+      //       let date = dayjs().format("YYYY-MM-DD").split('-');
+      //       this.addparm.name = '';
+      //       date.forEach(x=>this.addparm.name+=x);
+      //       this.addparm.name = this.addparm.name+'_{pool}'
+      //       this.add_volume = items[0].volume;
+      //       this.addparm.estimated_survival_rate = 70;
+      //       this.tempSelect = this.template_items[0].id;
+      //       this.dataVolumn = [];
+
+      //       // 關掉Dialog再開啟不會重置scrollbar位置 
+      //       setTimeout(()=>{
+      //         if(document.getElementsByClassName('v-dialog--active')) {
+      //           document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+      //         }
+      //       },100)
+      //     } else {
+      //       this.$toast.success(
+      //         `失敗：無法取得體積資料，池id:${this.poolid}}`,
+      //         {
+      //           duration: 2000
+      //         }
+      //       );
+      //     }
+      //   })
+      //   .finally(() => {
+      //     /* 不論失敗成功皆會執行 */
+      //   });
+    },
+    getCycleData: async function() {
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
+        .then(res=>{
+          if(res.status==200) {
+            console.log('可新增循環的池',res);
+            // 新增循環的池選擇
+            var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
+            this.addPoolData = data;
+          }else {
+            var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+            this.addPoolData = data;
+          }
+          
+        })
+        .finally(()=>{
+
+        })
+    },
+    getPondData: async function(bool=false) {
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
         .then(res => {
+          this.allPondsData = _.cloneDeep(res.data);
           var items = res.data.filter(x => x.id == this.poolid);
           if (items.length == 1) {
+            if(!bool) {
+              this.addDialog = true; 
+            }
+            let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+            let date1 = date[0].split('-').concat(date[1].split(':'));
+            // date1
+            console.log('date',date1);
+            this.addparm.name = '';
+            date1.forEach(x=>this.addparm.name+=x);
+            this.addparm.name = this.addparm.name+'_{pool}'
             this.add_volume = items[0].volume;
-            this.addDialog = true;
+            this.addparm.estimated_survival_rate = 70;
+            this.tempSelect = this.template_items[0].id;
+            this.addparm.temp_id = this.template_items[0].id;
+            this.dataVolumn = [];
+
+            // 關掉Dialog再開啟不會重置scrollbar位置 
+            setTimeout(()=>{
+              if(document.getElementsByClassName('v-dialog--active')) {
+                document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+              }
+            },100)
           } else {
             this.$toast.success(
               `失敗：無法取得體積資料，池id:${this.poolid}}`,
@@ -1455,6 +1617,9 @@ export default {
         .catch(error => {
           this.$toast.error("error:" + error, { duration: 2000 });
         });
+    },
+    cancelDialog() {
+      this.addDialog = false;
     },
     dellog: async function(data) {
       console.log(data);
@@ -1513,73 +1678,120 @@ export default {
     //取得選項-水源、水源鹽度
     getOptData:async function(){
       let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
-            await this.$axios.get(url).then(res => {
-                if(res.status==200){
-                    this.optData = res.data;
-                    
-                    //ObservationData
-                    this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+        await this.$axios.get(url).then(res => {
+            if(res.status==200){
+                this.optData = res.data;
+                
+                //ObservationData
+                this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
 
-                    //BacteriaData
-                    this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    this.optData.IsVirusInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    this.optData.IsBacteriumInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    
-                    console.log("opt",this.optData);
-                }else{
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
-            })
-            .catch(error=>{
-                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            });
+                //BacteriaData
+                this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                this.optData.IsVirusInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                this.optData.IsBacteriumInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                
+                console.log("opt",this.optData);
+            }else{
+                this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+            }
+        })
+        .catch(error=>{
+            this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+        });
     },
     //新增循環
     submitadd: async function() {
       const updUser = this.$auth.$state.user.email;
-      this.addparm.created_user = updUser;
-      this.addparm.pond_id = parseInt(this.poolid); //需要int
-      //樣板資料
-      var tempMain = {};
-      var tempContent = [];
-      if(this.tempSelect!=undefined){
-        var id = this.tempSelect;
-        var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
-        tempMain = temp.tempMain;
-        tempContent = temp.tempContent;
-      }
-      this.addparm['tempMain'] = tempMain;
-      this.addparm['tempContent'] = tempContent;
-      let parm = Object.assign({},this.addparm);
+      
+      let param = {};
+      this.volumeError = false;
+      this.addparm.multi_data=[];
+
+      param = _.cloneDeep(this.addparm);
+      param.created_user = updUser;
+      
+      this.dataVolumn.forEach(d=>{
+        param.multi_data.push({
+          pond_id: d.id,
+          num_per_unit: d.num_per_unit,
+          name: param.name.replace('pool',d.name)
+        })
+      })
+      delete param.estimated_num;
+      delete param.name;
+      delete param.num_per_unit;
+
+      
+      // let param = _.cloneDeep(this.addparm);
+      // param.created_user = updUser;
+      // param.pond_id = parseInt(this.dataid[0]); //需要int
+        
+      // //樣板資料
+      // var tempMain = {};
+      // var tempContent = [];
+      // if(this.tempSelect!=undefined){
+      //   var id = this.tempSelect;
+      //   var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
+      //   tempMain = temp.tempMain;
+      //   tempContent = temp.tempContent;
+      // }
+      // param['tempMain'] = tempMain;
+      // param['tempContent'] = tempContent;
+      // delete param.estimated_num;//刪除初始放苗量
+      // this.dataVolumn.forEach(d=>{
+      //   if(d.id==this.dataid[0]) {
+      //     param.num_per_unit = d.num_per_unit;
+      //     param.name = param.name.replace('pool',d.name);
+      //   }
+      //   if(!d.num_per_unit||d.num_per_unit==null) {
+      //     this.volumeError = true;
+      //   }
+      // })
+
+      
+      // let parm = Object.assign({},this.addparm);
       // return;
-      delete parm.estimated_num;//刪除初始放苗量
-      console.log(parm);
+      
+      console.log('>>>>>Submit Data',param);
       // debugger;
       // return;
+
       var valid = this.$refs.cycleform.validate();
-        if(valid){
-          await this.$axios
-            .post(
-              `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
-              parm
-            )
-            .then(res=>{
-              if (res.data == "新增成功") {
-                this.addDialog = false;
-                this.$refs.cycleform.reset();
-                this.getCircleData();
-                this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
-              }else{
-                this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-                console.log(res.data);
-              }
-            })
-            .catch(error=>{
-              this.$toast.error("新增失敗:" +error, { duration: 2000 });
-              console.log(error);
-            })
+      console.log('valid',valid);
+      if(this.dataid.length>0) {
+        this.isDataidError = false;
+      }else {
+        this.isDataidError = true;
+      }
+
+      if(valid && !this.isDataidError && !this.volumeError) {
+        // alert('submit data：'+ JSON.stringify(param));
+        await this.$axios
+          .post(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
+            param
+          )
+          .then(res=>{
+            if (res.data == "新增成功") {
+              this.addDialog = false;
+              this.$refs.cycleform.reset();
+              this.getCircleData();
+              this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
+            }else{
+              this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+              console.log(res.data);
+            }
+          })
+          .catch(error=>{
+            this.$toast.error("新增失敗:" +error, { duration: 2000 });
+            console.log(error);
+          })
+      }else {
+        if(!this.addbasicDataOpen) {
+          this.addbasicDataOpen = true;
         }
+      }
     },
     showdialog_imgdialog: async function() {
       // this.imgdata.imgdate="";
@@ -1695,6 +1907,7 @@ export default {
           : "";
     },
     handleSelectionChange: async function(selection, row) {
+      console.log('select',selection,row)
       //清除
       this.$refs.circletable.clearSelection();
       //選到當前
@@ -1703,18 +1916,23 @@ export default {
       }
     },
     handleCurrentChange: async function(val) {
+      console.log('current',val,this.currentDataId);
       //清除
       this.$refs.circletable.clearSelection();
       // this.eventData = []; //清除事件紀錄清單
-      this.$refs.circletable.toggleRowSelection(val);
-      if(this.circleData.filter(x=>x.id==val.id).length==1){
+      this.$refs.circletable.toggleRowSelection();
+      // this.$refs.circletable.setCurrentRow(val);
+      if(this.circleData.filter(x=>x.id==val.id).length==1) {
         var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
         var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
         tempMain = (tempMain==undefined)?{}:[];
         tempContent= (tempContent==undefined)?{}:[];
         this.passObj["tempMain"] = tempMain;
         this.passObj["tempContent"] = tempContent;
+        this.resultListOpen = false;
+        // this.currentDataId = val.id;
       }
+      
       // return;
       //下面不做，之前有做事件紀錄
       // if (val != null) {
@@ -1726,6 +1944,339 @@ export default {
       // // this.currentRow = val;
       // await this.geteventData();//取得事件紀錄清單
     },
+    // 循環清單點擊
+    async clickRow(val, column, event) {
+      console.log('click',val, column, event);
+      if(column.label !== '操作') {
+        if(val.id==this.currentDataId) {
+          // 與原本點選的相同，取消點選
+          let data = _.cloneDeep(this.circleData);
+          this.circleData = [];
+          this.circleData = data;
+          this.currentDataId = null;
+        }else {
+          //清除
+          this.$refs.circletable.clearSelection();
+          // this.eventData = []; //清除事件紀錄清單
+          this.$refs.circletable.toggleRowSelection();
+          // this.$refs.circletable.setCurrentRow(val);
+          if(this.circleData.filter(x=>x.id==val.id).length==1) {
+            var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
+            // var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
+            // var tempContent = await this.getTemp(val.id);
+
+            // tempMain = (tempMain==undefined)?{}:[];
+            // tempContent = (tempContent==undefined)?{}:[];
+
+            // tempMain = {
+            //   "id": 30,
+            //   "name_ch": "樣板A",
+            //   "name_en": "template_a",
+            //   "remark": "this is a test",
+            //   "created_user": "jeff",
+            //   "created_time": "2022-12-27 15:17:05",
+            //   "updated_user": "jianwei.wen@idwater.com.tw",
+            //   "updated_time": "2023-10-26 08:49:03"
+            // }
+            
+              // tempContent = [
+              // {
+              //   "phase_id": 1,
+              //   "phase_name": "空池",
+              //   "stepList": [
+              //       {
+              //           "step_id": 23,
+              //           "step_name": "新增循環",
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":23
+              //           // "execute_time": '2023-10-25 10:12:12',
+              //           // confirm_time: '',
+              //       },
+              //       {
+              //           "step_id": 40,
+              //           "step_name": "其他",
+              //           // isConfirm:false,
+              //           "msg":'i am msg 2.',
+              //           // "execute_time": '2023-10-25 10:25:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":'23_02'
+              //       },
+              //       {
+              //           "step_id": 41,
+              //           "step_name": "其他",
+              //           // isConfirm:false,
+              //           "msg":'i am msg 1.',
+              //           // "execute_time": '2023-10-25 10:20:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":'23_01'
+              //       },
+              //       {
+              //           "step_id": 24,
+              //           "step_name": "設備正常",
+              //           // "execute_time": '2023-10-31 10:30:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":24
+              //       },
+              //       {
+              //           "step_id": 25,
+              //           "step_name": "消毒養殖池",
+              //           // "execute_time": '2023-10-31 10:50:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":25
+              //       },
+              //       {
+              //           "step_id": 26,
+              //           "step_name": "擺曝氣盤",
+              //           // "execute_time": '2023-11-01 01:50:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":26
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 2,
+              //     "phase_name": "養殖審核",
+              //     "stepList": [
+              //       {
+              //           "step_id": 27,
+              //           "step_name": "養殖審核1",
+              //           // "execute_time": '2023-11-01 01:50:12',
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":27
+              //       },
+              //       {
+              //           "step_id": 28,
+              //           "step_name": "養殖審核2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":28
+              //       },
+              //       {
+              //           "step_id": 29,
+              //           "step_name": "養殖審核4",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":29
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 3,
+              //     "phase_name": "備池",
+              //     "stepList": [
+              //       {
+              //           "step_id": 30,
+              //           "step_name": "備池1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":30
+              //       },
+              //       {
+              //           "step_id": 31,
+              //           "step_name": "備池2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":31
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 4,
+              //     "phase_name": "蓄水",
+              //     "stepList": [
+              //       {
+              //           "step_id": 32,
+              //           "step_name": "蓄水1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":32
+              //       },
+              //       {
+              //           "step_id": 33,
+              //           "step_name": "蓄水2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":33
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 5,
+              //     "phase_name": "做水",
+              //     "stepList": [
+              //       {
+              //           "step_id": 34,
+              //           "step_name": "做水1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":34
+              //       },
+              //       {
+              //           "step_id": 35,
+              //           "step_name": "做水2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":35
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 6,
+              //     "phase_name": "放養中",
+              //     "stepList": [
+              //       {
+              //           "step_id": 36,
+              //           "step_name": "放養中1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":36
+              //       },
+              //       {
+              //           "step_id": 37,
+              //           "step_name": "放養中2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":37
+              //       }
+              //     ]
+              //   },
+              //   {
+              //     "phase_id": 7,
+              //     "phase_name": "清池",
+              //     "stepList": [
+              //       {
+              //           "step_id": 38,
+              //           "step_name": "清池1",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":38
+              //       },
+              //       {
+              //           "step_id": 39,
+              //           "step_name": "清池2",
+              //           "execute_time": '',
+              //           "confirm_time": '',
+              //           "executor":'',
+              //           "confirm":'',
+              //           "sort_id":39
+              //       }
+              //     ]
+              //   },
+              // ]
+            
+            
+            console.log(tempMain);
+            // this.passObj["tempMain"] = tempMain;
+            // this.passObj["tempContent"] = await this.getTemp(val.id);
+            this.getTemp(val.id);
+            
+          }
+          // this.currentDataId = val.id;
+        }
+      }
+        
+      
+      
+    },
+    getTemp(id) {
+      let para={breeding_record_id:id}
+      this.$axios
+      .get(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`,
+            { params: para },
+            { httpsAgent: agent }
+          )
+          .then(res => {
+            console.log('get temp',res);
+            res.data.forEach(data=>{
+              if(data.phase_name_ch!=='空池') {
+                data.stepList.forEach(async step=>{
+                  if(step.step_name_ch !== '其他' && step.seq_id=='1') {
+                    step.seq_id = step.step_id.toString();
+                    await this.reviseSeqid(step);
+                  }
+                })
+              }
+              
+            })
+            this.passObj["tempContent"] = [];
+            // this.passObj["tempContent"] = res.data;
+            res.data.forEach(d=>{
+              if(d.phase_name_ch!=='空池') {
+                this.passObj["tempContent"].push(d);
+              }
+            })
+            this.resultListOpen = false;
+            this.resultCycleOpen = true;
+            this.currentDataId = id;
+            // return res.data;
+          })
+          .finally(() => {
+            /* 不論失敗成功皆會執行 */ 
+          });
+    },
+    async reviseSeqid(step) {
+      step.updated_user = this.$auth.$state.user.name;
+      await this.$axios
+        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
+            .then(res => {
+                if(res.data=='修改成功'){
+                    // this.$emit('getTemp');
+                    // this.$toast.success("更新成功!",{ duration: 2000 });
+                }
+                
+            })
+            .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+            })
+            .finally(() => {
+            });
+    },
+    // async openCycle(val) {
+    //   await this.getTemp(val.id);
+    // },
     //依項目回傳主要類別是什麼
     getItemClass: async function(item) {
       let colclass = "";
@@ -1873,12 +2424,14 @@ export default {
     //樣版清單
     getTemplateData: async function () {
       this.tempSelect = undefined;
+      this.addparm.temp_id = undefined;
       var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
       await this.$axios
         .get(url)
         .then(res => {
           this.template_items = res.data.map(x => x.tempMain);
           this.template_all = res.data;
+          console.log('template',this.template_all)
         })
         .finally(() => {
           /* 不論失敗成功皆會執行 */
@@ -1886,10 +2439,11 @@ export default {
     },
     // 選擇樣板
     tempChange: function () {
-      if (this.tempSelect != undefined) {
+      if (this.addparm.temp_id != undefined) {
         this.editmode = 'edit';
         this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
-        var myMain = this.template_items.filter(x => x.id == this.tempSelect)[0];
+        // var myMain = this.template_items.filter(x => x.id == this.tempSelect)[0];
+
         //本來要show passObj 裡面的東西
         // var temp = this.template_all.filter(x => x.tempMain == myMain)[0];
         // this.passObj = temp; 
@@ -1899,6 +2453,283 @@ export default {
       }
 
     },
+    // 批次執行Dialog
+    mutiExecuteDialog() {
+      this.mutiExecute = true;
+      this.nowExeArea = this.maindata[0].node[0].id;
+      this.nowTab = '執行';
+      this.mutiExecuteData=[{
+        pond_id: 50,
+        pond_name: 'A2',
+        status: '空池',
+        item: '新增循環',
+        item_id: 23,
+        execute_time: '',
+        confirm_time: '',
+        msg:''
+      },{
+        pond_id: 51,
+        pond_name: 'A3',
+        status: '養殖審核',
+        item: '養殖審核1',
+        item_id: 27,
+        execute_time: '',
+        confirm_time: '',
+        msg:''
+        
+      }];
+      this.mutiConfirmData=[{
+        pond_id: 49,
+        pond_name: 'A1',
+        status: '空池',
+        item: '設備正常',
+        item_id: 24,
+        execute_time: '2023-10-25 11:22:11',
+        confirm_time: '',
+        msg:''
+      },];
+    },
+    opencapDialog:async function(){
+      this.captchaDialog = true;
+    },
+    captchacheck:async function(){
+      const token = await this.$recaptcha.getResponse();
+      var parm = {token:token};
+        await this.$axios
+        .get(
+          `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm}
+        )
+        .then(res => {
+          var resdata = JSON.parse(res.data);
+          if(resdata.success){
+            this.captchaDialog=false;
+            this.mutiExecuteStep();
+          }
+        });
+      await this.$recaptcha.reset();
+    },
+    // 批次執行
+    mutiExecuteStep() {
+      let data = [];
+      if(this.nowTab == '執行') {
+        let mssssg = [];
+        this.mutiExecuteData.forEach(m=>{
+          if(m.checked) {
+            mssssg.push(m.pond_name);
+          }
+        })
+        if(mssssg.length>0) {
+          if (confirm(`確認 ${mssssg.toString()} 已執行？`)) {
+            this.mutiExecuteData.forEach(m=>{
+              if(m.checked) {
+                data.push(m);
+                // m.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                if(m.item == '新增循環') {
+                  m.item_id = '23_01';
+                  m.item = '其他';
+                  m.msg = 'i am msg1.'
+                  m.checked = false;
+                }else if(m.item == '養殖審核1') {
+                  m.item_id = 28;
+                  m.item = '養殖審核2'
+                  m.checked = false;
+                }
+              }
+            })
+          }
+        }
+        
+      }else {
+        let mssssg = [];
+        this.mutiConfirmData.forEach(m=>{
+          if(m.checked) {
+            mssssg.push(m.pond_name);
+          }
+        })
+        if(mssssg.length>0) {
+          if (confirm(`已確認 ${mssssg.toString()} 已執行？`)) {
+            this.mutiConfirmData.forEach((m,mid)=>{
+              if(m.checked) {
+                data.push(m);
+                // if(m.item == '設備正常') {
+                //   m.item_id = 25;
+                //   m.item = '消毒養殖池';
+                //   m.msg = ''
+                //   m.checked = false;
+                // }
+                this.mutiConfirmData.splice(mid,1);
+              }
+            })
+          }
+        }
+        
+        
+        
+      }
+    },
+    // 新增循環的池選擇
+    setNestedDisabled: function (obj, name) {
+        //全部都設成disabled
+        var deleteindex = [];
+        var objj = obj;
+        objj.forEach((itm, index) => {
+            // console.log(itm.parent);//所有node(含leaf)的名稱
+            itm.parent = itm.hasOwnProperty("parent")
+                    ? itm.parent
+                    : name;
+            const nodelst = ["1", "2"]; //第1、2層
+            if (nodelst.filter(x => x == itm.level) > 0) {
+                itm.id = itm.name + "_" + itm.id;
+            }
+            if (itm.visible == false) {
+                //visible的不顯示
+                deleteindex.push(index);
+                
+            }
+            if (itm.hasOwnProperty("node")) {
+                this.setNestedDisabled(itm.node, itm.name);
+            }
+        });
+        // for (let i = 0; i < deleteindex.length; i++) {
+        //   const element = deleteindex[i];
+        //   obj.splice(element, 1);
+        // }
+        //刪除 走道
+        for (var i = deleteindex.length - 1; i >= 0; i--) {
+            objj.splice(deleteindex[i], 1);
+        }
+        // console.log(objj);
+        return objj;
+    },
+    //新增循環的池選擇，計算資料範圍
+    nestedMain: function (obj, level) {
+      // console.log('obj',obj);
+        obj.forEach(itm => {
+            if (itm.level == level) {
+                if (itm.hasOwnProperty("node")) {
+                    delete itm.node;
+                }
+            }
+            if (itm.hasOwnProperty("node")) {
+                this.nestedMain(itm.node, level);
+            }
+            
+        });
+        return obj;
+    },
+    // 新增循環的池選擇，資料改變時，傳出數值
+    changeEvent:function(){
+
+      // console.log('dataid',this.dataid)
+      if(this.dataid.length>0) {
+        this.isDataidError = false;
+        // this.dataVolumn = [];
+        let id = [];
+        let datas = _.cloneDeep(this.dataVolumn);
+        let volume = [];
+        
+        datas.forEach(v=>{
+          id.push(v.id);
+          if(this.dataid.includes(v.id)) {
+            volume.push(v);
+          }
+        })
+
+        this.dataid.forEach(data=>{
+          if(!id.includes(data)) {
+            let name = '';
+            this.maindata.forEach(m=>m.node.forEach(a=>a.node.forEach(p=>{
+              if(p.id==data) {
+                name = a.name+'_'+p.name;
+              }
+            })))
+            
+            volume.push({
+              id: data,
+              name: name,
+              volume: this.allPondsData.filter(x => x.id == data)[0].volume,
+              num_per_unit: undefined,
+              estimated_num: undefined
+            });
+          }
+        })
+        this.dataVolumn = volume;
+      }
+      this.$emit('scopeSel_data',this.dataid);
+    },
+    // 循環清單編輯
+    editCircle(data) {
+      // this.editperson_in_charge = '';
+      // 取得水體積
+      this.showadd(true);
+      let getData = _.cloneDeep(data);
+      // 預估放苗
+      getData.estimated_num = getData.total;
+      // 預估存活要為數值
+      getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
+      this.editDialog = true;
+      console.log('>>>>edit',getData);
+      setTimeout(()=>{
+        this.resultListOpen = true;
+        // this.resultCycleOpen = false;
+        // this.currentDataId = null;
+        this.editparm = getData;
+        this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+        if(document.getElementsByClassName('v-dialog--active')) {
+          document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+        }
+      },200)
+      
+      // console.log(this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge}));
+      
+    },
+    cancelEdit() {
+      this.editDialog = false;
+    },
+    async submitEdit() {
+      let parm = _.cloneDeep(this.editparm);
+      parm.person_in_charge = this.editperson_in_charge;
+      delete parm.estimated_num;//刪除初始放苗量
+      console.log('>>>edit',parm);
+      if(this.$refs.editform.validate()){
+        await this.$axios
+            .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${this.editparm.id}/`, parm)
+            .then(res => {
+                if(res.data=='修改成功'){
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    this.editDialog = false;
+                    this.getCircleData();
+                    // this.updateouterAction('done');
+                }else{
+                    this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+                }
+
+                console.log("修改API:" + res.request.responseURL);
+            })
+            .catch(error => {
+                this.$toast.error("error:" + error, { duration: 2000 });
+            })
+            .finally(() => {
+            });
+
+      }
+    },
+    calcutorPerUnit(bool) {
+      if(this.dataVolumn.length>0) {
+        if(bool) {
+          this.dataVolumn.forEach(x=>{
+            x.num_per_unit = this.all_num_per_unit;
+            x.estimated_num =  x.volume*this.all_num_per_unit;
+          })
+        }else {
+          this.dataVolumn.forEach(x=>{
+            x.num_per_unit = undefined;
+            x.estimated_num =  undefined;
+          })
+          this.all_num_per_unit = undefined;
+        }
+      }
+    }
   },
   async mounted() {
    
@@ -1919,11 +2750,55 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getWeather(); //氣象
     await this.getOptData(); //選項
+    if(this.poolid!==''&&this.poolid!==undefined) {
+      this.get_scopeData(this.poolid);
+    }else {
+      this.poolid = 49;
+      this.get_scopeData(this.poolid);
+      this.getCircleData();
+    }
+  },
+  watch: {
+    resultListOpen: {
+      // 開合面板循環清單的刪除會跑版 
+      handler() {
+        this.$nextTick(()=>{
+          this.$refs.circletable.doLayout();
+        })
+      },
+      deep: true
+    },
+    editDialog: {
+      // 編輯循環清單的會跑版 
+      handler() {
+        this.$nextTick(()=>{
+          this.$refs.circletable.doLayout();
+        })
+      },
+      deep: true
+    },
+    circleData: {
+      // 切換場區循環清單的會跑版 
+      handler() {
+        this.$nextTick(()=>{
+          this.$refs.circletable.doLayout();
+        })
+      },
+      deep: true
+    }
+  },
+  computed: {
+    // 新增循環的池選擇
+    maindataScope:function(){
+      var data = _.cloneDeep(this.addPoolData);
+      var level = 3;
+      return this.nestedMain(data,level);
+    }
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .circle {
   border: 1px solid;
   height: 100px;
@@ -1939,11 +2814,225 @@ export default {
   font-size: 1.2em;
   transform: translate(-50%, -50%);
 }
-</style>
-<style>
 .el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
 .el-table__body tr.current-row > td {
   color: #000000;
   background-color: #fff09d !important;
+}
+.v-card.bg-card {
+  .btn-groups {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    button {
+      margin-right: 8px;
+    }
+  }
+  .result {
+    padding: 8px 12px;
+    .v-card.result-card {
+      .card-title {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding: 0;
+        margin: 12px 16px;
+        .title {
+          width: 100%;
+          .v-card__title {
+            font-size: 1rem;
+            padding: 12px;
+          }
+        }
+        .chevron {
+          .v-icon {
+            color: $color-dark;
+          }
+        }
+      }
+      button {
+        width: 24px;
+        height: 24px;
+        background-color: #006AA6;
+        border-radius: 4px;
+        position: relative;
+        margin: 4px;
+        transition: all 0.3s;
+        &:hover {
+            background-color: lighten($color: #006AA6, $amount: 3);
+        }
+        .theme--light.v-icon {
+            font-size: 1rem;
+            color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+        &.delete {
+          background-color: #A60017;
+          &:hover {
+              background-color: lighten($color: rgba(#A60017,0.9), $amount: 3);
+          }
+        }
+      }
+    }
+  }
+  
+}
+
+.close {
+  width: 24px;
+  height: 24px !important;
+  & .v-icon {
+    margin: 0;
+    // color: $color-accent !important;
+  }
+}
+::v-deep {
+  .el-table, .el-table__expanded-cell,.el-table tr,.el-table th.el-table__cell {
+    background: $color-lighten;
+    background-color: $color-lighten;
+  }
+  .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+  .el-table .el-table__header-wrapper td.el-table__cell, .el-table th.el-table__cell.is-leaf {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .el-table .cell {
+    padding: 0 16px;
+  }
+  .el-table thead {
+    color: rgba(0,0,0,0.6);
+    font-size: 0.8rem;
+  }
+  .el-table tr.el-table__row--level-0 {
+    font-size: 0.65rem;
+    height: 40px;
+    font-weight: bold;
+    color: $color-dark;
+    
+    & td {
+      background-color: $color-primary-25;
+      padding: 0 16px;
+    }
+    & td:nth-child(1) {
+      border-radius: 4px 0 0 0;
+    }
+    & td:last-child {
+      border-radius: 0 4px 0 0;
+    }
+    & i::before {
+      color: $color-dark;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  }
+  .el-table__row.el-table__row--level-1 .cell {
+    // font-size: 0.875rem;
+    // min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+  }
+  .el-table__body tr.el-table__row.el-table__row--level-1.hover-row>td.el-table__cell {
+    background-color: transparent;
+  }
+  .el-table__body tr.hover-row>td.el-table__cell,
+  .el-table__body tr.current-row>td.el-table__cell {
+    background-color: rgba($color-primary-25,0.3);
+  }
+  .el-checkbox.is-disabled {
+    display: none;
+  }
+  .el-table-column--selection .cell {
+    justify-content: center;
+  }
+
+
+  .theme--light.v-input {
+    margin-top: 0;
+  }
+  
+  .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
+    background: transparent;
+  }
+  .v-text-field--filled.v-input--dense > .v-input__control > .v-input__slot,.v-text-field--filled > .v-input__control > .v-input__slot {
+    min-height: 36px;
+  }
+  .v-text-field--filled:not(.v-text-field--single-line) input {
+    margin-top: 0;
+  }
+  .v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
+    margin-top: 4px;
+  }
+  .v-text-field input {
+    // padding: 0;
+  }
+  .v-text-field > .v-input__control > .v-input__slot > .v-text-field__slot {
+    align-items: center;
+  }
+  .v-text-field--filled.v-input--dense .v-label {
+    top: 8px;
+  }
+  .v-text-field--filled.v-input--dense .v-label.v-label--active {
+    top: 0;
+    color: $color-form;
+  }
+  
+  .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
+      box-shadow: none;
+      border: 1px solid $color-form;
+  }
+  .theme--light.v-icon {
+    color: $color-form;
+  }
+  .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+    border-color: $color-form;
+  }
+  .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__append-inner,
+  .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__prepend-outer {
+    margin-top: 8px;
+  }
+  .theme--light.v-input--is-disabled input {
+    background-color: transparent;
+  }
+  .theme--light.v-input--is-disabled.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before,
+  .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
+    border: 1px solid $color-dark-25;
+    border-width: thin 0 0 0;
+  }
+  .v-label.theme--light {
+    color: $color-dark;
+  }
+  .v-label.v-label--active.theme--light {
+    color: $color-form;
+  }
+  .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+    padding-top: 0;
+  }
+  .v-label.v-label--is-disabled.theme--light {
+    color: $color-dark-25;
+  }
+  
+  .v-input--dense > .v-input__control > .v-input__slot {
+    margin-bottom: 8px;
+  }
+  .v-text-field.v-input--dense:not(.v-text-field--outlined) input {
+    padding: 4px 0;
+  }
+  .v-autocomplete.v-text-field--enclosed:not(.v-text-field--solo):not(.v-text-field--single-line):not(.v-text-field--outlined).v-input--dense .v-select__slot > input {
+    margin-top: 0;
+    padding-top: 0;
+  }
+}
+
+@media(max-width:960) {
+  .v-card.bg-card {
+    .btn-groups {
+      justify-content: flex-start;
+    }
+  } 
+
 }
 </style>

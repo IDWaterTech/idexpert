@@ -1,35 +1,106 @@
 <template>
-    <v-row>
-        <v-col cols="12">
-            <div>
-                <span>養殖樣板設定</span>
-            </div>
-        </v-col>
-        <v-col cols="12">
-            <v-row>
-                <v-col cols="8">
-                    <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" clearable @change="tempChange">
-                        <span slot="append-outer">
-                            <v-btn icon color="blue" @click="editmode='add'"  :disabled="tempSelect!=undefined" ><v-icon>mdi-plus-box</v-icon></v-btn>
-                        </span>
-                        <span slot="append-outer">
-                            <v-btn icon color="error" @click="delTemp" :disabled="tempSelect==undefined"><v-icon>mdi-delete</v-icon></v-btn>
-                        </span>
-                        <!-- <span slot="prepend">
-                            <v-btn icon color="blue" @click="getTemplateData"><v-icon>mdi-reload</v-icon></v-btn>
-                        </span> -->
-                    </v-autocomplete>
-                    <div>
-                        <FeedTemplate v-if="editmode=='add'" @action="actionResult" :templatemode="editmode"></FeedTemplate>
-                        <FeedTemplate v-if="editmode=='edit'" @action="actionResult" :key="editKey" :templatemode="editmode" :passObj="passObj"></FeedTemplate>
+    <div>
+        <v-row  v-if="template_items.length>0">
+            <v-col cols="7" md="6" sm="6" style="padding: 0;">
+                <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
+                    <v-select :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="template_items" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
+                    
+                    </v-select>
+                    
+                </div>
+            </v-col>
+            <v-col cols="5" md="6" sm="6" style="padding: 0;">
+                <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
+                    
+                    <div class="chevron" style="display: flex;align-items: center;">
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <button :class="{'disabled':editmode=='edit'}" class="btn-icon" @click="editmode='edit';tempSelect= template_items[0].id;tempChange();nowExpand = true;" v-bind="attrs" v-on="on">
+                                    <v-icon>mdi-pencil</v-icon>
+                                </button>
+                            </template>
+                            <span>編輯樣板</span>
+                        </v-tooltip>
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <button :class="{'disabled':editmode=='add'}" class="btn-icon green" @click="editmode='add';tempSelect= '';nowExpand = true;" v-bind="attrs" v-on="on">
+                                    <v-icon>mdi-plus</v-icon>
+                                </button>
+                            </template>
+                            <span>新增樣板</span>
+                        </v-tooltip>
+                        
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <button :class="{'disabled':editmode!=='edit'}" class="btn-icon  delete" @click="delTemp" v-bind="attrs" v-on="on">
+                                    <v-icon>mdi-trash-can</v-icon>
+                                </button>
+                            </template>
+                            <span>刪除樣板</span>
+                        </v-tooltip>
+                        <!-- <v-btn v-if="editmode=='edit'" class="btn-icon green" @click="editmode='add'"><v-icon>mdi-plus</v-icon></v-btn>
+                        <v-btn v-if="editmode=='add'" class="btn-icon" @click="editmode='edit'"><v-icon>mdi-pencil</v-icon></v-btn>
+                        <v-btn v-if="editmode=='edit'" class="btn-icon delete" @click="editmode='delTemp'"><v-icon>mdi-trash-can</v-icon></v-btn> -->
                     </div>
-
-                </v-col>
-                <v-col cols="4"></v-col>
-            </v-row>
-             
-        </v-col>
-    </v-row>
+                </div>
+            </v-col>
+        </v-row>
+        
+        <div class="content" style="padding: 0;margin-top: 24px;">
+            <div class="result">
+                <v-card class="result-card">
+                     <!-- 表頭 -->
+                    <div class="card-title">
+                       
+                        <div class="title">
+                            <v-row style="align-items: center;margin-bottom: 0;justify-content: space-between;">
+                                <!-- <v-col cols="4" md="4" sm="4" style="padding: 0;"> -->
+                                    <!-- <v-card-title>養殖歷程</v-card-title> -->
+                                    <v-card-title v-if="editmode=='edit'">樣板編輯</v-card-title>
+                                    <v-card-title v-if="editmode=='add'">樣板新增</v-card-title>
+                                <!-- </v-col> -->
+                                <!-- <v-col cols="8" md="8" sm="8" style="padding: 0 8px;"> -->
+                                    <div class="btn-groups" style="margin-right: 8px;">
+                                        <div class="open">
+                                            <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
+                                                <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
+                                            </v-btn>
+                                            <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;">
+                                                <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
+                                            </v-btn>
+                                        </div>
+                                    </div>
+                                    
+                                <!-- </v-col> -->
+                            </v-row>    
+                        </div>
+                          
+                        
+                    </div>
+                    <div class="content">
+                        <div class="search">
+                            <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" clearable @change="tempChange"> -->
+                                <!-- <span slot="append-outer">
+                                    <v-btn icon color="blue" @click="editmode='add'"  :disabled="tempSelect!=undefined" ><v-icon>mdi-plus-box</v-icon></v-btn>
+                                </span>
+                                <span slot="append-outer">
+                                    <v-btn icon color="error" @click="delTemp" :disabled="tempSelect==undefined"><v-icon>mdi-delete</v-icon></v-btn>
+                                </span> -->
+                                <!-- <span slot="prepend">
+                                    <v-btn icon color="blue" @click="getTemplateData"><v-icon>mdi-reload</v-icon></v-btn>
+                                </span> -->
+                            <!-- </v-autocomplete> -->
+                            <div>
+                                <FeedTemplate v-if="editmode=='add'" @action="actionResult" :templatemode="editmode" :accdata="[]" :nowExpand="nowExpand"></FeedTemplate>
+                                <FeedTemplate v-if="editmode=='edit'" @action="actionResult" :key="editKey" :templatemode="editmode" :passObj="passObj" :accdata="[]" :nowExpand="nowExpand"></FeedTemplate>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </v-card>
+            </div>
+        </div>
+    </div>
 
 </template>
 
@@ -43,6 +114,7 @@ export default {
             tempSelect: undefined,//已選到的樣版
             editmode:undefined,//目前是要新增樣版還是編輯
             passObj:{},
+            nowExpand: true
             
         }
     },
@@ -61,7 +133,7 @@ export default {
                 this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
                 var myMain =this.template_items.filter(x=>x.id==this.tempSelect)[0];
                 var temp = this.template_all.filter(x=>x.tempMain==myMain)[0];
-                this.passObj= temp;
+                this.passObj= _.cloneDeep(temp);
             }else{
                 this.editmode=undefined;
                 this.passObj={};
@@ -113,6 +185,14 @@ export default {
                 .then(res => {
                     this.template_items = res.data.map(x=>x.tempMain);
                     this.template_all = res.data;
+                    if(this.template_items.length>0) {
+                        this.tempSelect = res.data[0].tempMain.id;
+                        this.tempChange();
+                        this.editmode = 'edit';
+                    }else {
+                        this.editmode = 'add';
+                    }
+                    
                 })
               .finally(() => {
                 /* 不論失敗成功皆會執行 */
@@ -125,6 +205,36 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.v-card.result-card {
+    &.item-card.theme--light {
+        background-color: #fff;
+    }
+    .card-title {
+        padding: 12px 16px !important;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        .title {
+            width: 100%;
+            .v-card__title {
+                font-size: 1rem;
+                padding: 0;
+            }
+        }
+        
+        .chevron {
+            .v-icon {
+                color: $color-dark;
+            }
+        }      
+    } 
+}
+::v-deep {
+    .theme--light.v-data-table {
+        background-color: transparent;
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+        background-color: rgba($color: $color-primary, $alpha: 0.1);
+    }
+}
 </style>

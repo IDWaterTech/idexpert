@@ -1,13 +1,40 @@
 <!-- 
     養殖歷程-設定
  -->
-<template>
+ <template>
     <div>
         <!-- <h1 style="color:white;">養殖設定</h1>
         <span ></span> -->
-        <v-row dense class="mx-14">
+        <v-card class="bg-card" style="margin-bottom: 16px;">
+            <div class="content" style="padding-left: 0;padding-top:0;padding-bottom: 0;">
+                <div class="result">
+                    <!-- <div class="result-card" style="background-color: #fff;"> -->
+                        <v-row style="margin-bottom: 4px;align-items: center;">
+                            <v-col cols="12">
+                                <div class="header-bar">
+                                    <v-tabs show-arrows>
+                                        <!-- 上方tab -->
+                                        <v-tab v-for="tab in modelitems" :key="'tabs-'+tab.id" :href="`#` + tab.name">
+                                            {{ tab.name }}設定
+                                        </v-tab>
+                                        <v-tab-item :value="'種苗'">
+                                            <seedlings></seedlings>
+                                        </v-tab-item>
+                                        <v-tab-item :value="'樣板'">
+                                            <feedTemp></feedTemp>
+                                        </v-tab-item>
+                                    </v-tabs>
+                                </div>
+                            </v-col>
+                            
+                        </v-row>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </v-card>
+        <!-- <v-row dense class="mx-14"> -->
             <!-- 下拉 -->
-            <v-col cols="12">
+            <!-- <v-col cols="12">
                 <v-row>
                     <v-col cols="8">
                         <v-select dark v-model="settingModel" :items="modelitems" dense filled hide-details item-value="id"
@@ -24,11 +51,11 @@
                     <v-divider></v-divider>
                     <v-card-text>
                         <seedlings v-if="modelitems.filter(x => x.id == settingModel)[0].name == '種苗'"></seedlings>
-                        <feedTemp v-if="modelitems.filter(x => x.id == settingModel)[0].name == '樣板'"></feedTemp>
+                        <feedTemp2 v-if="modelitems.filter(x => x.id == settingModel)[0].name == '樣板'"></feedTemp2>
                     </v-card-text>
                 </v-card>
-            </v-col>
-        </v-row>
+            </v-col> -->
+        <!-- </v-row> -->
     </div>
 </template>
 
@@ -62,3 +89,5 @@ export default {
    
 };
 </script>
+<style lang="scss" scoped>
+</style>
