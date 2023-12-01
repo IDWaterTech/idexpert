@@ -49,7 +49,7 @@
                                 :style="{overflowX:`${nowAreaTag=='setting'&& nowLayout=='color'?'initial':'scroll'}`}"
                                 style="margin-bottom: 16px;overflow-x: scroll;overflow-y: hidden;"
                             >
-                                <poollayout  id="layout" :areas="areas" :layout="layout" :nowAreaTag="nowAreaTag" :nowAreaId="nowAreaId" :showedit="mapshowedit" :statcolor="statcolor" :successData="successData" :setting="setting" @editPoolOuter="edit($event)" @saveSuccess="saveDelete($event)"></poollayout>
+                                <poollayout :water="[]"  id="layout" :areas="areas" :layout="layout" :nowAreaTag="nowAreaTag" :nowAreaId="nowAreaId" :showedit="mapshowedit" :statcolor="statcolor" :successData="successData" :setting="setting" @editPoolOuter="edit($event)" @saveSuccess="saveDelete($event)"></poollayout>
                                 <!-- <setting v-else class="mt-3" @update="settingUpdated"></setting> -->
                             </v-tab-item>
                             

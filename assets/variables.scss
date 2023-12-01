@@ -529,6 +529,19 @@ $color-green: #00A660;
       }
     }
   }
+  .poollayout {
+    .block {
+        color: #00273E;
+        border-radius: 6px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        // min-width: 120px;
+        &.setting-block:hover {
+          opacity: 0.5;
+        }
+    }
+    
+  }
 }
 
 // result card

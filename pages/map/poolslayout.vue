@@ -5,11 +5,13 @@
       <div v-if="nowAreaTag!=='setting' && ponds.length>0 && isSetting">
         <v-row  v-for="(pond,pid) in ponds" :key="pid" class="mx-0 parent-row" :id="`pid-${pid}`" style="display: flex;align-items: stretch;">
           <div v-for="(b,bid) in pond.pond" :key="bid"
-            :class="{'block':b.state!==''&& b.rows.length==0 && b.isSetting,'text-center my-1':windowWidth>=700 && b.name!=='road','road':b.id==''&&b.name=='road','rows-display':b.rows.length>0,'edit-block':showedit}"
+            :class="{'block':b.state!==''&& b.rows.length==0 && b.isSetting,'text-center my-1':windowWidth>=700 && b.name!=='road','road':b.id==''&&b.name=='road','rows-display':b.rows.length>0,'edit-block':showedit,'danger-water':b.level=='danger','warning-water':b.level=='warning',}"
             :style="{
-              background: `${b.isSetting==false?'transparent':((b.id==''&& b.state=='')||b.rows.length||(b.id==''&&b.name=='road')>0)?'transparent':getItemColor(b.state)}`,
+              background: `${b.level=='danger'?'#A60017':b.level=='warning'?'#FBBC05':b.isSetting==false?'transparent':((b.id==''&& b.state=='')||b.rows.length||(b.id==''&&b.name=='road')>0)?'transparent':getItemColor(b.state)}`,
               minWidth: `${getWidth(b)}`,
-              minHeight: `${b.id==''&& b.state==''&& b.rows.length==0?'48px':'0'}`
+              minHeight: `${b.id==''&& b.state==''&& b.rows.length==0?'48px':'0'}`,
+              paddingTop: `${($route.path=='/basic'&& b.rows.length>0)? '0':'12px'}`,
+              paddingBottom: `${($route.path=='/basic'&& b.rows.length>0) ? '0':'12px'}`
             }" 
             style="flex-shrink: 0;"
             class="mx-3">
@@ -30,11 +32,11 @@
             ></mappoolelement>
 
             <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="mx-3 sub-row">
-              <v-row v-for="(row,sid) in b.rows" :key="sid">
+              <v-row v-for="(row,sid) in b.rows" :key="sid" style="margin-bottom: 0;">
                   <div
-                      :class="{'block':row.state!=='','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit}"
+                      :class="{'block':row.state!=='','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning',}"
                       :style="
-                          row.state == '無'? `width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
+                        row.state == '無'? b.rowMaxCols==1?`width:120px`:`width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
                       ">
                       <mappoolelement
                           :item="row"
@@ -85,7 +87,7 @@
             </div>
           </div>
         </v-row>
-        <v-row v-if="MaxDate" class="mx-0 parent-row">
+        <v-row v-if="MaxDate && $route.path!=='/basic'" class="mx-0 parent-row">
           <div class="mx-3 my-1 update-time">
             <span>最後更新時間：{{ MaxDate }}</span>
           </div>
@@ -125,11 +127,11 @@
           <settinglayout v-if="setting=='layout'" class="mx-3" style="width: 100%;" :areas="areas1"></settinglayout>
         </v-row>
       </div>
-      <div v-else-if="ponds.length==0 && !$route.query.field" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
+      <div v-else-if="ponds.length==0 && !$route.query.field || ponds.length==0 && $route.path=='/basic'" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
       <div v-else-if="$route.query.field" class="nodata">無資料!</div>
-      <div v-else-if="!isSetting && !$route.query.field" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
+      <div v-else-if="!isSetting && !$route.query.field && $route.path!=='/basic'" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
+      <div  v-else-if="!isSetting && $route.path=='/basic'" class="nodata">尚未設置地圖，請先至養殖池況頁，點選 設定 > 配置設定，選擇此區進行設定</div>
     </div>
-    
   </div>
 </template>
 
@@ -410,6 +412,14 @@ export default {
     };
   },
   props: {
+    water: {
+      type: Array,
+      default: []
+    },
+    waterloading: {
+      type: Boolean,
+      default: true
+    },
     showedit: {
       type: Boolean,
       default: false
@@ -446,10 +456,14 @@ export default {
       }
     }
   },
-  created() {
+  async created() {
     // this.nowLayout();
     // this.getPondData();
     this.getPondData();
+    await this.getStateColor();
+    if(this.$route.path == '/basic') {
+      this.isLoad = this.waterloading;
+    }
   },
   async mounted() {
     //監控視窗
@@ -476,7 +490,7 @@ export default {
     },
     getPondData: async function() {
       // let now = this.nowAreaTag+'-state';
-      let now = this.nowAreaTag[0].toLowerCase()+this.nowAreaTag.slice(1)+'-state'
+      // let now = this.nowAreaTag[0].toLowerCase()+this.nowAreaTag.slice(1)+'-state'
       // console.log(now)
       const agent = new https.Agent({
         rejectUnauthorized: false
@@ -497,13 +511,15 @@ export default {
       //   .catch(error => {
       //     // alert("error:" + error.message);
       //   });
+      console.log('nowAreaId',this.nowAreaId.factory_id);
       let parm = {
         factory_id: this.nowAreaId.factory_id,
         pond_area_id: null
 
       }
       // this.isLoad = false;
-      await this.$axios
+      if(this.nowAreaId.factory_id!==null) {
+        await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
         .then(res => {
           // this.ponds = res.data;
@@ -512,11 +528,21 @@ export default {
           
           this.dataPrepare();
           this.getLayoutData();
-          this.isLoad = true;
+          if(this.$route.path!==('/basic')) {
+            this.isLoad = true;
+          }
+          
         })
         .catch(error => {
           // alert("error:" + error.message);
         });
+      }
+      
+    },
+    async getStateColor() {
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
       //取得池況顏色設定
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
@@ -704,7 +730,9 @@ export default {
     },
     dataPrepare() {
       this.isSetting = false;
+      
       // 資料一開始撈取出來後，進行資料的整理，取出目前選取的區
+      console.log('dataPrepare',this.allData)
       this.allData.forEach(data=>{
         if(this.nowAreaTag==data.area_no) {
           this.ponds = data.ponds;
@@ -724,6 +752,10 @@ export default {
               if(r.isSetting) {
                 this.isSetting = true;
               }
+              if(this.water.filter(x=>x.id==r.id)[0].value) {
+                r.water = this.water.filter(x=>x.id==r.id)[0].value;
+                r.level = this.water.filter(x=>x.id==r.id)[0].level;
+              }
             })
           }else {
             if(!b.updated_time && b.id=='') {
@@ -736,6 +768,10 @@ export default {
             if(b.isSetting) {
               this.isSetting = true;
             }
+            if(this.water.filter(x=>x.id==b.id)[0]) {
+              b.water = this.water.filter(x=>x.id==b.id)[0].value;
+              b.level = this.water.filter(x=>x.id==b.id)[0].level;
+            }
           }
           b.center = false;
         })
@@ -743,7 +779,10 @@ export default {
       this.oldAreaTag=this.nowAreaTag;
       this.getMaxCols();
       console.log('data prepare',this.ponds);
-      this.nowLayout = this.areas[0].name;
+      if(this.areas.length>0) {
+        this.nowLayout = this.areas[0].name;
+      }
+      
       // this.getCenter();
     },     
   },
@@ -836,6 +875,17 @@ export default {
     nowLayout() {
       this.getLayoutData();
       // console.log('change layout',this.areas1);
+    },
+    // water: {
+    //   handler(val){
+    //     this.isLoad = this.waterloading;
+    //    // do stuff
+    //   },
+    //   deep: true
+
+    // },
+    waterloading() {
+      this.isLoad = true;
     }
   }
 };
@@ -949,6 +999,7 @@ v-row > div{
     justify-content: center;
     &.edit-block {
       padding: 12px;
+      min-width: 120px;
     }
   }
   .road {
@@ -969,5 +1020,61 @@ v-row > div{
   font-size: 14px;
   color: #00273E;
 }
-
+.danger-water,.warning-water {
+  // box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  &::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+.danger-water {
+//  border: 6px solid $color-accent;
+//  background-color: #d3808f;
+  // animation: scale 2s 2;
+  &::before {
+    // background-color: rgba($color-accent,0.6);
+    background-color: rgba(#fefefe,0.3);
+    
+    animation: breath 1.2s infinite;
+  }
+}
+.warning-water {
+  // border: 4px solid #FBBC05;
+  &::before {
+    // background-color: rgba(#f79c2b,0.2);
+    background-color: rgba(#fefefe,0.5);
+    animation: breath 2.5s infinite;
+ }
+}
+@keyframes breath {
+  0% {
+    opacity: 0.6;
+    // transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    // transform: scale(1);
+  }
+  100% {
+    opacity: 0.6;
+    // transform: scale(0.98);
+  }
+}
+@keyframes scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 </style>

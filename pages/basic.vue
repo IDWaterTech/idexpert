@@ -15,10 +15,10 @@
             <v-row style="margin-bottom: 4px;align-items: center;">
               <!-- 選擇場區 -->
               <v-col cols="12" md="4" sm="12" style="position: relative;">
-                <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;closepanel();" style="margin-right: 0;"></locate-select>
+                <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;" style="margin-right: 0;"></locate-select>
               </v-col>
               <!-- 選擇起始日 -->
-              <v-col cols="12" md="3" sm="12">
+              <!-- <v-col cols="12" md="3" sm="12">
                 <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
                   transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
@@ -37,9 +37,9 @@
                   closepanel();
                   "></v-date-picker>
                 </v-menu>
-              </v-col>
+              </v-col> -->
               <!-- 選擇迄日 -->
-              <v-col cols="12" md="3" sm="12">
+              <!-- <v-col cols="12" md="3" sm="12">
                 <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
                   transition="scale-transition" offset-y min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
@@ -62,7 +62,7 @@
               <v-col v-if="sel_main&&windowWidth>959.98 " cols="12" sm="1">
                 <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
                   class="mx-1" dense hide-details></v-text-field>
-              </v-col>
+              </v-col> -->
               <!-- 查詢/小螢幕布局圖 -->
               <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center" style="display: flex;flex-direction: row;align-items: center;">
                 <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
@@ -241,778 +241,26 @@
                   </v-card>
                 </v-col>
               </v-row>
-              <!-- 圖表 -->
+              <!-- 下方水質地圖 -->
               <v-row style="margin-bottom: 0;" >
                 <v-col cols="12" style="padding-top: 0;">
-                  <v-card class="result-card">
+                  <v-card class="result-card water">
                     <div class="content">
-                      <div class="header-bar" style="padding: 12px 0;padding-top: 4px;">
+                      <div class="header-bar water-bar" style="padding: 12px 0;padding-top: 4px;">
                         <v-tabs v-model="currenttab" show-arrows>
                           <!-- 上方tab -->
-                          <v-tab v-for="(tab, idx) in tabs" :key="'tabs-'+idx" :href="`#` + tab.name">
+                          <v-tab v-for="(tab, idx) in tabsMap" :key="'tabs-'+idx" :href="`#` + tab.name">
                             {{ tab.name }}
                           </v-tab>
-                          <!-- 水質監測 -->
-                          <v-tab-item :value="'水質監測'">
-                            <v-overlay :value="waterloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6" align-self="center" class="mutiselect">
-                                    <v-select v-model="defitem" clearable multiple filled deletable-chips chips dense hide-details
-                                      placeholder="指定項目" :items="Object.keys(allcols.water)" v-if="allcols.water"
-                                      :disabled="waterloading == true">
-                                    </v-select>
-                                    <div  v-if="windowWidth<959.98" class="spector" @click="setDefitem" style="padding-top: 4px;">主要觀測項目
 
-                                    </div>
-                                  </v-col>
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && waterloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.水質" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="waterdata.map(x => x['name'])" v-if="allcols.water" no-data-text="查無資料">
-                                      <!-- <template
-                                        v-slot:selection="{ item }">
-                                        <v-chip
-                                            style="font-size: 12px;margin: 2px;color: #fff;"
-                                            color="#408FBC"
-                                            class="main"
-                                            close
-                                        >
-                                        {{ item }}
-                                        </v-chip>
-                                        
-                                    </template> -->
-                                    </v-select>
-                                  </v-col>
-                                  <!-- 查詢 -->
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
-                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                </v-row>
-                                <!-- 觀測項目/圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6"  md="6" sm="4" align-self="center" style="padding-top: 0;" v-if="windowWidth<959.98">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <!-- 主要觀測項目 -->
-                                  <v-col v-if="windowWidth>959.98" cols="6" md="6" sm="4" align-self="center" style="padding-top: 0;">
-                                    <div class="spector" @click="setDefitem">主要觀測項目
-
-                                    </div>
-                                    <!-- <v-btn rounded block color="primary" @click="
-                                      () => {
-                                        this.defitem = [
-                                          '亞硝酸鹽濃度',
-                                          '氨氮濃度',
-                                          '水溫',
-                                          '溶氧濃度',
-                                          '酸鹼濃度'
-                                        ];
-                                      }
-                                    ">主要觀測項目</v-btn> -->
-                                  </v-col>
-                                  <!-- 圖表顯示控制 -->
-                                  <v-col cols="6" md="6" sm="8" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in waterdata"
-                                    :key="item.id" v-show="
-                                      defPool.水質.includes(item.name) || defPool.水質.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <!-- defitem -->
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
-                                      :defaultitem="defalutItemList" :loading="waterloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <!-- 無資料 -->
-                                <v-row v-if="waterdata.length < 1 && waterloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
-                          <!-- 環境監測 -->
-                          <v-tab-item :value="'環境監測'">
-                            <v-overlay :value="envloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6"  class="mutiselect">
-                                    <v-select v-model="defitem_env" clearable multiple deletable-chips chips hide-details placeholder="指定項目"
-                                      :items="Object.keys(allcols.env)" v-if="allcols.env" :disabled="envloading == true">
-                                    </v-select>
-                                    <!-- <v-select
-                                      v-model="defitem_env"
-                                      clearable
-                                      multiple
-                                      chips
-                                      placeholder="指定項目"
-                                      :items="Object.keys(envdatacols)"
-                                      v-if="envdatacols"
-                                    >
-                                    </v-select> -->
-                                  </v-col>
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && envloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.環境" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="envdata.map(x => x['name'])" v-if="allcols.env" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col>
-                                  <!-- <v-col cols="12" md="3" v-if="Object.keys(allcols).length > 0 && envloading == false">
-                                    <v-select v-model="defPool.環境" clearable multiple chips placeholder="顯示養殖池"
-                                      :items="envdata.map(x => x['name'])" v-if="allcols.env" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col> -->
-                                  
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  
-                                  
-                                  <!-- <v-col cols="12" md="3">
-                                    顯示：{{ colstyle + 1 }}欄式
-                                    <v-btn-toggle v-model="colstyle" dense mandatory>
-                                      <v-btn small>
-                                        <v-icon>mdi-square-medium</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-pause</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-view-column</v-icon>
-                                      </v-btn>
-                                    </v-btn-toggle>
-                                  </v-col> -->
-                                </v-row>
-                                <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in envdata"
-                                    :key="item.id" v-show="
-                                      defPool.環境.includes(item.name) || defPool.環境.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
-                                      :defaultitem="defalutItemList_env" :loading="envloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <v-row v-if="envdata.length < 1 && envloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
-                          <!-- 投餵飼料 -->
-                          <v-tab-item :value="'投餵飼料'">
-                            <v-overlay :value="feedloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6" align-self="center" class="mutiselect">
-                                    <v-select v-model="defitem_feed" clearable multiple filled deletable-chips chips dense hide-details
-                                      placeholder="指定項目" :items="Object.keys(allcols.feed)" v-if="allcols.feed"
-                                      :disabled="feedloading == true">
-                                    </v-select>
-                                  </v-col>
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && feedloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.飼料" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="feeddata.map(x => x['name'])" v-if="allcols.feed" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col>
-                                  
-                                  
-                                  <v-col cols="12" md="1" align-self="center"  v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
-                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  
-                                  
-                                  <!-- <v-col cols="12" md="3">
-                                    顯示：{{ colstyle + 1 }}欄式
-                                    <v-btn-toggle v-model="colstyle" dense mandatory>
-                                      <v-btn small>
-                                        <v-icon>mdi-square-medium</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-pause</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-view-column</v-icon>
-                                      </v-btn>
-                                    </v-btn-toggle>
-                                  </v-col> -->
-                                </v-row>
-                                <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in feeddata"
-                                    :key="item.id" v-show="
-                                      defPool.飼料.includes(item.name) || defPool.飼料.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
-                                      :defaultitem="defalutItemList_feed" :loading="feedloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <v-row v-if="feeddata.length < 1 && feedloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
-                          <!-- 飼料觀察網 -->
-                          <v-tab-item :value="'飼料觀察網'">
-                            <v-overlay :value="envloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6" align-self="center" class="mutiselect">
-                                    <v-select v-model="defitem_obs" clearable multiple filled deletable-chips chips dense hide-details
-                                      placeholder="指定項目" :items="Object.keys(allcols.obs)" v-if="allcols.obs"
-                                      :disabled="obsloading == true">
-                                    </v-select>
-                                  </v-col>
-                                  
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && obsloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.觀察" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="obsdata.map(x => x['name'])" v-if="allcols" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col>
-
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
-                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-
-                                  <!-- <v-col cols="12" md="3">
-                                    顯示：{{ colstyle + 1 }}欄式
-                                    <v-btn-toggle v-model="colstyle" dense mandatory>
-                                      <v-btn small>
-                                        <v-icon>mdi-square-medium</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-pause</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-view-column</v-icon>
-                                      </v-btn>
-                                    </v-btn-toggle>
-                                  </v-col> -->
-                                </v-row>
-                                <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in obsdata"
-                                    :key="item.id" v-show="
-                                      defPool.觀察.includes(item.name) || defPool.觀察.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
-                                      :defaultitem="defalutItemList_obs" :loading="obsloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <v-row v-if="obsdata.length < 1 && obsloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
-                          <!-- 進階值 -->
-                          <v-tab-item :value="'進階值'">
-                            <v-overlay :value="advloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6" align-self="center" class="mutiselect">
-                                    <v-select v-model="defitem_adv" clearable multiple filled deletable-chips chips dense hide-details
-                                      placeholder="指定項目" :items="Object.keys(allcols.adv)" v-if="allcols.adv"
-                                      :disabled="advloading == true">
-                                    </v-select>
-                                  </v-col>
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && advloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.進階" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="advdata.map(x => x['name'])" v-if="allcols.adv" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col>
-
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
-                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  
-                                  <!-- <v-col cols="12" md="3">
-                                    顯示：{{ colstyle + 1 }}欄式
-                                    <v-btn-toggle v-model="colstyle" dense mandatory>
-                                      <v-btn small>
-                                        <v-icon>mdi-square-medium</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-pause</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-view-column</v-icon>
-                                      </v-btn>
-                                    </v-btn-toggle>
-                                  </v-col> -->
-                                </v-row>
-                                <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in advdata"
-                                    :key="item.id" v-show="
-                                      defPool.進階.includes(item.name) || defPool.進階.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
-                                      :defaultitem="defalutItemList_adv" :loading="advloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <v-row v-if="advdata.length < 1 && advloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
-                          <!-- 投餵益生菌 -->
-                          <v-tab-item :value="'投餵益生菌'">
-                            <v-overlay :value="pbioloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6" align-self="center" class="mutiselect">
-                                    <v-select v-model="defitem_pbio" clearable multiple filled deletable-chips chips dense hide-details
-                                      placeholder="指定項目" :items="Object.keys(allcols.pbio)" v-if="allcols.pbio"
-                                      :disabled="pbioloading == true">
-                                    </v-select>
-                                  </v-col>
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && pbioloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.益生菌" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="pbiodata.map(x => x['name'])" v-if="allcols.pbio" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col>
-
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
-                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  
-                                  <!-- <v-col cols="12" md="3">
-                                    顯示：{{ colstyle + 1 }}欄式
-                                    <v-btn-toggle v-model="colstyle" dense mandatory>
-                                      <v-btn small>
-                                        <v-icon>mdi-square-medium</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-pause</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-view-column</v-icon>
-                                      </v-btn>
-                                    </v-btn-toggle>
-                                  </v-col> -->
-                                </v-row>
-                                <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in pbiodata"
-                                    :key="item.id" v-show="
-                                      defPool.益生菌.includes(item.name) ||
-                                      defPool.益生菌.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
-                                      :defaultitem="defalutItemList_pbio" :loading="pbioloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <v-row v-if="pbiodata.length < 1 && pbioloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
-                          <!-- 養殖用料 -->
-                          <v-tab-item :value="'養殖用料'">
-                            <v-overlay :value="materialloading" :absolute="true">
-                              <v-progress-circular indeterminate size="64"></v-progress-circular>
-                            </v-overlay>
-                            <v-card>
-                              <v-card-text style="padding: 12px 0;">
-                                <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <!-- 指定項目 -->
-                                  <v-col cols="12" md="6" align-self="center" class="mutiselect">
-                                    <v-select v-model="defitem_material" clearable multiple filled deletable-chips chips dense hide-details
-                                      placeholder="指定項目" :items="Object.keys(allcols.breeding_material)" v-if="allcols.breeding_material"
-                                      :disabled="materialloading == true">
-                                    </v-select>
-                                  </v-col>
-                                  <!-- 養殖池 -->
-                                  <v-col cols="12" md="5" v-if="Object.keys(allcols).length > 0 && materialloading == false" class="mutiselect"
-                                    :style="{'padding':`${windowWidth>959.98?'12px':'0 12px 12px 12px'}`}">
-                                    <v-select v-model="defPool.用料" clearable multiple deletable-chips chips hide-details placeholder="顯示養殖池" 
-                                      :items="materialdata.map(x => x['name'])" v-if="allcols.breeding_material" no-data-text="查無資料">
-                                    </v-select>
-                                  </v-col>
-                                  
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
-                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-
-                                  <!-- <v-col cols="12" md="3">
-                                    顯示：{{ colstyle + 1 }}欄式
-                                    <v-btn-toggle v-model="colstyle" dense mandatory>
-                                      <v-btn small>
-                                        <v-icon>mdi-square-medium</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-pause</v-icon>
-                                      </v-btn>
-                                      <v-btn small>
-                                        <v-icon>mdi-view-column</v-icon>
-                                      </v-btn>
-                                    </v-btn-toggle>
-                                  </v-col> -->
-                                </v-row>
-                                <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
-                                    <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
-                                  </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
-                                      區塊顯示
-                                      <v-switch
-                                        v-model="chartToggle"
-                                        label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
-                                      ></v-switch>
-                                    </div>
-                                    
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
-                                        <!-- 顯示：{{ colstyle + 1 }}欄式 -->
-                                        <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
-                                          <v-btn small>
-                                            <v-icon>mdi-square-medium</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-pause</v-icon>
-                                          </v-btn>
-                                          <v-btn small>
-                                            <v-icon>mdi-view-column</v-icon>
-                                          </v-btn>
-                                        </v-btn-toggle>
-                                    </div>
-                                    
-                                  </v-col>
-                                </v-row>
-                                <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in materialdata"
-                                    :key="item.id" v-show="
-                                      defPool.用料.includes(item.name) ||
-                                      defPool.用料.length == 0
-                                    ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
-                                    <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
-                                      :defaultitem="defalutItemList_material" :loading="materialloading" :title="item.name" :urldata="{
-                                        sel_main: sel_main,
-                                        sel_area: sel_area,
-                                        sel_pool: item.id
-                                      }"></WaterQuality_Vcharts2>
-                                  </v-col>
-                                </v-row>
-                                <!-- 無資料 -->
-                                <v-row v-if="materialdata.length < 1 && materialloading == false" style="margin-bottom: 0;">
-                                  <v-spacer></v-spacer>
-                                  <v-col cols="4" class="text-center">
-                                    <h4>暫無資料</h4>
-                                  </v-col>
-                                  <v-spacer></v-spacer>
-                                </v-row>
-                              </v-card-text>
-                            </v-card>
-                          </v-tab-item>
                         </v-tabs>
                       </div>
+                      <poollayout class="poollayout" :water="water" :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]" :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"></poollayout>
                     </div>
                   </v-card>
                 </v-col>
               </v-row>
+              
             </div>
           </div>
         </div>
@@ -1035,6 +283,8 @@ import _ from "lodash";
 import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
 import dayjs from "dayjs";
 import https from "https";
+import poollayout from "@/pages/map/poolslayout.vue";
+import nerdamer from 'nerdamer';
 //-----
 import "element-ui/lib/theme-chalk/index.css";
 export default {
@@ -1042,11 +292,12 @@ export default {
   middleware: "auth",
   components: {
     treelst,
-    WaterQuality_Vcharts2
+    WaterQuality_Vcharts2,
+    poollayout
   },
   head(){
     return{
-      title:'監測數據'
+      title:'即時數據'
     }
   },
   data() {
@@ -1068,7 +319,15 @@ export default {
         { name: "養殖用料" }
         // { name: "投餵益生菌" }  pbio目前沒有先拿掉
       ],
-      currenttab: "水質監測",
+      tabsMap: [
+        { name: "溶氧濃度" },
+        { name: "酸鹼值" },
+        { name: "亞硝酸鹽濃度" },
+        { name: "氨氮濃度" },
+        { name: "水溫" }
+        // { name: "投餵益生菌" }  pbio目前沒有先拿掉
+      ],
+      currenttab: "",
       tree: [],
       initiallyOpen: ["研發一場"],
       files: {
@@ -1201,6 +460,31 @@ export default {
       windowWidth: window.innerWidth,
       defaultPool: undefined,
       showPredict: true,
+      // 水質地圖
+      statcolor: [
+        { name: "無", color: "#D3DCE1", id: 1 },
+        { name: "default", color: "#00273E" },
+        { name: "放養中", color: "#F1E78D", id: 4 },
+        { name: "放養中(鎖排汙)", color: "#CBAAE5", id: 32 },
+        { name: " 集中暫養", color: "#8DA0E5", id: 31 },
+        { name: "尚未洗池", color: "#E8DDBF", id: 6 },
+        { name: "已清洗", color: "#A8E6DB", id: 7 },
+        { name: "蓄水中", color: "#D3B280", id: 8 },
+        { name: "蓄水完畢", color: "#A5D380", id: 9 },
+        { name: "消毒中", color: "#80D3AB", id: 10 },
+        { name: "做水中", color: "#C5E8E6", id: 11 },
+        { name: "預備放苗", color: "#83C9F0", id: 12 },
+        { name: "空池", color: "#BFDAE8", id: 3 },
+        { name: "養殖審核", color: "#D3808F", id: 33 }
+      ],
+      nowAreaId:{
+        factory_id: null,
+        pond_area_id: null
+      },
+      nowAreaTag:'',
+      water: [],
+      waterloading:false,
+      lightData:[],
     };
   },
   methods: {
@@ -1235,87 +519,92 @@ export default {
           f.node.forEach(a=>{
             if(a.id==this.sel_area && a.name == areaName) {
               this.sel_main = f.id;
+              this.nowAreaTag = a.area_no;
             }
           })
         })
+        this.nowAreaId={
+          factory_id: this.sel_main,
+          pond_area_id: this.sel_area
+        }
         this.showPredict = false;
         this.areachange();
       }
     },
-    closepanel: async function () {
-      this.mypanel = [];
-      //觸發取得水質資料
-      //this.waterdata=[];
-      if (this.sel_main && this.sel_area) {
-        switch (this.currenttab) {
-          case "水質監測":
-            this.waterdata = [];
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "water"
-            );
-            break;
-          case "投餵飼料":
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "feed"
-            );
-            break;
-          case "環境監測":
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "env"
-            );
-            break;
-          case "飼料觀察網":
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "obs"
-            );
-          case "進階值":
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "adv"
-            );
-            break;
-          case "投餵益生菌":
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "pbio"
-            );
-            break;
-          case "養殖用料":
-            await this.getAll(
-              this.sdate,
-              this.edate,
-              this.sel_main,
-              this.sel_area,
-              "material"
-            );
-            break;
-          default:
-            break;
-        }
-      }
-    },
+    // closepanel: async function () {
+    //   this.mypanel = [];
+    //   //觸發取得水質資料
+    //   //this.waterdata=[];
+    //   if (this.sel_main && this.sel_area) {
+    //     switch (this.currenttab) {
+    //       case "水質監測":
+    //         this.waterdata = [];
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "water"
+    //         );
+    //         break;
+    //       case "投餵飼料":
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "feed"
+    //         );
+    //         break;
+    //       case "環境監測":
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "env"
+    //         );
+    //         break;
+    //       case "飼料觀察網":
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "obs"
+    //         );
+    //       case "進階值":
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "adv"
+    //         );
+    //         break;
+    //       case "投餵益生菌":
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "pbio"
+    //         );
+    //         break;
+    //       case "養殖用料":
+    //         await this.getAll(
+    //           this.sdate,
+    //           this.edate,
+    //           this.sel_main,
+    //           this.sel_area,
+    //           "material"
+    //         );
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   }
+    // },
     areachange: async function () {
       var para = {
         id: this.sel_area
@@ -1565,14 +854,160 @@ export default {
       
       
     },
-    setDefitem() {
-      this.defitem = [
-        '亞硝酸鹽濃度',
-        '氨氮濃度',
-        '溫度',
-        '溶氧濃度',
-        '酸鹼值'
-      ];
+    // setDefitem() {
+    //   this.defitem = [
+    //     '亞硝酸鹽濃度',
+    //     '氨氮濃度',
+    //     '溫度',
+    //     '溶氧濃度',
+    //     '酸鹼值'
+    //   ];
+    // },
+    async getWaterData() {
+      if (this.sel_main && this.sel_area) {
+        const agent = new https.Agent({
+          rejectUnauthorized: false
+        });
+
+        let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/last-data-in-current-time-range/`;
+        let parm = {
+          factoryid: this.sel_main,
+          areaid: this.sel_area,
+          time_range: 30,
+          col_name: ''
+        };
+        switch (this.currenttab) {
+          case "亞硝酸鹽濃度":
+            parm.col_name = 'NO2';
+            break;
+          case "氨氮濃度":
+            parm.col_name = 'NH4';
+            break;
+          case "溶氧濃度":
+            parm.col_name = 'Do';
+            break;
+          case "酸鹼值":
+            parm.col_name = 'pH';
+            break;
+          case "水溫":
+            parm.col_name = 'Temperature';
+            break;
+          default:
+            break;
+        }
+        if(parm.col_name!=='') {
+          this.water = [];
+          this.waterloading = false;
+          console.log('water parm',parm);
+          await this.$axios
+            .get(apiURL, { params: parm }, { httpsAgent: agent })
+            .then(res => {
+              console.log("water:", res);
+              if(Array.isArray(res.data)) {
+                this.water = res.data;
+                // 測試用
+                // this.water.forEach(w=>{
+                //     w.value= 50
+                // })
+                // this.water.forEach(w=>{
+                //   if(w.id==50) {
+                //     w.value= 20
+                //   }  
+                // })
+                this.water.forEach(w=>{
+                  w.level = this.checkValue(parm.col_name,w.value);
+                })
+              }
+              
+              this.waterloading = true;
+              // this.goAnchor('#chart');
+            })
+            .catch(err => {
+              alert("失敗：" + err.message);
+              this.waterloading = true;
+            });
+        }
+      }  
+    },
+    checkValue(col_name,value) {
+      var checkstate = ['warning','critical'];
+      var checkstate_bool = [false,false];
+      // console.log('ruledata',this.lightData);
+      if(col_name == 'NH4') {
+        col_name = 'AmmoniaN';
+      }else if(col_name == 'Temperature') {
+        col_name = 'Temp';
+      }
+      // console.log('ruledata',col_name);
+      // console.log('ruledata',this.lightData[col_name]);
+      if(this.lightData[col_name]) {
+        for(var ruledatastate in checkstate){
+          var ruledata = this.lightData[col_name][checkstate[ruledatastate]];
+          // console.log('ruledata',ruledata);
+          checkstate_bool[ruledatastate] = false;
+          if(ruledata==null){
+              continue;
+          }
+          
+          var keysdata = Object.keys(ruledata);
+          // console.log('keysdata',keysdata);
+          keysdata.forEach(ele => {//rule
+              var trueCnt=0;
+              for(var rule in ruledata[ele]){
+                  var ruleitem = ruledata[ele][rule];
+                  var params = {};
+                  params[col_name] = value;
+                  var nerdreslut = this.nerdamerCheck(ruleitem,params);
+                  if(nerdreslut==true){
+                      trueCnt += 1;
+                  }
+                  if(trueCnt == ruledata[ele].length){
+                    checkstate_bool[ruledatastate] = true;
+                    break;
+                  }
+              }
+          });
+        }
+        if(checkstate_bool[1]==true){
+            return 'danger';
+        }else if(checkstate_bool[0]==true){
+          return 'warning';
+        }else{
+          return 'normal';
+        }
+      }else {
+        return 'normal';
+      }
+      
+    },
+    nerdamerCheck:function(exp,params){
+        // params 應該是{Do :4.5,Ca:3,Ma:4}
+        // nerdamer('5 <= Do',{Do :4.5},'numer');
+        var result = nerdamer(exp,params,'numer');
+        if(result.text()==0){
+            return false;
+        }
+        if(result.text()==1){
+            return true;
+        }
+    },
+    async getWaterWarn() {
+      let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
+        await this.$axios.get(url).then(async res => {
+            if(res.status==200){
+                this.lightData = res.data;
+                console.log(this.lightData)
+                //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'}
+                await this.getWaterData();
+                // console.log("get lightData ok");
+            }else{
+                this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+            }
+        })
+        .catch(error=>{
+          this.waterloading = true;
+          this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+        });
     }
   },
   async created() {
@@ -1588,9 +1023,13 @@ export default {
         this.defaultPool = '';
         if(this.maindata.length>0) {
           this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
+          this.nowAreaId.factory_id = this.maindata[0].id;
+          this.nowAreaId.pond_area_id = this.maindata[0].node[0].id;
+
         }else {
           this.defaultPool = '';
         }
+        
         console.log(this.defaultPool);
       });
     //get all cols
@@ -1599,6 +1038,9 @@ export default {
       .then(res => {
         this.allcols = res.data;
       });
+    this.currenttab = this.tabsMap[0].name;
+    // await this.getWaterData();
+    await this.getWaterWarn();
   },
   computed: {
     mpurl: function () {
@@ -1766,9 +1208,12 @@ export default {
     // this.rndKey = Math.round( (Math.random()*100) );
   },
   watch: {
-      windowWidth:function(){
-          return window.innerWidth;
-      },
+    windowWidth:function(){
+        return window.innerWidth;
+    },
+    async currenttab() {
+      await this.getWaterData();
+    }
   }
 };
 //                            _ooOoo_
@@ -1877,6 +1322,7 @@ export default {
     }
   }
 }
+
 .v-card.result-card.pool-detail {
   background-color: #fff;
   .card-title {
@@ -1900,6 +1346,7 @@ export default {
     
   }
 }
+
 .spector {
   color: $color-primary;
   // text-decoration: underline;
@@ -1912,6 +1359,18 @@ export default {
   color: $color-dark;
   padding-left: 4px;
 }
+.v-application.v-application--is-ltr {
+  .result-card.water {
+    overflow-x: scroll;
+    .poollayout .block {
+      &:hover {
+        margin-top: -20px !important;
+      }
+    }
+  }
+}
+
+
 
 ::v-deep {
   .iCountUp {
@@ -1955,5 +1414,15 @@ export default {
       }
     }
   }
+  .v-card.result-card.water {
+    background-color: rgba($color-primary,0.1) !important;
+  }
+  .result .header-bar.water-bar .theme--light.v-tabs > .v-tabs-bar,.result .header-barr.water-bar .theme--light.v-tabs-items {
+    background-color: transparent;
+  }
+  .result .header-bar.water-bar {
+    border-bottom: none;
+  }
+ 
 }
 </style>

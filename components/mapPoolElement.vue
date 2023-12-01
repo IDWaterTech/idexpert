@@ -1,15 +1,39 @@
 <template>
-  <div class="input-pool" :class="{'text-center':!showSelect}">
+  <div class="input-pool" :class="{'text-center':!showSelect,'basic-block':$route.path=='/basic'}">
     <button class="confirm" v-show="showSelect && item.state != '' && selectedItem !== '' && selectedItem !== item.state" @click="selectchecked">
       <v-icon>mdi-check</v-icon>
     </button>
-    
     <span
       v-if="item.state.length > 0"
       v-show="item.state != '' || showSelect"
-      >{{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}</span>
-    <span v-if="item.state.includes('(')"><br>( {{ item.state.split('(')[1] }}</span>
-    
+      style="z-index: 10;"
+      :style="{
+        'color':`${$route.path=='/basic'&& 
+                  item.state != '無'&& 
+                  item.water != ''&&
+                  item.level=='danger'?'#fefefe':'#00324E'}`
+      }">
+      <!-- basic warning/danger icon -->
+      <v-btn 
+        v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''&& (item.level=='warning'||item.level=='danger')" 
+        class="btn-icon just-icon"
+        :class="{'danger-water-icon':item.level=='danger',
+                 'warning-water-icon':item.level=='warning'}"
+        style="z-index: 10;"
+      ><v-icon>mdi-alert</v-icon></v-btn>
+
+      
+      {{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}
+      
+      <span v-if="item.state.includes('(')" style="z-index: 10;"><br>( {{ item.state.split('(')[1] }}</span>
+    </span>
+
+      <span v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''" 
+        style="display: flex;align-items: center;justify-content: center;font-size: 1.25rem;font-weight: bold;z-index: 10;"
+        :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
+      ><span>{{ item.water }}</span></span>
+      <!-- :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}" -->
+    <span v-if="$route.path=='/basic' && !item.water && item.state !== ''" style="z-index: 10;display: flex;align-items: center;justify-content: center;font-size: 1.25rem;">-</span>
     
     <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''"><br>{{item.updated_time}}</span>
     <v-select
@@ -189,6 +213,35 @@ export default {
 .v-input {
   margin-top: 20px;
 }
-
+.basic-block {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  
+  & .danger-water {
+    span {
+      color: #fefefe;
+    }
+  }
+  & .danger-water-icon.btn-icon.just-icon {
+    & .theme--light.v-icon {
+      // color: $color-accent !important;
+      color: #fefefe !important;
+      font-size: 1.2rem;
+    }
+  }
+  & .warning-water-icon.btn-icon.just-icon {
+    & .theme--light.v-icon {
+      color: #f79c2b !important;
+      font-size: 1.2rem;
+    }
+  }
+  & .danger-water-icon.btn-icon.just-icon, & .warning-water-icon.btn-icon.just-icon {
+    margin: 0;
+    pointer-events: none;
+  }
+}
 
 </style>

@@ -85,7 +85,7 @@
               </div>
                   
               <div v-for="(b,bid) in pond.pond" :key="bid"
-                  class="mx-3 my-1 text-center"
+                  class="mx-3 my-1 text-center setting-block"
                   style="cursor: pointer;flex-shrink: 0;"
                   :style="{ 
                       minWidth: `${getWidth(b)}`,
@@ -516,6 +516,7 @@
                   for(let i=0;i<evt;i++) {
                       if(i<this.nowChangeObject.rows.length) {
                           this.nowChange.rows.push(this.nowChangeObject[i]);
+                          
                       }else {
                           this.nowChange.rows.push({
                               "id": '',
@@ -526,9 +527,13 @@
                               "rows": [],
                               "roadDirection": '',
                           })
+
                       }
                       
                   }
+                  this.nowPondName = '';
+                  this.isPondName = false;
+                  this.isDoubleName = {};
               }
           },
           selectCol(evt) {
@@ -1238,12 +1243,6 @@
     
     
   
-  }
-  .block {
-      transition: all 0.3s;
-      &:hover {
-          background-color: #c3c3c3;
-      }
   }
   
   // dialog
