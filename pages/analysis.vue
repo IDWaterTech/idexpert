@@ -31,7 +31,7 @@
                         }
                       "></v-text-field>
                   </template>
-                  <v-date-picker v-model="sdate" locale="zh-tw" no-title @input="
+                  <v-date-picker v-model="sdate" locale="zh-tw" :max="edate" no-title @input="
                     menu_startdate = false;
                   daysSet();
                   closepanel();
@@ -52,7 +52,7 @@
                         }
                       "></v-text-field>
                   </template>
-                  <v-date-picker v-model="edate" locale="zh-tw" no-title @input="
+                  <v-date-picker v-model="edate" locale="zh-tw" :min="sdate" no-title @input="
                     menu_enddate = false;
                   daysSet();
                   closepanel();

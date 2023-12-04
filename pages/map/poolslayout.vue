@@ -7,7 +7,7 @@
           <div v-for="(b,bid) in pond.pond" :key="bid"
             :class="{'block':b.state!==''&& b.rows.length==0 && b.isSetting,'text-center my-1':windowWidth>=700 && b.name!=='road','road':b.id==''&&b.name=='road','rows-display':b.rows.length>0,'edit-block':showedit,'danger-water':b.level=='danger','warning-water':b.level=='warning',}"
             :style="{
-              background: `${b.level=='danger'?'#A60017':b.level=='warning'?'#FBBC05':b.isSetting==false?'transparent':((b.id==''&& b.state=='')||b.rows.length||(b.id==''&&b.name=='road')>0)?'transparent':getItemColor(b.state)}`,
+              background: `${b.level=='danger'?'#A60017':b.level=='warning'?'#FBBC05':b.isSetting==false?'transparent':((b.id==''&& b.state=='')||b.rows.length>0||(b.id==''&&b.name=='road'))?'transparent':getItemColor(b.state)}`,
               minWidth: `${getWidth(b)}`,
               minHeight: `${b.id==''&& b.state==''&& b.rows.length==0?'48px':'0'}`,
               paddingTop: `${($route.path=='/basic'&& b.rows.length>0)? '0':'12px'}`,
@@ -36,7 +36,7 @@
                   <div
                       :class="{'block':row.state!=='','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning',}"
                       :style="
-                        row.state == '無'? b.rowMaxCols==1?`width:120px`:`width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
+                        row.state == '無'? b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
                       ">
                       <mappoolelement
                           :item="row"
@@ -408,7 +408,11 @@ export default {
       isLoad: false,
       isSetting: false,
       setting:'color',
-      nowLayout: ''
+      nowLayout: '',
+      oldAreaId:{
+        factory_id: null,
+        pond_area_id: null
+      }
     };
   },
   props: {
@@ -519,23 +523,30 @@ export default {
       }
       // this.isLoad = false;
       if(this.nowAreaId.factory_id!==null) {
-        await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
-        .then(res => {
-          // this.ponds = res.data;
-          console.log('getData',res.data);
-          this.allData = res.data;
-          
+        if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
+          await this.$axios
+            .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
+            .then(res => {
+              // this.ponds = res.data;
+              console.log('getData',res.data);
+              this.allData = res.data;
+              
+              this.dataPrepare();
+              this.getLayoutData();
+              if(this.$route.path!==('/basic')) {
+                this.isLoad = true;
+              }
+              this.oldAreaId = _.cloneDeep(this.nowAreaId);
+              
+            })
+            .catch(error => {
+              // alert("error:" + error.message);
+            });
+        }else {
           this.dataPrepare();
           this.getLayoutData();
-          if(this.$route.path!==('/basic')) {
-            this.isLoad = true;
-          }
-          
-        })
-        .catch(error => {
-          // alert("error:" + error.message);
-        });
+        }
+        
       }
       
     },
@@ -735,7 +746,8 @@ export default {
       console.log('dataPrepare',this.allData)
       this.allData.forEach(data=>{
         if(this.nowAreaTag==data.area_no) {
-          this.ponds = data.ponds;
+          this.ponds = [];
+          this.ponds = _.cloneDeep(data.ponds);
         }
       })
       this.ponds.forEach(p=>{

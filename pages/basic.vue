@@ -14,8 +14,22 @@
           <div class="search">
             <v-row style="margin-bottom: 4px;align-items: center;">
               <!-- 選擇場區 -->
-              <v-col cols="12" md="4" sm="12" style="position: relative;">
+              <v-col cols="12" md="4" sm="4" style="position: relative;">
                 <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;" style="margin-right: 0;"></locate-select>
+              </v-col>
+              <v-col cols="12" md="2" sm="2" style="position: relative;">
+                <v-select 
+                  v-model="timeSelect" 
+                  @change="getWaterData()" 
+                  dense 
+                  filled 
+                  hide-details 
+                  :items="timekb" 
+                  item-text="name_ch"
+                  item-value="id"
+                  label="時間範圍內的數據"
+                  class="time-select"
+                  ></v-select>
               </v-col>
               <!-- 選擇起始日 -->
               <!-- <v-col cols="12" md="3" sm="12">
@@ -65,8 +79,8 @@
               </v-col> -->
               <!-- 查詢/小螢幕布局圖 -->
               <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center" style="display: flex;flex-direction: row;align-items: center;">
-                <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
-                  class="mx-1" dense hide-details style="max-width: 120px;"></v-text-field>
+                <!-- <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
+                  class="mx-1" dense hide-details style="max-width: 120px;"></v-text-field> -->
                 <button icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend" style="display: flex;align-items: center;font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;text-align: left;">
                   <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
                 </button>
@@ -252,9 +266,23 @@
                           <v-tab v-for="(tab, idx) in tabsMap" :key="'tabs-'+idx" :href="`#` + tab.name">
                             {{ tab.name }}
                           </v-tab>
-
+                          
                         </v-tabs>
                       </div>
+                      <!-- <div class="search" >
+                        <v-select 
+                          v-model="timeSelect" 
+                          @change="getWaterData()" 
+                          dense 
+                          filled 
+                          hide-details 
+                          :items="timekb" 
+                          item-text="name_ch"
+                          item-value="id"
+                          label="時間範圍內的數據"
+                          class="time-select"
+                          ></v-select>
+                      </div> -->
                       <poollayout class="poollayout" :water="water" :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]" :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"></poollayout>
                     </div>
                   </v-card>
@@ -485,6 +513,14 @@ export default {
       water: [],
       waterloading:false,
       lightData:[],
+      timekb:[
+        {id:0,name_ch:'5分鐘',value:5},
+        {id:1,name_ch:'30分鐘',value:30},
+        {id:2,name_ch:'8小時',value:480},
+        {id:3,name_ch:'24小時',value:1440},
+        // {id:4,name_ch:'30000',value:30000}
+      ],
+      timeSelect:0
     };
   },
   methods: {
@@ -873,7 +909,7 @@ export default {
         let parm = {
           factoryid: this.sel_main,
           areaid: this.sel_area,
-          time_range: 30,
+          time_range: this.timekb.filter(x=>x.id==this.timeSelect)[0].value,
           col_name: ''
         };
         switch (this.currenttab) {
@@ -1011,7 +1047,7 @@ export default {
     }
   },
   async created() {
-    await this._pageCheck(); //驗證頁面是否可檢視
+    //await this._pageCheck(); //驗證頁面是否可檢視
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
@@ -1422,6 +1458,11 @@ export default {
   }
   .result .header-bar.water-bar {
     border-bottom: none;
+  }
+  .time-select {
+    &.v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+      padding-top: 0;
+    }
   }
  
 }
