@@ -549,7 +549,7 @@ export default {
           console.log("API:" + res.request.responseURL);
         })
         .catch(error => {
-          this.$axios.error("error:" + error, { duration: 2000 });
+          this.$toast.error("error:" + error, { duration: 2000 });
         });
     },
     getpoolstat: async function() {
@@ -585,7 +585,7 @@ export default {
           pool = res.data;
         })
         .catch(error => {
-          this.$axios.error("error:" + error, { duration: 2000 });
+          this.$toast.error("error:" + error, { duration: 2000 });
           pool = [];
         })
         .finally(() => {
@@ -863,7 +863,7 @@ export default {
               }
             })
             .catch(error => {
-              this.$axios.error("error:" + error, { duration: 2000 });
+              this.$toast.error("error:" + error, { duration: 2000 });
             });
         } else {
           //編輯池
@@ -887,7 +887,7 @@ export default {
               }
             })
             .catch(error => {
-              this.$axios.error("error:" + error, { duration: 2000 });
+              this.$toast.error("error:" + error, { duration: 2000 });
             });
         }
       }else{
@@ -905,7 +905,7 @@ export default {
 
         })
         .catch(error => {
-          this.$axios.error("error:" + error, { duration: 2000 });
+          this.$toast.error("error:" + error, { duration: 2000 });
           pool = [];
         })
         .finally(() => {
@@ -934,7 +934,7 @@ export default {
               }
             })
             .catch(error => {
-              this.$axios.error("error:" + error, { duration: 2000 });
+              this.$toast.error("error:" + error, { duration: 2000 });
             });
             return;
           }
