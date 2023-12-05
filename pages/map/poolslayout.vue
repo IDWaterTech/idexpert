@@ -418,7 +418,9 @@ export default {
   props: {
     water: {
       type: Array,
-      default: []
+      default() {
+          return []
+      }
     },
     waterloading: {
       type: Boolean,
@@ -743,7 +745,7 @@ export default {
       this.isSetting = false;
       
       // 資料一開始撈取出來後，進行資料的整理，取出目前選取的區
-      console.log('dataPrepare',this.allData)
+      // console.log('dataPrepare',this.allData)
       this.allData.forEach(data=>{
         if(this.nowAreaTag==data.area_no) {
           this.ponds = [];

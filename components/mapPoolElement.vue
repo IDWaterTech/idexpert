@@ -6,7 +6,7 @@
     <span
       v-if="item.state.length > 0"
       v-show="item.state != '' || showSelect"
-      style="z-index: 10;"
+      style="z-index: 2;"
       :style="{
         'color':`${$route.path=='/basic'&& 
                   item.state != '無'&& 
@@ -19,21 +19,21 @@
         class="btn-icon just-icon"
         :class="{'danger-water-icon':item.level=='danger',
                  'warning-water-icon':item.level=='warning'}"
-        style="z-index: 10;"
+        style="z-index: 2;"
       ><v-icon>mdi-alert</v-icon></v-btn>
 
       
       {{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}
       
-      <span v-if="item.state.includes('(')" style="z-index: 10;"><br>( {{ item.state.split('(')[1] }}</span>
+      <span v-if="item.state.includes('(')" style="z-index: 2;"><br>( {{ item.state.split('(')[1] }}</span>
     </span>
 
       <span v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''" 
-        style="display: flex;align-items: center;justify-content: center;font-size: 1.25rem;font-weight: bold;z-index: 10;"
+        style="display: flex;align-items: center;justify-content: center;font-size: 1.25rem;font-weight: bold;z-index: 2;"
         :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
       ><span>{{ item.water }}</span></span>
       <!-- :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}" -->
-    <span v-if="$route.path=='/basic' && !item.water && item.state !== ''" style="z-index: 10;display: flex;align-items: center;justify-content: center;font-size: 1.25rem;">-</span>
+    <span v-if="$route.path=='/basic' && !item.water && item.state !== ''" style="z-index: 2;display: flex;align-items: center;justify-content: center;font-size: 1.25rem;">-</span>
     
     <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''"><br>{{item.updated_time}}</span>
     <v-select
