@@ -479,7 +479,6 @@ export default {
     // if(this.nowAreaTag!=='setting') {
     //   this.getPondData();
     // }
-    
   },
   methods: {
     getItemColor: function(data) {

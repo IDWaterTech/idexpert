@@ -584,6 +584,7 @@ export default {
         {id:2,name_ch:'8小時',value:480},
         {id:3,name_ch:'24小時',value:1440},
         // {id:4,name_ch:'30000',value:30000}
+        
       ],
       timeSelect:0,
       alertAllData:[],

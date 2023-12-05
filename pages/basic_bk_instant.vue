@@ -1049,6 +1049,7 @@ export default {
   },
   async created() {
     // await this._pageCheck(); //驗證頁面是否可檢視
+    
     const agent = new https.Agent({
       rejectUnauthorized: false
     });

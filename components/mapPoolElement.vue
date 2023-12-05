@@ -22,7 +22,6 @@
         style="z-index: 2;"
       ><v-icon>mdi-alert</v-icon></v-btn>
 
-      
       {{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}
       
       <span v-if="item.state.includes('(')" style="z-index: 2;"><br>( {{ item.state.split('(')[1] }}</span>
