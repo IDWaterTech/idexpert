@@ -201,6 +201,13 @@
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
+              ></el-switch><br />
+              <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB
+              <el-switch
+                v-model="scope.row.is_sys_enable_line_kb"
+                active-color="#13ce66"
+                inactive-color="#eee"
+                @change="statchange(scope.$index, scope.row)"
               ></el-switch>
             </template>
           </el-table-column>
@@ -306,6 +313,12 @@
                     >Line
                     <el-switch
                       v-model="addform.is_sys_enable_line"
+                      active-color="#13ce66"
+                      inactive-color="#eee"
+                    ></el-switch><br />
+                    <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB
+                    <el-switch
+                      v-model="addform.is_sys_enable_line_kb"
                       active-color="#13ce66"
                       inactive-color="#eee"
                     ></el-switch>
@@ -559,6 +572,7 @@ export default {
         is_active: true,
         is_sys_enable_email: false,
         is_sys_enable_line: false,
+        is_sys_enable_line_kb: false,
         position_id: [],
         factory_id: [],
       },
@@ -754,6 +768,7 @@ export default {
       parm["is_active"] = row.is_active;
       parm["is_sys_enable_email"] = row.is_sys_enable_email;
       parm["is_sys_enable_line"] = row.is_sys_enable_line;
+      parm["is_sys_enable_line_kb"] = row.is_sys_enable_line_kb;
       const updUser = this.$auth.$state.user.email;
       parm["updated_user"] = updUser;
       this.postedit(row.id, parm);
