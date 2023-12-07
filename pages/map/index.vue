@@ -1,14 +1,14 @@
 <template>
     <div>
       <v-card class="map">
-          <div class="card-title">
+          <!-- <div class="card-title">
               <v-row>
                   <div v-if="nowField==null" class="title">
                       <v-icon>mdi-map-outline</v-icon>
                       <v-card-title>養殖池況</v-card-title>
                   </div>
               </v-row>
-          </div>
+          </div> -->
           <mapcontent :auth="$auth.$state.loggedIn" :field="nowField"></mapcontent>
       </v-card>
     </div>
@@ -17,7 +17,7 @@
   <script>
   import mapcontent from "~/pages/map/mapcontent.vue";
   export default {
-    layout: 'emptynologin',
+    layout: 'emptynologin2',
     //   middleware: "auth",
     components: {
       mapcontent
@@ -51,48 +51,31 @@
   }
   </script>
   
-  <style lang="scss">
-      .v-card.map {
-          // padding: 16px;
-          min-height: 84vh;
-          // overflow-y: scroll;
-          margin-bottom: 24px;
-          overflow: hidden;
-          .card-title {
-              padding: 12px 24px;
-              padding-bottom: 0;
-              // background-color: #006AA6;
-              // color: #fefefe;
-              .row {
-                  margin-left: 0;
-                  margin-top: 0;
-              }
-              .title {
-                  display: flex;
-                  align-items: center;
-              }
-          }
-          .v-card__title {
-              color: #00273E;
-              font-weight: bold;
-          }
-          
+<style lang="scss">
+.v-card.map {
+    // padding: 16px;
+    min-height: 84vh;
+    // overflow-y: scroll;
+    margin-bottom: 24px;
+    overflow: hidden;
+    .card-title {
+        padding: 12px 24px;
+        padding-bottom: 0;
+        // background-color: #006AA6;
+        // color: #fefefe;
+        .row {
+            margin-left: 0;
+            margin-top: 0;
         }
-      
-      
-    //   // scrollbar
-    //   ::-webkit-scrollbar {
-    //       width: 6px;
-    //       height: 6px;
-    //   }
-    //   ::-webkit-scrollbar-track {
-    //       background: none; 
-    //   }
-    //   ::-webkit-scrollbar-thumb {
-    //       background-color: #BFD9E8;
-    //   }
-    //   // ::-webkit-scrollbar-button {
-    //   //     border-radius: 4px;
-    //   //     background: transparent;
-    //   // }
-  </style>
+        .title {
+            display: flex;
+            align-items: center;
+        }
+    }
+    .v-card__title {
+        color: #00273E;
+        font-weight: bold;
+    }
+    
+}
+</style>

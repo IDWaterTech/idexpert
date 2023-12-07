@@ -1,15 +1,15 @@
 <template>
   <div>
-    <v-card class="indicator">
-        <div class="card-title">
+    <v-card class="bg-card">
+        <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
                 <div class="title">
                     <v-icon>mdi-file-edit</v-icon>
                     <v-card-title>指標資料修改</v-card-title>
                 </div>
             </v-row>
-        </div>
-        <div class="content">
+        </div> -->
+        <div class="content" style="padding-top:12px">
           <div class="search">
             <v-row style="margin-bottom: 12px;">
               <!-- 選擇場(必選) -->
@@ -43,8 +43,8 @@
               </v-col> -->
               
               <v-col cols="12" md="8" sm="12" class="caculate caculate-8" style="position: relative;">
-                <locate-select :dataScope="'area'" :defaultSelect="nowArea" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
-                <label v-if="nowArea!==''" class="label-select">*請選擇養殖區域(必選)</label>
+                <locate-select :dataScope="'area'" :defaultSelect="nowArea" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <!-- <label v-if="nowArea!==''" class="label-select">*請選擇養殖區域(必選)</label> -->
               </v-col>
               <!-- 指定項目(必選) -->
               <v-col cols="12" md="4" sm="12" class="caculate">
@@ -382,11 +382,10 @@
               </v-dialog>
               <!-- </v-col> -->
             </v-row>
-            <v-divider></v-divider>
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
-            <v-row style="margin-bottom: 0;">
+            <v-row style="margin-bottom: 0;width: 100%;">
               <v-col cols="12">
                 <v-card class="result-card">
                   <div class="header-bar">
@@ -409,7 +408,7 @@
                           v-for="(tab,tid) in tabs"
                           :key="'tab-'+tid"
                           :value="tab"
-                          style="margin-bottom: 16px;">
+                          style=";min-height: 48vh;">
                           <!-- 編修紀錄 -->
                           <div v-show="nowTab=='編修紀錄'" class="result-content">
                             <v-data-table
@@ -618,7 +617,7 @@ const agent = new https.Agent({
 });
 // import { number } from "~/node_modules/echarts/lib/export";
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   components: {
     WaterQuality_Vcharts2
@@ -1508,7 +1507,7 @@ export default {
 
 <style lang="scss" scoped>
 .v-application.v-application--is-ltr {
-  .v-card.indicator {
+  .v-card.bg-card {
     min-height: 84vh;
     overflow: hidden;
     margin-bottom: 24px;
@@ -1544,7 +1543,7 @@ export default {
       font-weight: bold;
     }
     .content {
-      padding-top: 0;
+      padding: 12px;
       .row {
         align-items: center;
         .v-input {
@@ -1574,122 +1573,9 @@ export default {
     .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .v-card.result-card {
-      background-color: #E6F5FA;
-      .header-bar {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        padding: 12px 24px;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        h5 {
-          width: 100%;
-        }
-      }
-      .result-content {
-        padding: 0 24px;
-        &.event {
-          margin-top: 24px;
-        }
-      }
-    }
   }
 }
 ::v-deep {
-  .search {
-    .font-size-large {
-      font-size: 16px;
-    }
-    .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
-      padding-left: 0;
-      padding-right: 0;
-    }
-    .vue-treeselect__control {
-      border: none;
-      border-radius: 0;
-      border-bottom: 1px solid #6c9bcd;
-      .vue-treeselect__placeholder {
-        color: #00273E;
-        &::before {
-          content: '*'
-        }
-        &::after {
-          content: '(必選)';
-        }
-      }
-      .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-        color: #6c9bcd;
-      }
-      .vue-treeselect__x-container {
-        display: none;
-      }
-    }
-    .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover {
-      border-color: #6c9bcd;
-    }
-    .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused {
-      font-size: 14px;
-      color: #00273E;
-    }
-    .label-select {
-      font-size: 10px;
-      color: #6c9bcd !important;
-      position: absolute;
-      left: 18px;
-      top: 0;
-      
-    }
-  }
-  .result {
-    .header-bar {
-      .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,.theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
-        background-color: #E6F5FA;
-      }
-      .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
-          background-color: #E6F5FA;
-      }
-      .v-toolbar__content, .v-toolbar__extension {
-        padding: 0;
-        button {
-          height: 36px;
-          border-radius: 4px;
-        }
-        .v-btn--is-elevated {
-          box-shadow: none;
-          background-color: #006AA6;
-          color: #fff;
-        }
-        .theme--light.v-btn.v-btn--disabled {
-          color: #7F98A6;
-        }
-      }
-      .v-tab {
-        font-size: 18px;
-        font-weight: bold;
-        color: #7F98A6 !important;
-        .icons {
-          margin-right: 4px;
-          i {
-            color: #7F98A6;
-          }
-          
-        }
-      }
-      .v-tab.v-tab--active {
-        color: #006AA6 !important;
-        .icons {
-          margin-right: 4px;
-          i {
-            color: #006AA6;
-          }
-          
-        }
-      }
-      .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
-        border-radius: 4px;
-      }
-    }
-  }
   .select-color{
     &.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
       border-color: #6c9bcd;

@@ -2344,7 +2344,7 @@ import dayjs from "dayjs";
 import _ from "lodash";
 import { number } from 'echarts/lib/export';
 export default {
-    layout: "emptynologin",
+    layout: "emptynologin2",
     head() {
         return {
             title: '知識庫-鷹眼 v2.0'

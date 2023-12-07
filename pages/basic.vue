@@ -377,7 +377,7 @@ import nerdamer from 'nerdamer';
 import "element-ui/lib/theme-chalk/index.css";
 import { create } from 'domain';
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   components: {
     treelst,
@@ -1367,7 +1367,7 @@ export default {
   },
   async created() {
     // await this.getAlertData();
-    //await this._pageCheck(); //驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     const agent = new https.Agent({
       rejectUnauthorized: false
     });

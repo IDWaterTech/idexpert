@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-card class="video">
-        <div class="card-title">
+        <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
                 <div class="title">
                     <v-icon>mdi-video-box</v-icon>
                     <v-card-title>影像辨識</v-card-title>
                 </div>
             </v-row>
-        </div>
-        <div class="content">
+        </div> -->
+        <div class="content" style="padding-top:12px">
           <div class="search">
             <v-row style="margin-bottom: 12px;">
               <v-col cols="12" md="3" class="caculate" sm="12" style="position: relative;">
@@ -60,11 +60,10 @@
                 </div>
               </v-col>
             </v-row>
-            <v-divider></v-divider>
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
-            <v-row style="margin-bottom: 0;">
+            <v-row style="margin-bottom: 0;width: 100%;">
               <v-col cols="12">
                 <v-card class="result-card">
                   <!-- 觀察網 -->
@@ -75,7 +74,7 @@
                     :items="recogData.items" dense
                     :footer-props="footerProps"
                     no-data-text="查無資料"
-                    height="47vh"
+                    height="56vh"
                     fixed-header>
                     <template v-slot:[`item.feed_img`]="{ item }">
                       <!-- <img :src="item.feed_img" style="height:200px"> -->
@@ -102,7 +101,7 @@
                     :items="recogData.items" dense
                     :footer-props="footerProps"
                     no-data-text="查無資料"
-                    height="47vh"
+                    height="56vh"
                     fixed-header>
                     <template v-slot:[`item.images`]="{ item }">
                         <img v-img="{ group: item.id }" v-for="(img,i) in item.images" :key="i" :src="img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
@@ -141,7 +140,7 @@ import dayjs from "dayjs";
 import _ from "lodash";
 import beca from "@/pages/becateriarecog.vue";
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   components: {
     beca

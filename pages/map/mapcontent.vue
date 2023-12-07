@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- <div v-if="!isLoad">Loading...</div> -->
-        <div v-if="isLoad" class="content">
+        <div v-if="isLoad" class="content" style="padding-top:24px">
             <v-row>
                 <v-col class="d-flex"
                         cols="12"

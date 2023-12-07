@@ -296,7 +296,7 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 無資料 -->
-                                <v-row v-if="waterdata.length < 1 && waterloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="waterdata.length < 1 && waterloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -413,7 +413,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="envdata.length < 1 && envloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="envdata.length < 1 && envloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -517,7 +517,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="feeddata.length < 1 && feedloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="feeddata.length < 1 && feedloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -620,7 +620,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="obsdata.length < 1 && obsloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="obsdata.length < 1 && obsloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -722,7 +722,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="advdata.length < 1 && advloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="advdata.length < 1 && advloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -825,7 +825,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="pbiodata.length < 1 && pbioloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="pbiodata.length < 1 && pbioloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -929,7 +929,7 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 無資料 -->
-                                <v-row v-if="materialdata.length < 1 && materialloading == false" style="margin-bottom: 0;">
+                                <v-row v-if="materialdata.length < 1 && materialloading == false" style="margin-bottom: 0;min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -961,7 +961,7 @@ import https from "https";
 //-----
 import "element-ui/lib/theme-chalk/index.css";
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   // middleware: "auth",
   components: {
     // treelst,
@@ -1709,6 +1709,9 @@ export default {
 <style lang="scss" scoped>
 @import "https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css";
 .basic {
+  h4 {
+    color: rgba(0,0,0,0.3);
+  }
   .el-table__body-wrapper {
     height: 100%;
   }

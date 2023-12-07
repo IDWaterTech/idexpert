@@ -1,16 +1,16 @@
 <template>
   <div>
     <v-card class="bg-card" style="margin-bottom: 24px;">
-      <div class="card-title">
+      <!-- <div class="card-title">
         <v-row style="margin-bottom: 0;">
           <div class="title">
             <v-icon>mdi-file-check-outline</v-icon>
             <v-card-title>料表執行</v-card-title>
           </div>
         </v-row>
-      </div>
-      <div class="content">
-        <div class="search" style="margin-top: -20px;">
+      </div> -->
+      <div class="content" style="padding-top:12px">
+        <div class="search" >
           <v-row style="margin-bottom: 0;">
             <v-col cols="12" md="2">
               <!-- 選擇場 -->
@@ -352,7 +352,7 @@ import FileSaver from "file-saver";
 import XLSX from "xlsx/xlsx.js";
 import dayjs from "dayjs";
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   head(){
     return {

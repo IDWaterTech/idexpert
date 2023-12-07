@@ -47,6 +47,15 @@ $color-green: #00A660;
           background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
       }
     }
+    &.delete {
+      background-color: $color-accent !important;
+      & .v-icon {
+        color: #fff !important;
+      }
+      &:hover {
+        background-color: lighten($color: rgba($color-accent,0.8), $amount: 3) !important;
+      }
+    }
 }
 .btn-secondary {
   background-color: transparent !important;
@@ -309,12 +318,6 @@ $color-green: #00A660;
         padding: 0 12px;
       }
     }
-    .v-chip.v-size--default {
-      height: 24px;
-    }
-    .v-chip {
-      padding: 0 8px;
-    }
   }
   // 搜尋、Dialog、多選 輸入框式樣
   .search,.mutiselect,.v-dialog .v-sheet.v-card.custom-dialog {
@@ -473,6 +476,13 @@ $color-green: #00A660;
       opacity: 1;
     }
   }
+  // chips 
+  .v-chip.v-size--default {
+    height: 24px;
+  }
+  .v-chip {
+    padding: 0 8px;
+  }
 }
 
 // pages background card
@@ -526,6 +536,40 @@ $color-green: #00A660;
         .theme--light.v-btn.v-btn--disabled.btn-secondary .v-btn__loading,.theme--light.v-btn.v-btn--disabled.btn-secondary.v-btn--has-bg {
           background-color: transparent !important;
         }
+      }
+    }
+  }
+  .v-card.login {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    overflow: hidden;
+    margin-bottom: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.10), 0px 0px 10px 0px rgba(255,255,255,0.4);
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 48px;
+      .title {
+        color: #006AA6;
+        h3 {
+          // margin-top: -12px;
+          color: $color-primary;
+          font-weight: bold;
+        }
+      }
+    }
+    .content {
+      margin-bottom: 32px;
+      .google-btn {
+        border-radius: 4px;
       }
     }
   }

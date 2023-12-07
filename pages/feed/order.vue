@@ -4,17 +4,17 @@
       class="bg-card" 
       style="margin-bottom: 12px;"
       :style="{'minHeight':`${windowHeight>880?'88vh':'84vh'}`}">
-      <div class="card-title">
+      <!-- <div class="card-title">
           <v-row style="margin-bottom: 0;">
               <div class="title">
                   <v-icon>mdi-file-edit-outline</v-icon>
                   <v-card-title>料量設定</v-card-title>
               </div>
           </v-row>
-      </div>
-      <div class="content">
+      </div> -->
+      <div class="content" style="padding-top:12px">
         <!-- 搜尋欄 -->
-        <div class="search" style="margin-top: -20px;">
+        <div class="search">
           <v-row style="margin-bottom: 12px;">
             <v-col cols="12" md="6">
               <div class="search-container">
@@ -462,7 +462,7 @@ import mee from "math-expression-evaluator";
 import dayjs from "dayjs";
 import _ from "lodash";
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   head(){
     return {

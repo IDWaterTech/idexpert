@@ -839,7 +839,7 @@ const agent = new https.Agent({
 export default {
   
   components: { waterball },
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   components: {
     WaterQuality_Vcharts,

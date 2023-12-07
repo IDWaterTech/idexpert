@@ -63,7 +63,7 @@
 import seedlings from "@/pages/breeding/seedlings.vue";//種苗
 import feedTemp from "@/pages/breeding/feedTempSetting.vue";//樣板設定
 export default {
-    layout: "emptynologin",
+    layout: "emptynologin2",
     components: {
         seedlings,feedTemp
     },
