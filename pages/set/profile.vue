@@ -1,122 +1,94 @@
 <template>
-  <div>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-col cols="8">
-        <!-- <div v-if="!location.href.includes('expert.idwatertech.com')">{{`目前網址[${location.href}]無法使用本頁功能`}}</div>
-        <v-card tile :disabled="!location.href.includes('expert.idwatertech.com')"> -->
-        <v-card tile dark color="primary">
-          <v-card-title class="cardtitle">個人設定</v-card-title
-          >
-          <v-overlay :value="$route.query.hasOwnProperty('code')" :absolute="true">
-            <v-progress-circular indeterminate size="64"></v-progress-circular>
-          </v-overlay>
-          <v-card-text class="pt-2 pb-10 white--text">
-            <v-subheader dark
-              ><v-icon class="mx-2">mdi-account-circle-outline</v-icon
-              >個人資訊</v-subheader
-            ><v-divider class="mb-2"></v-divider>
-            <v-row>
-              <!-- <v-col cols="12" sm="2" align-self="center" class="text-center" style="font-size:2em">
-                    使用者
-                  </v-col> -->
-              <v-spacer></v-spacer>
-              <v-col
-                cols="12"
-                sm="8"
-                align-self="center"
-                class="text-center title"
-              >
-                <span class="title">{{ $auth.$state.user.name }}</span
-                ><br />
-                <span class="subtitle-1">{{ $auth.$state.user.email }}</span>
-              </v-col>
-              <v-col cols="12" sm="2" align-self="center">
-                <v-avatar color="primary" size="76"
-                  ><v-img :src="this.$auth.$state.user.picture"></v-img
-                ></v-avatar>
-              </v-col>
-            </v-row>
-            <v-subheader dark
-              ><v-icon class="mx-2">mdi-bell-circle-outline</v-icon
-              >接收通知</v-subheader
-            ><v-divider class="mb-2"></v-divider>
-            <v-row>
-              <v-spacer></v-spacer>
-              <v-col
-                cols="12"
-                sm="8"
-                align-self="center"
-                class="text-left title"
-              >
-                <v-icon color="#EA4335" class="mr-2">mdi-gmail</v-icon>Mail
-                <el-switch
-                  v-model="profile.is_personal_enable_email"
-                  active-color="#13ce66"
-                  inactive-color="#eee"
-                  @change="statchange()"
-                  :disabled="!profile.is_sys_enable_email"
-                ></el-switch
-                ><br />
-                <v-icon color="#00B900" class="mr-2"
-                  >mdi-alpha-l-circle-outline</v-icon
-                >Line
-                <el-switch
-                  v-model="profile.is_personal_enable_line"
-                  active-color="#13ce66"
-                  inactive-color="#eee"
-                  @change="statchange()"
-                  :disabled="!profile.is_sys_enable_line"
-                ></el-switch>
+  <div style="width: 100%;height: 100%;">
+    <v-card  class="login profile">
+      <v-overlay :value="$route.query.hasOwnProperty('code')" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+      <div class="card-title">
+        <!-- {{ this.$auth.$state.user.picture }} -->
+          <div class="title" style="display: flex;align-items: center;">
+            <v-avatar size="60"
+              ><v-img :src="this.$auth.$state.user.picture"></v-img
+            ></v-avatar>
+            <div class="information">
+              <span class="title">{{ $auth.$state.user.name }}</span>
+              <span style="max-width: 200px;font-size: 0.85rem;font-weight: 500;">{{ $auth.$state.user.email }}</span>
+            </div>
+          </div>
+      </div>
+      <v-divider></v-divider>
+      <div class="content notify">
+        <v-subheader class="title">
+          <v-icon class="mx-2">mdi-bell-circle-outline</v-icon>接收通知
+        </v-subheader>
+        <div class="notify-item">
+          <!-- <v-icon color="#EA4335" class="mr-2">mdi-gmail</v-icon> -->
+          <div class="mail">
+            <!-- {{ profile.is_sys_enable_email }} -->
+            <span>Mail</span>
+            <el-switch
+              v-model="profile.is_personal_enable_email"
+              active-color="#006AA6"
+              inactive-color="#BFCBD2"
+              @change="statchange()"
+              :disabled="!profile.is_sys_enable_email"
+            ></el-switch
+            >
+          </div>
+          
+          <!-- <v-icon color="#00B900" class="mr-2"
+            >mdi-alpha-l-circle-outline</v-icon> -->
+          <div class="mail line">
+            <span>Line</span>
+            <el-switch
+              v-model="profile.is_personal_enable_line"
+              active-color="#006AA6"
+              inactive-color="#BFCBD2"
+              @change="statchange()"
+              :disabled="!profile.is_sys_enable_line"
+            ></el-switch>
 
-                <v-btn
-                  color="#13ce66"
-                  style="color:white;"
-                  tile
-                  :href="interactionLink"
-                  :disabled="
-                    !profile.is_personal_enable_line ||
-                      profile.line_token.length != 0
-                  "
-                  v-if="!profile.line_token"
-                  >尚未綁定Line</v-btn
-                >
-                <v-btn
-                  color="#EA4335"
-                  style="color:white;"
-                  tile
-                  @click="revoke"
-                  :disabled="!profile.line_token"
-                  v-if="profile.line_token"
-                >
-                  <v-icon :disabled="!profile.line_token"
-                    >mdi-vector-polyline-remove</v-icon
-                  >解除綁定
-                </v-btn>
-                <v-icon color="#13ce66" :disabled="!profile.line_token"
-                  >mdi-check-bold</v-icon
-                >
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon
-                      color="orange"
-                      v-bind="attrs"
-                      v-on="on"
-                      @click="testMsg"
-                      :disabled="!profile.line_token"
-                      >mdi-information-outline</v-icon
-                    >
-                  </template>
-                  <span>發送測試訊息</span>
-                </v-tooltip>
-              </v-col>
-              <v-col cols="12" sm="2" align-self="center"> </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-spacer></v-spacer>
-    </v-row>
+            <v-btn
+              class="btn-primary green"
+              tile
+              :href="interactionLink"
+              :disabled="
+                !profile.is_personal_enable_line ||
+                  profile.line_token.length != 0
+              "
+              v-if="!profile.line_token"
+              >尚未綁定</v-btn
+            >
+            <v-btn
+              color="#EA4335"
+              style="color:white;"
+              tile
+              @click="revoke"
+              :disabled="!profile.line_token"
+              v-if="profile.line_token"
+              class="btn-primary delete"
+            >
+              <!-- <v-icon :disabled="!profile.line_token">mdi-vector-polyline-remove</v-icon> -->
+              解除綁定
+            </v-btn>
+            <!-- <v-icon color="#13ce66" :disabled="!profile.line_token"
+              >mdi-check-bold</v-icon
+            > -->
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <button class="btn-icon just-icon" :disabled="!profile.line_token" v-bind="attrs"
+                    v-on="on" @click="testMsg" style="cursor: pointer;">
+                  <v-icon style="font-size: 2rem;">mdi-send-circle-outline</v-icon>
+                </button>
+                
+              </template>
+              <span>發送測試訊息</span>
+            </v-tooltip>
+          </div>
+                  
+        </div>
+      </div>
+    </v-card>
   </div>
 </template>
 
@@ -128,7 +100,7 @@ const agent = new https.Agent({
           rejectUnauthorized: false
         });
 export default {
-  layout: "emptynologin",
+  layout: "emptynologinprofile",
   middleware: 'auth',
   data() {
     return {
@@ -320,8 +292,60 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .v-subheader {
   font-size: 1.5em;
+  padding: 0;
 }
+.v-application.v-application--is-ltr .v-card.login.profile {
+  padding: 40px 24px;
+  .card-title {
+    margin-bottom: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+  .notify {
+    // padding: 0 8px;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    width: 100%;
+    .title {
+      &.theme--light.v-subheader {
+        color: $color-primary;
+        font-weight: bold;
+      }
+      & .v-icon {
+        color: $color-primary;
+      }
+      
+    }
+    .notify-item {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-left: 4px;
+    }
+    .mail {
+      margin: 16px 8px;
+      & > span {
+        font-size: 1rem;
+        font-weight: bold;
+        color: $color-primary;
+        margin-right: 8px;
+      }
+    }
+  }
+  .information {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    .title {
+      font-weight: bold;
+    }
+  }
+}
+
 </style>
