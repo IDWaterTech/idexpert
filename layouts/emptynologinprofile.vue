@@ -2,7 +2,7 @@
   <client-only>
     <v-app>
        <!-- class="mainbg" -->
-      <v-main class="bg">
+      <v-main class="bg-profile">
         <v-navigation-drawer
           dark :height="($nuxt.$vuetify.breakpoint.name=='xs')?'80%':'100%'"
           app
@@ -248,7 +248,7 @@
   .switch-ip .v-input--dense > .v-input__control > .v-input__slot {
       margin-bottom: 8px;
   }
-  .bg {
+  .bg-profile {
     // background: var(--linear-gradient-dark, linear-gradient(179deg, #00324E 0.78%, #40657A 197.21%));
     // background: linear-gradient(178deg, #00324E -29.51%, #40657A 140.55%);
     // background: linear-gradient(180deg, #40657A 0%, #40657A 33.33%, #00324E 33.34%, #00324E 100%);
