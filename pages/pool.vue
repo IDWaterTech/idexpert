@@ -440,7 +440,7 @@
                       v-model="all_num_per_unit"
                       size="mini"
                       :precision="2"
-                      :step="0.1"
+                      :step="1"
                       :min="0"
                       prop="number"
                     ></el-input-number>
