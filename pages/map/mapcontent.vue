@@ -21,7 +21,8 @@
                     <div v-if="areas.length > 0" class="tabs">
                         <v-tabs v-model="nowAreaTag" show-arrows :style="{paddingLeft: isField?'12px':'0'}">
                             <div v-if="!isField" class="icons">
-                                <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon>
+                                <!-- <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon> -->
+                                <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="userDialog" class="my-3">mdi-pencil</v-icon>
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <button class="confirm" v-show="editData.length>0" @click="selectchecked()" v-bind="attrs"
@@ -67,13 +68,28 @@
                 </v-col>
             </v-row>
         </div>
+        <v-dialog v-model="openUserDialog" width="350" class="indicator-dialog">
+            <v-card height="230">
+                <v-card-title>管理員密碼</v-card-title>
+                <v-card-text>
+                    <v-text-field v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="btn-secondary" @click="captchacancel">取消</v-btn>
+                <v-btn class="btn-primary" @click="captchacheck">確認</v-btn>
+                
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
   </template>
   
   <script>
   import poollayout from "@/pages/map/poolslayout.vue";
   import setting from "~/pages/map/settingcolor.vue";
-import { Doughnut } from 'vue-chartjs';
+  import { Doughnut } from 'vue-chartjs';
+  import md5 from "md5";
   export default {
       layout: 'emptynologin',
       middleware: "auth",
@@ -126,7 +142,9 @@ import { Doughnut } from 'vue-chartjs';
               // 判斷url的參數
               isField: false,
               isLoad: false,
-              isError: false
+              isError: false,
+              openUserDialog: false,
+              ipadminpwd:''
           }
       },
       props:{
@@ -266,6 +284,29 @@ import { Doughnut } from 'vue-chartjs';
             }
             
         },
+        userDialog() {
+            if(this.mapshowedit) {
+                this.mapshowedit = false;
+            }else {
+                this.openUserDialog = true;
+            }
+        },
+        captchacheck() {
+            var input_ipadminpwd = md5(this.ipadminpwd);
+
+            //idwadmin56651588
+            if(input_ipadminpwd=='0df860f9cad0c35e96feeb0e3cf3619c'){
+                this.mapshowedit = true;
+                this.ipadminpwd = '';
+                this.openUserDialog = false;
+            }else {
+                this.$toast.error(`密碼錯誤`, { duration: 2000 });
+            }
+        },
+        captchacancel() {
+            this.ipadminpwd = '';
+            this.openUserDialog = false;
+        },
         edit(evt) {
             // 全部儲存用，接收子元件(更改池)的資料，儲存至editData
             // console.log('index edit',evt)
@@ -294,6 +335,7 @@ import { Doughnut } from 'vue-chartjs';
         saveDelete(evt) {
             // 當子元件更改池，各自儲存後，需到父層變更editData資料，全部儲存時，再次丟出
             this.editData = this.editData.filter(x => x.id !== evt.item.id);
+            this.mapshowedit = false;
             //   console.log('save Delete Data', this.editData);
         },
         selectchecked: async function () {
@@ -337,6 +379,7 @@ import { Doughnut } from 'vue-chartjs';
                     this.$toast.error(`修改失敗，找不到狀態id`, { duration: 2000 });
                 }
             }
+            this.showedit = false;
 
         },
         alertNowEdit(success) {

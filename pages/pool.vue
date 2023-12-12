@@ -9,10 +9,19 @@
               <v-row style="margin-bottom: 0;align-items: center;">
                 <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
                   <!-- 選擇池 -->
-                  <div class="search-container">
+                  <!-- <div class="search-container">
                     <locate-select 
                       class="select-template"
                       :class="{'disabled':$route.query.id&&$route.query.id!==''}" 
+                      :dataScope="'pool'" 
+                      :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:'49'" 
+                      :isMulti="false"
+                      @scopeSel_data="get_scopeData($event);getCircleData()"
+                      ></locate-select>
+                  </div> -->
+                  <div class="search-container">
+                    <locate-select 
+                      class="select-template"
                       :dataScope="'pool'" 
                       :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:'49'" 
                       :isMulti="false"
@@ -454,15 +463,17 @@
                     
                     <div class="volume" style="display: flex;flex-direction: column;align-items: flex-start;">
                       <el-input-number
+                        type="number"
                         :id="pond.name"
                         :ref="pond.name"
                         class="ml-2"
                         v-model="pond.num_per_unit"
                         size="mini"
                         :precision="2"
-                        :step="0.1"
+                        :step="1"
                         :min="0"
                         prop="number"
+                        required="true"
                         @change="
                               () => {
                                 pond.estimated_num =
@@ -1758,13 +1769,19 @@ export default {
       // return;
 
       var valid = this.$refs.cycleform.validate();
-      console.log('valid',valid);
+      
       if(this.dataid.length>0) {
         this.isDataidError = false;
+        this.dataVolumn.forEach(d=>{
+          if(!d.num_per_unit || d.num_per_unit==null ||d.num_per_unit=='') {
+            this.volumeError = true;
+          }
+          
+        })
       }else {
         this.isDataidError = true;
       }
-
+      console.log('valid',valid,this.isDataidError,this.volumeError);
       if(valid && !this.isDataidError && !this.volumeError) {
         // alert('submit data：'+ JSON.stringify(param));
         await this.$axios
