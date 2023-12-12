@@ -1544,46 +1544,52 @@ export default {
         })
     },
     getPondData: async function(bool=false) {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
-        .then(res => {
-          this.allPondsData = _.cloneDeep(res.data);
-          var items = res.data.filter(x => x.id == this.poolid);
-          if (items.length == 1) {
-            if(!bool) {
-              this.addDialog = true; 
-            }
-            let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
-            let date1 = date[0].split('-').concat(date[1].split(':'));
-            // date1
-            console.log('date',date1);
-            this.addparm.name = '';
-            date1.forEach(x=>this.addparm.name+=x);
-            this.addparm.name = this.addparm.name+'_{pool}'
-            this.add_volume = items[0].volume;
-            this.addparm.estimated_survival_rate = 70;
-            this.tempSelect = this.template_items[0].id;
-            this.addparm.temp_id = this.template_items[0].id;
-            this.dataVolumn = [];
+      if(this.template_items.length>0) {
+        await this.$axios
+          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
+          .then(res => {
+            this.allPondsData = _.cloneDeep(res.data);
+            var items = res.data.filter(x => x.id == this.poolid);
+            if (items.length == 1) {
+              if(!bool) {
+                this.addDialog = true; 
+                
+              }
+              let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+              let date1 = date[0].split('-').concat(date[1].split(':'));
+              // date1
+              console.log('date',date1);
+              this.addparm.name = '';
+              date1.forEach(x=>this.addparm.name+=x);
+              this.addparm.name = this.addparm.name+'_{pool}'
+              this.add_volume = items[0].volume;
+              this.addparm.estimated_survival_rate = 70;
+              this.tempSelect = this.template_items[0].id;
+              this.addparm.temp_id = this.template_items[0].id;
+              this.dataVolumn = [];
 
-            // 關掉Dialog再開啟不會重置scrollbar位置 
-            setTimeout(()=>{
-              if(document.getElementsByClassName('v-dialog--active')) {
-                document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
-              }
-            },100)
-          } else {
-            this.$toast.success(
-              `失敗：無法取得體積資料，池id:${this.poolid}}`,
-              {
-                duration: 2000
-              }
-            );
-          }
-        })
-        .finally(() => {
-          /* 不論失敗成功皆會執行 */
-        });
+              // 關掉Dialog再開啟不會重置scrollbar位置 
+              setTimeout(()=>{
+                if(document.getElementsByClassName('v-dialog--active')) {
+                  document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+                }
+              },100)
+            } else {
+              this.$toast.success(
+                `失敗：無法取得體積資料，池id:${this.poolid}}`,
+                {
+                  duration: 2000
+                }
+              );
+            }
+          })
+          .finally(() => {
+            /* 不論失敗成功皆會執行 */
+          });    
+      }else {
+        alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!')
+      }
+      
     },
     showlogDialog: async function() {
       if (this.$refs.logform != undefined) {
@@ -1977,259 +1983,262 @@ export default {
           // this.eventData = []; //清除事件紀錄清單
           this.$refs.circletable.toggleRowSelection();
           // this.$refs.circletable.setCurrentRow(val);
-          if(this.circleData.filter(x=>x.id==val.id).length==1) {
-            var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
-            // var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
-            // var tempContent = await this.getTemp(val.id);
+          if(this.circleData.length>0) {
+            if(this.circleData.filter(x=>x.id==val.id).length==1) {
+              var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
+              // var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
+              // var tempContent = await this.getTemp(val.id);
 
-            // tempMain = (tempMain==undefined)?{}:[];
-            // tempContent = (tempContent==undefined)?{}:[];
+              // tempMain = (tempMain==undefined)?{}:[];
+              // tempContent = (tempContent==undefined)?{}:[];
 
-            // tempMain = {
-            //   "id": 30,
-            //   "name_ch": "樣板A",
-            //   "name_en": "template_a",
-            //   "remark": "this is a test",
-            //   "created_user": "jeff",
-            //   "created_time": "2022-12-27 15:17:05",
-            //   "updated_user": "jianwei.wen@idwater.com.tw",
-            //   "updated_time": "2023-10-26 08:49:03"
-            // }
-            
-              // tempContent = [
-              // {
-              //   "phase_id": 1,
-              //   "phase_name": "空池",
-              //   "stepList": [
-              //       {
-              //           "step_id": 23,
-              //           "step_name": "新增循環",
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":23
-              //           // "execute_time": '2023-10-25 10:12:12',
-              //           // confirm_time: '',
-              //       },
-              //       {
-              //           "step_id": 40,
-              //           "step_name": "其他",
-              //           // isConfirm:false,
-              //           "msg":'i am msg 2.',
-              //           // "execute_time": '2023-10-25 10:25:12',
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":'23_02'
-              //       },
-              //       {
-              //           "step_id": 41,
-              //           "step_name": "其他",
-              //           // isConfirm:false,
-              //           "msg":'i am msg 1.',
-              //           // "execute_time": '2023-10-25 10:20:12',
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":'23_01'
-              //       },
-              //       {
-              //           "step_id": 24,
-              //           "step_name": "設備正常",
-              //           // "execute_time": '2023-10-31 10:30:12',
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":24
-              //       },
-              //       {
-              //           "step_id": 25,
-              //           "step_name": "消毒養殖池",
-              //           // "execute_time": '2023-10-31 10:50:12',
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":25
-              //       },
-              //       {
-              //           "step_id": 26,
-              //           "step_name": "擺曝氣盤",
-              //           // "execute_time": '2023-11-01 01:50:12',
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":26
-              //       }
-              //     ]
-              //   },
-              //   {
-              //     "phase_id": 2,
-              //     "phase_name": "養殖審核",
-              //     "stepList": [
-              //       {
-              //           "step_id": 27,
-              //           "step_name": "養殖審核1",
-              //           // "execute_time": '2023-11-01 01:50:12',
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":27
-              //       },
-              //       {
-              //           "step_id": 28,
-              //           "step_name": "養殖審核2",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":28
-              //       },
-              //       {
-              //           "step_id": 29,
-              //           "step_name": "養殖審核4",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":29
-              //       }
-              //     ]
-              //   },
-              //   {
-              //     "phase_id": 3,
-              //     "phase_name": "備池",
-              //     "stepList": [
-              //       {
-              //           "step_id": 30,
-              //           "step_name": "備池1",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":30
-              //       },
-              //       {
-              //           "step_id": 31,
-              //           "step_name": "備池2",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":31
-              //       }
-              //     ]
-              //   },
-              //   {
-              //     "phase_id": 4,
-              //     "phase_name": "蓄水",
-              //     "stepList": [
-              //       {
-              //           "step_id": 32,
-              //           "step_name": "蓄水1",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":32
-              //       },
-              //       {
-              //           "step_id": 33,
-              //           "step_name": "蓄水2",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":33
-              //       }
-              //     ]
-              //   },
-              //   {
-              //     "phase_id": 5,
-              //     "phase_name": "做水",
-              //     "stepList": [
-              //       {
-              //           "step_id": 34,
-              //           "step_name": "做水1",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":34
-              //       },
-              //       {
-              //           "step_id": 35,
-              //           "step_name": "做水2",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":35
-              //       }
-              //     ]
-              //   },
-              //   {
-              //     "phase_id": 6,
-              //     "phase_name": "放養中",
-              //     "stepList": [
-              //       {
-              //           "step_id": 36,
-              //           "step_name": "放養中1",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":36
-              //       },
-              //       {
-              //           "step_id": 37,
-              //           "step_name": "放養中2",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":37
-              //       }
-              //     ]
-              //   },
-              //   {
-              //     "phase_id": 7,
-              //     "phase_name": "清池",
-              //     "stepList": [
-              //       {
-              //           "step_id": 38,
-              //           "step_name": "清池1",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":38
-              //       },
-              //       {
-              //           "step_id": 39,
-              //           "step_name": "清池2",
-              //           "execute_time": '',
-              //           "confirm_time": '',
-              //           "executor":'',
-              //           "confirm":'',
-              //           "sort_id":39
-              //       }
-              //     ]
-              //   },
-              // ]
-            
-            
-            console.log(tempMain);
-            // this.passObj["tempMain"] = tempMain;
-            // this.passObj["tempContent"] = await this.getTemp(val.id);
-            this.getTemp(val.id);
-            
+              // tempMain = {
+              //   "id": 30,
+              //   "name_ch": "樣板A",
+              //   "name_en": "template_a",
+              //   "remark": "this is a test",
+              //   "created_user": "jeff",
+              //   "created_time": "2022-12-27 15:17:05",
+              //   "updated_user": "jianwei.wen@idwater.com.tw",
+              //   "updated_time": "2023-10-26 08:49:03"
+              // }
+              
+                // tempContent = [
+                // {
+                //   "phase_id": 1,
+                //   "phase_name": "空池",
+                //   "stepList": [
+                //       {
+                //           "step_id": 23,
+                //           "step_name": "新增循環",
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":23
+                //           // "execute_time": '2023-10-25 10:12:12',
+                //           // confirm_time: '',
+                //       },
+                //       {
+                //           "step_id": 40,
+                //           "step_name": "其他",
+                //           // isConfirm:false,
+                //           "msg":'i am msg 2.',
+                //           // "execute_time": '2023-10-25 10:25:12',
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":'23_02'
+                //       },
+                //       {
+                //           "step_id": 41,
+                //           "step_name": "其他",
+                //           // isConfirm:false,
+                //           "msg":'i am msg 1.',
+                //           // "execute_time": '2023-10-25 10:20:12',
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":'23_01'
+                //       },
+                //       {
+                //           "step_id": 24,
+                //           "step_name": "設備正常",
+                //           // "execute_time": '2023-10-31 10:30:12',
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":24
+                //       },
+                //       {
+                //           "step_id": 25,
+                //           "step_name": "消毒養殖池",
+                //           // "execute_time": '2023-10-31 10:50:12',
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":25
+                //       },
+                //       {
+                //           "step_id": 26,
+                //           "step_name": "擺曝氣盤",
+                //           // "execute_time": '2023-11-01 01:50:12',
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":26
+                //       }
+                //     ]
+                //   },
+                //   {
+                //     "phase_id": 2,
+                //     "phase_name": "養殖審核",
+                //     "stepList": [
+                //       {
+                //           "step_id": 27,
+                //           "step_name": "養殖審核1",
+                //           // "execute_time": '2023-11-01 01:50:12',
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":27
+                //       },
+                //       {
+                //           "step_id": 28,
+                //           "step_name": "養殖審核2",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":28
+                //       },
+                //       {
+                //           "step_id": 29,
+                //           "step_name": "養殖審核4",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":29
+                //       }
+                //     ]
+                //   },
+                //   {
+                //     "phase_id": 3,
+                //     "phase_name": "備池",
+                //     "stepList": [
+                //       {
+                //           "step_id": 30,
+                //           "step_name": "備池1",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":30
+                //       },
+                //       {
+                //           "step_id": 31,
+                //           "step_name": "備池2",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":31
+                //       }
+                //     ]
+                //   },
+                //   {
+                //     "phase_id": 4,
+                //     "phase_name": "蓄水",
+                //     "stepList": [
+                //       {
+                //           "step_id": 32,
+                //           "step_name": "蓄水1",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":32
+                //       },
+                //       {
+                //           "step_id": 33,
+                //           "step_name": "蓄水2",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":33
+                //       }
+                //     ]
+                //   },
+                //   {
+                //     "phase_id": 5,
+                //     "phase_name": "做水",
+                //     "stepList": [
+                //       {
+                //           "step_id": 34,
+                //           "step_name": "做水1",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":34
+                //       },
+                //       {
+                //           "step_id": 35,
+                //           "step_name": "做水2",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":35
+                //       }
+                //     ]
+                //   },
+                //   {
+                //     "phase_id": 6,
+                //     "phase_name": "放養中",
+                //     "stepList": [
+                //       {
+                //           "step_id": 36,
+                //           "step_name": "放養中1",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":36
+                //       },
+                //       {
+                //           "step_id": 37,
+                //           "step_name": "放養中2",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":37
+                //       }
+                //     ]
+                //   },
+                //   {
+                //     "phase_id": 7,
+                //     "phase_name": "清池",
+                //     "stepList": [
+                //       {
+                //           "step_id": 38,
+                //           "step_name": "清池1",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":38
+                //       },
+                //       {
+                //           "step_id": 39,
+                //           "step_name": "清池2",
+                //           "execute_time": '',
+                //           "confirm_time": '',
+                //           "executor":'',
+                //           "confirm":'',
+                //           "sort_id":39
+                //       }
+                //     ]
+                //   },
+                // ]
+              
+              
+              console.log(tempMain);
+              // this.passObj["tempMain"] = tempMain;
+              // this.passObj["tempContent"] = await this.getTemp(val.id);
+              this.getTemp(val.id);
+              
+            }
           }
+          
           // this.currentDataId = val.id;
         }
       }
@@ -2676,28 +2685,33 @@ export default {
     },
     // 循環清單編輯
     editCircle(data) {
-      // this.editperson_in_charge = '';
-      // 取得水體積
-      this.showadd(true);
-      let getData = _.cloneDeep(data);
-      // 預估放苗
-      getData.estimated_num = getData.total;
-      // 預估存活要為數值
-      getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
-      this.editDialog = true;
-      console.log('>>>>edit',getData);
-      setTimeout(()=>{
-        this.resultListOpen = true;
-        // this.resultCycleOpen = false;
-        // this.currentDataId = null;
-        this.editparm = getData;
-        this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
-        if(document.getElementsByClassName('v-dialog--active')) {
-          document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
-        }
-      },200)
-      
-      // console.log(this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge}));
+      if(this.template_items.length>0) {
+         // this.editperson_in_charge = '';
+        // 取得水體積
+        this.showadd(true);
+        let getData = _.cloneDeep(data);
+        // 預估放苗
+        getData.estimated_num = getData.total;
+        // 預估存活要為數值
+        getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
+        this.editDialog = true;
+        console.log('>>>>edit',getData);
+        setTimeout(()=>{
+          this.resultListOpen = true;
+          // this.resultCycleOpen = false;
+          // this.currentDataId = null;
+          this.editparm = getData;
+          this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+          if(document.getElementsByClassName('v-dialog--active')) {
+            document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+          }
+        },200)
+        
+        // console.log(this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge}));
+      }else {
+        alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!')
+      }
+     
       
     },
     cancelEdit() {
