@@ -188,7 +188,7 @@
               <div class="card-title" style="cursor: pointer;margin: 8px" @click="resultCycleOpen = !resultCycleOpen" >
                   <div class="title">
                       <v-card-title>養殖歷程</v-card-title>
-                      <span style="font-size: 14px;">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
+                      <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
                   </div>
                   <div class="btn-groups">
                     <div class="open">
@@ -1159,17 +1159,17 @@ export default {
     },
     //取得苗清單
     getSeedlingData:async function(){
-                this.SeedlingModel = undefined;
-                var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
-                await this.$axios
-                    .get(url)
-                    .then(res => {
-                        this.SeedlingData = res.data;
-                    })
-                    .finally(() => {
-                /* 不論失敗成功皆會執行 */ 
-                    });
-            },
+      this.SeedlingModel = undefined;
+      var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
+      await this.$axios
+          .get(url)
+          .then(res => {
+              this.SeedlingData = res.data;
+          })
+          .finally(() => {
+      /* 不論失敗成功皆會執行 */ 
+          });
+    },
     cellClass: function(row) {
       if (row.columnIndex == 0) {
         return "disableSelection";
