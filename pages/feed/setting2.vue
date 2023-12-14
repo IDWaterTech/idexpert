@@ -358,7 +358,53 @@
                           </div>
                         </div>
                         <div v-if="tablindex == '套餐設定'" class="content">
-                          <el-table
+                          <v-data-table light 
+                            :headers="comboHeaders"
+                            :items="manuFilterData" dense
+                            :id="'table-combo'"
+                            hide-default-footer
+                            disable-pagination
+                            no-data-text="查無資料"
+                            fixed-header
+                            maxHeight="55vh"
+                            style="height: 55vh;overflow-y: scroll;">
+                            
+                            <template  v-slot:[`item.main`]="{item}">
+                              <v-chip
+                                  v-for="(imain, key) in item.main_items"
+                                  :key="'main_items_'+key"
+                                  color="#408FBC"
+                                  style="color:#fff;font-size: 12px;margin: 2px;"
+                                  >{{ imain.name }}</v-chip>
+                            </template>
+                            <template  v-slot:[`item.sub`]="{item}">
+                              <v-chip
+                                  v-for="(smain, key) in item.sub_items"
+                                  :key="'sub_items_'+key"
+                                  color="#BFCBD2"
+                                  style="color:#00324E;font-size: 12px;margin: 2px;"
+                                  >{{ smain.name }}</v-chip>
+                            </template>
+                            <template  v-slot:[`item.actions`]="{item}">
+                                <v-tooltip bottom>
+                                      <template v-slot:activator="{ on, attrs }">
+                                          <button class="btn-icon" @click="openEdit(item.id)" v-bind="attrs" v-on="on">
+                                              <v-icon>mdi-pencil</v-icon>
+                                          </button>
+                                      </template>
+                                      <span>修改</span>
+                                  </v-tooltip>
+                                  <v-tooltip bottom>
+                                      <template v-slot:activator="{ on, attrs }">
+                                          <button class="btn-icon delete" @click="combodelete(item.id)" v-bind="attrs" v-on="on">
+                                              <v-icon>mdi-trash-can</v-icon>
+                                          </button>
+                                      </template>
+                                      <span>刪除</span>
+                                  </v-tooltip>
+                            </template>
+                          </v-data-table>
+                          <!-- <el-table
                             :data="manuFilterData"
                             style="width: 100%"
                             height="55vh"
@@ -368,7 +414,7 @@
                             <el-table-column type="expand">
                               <template slot-scope="props">
                                 <el-form label-position="left" inline style="width:100%">
-                                  <el-form-item style="margin: 0 40px 24px 40px;width:100%">
+                                  <el-form-item style="margin: 0 48px 24px 48px;width:80%">
                                     <el-table
                                       :data="props.row.main_items"
                                       style="width: 100%"
@@ -508,7 +554,7 @@
                             <template slot="empty">
                               <span>查無資料</span>
                             </template>
-                          </el-table>
+                          </el-table> -->
                         </div>
                       </v-card>
                     </div>
@@ -1150,6 +1196,13 @@ export default {
         { text: '單位', value: 'unit', sortable: false,width:"5%"},
         { text: '單位數量', value: 'unit_quantity', sortable: false,width:"10%"},
         { text: '成分參數', value: 'parameters', sortable: false,width:"25%"},
+        { text: '操作', value: 'actions', sortable: false,width:"10%"},
+      ],
+      comboHeaders:[
+        { text: '名稱(中)', value: 'name_ch', sortable: true,width:"15%"},
+        { text: '名稱(英)', value: 'name_en', sortable: true,width:"15%"},
+        { text: '主成分', value: 'main', sortable: false,width:"25%"},
+        { text: '次成分', value: 'sub', sortable: false,width:"25%"},
         { text: '操作', value: 'actions', sortable: false,width:"10%"},
       ],
       manvalid: true,
@@ -2327,6 +2380,9 @@ export default {
   
   .el-table.main-table,.el-table.sub-table {
     border-radius: 4px;
+    background-color: #fff;
+    margin-bottom: 8px;
+    border: 1px solid $color-primary-75;
     .el-table__header {
       tr {
         line-height: 24px !important;
@@ -2340,17 +2396,22 @@ export default {
       font-size: 0.75rem;
     }
   }
+  .el-table.sub-table {
+    border-color: $color-dark-50;
+  }
   .el-table.main-table .el-table__header th.el-table__cell {
-    background-color: $color-primary-75;
+    // background-color: $color-primary-75;
   }
   .el-table.main-table .el-table__header-wrapper th.el-table__cell > .cell {
-    color: #fff;
+    color: $color-primary;
+    // color: #fff;
   }
   .el-table.sub-table .el-table__header th.el-table__cell {
-    background-color: $color-dark-25;
+    // background-color: $color-dark-25;
   }
   .el-table.sub-table .el-table__header-wrapper th.el-table__cell > .cell {
-    color: $color-dark;
+    // color: $color-dark;
+    color: $color-dark-50;
   }
   .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
     padding-top: 8px;
