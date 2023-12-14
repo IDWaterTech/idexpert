@@ -72,9 +72,9 @@
                             hide-default-footer
                             disable-pagination
                             no-data-text="查無資料"
-                            height="55vh"
                             fixed-header
-                            style="overflow-y: scroll;">
+                            maxHeight="55vh"
+                            style="height: 55vh;overflow-y: scroll;">
                             <template  v-slot:[`item.actions`]="{item}">
                                   <v-tooltip bottom>
                                       <template v-slot:activator="{ on, attrs }">
@@ -104,20 +104,30 @@
                 <v-tab-item value="成份設定">
                   <div class="search">
                     <v-row>
-                      <v-col cols="7" md="3" sm="6" style="padding: 0;padding-left: 8px;">
+                      <v-col cols="12" lg="3" md="3" sm="6" style="padding: 0;padding-left: 8px;display: flex;align-items: center;">
+                        <v-chip v-if="fic_idx&&fic_idx!==null"
+                            :color="`${nowtag.is_main?'#408FBC':'#BFCBD2'}`"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="{'color':`${nowtag.is_main?'#fff':'#00324E'}`}"
+                          >{{ (nowtag.is_main)?'主':'次' }}</v-chip>
+                          <v-chip v-if="fic_idx&&fic_idx!==null"
+                            :color="`${nowtag.is_feed?'#7FB4D2':'#7F98A6'}`"
+                            style="font-size: 12px;margin: 2px;"
+                            :style="{'color':`${nowtag.is_feed?'#fff':'#fff'}`}"
+                          >{{ (nowtag.is_feed)?'餌':'料' }}</v-chip>
                           <v-autocomplete v-model="fic_idx" hide-details dense filled clearable placeholder="選擇成份類別" :items="feed_ingredient_category" 
                             @click:clear="
                               () => {
                                 fingfield = {};
                               }
                             "
-                            @change="ficselect" item-text="name_ch" item-value="id" style="min-width: 200px;">
+                            @change="ficselect" item-text="name_ch" item-value="id" style="min-width: 160px;">
                       
                           </v-autocomplete>
                           
                       </v-col>
                       
-                      <v-col cols="5" md="3" sm="6" style="padding: 0;">
+                      <v-col cols="12" lg="3" md="3" sm="6" style="padding: 0;">
                         <v-tooltip bottom>
                           <template v-slot:activator="{ on, attrs }">
                               <button class="btn-icon just-icon" @click="getficdata" v-bind="attrs" v-on="on">
@@ -245,9 +255,9 @@
                             hide-default-footer
                             disable-pagination
                             no-data-text="查無資料"
-                            height="55vh"
                             fixed-header
-                            style="overflow-y: scroll;">
+                            maxHeight="55vh"
+                            style="height: 55vh;overflow-y: scroll;">
                             <template v-slot:[`item.manufacturer`]="{ item }">
                                 {{manu.filter(x=>x.id==item.manufacturer_id)[0].name_ch}}
                             </template>
@@ -1148,6 +1158,7 @@ export default {
       mode: 'edit',
       tablindexOrigin: "",
       expands: [], //Expand only one line into the current line id
+      nowtag:{is_main:true,is_feed:true},
     };
   },
   async mounted() {
@@ -1327,6 +1338,10 @@ export default {
           x => x.id == this.fic_idx
         )[0];
         this.ficfieldOrigin = _.cloneDeep(this.ficfield);
+        this.nowtag = {
+          is_main:this.ficfield.is_main,
+          is_feed:this.ficfield.is_feed
+        };
         var tmpfic = this.feed_ingredient_category.filter(
           x => x.id == this.fic_idx
         )[0].id;
@@ -1542,6 +1557,7 @@ export default {
         .get(url)
         .then(res => {
           this.feed_ingredient_category = res.data;
+          this.ficselect();
           console.log('成份類別',this.feed_ingredient_category);
           console.log("取得成份類別清單API:" + res.request.responseURL);
         })
