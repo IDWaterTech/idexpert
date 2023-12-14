@@ -2324,10 +2324,17 @@ export default {
   .el-form--inline .el-form-item__content {
     width: 80%;
   }
+  
   .el-table.main-table,.el-table.sub-table {
     border-radius: 4px;
-    .el-table__header th.el-table__cell {
-      padding: 0;
+    .el-table__header {
+      tr {
+        line-height: 24px !important;
+      }
+      th.el-table__cell {
+        padding: 0;
+      }
+      
     }
     .cell {
       font-size: 0.75rem;
