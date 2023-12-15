@@ -2440,7 +2440,7 @@ export default {
             dialog:{
                 pdf:false
             },
-            pdf:{url:'https://drive.google.com/file/d/1NC0I9EaiyFLEoDrk1zVAxeSbGzEI-snu/preview'}
+            pdf:{url:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview'}
 
         }
     },
