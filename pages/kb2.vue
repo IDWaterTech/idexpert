@@ -95,9 +95,26 @@
                             </div>
                             <!-- 控制項 - result版面收合 -->
                             <div class="control">
+                                <v-icon @click="dialog.pdf=true" title="公式">mdi-square-root-box</v-icon>
                                 <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
                                 <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                             </div>
+                            <v-dialog v-model="dialog.pdf"
+                                        scrollable
+                                        max-width="75%"
+                                        >
+                                <v-card>
+                                    <v-card-title>計算公式</v-card-title>
+                                    <v-card-text style="height: 600px;">
+                                        <v-responsive>
+                                            <iframe :src="pdf.url" style="overflow:hidden;height:600px;width:100%;" ></iframe>
+                                        </v-responsive>
+                                    </v-card-text>
+                                    <!-- <v-card-actions>
+                                        <v-btn>Close</v-btn>
+                                    </v-card-actions> -->
+                                </v-card>
+                            </v-dialog>
                         </v-col>
                         <!-- 控制項 - result版面收合 -->
                         <!-- <v-col v-if="windowWidth>959.58" cols="12" md="4" style="display: flex;justify-content: flex-end;"
@@ -2342,7 +2359,7 @@
 import nerdamer from 'nerdamer';
 import dayjs from "dayjs";
 import _ from "lodash";
-import { number } from 'echarts/lib/export';
+// import { number } from 'echarts/lib/export';
 export default {
     layout: "emptynologin2",
     head() {
@@ -2419,6 +2436,11 @@ export default {
                 param: '',
                 name: ''
             },
+            //pdf
+            dialog:{
+                pdf:false
+            },
+            pdf:{url:'https://drive.google.com/file/d/1NC0I9EaiyFLEoDrk1zVAxeSbGzEI-snu/preview'}
 
         }
     },
