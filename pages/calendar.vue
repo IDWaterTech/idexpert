@@ -528,7 +528,11 @@
           </v-menu>
         </v-sheet>
       </v-col>
-      <v-col cols="12" style="height: 32px;"></v-col>
+      <v-col cols="12" style="height: 32px;">
+        <span class="white--text">
+          資料範圍：「場→可顯示場、區、池事件」、「區→可顯示區、池事件」、「池→可顯示池事件」
+        </span>
+      </v-col>
     </v-row>
     <v-card width="100%" min-height="600px" v-if="false">
       <iframe
