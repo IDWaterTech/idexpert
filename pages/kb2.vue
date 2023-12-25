@@ -104,10 +104,15 @@
                                         max-width="75%"
                                         >
                                 <v-card>
-                                    <v-card-title>計算公式</v-card-title>
+                                    <v-card-title>計算公式
+                                        <v-switch
+                                            v-model="formulaData"
+                                            :label="formulaData?'pdf':'xls'"
+                                            ></v-switch>
+                                    </v-card-title>
                                     <v-card-text style="height: 600px;">
                                         <v-responsive>
-                                            <iframe :src="pdf.url" style="overflow:hidden;height:600px;width:100%;" ></iframe>
+                                            <iframe :src="formulaUrl" style="overflow:hidden;height:600px;width:100%;" ></iframe>
                                         </v-responsive>
                                     </v-card-text>
                                     <!-- <v-card-actions>
@@ -2437,10 +2442,15 @@ export default {
                 name: ''
             },
             //pdf
+            formulaData:true,//true is pdf else is xls
             dialog:{
                 pdf:false
             },
-            pdf:{url:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview'}
+            // formulaUrl:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
+            url:{
+                pdf:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
+                xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0l0s0v5fgWL3UgmUYnBfLDNie7vkkafJ1gD0Cis4uo85jvizx9mPQqT1tXaiZK-7zlj82GjCJwm9_/pubhtml?widget=true&amp;headers=false'
+            }
 
         }
     },
@@ -3538,6 +3548,9 @@ export default {
         // this.resetParm();
     },
     computed: {
+        formulaUrl(){
+            return this.formulaData?this.url.pdf:this.url.xls;
+        },
         ShowPoolName(){
             var Factory = (this.BaseParm["Factory"]==undefined)?'':this.BaseParm["Factory"];
             var PondArea = (this.BaseParm["PondArea"]==undefined)?'':this.BaseParm["PondArea"];
