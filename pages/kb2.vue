@@ -969,6 +969,17 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
+                                                                                <span class="pa-0 ma-0" slot="prepend">觀察網隻數</span>
+                                                                            </v-col>
+                                                                            <v-col cols="12" md="8" sm="8">
+                                                                                <v-text-field v-model.number="ObservationData['ObservationNum']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                        <!-- <v-text-field v-model.number="ObservationData['DeadShrimpQty']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">死蝦數量</span></v-text-field> -->
+                                                                    </v-col>
+                                                                    <v-col cols=12 md="6" sm="6">
+                                                                        <v-row class="item-row item">
+                                                                            <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend">是否脫殼</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -983,12 +994,12 @@
                                                                                 <span  class="pa-0 ma-0" slot="prepend">腸線顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <!-- <div class="input-chips" @click="chipsOpen('IntestinalColor')">
-                                                                                    <v-chip v-for="(item,id) in optData.IntestinalColor" :key="'IntestinalColor'+id">
+                                                                                <div class="input-chips" @click="chipsOpen('IntestinalColor')">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.IntestinalColor" :key="'IntestinalColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div> -->
-                                                                                <v-select v-model="ObservationData['IntestinalColor']" clearable :items="optData.IntestinalColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                </div>
+                                                                                <!-- <v-select v-model="ObservationData['IntestinalColor']" clearable :items="optData.IntestinalColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-if="false" v-model="ObservationData['IntestinalColor']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">腸線顏色</span></v-text-field> -->
@@ -1000,12 +1011,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">肝胰臟顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <!-- <div class="input-chips" @click="chipsOpen('HepatopancreasColor')">
-                                                                                    <v-chip v-for="(item,id) in optData.HepatopancreasColor" :key="'HepatopancreasColor'+id">
+                                                                                <div class="input-chips" @click="chipsOpen('HepatopancreasColor')">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.HepatopancreasColor" :key="'HepatopancreasColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div> -->
-                                                                                <v-select v-model="ObservationData['HepatopancreasColor']" clearable :items="optData.HepatopancreasColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                </div>
+                                                                                <!-- <v-select v-model="ObservationData['HepatopancreasColor']" clearable :items="optData.HepatopancreasColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-if="false" v-model="ObservationData['HepatopancreasColor']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">肝胰臟顏色</span></v-text-field> -->
@@ -1017,12 +1028,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">肌肉顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <!-- <div class="input-chips" @click="chipsOpen('MuscleColor')">
-                                                                                    <v-chip v-for="(item,id) in optData.MuscleColor" :key="'MuscleColor'+id">
+                                                                                <div class="input-chips" @click="chipsOpen('MuscleColor')">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.MuscleColor" :key="'MuscleColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div> -->
-                                                                                <v-select v-model="ObservationData['MuscleColor']" clearable :items="optData.MuscleColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                </div>
+                                                                                <!-- <v-select v-model="ObservationData['MuscleColor']" clearable :items="optData.MuscleColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-if="false" v-model="ObservationData['MuscleColor']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">肌肉顏色</span></v-text-field> -->
@@ -1034,12 +1045,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">蝦體顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <!-- <div class="input-chips" @click="chipsOpen('BodyColor')">
-                                                                                    <v-chip v-for="(item,id) in optData.BodyColor" :key="'BodyColor'+id">
+                                                                                <div class="input-chips" @click="chipsOpen('BodyColor')">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.BodyColor" :key="'BodyColor'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div> -->
-                                                                                <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                </div>
+                                                                                <!-- <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-select v-model="ObservationData['BodyColor']" clearable :items="optData.BodyColor" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">蝦體顏色</span></v-select> -->
@@ -1050,12 +1061,12 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend">蝦體形狀</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <!-- <div class="input-chips" @click="chipsOpen('BodyShape')">
-                                                                                    <v-chip v-for="(item,id) in optData.BodyShape" :key="'BodyShape'+id">
+                                                                                <div class="input-chips" @click="chipsOpen('BodyShape')">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.BodyShape" :key="'BodyShape'+id">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
-                                                                                </div> -->
-                                                                                <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                </div>
+                                                                                <!-- <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-select v-model="ObservationData['BodyShape']" clearable :items="optData.BodyShape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">蝦體形狀</span></v-select> -->
@@ -2624,7 +2635,8 @@ export default {
                     var keyLst = Object.keys(this.optData);
                     keyLst.forEach(k=>{
                         if(!k.includes('Is') || k.split('Is')[0] !== 'Is') {
-                            this.optData[k].forEach(c=>{
+                            this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                            this.ObservationData[k].forEach(c=>{
                                 c.value=0;
                             })
                         }
@@ -2757,45 +2769,6 @@ export default {
                 this.MakeWaterParm = input_data.MakeWaterParm;
                 this.WaterQualityData = input_data.WaterQualityData;
                 this.ObservationData = input_data.ObservationData;
-                if(input_data.ObservationData.IntestinalColor) {
-                    this.optData.IntestinalColor.forEach(c=>{
-                        if(c.name_en == input_data.ObservationData.IntestinalColor) {
-                            c.value = 1;
-                        }
-                    })
-                    this.optData.IntestinalColor.sort((a,b)=>{return b.value-a.value});
-                }
-                if(input_data.ObservationData.HepatopancreasColor) {
-                    this.optData.HepatopancreasColor.forEach(c=>{
-                        if(c.name_en == input_data.ObservationData.HepatopancreasColor) {
-                            c.value = 1;
-                        }
-                    })
-                    this.optData.HepatopancreasColor.sort((a,b)=>{return b.value-a.value});
-                }
-                if(input_data.ObservationData.MuscleColor) {
-                    this.optData.MuscleColor.forEach(c=>{
-                        if(c.name_en == input_data.ObservationData.MuscleColor) {
-                            c.value = 1;
-                        }
-                    })
-                    this.optData.MuscleColor.sort((a,b)=>{return b.value-a.value});
-                }
-                if(input_data.ObservationData.BodyColor) {
-                    this.optData.BodyColor.forEach(c=>{
-                        if(c.name_en == input_data.ObservationData.BodyColor) {
-                            c.value = 1;
-                        }
-                    })
-                    this.optData.BodyColor.sort((a,b)=>{return b.value-a.value});
-                }if(input_data.ObservationData.BodyShape) {
-                    this.optData.BodyShape.forEach(c=>{
-                        if(c.name_en == input_data.ObservationData.BodyShape) {
-                            c.value = 1;
-                        }
-                    })
-                    this.optData.BodyShape.sort((a,b)=>{return b.value-a.value});
-                }
                 
                 console.log('Input Observation',this.ObservationData)
                 if(this.ObservationData['SamplingDatetime']) {
@@ -3357,7 +3330,8 @@ export default {
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
                 if(!k.includes('Is') || k.split('Is')[0] !== 'Is') {
-                    this.optData[k].forEach(c=>{
+                    this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                    this.ObservationData[k].forEach(c=>{
                         c.value=0;
                     })
                 }
@@ -3382,6 +3356,16 @@ export default {
                 if (res.status == 200) {
                     this.importQuerry(res.data,true);//導入資料
                     this.postParm(false,null,true);//查詢ai回饋資訊
+                    var keyLst = Object.keys(this.optData);
+                    keyLst.forEach(k=>{
+                        if(!k.includes('Is') || k.split('Is')[0] !== 'Is') {
+                            this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                            this.ObservationData[k].forEach(c=>{
+                                c.value=0;
+                            })
+                        }
+                        
+                    })
                     this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
@@ -3504,27 +3488,38 @@ export default {
         },
         // 蝦體顏色/形狀等的chips Dialog
         chipsOpen(title) {
-            this.chipsDialog = true;
-            this.chipsDialogData = _.cloneDeep(this.optData[title]);
-            this.chipsDialogTitle.param = title;
-            if(title == 'IntestinalColor') {
-                this.chipsDialogTitle.name = '腸線顏色';
-            }else if(title == 'HepatopancreasColor') {
-                this.chipsDialogTitle.name = '肝胰臟顏色';
-            }else if(title == 'MuscleColor') {
-                this.chipsDialogTitle.name = '肌肉顏色';
-            }else if(title == 'BodyColor') {
-                this.chipsDialogTitle.name = '蝦體顏色';
-            }else if(title == 'BodyShape') {
-                this.chipsDialogTitle.name = '蝦體形狀';
+            if(this.ObservationData['ObservationNum']) {
+                this.chipsDialog = true;
+                this.chipsDialogData = _.cloneDeep(this.ObservationData[title]);
+                this.chipsDialogTitle.param = title;
+                if(title == 'IntestinalColor') {
+                    this.chipsDialogTitle.name = '腸線顏色';
+                }else if(title == 'HepatopancreasColor') {
+                    this.chipsDialogTitle.name = '肝胰臟顏色';
+                }else if(title == 'MuscleColor') {
+                    this.chipsDialogTitle.name = '肌肉顏色';
+                }else if(title == 'BodyColor') {
+                    this.chipsDialogTitle.name = '蝦體顏色';
+                }else if(title == 'BodyShape') {
+                    this.chipsDialogTitle.name = '蝦體形狀';
+                }
+                console.log('Open',this.chipsDialogData)
+                this.chipsDialogData.sort((a,b)=>{return b.value-a.value});
+            }else {
+                this.$toast.error("請輸入觀察網隻數", { duration: 2000 });
             }
-            console.log('Open',this.chipsDialogData)
-            this.chipsDialogData.sort((a,b)=>{return b.value-a.value});
         },
         confirmChips() {
-            this.chipsDialog=false;
-            this.chipsDialogData.sort((a,b)=>{return b.value-a.value});
-            this.optData[this.chipsDialogTitle.param] = _.cloneDeep(this.chipsDialogData);
+            let chips = 0
+            this.chipsDialogData.forEach(c=>{chips+=c.value});
+            if(chips>this.ObservationData['ObservationNum']) {
+                alert('輸入隻數與觀察網隻數不符!');
+
+            }else {
+                this.chipsDialog=false;
+                this.chipsDialogData.sort((a,b)=>{return b.value-a.value});
+                this.ObservationData[this.chipsDialogTitle.param] = _.cloneDeep(this.chipsDialogData);
+            }
         }
     },
     async created() {
