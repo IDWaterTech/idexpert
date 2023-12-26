@@ -244,8 +244,36 @@
               </v-row>
               <!-- 養殖池 -->
               <v-row style="margin-bottom: 12px;align-items: stretch;height: 100%;" id="chart">
+                <!-- AI建議 -->
+                <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
+                  <v-card class="result-card pool-detail" style="height: calc(100% - 14px);overflow: hidden;">
+                    <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
+                      <div class="title">
+                          <v-card-title style="padding: 0;">警示內容</v-card-title>
+                      </div>
+                    </div>
+                    <div class="content" style="padding:4px 12px;max-height:240px;overflow-y:scroll">
+                      <v-row v-if="alertAllData.length>0" style="margin-bottom: 0;">
+                        <v-col cols="12">
+                          <div class="suggestion" v-for="(sug,id) in alertAllData" :key="'sug-'+id" style="padding: 8px 0;">
+                            <div class="title" style="width: 100%;background-color: #BFD9E8;">
+                              <span style="padding: 0 8px;font-size: 1rem;"> {{ sug.name }} </span><br>
+                            </div>
+                            <div class="sug" v-for="(status,id) in sug.suggestion['WaterQuality']" :key="'status-'+id" style="padding: 8px;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                              <span>{{ status.status }}</span>
+                            </div>
+                              
+                          </div>
+                        </v-col>
+                      </v-row>
+                      <v-row v-else>
+                        無
+                      </v-row>
+                    </div>
+                  </v-card>
+                </v-col>
                 <!-- 養殖池 -->
-                <v-col cols="12" md="12" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
+                <v-col cols="12" md="9" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
                   <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
                     <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
                       <div class="title">
@@ -289,34 +317,7 @@
                     </div>
                   </v-card>
                 </v-col>
-                <!-- AI建議 -->
-                <!-- <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
-                  <v-card class="result-card pool-detail" style="height: calc(100% - 14px);overflow: hidden;">
-                    <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
-                      <div class="title">
-                          <v-card-title style="padding: 0;">警示內容</v-card-title>
-                      </div>
-                    </div>
-                    <div class="content" style="padding:4px 12px;max-height:240px;overflow-y:scroll">
-                      <v-row v-if="alertAllData.length>0" style="margin-bottom: 0;">
-                        <v-col cols="12">
-                          <div class="suggestion" v-for="(sug,id) in alertAllData" :key="'sug-'+id" style="padding: 8px 0;">
-                            <div class="title" style="width: 100%;background-color: #BFD9E8;">
-                              <span style="padding: 0 8px;font-size: 1rem;"> {{ sug.name }} </span><br>
-                            </div>
-                            <div class="sug" v-for="(status,id) in sug.suggestion['WaterQuality']" :key="'status-'+id" style="padding: 8px;border-bottom: 1px solid rgba(0,0,0,0.1);">
-                              <span>{{ status.status }}</span>
-                            </div>
-                              
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row v-else>
-                        無
-                      </v-row>
-                    </div>
-                  </v-card>
-                </v-col> -->
+                
               </v-row>
               <!-- 下方水質地圖 -->
               <v-row style="margin-bottom: 0;" >
@@ -586,7 +587,7 @@ export default {
         {id:1,name_ch:'30分鐘',value:30},
         {id:2,name_ch:'8小時',value:480},
         {id:3,name_ch:'24小時',value:1440},
-        // {id:4,name_ch:'30000',value:30000}
+        // {id:4,name_ch:'30000',value:1000000}
         
       ],
       timeSelect:0,
@@ -1196,7 +1197,7 @@ export default {
     },
     getAlertNum() {
       // console.log('get alert item',this.waterParm);
-      // this.showAlert = false;
+      this.showAlert = false;
       this.total.warning = 0;
       let item = Object.keys(this.waterParm);
       let num = 0;
@@ -1228,7 +1229,7 @@ export default {
       // console.log('total',this.total);
       this.showAlert = true;
       this.checkColor();
-      // this.getAllRow();
+      this.getAllRow();
      
     },
     checkColor() {
