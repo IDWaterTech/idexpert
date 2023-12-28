@@ -100,7 +100,8 @@
                                             :no-data-text="templatemode=='cycleedit'?'無':''"
                                             hide-default-footer
                                             disable-pagination
-                                            style="max-height: 300px;overflow-y: scroll;">
+                                            style="max-height: 300px;overflow-y: scroll;"
+                                            :item-key="'table_'+id" >
                                             <!-- <template v-slot:[`column.udactions`]="{ column }">
                                                 <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
                                             </template> -->
