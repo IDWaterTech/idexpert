@@ -518,8 +518,8 @@ export default {
         { name: "name", text: "名稱", visible: true },
         { name: "volume", text: "體積(頓)", visible: true },
         { name: "depth", text: "深度(m)", visible: true },
-        { name: "max_water_level", text: "最大水位高度", visible: true },
-        { name: "sensor_to_pond_bottom", text: "感測到水底高度", visible: true },
+        { name: "max_water_level", text: "最大水位高度", visible: false },/* 先隱藏，之後有用到再開 */
+        { name: "sensor_to_pond_bottom", text: "感測到水底高度", visible: false },/* 先隱藏，之後有用到再開 */
         { name: "num", text: "小池數(個)", visible: true },
         { name: "aeration_tray_num", text: "曝氣盤數(個)", visible: true },
         { name: "state", text: "狀態", visible: true },
