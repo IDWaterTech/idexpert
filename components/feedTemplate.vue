@@ -386,10 +386,10 @@
                         
                     </v-card-text>
                     <v-card-text>
-                        <embed :src="viewDetail.file" style="overflow:scroll;height:500px;width:100%;max-width:500px">
-                        <!-- <v-responsive>
-                            <iframe :src="viewDetail.file" style="overflow:scroll;height:500px;width:100%;max-width:500px" ></iframe>
-                        </v-responsive> -->
+                        <!-- <embed :src="viewDetail.file" style="overflow:scroll;height:500px;width:100%;max-width:500px"> -->
+                        <v-responsive>
+                            <iframe :src="viewDetail.file" style="overflow:hidden;height:600px;width:100%;" ></iframe>
+                        </v-responsive>
                     </v-card-text>
                 </div>
                 <div class="basic" v-else>

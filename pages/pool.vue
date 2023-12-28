@@ -104,6 +104,9 @@
               </div>
               <!-- 清單 -->
               <div v-show="resultListOpen" class="content">
+                <v-overlay :value="!isLoading" :absolute="true">
+                  <v-progress-circular indeterminate size="64"></v-progress-circular>
+                </v-overlay>
                 <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
                    height="62vh"
                   @cell-click="clickRow"
@@ -1349,7 +1352,8 @@ export default {
       searchDate: {
         start: new Date(),
         end: dayjs(new Date()).format("YYYY-MM-DD")
-      }
+      },
+      isLoading: false
     };
   },
   methods: {
@@ -3322,7 +3326,7 @@ export default {
           }
           
       }
-      this.addReport[id].pond_id = [];
+      this.addReport[id].pond_id = new Array();
       this.addReport[id].disease_id = [];
       this.addReport[id].file = null;
       this.addReport[id].position = '';
@@ -3420,14 +3424,14 @@ export default {
           formData,
           config
         )
-        .then(res => {
+        .then(async res => {
           console.log("API:" + res.request.responseURL);
           if (res.data == "新增成功") {
             this.reportDialog = false;
             if(this.addReport[0].type == 1) {
-              this.getDisease();
-            }else if(this.addReport.type == 2) {
-              this.getWater();
+              await this.getDisease();
+            }else if(this.addReport[0].type == 2) {
+              await this.getWater();
             }
             this.$toast.success("新增成功", { duration: 2000 });
           } else {
@@ -3489,6 +3493,7 @@ export default {
     },
     // 取得物種清單
     async getType() {
+      this.isLoading= false;
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`, { httpsAgent: agent })
         .then(async res => {
@@ -3535,6 +3540,7 @@ export default {
             })
           })
           this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
+          this.isLoading = true;
           console.log("檢驗疾病清單:", res.request.responseURL)
         })
         .catch(err => {
