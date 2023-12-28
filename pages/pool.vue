@@ -1,5 +1,7 @@
 <template>
   <div>
+    
+    <!-- <div><v-btn @click="compareStatus({id:[24,23],status:'空池'})">空池</v-btn></div> -->
     <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
       <div class="content" style="padding-top:12px">
         <!-- 搜尋 -->
@@ -68,6 +70,10 @@
                     <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
+                    </v-btn>
+                    <v-btn tile class="btn-secondary green" @click="reportOpen" style="padding: 0 8px;">
+                      <v-icon style="font-size: 1rem;">mdi-file-multiple-outline</v-icon>
+                      新增檢驗
                     </v-btn>
                     <v-btn v-if="false" tile class="btn-secondary green" style="padding: 0 8px;" @click="mutiExecuteDialog">
                       <v-icon>mdi-check</v-icon>
@@ -160,7 +166,7 @@
                         刪除</v-btn> -->
                       <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-icon" @click="editCircle(scope.row)" v-bind="attrs" v-on="on">
+                            <button class="btn-icon" :class="{'disabled':scope.row.ended_date !== null && scope.row.ended_date !== ''}" @click="editCircle(scope.row)" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-pencil</v-icon>
                             </button>
                         </template>
@@ -185,28 +191,49 @@
           <div class="result-list">
             <v-card v-if="currentDataId!==null && currentDataId!==''" class="result-card" >
               <!-- 表頭 -->
-              <div class="card-title" style="cursor: pointer;margin: 8px" @click="resultCycleOpen = !resultCycleOpen" >
-                  <div class="title">
-                      <v-card-title>養殖歷程</v-card-title>
-                      <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
-                  </div>
-                  <div class="btn-groups">
-                    <div class="open">
-                      <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;resultCycleOpen = !resultCycleOpen">
-                        <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
-                      </v-btn>
-                      <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;resultCycleOpen = !resultCycleOpen">
-                        <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
-                      </v-btn>
+              <div class="card-title" style="cursor: pointer;margin: 8px">
+                  <v-row style="margin-bottom: 0;">
+                    <v-col cols="12" md="8" sm="6" style="padding: 4px;">
+                      <div class="title">
+                        <v-card-title>養殖歷程</v-card-title>
+                        <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
                     </div>
-                    <div class="chevron">
-                      <v-icon v-if="resultCycleOpen">mdi-triangle-small-up</v-icon>
-                      <v-icon v-if="!resultCycleOpen">mdi-triangle-small-down</v-icon>
-                    </div>
-                  </div>
+                    </v-col>
+                    <v-col cols="12" md="4" sm="6" style="padding: 4px 0;">
+                      <div class="btn-groups">
+                        <div class="filter">
+                          <v-select
+                            v-model="passObj.filter"
+                            :items="filterType"
+                            label="項目過濾"
+                            multiple
+                            item-value="id"
+                            item-text="name_ch"
+                            @change="filterChange"
+                            hide-details
+                          ></v-select>
+                        </div>
+                        <div class="open" style="padding-right: 12px;">
+                          <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;resultCycleOpen = !resultCycleOpen">
+                            <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
+                          </v-btn>
+                          <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;resultCycleOpen = !resultCycleOpen">
+                            <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
+                          </v-btn>
+                        </div>
+                        <!-- <div class="chevron">
+                          <v-icon v-if="resultCycleOpen">mdi-triangle-small-up</v-icon>
+                          <v-icon v-if="!resultCycleOpen">mdi-triangle-small-down</v-icon>
+                        </div> -->
+                      </div>
+                    </v-col>
+                  </v-row>
+                  
+                  
+                  
               </div> 
               <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
-                <FeedTemplate :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" @getTemp="getTemp(currentDataId)"></FeedTemplate>
+                <FeedTemplate :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus"></FeedTemplate>
               </div>
             </v-card>
           </div>
@@ -403,7 +430,7 @@
               </v-text-field>
             </v-card-text>
             <v-card-text>
-              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
+              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require"
                 @change="tempChange" label="選擇樣板">
               </v-autocomplete>
             </v-card-text>
@@ -574,7 +601,7 @@
                   <!-- 上方tab -->
                   <v-tab
                       v-for="(tab,tid) in executeTabs"
-                      :key="'tabs-'+tid"
+                      :key="'tabs_'+tid"
                       :href="`#` + tab">
                       {{ tab }}
                   </v-tab>
@@ -582,13 +609,13 @@
                   <v-tabs-items v-model="nowTab" touchless>
                     <v-tab-item 
                       v-for="(tab,tid) in executeTabs"
-                      :key="'tab-'+tid"
+                      :key="'tab_'+tid"
                       :value="tab"
                       style="margin-bottom: 16px;margin-top: 16px;">
                       <!-- 執行 -->
                       <div v-show="nowTab=='執行'" class="result-content">
                         <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiExecuteData" :key="item.pond_id" class="list" style="display: flex;align-items: center;">
+                          <div v-for="item in mutiExecuteData" :key="'execute_'+item.pond_id" class="list" style="display: flex;align-items: center;">
                             <v-checkbox
                               v-model="item.checked"
                               dense hide-details
@@ -606,7 +633,7 @@
                       <!-- 確認 -->
                       <div v-show="nowTab=='確認'" class="result-content">
                         <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiConfirmData" :key="item.pond_id" class="list" style="display: flex;align-items: center;">
+                          <div v-for="item in mutiConfirmData" :key="'confirm_'+item.pond_id" class="list" style="display: flex;align-items: center;">
                             <v-checkbox
                               v-model="item.checked"
                               dense hide-details
@@ -808,8 +835,7 @@
               </v-text-field>
             </v-card-text>
             <v-card-text>
-              <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
-                clearable @change="tempChange" label="選擇樣板(選)" disabled>
+              <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板(選)" disabled>
               </v-autocomplete>
             </v-card-text>
             <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
@@ -831,6 +857,163 @@
         </v-card>
       </v-form>
     </v-dialog>
+
+    <!-- 新增檢驗報告 -->
+    <v-dialog v-model="reportDialog" max-width="500px">
+      <v-form v-model="reportvalid" ref="addform">
+          <v-card class="custom-dialog">
+              <v-card-title class="add-title" style="display: block;width: 100%;">
+                  <div style="display: inline-block;">
+                      <span>新增檢驗報告</span> 
+                  </div>
+                  <div class="add" style="float: right;display: inline-block;">
+                      <v-btn class="btn-secondary close"
+                              title="取消" 
+                              @click="reportDialog = false; addReport=[{msg:''}]" 
+                              style="border: none;min-width: 0;padding: 0 4px;">
+                          <v-icon>mdi-close</v-icon>
+                      </v-btn>
+                  </div>
+              </v-card-title>
+              <div class="basic">
+                <v-card-text v-for="(add,id) in addReport" :key="'add_'+id" style="position: relative;display: flex;flex-direction: column;padding: 8px 16px;border-radius: 4px;margin-top: 8px;">
+                  <div class="textfield" style="display: flex;flex-direction: column;align-items: flex-start;">
+                    <div class="select-type" style="width: 50%;">
+                      <v-select v-model="add.type" dense filled :items="addOtherType" item-text="name_ch"
+                        item-value="id" label="項目類型" style="padding-top: 8px;margin-right: 16px;" @change="selectadd($event,id)"></v-select>
+                    </div>
+                    <div class="select-item" style="width: 100%;">
+                        <div class="select-bacteria" style="display: flex;align-items: flex-end;width: 100%;">
+                          <v-select
+                              v-model="add.status"
+                              :items="addStatus"
+                              :menu-props="{ maxHeight: '400' }"
+                              item-value="name_ch"
+                              item-text="name_ch"
+                              filled dense 
+                              class="mt-0 select-sample"
+                              style="width: 100%;margin-right: 16px;"
+                              label="檢驗結果"
+                              hide-details
+                              >
+                          </v-select>
+                          <v-text-field v-model="add.position" label="檢驗單位" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;"></v-text-field>
+                        </div>
+                        <div class="select-bacteria" style="display: flex;align-items: flex-end;margin-bottom: 12px;width: 100%;">
+                          <div class="date-time-picker" style="display: flex;flex-direction: column;align-items: flex-start;color: #6c9bcd;width: 100%;margin-right: 16px;">
+                              <v-menu v-model="menu_reportdate" :close-on-content-click="false" :nudge-right="40"
+                                transition="scale-transition" offset-y min-width="auto">
+                                <template v-slot:activator="{ on, attrs }">
+                                  <v-text-field v-model="add.execute_date" label="檢驗時間" :rules="rules.require"
+                                    prepend-icon="mdi-calendar" style="padding-top: 0;margin-bottom: 12px;width: 100%;" hide-details readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                              () => (add.execute_date = getNowDate())
+                                                            "></v-text-field>
+                                </template>
+                                <v-date-picker v-model="add.execute_date" no-title locale="zh-tw" @input="menu_reportdate = false">
+                                </v-date-picker>
+                              </v-menu>
+                                <!-- <span style="font-size: 12px;line-height: 12px;">檢驗時間</span>
+                                <a-date-picker v-model="add.execute_date" :defaultValue="add.execute_date" label="檢驗時間" value="null" format="yyyy-MM-DD" show-time placeholder="檢驗時間" @change="onChange" @ok="onOk" style="min-width: none;margin-left: 4px;margin-right: 16px;width: 100%;" /> -->
+                            </div>  
+                         
+                            <!-- {{ bacteriaAll.filter(x=>x.id==add.species)[0].test }} -->
+                        </div>
+                        <div v-if="add.type==1" class="select-bacteria" style="display: flex;align-items: flex-end;margin-bottom: 12px;width: 100%;">
+                            <v-select
+                                v-model="add.species"
+                                :items="bacteriaAll"
+                                :menu-props="{ maxHeight: '400' }"
+                                item-value="id"
+                                item-text="name_ch"
+                                @change="getReportDisease"
+                                filled dense class="mt-0"
+                                style="width: 100%;"
+                                label="檢驗物種"
+                                hide-details
+                                >
+                            </v-select>
+                            <v-select
+                                
+                                v-model="add.method_id"
+                                :items="bacteriaAll.filter(x=>x.id==add.species)[0].test"
+                                :menu-props="{ maxHeight: '400' }"
+                                item-value="id"
+                                item-text="name_ch"
+                                @change="select($event,id,false,'method')"
+                                filled dense class="mt-0"
+                                style="width: 100%;"
+                                label="檢驗方式"
+                                hide-details
+                                >
+                            </v-select>
+                            
+                        </div>
+                        <!-- <div class="select-bacteria" style="display: flex;align-items: flex-end;width: 100%;">
+                            <v-text-field v-model="add.sample_deco" label="樣品包裝" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;margin-right: 16px;"></v-text-field>
+                            <v-text-field v-model="add.sample_store" label="樣品保存" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;"></v-text-field>
+                        </div> -->
+                        
+                        <v-select
+                          v-if="add.type==1"
+                          v-model="add.disease_id"
+                          :items="bacteriaAll.filter(x=>x.id==add.species)[0].test.filter(y=>y.id==add.method_id)[0].disease"
+                          :menu-props="{ maxHeight: '400' }"
+                          multiple
+                          chips
+                          @change="select($event,id,false,'disease')"
+                          filled dense class="mt-0"
+                          style="width: 100%;margin: 8px 0;"
+                          label="感染項目"
+                          hide-details
+                          item-value="id"
+                          item-text="name_en"
+                          >
+                          <template
+                              v-slot:selection="{ item }">
+                              <v-chip
+                                  style="font-size: 12px;margin: 2px;color: #fff;"
+                                  color="#408FBC"
+                                  class="main"
+                                  close
+                                  @click:close="select(item,id,true)"
+                              >
+                              {{ item.name_en }}
+                              </v-chip>
+                              
+                          </template>
+                        </v-select>
+                        <div class="search-container" style="margin-bottom: 12px;">
+                            <span 
+                                style="font-size: 12px;line-height: 12px;color: #6c9bcd;"
+                                :style="{'color':`${isSelectPool?'#6c9bcd':'red'}`}">採樣池</span>
+                            <locate-select 
+                                class="select-template"
+                                :dataScope="'pool'" 
+                                defaultSelect="" 
+                                :isMulti="true"
+                                @scopeSel_data="sampledata($event,id)"
+                            ></locate-select>
+                            <span v-if="!isSelectPool && add.pond.length==0" class="error-text" style="font-size: 12px;">*必填項目</span>
+                            
+                        </div>
+                          <!-- <v-text-field v-model="add.position" label="檢驗單位" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field> -->
+                      </div>
+                      <div class="select-item" style="width: 100%;">
+                        <v-text-field v-model="add.msg" label="項目說明" :rules="rules.checklength" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
+                        <!-- <v-file-input v-if="add.type==1" v-model="add.files" multiplelabel="File input"></v-file-input> -->
+                        <v-file-input v-if="add.type!==0" v-model="add.file" accept=".pdf" label="上傳文件(限*pdf)" @change="submitFiles($event,id)" style="margin-top: 0;"></v-file-input>
+                      </div>
+                  </div>
+                </v-card-text>
+              </div>
+              <v-card-actions style="padding: 24px 12px;">
+                  <v-spacer></v-spacer>
+                  <v-btn class="btn-secondary" @click="reportDialog = false">取消</v-btn>
+                  <v-btn class="btn-primary" @click="submitreport">新增</v-btn>
+              </v-card-actions>
+          </v-card>
+      </v-form>
+  </v-dialog>
   </div>
 </template>
 
@@ -877,6 +1060,8 @@ export default {
           value => !value || value.size < 2000000 || "檔案大小必須小於 2 MB!",
           v => !!v || "*必要項目"
         ],
+        checklength:[v => v==null?'':v.length<=100 ||  "*不可輸入超過100字元"],
+        requireSelect: [v =>  !!v.length || "*必要項目"],
       },
       poolid: this.$route.query.id,
       nowPool: '',
@@ -938,6 +1123,7 @@ export default {
       addDialog: false,
       addvalid: false,
       menu_adddate: false,
+      menu_reportdate: false,
       menu_stockeddate:false,
       menu_stockeddate_edit:false,
       add_volume: undefined,
@@ -1036,14 +1222,30 @@ export default {
                     icon: "04d",
                     id: 0,
                     main: "Clouds"
-          }]
+          }],
+          statcolor: [
+                { name: "無", color: "#D3DCE1",id: 1 },
+                { name: "default", color: "#00273E" },
+                { name: "放養中", color: "#F1E78D",id: 4 },
+                { name: "放養中(鎖排汙)", color: "#CBAAE5",id: 32 },
+                { name: " 集中暫養", color: "#8DA0E5",id: 31},
+                { name: "尚未洗池", color: "#E8DDBF",id: 6 },
+                { name: "已清洗", color: "#A8E6DB",id: 7 },
+                { name: "蓄水中", color: "#D3B280",id: 8 },
+                { name: "蓄水完畢", color: "#A5D380",id: 9 },
+                { name: "消毒中", color: "#80D3AB",id: 10 },
+                { name: "做水中", color: "#C5E8E6",id: 11 },
+                { name: "預備放苗", color: "#83C9F0",id: 12 },
+                { name: "空池", color: "#BFDAE8",id: 3 },
+                { name: "養殖審核", color: "#D3808F",id: 33 }
+            ],
        
       },
       // 樣板
       template_items: [],//樣版清單
       template_all:[],
       tempSelect: undefined,//已選到的樣版
-      passObj:{tempMain:{},tempContent:[]},
+      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3]},
       feededitmode:'cycleedit',
       editKey:0,
       optData:{WaterSource:[{ "name_en": "Groundwater", "name_ch": "地下水" }, { "name_en": "Seawater", "name_ch": "海水" }]},//選項
@@ -1115,6 +1317,39 @@ export default {
       editperson_in_charge: '',
       captchaDialog: false,//批次執行驗證
       all_num_per_unit: undefined, //統一密度
+      // 疾病/水質檢驗
+      reportDialog: false,
+      addStatus:[{name_ch:'正常',name:'normal'},{name_ch:'警告',name:'warning'},{name_ch:'異常',name:'danger'}],
+      reportvalid: false,
+      bacteriaAll:[{
+        sample:'白蝦',
+        test:[
+            {method:'iiPCR',disease:['IsWSSV','IsEMSPlasmid','IsEMSToxin','IsEHP','IsTSV','IsIMNV','IsIHHNV','IsYHV']},
+            {method:'PCR',disease:['IsWSSVFirst','IsWSSVNested','IsAHPNSPirA','IsAHPNSPirB','IsEHP','IsTSV','IsIMNV','IsIHHNV','IsYHV']}
+        ]},{
+        sample:'鱘龍魚',
+        test:[
+            {method:'鱘龍魚iiPCR',disease:['IsWSSV鱘龍魚','IsEMSPlasmid鱘龍魚','IsEMSToxin鱘龍魚','IsEHP鱘龍魚','IsTSV鱘龍魚','IsIMNV鱘龍魚','IsIHHNV鱘龍魚','IsYHV鱘龍魚']},
+            {method:'鱘龍魚PCR',disease:['IsWSSVFirst鱘龍魚','IsWSSVNested鱘龍魚','IsAHPNSPirA鱘龍魚','IsAHPNSPirB鱘龍魚','IsEHP鱘龍魚','IsTSV鱘龍魚','IsIMNV鱘龍魚','IsIHHNV鱘龍魚','IsYHV鱘龍魚']}
+        ]},{
+        sample:'紅蟳',test:[
+            {method:'紅蟳iiPCR',disease:['IsWSSV紅蟳','IsEMSPlasmid紅蟳','IsEMSToxin紅蟳','IsEHP紅蟳','IsTSV紅蟳','IsIMNV紅蟳','IsIHHNV紅蟳','IsYHV紅蟳']},
+            {method:'紅蟳PCR',disease:['IsWSSVFirst紅蟳','IsWSSVNested紅蟳','IsAHPNSPirA紅蟳','IsAHPNSPirB紅蟳','IsEHP紅蟳','IsTSV紅蟳','IsIMNV紅蟳','IsIHHNV紅蟳','IsYHV紅蟳']}
+        ]},
+      ],
+      isSelectPool:true,
+      addReport:[{msg:'',type:undefined}],
+      addOtherType: [{id:1,name_ch:'疾病檢驗',name_en:'disease'},{id:2,name_ch:'水質檢驗',name_en:'water'}],
+      filterType: [{id:1,name_ch:'疾病檢驗',name_en:'disease'},{id:2,name_ch:'水質檢驗',name_en:'water'},{id:3,name_ch:'事件',name_en:'event'},],
+      diseaseReport:[],
+      waterReport:[],
+      eventReport:[],
+      statusId:[],
+      species:[],
+      searchDate: {
+        start: new Date(),
+        end: dayjs(new Date()).format("YYYY-MM-DD")
+      }
     };
   },
   methods: {
@@ -1129,9 +1364,12 @@ export default {
         return `${poolParent}_${poolName}`;
       }
     },
-    get_scopeData(evt) {
+    async get_scopeData(evt) {
       console.log('change pool',evt)
       this.poolid = evt;
+      // this.getDisease();
+      // this.getWater();
+      // await this.getEvent();
     },
     get_selectData(evt) {
       // console.log(evt);
@@ -1238,6 +1476,15 @@ export default {
             .then(res => {
               console.log("循環刪除 API:" + res.request.responseURL);
               if (res.data == "刪除成功") {
+                if(data.ended_date==null || data.ended_date=='') {
+                  let status={
+                    id: new Array(),
+                    status:'空池'
+                  }
+                  status.id.push(this.poolid);
+                  this.compareStatus(status);
+                }
+                
                 this.getCircleData();
                 this.$toast.success("刪除成功", { duration: 2000 });
                 this.currentDataId = null;
@@ -1398,10 +1645,10 @@ export default {
             this.getwarnData();
             // this.getDetectData();
             this.getshirimpData();
-            this.resultListOpen = true;
-            this.resultCycleOpen = false;
-            this.currentDataId = null;
           }
+          this.resultListOpen = true;
+          this.resultCycleOpen = false;
+          this.currentDataId = null;
         })
         .catch(error=>{
           this.$toast.error("error:" + error, { duration: 2000 });
@@ -1565,7 +1812,7 @@ export default {
               this.add_volume = items[0].volume;
               this.addparm.estimated_survival_rate = 70;
               this.tempSelect = this.template_items[0].id;
-              this.addparm.temp_id = this.template_items[0].id;
+              this.addparm.temp_id = null;
               this.dataVolumn = [];
 
               // 關掉Dialog再開啟不會重置scrollbar位置 
@@ -1799,6 +2046,15 @@ export default {
             if (res.data == "新增成功") {
               this.addDialog = false;
               this.$refs.cycleform.reset();
+              this.statusId = [];
+              param.multi_data.forEach(x=>{
+                this.statusId.push(x.pond_id);
+              })
+              let status = {
+                id: this.statusId,
+                status: '養殖審核'
+              }
+              this.compareStatus(status);
               this.getCircleData();
               this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
             }else{
@@ -1970,6 +2226,7 @@ export default {
     // 循環清單點擊
     async clickRow(val, column, event) {
       console.log('click',val, column, event);
+      // this.passObj.filter=[1,2,3];
       if(column.label !== '操作') {
         if(val.id==this.currentDataId) {
           // 與原本點選的相同，取消點選
@@ -2003,232 +2260,298 @@ export default {
               //   "updated_time": "2023-10-26 08:49:03"
               // }
               
-                // tempContent = [
-                // {
-                //   "phase_id": 1,
-                //   "phase_name": "空池",
-                //   "stepList": [
-                //       {
-                //           "step_id": 23,
-                //           "step_name": "新增循環",
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":23
-                //           // "execute_time": '2023-10-25 10:12:12',
-                //           // confirm_time: '',
-                //       },
-                //       {
-                //           "step_id": 40,
-                //           "step_name": "其他",
-                //           // isConfirm:false,
-                //           "msg":'i am msg 2.',
-                //           // "execute_time": '2023-10-25 10:25:12',
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":'23_02'
-                //       },
-                //       {
-                //           "step_id": 41,
-                //           "step_name": "其他",
-                //           // isConfirm:false,
-                //           "msg":'i am msg 1.',
-                //           // "execute_time": '2023-10-25 10:20:12',
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":'23_01'
-                //       },
-                //       {
-                //           "step_id": 24,
-                //           "step_name": "設備正常",
-                //           // "execute_time": '2023-10-31 10:30:12',
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":24
-                //       },
-                //       {
-                //           "step_id": 25,
-                //           "step_name": "消毒養殖池",
-                //           // "execute_time": '2023-10-31 10:50:12',
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":25
-                //       },
-                //       {
-                //           "step_id": 26,
-                //           "step_name": "擺曝氣盤",
-                //           // "execute_time": '2023-11-01 01:50:12',
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":26
-                //       }
-                //     ]
-                //   },
-                //   {
-                //     "phase_id": 2,
-                //     "phase_name": "養殖審核",
-                //     "stepList": [
-                //       {
-                //           "step_id": 27,
-                //           "step_name": "養殖審核1",
-                //           // "execute_time": '2023-11-01 01:50:12',
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":27
-                //       },
-                //       {
-                //           "step_id": 28,
-                //           "step_name": "養殖審核2",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":28
-                //       },
-                //       {
-                //           "step_id": 29,
-                //           "step_name": "養殖審核4",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":29
-                //       }
-                //     ]
-                //   },
-                //   {
-                //     "phase_id": 3,
-                //     "phase_name": "備池",
-                //     "stepList": [
-                //       {
-                //           "step_id": 30,
-                //           "step_name": "備池1",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":30
-                //       },
-                //       {
-                //           "step_id": 31,
-                //           "step_name": "備池2",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":31
-                //       }
-                //     ]
-                //   },
-                //   {
-                //     "phase_id": 4,
-                //     "phase_name": "蓄水",
-                //     "stepList": [
-                //       {
-                //           "step_id": 32,
-                //           "step_name": "蓄水1",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":32
-                //       },
-                //       {
-                //           "step_id": 33,
-                //           "step_name": "蓄水2",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":33
-                //       }
-                //     ]
-                //   },
-                //   {
-                //     "phase_id": 5,
-                //     "phase_name": "做水",
-                //     "stepList": [
-                //       {
-                //           "step_id": 34,
-                //           "step_name": "做水1",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":34
-                //       },
-                //       {
-                //           "step_id": 35,
-                //           "step_name": "做水2",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":35
-                //       }
-                //     ]
-                //   },
-                //   {
-                //     "phase_id": 6,
-                //     "phase_name": "放養中",
-                //     "stepList": [
-                //       {
-                //           "step_id": 36,
-                //           "step_name": "放養中1",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":36
-                //       },
-                //       {
-                //           "step_id": 37,
-                //           "step_name": "放養中2",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":37
-                //       }
-                //     ]
-                //   },
-                //   {
-                //     "phase_id": 7,
-                //     "phase_name": "清池",
-                //     "stepList": [
-                //       {
-                //           "step_id": 38,
-                //           "step_name": "清池1",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":38
-                //       },
-                //       {
-                //           "step_id": 39,
-                //           "step_name": "清池2",
-                //           "execute_time": '',
-                //           "confirm_time": '',
-                //           "executor":'',
-                //           "confirm":'',
-                //           "sort_id":39
-                //       }
-                //     ]
-                //   },
-                // ]
+              //   tempContent = [
+              //   // {
+              //   //   "phase_id": 1,
+              //   //   "phase_name": "空池",
+              //   //   "stepList": [
+              //   //       {
+              //   //           "step_id": 23,
+              //   //           "step_name_ch": "新增循環",
+              //   //           "confirm_time": '',
+              //   //           "executor":'',
+              //   //           "verify":'',
+              //   //           "seq_id":23
+              //   //           // "execute_time": '2023-10-25 10:12:12',
+              //   //           // verify_time: '',
+              //   //       },
+              //   //       {
+              //   //           "step_id": 50,
+              //   //           "step_name_ch": "疾病檢疫",
+              //   //           // isverify:false,
+              //   //           "msg":'i am msg 1.',
+              //   //           "execute_time": '2023-12-15 10:20:12',
+              //   //           // "execute_time": '',
+              //   //           "verify_time": '測試',
+              //   //           "executor":'shihya.hsu@idwater.com.tw',
+              //   //           "verify":'',
+              //   //           "seq_id":'23_01'
+              //   //       },
+              //   //       {
+              //   //           "step_id": 40,
+              //   //           "step_name_ch": "其他",
+              //   //           // isverify:false,
+              //   //           "msg":'i am msg 2.',
+              //   //           // "execute_time": '2023-10-25 10:25:12',
+              //   //           "execute_time": '',
+              //   //           "verify_time": '',
+              //   //           "executor":'',
+              //   //           "verify":'',
+              //   //           "seq_id":'23_02'
+              //   //       },
+              //   //       {
+              //   //           "step_id": 41,
+              //   //           "step_name_ch": "其他",
+              //   //           // isverify:false,
+              //   //           "msg":'i am msg 1.',
+              //   //           // "execute_time": '2023-10-25 10:20:12',
+              //   //           "execute_time": '',
+              //   //           "verify_time": '',
+              //   //           "executor":'',
+              //   //           "verify":'',
+              //   //           "seq_id":'23_01'
+              //   //       },
+              //   //       {
+              //   //           "step_id": 24,
+              //   //           "step_name_ch": "設備正常",
+              //   //           // "execute_time": '2023-10-31 10:30:12',
+              //   //           "execute_time": '',
+              //   //           "verify_time": '',
+              //   //           "executor":'',
+              //   //           "verify":'',
+              //   //           "seq_id":24
+              //   //       },
+              //   //       {
+              //   //           "step_id": 25,
+              //   //           "step_name_ch": "消毒養殖池",
+              //   //           // "execute_time": '2023-10-31 10:50:12',
+              //   //           "execute_time": '',
+              //   //           "verify_time": '',
+              //   //           "executor":'',
+              //   //           "verify":'',
+              //   //           "seq_id":25
+              //   //       },
+              //   //       {
+              //   //           "step_id": 26,
+              //   //           "step_name_ch": "擺曝氣盤",
+              //   //           // "execute_time": '2023-11-01 01:50:12',
+              //   //           "execute_time": '',
+              //   //           "verify_time": '',
+              //   //           "executor":'',
+              //   //           "verify":'',
+              //   //           "seq_id":26
+              //   //       }
+              //   //     ]
+              //   //   },
+              //     {
+              //       "phase_id": 2,
+              //       "phase_name": "養殖審核",
+              //       "stepList": [
+              //         {
+              //             "step_id": 27,
+              //             "step_name_ch": "養殖審核1",
+              //             // "execute_time": '2023-11-01 01:50:12',
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":27
+              //         },
+              //         {
+              //             "step_id": 99,
+              //             "step_name_ch": "疾病檢疫",
+              //             // isverify:false,
+              //             "msg":'測試',
+              //             "execute_time": '2023-12-15 10:20:12',
+              //             // "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'shihya.hsu@idwater.com.tw',
+              //             "verifier":'',
+              //             "seq_id":'28_01',
+              //         },
+              //         {
+              //             "step_id": 28,
+              //             "step_name_ch": "養殖審核2",
+              //             // "execute_time": '2023-11-02 01:50:12',
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":28
+              //         },
+              //         {
+              //             "step_id": 29,
+              //             "step_name_ch": "養殖審核4",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":29
+              //         },
+              //         {
+              //             "step_id": 40,
+              //             "step_name_ch": "其他",
+              //             // isverify:false,
+              //             "msg":'i am msg 2.',
+              //             // "execute_time": '2023-10-25 10:25:12',
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":'28_03'
+              //         },
+              //         {
+              //             "step_id": 41,
+              //             "step_name_ch": "其他",
+              //             // isverify:false,
+              //             "msg":'i am msg 1.',
+              //             // "execute_time": '2023-11-25 10:20:12',
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":'28_02'
+              //         },
+              //       ]
+              //     },
+              //     {
+              //       "phase_id": 3,
+              //       "phase_name": "備池",
+              //       "stepList": [
+              //         {
+              //             "step_id": 30,
+              //             "step_name_ch": "備池1",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":30
+              //         },
+              //         {
+              //             "step_id": 31,
+              //             "step_name_ch": "備池2",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":31
+              //         }
+              //       ]
+              //     },
+              //     {
+              //       "phase_id": 4,
+              //       "phase_name": "蓄水",
+              //       "stepList": [
+              //         {
+              //             "step_id": 32,
+              //             "step_name_ch": "蓄水1",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":32
+              //         },
+              //         {
+              //             "step_id": 33,
+              //             "step_name_ch": "蓄水2",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":33
+              //         }
+              //       ]
+              //     },
+              //     {
+              //       "phase_id": 5,
+              //       "phase_name": "做水",
+              //       "stepList": [
+              //         {
+              //             "step_id": 34,
+              //             "step_name_ch": "做水1",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":34
+              //         },
+              //         {
+              //             "step_id": 35,
+              //             "step_name_ch": "做水2",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":35
+              //         }
+              //       ]
+              //     },
+              //     {
+              //       "phase_id": 7,
+              //       "phase_name": "放養中",
+              //       "stepList": [
+              //         {
+              //             "step_id": 36,
+              //             "step_name_ch": "放養中1",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":36
+              //         },
+              //         {
+              //             "step_id": 37,
+              //             "step_name_ch": "放養中2",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":37
+              //         }
+              //       ]
+              //     },
+              //     {
+              //       "phase_id": 8,
+              //       "phase_name": "清池",
+              //       "stepList": [
+              //         {
+              //             "step_id": 38,
+              //             "step_name_ch": "清池1",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":38
+              //         },
+              //         {
+              //             "step_id": 39,
+              //             "step_name_ch": "清池2",
+              //             "execute_time": '',
+              //             "verify_time": '',
+              //             "executor":'',
+              //             "verifier":'',
+              //             "seq_id":39
+              //         }
+              //       ]
+              //     },
+              //   ]
+              this.searchDate.start = this.circleData.filter(x=>x.id==val.id)[0].started_date;
+              if(this.circleData.filter(x=>x.id==val.id)[0].ended_date!==null && this.circleData.filter(x=>x.id==val.id)[0].ended_date!=='') {
+                this.searchDate.end = this.circleData.filter(x=>x.id==val.id)[0].ended_date;
+              }else {
+                this.searchDate.end = dayjs(new Date()).format("YYYY-MM-DD");
+              }
+              
+              this.getDisease();
+              this.getWater();
+              this.getEvent();
+              this.passObj.nowId = this.poolid;
+              if(this.circleData.filter(x=>x.id==val.id)[0].ended_date!==null && this.circleData.filter(x=>x.id==val.id)[0].ended_date!=='' ) {
+                this.passObj.nowEnd = true;
+                this.passObj.ended_date = this.circleData.filter(x=>x.id==val.id)[0].ended_date;
+              }else {
+                this.passObj.nowEnd = false;
+              }
               
               
               console.log(tempMain);
@@ -2242,8 +2565,18 @@ export default {
           // this.currentDataId = val.id;
         }
       }
-        
-      
+    },
+    end() {
+      let data = _.cloneDeep(this.circleData.filter(x=>x.id==this.currentDataId)[0]);
+      console.log('end',data);
+      data.estimated_num = data.total;
+      // 預估存活要為數值
+      data.estimated_survival_rate = parseFloat(data.estimated_survival_rate.split('%')[0]);
+      data.ended_date = dayjs( new Date()).format("YYYY-MM-DD");
+      this.editparm = _.cloneDeep(data);
+      this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+      this.submitEdit(true);
+
       
     },
     getTemp(id) {
@@ -2256,32 +2589,223 @@ export default {
           )
           .then(res => {
             console.log('get temp',res);
-            res.data.forEach(data=>{
-              if(data.phase_name_ch!=='空池') {
-                data.stepList.forEach(async step=>{
-                  if(step.step_name_ch !== '其他' && step.seq_id=='1') {
-                    step.seq_id = step.step_id.toString();
-                    await this.reviseSeqid(step);
-                  }
-                })
-              }
-              
-            })
-            this.passObj["tempContent"] = [];
-            // this.passObj["tempContent"] = res.data;
-            res.data.forEach(d=>{
-              if(d.phase_name_ch!=='空池') {
-                this.passObj["tempContent"].push(d);
-              }
-            })
-            this.resultListOpen = false;
-            this.resultCycleOpen = true;
-            this.currentDataId = id;
-            // return res.data;
+            if(res.data=='養殖循環樣板資料不存在') {
+              this.$toast.error("error:" + res.data, { duration: 2000 });
+            }else {
+              res.data.forEach(data=>{
+                if(data.phase_name_ch!=='空池') {
+                  data.stepList.forEach(async (step,sid)=>{
+                    // 排序id原為項目隸屬id更改('step_id'+'_'+'數字'->step_+'在階段中的index')
+                    // 因檢疫時間須按照時間進行排列，因此更改排序的方式
+                    if(step.step_name_ch !== '其他') {
+                      step.type = 0;
+                    }else {
+                      step.type = null;
+                    }
+                    
+                    if(!step.seq_id.includes('step_')) {
+                      step.seq_id = 'step_'+sid;
+                      await this.reviseSeqid(step);
+                    }
+                    // if(step.step_name_ch !== '其他' && step.seq_id=='1') {
+                    //   step.seq_id = step.step_id.toString();
+                    //   await this.reviseSeqid(step);
+                    // }
+                  })
+                }
+                
+              })
+              this.passObj["tempContent"] = [];
+              // this.passObj["tempContent"] = res.data;
+              res.data.forEach(d=>{
+                if(d.phase_name_ch!=='空池') {
+                  this.passObj["tempContent"].push(d);
+                }
+              })
+
+              this.resultListOpen = false;
+              this.resultCycleOpen = true;
+              this.currentDataId = id;
+              // return res.data;
+            }
+            
           })
           .finally(() => {
             /* 不論失敗成功皆會執行 */ 
           });
+    },
+    // 取得疾病檢驗報告
+    async getDisease() {
+      this.diseaseReport = [
+      // {
+      //   step_name_ch: "疾病檢驗",
+      //   step_name_en: "disease",
+      //   status: '異常',
+      //   position:'艾滴0',
+      //   method:'PCR',
+      //   bacteriaSelect:['MMM'],
+      //   files:'',
+      //   msg:'0000',
+      //   type:1,
+      //   execute_time:'2023-12-25 12:09:09'
+      // },{
+      //   step_name_ch: "疾病檢驗",
+      //   step_name_en: "disease",  
+      //   status: '警告',
+      //   position:'艾滴1',
+      //   method:'PCRii',
+      //   bacteriaSelect:['ddd'],
+      //   files:'',
+      //   msg:'1111',
+      //   type:1,
+      //   execute_time:'2023-12-22 08:09:09'
+      // },{
+      //   step_name_ch: "疾病檢驗",
+      //   step_name_en: "disease",
+      //   status: '正常',
+      //   position:'艾滴2',
+      //   method:'PCRii',
+      //   bacteriaSelect:['ddd','445'],
+      //   files:'',
+      //   msg:'2222',
+      //   type:1,
+      //   execute_time:'2023-12-22 12:09:09'
+      // },
+      ]
+      let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/`;
+      let parm = {
+        started_date: this.searchDate.start,
+        ended_date: this.searchDate.end,
+        pond_id: this.poolid,
+      };
+      await this.$axios
+        .get(apiURL, { params: parm }, { httpsAgent: agent })
+        .then(res => {
+          this.diseaseReport = _.cloneDeep(res.data);
+          this.diseaseReport.forEach(d=>{
+            d.execute_time = d.execute_date+' 00:00:00';
+            d.step_name_ch = '疾病檢驗';
+            d.step_name_en = 'disease';
+            d.type = 1;
+            d.bacteriaSelect = [];
+            d.disease.forEach(x=>{
+              d.bacteriaSelect.push(x.name_en);
+            })
+            d.method = this.bacteriaAll[0].test.filter(x=>x.id == d.method_id)[0].name_ch;
+
+            // const blob = new Blob([d.file]);
+            // const objectUrl = URL.createObjectURL(blob);
+            // d.file = objectUrl;
+            
+            // const binaryData = [];
+            // binaryData.push(d.file);       
+            // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
+          })
+          console.log('疾病檢驗清單',this.diseaseReport);
+          // this.goAnchor('#chart'); 
+          console.log("疾病檢驗清單", res.request.responseURL);
+        })
+        .catch(err => {
+          alert("疾病失敗：" + err.message);
+        });
+      this.diseaseReport.sort((a,b)=>{
+          return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
+      })
+    },
+    // 取得水質檢驗報告
+    async getWater() {
+      this.waterReport = [
+        // {
+        //   step_name_ch: "水質檢驗",
+        //   step_name_en: "water",
+        //   status: '異常',
+        //   position:'艾滴water0',
+        //   files:'',
+        //   msg:'0000water',
+        //   type:2,
+        //   execute_time:'2023-12-21 09:09:09'
+        // },{
+        //   step_name_ch: "水質檢驗",
+        //   step_name_en: "water",
+        //   status: '警告',
+        //   position:'艾滴water1',
+        //   files:'',
+        //   msg:'1111water',
+        //   type:2,
+        //   execute_time:'2023-12-22 11:09:09'
+        // },{
+        //   step_name_ch: "水質檢驗",
+        //   step_name_en: "water",
+        //   status: '正常',
+        //   position:'艾滴water2',
+        //   files:'',
+        //   msg:'2222water',
+        //   type:2,
+        //   execute_time:'2023-12-26 12:09:09'
+        // },
+      ]
+      let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/water-quality-testing-record/`;
+      let parm = {
+        started_date: this.searchDate.start,
+        ended_date: this.searchDate.end,
+        pond_id: this.poolid,
+      };
+      await this.$axios
+        .get(apiURL, { params: parm }, { httpsAgent: agent })
+        .then(res => {
+          this.waterReport = _.cloneDeep(res.data);
+          this.waterReport.forEach(d=>{
+            d.execute_time = d.execute_date+' 00:00:00';
+            d.step_name_ch = '水質檢驗';
+            d.step_name_en = 'water';
+            d.type = 2;
+
+            // const blob = new Blob([d.file]);
+            // const objectUrl = URL.createObjectURL(blob);
+            // d.file = objectUrl;
+
+            // const binaryData = [];
+            // binaryData.push(d.file);       
+            // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
+          })
+          console.log('水質檢驗清單',this.diseaseReport);
+          // this.goAnchor('#chart'); 
+          console.log("水質檢驗清單", res.request.responseURL);
+        })
+        .catch(err => {
+          alert("水質失敗：" + err.message);
+        });
+      this.waterReport.sort((a,b)=>{
+          return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
+      })
+        
+    },
+    // 取得事件
+    async getEvent() {
+      let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/event/`;
+      let parm = {
+        started_date: this.searchDate.start,
+        ended_date: this.searchDate.end,
+        pond_id: this.poolid,
+      };
+      await this.$axios
+        .get(apiURL, { params: parm }, { httpsAgent: agent })
+        .then(res => {
+          this.eventReport = _.cloneDeep(res.data);
+          this.eventReport.forEach(d=>{
+            d.execute_time = d.created_time;
+            d.step_name_ch = '事件';
+            d.step_name_en = 'event';
+            d.type = 3;
+            d.msg=`[ `+d.event_category_name+` ] `+d.title
+          })
+          console.log('event',this.eventReport);
+          // this.goAnchor('#chart'); 
+          console.log("eventReport:", res.request.responseURL);
+        })
+        .catch(err => {
+          alert("事件失敗：" + err.message);
+        });
     },
     async reviseSeqid(step) {
       step.updated_user = this.$auth.$state.user.name;
@@ -2381,7 +2905,7 @@ export default {
           }
         })
         .catch(err => {
-          alert("失敗：" + err.message);
+          alert("折線圖失敗：" + err.message);
         })
         .finally(() => {
           this.waterloading = false;
@@ -2717,19 +3241,26 @@ export default {
     cancelEdit() {
       this.editDialog = false;
     },
-    async submitEdit() {
+    async submitEdit(bool=false) {
       let parm = _.cloneDeep(this.editparm);
       parm.person_in_charge = this.editperson_in_charge;
       delete parm.estimated_num;//刪除初始放苗量
       console.log('>>>edit',parm);
-      if(this.$refs.editform.validate()){
+      if(bool || this.$refs.editform.validate()){
         await this.$axios
             .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${this.editparm.id}/`, parm)
             .then(res => {
                 if(res.data=='修改成功'){
                     this.$toast.success("修改成功", { duration: 2000 });
+                    let status={
+                      id:new Array(),
+                      status: '空池'
+                    }
+                    status.id.push(this.poolid);
+                    this.compareStatus(status);
                     this.editDialog = false;
                     this.getCircleData();
+                    
                     // this.updateouterAction('done');
                 }else{
                     this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
@@ -2760,6 +3291,261 @@ export default {
           this.all_num_per_unit = undefined;
         }
       }
+    },
+    /* 檢驗報告 */
+    reportOpen() {
+      this.reportDialog=true;
+      
+      // this.addReport = [{msg:'',type:this.addOtherType[0].id}]
+      // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
+      if (this.$refs.addform != undefined) {
+          this.$refs.addform.reset();
+      }
+      setTimeout(async ()=>{
+        this.isSelectPool = true;
+        this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:[],position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+      },100)
+    },
+    // 新增的項目類型切換
+    selectadd(evt,id) {
+      console.log('selectadd',evt,id);
+      if(evt==1) {
+          this.addReport[id].method_id = this.bacteriaAll[0].test[0].id;
+          this.addReport[id].execute_date = dayjs(new Date()).format("YYYY-MM-DD");
+      }else {
+          // this.addReport[id].sample = '';
+          this.addReport[id].method_id = '';
+          if(evt==2) {
+              this.addReport[id].execute_date = dayjs(new Date()).format("YYYY-MM-DD");
+          }else {
+              this.addReport[id].execute_date = null;
+          }
+          
+      }
+      this.addReport[id].pond_id = [];
+      this.addReport[id].disease_id = [];
+      this.addReport[id].file = null;
+      this.addReport[id].position = '';
+      this.addReport[id].status = this.addStatus[0].name_ch;
+      this.isSelectPool = true;
+    },
+    sampledata(evt,id) {
+        console.log(evt);
+        this.addReport[id].pond_id = evt;
+        if(this.addReport[id].pond_id.length>0) {
+            this.isSelectPool = true;
+        }else {
+            this.isSelectPool = false;
+        }
+    },
+    // 感染選擇
+    select(item,id,bool=false,type) {
+        console.log(item);
+        if(bool) {
+            var index = this.addReport[id].disease_id.indexOf(item);
+            this.addReport[id].disease_id.splice(index,1);
+        }else {
+            if(type=='method') {
+                this.addReport[id].method_id = this.bacteriaAll.filter(x=>x.id==this.addReport[id].species)[0].test[0].id;
+                this.addReport[id].disease_id = [];
+            }
+        }
+        // for(let i=0;i<this.bacteriaAll.length;i++) {
+        //     if(this.bacteriaSelect.includes(this.bacteriaAll[i])) {
+        //         this.bacteriaDataObject[this.bacteriaAll[i]] = 1;
+        //     }else {
+        //         this.bacteriaDataObject[this.bacteriaAll[i]] = 0;
+        //     }
+        // }
+        
+    },
+    // 檢驗日期
+    onChange(value,dateString) {
+        console.log(value,dateString);
+    },
+    onOk(value) {
+        console.log(value);
+    },
+    submitFiles(evt,id) {
+        if (this.addReport[id].file) {
+            // let formData = new FormData();
+
+            // files
+            // for (let file of this.addStep[id].files) {
+                // formData.append("files", this.addReport[id].files);
+            // }
+
+            // additional data
+            // formData.append("test", "foo bar");
+            console.log('upload',this.addReport[id].file,this.nowViewer);
+            // axios
+            //     .post("/upload-files", formData)
+            //     .then(response => {
+            //         console.log("Success!");
+            //         console.log({ response });
+            //     })
+            //     .catch(error => {
+            //         console.log({ error });
+            //     });
+        } else {
+            console.log("there are no files.");
+        }
+    },
+    async submitreport() {
+      let formData = new FormData();
+      let parm = _.cloneDeep(this.addReport[0]);
+      parm.created_user = this.$auth.$state.user.name;
+      // parm.disease_id=parm.disease_id.length>0? parm.disease_id.toString():'';
+      // parm.pond_id = parm.pond_id.toString();
+
+      delete parm.type;
+      delete parm.species;
+      delete parm.file;
+
+      if(this.addReport[0].type==2) {
+        delete parm.disease_id;
+        delete parm.method_id;
+      }
+      Object.keys(parm).forEach(x=>{
+        formData.append(x,parm[x]);
+      })
+      // formData.append('parm',JSON.stringify(parm));
+      formData.append("file", this.addReport[0].file);
+      let config = { headers: { "Content-Type": "multipart/form-data" } };
+      let url=this.addReport[0].type==1?'/breeding/disease-testing-record/':'/breeding/water-quality-testing-record/';
+      console.log('report',formData,parm);
+      await this.$axios
+        .post(
+          `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
+          formData,
+          config
+        )
+        .then(res => {
+          console.log("API:" + res.request.responseURL);
+          if (res.data == "新增成功") {
+            this.reportDialog = false;
+            if(this.addReport[0].type == 1) {
+              this.getDisease();
+            }else if(this.addReport.type == 2) {
+              this.getWater();
+            }
+            this.$toast.success("新增成功", { duration: 2000 });
+          } else {
+            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error("error:" + error, { duration: 2000 });
+        });
+      console.log('submit report',this.addReport);
+    },
+    // 取得狀態顏色
+    async getStateColor() {
+      const agent = new https.Agent({
+          rejectUnauthorized: false
+      });
+      //取得池況顏色設定
+      await this.$axios
+          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
+          .then(res => {
+            // console.log('getColor',res.data);
+            this.statcolor = res.data;
+            console.log("池況狀態顏色:", res.request.responseURL);
+          })
+          .catch(error => {
+            console.log("error:" + error.message);
+          });
+    },
+    // 比對池況狀態id與地圖撈取出的id
+    compareStatus(status) {
+      let num = 0;
+      status.id.forEach(async x=>{
+        let statusid = this.statcolor.filter(x => x.name == status.status)[0].id;
+        const parm = {
+          id: statusid,
+          updated_user: this.$auth.$state.user.email
+        }
+        await this.$axios
+          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${x}/`, parm)
+          .then(res => {
+              if (res.data == "修改成功") {
+              // let evt={
+              //     item: this.item,
+              //     value: this.selectedItem
+              // }
+              // this.item.state = this.selectedItem;
+              // this.$toast.success(`修改成功`, { duration: 2000 });
+              // this.$emit('saveSuccess',evt);
+              // this.selectedItem = '';
+              } else {
+                  alert(res.data);
+              }
+          })
+          .catch(error => {
+              alert("error:" + error.message);
+          });
+      })
+      
+    },
+    // 取得物種清單
+    async getType() {
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`, { httpsAgent: agent })
+        .then(async res => {
+          // console.log('getColor',res.data);
+          // 跟著目前的池物種
+          this.bacteriaAll = res.data;
+          this.addReport[0].species = this.bacteriaAll[0].id;
+          await this.getMethod();
+          console.log("物種清單:", res.request.responseURL,this.bacteriaAll);
+        })
+        .catch(error => {
+          console.log("error:" + error.message);
+        });
+    },
+    // 取得檢驗方法
+    async getMethod() {
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`, { httpsAgent: agent })
+        .then(async res => {
+          // console.log('getColor',res.data);
+          // 跟著目前的池物種
+          this.bacteriaAll.forEach(x=>x.test=res.data);
+          await this.getReportDisease();
+          console.log("檢驗方法清單:", res.request.responseURL);
+        })
+        .catch(error => {
+          console.log("error:" + error.message);
+        });
+    },
+    // 取得檢驗的疾病
+    async getReportDisease() {
+      let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/`;
+      let parm = {
+        species_id: this.addReport[0].species,
+      };
+      console.log('report',this.addReport);
+      await this.$axios
+        .get(apiURL, { params: parm })
+        .then(res => {
+          this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test.forEach(y=>{
+            y.disease = [];
+            res.data.forEach(d=>{
+              y.disease.push(d);
+            })
+          })
+          this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
+          console.log("檢驗疾病清單:", res.request.responseURL)
+        })
+        .catch(err => {
+          alert("檢驗疾病失敗：" + err.message);
+        });
+    },
+    // 過濾篩選
+    filterChange(evt) {
+      this.passObj.filter = [];
+      this.passObj.filter = evt;
+      console.log('filter',this.passObj.filter);
     }
   },
   async mounted() {
@@ -2781,6 +3567,11 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getWeather(); //氣象
     await this.getOptData(); //選項
+    await this.getStateColor();
+    await this.getType();
+    // this.getDisease();
+    // this.getWater();
+    // await this.getEvent();
     if(this.poolid!==''&&this.poolid!==undefined) {
       this.get_scopeData(this.poolid);
     }else {
@@ -3056,6 +3847,58 @@ export default {
     margin-top: 0;
     padding-top: 0;
   }
+  .select-type {
+        .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+            padding-top: 8px;
+        }
+    }
+    .select-item {
+        .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+            padding-top: 0;
+        }
+        .select-sample {
+            &.v-input--hide-details > .v-input__control > .v-input__slot {
+                margin-bottom: 22px !important;
+            }
+        }
+    }
+    .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
+        color: #fff;
+    }
+    .date-time-picker {
+        display: flex;
+        align-items: center;
+        // margin: 0 8px;
+        & > span {
+            flex: 1;
+        }
+    }
+    .ant-calendar-picker {
+        // padding: 0 20px;
+        margin-left: 0 !important;
+    }
+    .ant-calendar-picker-input.ant-input {
+        border: none;
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0,0,0,0.42);
+        border-radius: 0;
+        // margin-left: 20px;
+        // margin-right: 4px;
+        color: rgba(0,0,0,0.87);
+        padding: 4px;
+    }
+    .ant-calendar-picker:hover {
+        border-color: $color-form;
+    } 
+    .ant-calendar-picker-clear {
+        background: $color-lighten;
+    }
+    .ant-calendar-picker-icon {
+        display: none;
+    }
+    .select-template .vue-treeselect__control .vue-treeselect__multi-value-item {
+      padding: 0 4px;
+    }
 }
 
 @media(max-width:960) {

@@ -43,6 +43,7 @@
                 <!-- {{ tempMain }}<br>
                 {{ mainItems }} -->
                 <!--:dense="$vuetify.breakpoint.smAndDown" -->
+                <div v-if="passObj.nowEnd" class="error-text" style="padding: 12px;"><b>此循環已結束({{ passObj.ended_date }})</b></div>
                 <div v-for="(mitem,id) in mainItems" :key="'status_'+mitem.phase_id" class="timeline">
                     <v-row class="template-outer" 
                         style="align-items: flex-start;margin-bottom: 0;"
@@ -63,17 +64,17 @@
                             </div>
                         </div>
                         <!-- 表格+時間軸 -->
-                        <div class="right" :id="'right_'+mitem.phase_id"
+                        <div class="right"
                             :style="{'width':`${windowWidth<834 || templatemode!=='cycleedit'?'100%':'calc(100% - 72px - 8px)'}`,
                                     'marginLeft':`${windowWidth<834?'8px':'0'}`}">
                             <!-- 時間軸：因有顏色變換，無法使用偽元素 -->
                             <div class="circle-line">
                                 <div v-if="id !== (mainItems.length-1)" class="line"
-                                    :style="{'borderColor':`${templatemode=='cycleedit'?(mitem.newest&&mitem.newest!==''?mitem.color:'#BFCBD2'):status.filter(x=>x.id==mitem.phase_id)[0].color}`,
+                                    :style="{'borderColor':`${templatemode=='cycleedit'?(mitem.newest&&mitem.newest!==''?mitem.color:'#BFCBD2'):status[id].color}`,
                                             'borderStyle':`${(mitem.newest&&mitem.newest!=='')||templatemode!=='cycleedit'?'solid':'dashed'}`,
                                             'top':`${windowWidth<834?'0':'16px'}`,}"></div>
                                 <div class="circle"
-                                    :style="{'borderColor':`${templatemode=='cycleedit'?mitem.color:status.filter(x=>x.id==mitem.phase_id)[0].color}`}"></div>
+                                    :style="{'borderColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"></div>
                             </div>
                             <!-- 表格 -->
                             <div class="content" style="width: 100%;padding: 12px 24px;">
@@ -81,30 +82,30 @@
                                 <v-card class="result-card item-card">
                                     <!-- 表頭 -->
                                     <div class="card-title"
-                                        :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status.filter(x=>x.id==mitem.phase_id)[0].color}`}"
-                                        @click="status[id].open = !status[id].open" >
+                                        :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"
+                                        @click="open(mitem,id)" >
                                         <div class="title">
                                             <v-card-title>{{ templatemode=='cycleedit'?mitem.phase_name_ch:mitem.phase_name }}</v-card-title>
                                         </div>
                                         <div class="chevron">
-                                            <v-icon v-if="status[id].open">mdi-triangle-small-up</v-icon>
+                                            <v-icon v-if="adjustOpen(mitem,id)">mdi-triangle-small-up</v-icon>
                                             <v-icon v-else>mdi-triangle-small-down</v-icon>
                                         </div>
                                     </div>
                                     <!-- 內容 -->
-                                    <div v-if="status[id].open" class="content">
+                                    <div v-if="adjustOpen(mitem,id)" class="content">
                                         <v-data-table light 
                                             :headers="headers.filter(x => x.showmode.includes(templatemode))"
                                             :items="mitem.stepList"
-                                            no-data-text=""
+                                            :no-data-text="templatemode=='cycleedit'?'無':''"
                                             hide-default-footer
                                             disable-pagination
                                             style="max-height: 300px;overflow-y: scroll;">
                                             <!-- <template v-slot:[`column.udactions`]="{ column }">
                                                 <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
                                             </template> -->
-                                            <template v-for="header in headers" v-slot:[`header.${header.value}`]>
-                                                <div v-if="header.text=='刪除' && templatemode=='cycleedit'" class="tool" :key="header.value" style="display: flex;align-items: center;">
+                                            <template v-for="(header,hid) in headers" v-slot:[`header.${header.value}`]>
+                                                <div v-if="header.text=='刪除' && templatemode=='cycleedit'" class="tool" :key="'header_'+hid+id" style="display: flex;align-items: center;">
                                                     {{ header.text }}
                                                     <v-tooltip bottom>
                                                         <template v-slot:activator="{ on }">
@@ -115,8 +116,7 @@
                                                         <span>僅可刪除『其他』項目</span>
                                                     </v-tooltip>
                                                 </div>
-                                                
-                                                <span v-else :key="header.value">{{ header.text }}</span>
+                                                <span v-else :key="'header_'+hid+id">{{ header.text }}</span>
                                             </template>
                                             <!-- <template v-slot:[`item.name`]="{ item }">
                                                 <v-tooltip bottom>
@@ -140,9 +140,26 @@
                                                     <v-icon>mdi-table-row-plus-after</v-icon>
                                                 </v-btn> -->
                                             </template>
+
+                                            <!-- 訊息 -->
+                                            <template v-slot:[`item.msg`]="{ item }">
+                                                {{ item.msg }}
+                                                <div v-if="item.bacteriaSelect && item.bacteriaSelect.length>0" class="items">
+                                                    <v-chip
+                                                        v-for="(chip,cid) in item.bacteriaSelect"
+                                                        style="font-size: 12px;margin: 2px;color: #fff;"
+                                                        color="#408FBC"
+                                                        class="main"
+                                                        :key="'chip_'+chip+'_'+cid">  
+                                                        {{ chip }}
+                                                    </v-chip>
+                                                </div>
+                                                
+                                            </template>
                                             <!-- 執行 -->
                                             <template v-slot:[`item.deft_executor`]="{ item }">
-                                               {{ item.deft_executor }} 
+                                               <span v-if="item.type==3||item.type==1||item.type==2">{{ item.created_user }} </span>
+                                               <span v-else>{{ item.deft_executor }} </span>
                                                <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
                                                <!-- {{ dateFormat(item.execute_time) }} -->
                                             </template>
@@ -154,16 +171,26 @@
                                             </template>
                                             <!-- 執行/確認 -->
                                             <template v-slot:[`item.executed_actions`]="{ index }">
-                                                <v-btn class="btn-secondary btn-small"
-                                                    :class="{'disabled':mitem.stepList[index].execute_disabled}"
-                                                    @click="execute(id,index)">
-                                                    {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].verify_time!==''?'已執行':'取消':'執行' }}
-                                                </v-btn>
-                                                <v-btn class="btn-primary btn-small"
-                                                    :class="`${mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time==''?'':'disabled'}`"
-                                                    @click="executeConfirm(id,index)">
-                                                    {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time!==''?'已確認':'確認' }}
-                                                </v-btn>
+                                                <div class="btn-groups" v-if="mitem.stepList[index].type == 0 || mitem.stepList[index].type == null">
+                                                    <v-btn class="btn-secondary btn-small"
+                                                        :class="{'disabled':mitem.stepList[index].execute_disabled}"
+                                                        @click="execute(id,index)">
+                                                        {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].verify_time!==''?'已執行':'取消':'執行' }}
+                                                    </v-btn>
+                                                    <v-btn class="btn-primary btn-small"
+                                                        :class="`${mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time==''?'':'disabled'}`"
+                                                        @click="executeConfirm(id,index)">
+                                                        {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time!==''?'已確認':'確認' }}
+                                                    </v-btn> 
+                                                </div>
+                                                <div class="btn-groups" v-if="mitem.stepList[index].type && mitem.stepList[index].type !== 0 && mitem.stepList[index].type !== null">
+                                                    <v-btn  class="btn-secondary btn-small green"
+                                                        @click="if(mitem.stepList[index].file || mitem.stepList[index].type == 3){viewOpen=true;viewDetail=mitem.stepList[index]}" 
+                                                        :class="{'disabled':mitem.stepList[index].type !== 3 && !mitem.stepList[index].file}"
+                                                        style="pointer-events: inherit;">
+                                                        檢視
+                                                    </v-btn>
+                                                </div>
                                             </template>
                                             <!-- 刪除 -->
                                             <template v-slot:[`item.udactions`]="{ index }">
@@ -192,12 +219,16 @@
                                                 新增項目
                                             </v-btn>
                                         </div>
+                                        <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
+                                            <v-btn class="btn-primary btn-small" @click="endCycle()">結束循環</v-btn>
+                                        </div>
                                         <!-- <span><b>最上方資料結構中的stepList資料整理(!!!!最後要上要記得清除!!!!)</b></span>
                                         <span class="error-text"><b>Note:新增/刪除 其他 需重新給api資料 因seq_id會變更</b></span>
                                         <div class="list" v-for="(step,i) in mitem.stepList" :key="'step_'+i">
                                             {{ step }}
                                         </div> -->
                                     </div>
+                                    
                                 </v-card>
                             </div>
                         </div>
@@ -239,7 +270,7 @@
                         </div>
                     </v-card-title>
                     <div class="basic" v-if="templatemode=='cycleedit'">
-                        <v-card-text v-for="(add,id) in addStep" :key="'add_'+id" style="display: flex;flex-direction: column;padding: 8px 16px;">
+                        <v-card-text v-for="(add,id) in addStep" :key="'addc_'+id" style="display: flex;flex-direction: column;padding: 8px 16px;">
                             <!-- <div class="minus" style="width: 100%;">
                                 <span>其他</span>
                                 <v-tooltip v-if="addStep.length>1"  bottom>
@@ -257,7 +288,7 @@
                                 </v-tooltip>
                             </div> -->
                             <div class="textfield" style="display: flex;align-items: center;">
-                                <v-text-field v-model="add.msg" label="項目說明" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
+                                <v-text-field v-model="add.msg" label="項目說明" :rules="rules.require.concat(rules.checklength)" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
                                 <v-tooltip v-if="addStep.length>1"  bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn  class="btn-icon-secondary delete"
@@ -276,13 +307,13 @@
                     <div class="basic" v-else>
                         <v-card-text>
                             <div class="search" style="display: flex;align-items: center;margin-bottom: 16px;">
-                                <v-select :disabled="stepmode=='add'" v-model="stepitem.id" @change="selectStep" dense filled hide-details :items="stepdata" item-text="name_ch"
+                                <v-autocomplete :disabled="stepmode=='add'" v-model="stepitem.id" @change="selectStep" dense filled hide-details :items="stepdata" item-text="name_ch"
                                     item-value="id">
                                     
                                     <!-- <v-btn slot="append-outer"  class="btn-icon" @click="showstep('edit')"><v-icon>mdi-pencil-outline</v-icon></v-btn>
                                     <v-btn slot="append-outer"  class="btn-icon green" @click="showstep('add')"><v-icon>mdi-plus</v-icon></v-btn>
                                     <v-btn slot="append-outer" :class="{'disabled':(stepitem.id==undefined)}" class="btn-icon delete" @click="deletestep"><v-icon>mdi-trash-can</v-icon></v-btn> -->
-                                </v-select>
+                                </v-autocomplete>
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn slot="append-outer" :class="{'disabled':(stepitem.id!==undefined||stepdata.length==0)}" class="btn-icon" @click="showstep('edit')" v-bind="attrs" v-on="on"><v-icon>mdi-pencil-outline</v-icon></v-btn>
@@ -316,6 +347,67 @@
                 </v-card>
             </v-form>
         </v-dialog>
+        <!-- 檢視pdf -->
+        <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`">
+            <v-card class="custom-dialog">
+                <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <div style="display: inline-block;">
+                        <span>檢視報告</span>
+                    </div>
+                    <div class="add" style="float: right;display: inline-block;">
+                        <!-- <v-btn  class="btn-primary"
+                                title="下載" 
+                                @click="viewOpen = false" 
+                                style="border: none;min-width: 0;padding: 0 4px;">
+                            <v-icon>mdi-tray-arrow-down</v-icon>
+                        </v-btn> -->
+                        <v-btn  class="btn-secondary close"
+                                title="取消" 
+                                @click="viewOpen = false" 
+                                style="border: none;min-width: 0;padding: 0 4px;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card-title>
+                <div class="basic" v-if="viewDetail.type && viewDetail.type!==3" style="padding-bottom: 24px;">
+                    <div class="card-title" style="margin-bottom: 0;">
+                        <div class="title">
+                            <v-card-title>基本資訊</v-card-title>
+                        </div>
+                    </div>
+                    <v-card-text>
+                        <div class="content">
+                            檢疫時間： {{ viewDetail.execute_date }}<br>
+                            檢疫狀況：{{ viewDetail.status }}<br>
+                            <span v-if="viewDetail.type==1">感染疾病：{{ viewDetail.bacteriaSelect.toString() }}<br></span>
+                            內容：{{ viewDetail.msg }}
+                            <!-- <a class="btn-primary" :href="viewDetail.file" target="_blank" style="padding: 12px;">檢視詳細內容</a> -->
+                        </div>
+                        
+                    </v-card-text>
+                    <v-card-text>
+                        <embed :src="viewDetail.file" style="overflow:scroll;height:500px;width:100%;max-width:500px">
+                        <!-- <v-responsive>
+                            <iframe :src="viewDetail.file" style="overflow:scroll;height:500px;width:100%;max-width:500px" ></iframe>
+                        </v-responsive> -->
+                    </v-card-text>
+                </div>
+                <div class="basic" v-else>
+                    <div class="card-title">
+                        <div class="title">
+                            <v-card-title>{{ viewDetail.msg }}</v-card-title>
+                        </div>
+                    </div>
+                    <v-card-text>
+                        <div class="content" style="margin-bottom: 40px;">
+                            起訖： {{ viewDetail.started_date }} ~ {{ viewDetail.ended_date }} <br>
+                            等級：{{ viewDetail.event_level_name }}<br>
+                            內容：{{ viewDetail.content }}
+                        </div>
+                    </v-card-text>
+                </div>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -342,7 +434,10 @@ export default {
                         updated_time: undefined,
                     },
                     tempContent: [
-                    ]
+                    ],
+                    nowEnd: false,
+                    nowId: 0,
+                    filter: [1,2,3]
                 };
             }
         },
@@ -353,7 +448,19 @@ export default {
         accdata: {
             type: Array,
             default: []
-        }
+        },
+        diseaseReport:{
+            type: Array,
+            default: []
+        },
+        waterReport:{
+            type: Array,
+            default: []
+        },
+        eventReport:{
+            type: Array,
+            default: []
+        },
     },
     data() {
         return {
@@ -456,19 +563,24 @@ export default {
             windowWidth: window.innerWidth,
             // 各狀態顏色
             status:[
-                // {color:'#B1DBF0',open:true,id:1},
-                {color:'#DD97A4',open:true,id:2},{color:'#92CDEE',open:true,id:3},{color:'#DBC5A4',open:true,id:4},{color:'#C5E8E6',open:true,id:5},{color:'#ECE499',open:true,id:7},{color:'#8BE3D3',open:true,id:8}],
+                // {color:'#B1DBF0',open:true,id:1,name:'空池'},
+                {color:'#DD97A4',open:true,id:2,name:'養殖審核'},{color:'#92CDEE',open:true,id:3,name:'備池'},{color:'#DBC5A4',open:true,id:4,name:'蓄水'},{color:'#C5E8E6',open:true,id:5,name:'做水'},{color:'#ECE499',open:true,id:7,name:'放養中'},{color:'#8BE3D3',open:true,id:8,name:'清池'}],
             // 新增其他
             addStep:[{msg:''}],
             rules: {
                 require: [v => !!v || "*必要項目"],
                 requireStepEn: [v => !!v || "*必要項目",v => v !=='others' || "*Cannot Enter ' Others '"],
                 requireStepCn: [v => !!v || "*必要項目",v => v!=='其他' || "*不可輸入'其他'"],
+                checklength:[v => v==null?'':v.length<=100 ||  "*不可輸入超過100字元"]
             },
             addvalid: false,
             isEdit: false,// 插入項目是否修改
             otherApi:0,
             stepdataAll:[],
+            justStep:[],
+            viewOpen: false,
+            viewDetail:{},
+            
         }
     },
     created(){
@@ -482,7 +594,7 @@ export default {
             this.mainItems.forEach(m=>m.open=this.nowExpand);
             console.log('mainItems',this.mainItems);
             // if(this.templatemode == 'cycleedit') {
-                this.sortData()
+            this.sortData();
             // };
         }else {
             // 因為抓取出來的資料stepList為空的不會儲存，因此得額外比對整體流程，並塞進stepList，這樣模板上才可以新增其他流程
@@ -491,7 +603,8 @@ export default {
                 this.mainItems.push({
                     phase_id: data.id,
                     phase_name: data.text,
-                    stepList: new Array()
+                    stepList: new Array(),
+                    open: this.nowExpand
                 })
             })
             if(this.templatemode=="edit"){
@@ -515,57 +628,101 @@ export default {
         /* 資料整理 */
         // 排序其他
         sortData() {
-            // 因有排序重整問題，須另外存取再取代原資料
+             // 因有排序重整問題，須另外存取再取代原資料
             let stepId = [];
-            this.mainItems.forEach((m,mid)=>{
+            let data = _.cloneDeep(this.passObj.tempContent);
+            this.mainItems = [];
+            data.forEach(d=>{
+                d.stepList = d.stepList.filter(x=>x.type==0 || x.type==null);
+            })
+            data.forEach((m,mid)=>{
                 stepId.push({
                     "phase_id": m.phase_id,
                     "phase_name_ch": m.phase_name_ch,
                     "open": m.open,
                     "color": m.color,
                     "newest": m.newest,
-                    "stepList": new Array(),
+                    "stepList": m.stepList,
                 })
-                let step=[]; // 存取其他的項目{id:'隸屬的step_id',step:'隸屬此id下的其他'}
-                let list=[]; // 因有排序問題另外存取再取代原資料
-                m.stepList.forEach(s=>{
-                    if(s.step_name_ch=='其他') {
-                        step.forEach(tt=>{
-                            // 其他的項目比對同一隸屬的id，將項目放進step中
-                            if(tt.id == parseInt(s.seq_id.split('_')[0])) {
-                                tt.step.push(s);
-                            }
-                        })
-                    }else {
-                        // 非其他的項目新增隸屬的結構
-                        step.push({
-                            id: s.seq_id,
-                            step: new Array(),
-                        })
-                    }
-                })
+                
                 // 項目排序
-                step.forEach(t=>{
-                    t.step.sort(function(a, b) {
-                        return parseInt(a.seq_id.split('_')[1]) - parseInt(b.seq_id.split('_')[1]);
-                    });
+                stepId[mid].stepList.sort((a,b)=>{
+                    return parseInt(a.seq_id.split('_')[1]) - parseInt(b.seq_id.split('_')[1]);
                 })
-                // 重新帶入stepList中的資料，因為排序有異動
-                m.stepList.forEach((s,sid)=>{
-                    if(s.step_name_ch!=='其他') {
-                        list.push(s);
-                        step.forEach(tt=>{
-                            if(tt.id == s.seq_id) {
-                                tt.step.forEach(z=>list.push(z));
-                            }
-                        })
-                    }
-                    
-                })
-                stepId[mid].stepList = list;
+                
             })
-            this.mainItems = stepId;
+            // this.mainItems = stepId;
+            this.justStep = data;
+            this.disabledData();
+            // this.dateData();
+        },
+        
+        sortTime() {
+            let data = _.cloneDeep(this.justStep);
+            if(this.passObj.filter==null || this.passObj.filter.includes(1)) {
+                this.diseaseReport.forEach(dis=>{
+                    let xid=0;
+                    let iid=0
+                    for(let i=0;i<data.length;i++) {
+                        for(let x=0;x<data[i].stepList.length;x++) {
+                            if(data[i].stepList[x].type==0 && data[i].stepList[x].execute_time && data[i].stepList[x].execute_time!=='') {
+                                // console.log(new Date(data[i].stepList[x].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                if(new Date(data[i].stepList[x].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                    iid = i;
+                                    xid = x+1;
+                                    
+                                    // break;
+                                }
+                            }
+                        }
+                    }
+                    data[iid].stepList.splice(xid,0,dis);
+                })
+            }
+            if(this.passObj.filter==null || this.passObj.filter.includes(2)) {
+                this.waterReport.forEach(dis=>{
+                    let yid=0;
+                    let wid=0
+                    for(let i=0;i<data.length;i++) {
+                        for(let x=0;x<data[i].stepList.length;x++) {
+                            if(data[i].stepList[x].type!==null && data[i].stepList[x].execute_time && data[i].stepList[x].execute_time!=='') {
+                                // console.log(new Date(data[i].stepList[x].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                if(new Date(data[i].stepList[x].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                    wid = i;
+                                    yid = x+1;
+                                    
+                                    // break;
+                                }
+                            }
+                        }
+                    }
+                    data[wid].stepList.splice(yid,0,dis);
+                })
+            }
+            if(this.passObj.filter==null || this.passObj.filter.includes(3)) { 
+                this.eventReport.forEach(dis=>{
+                    let etid=0;
+                    let eid=0
+                    for(let i=0;i<data.length;i++) {
+                        for(let x=0;x<data[i].stepList.length;x++) {
+                            if(data[i].stepList[x].type!==null && data[i].stepList[x].execute_time && data[i].stepList[x].execute_time!=='') {
+                                // console.log(new Date(data[i].stepList[x].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                if(new Date(data[i].stepList[x].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                    eid = i;
+                                    etid = x+1;
+                                    // break;
+                                }
+                            }
+                        }
+                    }
+                    data[eid].stepList.splice(etid,0,dis);
+                })
+            }
+            
+            this.mainItems = data;
+            console.log('sort',this.mainItems);
             this.dateData();
+
         },
         // 整理各階段最新時間
         dateData() {
@@ -591,33 +748,61 @@ export default {
         // 各階段顏色存取(表頭顏色、時間軸顏色)
         colorData() {
             this.mainItems.forEach((i,id)=>{
-                i.open = this.status[id].open;
-                // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
-                if(i.newest&& i.newest!=='') {
-                   i.color = this.status[id].color;
-                }else {
-                    if(id!==0) {
-                        // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
-                        // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
-                        if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
-                            if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time&&
-                            this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time!=='') {
-                                i.color = this.status[id].color;
+                if(this.templatemode=='cycleedit') {
+                    this.status.forEach((st,sid)=>{
+                        if(st.name==i.phase_name_ch) {
+                            i.open = st.open;
+                            // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
+                            if(i.newest&& i.newest!=='') {
+                            i.color = st.color;
                             }else {
-                                i.color = '#BFCBD2'
+                                if(id!==0) {
+                                    // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
+                                    // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
+                                    if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
+                                        if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time&&
+                                        this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time!=='') {
+                                            i.color = st.color;
+                                        }else {
+                                            i.color = '#BFCBD2'
+                                        }
+                                        
+                                    }else {
+                                        i.color = '#BFCBD2'
+                                    }
+                                }else {
+                                    i.color = st.color;
+                                }
+                                
                             }
-                            
-                        }else {
-                            i.color = '#BFCBD2'
                         }
-                    }else {
-                        i.color = this.status[id].color;
-                    }
-                    
+                    })
+                }else {
+
                 }
+                
+                
             })
             
-            this.disabledData();
+            this.executorData();
+        },
+        open(data,id) {
+            if(this.templatemode=='cycleedit') {
+                this.status.filter(x=>x.name==data.phase_name_ch)[0].open = !this.status.filter(x=>x.name==data.phase_name_ch)[0].open;
+            }else {
+                this.status[id].open=!this.status[id].open;
+                data.open = this.status[id].open;
+            }
+        },
+        adjustOpen(data,id) {
+            if(this.templatemode=='cycleedit') {
+                return this.status.filter(x=>x.name==data.phase_name_ch)[0].open;
+            }else {
+                data.open = this.status[id].open;
+                console.log(this.status[id].open);
+                return this.status[id].open;
+            }
+            
         },
         // 執行與確認disabled 整理
         disabledData() {
@@ -628,11 +813,11 @@ export default {
 
             let cancelId = []; // 存取目前取消狀態id，最後一項不disabled，前面的取消都要disabled
             let isNowDetect = false; // 判斷是否現在已有未執行狀態，如有存在，後面的執行鈕都應disabled
-            this.mainItems.forEach((m,mid)=>{
+            this.justStep.forEach((m,mid)=>{
                 m.stepList.forEach((s,sid)=>{
                     // 判斷現在的sid是否為0，如為0要額外判斷前一狀態的最後一項
                     if(sid!==0) {
-                        if(s.verify_time!=='') {
+                        if(s.verify_time!=='' || this.passObj.nowEnd) {
                             s.execute_disabled = true;
                         }else {
                             if((m.stepList[sid-1].execute_time&&m.stepList[sid-1].execute_time!=='') || (s.execute_time&&s.execute_time!=='')) {
@@ -648,15 +833,15 @@ export default {
                             }
                         }
                     }else {
-                        if(s.verify_time!=='') {
+                        if(s.verify_time!=='' || this.passObj.nowEnd) {
                             s.execute_disabled = true;
                         }else {
                             if(mid !==0 ) {
-                                if((this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].execute_time && 
-                                this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].execute_time!=='') || 
-                                (this.mainItems[mid].stepList[this.mainItems[mid].stepList.length-1].execute_time && 
-                                this.mainItems[mid].stepList[this.mainItems[mid].stepList.length-1].execute_time!=='')) {
-                                    if(this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].verify_time=='') {
+                                if((this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].execute_time && 
+                                this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].execute_time!=='') || 
+                                (this.justStep[mid].stepList[this.justStep[mid].stepList.length-1].execute_time && 
+                                this.justStep[mid].stepList[this.justStep[mid].stepList.length-1].execute_time!=='')) {
+                                    if(this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].verify_time=='') {
                                         s.execute_disabled = true;
                                     }else {
                                         s.execute_disabled = false;
@@ -670,72 +855,6 @@ export default {
                         }
                         
                     }
-                    // if(sid!==0) {
-                    //     // 已確認狀態一律disabled
-                    //     if(s.isConfirm) {
-                    //         s.execute_disabled = true;
-                    //     }else {
-                    //         // 非已確認狀態判斷前一項是否已執行
-                    //         if((m.stepList[sid-1].execute_time&&m.stepList[sid-1].execute_time!=='')) {
-                    //             // 此時狀態為取消先讓他非disabled(後續有額外判斷)
-                    //             if((s.execute_time&&s.execute_time!=='')) {
-                    //                 s.execute_disabled = false;
-                    //             }else {
-                    //                 // 如此時還尚未執行，需判斷是不是已經有未執行的項目(isNowDetect)，如果還沒有不要disabled，如果有，要disabled，因為要照著順序，只會出現一個未執行項目
-                    //                 // 此多出的判斷，是因為如果中間確認者未按照步驟確認，變成中間項目已執行已確認，但前面的取消執行時，造成前面開啟未執行項目，後面也會有未執行項目的奇怪現象
-                    //                 if(!isNowDetect) {
-                    //                     s.execute_disabled = false;
-                    //                     isNowDetect = true;
-                    //                 }else {
-                    //                     s.execute_disabled = true;
-                                        
-                    //                 }
-                    //             }
-                                
-                                
-                    //         }else {
-                    //             // 前面項未執行，後面項都disabled
-                    //             s.execute_disabled = true;
-                    //         }
-                    //     }
-                    // }else {
-                    //     if(s.isConfirm) {
-                    //         s.execute_disabled = true;
-                    //     }else {
-                    //         if(mid !==0 ) {
-                    //             if((this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].execute_time && 
-                    //             this.mainItems[mid-1].stepList[this.mainItems[mid-1].stepList.length-1].execute_time!=='')) {
-                    //                 if((s.execute_time&&s.execute_time!=='')) {
-                    //                     s.execute_disabled = false;
-                    //                 }else {
-                    //                     if(!isNowDetect) {
-                    //                         s.execute_disabled = false;
-                    //                         isNowDetect = true;
-                    //                     }else {
-                    //                         s.execute_disabled = true;
-                                            
-                    //                     }
-                    //                 }
-                    //             }else{
-                    //                 s.execute_disabled = true;
-                    //             }
-                    //         }else {
-                    //             // this.mainItems[0].stepList[0]
-                    //             if((s.execute_time&&s.execute_time!=='')) {
-                    //                 s.execute_disabled = false;
-                    //             }else {
-                    //                 if(!isNowDetect) {
-                    //                     s.execute_disabled = false;
-                    //                     isNowDetect = true;
-                    //                 }else {
-                    //                     s.execute_disabled = true;
-                                        
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                        
-                    // }
 
                     // 判斷現在狀態是否為取消狀態，是的話，額外存取，並更改disabled
                     if(s.execute_time && s.execute_time!=='' && s.verify_time=='') {
@@ -743,34 +862,34 @@ export default {
                             id: mid,
                             index: sid
                         })
-                        console.log('cancel',cancelId);
+                        // console.log('cancel',cancelId);
                     }
                 })
             })
             if(cancelId.length>0) {
                 cancelId.forEach((cancel,cid)=>{
                     if(cid !== (cancelId.length-1)) {
-                        this.mainItems[cancel.id].stepList[cancel.index].execute_disabled = true;
+                        this.justStep[cancel.id].stepList[cancel.index].execute_disabled = true;
                     }else {
-                        this.mainItems[cancel.id].stepList[cancel.index].execute_disabled = false;
+                        this.justStep[cancel.id].stepList[cancel.index].execute_disabled = false;
                     }
 
                  })
             }
             
-            this.executorData();
+            this.sortTime();
         },
         // 執行人員/確認人員的比對轉換
         executorData() {
             this.mainItems.forEach(m=>{
                 m.stepList.forEach(s=>{
-                    if(s.executor!=='') {
-                        // console.log(this.accdata.filter(x=>x.username==s.executor));
+                    if(s.executor&&s.executor!=='') {
+                        console.log(this.accdata,s.executor);
                         s.deft_executor = this.accdata.filter(x=>x.username==s.executor)[0].position+'-'+this.accdata.filter(x=>x.username==s.executor)[0].account_name;
                     }else {
                         s.deft_executor = '';
                     }
-                    if(s.verifier!=='') {
+                    if(s.verifier&&s.verifier!=='') {
                         s.deft_verifier = this.accdata.filter(x=>x.username==s.verifier)[0].position+'-'+this.accdata.filter(x=>x.username==s.verifier)[0].account_name;
                     }else {
                         s.deft_verifier = '';
@@ -823,10 +942,13 @@ export default {
                 // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
                 if (this.$refs.addform != undefined) {
                     this.$refs.addform.reset();
+                    
                 }
+                 
+                
             }
            
-            console.log('step add',this.mainItems);
+            console.log('step add',this.mainItems,this.stepitem);
         },
         // 新增項目確認!!送出step項目
         submitstep:async function(){
@@ -835,10 +957,10 @@ export default {
             console.log('valid form',valid);
             if(valid) {
                 if(this.templatemode=='cycleedit') {
-                    let datas = _.cloneDeep(this.mainItems);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
+                    let datas = _.cloneDeep(this.justStep);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
                     let stepId = [];// 因會有其他的排序id問題，必須要另外存取(主要是新增的項目下)
                     let other = _.cloneDeep(this.addStep);// 不能直接用addStep，如果重新開dialog新增會清空會連動影響
-                    other.forEach(step=>{
+                    other.forEach((step,sid)=>{
                         step.phase_id =  this.stepitem.phase_id;
                         step.seq_id = '';
                         step.msg = step.msg;
@@ -849,141 +971,86 @@ export default {
                         step.verifier = '';
                         step.created_user = this.$auth.$state.user.name;
                     })
-                    datas.forEach((item,id)=>{
-                        stepId.push({
-                            "phase_id": item.phase_id,
-                            // "phase_name_ch": item.phase_name_ch,
-                            "open": item.open,
-                            "color": item.color,
-                            "newest": item.newest,
-                            "stepList": new Array(),
-                        })
-                        let step=[]; // 存取其他的項目{id:'隸屬的seq_id',step:'隸屬此id下的其他'}
-                        let list=[]; // 因有排序問題另外存取再取代原資料
-                        if(item.phase_id == this.stepitem.phase_id) {
-                            item.stepList.forEach((s,sid)=>{
-                                // 非其他的項目，自動新增一個資料，主要用來存取他底下的其他項目
-                                if(s.step_name_ch!=='其他') {
-                                    if(this.stepitem.addidx==sid) {
-                                        step.push({
-                                            id: s.seq_id,
-                                            step: new Array(),
-                                        })
-                                        other.forEach(a=>{
-                                            // 如果新增的項目在最後項，需要比對下一個狀態是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
-                                            if((datas[id].stepList.length-1)==sid) {
-                                                if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
-                                                    // step.isConfirm = true;
-                                                    a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                    a.executor = updUser; 
-                                                    if(datas[id+1].stepList[0].verify_time!=='') {
-                                                        a.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                        a.verifier = updUser;
-                                                    }
-                                                }                                                    
-                                            }else {
-                                                // 如果新增的項目不在最後項，需要比對下一個項目是否已經開始執行或確認，如有，新增的項目自動變成已執行或已確認
-                                                if(datas[id].stepList[sid+1].execute_time &&
-                                                    datas[id].stepList[sid+1].execute_time!=='') {
-                                                        // step.isConfirm = true;
-                                                        a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                        a.executor = updUser; 
-                                                        if(datas[id].stepList[sid+1].verify_time!=='') {
-                                                            a.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                            a.verifier = updUser;
-                                                        }
-                                                }
-                                            }
-                                            step[step.length-1].step.push(a);
-                                        })
-                                    }else {
-                                        step.push({
-                                            id: s.seq_id,
-                                            step: new Array(),
-                                        })
+                    let addidx = this.getId();
+                    console.log('now',addidx)
+                    datas.forEach((data,did)=>{
+                        if(data.phase_id == this.stepitem.phase_id) {
+                            if(addidx==-1) {
+                                other.forEach((o,oid)=>{
+                                    // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
+                                    if(datas[did].stepList[0].execute_time&&datas[did].stepList[0].execute_time!=='' || this.passObj.nowEnd) {
+                                        o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                        o.executor = updUser; 
                                     }
-                                }else {
-                                    // 其他的項目，比對隸屬的項目
-                                    step.forEach(tt=>{
-                                        // 如index剛好為新增的index下，要將此其他後續接新增的其他，並判斷是否執行和確認
-                                        if(this.stepitem.addidx==sid) {
-                                            if(tt.id == parseInt(s.seq_id.split('_')[0])) {
-                                                tt.step.push(s);
-                                                other.forEach(a=>{
-                                                    if((datas[id].stepList.length-1)==sid) {
-                                                        if(datas[id+1] && datas[id+1].newest && datas[id+1].newest!=='') {
-                                                            // step.isConfirm = true;
-                                                            a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                            a.executor = updUser; 
-                                                            if(datas[id+1].stepList[0].verify_time!=='') {
-                                                                a.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                                a.verifier = updUser;
-                                                            }
-                                                        }                                                    
-                                                    }else {
-                                                        if(datas[id].stepList[sid+1].execute_time &&
-                                                            datas[id].stepList[sid+1].execute_time!=='') {
-                                                                // step.isConfirm = true;
-                                                                a.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                                a.executor = updUser; 
-                                                                if(datas[id].stepList[sid+1].verify_time!=='') {
-                                                                    a.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                                    a.verifier = updUser;
-                                                                }
-                                                        }
-                                                    }
-                                                    tt.step.push(a);
-                                                })
-                                            }
-                                        }else {
-                                            // 非index的新增，直接比對是哪個id項目push進去即可
-                                            if(tt.id == parseInt(s.seq_id.split('_')[0])) {
-                                                tt.step.push(s);
-                                            }
-                                        }
-                                        
-                                    })
-                                }
+                                    if(datas[did]&&datas[did].stepList[0].verify_time&&datas[did].stepList[0].verify_time!=='' || this.passObj.nowEnd) {
+                                        o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                        o.verifier = updUser; 
+                                    }
+                                    console.log('now addidx=-1');
                                     
-                                
-                            })
-                            // console.log('Step',step);
-                            // 因為有新增其他項目，必須重新給id
-                            step.forEach(step=>{
-                                step.step.forEach((tt,tid)=>{
-                                    let stepid = '';
-                                    if((tid+1)<10) {
-                                        stepid = '0'+(tid+1);
-                                    }else {
-                                        stepid = tid+1;
-                                    }
-                                    tt.seq_id = step.id+'_'+stepid;
                                 })
-                            })
-                            // 因為項目有順序，因此依照項目順序及旗下的其他項目依序push
-                            item.stepList.forEach(s=>{
-                                if(s.step_name_ch!=='其他') {
-                                    list.push(s);
-                                    step.forEach(tt=>{
-                                        if(tt.id == s.seq_id) {
-                                            if(tt.step.length>0) {
-                                                tt.step.forEach(z=>list.push(z));
-                                            }
-                                            
-                                        }
-                                    })
+                                data.stepList = other.concat(data.stepList);
+                                
+                            }else {
+                                data.stepList.forEach((step,sid)=>{
+                                
+                                    if(sid==addidx) {
+                                        if(sid==data.stepList.length-1) {
+                                            other.forEach((o,oid)=>{
+                                                // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
+                                                if(datas[did+1]&&datas[did+1].stepList[0].execute_time&&datas[did+1].stepList[0].execute_time!=='' || this.passObj.nowEnd) {
+                                                    o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                    o.executor = updUser; 
+                                                }
+                                                if(datas[did+1]&&datas[did+1].stepList[0].verify_time&&datas[did+1].stepList[0].verify_time!=='' || this.passObj.nowEnd) {
+                                                    o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                    o.verifier = updUser; 
+                                                }
+                                                console.log('sid==length');
+                                                data.stepList.splice((addidx+1+oid),0,o);
+                                                // data.stepList.splice((this.stepitem.addidx+1+oid),0,o);
+                                            })
+                                        }else {
+                                            // for(let i=addidx+1;i<data.stepList.length;i++) {
+                                                    other.forEach((o,oid)=>{
+                                                            if(data.stepList[addidx+1]&&data.stepList[addidx+1].execute_time&&data.stepList[addidx+1].execute_time!=='' || this.passObj.nowEnd) {
+                                                                o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                                o.executor = updUser; 
+                                                            }
+                                                            if(data.stepList[addidx+1]&&data.stepList[addidx+1].verify_time&&data.stepList[addidx+1].verify_time!=='' || this.passObj.nowEnd) {
+                                                                o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                                o.verifier = updUser; 
+                                                            }
+                                                            data.stepList.splice((addidx+1+oid),0,o);
+                                                        // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
+                                                        // data.stepList.splice((this.stepitem.addidx+1+oid),0,o);
+                                                    })
+
+                                            // }
+                                            console.log('sid!==length');
+                                        } 
+                                    }
+                                
+                                })
+                            }
+                            
+
+                            // 給排序id因為新增會要輸入
+                            data.stepList.forEach((step,sid)=>{
+                                if(step.seq_id=='' || step.seq_id.split('_')[1] !== sid.toString()) {
+                                    step.seq_id = 'step_'+sid;
                                 }
                             })
-                            stepId[id].stepList = list;
-                        }else {
-                            // 非新增項目，不影響排序直接用原本的資料
-                            stepId[id] = item;
+                            // console.log('other',data);
+                            this.addSubmitApi(other,data.stepList,this.stepitem.phase_id);
                         }
+                        
+                        
+                        
                     })
-                    datas = stepId;
                     
-                    console.log('other',other);
-                    this.addSubmitApi(other,datas,this.stepitem.phase_id);
+                    
+                    
                     
                     // 串api成功 
                     // if(true) {
@@ -1114,6 +1181,46 @@ export default {
             //         break;
             // }
         },
+        getId() {
+            let stepid=null;
+            let data = [];
+            let nowid = 0;
+            this.mainItems.forEach(m=>{
+                if(m.phase_id==this.stepitem.phase_id) {
+                    data = _.cloneDeep(m.stepList);
+                    m.stepList.forEach((step,sid)=>{
+                        if(sid==this.stepitem.addidx) {
+                            if(step.step_id) {
+                                stepid=step.step_id;
+                            }
+                        }
+                    })
+                }
+            })
+            
+            if(stepid==null) {
+                for(let i=this.stepitem.addidx;i>0;i--) {
+                    if(data[i].step_id) {
+                        stepid = data[i].step_id;
+                        break;
+                    }
+                }
+            }
+            
+            this.justStep.forEach(j=>{
+                if(j.phase_id==this.stepitem.phase_id) {
+                    j.stepList.forEach((step,sid)=>{
+                        if(step.step_id == stepid) {
+                            nowid = sid;
+                        }
+                    })
+                }
+            })
+            if(stepid==null&&nowid==0) {
+                nowid=-1;
+            }
+            return nowid
+        },
         // 送出新增的項目
         addSubmitApi(other,datas,id) {
             this.otherApi = 0;
@@ -1130,7 +1237,7 @@ export default {
                             if(this.otherApi == other.length) {
                                 if(api.length == other.length) {
                                     // 新增成功後，因其他項目的seq_id更改，需串api修改
-                                    this.reviseCycleData(datas,id,'add');
+                                    this.reviseData(datas,id);
                                     this.dialog.additem = false;
                                     this.$toast.success("新增成功", { duration: 2000 });
                                 }else {
@@ -1162,22 +1269,24 @@ export default {
         },
         // 新增/刪除多個修改
         reviseCycleData(datas,id,title) {
-            datas.forEach(d=>{
-                if(d.phase_id==id) {
-                    let item = 0;
-                    d.stepList.forEach(async step=>{
-                        if(step.step_name_ch=='其他' && step.step_id) {
-                            step.updated_user = this.$auth.$state.user.name;
-                            console.log('step',step);
-                            delete step.deft_executor;
-                            delete step.deft_verifier;
-                            delete step.execute_disabled;
+            let item = 0;
+            datas.forEach(async d=>{
+                // if(d.phase_id==id) {
+                    // d.stepList.forEach(async (step,sid)=>{
+                        if(d.step_id) {
+                            d.updated_user = this.$auth.$state.user.name;
+                            console.log('step',d);
+                            // d.seq_id = 'step_'+sid;
+                            delete d.deft_executor;
+                            delete d.deft_verifier;
+                            delete d.execute_disabled;
                             await this.$axios
-                                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
+                                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${d.step_id}/`, d)
                                     .then(res => {
                                         if(res.data=='修改成功'){
                                             item++;
-                                            if(item == d.stepList.length) {
+                                            console.log(datas.length,item);
+                                            if(item == datas.length) {
                                                 // if(title=='add') {
                                                     // 需重新取得歷程，因為新增的項目需取得step_id
                                                     this.$emit('getTemp');
@@ -1195,118 +1304,100 @@ export default {
                                     });
                         }else {
                             item++;
-                            if(item == d.stepList.length) {
+                            if(item == datas.length) {
                                 this.$emit('getTemp');
                             }
                         }
                             
+                    // })
+                // }
+            })
+        },
+        // 新增/取消 資料比對，有差異的再進行reviseCycleData
+        reviseData(datas,id) {
+            let apiData=[];
+            let ids = [];
+            console.log('revised',datas);
+            this.justStep.forEach(item=>{
+                if(item.phase_id==id) {
+                    item.stepList.forEach(step=>{
+                        ids.push(step.step_id);
                     })
                 }
+            }) 
+            // 比對修改的資料排序id是否有更改
+            datas.forEach((data,did)=>{
+                data.seq_id='step_'+did;
+                this.justStep.forEach(item=>{
+                    if(item.phase_id==id) {
+                        // console.log(id,item.stepList);
+                        item.stepList.forEach(step=>{
+                            if(!ids.includes(data.step_id)) {
+                                ids.push(data.step_id);
+                                apiData.push(data);
+                            }else {
+                                if(step.step_id==data.step_id) {
+                                    if(step === data) {
+                                        
+                                    }else {
+                                        console.log(step.seq_id,data.seq_id)
+                                        apiData.push(data);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                })
+                
             })
+            console.log('apiData',apiData,datas);
+            this.reviseCycleData(apiData,id);
         },
         // 刪除其他項目
         delsubitem: async function (phase_id, index) {
             console.log('delete',phase_id, index);
             var sub_item = this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList[index];
             if(this.templatemode == 'cycleedit') {
-                if(sub_item.step_name_ch=='其他') {
                     if (confirm(`是否刪除 ${sub_item.step_name_ch}：${sub_item.msg} ？`)) {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
                         // step_id
                         await this.$axios
-                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step//${sub_item.step_id}/`)
+                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${sub_item.step_id}/`)
                             .then(res => {
                                 if(res.data=='刪除成功'){
                                     let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
-                                    let datas = _.cloneDeep(this.mainItems);
+                                    // let datas = _.cloneDeep(this.mainItems);
+                                    let datas = _.cloneDeep(this.justStep);
                                     datas.forEach((item,id)=>{
-                                        stepId.push({
-                                            "phase_id": item.phase_id,
-                                            "phase_name_ch": item.phase_name_ch,
-                                            "open": item.open,
-                                            "color": item.color,
-                                            "newest": item.newest,
-                                            "stepList": new Array(),
-                                        })
+                                        // stepId.push({
+                                        //     "phase_id": item.phase_id,
+                                        //     "phase_name_ch": item.phase_name_ch,
+                                        //     "open": item.open,
+                                        //     "color": item.color,
+                                        //     "newest": item.newest,
+                                        //     "stepList": new Array(),
+                                        // })
+                                        
                                         if(item.phase_id == phase_id) {
-                                            // item.stepList.splice(index,1);
-                                            let step=[];
-                                            let list=[];
-                                            item.stepList.forEach((s,sid)=>{
-                                                if(s.step_name_ch!=='其他') {
-                                                    step.push({
-                                                        id: s.seq_id,
-                                                        step: new Array(),
-                                                    })
-                                                }else {
-                                                    if(sid!==index) {
-                                                        step.forEach(tt=>{
-                                                        // 其他的項目比對同一隸屬的id，將項目放進step中
-                                                        if(tt.id == parseInt(s.seq_id.split('_')[0])) {
-                                                            tt.step.push(s);
-                                                        }
-                                                    })
-                                                    }
+                                            let sindex = 0;
+                                            item.stepList.forEach((step,sid)=>{
+                                                if(sub_item.step_id!==step.step_id) {
+                                                    // if(sid>index) {
+                                                    //     step.seq_id = 'step_'+(sindex);
+                                                    //     sindex++;
+                                                    // }
+                                                    stepId.push(step);
                                                 }
                                             })
-                                            step.forEach(step=>{
-                                                step.step.forEach((tt,tid)=>{
-                                                    let stepid = '';
-                                                    if((tid+1)<10) {
-                                                        stepid = '0'+(tid+1);
-                                                    }else {
-                                                        stepid = tid+1;
-                                                    }
-                                                    tt.seq_id = step.id+'_'+stepid;
-                                                })
-                                            })
-                                            item.stepList.forEach(s=>{
-                                                if(s.step_name_ch!=='其他') {
-                                                    list.push(s);
-                                                    step.forEach(tt=>{
-                                                        if(tt.id == s.seq_id){
-                                                            tt.step.forEach(z=>list.push(z));
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                            stepId[id].stepList = list;
-
-                                        }else {
-                                            stepId[id].stepList = item.stepList;
+                                            this.reviseData(stepId,phase_id);
                                         }
+                                        
 
                                     })
-                                    datas = stepId;
-                                    this.reviseCycleData(datas,phase_id,'delete');
-                                    // datas.forEach(d=>{
-                                    //     if(d.phase_id==phase_id) {
-                                    //         d.stepList.forEach(async step=>{
-                                    //             if(step.step_name_ch=='其他') {
-                                    //                 step.updated_user = this.$auth.$state.user.name;
-                                    //                 await this.$axios
-                                    //                     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
-                                    //                         .then(res => {
-                                    //                             if(res.data=='修改成功'){
-                                    //                                 // if(true) {
-                                    //                                 // 重新送出id
-                                    //                                 this.mainItems = datas;
-                                    //                                 // 刪除後，可能會影響最新執行的日期及disabled及狀態顏色，因此要重新整理資料
-                                    //                                 this.dateData();
-                                    //                             // }
-                                    //                             }
-                                                                
-                                    //                         })
-                                    //                         .catch(error => {
-                                    //                             this.$toast.error("error:" + error, { duration: 2000 });
-                                    //                         })
-                                    //                         .finally(() => {
-                                    //                         });
-                                    //             }
-                                                
-                                    //         })
-                                    //     }
-                                    // })
+                                    // datas = stepId;
+                                    // this.reviseCycleData(datas,phase_id,'delete');
+                                    console.log('delete',stepId);
+
                                     
                                     this.$toast.success("刪除成功", { duration: 2000 });
                                 }else{
@@ -1323,12 +1414,10 @@ export default {
                         
                         
                     }
-                }
                 
             }else {
                 this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
             }
-            
         },
 
         /* 執行/確認 */
@@ -1347,6 +1436,30 @@ export default {
                         items[id].stepList[index].execute_time = '';
                         items[id].stepList[index].executor = '';
                         items[id].stepList[index].updated_user = this.$auth.$state.user.name;
+                        this.justStep.forEach(s=>{
+                            if(s.phase_id==items[id].phase_id) {
+                                s.stepList.forEach(async (step,sid)=>{
+                                    if(step.step_id==items[id].stepList[index].step_id) {
+                                        step.execute_time = items[id].stepList[index].execute_time;
+                                        step.executor =  items[id].stepList[index].executor;
+                                        step.updated_user = items[id].stepList[index].updated_user;
+                                        if(sid==0) {
+                                            if(id-1>=0) {
+                                                let statusid = this.status.filter(x=>x.name == this.justStep[id-1].phase_name_ch)[0].name;
+                                                const parm = {
+                                                    id: new Array(),
+                                                    status: statusid
+                                                };
+                                                parm.id.push(this.passObj.nowId);
+                                                this.$emit("compareStatus",parm);
+                                            }
+                                            
+                                            
+                                        }
+                                    }
+                                })
+                            }
+                        })
                         // // 取消後面的步驟已執行的均取消
                         // for(let i=id;i<items.length;i++) {
                         //     if(i==id) {
@@ -1384,6 +1497,31 @@ export default {
                         this.mainItems[id].stepList[index].executor = updUser;
                         this.mainItems[id].stepList[index].deft_executor = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
                         this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.name;
+                        this.justStep.forEach(s=>{
+                            if(s.phase_id==this.mainItems[id].phase_id) {
+                                s.stepList.forEach(async (step,sid)=>{
+                                    if(step.step_id==this.mainItems[id].stepList[index].step_id) {
+                                        step.execute_time = this.mainItems[id].stepList[index].execute_time;
+                                        step.executor = updUser;
+                                        step.deft_executor = this.mainItems[id].stepList[index].deft_executor;
+                                        step.updated_user = this.$auth.$state.user.name;
+
+                                        if(sid==0) {
+                                            if(sid==0 && id!==0) {
+                                                let statusid = this.status.filter(x=>x.name == this.justStep[id].phase_name_ch)[0].name;
+                                                const parm = {
+                                                    id: new Array(),
+                                                    status: statusid,
+                                                };
+                                                parm.id.push(this.passObj.nowId);
+                                                this.$emit("compareStatus",parm);
+                                                
+                                            }
+                                        }
+                                    }
+                                })
+                            }
+                        })
                         await this.updateStatus(this.mainItems[id].stepList[index],'execute');
                         // this.dateData();
                     }
@@ -1405,12 +1543,27 @@ export default {
                 this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.name;
                 this.mainItems[id].stepList[index].deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
                 let submitData = [];
-                submitData.push(this.mainItems[id].stepList[index]);
+                this.justStep[id].stepList.forEach(async (x,xid)=>{
+                    if(this.mainItems[id].stepList[index].step_id==x.step_id) {
+                        if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
+                            x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                            x.verifier = updUser;
+                            x.updated_user = this.$auth.$state.user.name;
+                            x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+                            submitData.push(x);
+                            // this.updateStatus(this.mainItems[i].stepList[x]);
+                        }
+                        
+                    }
+                    
+                })
+                
+                // submitData.push(this.mainItems[id].stepList[index]);
                 // this.updateStatus(this.mainItems[id].stepList[index]);
                 // 確認前面的均一起確認
                 for(let i=0;i<=id;i++) {
                     if(i!==id) {
-                        this.mainItems[i].stepList.forEach(x=>{
+                        this.justStep[i].stepList.forEach(x=>{
                             if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
                                 x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                 x.verifier = updUser;
@@ -1422,21 +1575,32 @@ export default {
                         })
                     }else {
                         if(index !== 0) {
-                            for(let x=0;x<index;x++) {
-                                if(this.mainItems[i].stepList[x].execute_time&&this.mainItems[i].stepList[x].execute_time!=='' && this.mainItems[i].stepList[x].verify_time=='') {
-                                   this.mainItems[i].stepList[x].verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                   this.mainItems[i].stepList[x].verifier = updUser;
-                                   this.mainItems[i].stepList[x].updated_user = this.$auth.$state.user.name;
-                                   this.mainItems[i].stepList[x].deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+                            let nowsid = 0;
+                            this.justStep[i].stepList.forEach((step,sid)=>{
+                                if(this.mainItems[id].stepList[index].step_id==step.step_id) {
+                                    nowsid = sid;
+                                }                                
+                            })
+                            for(let x=0;x<nowsid;x++) {
+                                    this.justStep[i].stepList.forEach(step=>{
+                                        if(this.justStep[i].stepList[x].execute_time&&this.justStep[i].stepList[x].execute_time!=='' && this.justStep[i].stepList[x].verify_time=='') {
+                                            if(step.step_id == this.justStep[i].stepList[x].step_id) {
+                                                step.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                                                step.verifier = updUser;
+                                                step.updated_user = this.$auth.$state.user.name;
+                                                step.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+                                                submitData.push(this.justStep[i].stepList[x]);
+                                            }
+                                        }
+                                        
+                                    })
+                                    
                                 //    this.updateStatus(this.mainItems[id].stepList[index]);
-                                    submitData.push(this.mainItems[i].stepList[x]);
-                                }
+                                    
                                 
                             }
                         }
-                        
                     }
-                    
                 }
                 submitData.forEach(async s=>{
                     await this.updateStatus(s,'verify');
@@ -1459,10 +1623,11 @@ export default {
                         if(res.data=='修改成功'){
                             // this.$emit('getTemp');
                             // this.$toast.success("更新成功!",{ duration: 2000 });
+                            
                             if(title=='cancel') {
                                 this.$emit('getTemp');
                             }else {
-                                this.dateData();
+                                this.disabledData();
                             }
                             
                         }
@@ -1473,6 +1638,10 @@ export default {
                     })
                     .finally(() => {
                     });
+        },
+        // 結束養殖循環
+        endCycle() {
+            this.$emit('end');
         },
         /* 樣板編輯 */
         // 刪除step(表格)
@@ -1554,9 +1723,25 @@ export default {
                    tempContent: new Array()
                 }
                 this.mainItems.forEach(m=>{
-                    if(m.stepList.length>0){
-                        para.tempContent.push(m)
+                    if(m.phase_name!=='空池') {
+                        if(m.stepList.length>0){
+                        //     var pushitem = {
+                        //         step_id : 0,//項目原始id
+                        //         seq_id : '',
+                        //         // sort:undefined,
+                        //         step_name : m.phase_name,
+                        //         step_name_ch : m.phase_name,
+                        //         step_exec:undefined,//執行/確認人員
+                        //         checktime:undefined,//確認時間
+                        //         result:undefined,//結果
+                        //         msg: '',//msg
+                        //     };
+                        //     m.stepList.push(pushitem);
+                            para.tempContent.push(m)
+                        }
+                        
                     }
+                    
                 });
                 console.log('Save Edit',para);
                 await this.$axios
@@ -1589,8 +1774,23 @@ export default {
                    tempContent: new Array()
                 }
                 this.mainItems.forEach(m=>{
-                    if(m.stepList.length>0){
-                        para.tempContent.push(m)
+                    if(m.phase_name!=='空池') {
+                        if(m.stepList.length>0){
+                        //     var pushitem = {
+                        //         step_id : 0,//項目原始id
+                        //         seq_id : '',
+                        //         // sort:undefined,
+                        //         step_name : m.phase_name,
+                        //         step_name_ch : m.phase_name,
+                        //         step_exec:undefined,//執行/確認人員
+                        //         checktime:undefined,//確認時間
+                        //         result:undefined,//結果
+                        //         msg: '',//msg
+                        //     };
+                        //     m.stepList.push(pushitem);
+                            para.tempContent.push(m)
+                        }
+                        
                     }
                 });
                 // console.log(para);
@@ -1702,7 +1902,8 @@ export default {
                     this.isEdit = true;
                 }
             }
-        }
+        },
+        
     },
     computed: {
     
@@ -1726,21 +1927,41 @@ export default {
             })
             this.mainItems = [];
             this.mainItems = data;
-            
-            console.log('mainItems',this.mainItems);
+            // if(this.templatemode)
+            console.log('mainItems',this.status,data,this.mainItems);
         },
         passObj: {
             handler(val){
-                
+                console.log(val)
                 this.mainItems = _.cloneDeep(this.passObj.tempContent);
                 this.mainItems.forEach(m=>m.open=this.nowExpand);
-                this.sortData();
+                if(this.templatemode=='cycleedit') {
+                    this.sortData();
+                }
+                
                 console.log('更新passObj',this.passObj);
             // do stuff
             },
             deep: true
-        }
-        
+        },
+        diseaseReport() {
+            if(this.templatemode=='cycleedit') {
+                this.sortTime();
+            }
+            
+        },
+        waterReport() {
+            if(this.templatemode=='cycleedit') {
+                this.sortTime();
+            }
+            
+        },
+        eventReport() {
+            if(this.templatemode=='cycleedit') {
+                this.sortTime();
+            }
+            
+        },
     },
 }
 </script>

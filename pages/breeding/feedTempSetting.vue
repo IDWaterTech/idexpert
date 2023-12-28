@@ -3,9 +3,9 @@
         <v-row  v-if="template_items.length>0">
             <v-col cols="7" md="6" sm="6" style="padding: 0;">
                 <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
-                    <v-select :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="template_items" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
+                    <v-autocomplete :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="template_items" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
                     
-                    </v-select>
+                    </v-autocomplete>
                     
                 </div>
             </v-col>
@@ -91,8 +91,8 @@
                                 </span> -->
                             <!-- </v-autocomplete> -->
                             <div>
-                                <FeedTemplate v-if="editmode=='add'" @action="actionResult" :templatemode="editmode" :accdata="[]" :nowExpand="nowExpand"></FeedTemplate>
-                                <FeedTemplate v-if="editmode=='edit'" @action="actionResult" :key="editKey" :templatemode="editmode" :passObj="passObj" :accdata="[]" :nowExpand="nowExpand"></FeedTemplate>
+                                <FeedTemplate v-if="editmode=='add'" @action="actionResult" :templatemode="editmode" :accdata="[]" :nowExpand="nowExpand" :waterReport="[]" :diseaseReport="[]" :eventReport="[]"></FeedTemplate>
+                                <FeedTemplate v-if="editmode=='edit'" @action="actionResult" :key="editKey" :templatemode="editmode" :passObj="passObj" :accdata="[]" :nowExpand="nowExpand" :waterReport="[]" :diseaseReport="[]" :eventReport="[]"></FeedTemplate>
                             </div>
                         </div>
                         
