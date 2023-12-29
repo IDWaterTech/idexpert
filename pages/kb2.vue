@@ -2461,7 +2461,8 @@ export default {
             url:{
                 pdf:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
                 xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0l0s0v5fgWL3UgmUYnBfLDNie7vkkafJ1gD0Cis4uo85jvizx9mPQqT1tXaiZK-7zlj82GjCJwm9_/pubhtml?widget=true&amp;headers=false'
-            }
+            },
+            observationKey:{}
 
         }
     },
@@ -2634,7 +2635,7 @@ export default {
                     this.optData = res.data;
                     var keyLst = Object.keys(this.optData);
                     keyLst.forEach(k=>{
-                        if(!k.includes('Is') || k.split('Is')[0] !== 'Is') {
+                        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
                             this.ObservationData[k] = _.cloneDeep(this.optData[k]);
                             this.ObservationData[k].forEach(c=>{
                                 c.value=0;
@@ -2768,9 +2769,38 @@ export default {
                 
                 this.MakeWaterParm = input_data.MakeWaterParm;
                 this.WaterQualityData = input_data.WaterQualityData;
-                this.ObservationData = input_data.ObservationData;
+                this.ObservationData = _.cloneDeep(input_data.ObservationData);
+                var keyLst = Object.keys(this.optData);
+                keyLst.forEach(k=>{
+                    if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                        if(this.ObservationData[k]) {
+                            let data = [];
+                            var keys = Object.keys(this.ObservationData[k]);
+                            keys.forEach((s,sid)=>{
+                                this.optData[k].forEach(x=>{
+                                    if(x.name_en.toUpperCase() == s.toUpperCase()) {
+                                        data[sid] = _.cloneDeep(x);
+                                        data[sid].value = this.ObservationData[k][s];
+                                    }
+                                     
+                                })
+                            })
+                            this.ObservationData[k] = data;
+                                
+                            
+                        }else {
+                            this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                            this.ObservationData[k].forEach(c=>{
+                                c.value=0;
+                            })
+                        }
+                        
+                        
+                    }
+                    
+                })
+                console.log('Input Observation',this.ObservationData);
                 
-                console.log('Input Observation',this.ObservationData)
                 if(this.ObservationData['SamplingDatetime']) {
                     this.ObservationData['SamplingDatetime'] = this.$moment(new Date(this.ObservationData['SamplingDatetime']), 'YYYY-MM-DD HH:mm:ss');
                 }
@@ -2883,6 +2913,16 @@ export default {
                         let maxDate = new Date(this.ObservationData['LastSamplingDatetime']);
                         input_data.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
                     }
+                    var keyLst = Object.keys(this.optData);
+                    keyLst.forEach(k=>{
+                        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                            let data = _.cloneDeep(input_data.ObservationData);
+                            input_data.ObservationData[k] = {};
+                            data[k].forEach(d=>{
+                                input_data.ObservationData[k][d.name_en] = d.value;
+                            })
+                        }
+                    })
                     var output_data = this.suggData;
                     var allParm = {
                         input_data:input_data,
@@ -2949,6 +2989,16 @@ export default {
                 let maxDate = new Date(this.ObservationData['LastSamplingDatetime']);
                 allParm.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
             }
+            var keyLst = Object.keys(this.optData);
+            keyLst.forEach(k=>{
+                if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                    let data = _.cloneDeep(allParm.ObservationData);
+                    allParm.ObservationData[k] = {};
+                    data[k].forEach(d=>{
+                        allParm.ObservationData[k][d.name_en] = d.value;
+                    })
+                }
+            })
             console.log("all參數：",allParm);
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
             await this.$axios.post(url, allParm).then(res => {
@@ -3329,7 +3379,7 @@ export default {
             };
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
-                if(!k.includes('Is') || k.split('Is')[0] !== 'Is') {
+                if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
                     this.ObservationData[k] = _.cloneDeep(this.optData[k]);
                     this.ObservationData[k].forEach(c=>{
                         c.value=0;
@@ -3358,7 +3408,7 @@ export default {
                     this.postParm(false,null,true);//查詢ai回饋資訊
                     var keyLst = Object.keys(this.optData);
                     keyLst.forEach(k=>{
-                        if(!k.includes('Is') || k.split('Is')[0] !== 'Is') {
+                        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
                             this.ObservationData[k] = _.cloneDeep(this.optData[k]);
                             this.ObservationData[k].forEach(c=>{
                                 c.value=0;
