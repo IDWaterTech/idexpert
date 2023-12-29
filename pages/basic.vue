@@ -587,12 +587,14 @@ export default {
         {id:1,name_ch:'30分鐘',value:30},
         {id:2,name_ch:'8小時',value:480},
         {id:3,name_ch:'24小時',value:1440},
-        // {id:4,name_ch:'30000',value:1000000}
+        // {id:4,name_ch:'30000',value:800000},
+        // {id:5,name_ch:'40000',value:1000000}
         
       ],
       timeSelect:0,
       alertAllData:[],
-      nowClickRow:''
+      nowClickRow:'',
+      originData:[]
     };
   },
   methods: {
@@ -732,7 +734,8 @@ export default {
             { httpsAgent: agent }
           )
           .then(async res => {
-            this.mainpool.items = res.data;
+            this.mainpool.items = _.cloneDeep(res.data);
+            this.originData = _.cloneDeep(res.data);
             // await this.getWaterData();
             
             this.getAlertNum();
@@ -1010,6 +1013,7 @@ export default {
           this.water = [];
           this.waterParm[parm.col_name] = [];
           this.waterloading = false;
+          this.mainpool.items = _.cloneDeep(this.originData);
           // console.log('water parm',parm);
           await this.$axios
             .get(apiURL, { params: parm }, { httpsAgent: agent })
