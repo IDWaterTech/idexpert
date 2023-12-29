@@ -159,8 +159,7 @@
                                             </template>
                                             <!-- 執行 -->
                                             <template v-slot:[`item.deft_executor`]="{ item }">
-                                               <span v-if="item.type==3||item.type==1||item.type==2">{{ item.created_user }} </span>
-                                               <span v-else>{{ item.deft_executor }} </span>
+                                               <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span>
                                                <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
                                                <!-- {{ dateFormat(item.execute_time) }} -->
                                             </template>
@@ -401,9 +400,10 @@
                     </div>
                     <v-card-text>
                         <div class="content" style="margin-bottom: 40px;">
-                            起訖： {{ viewDetail.started_date }} ~ {{ viewDetail.ended_date }} <br>
-                            等級：{{ viewDetail.event_level_name }}<br>
-                            內容：{{ viewDetail.content }}
+                            事件起訖： {{ viewDetail.started_date }} ~ {{ viewDetail.ended_date }} <br>
+                            創建人員： {{ viewDetail.created_user }} <br>
+                            事件等級：{{ viewDetail.event_level_name }}<br>
+                            事件內容：{{ viewDetail.content }}
                         </div>
                     </v-card-text>
                 </div>
