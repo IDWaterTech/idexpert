@@ -245,7 +245,7 @@
               <!-- 養殖池 -->
               <v-row style="margin-bottom: 12px;align-items: stretch;height: 100%;" id="chart">
                 <!-- AI建議 -->
-                <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
+                <!-- <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
                   <v-card class="result-card pool-detail" style="height: calc(100% - 14px);overflow: hidden;">
                     <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
                       <div class="title">
@@ -271,9 +271,9 @@
                       </v-row>
                     </div>
                   </v-card>
-                </v-col>
+                </v-col> -->
                 <!-- 養殖池 -->
-                <v-col cols="12" md="9" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
+                <v-col cols="12" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
                   <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
                     <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
                       <div class="title">
