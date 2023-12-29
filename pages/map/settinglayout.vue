@@ -107,6 +107,7 @@
                               :class="{'block':row.rows.length==0 && (row.id!==''||row.name!=='road'),'road':row.id==''&&row.name=='road'}">
                               <div style="width: 100%;height: 100%;" @click="openDialog(pid,bid,rid)">
                                   <div v-if="row.name=='road'" style="width: 100%;z-index: 1000;">走道</div>
+                                  <div v-else-if="row.name=='tank'">生化槽</div>
                                   <div v-else-if="row.state!==''">{{ row.name }}</div>
                                   <div v-else>空白</div>
                               </div>
@@ -138,6 +139,7 @@
                               <span v-if="b.center || b.roadDirection == 'vertical'" style="writing-mode: vertical-rl;">走道</span>
                           </div>
                       </div>
+                      <div v-else-if="b.name=='tank'">生化槽</div>
                       <div v-else-if="b.id!==''">{{ b.name }}</div>
                       <div v-else>空白</div>
                   </div>    
@@ -230,7 +232,7 @@
               newData: {},
               addDialog: false,
               nowChangeObject:{},
-              type:['池','走道','空白'],
+              type:['池','走道','空白','生化槽'],
               nowType:'',
               pondData:[],
               nowPondName:'',
@@ -466,6 +468,7 @@
               }else {
                   this.nowDirection = '橫向';
               }
+              console.log('nowChange',this.nowChange);
               
               // 判斷目前的欄位數和類型
               this.nowCol = this.isSetting?this.nowChange.cols:1;
@@ -476,8 +479,10 @@
               }else {
                   if(this.nowChange.name == 'road') {
                       this.nowType = '走道';
-                  }else {
+                  }else if(this.nowChange.name == ''){
                       this.nowType = '空白';
+                  }else {
+                    this.nowType = '生化槽'
                   }
               }
               
@@ -490,12 +495,15 @@
                   if(this.nowChange.cols==1) this.showDirection();
                   this.isPondName = false;
                   this.isDoubleName = {};
-              }else if(evt=='空白') {
+              }else if(evt=='空白' || evt=='生化槽') {
                   this.nowChange.id='';
                   this.nowChange.name = '';
                   this.nowChange.state = '';
                   this.isPondName = false;
                   this.isDoubleName = {};
+                  if(evt=='生化槽') {
+                    this.nowChange.name = 'tank';
+                  }
               }else {
                   // console.log(this.nowChage.id);
                   // this.nowPondName = this.pondData[0].name;
@@ -936,14 +944,19 @@
               
           },
           deleteSubRow(pid,bid,rid) {
-              this.ponds[pid].pond[bid].rows.splice(rid,1);
-              if(this.ponds[pid].pond[bid].rows.length==1) {
-                  this.ponds[pid].pond[bid].id = this.ponds[pid].pond[bid].rows[0].id;
-                  this.ponds[pid].pond[bid].name = this.ponds[pid].pond[bid].rows[0].name;
-                  this.ponds[pid].pond[bid].state = this.ponds[pid].pond[bid].rows[0].state;
-                  // this.ponds[pid].pond[bid].cols = this.ponds[pid].pond[bid].rows[0].cols;
-                  this.ponds[pid].pond[bid].rows = [];
-              }
+            console.log('delete sub row',this.ponds[pid].pond[bid],rid);
+            this.ponds[pid].pond[bid].rows.splice(rid,1);
+            if(this.ponds[pid].pond[bid].rows.length==1) {
+                this.ponds[pid].pond[bid].id = this.ponds[pid].pond[bid].rows[0].id;
+                this.ponds[pid].pond[bid].name = this.ponds[pid].pond[bid].rows[0].name;
+                this.ponds[pid].pond[bid].state = this.ponds[pid].pond[bid].rows[0].state;
+                this.ponds[pid].pond[bid].cols = this.ponds[pid].pond[bid].rows[0].cols;
+                this.ponds[pid].pond[bid].rows = [];
+                if(this.ponds[pid].pond[bid].name == 'road') {
+                    this.ponds[pid].pond[bid].roadDirection = 'horizontal';
+                }
+                console.log('del after',this.ponds[pid].pond[bid])
+            }
           },
           dataPrepare() {
             // 所有的池資料

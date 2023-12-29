@@ -22,12 +22,13 @@
         style="z-index: 2;"
       ><v-icon>mdi-alert</v-icon></v-btn>
 
-      {{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}
       
+      <span style="z-index: 2;">{{ item.name }}-{{ item.state.includes('(')?item.state.split('(')[0]:item.state}}</span>
       <span v-if="item.state.includes('(')" style="z-index: 2;"><br>( {{ item.state.split('(')[1] }}</span>
+      
     </span>
-
-      <span v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''" 
+    <span v-if="item.name=='tank'" style="z-index: 2;">生化槽</span>
+    <span v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''" 
         style="display: flex;align-items: center;justify-content: center;font-size: 1.25rem;font-weight: bold;z-index: 2;"
         :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
       ><span>{{ item.water }}</span></span>
