@@ -101,7 +101,8 @@
                                             hide-default-footer
                                             disable-pagination
                                             style="max-height: 300px;overflow-y: scroll;"
-                                            :item-key="'table_'+id" >
+                                            :item-class="itemRowBackground"
+                                            :item-key="'table_'+id">
                                             <!-- <template v-slot:[`column.udactions`]="{ column }">
                                                 <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
                                             </template> -->
@@ -898,6 +899,11 @@ export default {
                 })
             })
         },
+        // 表格顏色判斷
+        itemRowBackground(evt) {
+            return evt.status&&evt.status=='異常'?'danger-bg':evt.status&&evt.status=='警告'?'warning-bg':'';
+        },
+
         /* 其他項目 */
         // 新增項目Dialog打開
         addsubitem: function (phase_id, addidx = undefined) {
@@ -2086,6 +2092,13 @@ export default {
 ::v-deep {
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
         background-color: rgba($color: $color-primary, $alpha: 0.1);
+    }
+    
+    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.danger-bg {
+        background-color: #FBEEEE;
+    }
+    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.warning-bg {
+        background-color: #FFFAE6;
     }
 }
 
