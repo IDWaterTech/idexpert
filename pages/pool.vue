@@ -23,6 +23,7 @@
                   </div> -->
                   <div class="search-container">
                     <locate-select 
+                      id="search"
                       class="select-template"
                       :dataScope="'pool'" 
                       :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:'49'" 
@@ -67,15 +68,15 @@
               <v-row style="margin-bottom: 0;align-items: center;">
                 <v-col cols="12" style="padding: 0;padding-right: 8px;">
                   <div class="btn-groups">
-                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;">
+                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
                     </v-btn>
-                    <v-btn tile class="btn-secondary green" @click="reportOpen" style="padding: 0 8px;">
+                    <v-btn tile class="btn-secondary green" @click="reportOpen" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
                       <v-icon style="font-size: 1rem;">mdi-file-multiple-outline</v-icon>
                       新增檢驗
                     </v-btn>
-                    <v-btn v-if="false" tile class="btn-secondary green" style="padding: 0 8px;" @click="mutiExecuteDialog">
+                    <v-btn v-if="false" tile class="btn-secondary clear" style="padding: 0 8px;" @click="mutiExecuteDialog" :class="{'disabled':!isLoading}">
                       <v-icon>mdi-check</v-icon>
                       批次執行
                     </v-btn>
@@ -282,6 +283,7 @@
                 @scopeSel_data="get_selectData($event)" 
                 ></locate-select> -->
                 <treeselect
+                  id="addpool"
                     @input="changeEvent"
                     v-model="dataid"
                     :options="maindataScope"
@@ -990,13 +992,15 @@
                                 style="font-size: 12px;line-height: 12px;color: #6c9bcd;"
                                 :style="{'color':`${isSelectPool?'#6c9bcd':'red'}`}">採樣池</span>
                             <locate-select 
+                              id="reportpool"
                                 class="select-template"
                                 :dataScope="'pool'" 
                                 defaultSelect="" 
                                 :isMulti="true"
                                 @scopeSel_data="sampledata($event,id)"
+                                :class="{'error-text': !isSelectPool}"
                             ></locate-select>
-                            <span v-if="!isSelectPool && add.pond.length==0" class="error-text" style="font-size: 12px;">*必填項目</span>
+                            <span v-if="(!isSelectPool)" class="error-text" style="font-size: 12px;">*必填項目</span>
                             
                         </div>
                           <!-- <v-text-field v-model="add.position" label="檢驗單位" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field> -->
@@ -1004,7 +1008,7 @@
                       <div class="select-item" style="width: 100%;">
                         <v-text-field v-model="add.msg" label="項目說明" :rules="rules.checklength" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
                         <!-- <v-file-input v-if="add.type==1" v-model="add.files" multiplelabel="File input"></v-file-input> -->
-                        <v-file-input v-if="add.type!==0" v-model="add.file" accept=".pdf" label="上傳文件(限*pdf)" @change="submitFiles($event,id)" style="margin-top: 0;"></v-file-input>
+                        <v-file-input v-if="add.type!==0" v-model="add.file" accept=".pdf" :rules="rules.require" label="上傳文件(限*pdf)" @change="submitFiles($event,id)" style="margin-top: 0;"></v-file-input>
                       </div>
                   </div>
                 </v-card-text>
@@ -3307,8 +3311,9 @@ export default {
       }
       setTimeout(async ()=>{
         this.isSelectPool = true;
-        this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:[],position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+        this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:null,position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
       },100)
+      
     },
     // 新增的項目類型切換
     selectadd(evt,id) {
@@ -3326,7 +3331,7 @@ export default {
           }
           
       }
-      this.addReport[id].pond_id = new Array();
+      this.addReport[id].pond_id = null;
       this.addReport[id].disease_id = [];
       this.addReport[id].file = null;
       this.addReport[id].position = '';
@@ -3334,13 +3339,14 @@ export default {
       this.isSelectPool = true;
     },
     sampledata(evt,id) {
-        console.log(evt);
         this.addReport[id].pond_id = evt;
-        if(this.addReport[id].pond_id.length>0) {
+        if(evt!==null&&this.addReport[id].pond_id.length>0) {
             this.isSelectPool = true;
         }else {
             this.isSelectPool = false;
+            // this.addReport[id].pond_id = null;
         }
+        console.log(evt,this.isSelectPool);
     },
     // 感染選擇
     select(item,id,bool=false,type) {
@@ -3398,50 +3404,59 @@ export default {
     async submitreport() {
       let formData = new FormData();
       let parm = _.cloneDeep(this.addReport[0]);
-      parm.created_user = this.$auth.$state.user.name;
-      // parm.disease_id=parm.disease_id.length>0? parm.disease_id.toString():'';
-      // parm.pond_id = parm.pond_id.toString();
-
-      delete parm.type;
-      delete parm.species;
-      delete parm.file;
-
-      if(this.addReport[0].type==2) {
-        delete parm.disease_id;
-        delete parm.method_id;
+      this.isSelectPool = true;
+      if(this.addReport[0].pond_id==null || this.addReport[0].pond_id.length==0) {
+        this.isSelectPool = false;
       }
-      Object.keys(parm).forEach(x=>{
-        formData.append(x,parm[x]);
-      })
-      // formData.append('parm',JSON.stringify(parm));
-      formData.append("file", this.addReport[0].file);
-      let config = { headers: { "Content-Type": "multipart/form-data" } };
-      let url=this.addReport[0].type==1?'/breeding/disease-testing-record/':'/breeding/water-quality-testing-record/';
-      console.log('report',formData,parm);
-      await this.$axios
-        .post(
-          `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
-          formData,
-          config
-        )
-        .then(async res => {
-          console.log("API:" + res.request.responseURL);
-          if (res.data == "新增成功") {
-            this.reportDialog = false;
-            if(this.addReport[0].type == 1) {
-              await this.getDisease();
-            }else if(this.addReport[0].type == 2) {
-              await this.getWater();
-            }
-            this.$toast.success("新增成功", { duration: 2000 });
-          } else {
-            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-          }
+      var valid = this.$refs.addform.validate();
+      
+      if(valid && this.isSelectPool) {
+        
+        parm.created_user = this.$auth.$state.user.name;
+        // parm.disease_id=parm.disease_id.length>0? parm.disease_id.toString():'';
+        // parm.pond_id = parm.pond_id.toString();
+
+        delete parm.type;
+        delete parm.species;
+        delete parm.file;
+        if(this.addReport[0].type==2) {
+          delete parm.disease_id;
+          delete parm.method_id;
+        }
+        Object.keys(parm).forEach(x=>{
+          formData.append(x,parm[x]);
         })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
-      console.log('submit report',this.addReport);
+        // formData.append('parm',JSON.stringify(parm));
+        formData.append("file", this.addReport[0].file);
+        let config = { headers: { "Content-Type": "multipart/form-data" } };
+        let url=this.addReport[0].type==1?'/breeding/disease-testing-record/':'/breeding/water-quality-testing-record/';
+        console.log('report',formData,parm);
+        await this.$axios
+          .post(
+            `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
+            formData,
+            config
+          )
+          .then(async res => {
+            console.log("API:" + res.request.responseURL);
+            if (res.data == "新增成功") {
+              this.reportDialog = false;
+              if(this.addReport[0].type == 1) {
+                await this.getDisease();
+              }else if(this.addReport[0].type == 2) {
+                await this.getWater();
+              }
+              this.$toast.success("新增成功", { duration: 2000 });
+            } else {
+              this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+            }
+          })
+          .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+          });
+          console.log('submit report',this.addReport);
+      }
+      
     },
     // 取得狀態顏色
     async getStateColor() {
@@ -3904,6 +3919,13 @@ export default {
     }
     .select-template .vue-treeselect__control .vue-treeselect__multi-value-item {
       padding: 0 4px;
+    }
+    .select-template.error-text .vue-treeselect__control .vue-treeselect__placeholder {
+      color: red;
+    }
+    .select-template .vue-treeselect__control .vue-treeselect__placeholder::before,
+    .select-template .vue-treeselect__control .vue-treeselect__placeholder::after {
+      content: '';
     }
 }
 
