@@ -19,7 +19,7 @@
             <v-col cols="12" md="6">
               <div class="search-container">
                 <!-- 選擇場 -->
-                <locate-select :dataScope="'field'" defaultSelect="研發一場-YLTCID001_1" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <locate-select :dataScope="'field'" :defaultSelect="factoryData.length>0?factoryData[0].name+'_'+factoryData[0].id:''" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
                 <!-- 放養中 -->
                 <v-checkbox
                   v-model="showFeeding"
@@ -626,10 +626,11 @@ export default {
   },
   methods: {
     get_scopeData(evt) {
-      console.log('Change Field',evt);
-      console.log('factory data',this.factoryData);
+      console.log('Change Field',evt.split('_')[0]);
+      // console.log('factory data',this.factoryData);
       let fieldId = evt.split('_')[evt.split('_').length-1];
       this.factoryid = fieldId;
+      console.log('Change Field',fieldId);
     },
     // 飼料表設定-清單
     eventSetGet:async function(){
@@ -1119,7 +1120,8 @@ export default {
       this.imploading=true;//載入中
       this.imptimedata=[];//清空清單
       var para = {
-        feed_date: this.sdate
+        feed_date: this.sdate,
+        factory_id: this.factoryid
       };
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
