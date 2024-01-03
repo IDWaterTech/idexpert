@@ -628,6 +628,9 @@ export default {
     get_scopeData(evt) {
       console.log('Change Field',evt.split('_')[0]);
       // console.log('factory data',this.factoryData);
+      this.dataclear();
+      this.sdate = '';
+      this.imptimedata = [];
       let fieldId = evt.split('_')[evt.split('_').length-1];
       this.factoryid = fieldId;
       console.log('Change Field',fieldId);
@@ -766,6 +769,7 @@ export default {
           this.imptimedata = []; //清空取得的帶入資料
           this.sdate = '';
           this.stime = '';
+          console.log('feedparm',feedparm);
         }else{
           datecount = -1;
           errormsg = res.data;
@@ -906,7 +910,7 @@ export default {
         .get(url)
         .then(res => {
           this.factoryData = res.data;
-          this.factoryid = res.data[0].id;
+          // this.factoryid = res.data[0].id;
           var item = [];
           res.data.forEach(element => {
             //[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
