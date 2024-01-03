@@ -396,9 +396,10 @@
                           :key="'tabs-'+tid"
                           :href="`#` + tab">
                           <div class="icons">
+                            <v-icon v-if="tab=='圖表'">mdi-chart-bell-curve-cumulative</v-icon>
                             <v-icon v-if="tab=='編修紀錄'">mdi-text-box-edit-outline</v-icon>
                             <v-icon v-if="tab=='事件紀錄'">mdi-calendar-edit-outline</v-icon>
-                            <v-icon v-if="tab=='圖表'">mdi-chart-bell-curve-cumulative</v-icon>
+                            <v-icon v-if="tab=='觀察網資訊'">mdi-tray-full</v-icon>
                           </div>
                           {{ tab }}
                       </v-tab>
@@ -409,6 +410,27 @@
                           :key="'tab-'+tid"
                           :value="tab"
                           style=";min-height: 48vh;">
+                           <!-- 圖表 -->
+                           <div v-show="nowTab=='圖表'" class="result-content">
+                            <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
+                              <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                              <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                            </v-row>
+                            <v-row style="width: 100%;">
+                              <WaterQuality_Vcharts2
+                                :rowsData="item.items"
+                                xColName="inspected_date"
+                                :defaultitem="{}"
+                                :loading="waterloading"
+                                :title="item.name"
+                                :chartmin="chartmin"
+                                :chartmax="chartmax"
+                                :markdata="markdata"
+                                :isIndicator="true"
+                                style="width: 100%;min-height: 26vh;"
+                              ></WaterQuality_Vcharts2>
+                            </v-row>
+                          </div>
                           <!-- 編修紀錄 -->
                           <div v-show="nowTab=='編修紀錄'" class="result-content">
                             <v-data-table
@@ -518,28 +540,11 @@
                             </v-data-table>
                           </div>
                           
-                          <!-- 圖表 -->
-                          <div v-show="nowTab=='圖表'" class="result-content">
-                            <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
-                              <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
-                              <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
-                            </v-row>
-                            <v-row style="width: 100%;">
-                              <WaterQuality_Vcharts2
-                                :rowsData="item.items"
-                                xColName="inspected_date"
-                                :defaultitem="{}"
-                                :loading="waterloading"
-                                :title="item.name"
-                                :chartmin="chartmin"
-                                :chartmax="chartmax"
-                                :markdata="markdata"
-                                :isIndicator="true"
-                                style="width: 100%;min-height: 26vh;"
-                              ></WaterQuality_Vcharts2>
-                            </v-row>
+                         
+                          <!-- 觀察網資訊 -->
+                          <div v-show="nowTab=='觀察網資訊'" class="result-content">
+                            div 觀察網資訊
                           </div>
-                              
                         </v-tab-item>
                       </v-tabs-items>
                     </v-tabs>
@@ -742,8 +747,8 @@ export default {
       //公式
       formula:"",
       //tab
-      tabs: ['編修紀錄','事件紀錄','圖表'],
-      nowTab: '編修紀錄',
+      tabs: ['圖表','編修紀錄','事件紀錄','觀察網資訊'],
+      nowTab: '圖表',
       //編修紀錄checkbox disable判斷
       disabledAllDel:true,
       // select
