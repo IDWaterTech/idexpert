@@ -15,7 +15,7 @@
             <v-col cols="12" md="2">
               <!-- 選擇場 -->
               <div class="search-container">
-                <locate-select :dataScope="'field'" defaultSelect="研發一場-YLTCID001_1" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <locate-select :dataScope="'field'" :defaultSelect="factoryData.length>0?factoryData[0].name+'_'+factoryData[0].id:''" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
               </div>
             </v-col>
             <!-- 選擇日期sdate -->
@@ -530,7 +530,8 @@ export default {
         return;
       }
       var para = {
-        feed_date: this.sdate
+        feed_date: this.sdate,
+        factory_id: this.factoryid,
       };
 
       await this.$axios
