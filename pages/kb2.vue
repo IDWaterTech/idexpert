@@ -1442,7 +1442,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="->砂糖量(做水)、尿素">放養初始重量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="->砂糖量(做水)、尿素">放養初始重量(單隻)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -2460,7 +2460,7 @@ export default {
             // formulaUrl:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
             url:{
                 pdf:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
-                xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0l0s0v5fgWL3UgmUYnBfLDNie7vkkafJ1gD0Cis4uo85jvizx9mPQqT1tXaiZK-7zlj82GjCJwm9_/pubhtml?widget=true&amp;headers=false'
+                xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLS_4p8BhJ1yNhmqv4_pVEt7CUCDueo6r51pyT7fcaNIVdGWYA2b6oCTBQSoH-rrBrEMdQ05QVGebk/pubhtml?widget=true&amp;headers=false'
             },
             observationKey:{}
 
