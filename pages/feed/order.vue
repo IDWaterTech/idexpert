@@ -795,6 +795,7 @@ export default {
       // console.log('儲存資料',data);
       var parm = {
         feed_time: `${this.adate} ${this.atime}`,
+        factory_id:Number(this.factoryid),
         created_user: this.$auth.$state.user.email,
         data: data
       };
