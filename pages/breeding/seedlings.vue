@@ -103,7 +103,7 @@
                             <span style="width:100px" slot="prepend">備註</span>
                         </v-text-field>
                         <v-text-field filled dense v-model.number="seedFormData.price" :rules="rules.requireNum" type="number">
-                            <span style="width:100px" slot="prepend">市價{{ seedFormData.price==undefined }}</span>
+                            <span style="width:100px" slot="prepend">市價</span>
                         </v-text-field>
                         <v-text-field dense disabled v-model="seedFormData.updated_time" :rules="rules.require" v-if="seedFormData.mode=='edit'" >
                             <span style="width:100px" slot="prepend">修改時間</span>
