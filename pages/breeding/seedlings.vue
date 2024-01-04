@@ -99,11 +99,11 @@
                         <v-autocomplete v-model="seedFormData.manufacturer_id" :rules="rules.require" style="width" :items="manu" item-text="name_ch" item-value="id" dense filled
                             label="選擇廠商" clearable><span style="width:100px" slot="prepend">廠商id<v-icon class="mx-1" @click="getmanudata">
                                     mdi-reload</v-icon></span></v-autocomplete>
-                        <v-text-field filled dense v-model="seedFormData.remark" :rules="rules.require">
+                        <v-text-field filled dense v-model="seedFormData.remark">
                             <span style="width:100px" slot="prepend">備註</span>
                         </v-text-field>
-                        <v-text-field filled dense v-model.number="seedFormData.price" :rules="rules.require" type="number">
-                            <span style="width:100px" slot="prepend">市價</span>
+                        <v-text-field filled dense v-model.number="seedFormData.price" :rules="rules.requireNum" type="number">
+                            <span style="width:100px" slot="prepend">市價{{ seedFormData.price==undefined }}</span>
                         </v-text-field>
                         <v-text-field dense disabled v-model="seedFormData.updated_time" :rules="rules.require" v-if="seedFormData.mode=='edit'" >
                             <span style="width:100px" slot="prepend">修改時間</span>
@@ -131,6 +131,7 @@
             return {
                 rules: {
                     require: [v => !!v || "*必要項目"],
+                    requireNum:[v=>(!isNaN(v) && v != undefined  && typeof(v) == "number" && v >= 0)|| "*請輸入>=0數字"]
                 },
                 SeedlingModel:'',
                 SeedlingData:[],
