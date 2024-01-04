@@ -290,7 +290,7 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['CrudeProteinPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">粗蛋白含量</span><span class="pa-0 ma-0" slot="append">%</span></v-text-field> -->
                                                                     </v-col>
-                                                                    <v-col cols=12 md="6" sm="6">
+                                                                    <v-col v-if="false" cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0 text-center" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的飼料含氮量參數">含氮量</span>
@@ -313,7 +313,7 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['SugarSourcePurity']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖(碳源)純度</span><span class="pa-0 ma-0" slot="append">%</span></v-text-field> -->
                                                                     </v-col>
-                                                                    <v-col cols=12 md="6" sm="6">
+                                                                    <!-- <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖含碳量參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">砂糖(碳源)含碳量</span>
@@ -322,8 +322,7 @@
                                                                                 <v-text-field v-model.number="FeedParm['SugarSourceCarbonPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
-                                                                        <!-- <v-text-field v-model.number="FeedParm['SugarSourceCarbonPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖(碳源)含碳量</span><span class="pa-0 ma-0" slot="append">%</span></v-text-field> -->
-                                                                    </v-col>
+                                                                    </v-col> -->
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
