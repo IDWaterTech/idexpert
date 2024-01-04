@@ -162,7 +162,7 @@ export default {
               id: 99999,
               is_drop_down: false,
               name: "知識庫鷹眼",
-              url: "/kb"
+              url: "/kb2"
             },
             // {
             //   disabled: false,

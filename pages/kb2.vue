@@ -1753,22 +1753,22 @@
                                                                         <tbody>
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">飼料量</td></tr>
                                                                             <tr>
-                                                                                <td>粉料</td>
+                                                                                <td title="水體體積、放養密度、養殖天數、水溫、蝦子重量">粉料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td>0號料</td>
+                                                                                <td title="水體體積、放養密度、上一餐時間、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">0號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td>1號料</td>
+                                                                                <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">1號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td>2號料</td>
+                                                                                <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">2號料</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
@@ -1780,17 +1780,17 @@
                                                                             </tr> -->
                                                                             <tr>
                                                                                 <!-- <td>前一餐飼料量</td> -->
-                                                                                <td>上一餐飼料量</td>
+                                                                                <td title="上一餐飼料量">上一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td>下一餐飼料量</td>
+                                                                                <td title="參考上方粉料、0號料、1號料、2號料的Input">下一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td>累計飼料量</td>
+                                                                                <td title="累積飼料量">累計飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
@@ -1815,22 +1815,22 @@
                                                                             <tbody>
                                                                                 <tr style="background-color:#E5F2E0;"><td colspan="3">飼料量</td></tr>
                                                                                 <tr>
-                                                                                    <td>粉料</td>
+                                                                                    <td title="水體體積、放養密度、養殖天數、水溫、蝦子重量">粉料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
                                                                                     <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td>0號料</td>
+                                                                                    <td title="水體體積、放養密度、上一餐時間、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">0號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
                                                                                     <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td>1號料</td>
+                                                                                    <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">1號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
                                                                                     <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td>2號料</td>
+                                                                                    <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">2號料</td>
                                                                                     <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
                                                                                     <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                                 </tr>
@@ -1875,7 +1875,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">前餐砂糖量(配合飼料CN比)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="前一餐飼料量、粗蛋白含量、目標CN比、飼料CN比、砂糖純度、砂糖含碳量">前餐砂糖量(配合飼料CN比)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['LastSugarCN']" disabled dense hide-details class="mt-0 "></v-text-field>
@@ -1887,7 +1887,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">下餐砂糖量 (配合飼料CN比)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="下一餐飼料量、粗蛋白含量、目標CN比、飼料CN比、砂糖純度、砂糖含碳量">下餐砂糖量 (配合飼料CN比)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['SugarCN']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -1899,7 +1899,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量 (降氨氮)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="氨氮、目標CN比、水體體積、砂糖純度、砂糖含碳量">砂糖量 (降氨氮)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['SugarAmmoniaN']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -1911,7 +1911,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量 (降亞硝酸)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量">砂糖量 (降亞硝酸)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['SugarNO2']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -1923,7 +1923,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量 (提高枯草桿菌)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="枯草桿菌、水體體積">砂糖量 (提高枯草桿菌)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['SugarBacillusSubtilis']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -1935,7 +1935,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量 (降紫菌)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="腸炎弧菌、水體體積">砂糖量 (降紫菌)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['SugarVibrioEnteritidis']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -1947,7 +1947,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量 (降靛菌)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="創傷弧菌、水體體積">砂糖量 (降靛菌)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -1996,7 +1996,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item" style="background-color:#E5F2E0;">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">熟石灰量</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="酸鹼值、水體體積">熟石灰量</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.Material['Lime']" disabled dense hide-details class="mt-0" style="background-color:#E5F2E0;"></v-text-field>
@@ -2175,7 +2175,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">砂糖量(做水)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、放養密度、水溫、放養初始重量、粗蛋白含量、尿素有效濃度、目標CN比、砂糖純度、砂糖含碳量">砂糖量(做水)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.MakeWater['SugarMakeWater']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -2187,7 +2187,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">漂白粉(30ppm濃度)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、漂白粉有效濃度">漂白粉(30ppm濃度)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.MakeWater['BleachingPowder']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -2199,7 +2199,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">海波</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、水體餘氯、海波有效濃度">海波</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.MakeWater['Hypo']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -2211,7 +2211,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend">尿素</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、放養密度、水溫、放養初始重量、粗蛋白含量、尿素有效濃度">尿素</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.MakeWater['Urea']" disabled dense hide-details class="mt-0"></v-text-field>
