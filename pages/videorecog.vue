@@ -292,7 +292,7 @@ export default {
                               蝦子重量(g)：[ ${d.shrimp_weight==null?'':d.shrimp_weight} ]<br>
                               蝦子長度(cm)：[ ${d.shrimp_length==null?'':d.shrimp_length} ]<br>
                               飼料殘餌率：${d.leftover_rate}<br>
-                              檢測時間：${d.inspected_date}`,
+                              檢測時間：${d.inspected_time}`,
                     feed_img:d.feed_img,
                     id:d.id,
                     shrimp_img:d.shrimp_img
