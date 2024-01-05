@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <!-- <div><v-btn @click="compareStatus({id:[24,23],status:'空池'})">空池</v-btn></div> -->
     <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
       <div class="content" style="padding-top:12px">
@@ -196,48 +195,60 @@
             <v-card v-if="currentDataId!==null && currentDataId!==''" class="result-card" >
               <!-- 表頭 -->
               <div class="card-title" style="cursor: pointer;margin: 8px">
-                  <v-row style="margin-bottom: 0;">
-                    <v-col cols="12" md="8" sm="6" style="padding: 4px;">
-                      <div class="title">
-                        <v-card-title>養殖歷程</v-card-title>
-                        <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
-                    </div>
-                    </v-col>
-                    <v-col cols="12" md="4" sm="6" style="padding: 4px 0;">
-                      <div class="btn-groups">
-                        <div class="filter">
-                          <v-select
-                            v-model="passObj.filter"
-                            :items="filterType"
-                            label="項目過濾"
-                            multiple
-                            item-value="id"
-                            item-text="name_ch"
-                            @change="filterChange"
-                            hide-details
-                          ></v-select>
-                        </div>
-                        <div class="open" style="padding-right: 12px;">
-                          <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;resultCycleOpen = !resultCycleOpen">
-                            <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
-                          </v-btn>
-                          <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;resultCycleOpen = !resultCycleOpen">
-                            <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
-                          </v-btn>
-                        </div>
-                        <!-- <div class="chevron">
-                          <v-icon v-if="resultCycleOpen">mdi-triangle-small-up</v-icon>
-                          <v-icon v-if="!resultCycleOpen">mdi-triangle-small-down</v-icon>
-                        </div> -->
+                <v-row style="margin-bottom: 0;">
+                  <v-col cols="12" md="8" sm="6" style="padding: 4px;">
+                    <div class="title">
+                      <v-card-title>循環紀錄</v-card-title>
+                      <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
+                  </div>
+                  </v-col>
+                  <v-col cols="12" md="4" sm="6" style="padding: 4px 0;">
+                    <div class="btn-groups">
+                      <div class="filter" style="max-width: 200px;">
+                        <!-- <v-select
+                          v-model="passObj.filter"
+                          :items="filterType"
+                          label="項目過濾"
+                          multiple
+                          item-value="id"
+                          item-text="name_ch"
+                          @change="filterChange"
+                          hide-details
+                        ></v-select> -->
+                        
+                        <treeselect
+                          v-model="passObj.filter"
+                          :options="filterType"
+                          placeholder="項目過濾"
+                          multiple
+                          :limit="1"
+                          :limitText="() => `+ ${passObj.filter.length-1}`"
+                          class="select-template font-size-large"
+                          >
+                          <!-- node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name -->
+                          <!-- {{ node.parentNode && node.raw.length > 0?node.parentNode.label+ '_'+node.raw.label:node.parentNode.label }} -->
+                          <div slot="value-label" slot-scope="{ node }"  class="font-size-large"> {{ node.nestedSearchLabel }} </div>
+                          <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.label}` }}</div>
+                        </treeselect>
                       </div>
-                    </v-col>
-                  </v-row>
-                  
-                  
-                  
+                      <div class="open" style="padding-right: 12px;">
+                        <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;resultCycleOpen = !resultCycleOpen">
+                          <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
+                        </v-btn>
+                        <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;resultCycleOpen = !resultCycleOpen">
+                          <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
+                        </v-btn>
+                      </div>
+                      <!-- <div class="chevron">
+                        <v-icon v-if="resultCycleOpen">mdi-triangle-small-up</v-icon>
+                        <v-icon v-if="!resultCycleOpen">mdi-triangle-small-down</v-icon>
+                      </div> -->
+                    </div>
+                  </v-col>
+                </v-row>
               </div> 
               <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
-                <FeedTemplate :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus"></FeedTemplate>
+                <FeedTemplate :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen"></FeedTemplate>
               </div>
             </v-card>
           </div>
@@ -265,7 +276,7 @@
           <!-- 選擇池 -->
           <div class="card-title">
             <div class="title">
-                <v-card-title>選擇池</v-card-title>
+                <v-card-title>1. 選擇池</v-card-title>
             </div>
             <!-- <div class="chevron" >
               <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
@@ -293,6 +304,8 @@
                     placeholder="請選擇養殖池"
                     multiple
                     :rules="rules.length"
+                    :limit="1"
+                    :limitText="() => `+ ${dataid.length-1}`"
                     :normalizer="
                       node => {
                         return { children: node.node };
@@ -304,7 +317,6 @@
                   <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
                   <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}</div>
                 </treeselect>
-              
             </v-card-text>
             <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
             <span  class="error-text" style="padding-left: 8px;"><b>Note:需撈取出可新增循環的池，資料架構與/api/architecture相同</b><br></span> -->
@@ -313,7 +325,7 @@
           <!-- 基本資料 -->
           <div class="card-title" @click="addbasicDataOpen = !addbasicDataOpen" style="cursor: pointer">
               <div class="title">
-                  <v-card-title>基本資料設定</v-card-title>
+                  <v-card-title>2. 基本資料設定</v-card-title>
               </div>
               <div class="chevron" >
                 <v-icon v-if="addbasicDataOpen">mdi-triangle-small-up</v-icon>
@@ -449,7 +461,7 @@
           <!-- 輸入池密度 -->
           <div v-if="dataid.length>0" class="card-title">
             <div class="title">
-                <v-card-title>輸入各池密度</v-card-title>
+                <v-card-title>3. 輸入各池密度</v-card-title>
                 <div v-if="volumeError" class="error-text">*請確實輸入養殖池密度</div>
             </div>
             <!-- <div class="chevron" >
@@ -869,7 +881,7 @@
           <v-card class="custom-dialog">
               <v-card-title class="add-title" style="display: block;width: 100%;">
                   <div style="display: inline-block;">
-                      <span>新增檢驗報告</span> 
+                      <span>{{addReport[0].pond_ids?'修改':'新增'}}檢驗報告</span> 
                   </div>
                   <div class="add" style="float: right;display: inline-block;">
                       <v-btn class="btn-secondary close"
@@ -993,12 +1005,13 @@
                                 :style="{'color':`${isSelectPool?'#6c9bcd':'red'}`}">採樣池</span>
                             <locate-select 
                               id="reportpool"
-                                class="select-template"
-                                :dataScope="'pool'" 
-                                defaultSelect="" 
-                                :isMulti="true"
-                                @scopeSel_data="sampledata($event,id)"
-                                :class="{'error-text': !isSelectPool}"
+                              class="select-template"
+                              :dataScope="'pool'" 
+                              :defaultSelect="add.pond_ids?add.pond_ids:null" 
+                              :isMulti="true"
+                              @scopeSel_data="sampledata($event,id)"
+                              :class="{'error-text': !isSelectPool}"
+                              limit="1"
                             ></locate-select>
                             <span v-if="(!isSelectPool)" class="error-text" style="font-size: 12px;">*必填項目</span>
                             
@@ -1008,7 +1021,9 @@
                       <div class="select-item" style="width: 100%;">
                         <v-text-field v-model="add.msg" label="項目說明" :rules="rules.checklength" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
                         <!-- <v-file-input v-if="add.type==1" v-model="add.files" multiplelabel="File input"></v-file-input> -->
-                        <v-file-input v-if="add.type!==0" v-model="add.file" accept=".pdf" :rules="rules.require" label="上傳文件(限*pdf)" @change="submitFiles($event,id)" style="margin-top: 0;"></v-file-input>
+                        <v-file-input v-if="add.type!==0&&!add.id" v-model="add.file" accept=".pdf" :rules="rules.require" label="上傳文件(限*pdf)" @change="submitFiles($event,id)" style="margin-top: 0;"></v-file-input>
+                        <v-text-field v-else v-model="add.filename" label="檢驗報告" style="padding-top: 8px;margin-top: 0;width: 100%;" disabled hide-details></v-text-field>
+                        <span v-if="add.pond_ids" class="error-text">*欲修改報告，請先刪除此檢驗報告重新新增</span>
                       </div>
                   </div>
                 </v-card-text>
@@ -1048,7 +1063,7 @@ export default {
   },
   head(){
     return {
-      title:"養殖池",
+      title:"養殖循環",
     }
   },
   data() {
@@ -1347,7 +1362,38 @@ export default {
       isSelectPool:true,
       addReport:[{msg:'',type:undefined}],
       addOtherType: [{id:1,name_ch:'疾病檢驗',name_en:'disease'},{id:2,name_ch:'水質檢驗',name_en:'water'}],
-      filterType: [{id:1,name_ch:'疾病檢驗',name_en:'disease'},{id:2,name_ch:'水質檢驗',name_en:'water'},{id:3,name_ch:'事件',name_en:'event'},],
+      filterType: [{
+        id: 1,
+        label: '疾病檢驗',
+        children: [ {
+          id: 11,
+          label: '異常',
+        }, {
+          id: 12,
+          label: '警告',
+        }, {
+          id: 13,
+          label: '正常',
+        }],
+      },{
+        id: 2,
+        label: '水質檢驗',
+        children: [ {
+          id: 21,
+          label: '異常',
+        }, {
+          id: 22,
+          label: '警告',
+        }, {
+          id: 23,
+          label: '正常',
+        }],
+      },{
+        id: 3,
+        label: '事件',
+        children: []
+      },],
+      // filterType: [{id:1,name_ch:'疾病檢驗',name_en:'disease'},{id:2,name_ch:'水質檢驗',name_en:'water'},{id:3,name_ch:'事件',name_en:'event'},{id:4,name_ch:'異常',name_en:'danger'},{id:5,name_ch:'警告',name_en:'warning'},{id:6,name_ch:'正常',name_en:'normal'}],
       diseaseReport:[],
       waterReport:[],
       eventReport:[],
@@ -1357,7 +1403,9 @@ export default {
         start: new Date(),
         end: dayjs(new Date()).format("YYYY-MM-DD")
       },
-      isLoading: false
+      isLoading: false,
+      selectPond:[],
+      keepNodeName:''
     };
   },
   methods: {
@@ -2801,7 +2849,7 @@ export default {
         .then(res => {
           this.eventReport = _.cloneDeep(res.data);
           this.eventReport.forEach(d=>{
-            d.execute_time = d.created_time;
+            d.execute_time = d.started_date;
             d.step_name_ch = '事件';
             d.step_name_en = 'event';
             d.type = 3;
@@ -3303,16 +3351,55 @@ export default {
     /* 檢驗報告 */
     reportOpen() {
       this.reportDialog=true;
-      
       // this.addReport = [{msg:'',type:this.addOtherType[0].id}]
-      // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
+        // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
+        if (this.$refs.addform != undefined) {
+            this.$refs.addform.reset();
+        }
+        setTimeout(async ()=>{
+          this.isSelectPool = true;
+          this.selectPond = [];
+          this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:null,position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+        },100)
+    },
+    reportEditOpen(item) {
+      this.reportDialog=true;
       if (this.$refs.addform != undefined) {
           this.$refs.addform.reset();
       }
       setTimeout(async ()=>{
         this.isSelectPool = true;
-        this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:null,position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+        this.addReport = [];
+        this.addReport.push(item);
+        this.addReport[0].filename = decodeURI(this.addReport[0].file.split('.pdf')[0].split(item.type==2?'water_quality_testing_record/':'disease_testing_record/')[1].split('_')[0])+'.pdf';
+        if(item.type == 1) {
+          this.addReport[0].disease_id = [];
+          this.addReport[0].disease.forEach(x=>this.addReport[0].disease_id.push(x.id))
+          this.addReport[0].species = undefined,
+          this.bacteriaAll.forEach(x=>{
+            x.test.forEach(t=>{
+              if(t.id==this.addReport[0].method_id) {
+                let ids = [];
+                t.disease.forEach(d=>ids.push(d.id));
+                let isIncludes = [];
+                this.addReport[0].disease_id.forEach(i=>{
+                  if(ids.includes(i)) {
+                    isIncludes.push(true);
+                  }else {
+                    isIncludes.push(false);
+                  }
+                })
+                if(!isIncludes.includes(false)) {
+                  this.addReport[0].species = x.id;
+                }
+              }
+            })
+          })
+          console.log(this.addReport[0]);
+        }
       },100)
+      
+      
       
     },
     // 新增的項目類型切換
@@ -3346,7 +3433,7 @@ export default {
             this.isSelectPool = false;
             // this.addReport[id].pond_id = null;
         }
-        console.log(evt,this.isSelectPool);
+        // console.log(evt,this.isSelectPool);
     },
     // 感染選擇
     select(item,id,bool=false,type) {
@@ -3405,14 +3492,65 @@ export default {
       let formData = new FormData();
       let parm = _.cloneDeep(this.addReport[0]);
       this.isSelectPool = true;
-      if(this.addReport[0].pond_id==null || this.addReport[0].pond_id.length==0) {
+      if(parm.pond_id==null || parm.pond_id.length==0) {
         this.isSelectPool = false;
       }
       var valid = this.$refs.addform.validate();
       
       if(valid && this.isSelectPool) {
-        
-        parm.created_user = this.$auth.$state.user.name;
+        if(this.addReport[0].pond_ids) {
+          console.log('parm',this.addReport[0]);
+          // parm.name_ch = parm.step_name_ch;
+          // parm.name_en = parm.step_name_en;
+          parm.updated_user = this.$auth.$state.user.name;
+          
+          delete parm.pond_ids;
+          delete parm.type;
+          delete parm.species;
+          delete parm.file;
+          delete parm.filename;
+          delete parm.deft_executor;
+          delete parm.deft_verifier;
+          delete parm.execute_time;
+          delete parm.id;
+          delete parm.step_name_ch;
+          delete parm.step_name_en;
+          
+          Object.keys(parm).forEach(x=>{
+            formData.append(x,parm[x]);
+          })
+          
+          let config = { headers: { "Content-Type": "multipart/form-data" } };
+          let url=this.addReport[0].type==1?`/breeding/disease-testing-record/${this.addReport[0].id}/`:`/breeding/water-quality-testing-record/${this.addReport[0].id}/`;
+          console.log('parm',parm);
+          await this.$axios
+          .patch(
+                `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
+                formData,
+                config
+              )
+              .then(async res => {
+                  if(res.data=='修改成功'){
+                    this.reportDialog = false;
+                    if(this.addReport[0].type == 1) {
+                      await this.getDisease();
+                    }else if(this.addReport[0].type == 2) {
+                      await this.getWater();
+                    }
+                    this.$toast.success("修改成功", { duration: 2000 });
+                  }else{
+                      this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+                  }
+
+                  console.log("修改步驟API:" + res.request.responseURL);
+              })
+              .catch(error => {
+                  this.$toast.error("error:" + error, { duration: 2000 });
+              })
+              .finally(() => {
+              });
+        }else {
+          parm.created_user = this.$auth.$state.user.name;
         // parm.disease_id=parm.disease_id.length>0? parm.disease_id.toString():'';
         // parm.pond_id = parm.pond_id.toString();
 
@@ -3455,6 +3593,8 @@ export default {
             this.$toast.error("error:" + error, { duration: 2000 });
           });
           console.log('submit report',this.addReport);
+        }
+        
       }
       
     },
@@ -3566,8 +3706,9 @@ export default {
     filterChange(evt) {
       this.passObj.filter = [];
       this.passObj.filter = evt;
-      console.log('filter',this.passObj.filter);
-    }
+      console.log('filter',evt);
+    },
+
   },
   async mounted() {
    
@@ -3926,6 +4067,9 @@ export default {
     .select-template .vue-treeselect__control .vue-treeselect__placeholder::before,
     .select-template .vue-treeselect__control .vue-treeselect__placeholder::after {
       content: '';
+    }
+    .select-template .vue-treeselect__control {
+      background-color: transparent;
     }
 }
 

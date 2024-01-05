@@ -107,7 +107,7 @@
                                                 <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
                                             </template> -->
                                             <template v-for="(header,hid) in headers" v-slot:[`header.${header.value}`]>
-                                                <div v-if="header.text=='刪除' && templatemode=='cycleedit'" class="tool" :key="'header_'+hid+id" style="display: flex;align-items: center;">
+                                                <div v-if="header.text=='操作' && templatemode=='cycleedit'" class="tool" :key="'header_'+hid+id" style="display: flex;align-items: center;">
                                                     {{ header.text }}
                                                     <v-tooltip bottom>
                                                         <template v-slot:activator="{ on }">
@@ -115,7 +115,7 @@
                                                                 <v-icon>mdi-information-outline</v-icon>
                                                             </v-btn>
                                                         </template>
-                                                        <span>僅可刪除『其他』項目</span>
+                                                        <span>僅可編輯/刪除『其他』、『疾病檢驗』、『水質檢驗』項目</span>
                                                     </v-tooltip>
                                                 </div>
                                                 <span v-else :key="'header_'+hid+id">{{ header.text }}</span>
@@ -142,7 +142,20 @@
                                                     <v-icon>mdi-table-row-plus-after</v-icon>
                                                 </v-btn> -->
                                             </template>
-
+                                            <!-- 項目名稱 -->
+                                            <template v-slot:[`item.step_name_ch`]="{ item }">
+                                                <v-tooltip v-if="templatemode=='cycleedit' && (item.type==1 || item.type==2)" bottom>
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <span v-bind="attrs" v-on="on">{{ item.step_name_ch }}</span>
+                                                    </template>
+                                                    <span>{{ item.status }}</span>
+                                                </v-tooltip>
+                                                <span v-else>{{ item.step_name_ch }}</span>
+                                                <!-- <v-btn  class="btn-icon" title="在下方新增一列" @click="addsubitem(mitem.id,index)">
+                                                    <v-icon>mdi-table-row-plus-after</v-icon>
+                                                </v-btn> -->
+                                            </template>
+                                            
                                             <!-- 訊息 -->
                                             <template v-slot:[`item.msg`]="{ item }">
                                                 {{ item.msg }}
@@ -193,20 +206,35 @@
                                                     </v-btn>
                                                 </div>
                                             </template>
-                                            <!-- 刪除 -->
+                                            
+                                            <!-- 編輯/刪除 -->
                                             <template v-slot:[`item.udactions`]="{ index }">
+                                                <v-tooltip v-if="templatemode=='cycleedit'" bottom>
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn  class="btn-icon"
+                                                             title="編輯" 
+                                                             @click="editsubitem(mitem.phase_id, index)" 
+                                                             v-bind="attrs" v-on="on"
+                                                             :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'}"
+                                                             style="pointer-events: inherit;">
+                                                            <v-icon>mdi-pencil</v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <span v-if="(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'">僅可編輯『其他』、『疾病檢驗』、『水質檢驗』項目</span>
+                                                    <span v-else>編輯</span>
+                                                </v-tooltip>
                                                 <v-tooltip bottom>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn  class="btn-icon delete"
                                                              title="刪除" 
                                                              @click="delsubitem(mitem.phase_id, index)" 
                                                              v-bind="attrs" v-on="on"
-                                                             :class="{'disabled':mitem.stepList[index].step_name_ch!=='其他'&&templatemode=='cycleedit'}"
+                                                             :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'}"
                                                              style="pointer-events: inherit;">
                                                             <v-icon>mdi-trash-can</v-icon>
                                                         </v-btn>
                                                     </template>
-                                                    <span v-if="mitem.stepList[index].step_name_ch!=='其他'&&templatemode=='cycleedit'">僅可刪除『其他』項目</span>
+                                                    <span v-if="(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'">僅可刪除『其他』、『疾病檢驗』、『水質檢驗』項目</span>
                                                     <span v-else>刪除</span>
                                                 </v-tooltip>
                                                 <!-- <v-btn class="btn-icon delete" title="刪除" @click="delsubitem(mitem.id, index)">
@@ -229,7 +257,6 @@
                                             {{ step }}
                                         </div> -->
                                     </div>
-                                    
                                 </v-card>
                             </div>
                         </div>
@@ -348,12 +375,74 @@
                 </v-card>
             </v-form>
         </v-dialog>
+        <!-- 編輯其他項目的dialog -->
+        <v-dialog v-model="editem" max-width="500px">
+            <v-form v-model="editvalid" ref="editform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span v-if="templatemode=='cycleedit'">編輯項目</span>
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="editem = false; addReport=[{msg:''}]" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <v-card-text v-for="(add,id) in addStep" :key="'addc_'+id" style="display: flex;flex-direction: column;padding: 8px 16px;">
+                            <!-- <div class="minus" style="width: 100%;">
+                                <span>其他</span>
+                                <v-tooltip v-if="addStep.length>1"  bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn  class="btn-secondary delete"
+                                                title="刪除項目" 
+                                                @click="addStep.push({msg:''})" 
+                                                v-bind="attrs" v-on="on"
+                                                style="border: none;float: right;">
+                                            <v-icon>mdi-minus</v-icon>
+                                            刪除
+                                        </v-btn>
+                                    </template>
+                                    <span>刪除項目</span>
+                                </v-tooltip>
+                            </div> -->
+                            <div class="textfield" style="display: flex;align-items: center;">
+                                <v-text-field v-model="add.msg" label="項目說明" :rules="rules.require.concat(rules.checklength)" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
+                                <v-tooltip v-if="addStep.length>1"  bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn  class="btn-icon-secondary delete"
+                                                title="刪除" 
+                                                @click="addStep.splice(id,1)" 
+                                                v-bind="attrs" v-on="on"
+                                                style="border-radius: 50%;border: none !important;;">
+                                            <v-icon>mdi-close</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>刪除</span>
+                                </v-tooltip>
+                            </div>
+                        </v-card-text>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-secondary" @click="dialog.additem = false">取消</v-btn>
+                        <v-btn class="btn-primary" @click="submitedit">修改</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
         <!-- 檢視pdf -->
         <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title" style="display: block;width: 100%;">
-                    <div style="display: inline-block;">
-                        <span>檢視報告</span>
+                    <div style="display: inline-block;"
+                        :style="{'color':`${viewDetail.status&&viewDetail.status=='異常'?'#A60017':viewDetail.status&&viewDetail.status=='警告'?'#f79c2b':'#00324E'}`}">
+                        <span v-text="viewDetail.type==1?'疾病報告':viewDetail.type==2?'水質報告':viewDetail.type==3?'事件':''"></span>
+                        <span v-if="viewDetail.status"> - {{ viewDetail.status }}</span>
                     </div>
                     <div class="add" style="float: right;display: inline-block;">
                         <!-- <v-btn  class="btn-primary"
@@ -371,18 +460,17 @@
                     </div>
                 </v-card-title>
                 <div class="basic" v-if="viewDetail.type && viewDetail.type!==3" style="padding-bottom: 24px;">
-                    <div class="card-title" style="margin-bottom: 0;">
+                    <!-- <div class="card-title" style="margin-bottom: 0;">
                         <div class="title">
                             <v-card-title>基本資訊</v-card-title>
                         </div>
-                    </div>
+                    </div> -->
                     <v-card-text>
                         <div class="content">
-                            檢疫時間： {{ viewDetail.execute_date }}<br>
-                            檢疫狀況：{{ viewDetail.status }}<br>
-                            <span v-if="viewDetail.type==1">感染疾病：{{ viewDetail.bacteriaSelect.toString() }}<br></span>
-                            內容：{{ viewDetail.msg }}
-                            <!-- <a class="btn-primary" :href="viewDetail.file" target="_blank" style="padding: 12px;">檢視詳細內容</a> -->
+                            <!-- 檢疫時間： {{ viewDetail.execute_date }}<br> -->
+                            <!-- 檢疫狀況：{{ viewDetail.status }}<br> -->
+                            <!-- <span v-if="viewDetail.type==1">感染疾病：{{ viewDetail.bacteriaSelect.toString() }}<br></span> -->
+                            訊息：{{ viewDetail.msg }}
                         </div>
                         
                     </v-card-text>
@@ -531,12 +619,13 @@ export default {
                 { text: "項目", value: "step_name_ch", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 { text: "項目", value: "step_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
-                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: '執行員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
                 { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
-                { text: '刪除', value: 'udactions', sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
+                // { text: '編輯', value: 'reactions', sortable: false,width:"7%",showmode: ['cycleedit']},
+                { text: '操作', value: 'udactions', sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
             ],
             mainItems: [{
                 phase_id: 1,
@@ -582,11 +671,12 @@ export default {
             justStep:[],
             viewOpen: false,
             viewDetail:{},
-            
+            editem: false,
+            editvalid:false,
         }
     },
     created(){
-       console.log("created");
+        console.log("created");
         if(this.templatemode=="cycleedit"){
             // this.tempMain = this.passObj.tempMain;
             // this.mainItems = this.passObj.tempContent;
@@ -661,7 +751,7 @@ export default {
         
         sortTime() {
             let data = _.cloneDeep(this.justStep);
-            if(this.passObj.filter==null || this.passObj.filter.includes(1)) {
+            if(this.passObj.filter==null || this.passObj.filter.includes(1) || this.passObj.filter.includes(11)|| this.passObj.filter.includes(12)|| this.passObj.filter.includes(13)) {
                 this.diseaseReport.forEach(dis=>{
                     let xid=0;
                     let iid=0
@@ -678,10 +768,19 @@ export default {
                             }
                         }
                     }
-                    data[iid].stepList.splice(xid,0,dis);
+                    if(this.passObj.filter==null || (this.passObj.filter.includes(11) && dis.status=='異常')) {
+                        data[iid].stepList.splice(xid,0,dis);
+                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(12) && dis.status=='警告')) {
+                        data[iid].stepList.splice(xid,0,dis);
+                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(13) && dis.status=='正常')) {
+                        data[iid].stepList.splice(xid,0,dis);
+                    }else if(this.passObj.filter==null || (!this.passObj.filter.includes(11)&&!this.passObj.filter.includes(12)&&!this.passObj.filter.includes(13))){
+                        data[iid].stepList.splice(xid,0,dis);
+                    }
+                    
                 })
             }
-            if(this.passObj.filter==null || this.passObj.filter.includes(2)) {
+            if(this.passObj.filter==null || this.passObj.filter.includes(2)|| this.passObj.filter.includes(21)|| this.passObj.filter.includes(22)|| this.passObj.filter.includes(23)) {
                 this.waterReport.forEach(dis=>{
                     let yid=0;
                     let wid=0
@@ -698,7 +797,16 @@ export default {
                             }
                         }
                     }
-                    data[wid].stepList.splice(yid,0,dis);
+                    if(this.passObj.filter==null ||(this.passObj.filter.includes(21) && dis.status=='異常')) {
+                        data[wid].stepList.splice(yid,0,dis);
+                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(22) && dis.status=='警告')) {
+                        data[wid].stepList.splice(yid,0,dis);
+                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(23) && dis.status=='正常')) {
+                        data[wid].stepList.splice(yid,0,dis);
+                    }else if(this.passObj.filter==null || (!this.passObj.filter.includes(21)&&!this.passObj.filter.includes(22)&&!this.passObj.filter.includes(23))){
+                        data[wid].stepList.splice(yid,0,dis);
+                    }
+                    
                 })
             }
             if(this.passObj.filter==null || this.passObj.filter.includes(3)) { 
@@ -1368,7 +1476,8 @@ export default {
                     if (confirm(`是否刪除 ${sub_item.step_name_ch}：${sub_item.msg} ？`)) {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
                         // step_id
-                        await this.$axios
+                        if(sub_item.type==null) {
+                            await this.$axios
                             .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${sub_item.step_id}/`)
                             .then(res => {
                                 if(res.data=='刪除成功'){
@@ -1418,6 +1527,48 @@ export default {
                             })
                             .finally(() => {
                             });
+                        }else if(sub_item.type==1) {
+                            await this.$axios
+                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/${sub_item.id}/`)
+                            .then(res => {
+                                if(res.data=='刪除成功'){
+                                    this.$emit('getDisease')
+
+                                    
+                                    this.$toast.success("刪除成功", { duration: 2000 });
+                                }else{
+                                    this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
+                                }
+
+                                console.log("刪除步驟API:" + res.request.responseURL);
+                            })
+                            .catch(error => {
+                                this.$toast.error("error:" + error, { duration: 2000 });
+                            })
+                            .finally(() => {
+                            });
+                        }else if(sub_item.type==2) {
+                            await this.$axios
+                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/water-quality-testing-record/${sub_item.id}/`)
+                            .then(res => {
+                                if(res.data=='刪除成功'){
+                                    this.$emit('getWater')
+
+                                    
+                                    this.$toast.success("刪除成功", { duration: 2000 });
+                                }else{
+                                    this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
+                                }
+
+                                console.log("刪除步驟API:" + res.request.responseURL);
+                            })
+                            .catch(error => {
+                                this.$toast.error("error:" + error, { duration: 2000 });
+                            })
+                            .finally(() => {
+                            });
+                        }
+                        
                         
                         
                     }
@@ -1425,6 +1576,52 @@ export default {
             }else {
                 this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
             }
+        },
+        // 編輯
+        editsubitem(phase_id, index) {
+            // console.log("phase:", phase_id, "addidx:",addidx);
+            // this.stepitem.phase_id = phase_id;
+            // this.stepitem.addidx = addidx;
+            let item = _.cloneDeep(this.mainItems.filter(m=>m.phase_id==phase_id)[0].stepList[index]);
+            if(item.type==null) {
+                this.editem = true;//show dialog
+                this.addStep = [];
+                this.addStep.push(item);
+            }else if(item.type == 1 || item.type==2) {
+                this.$emit('reportEditOpen',item);
+            }
+            
+        },
+        async submitedit() {
+            let parm = _.cloneDeep(this.addStep[0]);
+            var valid = this.$refs.editform.validate();
+            if(valid) {
+                delete parm.execute_disabled;
+                delete parm.type;
+                delete parm.deft_executor;
+                delete parm.deft_verifier;
+                delete parm.step_id;
+                parm.updated_user = this.$auth.$state.user.name;
+                await this.$axios
+                    .patch(
+                    `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${this.addStep[0].step_id}/`,
+                        parm
+                    )
+                    .then(res => {
+                    // console.log("警示修改API:" + res.request.responseURL);
+                    if (res.data == "修改成功") {
+                        this.$emit('getTemp');
+                        this.editem = false;
+                        this.$toast.success("修改成功", { duration: 2000 });
+                    } else {
+                        this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+                    }
+                    })
+                    .catch(error => {
+                    this.$toast.error("error:" + error, { duration: 2000 });
+                    });
+            }
+            
         },
 
         /* 執行/確認 */

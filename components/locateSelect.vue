@@ -14,6 +14,8 @@
                   return { children: node.node };
                 }
               "
+              :limit="parseInt(limit)"
+              :limitText="() => `+${dataid.length - parseInt(limit)}`"
               class="font-size-large"
             >
               <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
@@ -38,6 +40,10 @@ export default {
         defaultSelect:{//預設選定項目
             type:[String,Array,Object],
             default:''
+        },
+        limit:{//預設選定項目
+            type: String,
+            default: '1'
         }
     },
     data() {
