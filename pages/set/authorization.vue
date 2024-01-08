@@ -236,6 +236,8 @@
                     :value-consists-of="'ALL_WITH_INDETERMINATE'"
                     :disable-branch-nodes="false"
                     class="select-template"
+                    :limit="3"
+                    :limitText="() => `+ ${addform.privilege_id.length-3}`"
                   >
                     <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                     <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
@@ -246,7 +248,7 @@
                     v-model="addform.is_active"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
-                    active-text="啟用"
+                    active-text="角色授權是否啟用"
                   ></el-switch
                   >
                 </v-card-text>
@@ -344,6 +346,8 @@
                   :value-consists-of="'ALL_WITH_INDETERMINATE'"
                   :disable-branch-nodes="false"
                   class="select-template"
+                  :limit="3"
+                  :limitText="() => `+ ${editform.privilege_id.length-3}`"
                 >
                   <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                   <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
@@ -354,7 +358,7 @@
                     v-model="editform.is_active"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
-                    active-text="啟用"
+                    active-text="角色授權是否啟用"
                   ></el-switch
                   >
               </v-card-text>  
