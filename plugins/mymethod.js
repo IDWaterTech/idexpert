@@ -86,15 +86,25 @@ import https from "https";
                   let urlpath = $nuxt.$route.path;
                   function getallpath(item){
                     let tmplst=[];
+                    // item.forEach(element => {
+                    //   tmplst.push(element.url);
+                    //   if(element.hasOwnProperty("other_children")){
+                    //     tmplst.push(...element["other_children"].map(x=>{return x.url}));
+                    //   }
+                    //   if(element.hasOwnProperty("children")){
+                    //     tmplst.push(...getallpath(element["children"]));
+                    //   }
+                    // });
+                    
                     item.forEach(element => {
-                      tmplst.push(element.url);
-                      if(element.hasOwnProperty("other_children")){
-                        tmplst.push(...element["other_children"].map(x=>{return x.url}));
+                      if(element.type.toLowerCase() =='menu' || element.type.toLowerCase() =='page') {
+                        tmplst.push(element.url);
                       }
-                      if(element.hasOwnProperty("children")){
+                      if(element.hasOwnProperty("children")) {
                         tmplst.push(...getallpath(element["children"]));
                       }
                     });
+                    console.log('tmplst',tmplst);
                     return tmplst;
                   }
                   let accPagelstNew= getallpath(accPagelst).map((x)=>{return x.toLowerCase();});
