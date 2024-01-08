@@ -80,7 +80,7 @@ export default {
             return a.平均價 > b.平均價 ? 0 : 1;
           });
 
-          console.log("MarketPrice api：" + res.request.responseURL);
+          // console.log("MarketPrice api：" + res.request.responseURL);
         });
     }
   },

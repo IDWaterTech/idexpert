@@ -2997,7 +2997,7 @@ export default {
           this.weatherdata.wind = weadata.wind;
           this.weatherdata.weather = weadata.weather;
         //   this.weatherdata.rain.h_1 = weadata.rain.1h;
-          console.log("weather api：" + res.request.responseURL);
+          // console.log("weather api：" + res.request.responseURL);
           this.getLocation();
         })
         .catch(error => {
