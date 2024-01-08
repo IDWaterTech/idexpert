@@ -186,13 +186,32 @@
                                             <!-- 執行/確認 -->
                                             <template v-slot:[`item.executed_actions`]="{ index }">
                                                 <div class="btn-groups" v-if="mitem.stepList[index].type == 0 || mitem.stepList[index].type == null">
-                                                    <v-btn class="btn-secondary btn-small"
+                                                    <v-tooltip v-if="!authorization.execute" bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn class="btn-secondary btn-small nonauth disabled"
+                                                                v-bind="attrs" v-on="on"
+                                                                >
+                                                                {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].verify_time!==''?'已執行':'取消':'執行' }}
+                                                            </v-btn>
+                                                        </template>
+                                                        <span>未授權</span>
+                                                    </v-tooltip>
+                                                    <v-btn v-else class="btn-secondary btn-small"
                                                         :class="{'disabled':mitem.stepList[index].execute_disabled}"
                                                         @click="execute(id,index)">
                                                         {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].verify_time!==''?'已執行':'取消':'執行' }}
                                                     </v-btn>
-                                                    <v-btn class="btn-primary btn-small"
-                                                        :class="`${mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time==''?'':'disabled'}`"
+                                                    <v-tooltip v-if="!authorization.verify" bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn class="btn-primary btn-small nonauth disabled"
+                                                                v-bind="attrs" v-on="on">
+                                                                {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time!==''?'已確認':'確認' }}
+                                                            </v-btn> 
+                                                        </template>
+                                                        <span>未授權</span>
+                                                    </v-tooltip>
+                                                    <v-btn  v-else class="btn-primary btn-small"
+                                                        :class="`${(mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time=='')?'':'disabled'}`"
                                                         @click="executeConfirm(id,index)">
                                                         {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time!==''?'已確認':'確認' }}
                                                     </v-btn> 
@@ -673,6 +692,10 @@ export default {
             viewDetail:{},
             editem: false,
             editvalid:false,
+            authorization: {
+                execute: false,
+                verify: false
+            }
         }
     },
     created(){
@@ -685,6 +708,7 @@ export default {
             this.mainItems = _.cloneDeep(this.passObj.tempContent);
             this.mainItems.forEach(m=>m.open=this.nowExpand);
             console.log('mainItems',this.mainItems);
+            this.getAuth();
             // if(this.templatemode == 'cycleedit') {
             this.sortData();
             // };
@@ -717,6 +741,49 @@ export default {
        
     },
     methods: {
+        /* 取得授權 */
+        async getAuth() {
+            let datalst;
+            let auth = [];
+            this.authorization = {
+                execute: false,
+                verify: false
+            }
+            try{datalst = await this.getMenuAuthorization(false)}catch{console.log(error)}
+            if(datalst) {
+                auth = datalst.data;
+            }
+            for(let i=0;i<auth.length;i++) {
+                if(auth[i].id==14) {
+                    if(auth[i].children) {
+                        for(let x=0;x<auth[i].children.length;x++) {
+                            if(auth[i].children[x].name == '執行') {
+                                this.authorization.execute = true;
+                            }else if(auth[i].children[x].name == '確認') {
+                                this.authorization.verify = true;
+                            }
+                        }
+                    }
+                }else {
+                    if(auth[i].children) {
+                        for(let x=0;x<auth[i].children.length;x++) {
+                            if(auth[i].children[x].id == 14) {
+                                if(auth[i].children[x].children) {
+                                    for(let y=0;y<auth[i].children[x].children.length;y++) {
+                                        if(auth[i].children[x].children[y].name == '執行') {
+                                            this.authorization.execute = true;
+                                        }else if(auth[i].children[x].children[y].name == '確認') {
+                                            this.authorization.verify = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        },
         /* 資料整理 */
         // 排序其他
         sortData() {
@@ -2298,6 +2365,8 @@ export default {
         background-color: #FFFAE6;
     }
 }
-
+.btn-primary.disabled.nonauth,.btn-secondary.disabled.nonauth {
+    pointer-events: initial;
+}
 
 </style>

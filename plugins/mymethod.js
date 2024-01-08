@@ -41,16 +41,48 @@ import https from "https";
                 //帳號被授權進入的項目
                 let accheader = { account: this.$auth.$state.user.email };
                 let accPagelst = [];
-                await this.$axios
-                  .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`, {
-                    headers: accheader
-                  }) 
-                  .then(res => {
-                    accPagelst = res.data;
-                    console.log("accPagelst:",accPagelst);
-                    console.log("accPage api:",res.request.responseURL);
-                    this.$store.commit('mydata/set_listitems', accPagelst);
-                  });
+                let datalst;
+                try {
+                  datalst = await this.getMenuAuthorization(false);
+                }catch {
+                  console.log(error);
+                }
+                if(datalst) {
+                  accPagelst = datalst.data;
+                  console.log("accPagelst:",accPagelst);
+                  console.log("accPage api:",datalst.request.responseURL);
+                  // let data = [];
+                  // let nowmainid = 0;
+                  // accPagelst.forEach(main=>{
+                  //   if(main.type.toLowerCase() == 'menu' && main.is_show) {
+                  //     data[nowmainid] = _.cloneDeep(main);
+                  //     if(main.children) {
+                  //       data[nowmainid].children = new Array();
+                  //       main.children.forEach(child=>{
+                  //         if(child.type.toLowerCase()=="menu" && child.is_show) {
+                  //           data[nowmainid].children.push(child);
+                  //         }
+                  //       })
+                  //       if(data[nowmainid].children.length==0) {
+                  //         delete data[nowmainid].children;
+                  //       }
+                  //     }
+                  //     nowmainid++;
+                  //   }
+                  // })
+                  // accPagelst = data;
+                  this.$store.commit('mydata/set_listitems', accPagelst);
+                }
+                // await this.$axios
+                //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`, {
+                //     headers: accheader
+                //   }) 
+                //   .then(res => {
+                //     accPagelst = res.data;
+                //     console.log("accPagelst:",accPagelst);
+                //     console.log("accPage api:",res.request.responseURL);
+                //     this.$store.commit('mydata/set_listitems', accPagelst);
+                //   });
                   let urlpath = $nuxt.$route.path;
                   function getallpath(item){
                     let tmplst=[];
@@ -104,7 +136,24 @@ import https from "https";
               this.$store.commit('mydata/set_api', process.env['internal']);
             }
             console.log("設定網路：",)
-          }
+          },
+          getMenuAuthorization:async function(bool){
+            let menu = [];
+            const agent = new https.Agent({
+              rejectUnauthorized: false
+            });
+            const accheader = { account: this.$auth.$state.user.email };
+            const url = bool?`/user-access/authorization-items/?is_all=true`:`/user-access/authorization-items/`;
+            return await this.$axios
+              .get(`${this.$store.state.mydata.gobal_api.apiUrl+url}`, { httpsAgent: agent,headers:accheader }) //所有使用者的清單
+              // .then(res => {
+              //   console.log("authorization-items api：" + res.request.responseURL);
+              //   console.log('getMenuAuthorization',menu,accheader);
+              // })
+              // .catch(error => {
+              //   this.$toast.error("錯誤：" + error, { duration: 2000 });
+              // });
+        },
       },
       
     }); 

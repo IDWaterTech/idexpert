@@ -1,285 +1,374 @@
 <template>
   <div>
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title></v-card-title>
+    <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
+      <!-- 表頭 -->
+      <div class="card-title" style="cursor: pointer;margin: 0 8px;padding: 12px;">
+        <div class="title">
+              <v-card-title style="padding: 0;font-size: 1.1rem;">角色清單</v-card-title>
+          </div>
+          <div class="chevron">
+            <v-btn class="btn-secondary green" @click="showadd" style="padding: 0 8px;"><v-icon>mdi-plus</v-icon> 新增角色</v-btn>
+            <!-- <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                  <button class="btn-secondary green" @click="showadd" v-bind="attrs" v-on="on" style="padding: 4px 8px;display: flex;align-items: center;">
+                      <v-icon>mdi-plus</v-icon> 新增角色
+                  </button>
+              </template>
+              <span>新增角色</span>
+            </v-tooltip> -->
+          </div>
+      </div>
+      <!-- 清單 -->
+      <div class="content" style="width: 100%;">
+        <!-- 表格 -->
+        <el-table
+          :data="roledata"
+          class="mt-3"
+          row-key="id"
+          :expand-row-keys="expands"
+          @expand-change="expandSelect"
+        >
+          <el-table-column type="expand" fixed width="30px">
+            <template slot-scope="props">
+              <v-row>
+                <v-col cols="11" style="padding:0 16px">
+                  <div style="min-height:250px;margin-left: 48px;">
+                    <div v-show="false">{{ props.row.privilege }}</div>
+                    <!-- {{props.row.privilege.map(item => {return item.id;})}} -->
+                    <span>授權項目</span>
+                    <treeselect
+                      :multiple="true"
+                      :clearable="true"
+                      :searchable="false"
+                      :flat="true"
+                      :open-on-click="true"
+                      :clear-on-select="true"
+                      :close-on-select="true"
+                      :always-open="true"
+                      :openDirection="'bottom'"
+                      :options="privdatadisable"
+                      :sort-value-by="'INDEX'"
+                      :default-expand-level="2"
+                      :max-height="200"
+                      placeholder="無授權項目"
+                      zIndex="0"
+                      v-model="expandtree"
+                      :value-consists-of="'ALL_WITH_INDETERMINATE'"
+                      style="margin-top: 8px;"
+                    >
+                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                      <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                    </treeselect>
+                  </div>
+                </v-col>
+                <v-spacer></v-spacer>
+              </v-row>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column label="ID" prop="id" fixed width="50px">
+          </el-table-column> -->
+          <!-- <el-table-column label="角色名稱" prop="name"> </el-table-column> -->
+          <el-table-column label="角色名稱" width="200px">
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="top">
+                <p>
+                  角色狀態: {{ scope.row.is_active ? "啟用中" : "停用" }}
+                </p>
+                <div slot="reference" class="name-wrapper">
+                  <v-btn
+                    outlined
+                    style="cursor:default;border: none;"
+                    :color="scope.row.is_active ? 'success' : 'error'"
+                    >{{ scope.row.name }}</v-btn
+                  >
+                  <!-- <el-tag size="medium" color="warning">{{ scope.row.name }}</el-tag> -->
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
+          <el-table-column label="描述" prop="desc"> </el-table-column>
+          <!-- <el-table-column label="已授權的" align="center"> -->
+            <el-table-column prop="department" label="授權單位">
+              <template slot-scope="scope">
+                <v-chip
+                  class="ma-2"
+                  color="#408FBC"
+                  text-color="white"
+                  v-for="(item, key) in scope.row.department"
+                  :key="key"
+                  style="font-size: 13px;"
+                  >{{ item.name }}</v-chip
+                >
+              </template>
+            </el-table-column>
+            <el-table-column prop="position" label="授權職位">
+              <template slot-scope="scope">
+                <v-chip
+                  class="ma-2"
+                  color="#408FBC"
+                  text-color="white"
+                  v-for="(item, key) in scope.row.position"
+                  :key="key"
+                  style="font-size: 13px;"
+                  >{{ item.name }}</v-chip
+                >
+              </template>
+            </el-table-column>
+          <!-- </el-table-column> -->
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="120"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn  class="btn-icon"
+                          @click="showedit(scope.row)"
+                          v-bind="attrs" v-on="on"
+                          style="pointer-events: inherit;">
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                </template>
+                <span>編輯</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-icon delete"
+                        @click="showdel(scope.row)"
+                        v-bind="attrs" v-on="on"
+                        :class="{'disabled':scope.row.id == 1}"
+                        style="pointer-events: inherit;">
+                          <v-icon>mdi-trash-can</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>刪除</span>
+              </v-tooltip>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </v-card>
+    <!-- 新增角色 -->
+    <v-dialog v-model="adddialog" max-width="500px">
+      <v-form ref="addform" v-model="valid" lazy-validation>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              新增角色
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="adddialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          
           <v-card-text>
-            <v-btn tile color="primary" @click="showadd">+ 新增角色</v-btn>
-            <!-- 新增角色 -->
-            <v-dialog v-model="adddialog" max-width="500px">
-              <v-form ref="addform" v-model="valid" lazy-validation>
-                <v-card>
-                  <v-card-title>新增角色</v-card-title>
-                  <v-card-text>
-                    <v-text-field
-                      v-model="addform.name"
-                      :rules="rules.require"
-                      label="角色名稱"
-                      placeholder="管理員"
-                      autocompleted="false"
-                    ></v-text-field>
-                    <v-text-field
-                      v-model="addform.desc"
-                      :rules="rules.require"
-                      label="角色描述"
-                      placeholder="全部的功能都有"
-                      autocompleted="false"
-                    ></v-text-field>
-                    <el-switch
-                      v-model="addform.is_active"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-text="啟用"
-                    ></el-switch
-                    ><br />
-                    職位
-                    <treeselect
-                      v-model="addform.position_id"
-                      :multiple="true"
-                      :options="positdata"
-                      :flat="true"
-                      :default-expand-level="2"
-                      placeholder="已授權的職位"
-                      :sort-value-by="'INDEX'"
-                      :disable-branch-nodes="true"
-                    >
-                      <div slot="value-label" slot-scope="{ node }">
-                        {{ node.raw.unit }}-{{ node.raw.label }}
-                      </div>
-                    </treeselect>
-                    <!-- {{positdata.filter(x=>x.is_leaf==false)}} -->
-                    單位
-                    <treeselect
-                      v-model="addform.department_id"
-                      :multiple="true"
-                      :options="depdata"
-                      :flat="true"
-                      :default-expand-level="1"
-                      placeholder="被授權的單位"
-                      :sort-value-by="'INDEX'"
-                      :disable-branch-nodes="false"
-                    >
-                    </treeselect>
-                    授權
-                    <treeselect
-                      v-model="addform.privilege_id"
-                      :multiple="true"
-                      :options="privdata"
-                      :default-expand-level="1"
-                      placeholder="被授權的項目"
-                      :sort-value-by="'INDEX'"
-                      :value-consists-of="'ALL_WITH_INDETERMINATE'"
-                      :disable-branch-nodes="false"
-                    >
-                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
-                      <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
-                    </treeselect>
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn tile color="primary" @click="addsubmit">新增</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-form>
-            </v-dialog>
-            <!-- 編輯角色 -->
-            <v-dialog v-model="editdialog" max-width="500px">
-              <v-form ref="editform" v-model="editvalid" lazy-validation>
-                <v-card>
-                  <v-card-title>編輯角色</v-card-title>
-                  <v-card-text>
-                    <v-text-field
-                      v-model="editform.name"
-                      :rules="rules.require"
-                      label="角色名稱"
-                      placeholder="管理員"
-                      autocompleted="false"
-                    ></v-text-field>
-                    <v-text-field
-                      v-model="editform.desc"
-                      :rules="rules.require"
-                      label="角色描述"
-                      placeholder="全部的功能都有"
-                      autocompleted="false"
-                    ></v-text-field>
-                    <el-switch
-                      v-model="editform.is_active"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-text="啟用"
-                    ></el-switch
-                    ><br />
-                    職位
-                    <treeselect
-                      v-model="editform.position_id"
-                      :multiple="true"
-                      :options="positdata"
-                      :flat="true"
-                      :default-expand-level="2"
-                      placeholder="已授權的職位"
-                      :sort-value-by="'INDEX'"
-                      :disable-branch-nodes="true"
-                    >
-                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
-                    </treeselect>
-                    單位
-                    <treeselect
-                      v-model="editform.department_id"
-                      :multiple="true"
-                      :options="depdata"
-                      :flat="true"
-                      :default-expand-level="1"
-                      placeholder="被授權的單位"
-                      :sort-value-by="'INDEX'"
-                      :disable-branch-nodes="false"
-                    >
-                    </treeselect>
-                    授權項目
-                    <treeselect
-                      v-model="editform.privilege_id"
-                      :multiple="true"
-                      :options="privdata"
-                      :default-expand-level="1"
-                      placeholder="被授權的項目"
-                      :sort-value-by="'INDEX'"
-                      :value-consists-of="'ALL_WITH_INDETERMINATE'"
-                      :disable-branch-nodes="false"
-                    >
-                      <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
-                      <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
-                    </treeselect>
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn tile color="primary" @click="editsubmit">確認修改</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-form>
-            </v-dialog>
-            <!-- 表格 -->
-            <el-table
-              :data="roledata"
-              class="mt-3"
-              row-key="id"
-              :expand-row-keys="expands"
-              @expand-change="expandSelect"
-            >
-              <el-table-column type="expand" fixed width="30px">
-                <template slot-scope="props">
-                  <v-row>
-                    <v-col cols="11">
-                      <div style="min-height:250px">
-                        <div v-show="false">{{ props.row.privilege }}</div>
-                        <!-- {{props.row.privilege.map(item => {return item.id;})}} -->
-                        <span class="title">授權項目</span>
-                        <treeselect
-                          :multiple="true"
-                          :clearable="true"
-                          :searchable="false"
-                          :flat="true"
-                          :open-on-click="true"
-                          :clear-on-select="true"
-                          :close-on-select="true"
-                          :always-open="true"
-                          :openDirection="'bottom'"
-                          :options="privdatadisable"
-                          :sort-value-by="'INDEX'"
-                          :default-expand-level="2"
-                          :max-height="200"
-                          placeholder="無授權項目"
-                          zIndex="0"
-                          v-model="expandtree"
-                          :value-consists-of="'ALL_WITH_INDETERMINATE'"
-                        >
-                          <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
-                          <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
-                        </treeselect>
-                      </div>
-                    </v-col>
-                    <v-spacer></v-spacer>
-                  </v-row>
-                </template>
-              </el-table-column>
-              <!-- <el-table-column label="ID" prop="id" fixed width="50px">
-              </el-table-column> -->
-              <!-- <el-table-column label="角色名稱" prop="name"> </el-table-column> -->
-              <el-table-column label="角色名稱" align="center" width="200px">
-                <template slot-scope="scope">
-                  <el-popover trigger="hover" placement="top">
-                    <p>
-                      角色狀態: {{ scope.row.is_active ? "啟用中" : "停用" }}
-                    </p>
-                    <div slot="reference" class="name-wrapper">
-                      <v-btn
-                        outlined
-                        style="cursor:default;"
-                        :color="scope.row.is_active ? 'success' : 'error'"
-                        >{{ scope.row.name }}</v-btn
-                      >
-                      <!-- <el-tag size="medium" color="warning">{{ scope.row.name }}</el-tag> -->
+            <div class="basic" style="padding-left: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                  v-model="addform.name"
+                  :rules="rules.require"
+                  label="角色名稱"
+                  placeholder="管理員"
+                  autocompleted="false"
+                ></v-text-field>
+                </v-card-text>
+                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                  <v-text-field
+                    v-model="addform.desc"
+                    :rules="rules.require"
+                    label="角色描述"
+                    placeholder="全部的功能都有"
+                    autocompleted="false"
+                    style="margin-top: 0;padding-top: 0;"
+                  ></v-text-field>
+                </v-card-text>
+                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                  職位
+                  <treeselect
+                    v-model="addform.position_id"
+                    :multiple="true"
+                    :options="positdata"
+                    
+                    :default-expand-level="2"
+                    placeholder="已授權的職位"
+                    :sort-value-by="'INDEX'"
+                    :disable-branch-nodes="true"
+                    class="select-template"
+                  >
+                    <div slot="value-label" slot-scope="{ node }">
+                      {{ node.raw.unit }}-{{ node.raw.label }}
                     </div>
-                  </el-popover>
-                </template>
-              </el-table-column>
-              <el-table-column label="描述" prop="desc"> </el-table-column>
-              <el-table-column label="已授權的" align="center">
-                <el-table-column prop="department" label="單位" align="center">
-                  <template slot-scope="scope">
-                    <v-chip
-                      class="ma-2"
-                      :color="'primary'"
-                      text-color="white"
-                      v-for="(item, key) in scope.row.department"
-                      :key="key"
-                      >{{ item.name }}</v-chip
-                    >
-                  </template>
-                </el-table-column>
-                <el-table-column prop="position" label="職位" align="center">
-                  <template slot-scope="scope">
-                    <v-chip
-                      class="ma-2"
-                      :color="'primary'"
-                      text-color="white"
-                      v-for="(item, key) in scope.row.position"
-                      :key="key"
-                      >{{ item.name }}</v-chip
-                    >
-                  </template>
-                </el-table-column>
-              </el-table-column>
-              <el-table-column
-                fixed="right"
-                label="操作"
-                width="60"
-                align="center"
-              >
-                <template slot-scope="scope">
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="showedit(scope.row)"
-                    style="padding:0px; min-width:unset;"
-                    >編輯</v-btn
+                  </treeselect>
+                </v-card-text>
+                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                  單位
+                  <treeselect
+                    v-model="addform.department_id"
+                    :multiple="true"
+                    :options="depdata"
+                    
+                    :default-expand-level="1"
+                    placeholder="被授權的單位"
+                    :sort-value-by="'INDEX'"
+                    :disable-branch-nodes="false"
+                    class="select-template"
                   >
-                  <v-btn
-                    text
-                    color="error"
-                    @click="showdel(scope.row)"
-                    style="padding:0px; min-width:unset;"
-                    :disabled="scope.row.id == 1"
-                    >刪除</v-btn
+                  </treeselect>
+                </v-card-text>
+                <!-- {{positdata.filter(x=>x.is_leaf==false)}} -->
+                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                  授權
+                  <treeselect
+                    v-model="addform.privilege_id"
+                    :multiple="true"
+                    :options="privdata"
+                    :default-expand-level="1"
+                    placeholder="被授權的項目"
+                    :sort-value-by="'INDEX'"
+                    :value-consists-of="'ALL_WITH_INDETERMINATE'"
+                    :disable-branch-nodes="false"
+                    class="select-template"
                   >
-                </template>
-              </el-table-column>
-            </el-table>
+                    <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                    <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                  </treeselect>
+                </v-card-text>
+                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                  <el-switch
+                    v-model="addform.is_active"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    active-text="啟用"
+                  ></el-switch
+                  >
+                </v-card-text>
+            </div> 
           </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="adddialog = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="addsubmit">新增</v-btn>
+          </v-card-actions>
+          
         </v-card>
-      </v-col>
-    </v-row>
+      </v-form>
+    </v-dialog>
+    <!-- 編輯角色 -->
+    <v-dialog v-model="editdialog" max-width="500px">
+      <v-form ref="editform" v-model="editvalid" lazy-validation>
+        <v-card  class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              編輯角色
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="editdialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          
+          <v-card-text>
+            <div class="basic" style="padding-left: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                    v-model="editform.name"
+                    :rules="rules.require"
+                    label="角色名稱"
+                    placeholder="管理員"
+                    autocompleted="false"
+                  ></v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                    v-model="editform.desc"
+                    :rules="rules.require"
+                    label="角色描述"
+                    placeholder="全部的功能都有"
+                    autocompleted="false"
+                    style="margin-top: 0;padding-top: 0;"
+                  ></v-text-field>
+              </v-card-text>  
+              
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                職位
+                <treeselect
+                  v-model="editform.position_id"
+                  :multiple="true"
+                  :options="positdata"
+                  
+                  :default-expand-level="2"
+                  placeholder="已授權的職位"
+                  :sort-value-by="'INDEX'"
+                  :disable-branch-nodes="true"
+                  class="select-template"
+                ><div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
+                </treeselect>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                單位
+                  <treeselect
+                  v-model="editform.department_id"
+                  :multiple="true"
+                  :options="depdata"
+                  
+                  :default-expand-level="1"
+                  placeholder="被授權的單位"
+                  :sort-value-by="'INDEX'"
+                  :disable-branch-nodes="false"
+                  class="select-template"
+                >
+                </treeselect>
+              </v-card-text>  
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                授權項目
+                <treeselect
+                  v-model="editform.privilege_id"
+                  :multiple="true"
+                  :options="privdata"
+                  :default-expand-level="1"
+                  placeholder="被授權的項目"
+                  :sort-value-by="'INDEX'"
+                  :value-consists-of="'ALL_WITH_INDETERMINATE'"
+                  :disable-branch-nodes="false"
+                  class="select-template"
+                >
+                  <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                  <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
+                </treeselect>
+              </v-card-text>    
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <el-switch
+                    v-model="editform.is_active"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    active-text="啟用"
+                  ></el-switch
+                  >
+              </v-card-text>  
+                
+            </div>
+            
+          </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="editdialog = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="editsubmit">修改</v-btn>
+          </v-card-actions>
+          
+        </v-card>
+      </v-form>
+    </v-dialog>
   </div>
 </template>
 
@@ -288,7 +377,7 @@ import "element-ui/lib/theme-chalk/index.css"; //element ui css
 import _ from "lodash";
 import dayjs from "dayjs";
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   data() {
     return {
@@ -374,24 +463,45 @@ export default {
       return obj;
     },
     getPrivilege: async function() {
+      let data;
       //授權項目的清單
-      let accheader = { account: this.$auth.$state.user.email };
-      const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
-      await this.$axios
-        .get(url, {
-          headers: accheader
-        })
-        .then(res => {
-          this.privdata = res.data;
+      try {
+        data = await this.getMenuAuthorization(true);
+        console.log("authorization-items api：" + data.request.responseURL);
+      }catch {
+        this.$toast.error("錯誤：" + error, { duration: 2000 });
+      }
+      if(data) {
+        this.privdata = data.data;
+        if(this.privdata&&this.privdata.length>0) {
           this.privdatadisable = this.setNestedDisabled(
             _.cloneDeep(this.privdata)
           );
-          console.log("api：" + res.request.responseURL);
-        });
+        }
+      }
+      
+      
+      console.log('menu data',this.privdata)
+      // let accheader = { account: this.$auth.$state.user.email };
+      // const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
+      // await this.$axios
+      //   .get(url, {
+      //     headers: accheader
+      //   })
+      //   .then(res => {
+      //     this.privdata = res.data;
+      //     this.privdatadisable = this.setNestedDisabled(
+      //       _.cloneDeep(this.privdata)
+      //     );
+      //     console.log("api：" + res.request.responseURL);
+      //   });
     },
     showadd: function() {
       this.addform.position_id = [];
       this.addform.department_id = [];
+      if (this.$refs.addform != undefined) {
+        this.$refs.addform.reset();
+      }
       this.adddialog = true;
     },
     showedit: function(data) {
@@ -515,7 +625,33 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.v-card.result-card {
+  &.bg-card {
+    background-color: #fff;
+  }
+  .card-title {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    .title {
+      width: 100%;
+      font-size: 1rem;
+    }
+    .chevron {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+::v-deep {
+  .select-template.vue-treeselect .vue-treeselect__multi-value-label,
+  .select-template.vue-treeselect .vue-treeselect__multi-value-label div {
+    line-height: 0;
+  }
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder::before,
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder::after {
+    content: '';
+  }
+}
 /* .el-table__expanded-cell {
     padding: 2px 5px !important;
 } */

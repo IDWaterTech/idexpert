@@ -71,13 +71,6 @@ $color-green: #00A660;
       color: $color-green !important;
     }
   }
-  &.clear {
-    color: darken(#67BEDA,1.2) !important;
-    border: 1px solid #67BEDA !important;
-    & .v-icon {
-      color: #67BEDA!important;
-    }
-  }
   &.disabled {
     border: 1px solid $color-dark-25 !important;
     color: $color-dark-50 !important;
@@ -210,6 +203,41 @@ $color-green: #00A660;
     background-color: $color-dark;
   }
 }
+
+// 移至最上方
+.fixed-btn {
+  position: fixed;
+  bottom: 40px;
+  right: 16px;
+  z-index: 1000;
+  .btn-primary {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
+      margin: 0;
+      .v-icon.v-icon {
+          color: #fff !important;
+          font-size: 1.5rem;
+      }
+  }
+  .to-self {
+      display: flex;
+      flex-direction: column;
+      width: 120px;
+      align-items: flex-end;
+      border-radius: 4px;
+      .btn-primary.btn-to {
+          border-radius: 4px 4px 0 0 !important;
+          // background-color: #BFD9E8;
+          &.to-ai {
+              border-radius: 0 0 4px 4px !important;
+              background-color: #2fba95 !important;
+          }
+      }
+  }
+}
+
 // 場區池下拉選單
 ::v-deep {
   // locateselect

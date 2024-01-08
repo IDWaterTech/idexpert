@@ -94,16 +94,46 @@ export default {
   methods: {
     // 所有menu
     async getAllMenu() {
-      let accheader = { account: this.$auth.$state.user.email };
-      const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
-      await this.$axios
-        .get(url, {
-          headers: accheader
-        })
-        .then(async res => {
-          console.log(res);
-          if(res.status==200) {
-            this.menuList = res.data;
+      let datalst;
+      try{
+        datalst = await this.getMenuAuthorization(true);
+      }catch {
+        console.log(error);
+      }
+      if(datalst) {
+          if(datalst.status==200) {
+            this.menuList = datalst.data;
+            // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
+            // 有子層的父層增加isOpen參數，用來開合子層
+            this.menuList.forEach(m=>{
+              m.disabled = false;
+              if(m.children) {
+                m.isOpen = false;
+                m.children.forEach(child=>{
+                  child.disabled = false;
+                })
+              }
+            })
+            let menu = [];
+            let nowmainid = 0;
+            this.menuList.forEach(main=>{
+              if(main.type.toLowerCase() == 'menu' && main.is_show) {
+                menu[nowmainid] = _.cloneDeep(main);
+                if(main.children) {
+                  menu[nowmainid].children = new Array();
+                  main.children.forEach(child=>{
+                    if(child.type.toLowerCase()=="menu" && child.is_show) {
+                      menu[nowmainid].children.push(child);
+                    }
+                  })
+                  if(menu[nowmainid].children.length==0) {
+                    delete menu[nowmainid].children;
+                  }
+                }
+                nowmainid++;
+              }
+            })
+            this.menuList = menu;
             // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
             // 有子層的父層增加isOpen參數，用來開合子層
             this.menuList.forEach(m=>{
@@ -116,66 +146,145 @@ export default {
               }
             })
             await this.getOwnMenu();
-          }
-          console.log("api：" + res.request.responseURL);
-        });
+        }
+        console.log("api：" + datalst.request.responseURL);
+      }
+      // let accheader = { account: this.$auth.$state.user.email };
+      // const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
+      // await this.$axios
+      //   .get(url, {
+      //     headers: accheader
+      //   })
+      //   .then(async res => {
+      //     console.log(res);
+      //     if(res.status==200) {
+      //       this.menuList = res.data;
+      //       // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
+      //       // 有子層的父層增加isOpen參數，用來開合子層
+      //       this.menuList.forEach(m=>{
+      //         m.disabled = false;
+      //         if(m.children) {
+      //           m.isOpen = false;
+      //           m.children.forEach(child=>{
+      //             child.disabled = false;
+      //           })
+      //         }
+      //       })
+      //       await this.getOwnMenu();
+      //     }
+      //     console.log("api：" + res.request.responseURL);
+      //   });
     },
     // 自身帳號menu，用來比對所有menu，自身沒有的要加上disabled
     async getOwnMenu() {
-      let accheader = { account: this.$auth.$state.user.email };
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`, {
-          headers: accheader
-        }) 
-        .then(res => {
-          console.log(res);
-          if(res.status==200) {
-            let ownId = [];
-            let data = _.cloneDeep(this.menuList);
-            this.menuList = [];
-            // 測試子層disabled用(飼料表->料量設定)
-            // res.data[2].children.splice(1,1);
-            res.data.forEach(own => {
-              ownId.push(own.id);
-              if(own.children) {
-                own.children.forEach(oc=>{
-                  ownId.push(oc.id);
-                })
-              }
-            });
-            data.forEach(m=>{
-              if(!ownId.includes(m.id)){
-                m.disabled = true;
-              }
-              if(m.children) {
-                m.children.forEach(mc=>{
-                  if(!ownId.includes(mc.id)) {
-                    mc.disabled = true;
-                  }
-                })
-              }
-            })
-            this.menuList = data;
-            this.menuList.push({
-              disabled: false,
-              icon: "mdi-database-edit-outline",
-              id: 99999,
-              is_drop_down: false,
-              name: "知識庫鷹眼",
-              url: "/kb2"
-            },
-            // {
-            //   disabled: false,
-            //   icon: "mdi-briefcase-eye-outline",
-            //   id: 77777,
-            //   is_drop_down: false,
-            //   name: "模型預測",
-            //   url: "/pondpredict"
-            // },
-            )
-          }
-          console.log('menuList',this.menuList)
-        });
+      let datalst;
+      try{
+        datalst = await this.getMenuAuthorization(false);
+      }catch {
+        console.log(error);
+      }
+      if(datalst) {
+        if(datalst.status==200) {
+          let ownId = [];
+          let data = _.cloneDeep(this.menuList);
+          this.menuList = [];
+          // 測試子層disabled用(飼料表->料量設定)
+          // res.data[2].children.splice(1,1);
+          datalst.data.forEach(own => {
+            ownId.push(own.id);
+            if(own.children) {
+              own.children.forEach(oc=>{
+                ownId.push(oc.id);
+              })
+            }
+          });
+          data.forEach(m=>{
+            if(!ownId.includes(m.id)){
+              m.disabled = true;
+            }
+            if(m.children) {
+              m.children.forEach(mc=>{
+                if(!ownId.includes(mc.id)) {
+                  mc.disabled = true;
+                }
+              })
+            }
+          })
+          this.menuList = data;
+          this.menuList.push({
+            disabled: false,
+            icon: "mdi-database-edit-outline",
+            id: 99999,
+            is_drop_down: false,
+            name: "知識庫鷹眼",
+            url: "/kb2"
+          },
+          // {
+          //   disabled: false,
+          //   icon: "mdi-briefcase-eye-outline",
+          //   id: 77777,
+          //   is_drop_down: false,
+          //   name: "模型預測",
+          //   url: "/pondpredict"
+          // },
+          )
+        }
+        console.log('menuList',this.menuList)
+      }
+      // let accheader = { account: this.$auth.$state.user.email };
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/`, {
+      //     headers: accheader
+      //   }) 
+      //   .then(res => {
+      //     console.log(res);
+      //     if(res.status==200) {
+      //       let ownId = [];
+      //       let data = _.cloneDeep(this.menuList);
+      //       this.menuList = [];
+      //       // 測試子層disabled用(飼料表->料量設定)
+      //       // res.data[2].children.splice(1,1);
+      //       res.data.forEach(own => {
+      //         ownId.push(own.id);
+      //         if(own.children) {
+      //           own.children.forEach(oc=>{
+      //             ownId.push(oc.id);
+      //           })
+      //         }
+      //       });
+      //       data.forEach(m=>{
+      //         if(!ownId.includes(m.id)){
+      //           m.disabled = true;
+      //         }
+      //         if(m.children) {
+      //           m.children.forEach(mc=>{
+      //             if(!ownId.includes(mc.id)) {
+      //               mc.disabled = true;
+      //             }
+      //           })
+      //         }
+      //       })
+      //       this.menuList = data;
+      //       this.menuList.push({
+      //         disabled: false,
+      //         icon: "mdi-database-edit-outline",
+      //         id: 99999,
+      //         is_drop_down: false,
+      //         name: "知識庫鷹眼",
+      //         url: "/kb2"
+      //       },
+      //       // {
+      //       //   disabled: false,
+      //       //   icon: "mdi-briefcase-eye-outline",
+      //       //   id: 77777,
+      //       //   is_drop_down: false,
+      //       //   name: "模型預測",
+      //       //   url: "/pondpredict"
+      //       // },
+      //       )
+      //     }
+      //     console.log('menuList',this.menuList)
+      //   });
     },
     // id=第一層menu,cid=子層,bool=是否去連結
     openChild(id,cid,bool) {
