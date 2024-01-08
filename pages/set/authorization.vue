@@ -240,16 +240,6 @@
                     <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                     <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                   </treeselect>
-                  <!-- <treeselect
-                  :multiple="true"
-                  :options="options"
-                  :flat="true"
-                  :sort-value-by="sortValueBy"
-                  :default-expand-level="1"
-                  placeholder="Try selecting some options."
-                  v-model="value"
-                  /> -->
-                <treeselect-value :value="value" />
                 </v-card-text>
                 <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
                   <el-switch
