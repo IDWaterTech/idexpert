@@ -626,14 +626,14 @@ export default {
   },
   methods: {
     get_scopeData(evt) {
-      console.log('Change Field',evt.split('_')[0]);
+      // console.log('Change Field',evt.split('_')[0]);
       // console.log('factory data',this.factoryData);
       this.dataclear();
       this.sdate = '';
       this.imptimedata = [];
       let fieldId = evt.split('_')[evt.split('_').length-1];
       this.factoryid = fieldId;
-      console.log('Change Field',fieldId);
+      // console.log('Change Field',fieldId);
     },
     // 飼料表設定-清單
     eventSetGet:async function(){
@@ -856,11 +856,23 @@ export default {
       //抓水池的觀察網飼料百分比
       await this.getfeedpct();
       
-      var wc_state=[];
-      var tf_state=[];
-      var zw_state=[];
-      var sp_state=[];
+      // var wc_state=[];
+      // var tf_state=[];
+      // var zw_state=[];
+      // var sp_state=[];
+      var all_state=[];
       //#region 池狀態
+      //all
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/state-of-all-pools/`)
+        .then(res => {
+          all_state = res.data;
+          /**
+           * [
+              {id: 82, name: '0-1', area_name: '紫微', state: '無'},...
+              ]
+           */
+        });
+      /*
       await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`)
         .then(res => {
           var keys = Object.keys(res.data);
@@ -868,6 +880,17 @@ export default {
             key = keys[key];
             wc_state.push(...res.data[key]);
           }
+          // 
+          // [
+          //  {
+          //    id: 3
+          //    name: "C1"
+          //    state: "放養中(鎖排汙)"
+          //    updated_time: "2023-08-24 14:15:29"
+          //    updated_user: ""
+          //  },...
+          // ]
+          // 
         });
       await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/tf-state/`)
         .then(res => {
@@ -890,7 +913,7 @@ export default {
             
           }
         });
-        await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/sp-state/`)
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/sp-state/`)
         .then(res => {
           var keys = Object.keys(res.data);
           
@@ -904,8 +927,7 @@ export default {
             
           }
         });
-        // debugger;
-      //#endregion
+      */
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
       await this.$axios
         .get(url)
@@ -913,6 +935,7 @@ export default {
           this.factoryData = res.data;
           // this.factoryid = res.data[0].id;
           var item = [];
+          
           res.data.forEach(element => {
             //[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
             if (element.hasOwnProperty("node")) {
@@ -947,7 +970,31 @@ export default {
                     .map(x=>(
                       x.observation_feed_pct = (this.feed_pct_list.filter(y=>y.id==x.id).length==1)?this.feed_pct_list.filter(y=>y.id==x.id)[0].observation_feed_pct:0
                     ));
+
+                  // ele.node內容
+                  //{
+                  //     "id": 1,
+                  //     "name": "A1",
+                  //     "level": "3",
+                  //     "visible": true,
+                  //     "area_name": "武曲",
+                  //     "pond_name": "A1",
+                  //     "pond_id": 1,
+                  //     "feed_event_settings_id": "",
+                  //     "has_observation": false,
+                  //     "is_executed": false,
+                  //     "factory_id": 1,
+                  //     "observation_feed_pct": 40
+                  // }
+                    
+                    
                 //把池狀態放入
+                //all
+                ele.node.filter(x=>x.visible== true)
+                  .map(x=>{
+                    x.state = (all_state.filter(y => y.id == x.pond_id).length == 1)? (all_state.filter(y => y.id == x.id)[0].state) : ""
+                  });
+                  /*
                 //wc
                 ele.node.filter(x => x.visible == true && x.area_name=='武曲')
                   .map(x => (
@@ -964,16 +1011,11 @@ export default {
                     x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
                   ));
                 //sp
-                // if(ele.node.filter(x => x.visible == true && x.area_name=='救地球').length>0){
-                // }
                 ele.node.filter(x => x.visible == true && x.area_name=='救地球')
                   .map(x => (
                     x.state = (sp_state.filter(y => y.id == x.pond_id).length == 1) ? (sp_state.filter(y => y.id == x.id)[0].state) : ""
                   ));
-                
-                //  if(ele.node.filter(x=>x.area_name=='救地球').length>0){
-                //   debugger;
-                // }
+                */
 
                 var getdata = ele.node.filter(x => x.visible == true);
                 item.push(..._.cloneDeep(getdata));
@@ -983,7 +1025,7 @@ export default {
           });
           this.desserts = item;
           this.has_observe = false;
-          console.log("完整資料：",this.desserts);
+          // console.log("完整資料：",this.desserts);
           console.log("取得場架構API:" + res.request.responseURL);
         })
         .catch(error => {
