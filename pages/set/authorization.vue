@@ -195,7 +195,7 @@
                     v-model="addform.position_id"
                     :multiple="true"
                     :options="positdata"
-                    
+                    :flat="true"
                     :default-expand-level="2"
                     placeholder="已授權的職位"
                     :sort-value-by="'INDEX'"
@@ -213,7 +213,7 @@
                     v-model="addform.department_id"
                     :multiple="true"
                     :options="depdata"
-                    
+                    :flat="true"
                     :default-expand-level="1"
                     placeholder="被授權的單位"
                     :sort-value-by="'INDEX'"
@@ -226,6 +226,7 @@
                 <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
                   授權
                   <treeselect
+                    :flat="true"
                     v-model="addform.privilege_id"
                     :multiple="true"
                     :options="privdata"
@@ -239,6 +240,16 @@
                     <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                     <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                   </treeselect>
+                  <!-- <treeselect
+                  :multiple="true"
+                  :options="options"
+                  :flat="true"
+                  :sort-value-by="sortValueBy"
+                  :default-expand-level="1"
+                  placeholder="Try selecting some options."
+                  v-model="value"
+                  /> -->
+                <treeselect-value :value="value" />
                 </v-card-text>
                 <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
                   <el-switch
@@ -306,7 +317,7 @@
                   v-model="editform.position_id"
                   :multiple="true"
                   :options="positdata"
-                  
+                  :flat="true"
                   :default-expand-level="2"
                   placeholder="已授權的職位"
                   :sort-value-by="'INDEX'"
@@ -321,7 +332,7 @@
                   v-model="editform.department_id"
                   :multiple="true"
                   :options="depdata"
-                  
+                  :flat="true"
                   :default-expand-level="1"
                   placeholder="被授權的單位"
                   :sort-value-by="'INDEX'"
@@ -333,6 +344,7 @@
               <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
                 授權項目
                 <treeselect
+                  :flat="true"
                   v-model="editform.privilege_id"
                   :multiple="true"
                   :options="privdata"
@@ -381,6 +393,9 @@ export default {
   middleware: "auth",
   data() {
     return {
+      value: [ 'c', 'aaa', 'bb' ],
+      // options: generateOptions(3),
+      sortValueBy: 'ORDER_SELECTED',
       roledata: [
         // {
         //   id: "12987122",

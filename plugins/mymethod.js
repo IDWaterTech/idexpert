@@ -104,7 +104,7 @@ import https from "https";
                         tmplst.push(...getallpath(element["children"]));
                       }
                     });
-                    console.log('tmplst',tmplst);
+                    // console.log('tmplst',tmplst);
                     return tmplst;
                   }
                   let accPagelstNew= getallpath(accPagelst).map((x)=>{return x.toLowerCase();});
