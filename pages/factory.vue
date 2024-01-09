@@ -277,6 +277,7 @@
                   dense
                 >
                   <span style="width:50px;" slot="prepend">體積</span>
+                  <span style="width:25px;" slot="append">m<sup>3</sup></span>
                 </v-text-field>
               </v-col>
               <!-- 深度 -->
@@ -291,6 +292,7 @@
                   dense
                 >
                   <span style="width:50px;" slot="prepend">深度</span>
+                  <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
               </v-col>
               <!-- 池子數 -->
@@ -305,6 +307,7 @@
                   filled
                   dense
                   ><span style="width:50px;" slot="prepend">池子數</span>
+                  <span style="width:25px;" slot="append">個</span>
                 </v-text-field>
               </v-col>
               <!-- 曝氣盤數 -->
@@ -321,6 +324,7 @@
                   required
                 >
                   <span style="width:50px;" slot="prepend">曝氣盤</span>
+                  <span style="width:25px;" slot="append">個</span>
                 </v-text-field>
               </v-col>
               <!-- 最大水位高度 v-model.number=""-->
@@ -336,6 +340,7 @@
                   required
                 >
                   <span style="width:70px;" slot="prepend">最大水位高度</span>
+                  <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
               </v-col>
               <!-- 感測到水底高度 -->
@@ -351,6 +356,7 @@
                   required
                 >
                   <span style="width:70px;" slot="prepend">感測到水底高度</span>
+                  <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
               </v-col>
               <!-- 底面積 -->
@@ -366,6 +372,7 @@
                   required
                 >
                   <span style="width:70px;" slot="prepend">底面積</span>
+                  <span style="width:25px;" slot="append">m<sup>2</sup></span>
                 </v-text-field>
               </v-col>
               <!-- 觀察觀飼料百分比 -->
