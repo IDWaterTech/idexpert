@@ -95,7 +95,6 @@ import https from "https";
                     //     tmplst.push(...getallpath(element["children"]));
                     //   }
                     // });
-                    
                     item.forEach(element => {
                       if(element.type.toLowerCase() =='menu' || element.type.toLowerCase() =='page') {
                         tmplst.push(element.url);
