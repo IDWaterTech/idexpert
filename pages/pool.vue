@@ -1861,6 +1861,7 @@ export default {
                 this.addDialog = true; 
                 
               }
+              if(this.bacteriaAll.length>0) {
               let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
               let date1 = date[0].split('-').concat(date[1].split(':'));
               // date1
@@ -3660,10 +3661,15 @@ export default {
         .then(async res => {
           // console.log('getColor',res.data);
           // 跟著目前的池物種
-          this.bacteriaAll = res.data;
-          this.addReport[0].species = this.bacteriaAll[0].id;
-          await this.getMethod();
-          console.log("物種清單:", res.request.responseURL,this.bacteriaAll);
+          if(res.data.length>0) {
+            this.bacteriaAll = res.data;
+            this.addReport[0].species = this.bacteriaAll[0].id;
+            await this.getMethod();
+            console.log("物種清單:", res.request.responseURL,this.bacteriaAll);
+          }else {
+            this.isLoading = true;
+          }
+          
         })
         .catch(error => {
           console.log("error:" + error.message);
