@@ -1862,25 +1862,28 @@ export default {
                 
               }
               if(this.bacteriaAll.length>0) {
-              let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
-              let date1 = date[0].split('-').concat(date[1].split(':'));
-              // date1
-              console.log('date',date1);
-              this.addparm.name = '';
-              date1.forEach(x=>this.addparm.name+=x);
-              this.addparm.name = this.addparm.name+'_{pool}'
-              this.add_volume = items[0].volume;
-              this.addparm.estimated_survival_rate = 70;
-              this.tempSelect = this.template_items[0].id;
-              this.addparm.temp_id = null;
-              this.dataVolumn = [];
+                let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+                let date1 = date[0].split('-').concat(date[1].split(':'));
+                // date1
+                console.log('date',date1);
+                this.addparm.name = '';
+                date1.forEach(x=>this.addparm.name+=x);
+                this.addparm.name = this.addparm.name+'_{pool}'
+                this.add_volume = items[0].volume;
+                this.addparm.estimated_survival_rate = 70;
+                this.tempSelect = this.template_items[0].id;
+                this.addparm.temp_id = null;
+                this.dataVolumn = [];
 
-              // 關掉Dialog再開啟不會重置scrollbar位置 
-              setTimeout(()=>{
-                if(document.getElementsByClassName('v-dialog--active')) {
-                  document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+                // 關掉Dialog再開啟不會重置scrollbar位置 
+                setTimeout(()=>{
+                    if(document.getElementsByClassName('v-dialog--active')) {
+                      document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+                    }
+                  },100)
+                }else {
+                  alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
                 }
-              },100)
             } else {
               this.$toast.success(
                 `失敗：無法取得體積資料，池id:${this.poolid}}`,
