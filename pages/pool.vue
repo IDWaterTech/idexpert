@@ -156,8 +156,8 @@
                   <!-- <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column> -->
                   <!-- 放養初始長度 -->
                   <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
-                  <!-- 放養初始重量 -->
-                  <el-table-column label="放養初始重量" prop="initial_weight" align="center"></el-table-column>
+                  <!-- 放養初始重量(g/單隻) -->
+                  <el-table-column label="放養初始重量(g/單隻)" prop="initial_weight" align="center"></el-table-column>
 
                   <el-table-column label="養殖負責" prop="person_in_charge" align="center">
                   </el-table-column>
@@ -409,7 +409,7 @@
                   <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
                 </v-col>
                 <v-col cols="6" style="padding: 0;padding-right: 8px;">
-                  <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"></v-text-field>
+                  <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>    
@@ -432,7 +432,7 @@
               </v-text-field>
             </v-card-text>       -->
             <v-card-text style="display: flex;align-items: center;">
-              <v-text-field filled dense type="number" v-model.number="addparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" v-model.number="addparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
             <v-card-text>
@@ -816,7 +816,7 @@
                   <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
                 </v-col>
                 <v-col cols="6" style="padding: 0;padding-right: 8px;">
-                  <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"></v-text-field>
+                  <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>    
@@ -837,7 +837,7 @@
               </v-text-field>
             </v-card-text>   -->
             <v-card-text style="display: flex;align-items: center;">
-              <v-text-field filled dense type="number" v-model.number="editparm.initial_weight" label="放養初始重量(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
             <v-card-text>
@@ -1768,6 +1768,7 @@ export default {
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
       this.addparm.estimated_num = undefined;
+      this.addparm.initial_weight = 0.1;
       this.all_num_per_unit = undefined;
       if (this.$refs.logform != undefined) {
         this.$refs.logform.reset();
@@ -3281,6 +3282,9 @@ export default {
           // this.resultCycleOpen = false;
           // this.currentDataId = null;
           this.editparm = getData;
+          if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
+            this.editparm.initial_weight = 0.1;
+          }
           this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
           if(document.getElementsByClassName('v-dialog--active')) {
             document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;

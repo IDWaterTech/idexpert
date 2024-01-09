@@ -305,7 +305,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖純度參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">砂糖(碳源)純度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的砂糖純度參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">純度(砂糖-碳源)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="FeedParm['SugarSourcePurity']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
