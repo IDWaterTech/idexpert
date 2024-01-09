@@ -48,29 +48,29 @@ import https from "https";
                   console.log(error);
                 }
                 if(datalst) {
-                  accPagelst = datalst.data;
+                  accPagelst = _.cloneDeep(datalst.data);
                   console.log("accPagelst:",accPagelst);
                   console.log("accPage api:",datalst.request.responseURL);
-                  // let data = [];
-                  // let nowmainid = 0;
-                  // accPagelst.forEach(main=>{
-                  //   if(main.type.toLowerCase() == 'menu' && main.is_show) {
-                  //     data[nowmainid] = _.cloneDeep(main);
-                  //     if(main.children) {
-                  //       data[nowmainid].children = new Array();
-                  //       main.children.forEach(child=>{
-                  //         if(child.type.toLowerCase()=="menu" && child.is_show) {
-                  //           data[nowmainid].children.push(child);
-                  //         }
-                  //       })
-                  //       if(data[nowmainid].children.length==0) {
-                  //         delete data[nowmainid].children;
-                  //       }
-                  //     }
-                  //     nowmainid++;
-                  //   }
-                  // })
-                  // accPagelst = data;
+                  let data = [];
+                  let nowmainid = 0;
+                  accPagelst.forEach(main=>{
+                    if(main.is_show) {
+                      data[nowmainid] = _.cloneDeep(main);
+                      if(main.children) {
+                        data[nowmainid].children = new Array();
+                        main.children.forEach(child=>{
+                          if(child.is_show) {
+                            data[nowmainid].children.push(child);
+                          }
+                        })
+                        if(data[nowmainid].children.length==0) {
+                          delete data[nowmainid].children;
+                        }
+                      }
+                      nowmainid++;
+                    }
+                  })
+                  accPagelst = data;
                   this.$store.commit('mydata/set_listitems', accPagelst);
                 }
                 // await this.$axios
@@ -107,7 +107,7 @@ import https from "https";
                     // console.log('tmplst',tmplst);
                     return tmplst;
                   }
-                  let accPagelstNew= getallpath(accPagelst).map((x)=>{return x.toLowerCase();});
+                  let accPagelstNew= getallpath(datalst.data).map((x)=>{return x.toLowerCase();});
                   //排除根目錄、個人頁、登入頁
                   urlpath = (urlpath.substr(-1)=='/')?urlpath.substr(0,urlpath.length-1):urlpath;
                   var isallowPath =(accPagelstNew.filter(x=>x == urlpath.toLowerCase()).length == 1) || ["","/","/set/profile","/login"].includes(urlpath);
