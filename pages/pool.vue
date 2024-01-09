@@ -215,7 +215,6 @@
                           @change="filterChange"
                           hide-details
                         ></v-select> -->
-                        
                         <treeselect
                           v-model="passObj.filter"
                           :options="filterType"
@@ -224,6 +223,7 @@
                           :limit="1"
                           :limitText="() => `+ ${passObj.filter.length-1}`"
                           class="select-template font-size-large"
+                          @input="filterChange"
                           >
                           <!-- node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name -->
                           <!-- {{ node.parentNode && node.raw.length > 0?node.parentNode.label+ '_'+node.raw.label:node.parentNode.label }} -->
@@ -432,7 +432,7 @@
               </v-text-field>
             </v-card-text>       -->
             <v-card-text style="display: flex;align-items: center;">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" v-model.number="addparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
             <v-card-text>
@@ -837,7 +837,7 @@
               </v-text-field>
             </v-card-text>   -->
             <v-card-text style="display: flex;align-items: center;">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
             <v-card-text>
@@ -1084,6 +1084,7 @@ export default {
         ],
         checklength:[v => v==null?'':v.length<=100 ||  "*不可輸入超過100字元"],
         requireSelect: [v =>  !!v.length || "*必要項目"],
+        requireNum:[v=>( !!v || v > 0)|| "*請輸入>0數字"]
       },
       poolid: this.$route.query.id,
       nowPool: '',
@@ -1768,7 +1769,7 @@ export default {
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
       this.addparm.estimated_num = undefined;
-      this.addparm.initial_weight = 0.1;
+      // this.addparm.initial_weight = 0;
       this.all_num_per_unit = undefined;
       if (this.$refs.logform != undefined) {
         this.$refs.logform.reset();
@@ -2283,7 +2284,7 @@ export default {
     // 循環清單點擊
     async clickRow(val, column, event) {
       console.log('click',val, column, event);
-      // this.passObj.filter=[1,2,3];
+      this.passObj.filter=[1,2,3];
       if(column.label !== '操作') {
         if(val.id==this.currentDataId) {
           // 與原本點選的相同，取消點選
@@ -3282,9 +3283,9 @@ export default {
           // this.resultCycleOpen = false;
           // this.currentDataId = null;
           this.editparm = getData;
-          if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
-            this.editparm.initial_weight = 0.1;
-          }
+          // if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
+          //   this.editparm.initial_weight = 0.1;
+          // }
           this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
           if(document.getElementsByClassName('v-dialog--active')) {
             document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
@@ -3708,9 +3709,11 @@ export default {
     },
     // 過濾篩選
     filterChange(evt) {
-      this.passObj.filter = [];
-      this.passObj.filter = evt;
-      console.log('filter',evt);
+      let pass = _.cloneDeep(this.passObj);
+      this.passObj = {};
+      pass.filter = evt;
+      this.passObj = _.cloneDeep(pass);
+      console.log('filter',evt,this.passObj.filter);
     },
 
   },
