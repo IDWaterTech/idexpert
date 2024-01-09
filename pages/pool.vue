@@ -215,6 +215,7 @@
                           @change="filterChange"
                           hide-details
                         ></v-select> -->
+                        <span style="font-size:12px;color:#6c9bcd">項目過濾</span>
                         <treeselect
                           v-model="passObj.filter"
                           :options="filterType"
@@ -2866,7 +2867,7 @@ export default {
         });
     },
     async reviseSeqid(step) {
-      step.updated_user = this.$auth.$state.user.name;
+      step.updated_user = this.$auth.$state.user.email;
       await this.$axios
         .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
             .then(res => {
@@ -3507,7 +3508,7 @@ export default {
           console.log('parm',this.addReport[0]);
           // parm.name_ch = parm.step_name_ch;
           // parm.name_en = parm.step_name_en;
-          parm.updated_user = this.$auth.$state.user.name;
+          parm.updated_user = this.$auth.$state.user.email;
           
           delete parm.pond_ids;
           delete parm.type;
@@ -3555,7 +3556,7 @@ export default {
               .finally(() => {
               });
         }else {
-          parm.created_user = this.$auth.$state.user.name;
+          parm.created_user = this.$auth.$state.user.email;
         // parm.disease_id=parm.disease_id.length>0? parm.disease_id.toString():'';
         // parm.pond_id = parm.pond_id.toString();
 

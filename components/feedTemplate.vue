@@ -1151,7 +1151,7 @@ export default {
                         step.verify_time='';
                         step.executor = '';
                         step.verifier = '';
-                        step.created_user = this.$auth.$state.user.name;
+                        step.created_user = this.$auth.$state.user.email;
                     })
                     let addidx = this.getId();
                     console.log('now',addidx)
@@ -1456,7 +1456,7 @@ export default {
                 // if(d.phase_id==id) {
                     // d.stepList.forEach(async (step,sid)=>{
                         if(d.step_id) {
-                            d.updated_user = this.$auth.$state.user.name;
+                            d.updated_user = this.$auth.$state.user.email;
                             console.log('step',d);
                             // d.seq_id = 'step_'+sid;
                             delete d.deft_executor;
@@ -1668,7 +1668,7 @@ export default {
                 delete parm.deft_executor;
                 delete parm.deft_verifier;
                 delete parm.step_id;
-                parm.updated_user = this.$auth.$state.user.name;
+                parm.updated_user = this.$auth.$state.user.email;
                 await this.$axios
                     .patch(
                     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${this.addStep[0].step_id}/`,
@@ -1706,7 +1706,7 @@ export default {
                         this.mainItems = []
                         items[id].stepList[index].execute_time = '';
                         items[id].stepList[index].executor = '';
-                        items[id].stepList[index].updated_user = this.$auth.$state.user.name;
+                        items[id].stepList[index].updated_user = this.$auth.$state.user.email;
                         this.justStep.forEach(s=>{
                             if(s.phase_id==items[id].phase_id) {
                                 s.stepList.forEach(async (step,sid)=>{
@@ -1767,7 +1767,7 @@ export default {
                         this.mainItems[id].stepList[index].execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                         this.mainItems[id].stepList[index].executor = updUser;
                         this.mainItems[id].stepList[index].deft_executor = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
-                        this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.name;
+                        this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.email;
                         this.justStep.forEach(s=>{
                             if(s.phase_id==this.mainItems[id].phase_id) {
                                 s.stepList.forEach(async (step,sid)=>{
@@ -1775,7 +1775,7 @@ export default {
                                         step.execute_time = this.mainItems[id].stepList[index].execute_time;
                                         step.executor = updUser;
                                         step.deft_executor = this.mainItems[id].stepList[index].deft_executor;
-                                        step.updated_user = this.$auth.$state.user.name;
+                                        step.updated_user = this.$auth.$state.user.emil;
 
                                         if(sid==0) {
                                             if(sid==0 && id!==0) {
@@ -1819,7 +1819,7 @@ export default {
                         if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
                             x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                             x.verifier = updUser;
-                            x.updated_user = this.$auth.$state.user.name;
+                            x.updated_user = this.$auth.$state.user.email;
                             x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
                             submitData.push(x);
                             // this.updateStatus(this.mainItems[i].stepList[x]);
@@ -1838,7 +1838,7 @@ export default {
                             if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
                                 x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                 x.verifier = updUser;
-                                x.updated_user = this.$auth.$state.user.name;
+                                x.updated_user = this.$auth.$state.user.email;
                                 x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
                                 submitData.push(x);
                                 // this.updateStatus(this.mainItems[i].stepList[x]);
@@ -1858,7 +1858,7 @@ export default {
                                             if(step.step_id == this.justStep[i].stepList[x].step_id) {
                                                 step.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                                                 step.verifier = updUser;
-                                                step.updated_user = this.$auth.$state.user.name;
+                                                step.updated_user = this.$auth.$state.user.email;
                                                 step.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
                                                 submitData.push(this.justStep[i].stepList[x]);
                                             }

@@ -274,7 +274,7 @@
                             )"
                             :key="idx"
                           >
-                            <span :style="`font-size:${cellsize}em`">{{ `${sub.name.substr(0,1)}：${Math.round((sub.feed_amount + Number.EPSILON) * 1) / 1}` }}</span>
+                            <span :style="`font-size:${cellsize}em`">{{ `${sub.name.substr(0,1)}：${Math.round((sub.feed_amount + Number.EPSILON) * 100) / 100}` }}</span>
                           </v-chip>
                         </div>
                       </template>
@@ -782,7 +782,7 @@ export default {
               return a + b;
             });
           var total = main_total + sub_total;
-          element.feed_total = Math.round((total + Number.EPSILON) * 1) / 1;
+          element.feed_total = Math.round((total + Number.EPSILON) * 100) / 100;
           //子成份查找有無包含獨立顯示，有的話再去改total
           if (element.sub_items.filter(x => sub.includes(x.name)).length > 0) {
             //陣列裡每個項目(次項目)
@@ -799,10 +799,10 @@ export default {
             // Math.round((total - value + Number.EPSILON) * 100) / 100;
             //小數點0位
             element.feed_total =
-              Math.round((total - value + Number.EPSILON) * 1) / 1;
+              Math.round((total - value + Number.EPSILON) * 100) / 100;
           }
           // observation_total 小數點去掉
-          element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 1) / 1;
+          element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 100) / 100;
           element.combomark = false;
           // tag 
           for(let i=0;i<this.combomark.length;i++) {
@@ -881,7 +881,7 @@ export default {
               var value = pre + element.total_amount;
               //math用來解決浮點數相加會出現10.000000000001的狀況
               main_items[element.name] =
-                Math.round((value + Number.EPSILON) * 1) / 1;
+                Math.round((value + Number.EPSILON) * 100) / 100;
             });
             sitem.forEach(element => {
               var pre =
@@ -899,7 +899,7 @@ export default {
           var tot =
             Object.values(main_items).reduce((prev, curr) => prev + curr, 0) +
             Object.values(sub_items).reduce((prev, curr) => prev + curr, 0);
-            tot = Math.round((tot + Number.EPSILON) * 1) / 1;
+            tot = Math.round((tot + Number.EPSILON) * 100) / 100;
             combo_result.push({
             combo_name: combo_name,
             main_items: main_items,
