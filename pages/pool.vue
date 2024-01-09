@@ -3360,7 +3360,8 @@ export default {
     },
     /* 檢驗報告 */
     reportOpen() {
-      this.reportDialog=true;
+      if(this.bacteriaAll.length>0) {
+        this.reportDialog=true;
       // this.addReport = [{msg:'',type:this.addOtherType[0].id}]
         // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
         if (this.$refs.addform != undefined) {
@@ -3371,6 +3372,10 @@ export default {
           this.selectPond = [];
           this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:null,position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
         },100)
+      }else {
+        alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
+      }
+      
     },
     reportEditOpen(item) {
       this.reportDialog=true;
@@ -3662,7 +3667,7 @@ export default {
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`, { httpsAgent: agent })
         .then(async res => {
-          // console.log('getColor',res.data);
+          console.log('getType',res.data);
           // 跟著目前的池物種
           if(res.data.length>0) {
             this.bacteriaAll = res.data;

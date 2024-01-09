@@ -931,7 +931,7 @@ export default {
                             i.open = st.open;
                             // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
                             if(i.newest&& i.newest!=='') {
-                            i.color = st.color;
+                                i.color = st.color;
                             }else {
                                 if(id!==0) {
                                     // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
@@ -976,7 +976,7 @@ export default {
                 return this.status.filter(x=>x.name==data.phase_name_ch)[0].open;
             }else {
                 data.open = this.status[id].open;
-                console.log(this.status[id].open);
+                // console.log(this.status[id].open);
                 return this.status[id].open;
             }
             
@@ -1116,9 +1116,8 @@ export default {
                     // this.stepmode = 'add';
                     this.stepitem.phase_id = phase_id;
                     this.stepitem.addidx = addidx;
-                    this.showstep(this.add);
+                    this.showstep('add');
                 }
-                
                 
             }else {
                 // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
@@ -1244,7 +1243,7 @@ export default {
                 }else {
                     this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
                     this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
-                    console.log('step',this.stepformedit);
+                    console.log('step',this.stepformedit,this.stepmode);
                     switch (this.stepmode) {
                         case 'add':
                             console.log('step add',this.stepitem);
@@ -1930,6 +1929,7 @@ export default {
                         this.stepformedit = {};
                         this.stepitem.id = undefined;
                         this.stepmode = 'add';
+                        this.dialog.additem = false;
                         // let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
                         // this.stepitem = _.cloneDeep(this.stepdata[0]);
                         // this.stepitem.phase_id = submit.phase_id;
