@@ -998,12 +998,12 @@ export default {
                             s.execute_disabled = true;
                         }else {
                             if((m.stepList[sid-1].execute_time&&m.stepList[sid-1].execute_time!=='') || (s.execute_time&&s.execute_time!=='')) {
-                                if(m.stepList[sid-1].verify_time=='') {
-                                    s.execute_disabled = true;
-                                }else {
-                                    s.execute_disabled = false;
-                                }
-                                
+                                // if(m.stepList[sid-1].verify_time=='') {
+                                //     s.execute_disabled = false;
+                                // }else {
+                                //     s.execute_disabled = false;
+                                // }
+                                s.execute_disabled = false;
                                 
                             }else {
                                 s.execute_disabled = true;
@@ -1023,6 +1023,7 @@ export default {
                                     }else {
                                         s.execute_disabled = false;
                                     }
+                                    // s.execute_disabled = false;
                                 }else{
                                     s.execute_disabled = true;
                                 }
