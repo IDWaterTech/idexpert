@@ -2760,7 +2760,7 @@ export default {
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = input_data.FeedParm;
                 if(this.FeedParm['LastFeedDatetime']) {
-                    this.FeedParm['LastFeedDatetime'] = this.$moment(new Date(this.FeedParm['LastFeedDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                    this.FeedParm['LastFeedDatetime'] = this.$moment(new Date(this.FeedParm['LastFeedDatetime']), 'YYYY-MM-DD HH:mm');
                 }
                 if(this.FeedParm['CumulativeFeedAmountInput']) {}else {
                     this.FeedParm['CumulativeFeedAmountInput'] = 0;
@@ -2801,10 +2801,10 @@ export default {
                 console.log('Input Observation',this.ObservationData);
                 
                 if(this.ObservationData['SamplingDatetime']) {
-                    this.ObservationData['SamplingDatetime'] = this.$moment(new Date(this.ObservationData['SamplingDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                    this.ObservationData['SamplingDatetime'] = this.$moment(new Date(this.ObservationData['SamplingDatetime']), 'YYYY-MM-DD HH:mm');
                 }
                 if(this.ObservationData['LastSamplingDatetime']) {
-                    this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(this.ObservationData['LastSamplingDatetime']), 'YYYY-MM-DD HH:mm:ss');
+                    this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(this.ObservationData['LastSamplingDatetime']), 'YYYY-MM-DD HH:mm');
                 }
                 this.BacteriaData = input_data.BacteriaData;
                 console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
@@ -2902,15 +2902,15 @@ export default {
                     input_data.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
                     if(input_data.FeedParm['LastFeedDatetime']) {
                         let maxDate = new Date(this.FeedParm['LastFeedDatetime']);
-                        input_data.FeedParm['LastFeedDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                        input_data.FeedParm['LastFeedDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm");
                     }
                     if(input_data.ObservationData['SamplingDatetime']) {
                         let maxDate = new Date(this.ObservationData['SamplingDatetime']);
-                        input_data.ObservationData['SamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                        input_data.ObservationData['SamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm");
                     }
                     if(input_data.ObservationData['LastSamplingDatetime']) {
                         let maxDate = new Date(this.ObservationData['LastSamplingDatetime']);
-                        input_data.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                        input_data.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm");
                     }
                     var keyLst = Object.keys(this.optData);
                     keyLst.forEach(k=>{
@@ -2978,15 +2978,15 @@ export default {
             allParm.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
             if(allParm.FeedParm['LastFeedDatetime']) {
                 let maxDate = new Date(this.FeedParm['LastFeedDatetime']);
-                allParm.FeedParm['LastFeedDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                allParm.FeedParm['LastFeedDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm");
             }
             if(allParm.ObservationData['SamplingDatetime']) {
                 let maxDate = new Date(this.ObservationData['SamplingDatetime']);
-                allParm.ObservationData['SamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                allParm.ObservationData['SamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm");
             }
             if(allParm.ObservationData['LastSamplingDatetime']) {
                 let maxDate = new Date(this.ObservationData['LastSamplingDatetime']);
-                allParm.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                allParm.ObservationData['LastSamplingDatetime'] = dayjs(maxDate).format("YYYY-MM-DD HH:mm");
             }
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
