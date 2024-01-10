@@ -1873,6 +1873,7 @@ export default {
                         }
                     }
                 }
+                console.log('verify',submitData);
                 submitData.forEach(async s=>{
                     await this.updateStatus(s,'verify');
                 })
@@ -1886,6 +1887,7 @@ export default {
             delete item.deft_executor;
             delete item.deft_verifier; 
             delete item.execute_disabled;
+            delete item.type;
             // delete item.step_id;
 
             await this.$axios
