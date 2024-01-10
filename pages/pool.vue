@@ -1004,11 +1004,12 @@
                             <span 
                                 style="font-size: 12px;line-height: 12px;color: #6c9bcd;"
                                 :style="{'color':`${isSelectPool?'#6c9bcd':'red'}`}">採樣池</span>
-                            <locate-select 
+                            <locate-select
+                              ref="poolSelect"
                               id="reportpool"
                               class="select-template"
                               :dataScope="'pool'" 
-                              :defaultSelect="add.pond_ids?add.pond_ids:null" 
+                              :defaultSelect="add.pond_ids?add.pond_ids:add.pond_id" 
                               :isMulti="true"
                               @scopeSel_data="sampledata($event,id)"
                               :class="{'error-text': !isSelectPool}"
@@ -1032,7 +1033,7 @@
               <v-card-actions style="padding: 24px 12px;">
                   <v-spacer></v-spacer>
                   <v-btn class="btn-secondary" @click="reportDialog = false">取消</v-btn>
-                  <v-btn class="btn-primary" @click="submitreport">新增</v-btn>
+                  <v-btn class="btn-primary" @click="submitreport">{{addReport[0].pond_ids?'修改':'新增'}}</v-btn>
               </v-card-actions>
           </v-card>
       </v-form>
@@ -3360,6 +3361,7 @@ export default {
     },
     /* 檢驗報告 */
     reportOpen() {
+      // console.log('open',this.bacteriaAll)
       if(this.bacteriaAll.length>0) {
         this.reportDialog=true;
       // this.addReport = [{msg:'',type:this.addOtherType[0].id}]
@@ -3370,7 +3372,9 @@ export default {
         setTimeout(async ()=>{
           this.isSelectPool = true;
           this.selectPond = [];
-          this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:null,position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+          this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,disease_id:[],file:null,pond_id:[],position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+          // this.$refs.poolSelect.changeEvent();
+          this.sampledata(null,0);
         },100)
       }else {
         alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
