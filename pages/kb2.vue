@@ -285,7 +285,7 @@
                                                                                 <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的飼料粗蛋白參數->砂糖量(做水)、尿素、前餐砂糖量、下餐砂糖量">粗蛋白含量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <v-text-field v-model.number="FeedParm['CrudeProteinPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
+                                                                                <v-text-field v-model.number="FeedParm['CrudeProteinPct']" type="number" dense hide-details class="mt-0" @change="changeCrudeProteinPct"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['CrudeProteinPct']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">粗蛋白含量</span><span class="pa-0 ma-0" slot="append">%</span></v-text-field> -->
@@ -326,7 +326,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的飼料CN比參數">飼料CN比</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料紀錄中所使用的飼料CN比參數"><a href="https://www.tfrin.gov.tw/News_Content.aspx?n=310&s=236373" target="_blank">飼料CN比</a></span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">飼料CN比(依照飼料)</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -2387,7 +2387,7 @@ export default {
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
-            FeedParm:{CumulativeFeedAmountInput:0},//飼料參數
+            FeedParm:{FeedCN:undefined,CumulativeFeedAmountInput:0},//飼料參數
             MakeWaterParm:{},//做水參數
             WaterQualityData:{},//水質資訊
             ObservationData:{Leftover:0},//觀察網資訊
@@ -2755,10 +2755,12 @@ export default {
                 }else{
                     input_data = _input_data;
                 }
-                console.log('import',input_data)
+                console.log('import',input_data);
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = input_data.FeedParm;
+                //自動查表計算飼料CN比
+                this.changeCrudeProteinPct();
                 if(this.FeedParm['LastFeedDatetime']) {
                     this.FeedParm['LastFeedDatetime'] = this.$moment(new Date(this.FeedParm['LastFeedDatetime']), 'YYYY-MM-DD HH:mm');
                 }
@@ -2841,6 +2843,37 @@ export default {
             }
             
             return;
+        },
+        changeCrudeProteinPct:function(){
+            this.FeedParm['FeedCN'] = this.calcFeedCN(this.FeedParm['CrudeProteinPct']);
+        },
+        //填入粗蛋白回傳結果
+        calcFeedCN:function(CrudeProteinPct){
+            const cnTable = [{"CrudeProtein":15,"cn":20.8},
+                                {"CrudeProtein":20,"cn":15.6},
+                                {"CrudeProtein":25,"cn":12.5},
+                                {"CrudeProtein":30,"cn":10.4},
+                                {"CrudeProtein":35,"cn":8.9},
+                                {"CrudeProtein":40,"cn":7.8},
+                                {"CrudeProtein":45,"cn":6.9},
+                                {"CrudeProtein":50,"cn":6.3},
+                                {"CrudeProtein":55,"cn":5.7},
+                                {"CrudeProtein":60,"cn":5.2},
+                                ];
+                if(typeof(CrudeProteinPct)!="undefined" && CrudeProteinPct != ""){
+                    var thisCrudeProteinPct = Number(CrudeProteinPct);//粗蛋白含量
+                    var currentCN = null;
+                    cnTable.forEach((item,i,array)=>{
+                        var min = item['CrudeProtein'] - 3;
+                        var max = item['CrudeProtein'] + 2;
+                        if(thisCrudeProteinPct >= min && thisCrudeProteinPct <= max){
+                            currentCN = item['cn'];
+                        }
+                    });
+                    return _.cloneDeep(currentCN);
+                }else{
+                    return null;
+                }
         },
         delQuerry:async function(querrypool){
             // if(this.querrySelectedLst[querrypool]==null){
