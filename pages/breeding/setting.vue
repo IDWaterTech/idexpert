@@ -86,6 +86,9 @@ export default {
     methods: {
         
     },
+    async created() {
+        await this._pageCheck(); //驗證頁面是否可檢視
+  }
    
 };
 </script>
