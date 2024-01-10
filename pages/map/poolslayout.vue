@@ -11,10 +11,12 @@
               minWidth: `${getWidth(b)}`,
               minHeight: `${b.id==''&& b.state==''&& b.rows.length==0?'48px':'0'}`,
               paddingTop: `${($route.path=='/basic'&& b.rows.length>0)? '0':'12px'}`,
-              paddingBottom: `${($route.path=='/basic'&& b.rows.length>0) ? '0':'12px'}`
+              paddingBottom: `${($route.path=='/basic'&& b.rows.length>0) ? '0':'12px'}`,
+              cursor:`${$route.path=='/basic'&& b.rows.length==0?'pointer':'default'}`
             }" 
             style="flex-shrink: 0;"
-            class="mx-3">
+            class="mx-3"
+            @click="goIndicator(b)">
             <!-- ((b.id==''&&b.name=='road')||(b.id==''&&b.state==''))?`width:${getWidth(b)}`:b.state == '無'? `width: ${getWidth(b)}`: b.state.length == 0 || b.rows.length==0 ? `background: ${getItemColor(b.state)};${getWidth(b)}`: b.rows.length==0?`background:transparent;width: ${getWidth(b)}`:`background:${getItemColor(b.state)};width: ${getWidth(b)};padding-top:12px` -->
             <mappoolelement
               v-if="b.rows.length==0 && b.name!=='road' && b.isSetting"
@@ -34,10 +36,11 @@
             <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="mx-3 sub-row">
               <v-row v-for="(row,sid) in b.rows" :key="sid" style="margin-bottom: 0;">
                   <div
-                      :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning',}"
+                      :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning','pointer':$route.path=='/basic'&& row.rows.length==0}"
                       :style="
                         row.name=='tank'?`background:#C7D380;width:120px`:row.state == '無'? b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
-                      ">
+                      "
+                      @click="goIndicator(row)">
                       <mappoolelement
                           :item="row"
                           :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
@@ -771,6 +774,7 @@ export default {
               if(this.water.filter(x=>x.id==r.id)[0].value) {
                 r.water = this.water.filter(x=>x.id==r.id)[0].value;
                 r.level = this.water.filter(x=>x.id==r.id)[0].level;
+                r.parm_name = this.water.filter(x=>x.id==r.id)[0].parm_name;
               }
             })
           }else {
@@ -787,6 +791,7 @@ export default {
             if(this.water.filter(x=>x.id==b.id)[0]) {
               b.water = this.water.filter(x=>x.id==b.id)[0].value;
               b.level = this.water.filter(x=>x.id==b.id)[0].level;
+              b.parm_name = this.water.filter(x=>x.id==b.id)[0].parm_name;
             }
           }
           b.center = false;
@@ -800,7 +805,14 @@ export default {
       }
       
       // this.getCenter();
-    },     
+    },
+    
+    goIndicator(item) {
+      if(item.id!==''&&item.rows.length==0&&this.$route.path=='/basic') {
+        this.$emit('goIndicator',item);
+      }
+      // this.$emit('goIndicator',item)
+    }    
   },
   computed: {
     MaxDate: function() {
@@ -902,7 +914,7 @@ export default {
     // },
     waterloading() {
       this.isLoad = true;
-    }
+    },
   }
 };
 </script>
@@ -1067,6 +1079,9 @@ v-row > div{
     background-color: rgba(#fefefe,0.5);
     animation: breath 2.5s infinite;
  }
+}
+.pointer {
+  cursor: pointer;
 }
 @keyframes breath {
   0% {

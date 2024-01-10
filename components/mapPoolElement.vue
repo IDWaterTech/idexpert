@@ -29,9 +29,9 @@
     </span>
     <span v-if="item.name=='tank'" style="z-index: 2;">生化槽</span>
     <span v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''" 
-        style="display: flex;align-items: center;justify-content: center;font-size: 1.25rem;font-weight: bold;z-index: 2;"
+        style="display: flex;align-items: center;justify-content: center;z-index: 2;"
         :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
-      ><span>{{ item.water }}</span></span>
+      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span> <span style="margin-left: 4px;">{{ item.parm_name=='Do'||item.parm_name=='NO2'||item.parm_name=='NH4'?'ppm':item.parm_name=='Temperature'?'°C':'' }}</span></span>
       <!-- :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}" -->
     <span v-if="$route.path=='/basic' && !item.water && item.state !== ''" style="z-index: 2;display: flex;align-items: center;justify-content: center;font-size: 1.25rem;">-</span>
     
@@ -164,7 +164,7 @@ export default {
       if(!this.showSelect) {
         this.selectedItem ='';
       }
-    }
+    },
   }
 };
 </script>

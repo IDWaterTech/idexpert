@@ -18,7 +18,7 @@
                 <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;" style="margin-right: 0;"></locate-select>
               </v-col>
               <v-col cols="12" md="2" sm="2" style="position: relative;">
-                <v-select 
+                <!-- <v-select 
                   v-model="timeSelect" 
                   @change="getWaterData()" 
                   dense 
@@ -29,7 +29,19 @@
                   item-value="id"
                   label="時間範圍內的數據"
                   class="time-select"
-                  ></v-select>
+                  ></v-select> -->
+                  <v-select 
+                    v-model="timeSelect" 
+                    @change="getWaterData()" 
+                    dense 
+                    filled 
+                    hide-details 
+                    :items="timekb" 
+                    item-text="name_ch"
+                    item-value="id"
+                    class="time-select"
+                    disabled
+                    ></v-select>
               </v-col>
               <!-- 選擇起始日 -->
               <!-- <v-col cols="12" md="3" sm="12">
@@ -347,7 +359,7 @@
                           class="time-select"
                           ></v-select>
                       </div> -->
-                      <poollayout class="poollayout" :water="water" :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]" :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"></poollayout>
+                      <poollayout class="poollayout" :water="water" :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]" :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor" @goIndicator="goIndicator($event)"></poollayout>
                     </div>
                   </v-card>
                 </v-col>
@@ -583,10 +595,10 @@ export default {
       waterloading:false,
       lightData:[],
       timekb:[
-        {id:0,name_ch:'5分鐘',value:5},
-        {id:1,name_ch:'30分鐘',value:30},
-        {id:2,name_ch:'8小時',value:480},
-        {id:3,name_ch:'24小時',value:1440},
+        // {id:0,name_ch:'5分鐘',value:5},
+        // {id:1,name_ch:'30分鐘',value:30},
+        // {id:2,name_ch:'8小時',value:480},
+        {id:3,name_ch:'24小時內最新數據',value:1440},
         // {id:4,name_ch:'30000',value:800000},
         // {id:5,name_ch:'40000',value:1000000}
         
@@ -1033,9 +1045,11 @@ export default {
                 // })
                 this.waterParm[parm.col_name].forEach(w=>{
                   w.level = this.checkValue(parm.col_name,w.value);
+                  w.parm_name = parm.col_name;
                 })
                 if(parm.col_name == nowTab) {
                   this.water = _.cloneDeep(this.waterParm[nowTab]);
+                  console.log('parm',this.water)
                   this.waterloading = true;
                 }
                 num++;
@@ -1252,6 +1266,7 @@ export default {
                 }
               }
             })
+            // p.parm_name = this.nowTab;
           }
         })
       }
@@ -1371,10 +1386,49 @@ export default {
           })
         }
       })
+    },
+    goIndicator(item) {
+      console.log('goIndicator',item);
+      let defitem = '';
+      switch (this.currenttab) {
+          case "亞硝酸鹽濃度":
+            defitem = '亞硝酸鹽濃度';
+            break;
+          case "氨氮濃度":
+            defitem = '氨氮濃度';
+            break;
+          case "溶氧濃度":
+            defitem = '溶氧濃度';
+            break;
+          case "酸鹼值":
+            defitem = '酸鹼值';
+            break;
+          case "水溫":
+            defitem = '溫度';
+            break;
+          default:
+            break;
+        }
+      this.urldata= {
+        sdate:  dayjs().format("YYYY-MM-DD"),
+        sel_area: this.sel_area,
+        sel_main: this.sel_main,
+        sel_pool: item.id,
+        defitem: defitem
+      };
+     
+        let routeData = this.$router.resolve({
+          path: "indicator/edit",
+          query: this.urldata
+        });
+        console.log(routeData);
+        window.open(routeData.href, "_blank");
+      
     }
   },
   async created() {
     // await this.getAlertData();
+    this.timeSelect = this.timekb[0].id
     await this._pageCheck(); //驗證頁面是否可檢視
     const agent = new https.Agent({
       rejectUnauthorized: false
