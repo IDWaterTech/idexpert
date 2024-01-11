@@ -67,10 +67,24 @@
               <v-row style="margin-bottom: 0;align-items: center;">
                 <v-col cols="12" style="padding: 0;padding-right: 8px;">
                   <div class="btn-groups">
-                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
+                    <!-- <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading||(passObj.authorization&&!passObj.authorization.verify)}">
+                      <v-icon>mdi-plus</v-icon>
+                      新增循環
+                    </v-btn> -->
+                    <v-btn v-if="(passObj.authorization&&passObj.authorization.verify)" tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
                     </v-btn>
+                    <v-tooltip v-else bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn class="btn-secondary" style="padding: 0 8px;pointer-events: initial;" :class="{'disabled':!isLoading||(passObj.authorization&&!passObj.authorization.verify)}"
+                                v-bind="attrs" v-on="on"
+                                >
+                                <v-icon>mdi-plus</v-icon>新增循環  
+                            </v-btn>
+                        </template>
+                        <span>未授權</span>
+                    </v-tooltip>
                     <v-btn tile class="btn-secondary green" @click="reportOpen" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
                       <v-icon style="font-size: 1rem;">mdi-file-multiple-outline</v-icon>
                       新增檢驗
@@ -1270,7 +1284,7 @@ export default {
       template_items: [],//樣版清單
       template_all:[],
       tempSelect: undefined,//已選到的樣版
-      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3]},
+      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],authorization:{execute:false,verify:false}},
       feededitmode:'cycleedit',
       editKey:0,
       optData:{WaterSource:[{ "name_en": "Groundwater", "name_ch": "地下水" }, { "name_en": "Seawater", "name_ch": "海水" }]},//選項
@@ -1412,6 +1426,50 @@ export default {
     };
   },
   methods: {
+    /* 取得授權 */
+    async getAuth() {
+      let datalst;
+      let auth = [];
+      this.passObj.authorization = {
+          execute: false,
+          verify: false
+      }
+      try{datalst = await this.getMenuAuthorization(false)}catch{console.log(error)}
+      if(datalst) {
+          auth = datalst.data;
+      }
+      for(let i=0;i<auth.length;i++) {
+          if(auth[i].id==14) {
+              if(auth[i].children) {
+                  for(let x=0;x<auth[i].children.length;x++) {
+                      if(auth[i].children[x].name == '執行') {
+                          this.passObj.authorization.execute = true;
+                      }else if(auth[i].children[x].name == '確認') {
+                          this.passObj.authorization.verify = true;
+                      }
+                  }
+              }
+          }else {
+              if(auth[i].children) {
+                  for(let x=0;x<auth[i].children.length;x++) {
+                      if(auth[i].children[x].id == 14) {
+                          if(auth[i].children[x].children) {
+                              for(let y=0;y<auth[i].children[x].children.length;y++) {
+                                  if(auth[i].children[x].children[y].name == '執行') {
+                                      this.passObj.authorization.execute = true;
+                                  }else if(auth[i].children[x].children[y].name == '確認') {
+                                      this.passObj.authorization.verify = true;
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+              
+          }
+      }
+      console.log('auth',this.passObj.authorization)
+  },
     //取得pooid的池子名稱
     getNodeName:function(id){
       if(this.maindata.length>0 && this.poolid!=undefined){
@@ -1712,9 +1770,10 @@ export default {
         .catch(error=>{
           this.$toast.error("error:" + error, { duration: 2000 });
         })
-        .finally(() => {
+        .finally(async () => {
           this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
-          this.passObj = {tempMain:{},tempContent:[]};
+          this.passObj.tempMain = {};
+          this.passObj.tempContent = []
         });
 
       // this.getDetectData(); //無論如何都要抓 事件紀錄清單
@@ -3753,6 +3812,7 @@ export default {
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+    await this.getAuth();
     await this.getWeather(); //氣象
     await this.getOptData(); //選項
     await this.getStateColor();

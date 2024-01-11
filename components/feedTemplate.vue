@@ -8,19 +8,19 @@
                         <!-- <v-col cols="12"></v-col> -->
                         <!-- <v-spacer></v-spacer> -->
                         <v-col cols="12" md="2" sm="3">
-                            <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require"
+                            <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"
                                 label="樣板名稱(中)" clearable></v-text-field>
                         </v-col>
                         <v-col cols="12" md="2" sm="3">
-                            <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require"
+                            <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"
                                 label="樣板名稱(英)" clearable></v-text-field>
                         </v-col>
                         <v-col cols="12" md="2" sm="3">
-                            <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable></v-text-field>
+                            <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"></v-text-field>
                         </v-col>
                         <v-col cols="2" v-if="templatemode=='add'" style="display: flex;align-items: center;justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存樣板"
-                                :class="{'disabled':!(tempMain.name_ch && tempMain.name_en)}"
+                                :class="{'disabled':!(tempMain.name_ch && tempMain.name_en) || templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                 @click="saveTemp"
                                 style="padding: 0 8px;">
                                 <v-icon style="font-size: 1.5rem;">mdi-content-save</v-icon>儲存
@@ -28,7 +28,7 @@
                         </v-col>
                         <v-col cols="2" v-if="templatemode=='edit'" style="display: flex;align-items: center;justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存編輯"
-                                :class="{'disabled':!(tempMain.name_ch && tempMain.name_en)}"
+                                :class="{'disabled':!(tempMain.name_ch && tempMain.name_en)|| templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                  @click="saveEdit"
                                  style="padding: 0 8px;">
                                 <v-icon style="font-size: 1.5rem;">mdi-content-save</v-icon>儲存
@@ -131,7 +131,8 @@
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn  class="btn-icon just-icon"
                                                              title="下方新增其他" 
-                                                             @click="addsubitem(mitem.phase_id,index)" 
+                                                             @click="addsubitem(mitem.phase_id,index)"
+                                                             :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                                              v-bind="attrs" v-on="on">
                                                             <v-icon>mdi-table-row-plus-after</v-icon>
                                                         </v-btn>
@@ -248,7 +249,7 @@
                                                              title="刪除" 
                                                              @click="delsubitem(mitem.phase_id, index)" 
                                                              v-bind="attrs" v-on="on"
-                                                             :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'}"
+                                                             :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'||templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                                              style="pointer-events: inherit;">
                                                             <v-icon>mdi-trash-can</v-icon>
                                                         </v-btn>
@@ -262,13 +263,26 @@
                                             </template>
                                         </v-data-table>
                                         <div v-if="templatemode!=='cycleedit' && mitem.stepList.length==0" class="add-step">
-                                            <v-btn class="btn-secondary" @click="addsubitem(mitem.phase_id, (mainItems.filter(x => x.phase_id == mitem.phase_id).length > 0) ? mainItems.filter(x => x.phase_id == mitem.phase_id)[0].stepList.length-1 : 0)">
+                                            <v-btn class="btn-secondary"
+                                                :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
+                                                 @click="addsubitem(mitem.phase_id, (mainItems.filter(x => x.phase_id == mitem.phase_id).length > 0) ? mainItems.filter(x => x.phase_id == mitem.phase_id)[0].stepList.length-1 : 0)">
                                                 <v-icon>mdi-plus</v-icon>
                                                 新增項目
                                             </v-btn>
                                         </div>
                                         <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
-                                            <v-btn class="btn-primary btn-small" @click="endCycle()">結束循環</v-btn>
+                                            <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
+                                            <v-tooltip v-else bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn class="btn-primary btn-small disabled"
+                                                        v-bind="attrs" v-on="on"
+                                                        style="pointer-events: initial;"
+                                                        >
+                                                        結束循環
+                                                    </v-btn>
+                                                </template>
+                                                <span>未授權</span>
+                                            </v-tooltip>
                                         </div>
                                         <!-- <span><b>最上方資料結構中的stepList資料整理(!!!!最後要上要記得清除!!!!)</b></span>
                                         <span class="error-text"><b>Note:新增/刪除 其他 需重新給api資料 因seq_id會變更</b></span>
@@ -546,7 +560,11 @@ export default {
                     ],
                     nowEnd: false,
                     nowId: 0,
-                    filter: [1,2,3]
+                    filter: [1,2,3],
+                    authorization: {
+                        execute: false,
+                        verify: false
+                    }
                 };
             }
         },
@@ -707,8 +725,9 @@ export default {
             // this.tempMain = _.cloneDeep(this.passObj.tempMain);
             this.mainItems = _.cloneDeep(this.passObj.tempContent);
             this.mainItems.forEach(m=>m.open=this.nowExpand);
+            this.authorization = _.cloneDeep(this.passObj.authorization);
             console.log('mainItems',this.mainItems);
-            this.getAuth();
+            // this.getAuth();
             // if(this.templatemode == 'cycleedit') {
             this.sortData();
             // };
@@ -741,49 +760,6 @@ export default {
        
     },
     methods: {
-        /* 取得授權 */
-        async getAuth() {
-            let datalst;
-            let auth = [];
-            this.authorization = {
-                execute: false,
-                verify: false
-            }
-            try{datalst = await this.getMenuAuthorization(false)}catch{console.log(error)}
-            if(datalst) {
-                auth = datalst.data;
-            }
-            for(let i=0;i<auth.length;i++) {
-                if(auth[i].id==14) {
-                    if(auth[i].children) {
-                        for(let x=0;x<auth[i].children.length;x++) {
-                            if(auth[i].children[x].name == '執行') {
-                                this.authorization.execute = true;
-                            }else if(auth[i].children[x].name == '確認') {
-                                this.authorization.verify = true;
-                            }
-                        }
-                    }
-                }else {
-                    if(auth[i].children) {
-                        for(let x=0;x<auth[i].children.length;x++) {
-                            if(auth[i].children[x].id == 14) {
-                                if(auth[i].children[x].children) {
-                                    for(let y=0;y<auth[i].children[x].children.length;y++) {
-                                        if(auth[i].children[x].children[y].name == '執行') {
-                                            this.authorization.execute = true;
-                                        }else if(auth[i].children[x].children[y].name == '確認') {
-                                            this.authorization.verify = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                }
-            }
-        },
         /* 資料整理 */
         // 排序其他
         sortData() {
@@ -2047,6 +2023,7 @@ export default {
                    tempMain :  this.tempMain,
                    tempContent: new Array()
                 }
+                para.tempMain.is_enable = true;
                 this.mainItems.forEach(m=>{
                     if(m.phase_name!=='空池') {
                         if(m.stepList.length>0){

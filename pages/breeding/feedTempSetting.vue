@@ -1,21 +1,21 @@
 <template>
     <div>
-        <v-row  v-if="template_items.length>0">
-            <v-col cols="7" md="6" sm="6" style="padding: 0;">
+        <v-row  v-if="filterTemplate.length>0">
+            <v-col cols="12" md="4" sm="6" style="padding: 0;">
                 <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
-                    <v-autocomplete :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="template_items" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
+                    <v-autocomplete :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="filterTemplate" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
                     
                     </v-autocomplete>
                     
                 </div>
             </v-col>
-            <v-col cols="5" md="6" sm="6" style="padding: 0;">
+            <v-col cols="12" md="8" sm="6" style="padding: 0;">
                 <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
-                    
+                    <v-checkbox v-model="isEnable" label="顯示已停用樣板" @change="checkTemp" hide-details style="margin-right: 16px;"></v-checkbox>
                     <div class="chevron" style="display: flex;align-items: center;">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
-                                <button :class="{'disabled':editmode=='edit'}" class="btn-icon" @click="editmode='edit';tempSelect= template_items[0].id;tempChange();nowExpand = true;" v-bind="attrs" v-on="on">
+                                <button :class="{'disabled':editmode=='edit'}" class="btn-icon" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;" v-bind="attrs" v-on="on">
                                     <v-icon>mdi-pencil</v-icon>
                                 </button>
                             </template>
@@ -38,6 +38,14 @@
                             </template>
                             <span>刪除樣板</span>
                         </v-tooltip>
+                        <v-tooltip bottom v-if="tempSelect&&filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable">
+                            <template v-slot:activator="{ on, attrs }">
+                                <button :class="{'disabled':editmode!=='edit'}" class="btn-icon just-icon delete" @click="cancelTemp" v-bind="attrs" v-on="on">
+                                    <v-icon>mdi-cancel</v-icon>
+                                </button>
+                            </template>
+                            <span>停用</span>
+                        </v-tooltip>
                         <!-- <v-btn v-if="editmode=='edit'" class="btn-icon green" @click="editmode='add'"><v-icon>mdi-plus</v-icon></v-btn>
                         <v-btn v-if="editmode=='add'" class="btn-icon" @click="editmode='edit'"><v-icon>mdi-pencil</v-icon></v-btn>
                         <v-btn v-if="editmode=='edit'" class="btn-icon delete" @click="editmode='delTemp'"><v-icon>mdi-trash-can</v-icon></v-btn> -->
@@ -56,7 +64,7 @@
                             <v-row style="align-items: center;margin-bottom: 0;justify-content: space-between;">
                                 <!-- <v-col cols="4" md="4" sm="4" style="padding: 0;"> -->
                                     <!-- <v-card-title>養殖歷程</v-card-title> -->
-                                    <v-card-title v-if="editmode=='edit'">樣板編輯</v-card-title>
+                                    <v-card-title v-if="editmode=='edit'">樣板編輯 <span v-if="tempSelect&&!filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable" class="error-text"> - 此樣板已停用</span></v-card-title>
                                     <v-card-title v-if="editmode=='add'">樣板新增</v-card-title>
                                 <!-- </v-col> -->
                                 <!-- <v-col cols="8" md="8" sm="8" style="padding: 0 8px;"> -->
@@ -114,8 +122,9 @@ export default {
             tempSelect: undefined,//已選到的樣版
             editmode:undefined,//目前是要新增樣版還是編輯
             passObj:{},
-            nowExpand: true
-            
+            nowExpand: true,
+            isEnable: false,
+            filterTemplate:[]
         }
     },
     methods: {
@@ -160,7 +169,7 @@ export default {
                     this.$toast.error("刪除 error:" + error, { duration: 2000 });
                 })
                 .finally(() => {
-                    this.tempSelect = undefined;
+                    // this.tempSelect = undefined;
                     this.getTemplateData();
                 });
         },
@@ -185,18 +194,58 @@ export default {
                 .then(res => {
                     this.template_items = res.data.map(x=>x.tempMain);
                     this.template_all = res.data;
-                    if(this.template_items.length>0) {
-                        this.tempSelect = res.data[0].tempMain.id;
-                        this.tempChange();
-                        this.editmode = 'edit';
-                    }else {
-                        this.editmode = 'add';
-                    }
+                    
+                    this.checkTemp();
                     
                 })
               .finally(() => {
                 /* 不論失敗成功皆會執行 */
               });
+        },
+        async cancelTemp() {
+            var id= this.tempSelect;
+            let para = _.cloneDeep(this.passObj);
+            para.tempMain.is_enable = false;
+            if (confirm("停用後即不可再次啟用!請確認是否停用 - " + para.tempMain.name_ch+"?")) {
+                await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
+                .then(res => {
+                    console.log(res);
+                    if(res.data=='修改成功'){
+                        this.$toast.success("修改成功", { duration: 2000 });
+                        this.tempSelect = this.filterTemplate[0].id;
+                        this.tempChange();
+                        this.editmode = 'edit';
+                    }else{
+                        this.$toast.error("修改樣板失敗:" + res.data, { duration: 2000 });
+                    }
+
+                    console.log("修改樣板API:" + res.request.responseURL);
+                })
+                .catch(error => {
+                    this.$toast.error("error:" + error, { duration: 2000 });
+                })
+                .finally(() => {
+                    this.tempSelect = undefined;
+                    this.getTemplateData();
+                });
+            }
+            
+        },
+        checkTemp() {
+            console.log('Enable',this.isEnable,this.template_items)
+            if(this.isEnable) {
+                this.filterTemplate = _.cloneDeep(this.template_items);
+            }else {
+                this.filterTemplate = _.cloneDeep(this.template_items.filter(x=>x.is_enable==true));
+            }
+            if(this.filterTemplate.length>0) {
+                this.tempSelect = this.filterTemplate[0].id;
+                this.tempChange();
+                this.editmode = 'edit';
+            }else {
+                this.editmode = 'add';
+            }
         }
     },
     async mounted() {

@@ -160,11 +160,11 @@ $color-green: #00A660;
     &:hover {
       background-color: $color-primary-25 !important;
     }
-    &.disabled {
-      pointer-events: none;
+    &.green {
       .theme--light.v-icon {
-        color: $color-dark-50 !important;
+        color: $color-green !important;
       }
+      
     }
     &.delete {
       .theme--light.v-icon {
@@ -178,6 +178,12 @@ $color-green: #00A660;
           color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
         }
         
+      }
+    }
+    &.disabled {
+      pointer-events: none;
+      .theme--light.v-icon {
+        color: $color-dark-50 !important;
       }
     }
   }
