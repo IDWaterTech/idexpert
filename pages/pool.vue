@@ -3102,7 +3102,7 @@ export default {
       await this.$axios
         .get(url)
         .then(res => {
-          this.template_items = res.data.map(x => x.tempMain);
+          this.template_items = res.data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain);
           this.template_all = res.data;
           console.log('template',this.template_all)
         })
