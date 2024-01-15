@@ -2513,6 +2513,9 @@ export default {
   .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
     padding-top: 8px;
   }
+  .v-data-table--fixed-header > .v-data-table__wrapper {
+    overflow-y: hidden;
+  }
 
 }
 </style>

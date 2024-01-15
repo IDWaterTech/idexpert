@@ -120,7 +120,7 @@
                         <v-row style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
                           <v-chip
                             v-for="mfla in item.main_items"
-                            :key="mfla.id"
+                            :key="item.id+'_main_'+mfla.id"
                             :color="item.color"
                             style="font-size: 12px;margin: 2px;"
                             :style="Number(mfla.feed_amount) <= 0 ? 'color:red;' : 'color:white;backgroundColor:#408FBC'"
@@ -139,7 +139,7 @@
                         <v-row  style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
                           <v-chip
                             v-for="fla in item.sub_items"
-                            :key="fla.id"
+                            :key="item.id+'_sub_'+fla.id"
                             :color="item.color"
                             style="font-size: 12px;margin: 2px;"
                             :style="Number(fla.feed_amount) <= 0 ? 'color:red;' : 'backgroundColor:#BFCBD2;color: #00324E;'"
@@ -680,7 +680,7 @@ export default {
       await this.$axios
         .get(url)
         .then(res => {
-          this.combo = res.data;
+          this.combo = res.data.filter(x=>x.is_enable==true);
           this.comboidx = null;
           this.combofield = {};
           console.log("取得得套餐清單(飼料設定)API:" + res.request.responseURL);
