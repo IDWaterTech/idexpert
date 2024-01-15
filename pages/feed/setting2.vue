@@ -1,6 +1,9 @@
 <template>
   <div>
     <v-card class="bg-card">
+      <v-overlay :value="!isLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <div class="content" style="padding-left: 0;padding-top:0;padding-bottom: 0;">
         <div class="result">
           <v-row style="margin-bottom: 8px;">
@@ -303,11 +306,11 @@
                     <div class="search">
                       <!-- {{ combo }} -->
                       <v-row>
-                        <v-col cols="7" md="3" sm="6" style="padding: 0;padding-left: 8px;">
+                        <v-col cols="12" md="3" sm="6" style="padding: 0;padding-left: 8px;">
                           <v-autocomplete
                             v-model="comboidx"
                             style="min-width: 200px;"
-                            :items="combo"
+                            :items="combodatas"
                             item-text="name_ch"
                             item-value="id"
                             dense
@@ -319,7 +322,8 @@
                             ></v-autocomplete>
                         </v-col>
                         
-                        <v-col cols="5" md="3" sm="6" style="padding: 0;">
+                        <v-col cols="12" md="3" sm="6" style="padding: 0;display: flex;align-items: center;">
+                          <v-checkbox v-model="isEnable" label="顯示已停用套餐" @change="checkTemp" hide-details style="margin-right: 16px;"></v-checkbox>
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                                 <button class="btn-icon just-icon" @click="getcombodata" v-bind="attrs" v-on="on">
@@ -388,7 +392,7 @@
                             <template  v-slot:[`item.actions`]="{item}">
                                 <v-tooltip bottom>
                                       <template v-slot:activator="{ on, attrs }">
-                                          <button class="btn-icon" @click="openEdit(item.id)" v-bind="attrs" v-on="on">
+                                          <button class="btn-icon" :class="{'disabled':!item.is_enable}" @click="openEdit(item.id)" v-bind="attrs" v-on="on">
                                               <v-icon>mdi-pencil</v-icon>
                                           </button>
                                       </template>
@@ -396,12 +400,21 @@
                                   </v-tooltip>
                                   <v-tooltip bottom>
                                       <template v-slot:activator="{ on, attrs }">
-                                          <button class="btn-icon delete" @click="combodelete(item.id)" v-bind="attrs" v-on="on">
-                                              <v-icon>mdi-trash-can</v-icon>
+                                          <button class="btn-icon just-icon delete" :class="{'disabled':!item.is_enable}" @click="comboenable(item,false)" v-bind="attrs" v-on="on">
+                                              <v-icon>mdi-cancel</v-icon>
                                           </button>
                                       </template>
-                                      <span>刪除</span>
+                                      <span>停用</span>
                                   </v-tooltip>
+                                  <!-- <v-tooltip v-else bottom>
+                                      <template v-slot:activator="{ on, attrs }">
+                                          <button class="btn-icon just-icon green" @click="comboenable(item,true)" v-bind="attrs" v-on="on">
+                                              <v-icon style="font-size: 1.5rem;">mdi-lock-open-check-outline</v-icon>
+                                          </button>
+                                      </template>
+                                      <span>啟用</span>
+                                  </v-tooltip> -->
+                                  
                             </template>
                           </v-data-table>
                           <!-- <el-table
@@ -1212,6 +1225,9 @@ export default {
       tablindexOrigin: "",
       expands: [], //Expand only one line into the current line id
       nowtag:{is_main:true,is_feed:true},
+      isEnable: false,
+      combodatas:[],
+      isLoading: false
     };
   },
   async mounted() {
@@ -1589,6 +1605,7 @@ export default {
             this.manuFilterData = this.fing.filter(x => x.feed_ingredient_category_id == this.fic_idx);
             
           }
+          this.isLoading = true;
           console.log("取得成份類別及細項API:" + res.request.responseURL);
         })
         .catch(error => {
@@ -1755,6 +1772,69 @@ export default {
           });
       }
     },
+    async comboenable(item,bool) {
+      if (confirm("停用後即不可再次啟用!請確認是否停用 - " + item.name_ch+"?")) {
+        var id = item.id;
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
+        var parms = _.cloneDeep(item);
+        parms.is_enable = bool;
+        //主成份
+        delete parms.main_items;
+        var main = [];
+        // this.combofield.main_items.forEach(element => {
+        //   main.push({id:element});
+        // });
+        for (let i = 0; i < Object.keys(this.main_formula).length; i++) {
+          const id = Object.keys(this.main_formula)[i];
+          const value = this.main_formula[id];
+          const remark = this.main_formula_remark[id];
+          main.push({ id: id, formula: value, remark: remark });
+        }
+        parms.main_items = main;
+        //次成份
+        delete parms.sub_items;
+        var sub = [];
+        for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
+          const id = Object.keys(this.sub_formula)[i];
+          const value = this.sub_formula[id];
+          const remark = this.sub_formula_remark[id];
+          sub.push({ id: id, formula: value, remark: remark });
+        }
+        parms.sub_items = sub;
+        parms.updated_user = this.$auth.$state.user.email;
+        //刪掉不要的
+        delete parms.created_time;
+        delete parms.created_user;
+        delete parms.id;
+        delete parms.updated_time;
+
+        await this.$axios
+          .patch(url, parms)
+          .then(res => {
+            if (res.data == "修改成功") {
+              this.$toast.success(`修改套餐清單(飼料設定)成功`, {
+                duration: 2000
+              });
+              this.getcombodata();
+              console.log(
+                "修改套餐清單(飼料設定)API:" + res.request.responseURL
+              );
+            } else {
+              this.$toast.error(`修改套餐清單(飼料設定)失敗:${res.data}`, {
+                duration: 2000
+              });
+            }
+          })
+          .catch(error => {
+            this.$toast.error(`修改套餐清單(飼料設定)失敗:${error}`, {
+              duration: 2000
+            });
+          })
+          .finally(() => {});
+      }
+      
+    },
+    //停用套餐清單(飼料設定)
     //選擇套餐清單(飼料設定)
     comboselect: async function() {
       console.log('combo select',this.comboidx);
@@ -1792,6 +1872,8 @@ export default {
       // this.fingparam = [],//成份參數
       // this.ficisEditing=false;//只要select change就關閉編輯成份類別
       this.comboisEditing = false; //只要select change就關閉編輯套餐清單
+      
+      this.checkTemp();
       // this.getparmdata();//參數清單
     },
     // 整理主/次成分資料
@@ -1830,6 +1912,7 @@ export default {
       if (val) {
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
         var parms = _.cloneDeep(this.combofield);
+        parms.is_enable = true;
         //主成份
         delete parms.main_items;
         var main = [];
@@ -2197,6 +2280,19 @@ export default {
         this.combosubmit()
       }
       // this.editForm = false;
+    },
+    // 過濾套餐是否顯示停用
+    checkTemp() {
+      console.log('Enable',this.comboidx,this.isEnable,this.combo)
+      let nowData = _.cloneDeep(this.comboidx==null?this.combo:this.combo.filter(x => x.id == this.comboidx));
+      if(this.isEnable) {
+          this.manuFilterData = _.cloneDeep(nowData);
+          this.combodatas = _.cloneDeep(this.combo);
+      }else {
+          this.manuFilterData = _.cloneDeep(nowData.filter(x => x.is_enable==true));
+          this.combodatas = _.cloneDeep(this.combo.filter(x => x.is_enable==true));
+      }
+        
     }
   },
   async created() {
@@ -2219,6 +2315,7 @@ export default {
         // this.comboidx = this.combo[0].id;
         this.comboidx = null;
         // this.manuFilterData = [];
+        this.isEnable = false;
         this.comboselect();
 
       }
