@@ -813,7 +813,7 @@ export default {
                 duration: 2000
               });
             } else {
-              this.$toast.success(`新增失敗:${res.data}`, {
+              this.$toast.error(`新增失敗:${res.data}`, {
                 duration: 2000
               });
             }
