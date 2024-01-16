@@ -3436,6 +3436,9 @@ export default {
             let url =`${this.$store.state.mydata.gobal_api.apiUrl}/kb/required-data/`;
             await this.$axios.get(url, {params:parm}).then(res => {
                 if (res.status == 200) {
+                    this.getSampleData();
+                    res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
+                    res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
                     this.importQuerry(res.data,true);//導入資料
                     this.postParm(false,null,true);//查詢ai回饋資訊
                     var keyLst = Object.keys(this.optData);
@@ -3448,7 +3451,54 @@ export default {
                         }
                         
                     })
+                    
                     this.$toast.success(`取得基本資料成功`, { duration: 2000 });
+                } else {
+                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                }
+                console.log("取得基本資料API:" + res.request.responseURL);
+            }).catch(error => {
+                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            })
+            .finally(() => {
+                    //this.getdata();
+            });
+        },
+        async getSampleData() {
+            let factory = '';
+            let area = '';
+            let pond = '';
+            this.allData.forEach(f=>{
+                f.node.forEach(a=>{
+                    a.node.forEach(p=>{
+                        if(p.id==this.nowSelectPool) {
+                            pond = p.name;
+                            area = a.name;
+                            factory = f.name;
+                        }
+                    })
+                })
+            })
+            var parm ={
+                Username: this.$auth.$state.user.email,
+                Factory: factory,
+                PondArea : area,
+                Pond:  pond
+            };
+            let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/last-sampling-data/`;
+            await this.$axios.get(url, {params:parm}).then(res => {
+                if (res.status == 200) {
+                    if(res.data.LastShrimpWeight || res.data.LastSamplingDatetime) {
+                        if(res.data.LastShrimpWeight!==null) {
+                            this.ObservationData['LastShrimpWeight'] = res.data.LastShrimpWeight;
+                        }
+                        if(res.data.LastSamplingDatetime!==null) {
+                            this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(res.data.LastSamplingDatetime), 'YYYY-MM-DD HH:mm');
+                        }
+                    }
+                    
+                    
+                    // this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
