@@ -43,6 +43,16 @@
                     disabled
                     ></v-select>
               </v-col>
+              <v-col cols="12" md="2" sm="2" style="position: relative;">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <button class="btn-icon just-icon" @click="getWaterData()" v-bind="attrs" v-on="on">
+                        <v-icon style="font-size: 24px;">mdi-reload</v-icon>
+                      </button>
+                  </template>
+                  <span>重新整理</span>
+                </v-tooltip>
+              </v-col>
               <!-- 選擇起始日 -->
               <!-- <v-col cols="12" md="3" sm="12">
                 <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
@@ -320,6 +330,7 @@
                             )" :fixed="item.text == fixedname" :prop="item.value" :label="item.text" :key="key" align="center"
                               >
                             </el-table-column>
+                            
                           </el-table>
                           <v-data-table :headers="headers" :items="mainpool.items" item-key="unit" :footer-props="footerProps"
                             no-data-text="查無資料" disable-sort :loading="tableloading" style="height: 100%;width: 100%;" v-if="false">
@@ -587,7 +598,8 @@ export default {
       ],
       nowAreaId:{
         factory_id: null,
-        pond_area_id: null
+        pond_area_id: null,
+        range:null
       },
       nowAreaTag:'',
       water: [],
@@ -747,9 +759,39 @@ export default {
           )
           .then(async res => {
             this.mainpool.items = _.cloneDeep(res.data);
-            this.originData = _.cloneDeep(res.data);
+            console.log(this.mainpool.items);
+            this.mainpool.items.forEach(x=>{
+              x.estimated_num = x.estimated_num==null?x.estimated_num:(parseFloat(x.estimated_num).toFixed(2))
+            })
+            this.originData = _.cloneDeep(this.mainpool.items);
             // await this.getWaterData();
-            
+            let nowTab = ''
+            switch (this.currenttab) {
+              case "亞硝酸鹽濃度":
+                nowTab = 'NO2';
+                break;
+              case "氨氮濃度":
+                nowTab = 'NH4';
+                break;
+              case "溶氧濃度":
+                nowTab = 'Do';
+                break;
+              case "酸鹼值":
+                nowTab = 'pH';
+                break;
+              case "水溫":
+                nowTab = 'Temperature';
+                break;
+              default:
+                break;
+            }
+            if(nowTab=='NH4') {
+              this.nowAreaId.range = this.lightData['AmmoniaN'];
+            }else if(nowTab=='Temperature') {
+              this.nowAreaId.range = this.lightData['Temp'];
+            }else {
+                this.nowAreaId.range = this.lightData[nowTab];
+            }
             this.getAlertNum();
             
             setTimeout(()=>{
@@ -945,6 +987,7 @@ export default {
               this.total.pond = sums[index];
             }
             if(column.label == '預估放養隻數') {
+              sums[index] = sums[index].toFixed(2)
               this.total.predict = sums[index];
               this.showPredict = true;
             }
@@ -1022,6 +1065,13 @@ export default {
             time_range: this.timekb.filter(x=>x.id==this.timeSelect)[0].value,
             col_name: k
           };
+          if(nowTab=='NH4') {
+            this.nowAreaId.range = this.lightData['AmmoniaN'];
+          }else if(nowTab=='Temperature') {
+            this.nowAreaId.range = this.lightData['Temp'];
+          }else {
+              this.nowAreaId.range = this.lightData[nowTab];
+          }
           this.water = [];
           this.waterParm[parm.col_name] = [];
           this.waterloading = false;
@@ -1059,7 +1109,6 @@ export default {
                 }
                 
               }
-              
               
               // this.goAnchor('#chart');
             })
@@ -1651,6 +1700,13 @@ export default {
           break;
       }
       this.water = this.waterParm[nowTab];
+      if(nowTab=='NH4') {
+        this.nowAreaId.range = this.lightData['AmmoniaN'];
+      }else if(nowTab=='Temperature') {
+        this.nowAreaId.range = this.lightData['Temp'];
+      }else {
+          this.nowAreaId.range = this.lightData[nowTab];
+      }
     }
   }
 };

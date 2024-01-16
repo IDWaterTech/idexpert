@@ -13,9 +13,10 @@
               paddingTop: `${($route.path=='/basic'&& b.rows.length>0)? '0':'12px'}`,
               paddingBottom: `${($route.path=='/basic'&& b.rows.length>0) ? '0':'12px'}`,
               cursor:`${$route.path=='/basic'&& b.rows.length==0?'pointer':'default'}`
-            }" 
+            }"
             style="flex-shrink: 0;"
             class="mx-3"
+            :title="getTitle(b)"
             @click="goIndicator(b)">
             <!-- ((b.id==''&&b.name=='road')||(b.id==''&&b.state==''))?`width:${getWidth(b)}`:b.state == '無'? `width: ${getWidth(b)}`: b.state.length == 0 || b.rows.length==0 ? `background: ${getItemColor(b.state)};${getWidth(b)}`: b.rows.length==0?`background:transparent;width: ${getWidth(b)}`:`background:${getItemColor(b.state)};width: ${getWidth(b)};padding-top:12px` -->
             <mappoolelement
@@ -40,6 +41,7 @@
                       :style="
                         row.name=='tank'?`background:#C7D380;width:120px`:row.state == '無'? b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
                       "
+                      :title="getTitle(row)"
                       @click="goIndicator(row)">
                       <mappoolelement
                           :item="row"
@@ -136,7 +138,7 @@
       <div v-else-if="ponds.length==0 && !$route.query.field || ponds.length==0 && $route.path=='/basic'" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
       <div v-else-if="$route.query.field" class="nodata">無資料!</div>
       <div v-else-if="!isSetting && !$route.query.field && $route.path!=='/basic'" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
-      <div  v-else-if="!isSetting && $route.path=='/basic'" class="nodata">尚未設置地圖，請先至養殖池況頁，點選 設定 > 配置設定，選擇此區進行設定</div>
+      <div v-else-if="!isSetting && $route.path=='/basic'" class="nodata">尚未設置地圖，請先至養殖池況頁，點選 設定 > 配置設定，選擇此區進行設定</div>
     </div>
   </div>
 </template>
@@ -464,7 +466,8 @@ export default {
       type: Object,
       default: {
         factory_id: null,
-        pond_area_id: null
+        pond_area_id: null,
+        range: null
       }
     }
   },
@@ -812,6 +815,56 @@ export default {
         this.$emit('goIndicator',item);
       }
       // this.$emit('goIndicator',item)
+    },
+    getTitle(item) {
+      // console.log(item,this.ponds);
+      let warning = '';
+      let danger = '';
+      if(item.rows.length==0 && item.id!=='') {
+        if(this.nowAreaId.range) {
+          if(this.nowAreaId.range['warning']) {
+            var keysdata = Object.keys(this.nowAreaId.range['warning']);
+            for(let i=0;i<keysdata.length;i++) {
+              this.nowAreaId.range['warning'][keysdata[i]].forEach(x=>{
+                if(x!=='') {
+                  warning += x+',';
+                }
+              })
+            }
+            // console.log('warning',item.check['warning'])
+          }
+        
+      }
+      if(this.nowAreaId.range) {
+        if(this.nowAreaId.range['critical']) {
+          var keysdata = Object.keys(this.nowAreaId.range['critical']);
+          for(let i=0;i<keysdata.length;i++) {
+            this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
+              if(x!=='') {
+                danger += x+',';
+              }
+            })
+          }
+          // console.log('critical',item.check['critical'])
+        }
+        
+      }
+      } 
+      
+
+      if(warning!==''&& danger!=='') {
+        return '警告值：'+warning+'\n危險值：'+danger;
+      }else {
+        if(warning==''&& danger=='') {
+          return ''
+        }else {
+          if(warning!=='') {
+            return '警告值：'+warning;
+          }else {
+            return '危險值：'+danger;
+          }
+        }
+      }
     }    
   },
   computed: {
@@ -853,7 +906,6 @@ export default {
       // return dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
       return dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
     },
-    
   },
   watch: {
     successData() {
