@@ -4,18 +4,25 @@
 // $font-size-root: 20px;
 
 // color
+// 主要色
 $color-primary: #006AA6;
 $color-primary-75: #408FBC;
 $color-primary-50: #7FB4D2;
 $color-primary-25: #BFD9E8;
+// 次要色
 $color-dark: #00324E;
 $color-dark-75: #40657A;
 $color-dark-50: #7F98A6;
 $color-dark-25: #BFCBD2;
+// 淺色
 $color-light: #F4FBFF;
+// 淺色(次底板背景色)
 $color-lighten: #E6F5FA;
+// 強調色(錯誤/注意/刪除)
 $color-accent: #A60017;
+// 表格色
 $color-form: #6c9bcd;
+// 輔助色(綠)
 $color-green: #00A660;
 
 //btn btn-primary主要底色+白文字 btn-secondary次要邊框+邊框色文字
@@ -120,7 +127,7 @@ $color-green: #00A660;
   &.delete {
     background-color: $color-accent !important;
     &:hover {
-      background-color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
+      background-color: lighten($color: rgba($color-accent,0.8), $amount: 3) !important;
     }
     &.disabled {
       pointer-events: none;
@@ -173,9 +180,9 @@ $color-green: #00A660;
       }
       
       &:hover {
-        background-color: rgba(#A60017,0.1) !important;
+        background-color: rgba($color-accent,0.1) !important;
         .theme--light.v-icon {
-          color: lighten($color: rgba(#A60017,0.8), $amount: 3) !important;
+          color: lighten($color: rgba($color-accent,0.8), $amount: 3) !important;
         }
         
       }
@@ -465,10 +472,11 @@ $color-green: #00A660;
   .result {
     .header-bar {
       .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,.theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
-        background-color: #E6F5FA;
+        background-color: $color-lighten;
+;
       }
       .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
-        background-color: #E6F5FA;
+        background-color: $color-lighten;
       }
       .v-tabs-slider-wrapper {
         display: none;
@@ -477,11 +485,11 @@ $color-green: #00A660;
         // font-size: 18px;
         font-size: 1rem !important;
         font-weight: bold;
-        color: #7F98A6 !important;
+        color: $color-dark-50 !important;
         .icons {
           margin-right: 4px;
           i {
-            color: #7F98A6;
+            color: $color-dark-50;
           }
           
         }
@@ -599,7 +607,7 @@ $color-green: #00A660;
       justify-content: center;
       margin-bottom: 48px;
       .title {
-        color: #006AA6;
+        color: $color-primary;
         h3 {
           // margin-top: -12px;
           color: $color-primary;
@@ -631,10 +639,10 @@ $color-green: #00A660;
 
 // result card 次要底板(區隔搜尋欄位增加畫面顏色層次與注意力)
 .v-card.result-card {
-  background-color: #E6F5FA;
+  background-color: $color-lighten;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
   .theme--light.v-card {
-      background-color: #E6F5FA;
+      background-color: $color-lighten;
   }
   .card-title {
     display: flex;
@@ -664,33 +672,33 @@ $color-green: #00A660;
       }
       .v-btn--is-elevated {
         box-shadow: none;
-        background-color: #006AA6;
+        background-color: $color-primary;
         color: #fff;
       }
       .theme--light.v-btn.v-btn--disabled {
-        color: #7F98A6;
+        color: $color-dark-50;
       }
     }
     .v-tab {
       // font-size: 18px;
       font-size: 1.1rem !important;
       font-weight: bold;
-      color: #7F98A6 !important;
+      color: $color-dark-50 !important;
       .icons {
         margin-right: 4px;
         i {
-          color: #7F98A6;
+          color: $color-dark-50;
         }
         
       }
     }
     .v-tab.v-tab--active {
-      color: #006AA6 !important;
+      color: $color-primary !important;
       border-bottom: 2px solid $color-primary;
       .icons {
         margin-right: 4px;
         i {
-          color: #006AA6;
+          color: $color-primary;
         }
         
       }
