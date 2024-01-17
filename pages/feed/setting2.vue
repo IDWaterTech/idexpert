@@ -398,22 +398,22 @@
                                       </template>
                                       <span>修改</span>
                                   </v-tooltip>
-                                  <v-tooltip bottom>
+                                  <v-tooltip v-if="item.is_enable" bottom>
                                       <template v-slot:activator="{ on, attrs }">
-                                          <button class="btn-icon just-icon delete" :class="{'disabled':!item.is_enable}" @click="comboenable(item,false)" v-bind="attrs" v-on="on">
+                                          <button class="btn-icon just-icon delete"  @click="comboenable(item,false)" v-bind="attrs" v-on="on">
                                               <v-icon>mdi-cancel</v-icon>
                                           </button>
                                       </template>
                                       <span>停用</span>
                                   </v-tooltip>
-                                  <!-- <v-tooltip v-else bottom>
+                                  <v-tooltip v-else bottom>
                                       <template v-slot:activator="{ on, attrs }">
                                           <button class="btn-icon just-icon green" @click="comboenable(item,true)" v-bind="attrs" v-on="on">
                                               <v-icon style="font-size: 1.5rem;">mdi-lock-open-check-outline</v-icon>
                                           </button>
                                       </template>
                                       <span>啟用</span>
-                                  </v-tooltip> -->
+                                  </v-tooltip>
                                   
                             </template>
                           </v-data-table>
@@ -1773,7 +1773,7 @@ export default {
       }
     },
     async comboenable(item,bool) {
-      if (confirm("停用後即不可再次啟用!請確認是否停用 - " + item.name_ch+"?")) {
+      if (confirm((bool?"請確認是否啟用 - ":"請確認是否停用 - ") + item.name_ch+"?")) {
         var id = item.id;
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
         var parms = _.cloneDeep(item);

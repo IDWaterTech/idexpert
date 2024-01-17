@@ -40,11 +40,19 @@
                         </v-tooltip>
                         <v-tooltip bottom v-if="tempSelect&&filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable">
                             <template v-slot:activator="{ on, attrs }">
-                                <button :class="{'disabled':editmode!=='edit'}" class="btn-icon just-icon delete" @click="cancelTemp" v-bind="attrs" v-on="on">
+                                <button :class="{'disabled':editmode!=='edit'}" class="btn-icon just-icon delete" @click="cancelTemp(false)" v-bind="attrs" v-on="on">
                                     <v-icon>mdi-cancel</v-icon>
                                 </button>
                             </template>
                             <span>停用</span>
+                        </v-tooltip>
+                        <v-tooltip bottom v-if="tempSelect&&!filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable">
+                            <template v-slot:activator="{ on, attrs }">
+                                <button :class="{'disabled':editmode!=='edit'}" class="btn-icon just-icon green" @click="cancelTemp(true)" v-bind="attrs" v-on="on">
+                                    <v-icon style="font-size: 1.5rem;">mdi-lock-open-check-outline</v-icon>
+                                </button>
+                            </template>
+                            <span>啟用</span>
                         </v-tooltip>
                         <!-- <v-btn v-if="editmode=='edit'" class="btn-icon green" @click="editmode='add'"><v-icon>mdi-plus</v-icon></v-btn>
                         <v-btn v-if="editmode=='add'" class="btn-icon" @click="editmode='edit'"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -82,8 +90,6 @@
                                 <!-- </v-col> -->
                             </v-row>    
                         </div>
-                          
-                        
                     </div>
                     <div class="content">
                         <div class="search">
@@ -202,11 +208,11 @@ export default {
                 /* 不論失敗成功皆會執行 */
               });
         },
-        async cancelTemp() {
+        async cancelTemp(bool) {
             var id= this.tempSelect;
             let para = _.cloneDeep(this.passObj);
-            para.tempMain.is_enable = false;
-            if (confirm("停用後即不可再次啟用!請確認是否停用 - " + para.tempMain.name_ch+"?")) {
+            para.tempMain.is_enable = bool;
+            if (confirm((bool?"請確認是否啟用 - ":"請確認是否停用 - ") + para.tempMain.name_ch+"?")) {
                 await this.$axios
                 .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
                 .then(res => {
