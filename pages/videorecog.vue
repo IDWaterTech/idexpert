@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="video">
+    <v-card class="bg-card">
         <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
                 <div class="title">
@@ -10,11 +10,11 @@
             </v-row>
         </div> -->
         <div class="content" style="padding-top:12px">
-          <div class="search">
-            <v-row style="margin-bottom: 12px;">
+          <div class="search" style="margin-bottom: 12px;">
+            <v-row style="margin-bottom: 0;">
               <v-col cols="12" md="3" class="caculate" sm="12" style="position: relative;">
                 <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
-                <label v-if="nowPool!==''" class="label-select">*請選擇養殖區域(必選)</label>
+                <!-- <label v-if="nowPool!==''" class="label-select">*請選擇養殖區域(必選)</label> -->
               </v-col>
               <!-- 選擇起日 -->
               <v-col cols="12" md="3" sm="12"  class="caculate">
@@ -57,10 +57,11 @@
                     class="btn-primary"
                     >查詢</v-btn
                   >
-                  <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
+                  <span v-if="innerWidth <= 768" class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
                 </div>
               </v-col>
             </v-row>
+            <v-row v-if="innerWidth>768" style="margin-bottom: 0;"><v-col cols="12" style="padding: 0 12px;"><span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span></v-col></v-row>
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
@@ -120,9 +121,9 @@
                       </div>
                     </template>
                     <template v-slot:[`item.action`]="{item}">
-                      <button class="btn-add delete" style="width: 24px;height: 24px;" @click="delitem('bacteria',item.id)">
+                      <v-btn class="btn-icon delete"  @click="delitem('bacteria',item.id)">
                           <v-icon color="white">mdi-trash-can</v-icon>
-                      </button>
+                      </v-btn>
                     </template>
                   </v-data-table>
                 </v-card>
@@ -450,59 +451,12 @@ export default {
 
 <style lang="scss" scoped>
 .v-application.v-application--is-ltr {
-  .v-card.video {
-    min-height: 84vh;
-    overflow: hidden;
-    margin-bottom: 24px;
+  .v-card.bg-card {
     * {
       color: $color-dark;
     }
-    button.v-icon, button.v-btn--icon .v-icon {
-      color: $color-primary;
-    }
     .red--text {
       color: $color-accent !important;
-    }
-    .card-title,.content {
-      padding: 12px 24px;
-      .row {
-        margin-left: 0;
-        margin-top: 0;
-        margin-bottom: 24px;
-      }
-      .title {
-        display: flex;
-        align-items: center;
-        .theme--light.v-icon {
-          color: $color-form;
-        }
-      }
-    }
-    .card-title {
-     padding-bottom: 0;
-    }
-    .v-card__title {
-      color: $color-dark;
-      font-weight: bold;
-    }
-    .content {
-      padding-top: 0;
-      .row {
-        align-items: center;
-        .v-input {
-          margin-top: 0;
-          padding-top: 0;
-          &.primary {
-            background-color: transparent !important;;
-          }
-        }
-        .theme--light.v-btn.v-btn--disabled .v-icon {
-          color: $color-dark-25 !important;
-        }
-        .theme--light.v-btn.v-btn--disabled .v-btn__loading,.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
-          background-color: $color-dark-25 !important;
-        }
-      }
     }
     .search {
       margin-bottom: 12px;
@@ -533,115 +487,13 @@ export default {
           width: 100%;
         }
       }
-      .result-content {
-        padding: 0 24px;
-        &.event {
-          margin-top: 24px;
-        }
-      }
     }
   }
 }
 ::v-deep {
-  .search {
-    .font-size-large {
-      font-size: 16px;
-    }
-    
-    .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-      border-color: $color-form;
-    }
-  
-    .theme--light.v-input input {
-      font-size: 14px;
-      color: $color-dark;
-    }
-    .label-select {
-      font-size: 10px;
-      color: $color-form !important;
-      position: absolute;
-      left: 18px;
-      top: 0;
-    }
-    .theme--light.v-label {
-      color: $color-dark;
-    }
-    .theme--light.v-icon,.theme--light.v-label.v-label--active {
-      color: $color-form;
-    }
-  }
   .result {
     .theme--light.v-data-table.v-data-table--fixed-header thead th {
       background: $color-lighten;
-    }
-    .header-bar {
-      .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,
-      .theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
-        background-color: $color-lighten;
-      }
-      .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
-          background-color: $color-lighten;
-      }
-      .v-toolbar__content, .v-toolbar__extension {
-        padding: 0;
-        button {
-          height: 36px;
-          border-radius: 4px;
-        }
-        .v-btn--is-elevated {
-          box-shadow: none;
-          background-color: $color-primary;
-          color: #fff;
-        }
-        .theme--light.v-btn.v-btn--disabled {
-          color: $color-dark-50;
-        }
-      }
-      .v-tab {
-        font-size: 18px;
-        font-weight: bold;
-        color: $color-dark-50 !important;
-        .icons {
-          margin-right: 4px;
-          i {
-            color: $color-dark-50;
-          }
-          
-        }
-      }
-      .v-tab.v-tab--active {
-        color: $color-primary !important;
-        .icons {
-          margin-right: 4px;
-          i {
-            color: $color-primary;
-          }
-          
-        }
-      }
-      .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
-        border-radius: 4px;
-      }
-    }
-  }
-  .select-color{
-    &.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-      border-color: $color-form;
-    }
-    & .theme--light.v-input input, &.theme--light.v-input textarea,& .theme--light.v-label {
-      color: $color-dark;
-    }
-    & .theme--light.v-label.v-label--active {
-      color: $color-form;
-    }
-    & .v-icon.v-icon {
-      color: $color-form;
-    }
-    & .v-select__selection--comma,.theme--light.v-select .v-select__selections {
-      color: $color-dark;
-    }
-    & .v-select__slot {
-      border-color: $color-form;
     }
   }
   .edit-table {
@@ -659,98 +511,12 @@ export default {
       height: 100%;
     }
   }
-  .edit-disabled {
-    &.theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
-      border-image: none;
-      border: none;
-    }
-    &.theme--light.v-text-field--filled > .v-input__control > .v-input__slot,&.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
-      background: $color-dark-25;
-      color: $color-dark-50;
-    }
-    &.v-text-field .v-input__slot {
-      border-radius: 4px;
-    }
-  }
 }
 button {
-      width: 24px;
-      height: 24px;
-      background-color: $color-primary;
-      border-radius: 4px;
-      position: relative;
-      margin: 4px;
-      transition: all 0.3s;
-      padding: 0 10px;
-      &:hover {
-          background-color: lighten($color: $color-primary, $amount: 3);
-      }
-      .theme--light.v-icon {
-          font-size: 1rem;
-          color: #fff;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%,-50%);
-      }
-      &.btn-primary {
-        height: 32px;
-        width: initial;
-        padding: auto 12px;
-        .theme--light.v-icon {
-          font-size: 1rem;
-          color: #fff;
-          position: relative;
-          transform: none;
-          top: initial;
-          left: initial;
-          margin-right: 4px;
-        }
-      }
-      
-      &.btn-add {
-          background-color: $color-green !important;
-          &:hover {
-              background-color: lighten($color: $color-green, $amount: 3) !important;
-          }
-      }
-      &.save {
-          background-color: $color-primary !important;
-          &:hover {
-              background-color: lighten($color: $color-primary, $amount: 3) !important;
-          }
-      }
-      &.delete {
-          background-color: $color-accent !important;
-          &:hover {
-              background-color: lighten($color: rgba($color-accent,0.9), $amount: 3) !important;
-          }
-      }
-      &.clear {
-          background-color: #67BEDA !important;
-          &:hover {
-              background-color: lighten($color: rgba(#67BEDA,0.9), $amount: 3) !important;
-          }
-      }
-      &.disabled {
-        background-color: $color-dark-25 !important;
-        user-select: none;
-        .theme--light.v-icon {
-          color: $color-dark-50 !important;
-        }
-        &:hover {
-          background-color: $color-dark-25 !important;
-        }
-        
-      }
-      .theme--light.v-data-table {
-        background-color: $color-lighten;
-      }
-      .result-content {
-        padding: 0 24px;
-
-      }
-    }
+  .theme--light.v-data-table {
+    background-color: $color-lighten;
+  }
+}
 @media (max-width: 768px) {
   .v-application.v-application--is-ltr {
     .v-card.video {
