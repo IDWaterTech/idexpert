@@ -57,6 +57,7 @@
                     class="btn-primary"
                     >查詢</v-btn
                   >
+                  <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
                 </div>
               </v-col>
             </v-row>
