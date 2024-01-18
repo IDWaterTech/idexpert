@@ -34,7 +34,7 @@
               @saveSuccess="saveDelete($event)"
             ></mappoolelement>
 
-            <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="mx-3 sub-row">
+            <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="sub-row" :class="{'mx-3':$route.path=='/map'}">
               <v-row v-for="(row,sid) in b.rows" :key="sid" style="margin-bottom: 0;">
                   <div
                       :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning','pointer':$route.path=='/basic'&& row.rows.length==0}"
