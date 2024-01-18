@@ -40,7 +40,6 @@
                     item-text="name_ch"
                     item-value="id"
                     class="time-select"
-                    disabled
                     ></v-select>
               </v-col>
               <v-col cols="12" md="2" sm="2" style="position: relative;">
@@ -607,10 +606,11 @@ export default {
       waterloading:false,
       lightData:[],
       timekb:[
-        // {id:0,name_ch:'5分鐘',value:5},
-        // {id:1,name_ch:'30分鐘',value:30},
-        // {id:2,name_ch:'8小時',value:480},
         {id:3,name_ch:'24小時內最新數據',value:1440},
+        {id:0,name_ch:'5分鐘內最新數據',value:5},
+        {id:1,name_ch:'30分鐘內最新數據',value:30},
+        {id:2,name_ch:'8小時內最新數據',value:480},
+        
         // {id:4,name_ch:'30000',value:800000},
         // {id:5,name_ch:'40000',value:1000000}
         
