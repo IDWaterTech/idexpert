@@ -3395,7 +3395,7 @@ export default {
             this.querrySelectedLst={"1":"","2":"","3":"","4":""};
             this.BaseParm = {InspectedTime:'',InspectedDate:'',Factory:this.BaseParm['Factory']?this.BaseParm['Factory']:'',PondArea:this.BaseParm['PondArea']?this.BaseParm['PondArea']:'',Pond:this.BaseParm['Pond']?this.BaseParm['Pond']:''};
             this.BreedingParm = {};
-            this.FeedParm={CumulativeFeedAmountInput:0};
+            this.FeedParm={FeedCN:undefined,CumulativeFeedAmountInput:0};
             this.MakeWaterParm={};
             this.WaterQualityData = {};
             this.ObservationData = {Leftover:0};
