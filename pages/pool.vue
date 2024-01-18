@@ -161,7 +161,7 @@
                   <!-- 養殖密度 -->
                   <el-table-column label="養殖密度" prop="num_per_unit" align="center"></el-table-column>
                   <!-- 預估放養隻數 -->
-                  <el-table-column label="預估放養隻數" prop="total" align="center"></el-table-column>
+                  <el-table-column label="預估放養隻數" prop="total" align="center"><template slot-scope="scope">{{scope.row.total.toFixed(2)}}</template></el-table-column>
                   <!-- 目標CN比 -->
                   <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
                   <!-- 預估FCR -->
