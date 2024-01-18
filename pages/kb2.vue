@@ -330,7 +330,7 @@
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">飼料CN比(依照飼料)</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <v-text-field v-model.number="FeedParm['FeedCN']" type="number" dense hide-details class="mt-0"></v-text-field>
+                                                                                <v-text-field v-model.number="FeedParm['FeedCN']" :key="FeedCNKey" type="number" dense hide-details class="mt-0"></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['FeedCN']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">飼料CN比(依照飼料)</span></v-text-field> -->
@@ -2388,6 +2388,7 @@ export default {
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
             FeedParm:{FeedCN:undefined,CumulativeFeedAmountInput:0},//飼料參數
+            FeedCNKey:0,
             MakeWaterParm:{},//做水參數
             WaterQualityData:{},//水質資訊
             ObservationData:{Leftover:0},//觀察網資訊
@@ -2846,6 +2847,7 @@ export default {
         },
         changeCrudeProteinPct:function(){
             this.FeedParm['FeedCN'] = this.calcFeedCN(this.FeedParm['CrudeProteinPct']);
+            this.FeedCNKey =  Math.floor(Math.random() * 100);
         },
         //填入粗蛋白回傳結果
         calcFeedCN:function(CrudeProteinPct){
