@@ -941,7 +941,7 @@
                                                               () => (add.execute_date = getNowDate())
                                                             "></v-text-field>
                                 </template>
-                                <v-date-picker v-model="add.execute_date" no-title locale="zh-tw" @input="menu_reportdate = false">
+                                <v-date-picker v-model="add.execute_date" no-title locale="zh-tw" :max="getNowDate()" @input="menu_reportdate = false">
                                 </v-date-picker>
                               </v-menu>
                                 <!-- <span style="font-size: 12px;line-height: 12px;">檢驗時間</span>
