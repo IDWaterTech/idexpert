@@ -1232,7 +1232,7 @@
                                                                                         <v-text-field v-model="BaseParm['InspectedDate']" class="mt-0" clearable readonly dense hide-details 
                                                                                             v-bind="attrs" v-on="on"></v-text-field>
                                                                                     </template>
-                                                                                    <v-date-picker v-model="BaseParm['InspectedDate']" locale="zh-tw" no-title @input="
+                                                                                    <v-date-picker v-model="BaseParm['InspectedDate']" :max="getNowDate()" locale="zh-tw" no-title @input="
                                                                                     menu_inspecteddate = false;
                                                                                     "></v-date-picker>
                                                                                 </v-menu>
