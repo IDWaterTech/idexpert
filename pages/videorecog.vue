@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card">
         <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
@@ -57,11 +60,23 @@
                     class="btn-primary"
                     >查詢</v-btn
                   >
-                  <span v-if="innerWidth <= 768" class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
+                  <div class="step" v-if="innerWidth <= 768">
+                    <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
+                    <v-btn class="btn-secondary" @click="stepLoad()">同步</v-btn>
+                  </div>
+                  
                 </div>
               </v-col>
             </v-row>
-            <v-row v-if="innerWidth>768" style="margin-bottom: 0;"><v-col cols="12" style="padding: 0 12px;"><span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span></v-col></v-row>
+            <div class="step" v-if="innerWidth>768" >
+              <v-row style="margin-bottom: 0;">
+                <v-col cols="12" style="padding: 0 12px;">
+                  <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
+                  <v-btn class="btn-secondary" @click="stepLoad()">同步</v-btn>
+                </v-col>
+              </v-row>
+            </div>
+            
           </div>
           <!-- 搜尋結果 -->
           <div class="result">
@@ -197,7 +212,13 @@ export default {
         "items-per-page-text": "每頁",
         "items-per-page-options": [25, 50, 75, 100]
       },
-      headers:[]
+      headers:[
+                  {align: "center",groupable: false,text: "資料",value: "id",width:"10%"},
+                  {align: "center",groupable: false,text: "觀察網飼料圖(已辨識)",value: "feed_img",width:"25%", sortable: false },
+                  {align: "center",groupable: false,text: "觀察網蝦子圖(已辨識)",value: "shrimp_img",width:"25%", sortable: false },
+                  {align: "center",groupable: false,text: "辨識資訊",value: "shrimp",width:"30%"},
+                  {align: "center",groupable: false,text: "操作",value: "action",width:"10%", sortable: false}],
+      isLoading: false,
     };
   },
   methods: {
@@ -407,6 +428,7 @@ export default {
           this.maindata = res.data;
           var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
           this.maindata = data;
+          this.isLoading = true;
         });
       //用id抓到name
       this.maindata.forEach(x => {
@@ -423,6 +445,11 @@ export default {
         this.poolName = getedItem.name;
         console.log(getedItem);
       }
+    },
+    stepLoad() {
+      this.isLoading = false;
+      // console.log('Step Load',this.isLoading);
+      setTimeout(()=>{this.isLoading=true},1000);
     }
   },
   async mounted() {
