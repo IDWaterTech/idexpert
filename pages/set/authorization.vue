@@ -198,6 +198,8 @@
                     :flat="true"
                     :default-expand-level="2"
                     placeholder="已授權的職位"
+                    append-to-body  
+                    z-index="9999"
                     :sort-value-by="'INDEX'"
                     :disable-branch-nodes="true"
                     class="select-template"
@@ -215,6 +217,8 @@
                     :options="depdata"
                     :flat="true"
                     :default-expand-level="1"
+                    append-to-body  
+                    z-index="9999"
                     placeholder="被授權的單位"
                     :sort-value-by="'INDEX'"
                     :disable-branch-nodes="false"
@@ -237,6 +241,8 @@
                     :disable-branch-nodes="false"
                     class="select-template"
                     :limit="3"
+                    append-to-body  
+                    z-index="9999"    
                     :limitText="() => `+ ${addform.privilege_id.length-3}`"
                   >
                     <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
@@ -312,6 +318,8 @@
                   :flat="true"
                   :default-expand-level="2"
                   placeholder="已授權的職位"
+                  append-to-body  
+                  z-index="9999"
                   :sort-value-by="'INDEX'"
                   :disable-branch-nodes="true"
                   class="select-template"
@@ -327,6 +335,8 @@
                   :flat="true"
                   :default-expand-level="1"
                   placeholder="被授權的單位"
+                  append-to-body  
+                  z-index="9999"
                   :sort-value-by="'INDEX'"
                   :disable-branch-nodes="false"
                   class="select-template"
@@ -342,6 +352,8 @@
                   :options="privdata"
                   :default-expand-level="1"
                   placeholder="被授權的項目"
+                  append-to-body  
+                  z-index="9999"
                   :sort-value-by="'INDEX'"
                   :value-consists-of="'ALL_WITH_INDETERMINATE'"
                   :disable-branch-nodes="false"
