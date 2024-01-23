@@ -1453,7 +1453,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">預估間補個體重</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend">預估收成個體重</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"></v-text-field>
