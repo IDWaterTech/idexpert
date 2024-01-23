@@ -422,7 +422,7 @@ export default {
       sel_main: "",
       sel_area: "",
       clickeditem: "",
-      defitem: ["亞硝酸鹽濃度", "氨氮濃度", "溫度", "溶氧濃度", "酸鹼值"],
+      defitem: ["亞硝酸鹽濃度", "氨氮濃度", "水溫", "溶氧濃度", "酸鹼值"],
       defPool: { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [],用料:[] },
       //items: ["A1", "A2"],
       tabs: [
@@ -1453,7 +1453,7 @@ export default {
             defitem = '酸鹼值';
             break;
           case "水溫":
-            defitem = '溫度';
+            defitem = '水溫';
             break;
           default:
             break;
