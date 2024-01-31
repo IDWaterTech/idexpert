@@ -994,7 +994,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('IntestinalColor')">
-                                                                                    <v-chip v-for="(item,id) in ObservationData.IntestinalColor" :key="'IntestinalColor'+id">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.IntestinalColor" :key="'IntestinalColor'+id" :class="{'chips-value':item.value>0}">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
                                                                                 </div>
@@ -1011,7 +1011,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('HepatopancreasColor')">
-                                                                                    <v-chip v-for="(item,id) in ObservationData.HepatopancreasColor" :key="'HepatopancreasColor'+id">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.HepatopancreasColor" :key="'HepatopancreasColor'+id" :class="{'chips-value':item.value>0}">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
                                                                                 </div>
@@ -1028,7 +1028,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('MuscleColor')">
-                                                                                    <v-chip v-for="(item,id) in ObservationData.MuscleColor" :key="'MuscleColor'+id">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.MuscleColor" :key="'MuscleColor'+id" :class="{'chips-value':item.value>0}">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
                                                                                 </div>
@@ -1045,7 +1045,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('BodyColor')">
-                                                                                    <v-chip v-for="(item,id) in ObservationData.BodyColor" :key="'BodyColor'+id">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.BodyColor" :key="'BodyColor'+id" :class="{'chips-value':item.value>0}">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
                                                                                 </div>
@@ -1061,7 +1061,7 @@
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('BodyShape')">
-                                                                                    <v-chip v-for="(item,id) in ObservationData.BodyShape" :key="'BodyShape'+id">
+                                                                                    <v-chip v-for="(item,id) in ObservationData.BodyShape" :key="'BodyShape'+id" :class="{'chips-value':item.value>0}">
                                                                                         {{ item.name_ch }}:{{ item.value }}
                                                                                     </v-chip>
                                                                                 </div>
@@ -2562,6 +2562,17 @@ export default {
                 .catch(error=>{
                     console.log(error);
                 })
+            // this.allData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+            // this.querrySelectedLst = {};
+            // this.querryDataLst = {}
+            // this.allData.forEach(f=>{
+            //     f.node.forEach(a=>{
+            //         a.node.forEach(p=>{
+            //             this.querrySelectedLst[`${p.id}`] = '';
+            //             this.querryDataLst[`${p.id}`] = [];
+            //         })
+            //     })
+            // })
         },
         getNowDate: function() {
             let mydate = dayjs().format("YYYY-MM-DD");
@@ -3651,6 +3662,11 @@ export default {
 
             }else {
                 this.chipsDialog=false;
+                this.chipsDialogData.forEach(c=>{
+                    if(c.value==null||c.value=='') {
+                        c.value = 0;
+                    }
+                })
                 this.chipsDialogData.sort((a,b)=>{return b.value-a.value});
                 this.ObservationData[this.chipsDialogTitle.param] = _.cloneDeep(this.chipsDialogData);
             }
@@ -4264,8 +4280,13 @@ export default {
                     font-size: 12px;
                     height: 20px;
                     padding: 0 8px;
-                    background: $color-primary-75;
+                    background: rgba($color-dark-50,0.8);
                     color: #fff;
+                }
+                .v-chip.chips-value.v-size--default {
+                    background: $color-primary-75;
+                    // background: rgba($color-accent,0.35);
+                    // color: $color-dark;
                 }
             }
         }
