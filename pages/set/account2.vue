@@ -279,6 +279,36 @@
               ></el-switch> -->
             </template>
           </el-table-column>
+          <el-table-column
+            prop="line_notify"
+            label="個人通知允許"
+            align="left"
+          >
+            <template slot-scope="scope">
+              <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
+              <span style="width: 36px;display: inline-block;">Line</span>
+              <v-tooltip v-if="scope.row.line_notify" bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>允許接收</span>
+              </v-tooltip>
+              <v-tooltip v-else bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle delete" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-close-circle-outline</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>禁止接收</span>
+              </v-tooltip>
+            </template>
+          </el-table-column>
           <!-- 禁刪使用者所以強制隱藏 -->
           <!-- <el-table-column
             label="操作"
@@ -830,6 +860,10 @@ export default {
         )
         .then(res => {
           this.accdata = res.data;
+          this.accdata.forEach(async (acc,cid)=>{
+            await this.getUser(acc.username,cid);
+          })
+          console.log('acc',this.accdata);
           console.log("accList api：" + res.request.responseURL);
         })
         .catch(error => {
@@ -858,6 +892,7 @@ export default {
           this.maindata = res.data;
           // this.sel_main = 1;
         });
+      // this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱
@@ -1195,7 +1230,31 @@ export default {
       // }else{
       //   return `background-color:${bgcolor};`;
       // }
-    }
+    },
+    getUser: async function(account,id) {
+      let accheader = { account: account };
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
+          headers: accheader
+        })
+        .then(res => {
+          if (res.data != "帳號資料不存在") {
+            console.log('getUser',res.data);
+            this.accdata[id].line_notify = res.data.is_personal_enable_line
+            
+            // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
+          } else {
+            return false;
+            // this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+        })
+        .finally(() => {
+          //this.getdata();
+        });
+    },
   },
   async created() {
     // await this._pageCheck(); //驗證頁面是否可檢視
