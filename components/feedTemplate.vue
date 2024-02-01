@@ -29,8 +29,8 @@
                         <v-col cols="2" v-if="templatemode=='edit'" style="display: flex;align-items: center;justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存編輯"
                                 :class="{'disabled':!(tempMain.name_ch && tempMain.name_en)|| templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                 @click="saveEdit"
-                                 style="padding: 0 8px;">
+                                @click="saveEdit"
+                                style="padding: 0 8px;">
                                 <v-icon style="font-size: 1.5rem;">mdi-content-save</v-icon>儲存
                             </v-btn>
                         </v-col>
@@ -130,10 +130,10 @@
                                                 <v-tooltip bottom>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn  class="btn-icon just-icon"
-                                                             title="下方新增其他" 
-                                                             @click="addsubitem(mitem.phase_id,index)"
-                                                             :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                                             v-bind="attrs" v-on="on">
+                                                            title="下方新增其他" 
+                                                            @click="addsubitem(mitem.phase_id,index)"
+                                                            :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
+                                                            v-bind="attrs" v-on="on">
                                                             <v-icon>mdi-table-row-plus-after</v-icon>
                                                         </v-btn>
                                                     </template>
@@ -159,7 +159,7 @@
                                             
                                             <!-- 訊息 -->
                                             <template v-slot:[`item.msg`]="{ item }">
-                                                {{ item.msg }}
+                                                {{ item.type==0?item.remark:item.msg }}
                                                 <div v-if="item.bacteriaSelect && item.bacteriaSelect.length>0" class="items">
                                                     <v-chip
                                                         v-for="(chip,cid) in item.bacteriaSelect"
@@ -174,15 +174,15 @@
                                             </template>
                                             <!-- 執行 -->
                                             <template v-slot:[`item.deft_executor`]="{ item }">
-                                               <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span>
-                                               <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
-                                               <!-- {{ dateFormat(item.execute_time) }} -->
+                                                <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span>
+                                                <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
+                                                <!-- {{ dateFormat(item.execute_time) }} -->
                                             </template>
                                             <!-- 確認 -->
                                             <template v-slot:[`item.deft_verifier`]="{ item }">
-                                               {{ item.deft_verifier }} 
-                                               <span v-if="item.verify_time&&item.verify_time!==''" v-text="dateFormat(item.verify_time)"></span>
-                                               <!-- {{ dateFormat(item.execute_time) }} -->
+                                                {{ item.deft_verifier }} 
+                                                <span v-if="item.verify_time&&item.verify_time!==''" v-text="dateFormat(item.verify_time)"></span>
+                                                <!-- {{ dateFormat(item.execute_time) }} -->
                                             </template>
                                             <!-- 執行/確認 -->
                                             <template v-slot:[`item.executed_actions`]="{ index }">
@@ -232,11 +232,11 @@
                                                 <v-tooltip v-if="templatemode=='cycleedit'" bottom>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn  class="btn-icon"
-                                                             title="編輯" 
-                                                             @click="editsubitem(mitem.phase_id, index)" 
-                                                             v-bind="attrs" v-on="on"
-                                                             :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'}"
-                                                             style="pointer-events: inherit;">
+                                                            title="編輯" 
+                                                            @click="editsubitem(mitem.phase_id, index)" 
+                                                            v-bind="attrs" v-on="on"
+                                                            :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'}"
+                                                            style="pointer-events: inherit;">
                                                             <v-icon>mdi-pencil</v-icon>
                                                         </v-btn>
                                                     </template>
@@ -246,11 +246,11 @@
                                                 <v-tooltip bottom>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn  class="btn-icon delete"
-                                                             title="刪除" 
-                                                             @click="delsubitem(mitem.phase_id, index)" 
-                                                             v-bind="attrs" v-on="on"
-                                                             :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'||templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                                             style="pointer-events: inherit;">
+                                                            title="刪除" 
+                                                            @click="delsubitem(mitem.phase_id, index)" 
+                                                            v-bind="attrs" v-on="on"
+                                                            :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'||templatemode=='edit'&&!passObj.tempMain.is_enable}"
+                                                            style="pointer-events: inherit;">
                                                             <v-icon>mdi-trash-can</v-icon>
                                                         </v-btn>
                                                     </template>
@@ -265,7 +265,7 @@
                                         <div v-if="templatemode!=='cycleedit' && mitem.stepList.length==0" class="add-step">
                                             <v-btn class="btn-secondary"
                                                 :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                                 @click="addsubitem(mitem.phase_id, (mainItems.filter(x => x.phase_id == mitem.phase_id).length > 0) ? mainItems.filter(x => x.phase_id == mitem.phase_id)[0].stepList.length-1 : 0)">
+                                                @click="addsubitem(mitem.phase_id, (mainItems.filter(x => x.phase_id == mitem.phase_id).length > 0) ? mainItems.filter(x => x.phase_id == mitem.phase_id)[0].stepList.length-1 : 0)">
                                                 <v-icon>mdi-plus</v-icon>
                                                 新增項目
                                             </v-btn>
@@ -662,6 +662,7 @@ export default {
                 { text: '執行員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
                 { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: '編輯', value: 'reactions', sortable: false,width:"7%",showmode: ['cycleedit']},
+                { text: '備註', value: 'remark', sortable: false,width:"20%",showmode: ['add', 'edit']},
                 { text: '操作', value: 'udactions', sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
             ],
             mainItems: [{
@@ -2075,16 +2076,21 @@ export default {
                 .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
                 .then(res => {
                     this.stepdataAll = res.data;
-                    this.mainItems.forEach(m=>{
+                    let data = _.cloneDeep(this.mainItems);
+                    this.mainItems = [];
+                    data.forEach(m=>{
                         m.stepList.forEach(s=>{
                             this.stepdataAll.forEach(a=>{
                                 if(s.step_id == a.id) {
                                     s.step_name_ch = a.name_ch;
                                     s.step_name_en = a.name_en;
+                                    s.remark = a.remark;
                                 }
                             })
                         })
                     })
+                    this.mainItems = _.cloneDeep(data);
+                    console.log('getStep',this.mainItems)
                     if(bool) {
                         console.log('get Step',this.stepitem,this.stepformedit,this.stepdataAll);
                         let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
@@ -2132,6 +2138,7 @@ export default {
                 checktime:undefined,//確認時間
                 result:undefined,//結果
                 msg:undefined,//msg
+                remark: this.stepitem.remark,
             };
             if(this.mainItems.filter(x=>x.phase_id == phaseid).length==0){
                 var itemName = this.items.filter(x=>x.id == phaseid)[0].text;
