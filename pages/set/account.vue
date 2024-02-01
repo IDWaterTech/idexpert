@@ -1,51 +1,46 @@
 <template>
   <div>
-    <v-row>
-      <v-col>
-        <!-- <el-button type="primary" icon="el-icon-plus" circle></el-button> -->
-        <v-btn
-          class="mx-2"
-          fab
-          dark
-          small
-          color="primary"
-          depressed
-          @click="showaddDialog"
-        >
-          <v-icon>
-            mdi-account-plus-outline
-          </v-icon>
-        </v-btn>
-        <v-btn
-          class="mx-2"
-          @click="showannDialog"
-          fab
-          dark
-          small
-          color="primary"
-          depressed
-          ><v-icon>mdi-cellphone-message</v-icon></v-btn
-        >
-      </v-col>
-      <v-col cols="12" align-self="center">
+    <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
+      <!-- 表頭 -->
+      <div class="card-title" style="cursor: pointer;margin: 8px;padding: 12px;">
+          <div class="title">
+              <v-card-title style="padding: 0;">帳號清單</v-card-title>
+          </div>
+          <div class="chevron">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                  <button class="btn-icon green" @click="showaddDialog" v-bind="attrs" v-on="on">
+                      <v-icon>mdi-plus</v-icon>
+                  </button>
+              </template>
+              <span>新增帳號</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                  <button class="btn-icon" @click="showannDialog" v-bind="attrs" v-on="on">
+                      <v-icon>mdi-cellphone-message</v-icon>
+                  </button>
+              </template>
+              <span>發布公告</span>
+            </v-tooltip>
+          </div>
+      </div>
+      <!-- 清單 -->
+      <div class="content" style="padding-top:12px;width: 100%;">
         <el-table
           :data="accdata"
           style="width: 100%"
-          max-height="600"
+          height="67vh"
           row-key="id"
           :expand-row-keys="expands"
           @expand-change="expandSelect"
           :header-cell-style="tableHeaderStyle"
         >
-          <!-- :header-cell-style="{
-            'background-color': '#64B5F6',
-            color: '#fff',
-            'font-weight': '500'
-          }" -->
-          <el-table-column type="expand">
+          <!-- <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline>
-                <el-form-item>
+                <div class="space-icon" style="width: 48px;"></div>
+                <el-form-item style="padding-left: 16px;">
                   <span>帳號：{{ props.row.username }}</span
                   ><br />
                   <span>姓名：{{ props.row.account_name }}</span
@@ -53,25 +48,22 @@
                     @click="showedititemDialog(props.row, 'account_name')"
                     >mdi-square-edit-outline</v-icon
                   ><br />
-                  職位：
-                  <span>
-                    <v-chip
-                      class="ma-2"
-                      :color="getUnitSet('color', item.department)"
-                      label
-                      text-color="white"
-                      v-for="item in props.row.position"
-                      :key="item.id"
-                    >
-                      <v-icon left>
-                        {{ getUnitSet("icon", item.department) }}
-                      </v-icon>
-                      {{ item.department }}-{{ item.name }} </v-chip
-                    ><v-icon @click="showpositDialog(props.row)"
-                      >mdi-square-edit-outline</v-icon
-                    >
-                  </span>
-                  <br />
+                  <div class="position" style="display: flex;align-items: center;">
+                    職位：
+                    <span style="display: inline-block;">
+                      <div
+                        class="ma-2"
+                        style="display: inline-block;"
+                        v-for="item in props.row.position"
+                        :key="item.id"
+                      >
+                        {{ item.department }}-{{ item.name }} </div
+                      >
+                      <v-icon @click="showpositDialog(props.row)"
+                        >mdi-square-edit-outline</v-icon
+                      >
+                    </span>
+                  </div>
                   <span>
                     <span>所屬場別：</span>
                     <v-chip
@@ -86,28 +78,11 @@
                     ><v-icon slot="append" @click="showedititemDialog(props.row, 'factory_id')"
                       >mdi-square-edit-outline</v-icon
                     >
-                    <!-- <v-autocomplete
-                      v-model="props.row.factory_id"
-                      filled
-                      disabled
-                      color="#ff0000"
-                      multiple
-                      :items="maindata"
-                      item-text="name"
-                      item-value="id"
-                      dense
-                      deletable-chips
-                      chips
-                      style="width:450px"
-                      ><v-icon slot="append" @click="showedititemDialog(props.row, 'factory_id')"
-                      >mdi-square-edit-outline</v-icon
-                    ></v-autocomplete
-                    > -->
                   </span>
                 </el-form-item>
               </el-form>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             v-for="(item, key) in accCols.filter(
               x => !accColsHide.includes(x.text)
@@ -115,7 +90,6 @@
             :prop="item.value"
             :label="item.text"
             :key="key"
-            align="center"
             :width="item.width"
             v-show="false"
           >
@@ -123,8 +97,7 @@
           <el-table-column
             prop="department"
             label="單位"
-            width="250"
-            align="left"
+            width="200"
           >
             <template slot-scope="scope">
               <v-chip
@@ -140,13 +113,40 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="position"
-            label="職位"
-            width="150"
-            align="center"
+            prop="factory_id"
+            label="所屬場別"
+            width="200"
           >
             <template slot-scope="scope">
               <v-chip
+                class="ma-2"
+                label
+                color="teal"
+                text-color="white"
+                v-for="item in scope.row.factory_id"
+                :key="item"
+              >
+                {{ maindata.filter(x=>x.id == item).length==1?maindata.filter(x=>x.id == item)[0].name:item}} </v-chip
+              >
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="position"
+            label="職位"
+          >
+            <template slot-scope="scope">
+              <div
+                class="ma-2"
+                
+                v-for="(item, key) in scope.row.position"
+                :key="key"
+                >{{
+                  item.department == "艾滴科技股份有限公司"
+                    ? ""
+                    : item.department + "-"
+                }}{{ item.name }}</div
+              >
+              <!-- <v-chip
                 class="ma-2"
                 :color="getUnitSet('color', item.department)"
                 text-color="white"
@@ -157,14 +157,12 @@
                     ? ""
                     : item.department + "-"
                 }}{{ item.name }}</v-chip
-              >
+              > -->
             </template>
           </el-table-column>
           <el-table-column
             prop="is_active"
             label="狀態"
-            width="150"
-            align="center"
           >
             <template slot-scope="scope">
               <el-tag
@@ -172,47 +170,147 @@
                 disable-transitions
                 >{{ scope.row.is_active ? "啟用中" : "停用中" }}</el-tag
               >
-              <el-switch
+              <!-- <el-switch
                 v-model="scope.row.is_active"
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
-              ></el-switch>
+              ></el-switch> -->
             </template>
           </el-table-column>
           <el-table-column
             prop="is_active"
             label="允許接收通知"
-            width="150"
-            align="center"
+            align="left"
           >
             <template slot-scope="scope">
-              <v-icon color="#EA4335">mdi-gmail</v-icon>Mail
-              <el-switch
+              <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
+              <span style="width: 36px;display: inline-block;">Mail</span>
+              <v-tooltip v-if="scope.row.is_sys_enable_email" bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>允許接收</span>
+              </v-tooltip>
+              <v-tooltip v-else bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle delete" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-close-circle-outline</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>禁止接收</span>
+              </v-tooltip>
+              <!-- <v-btn v-if="scope.row.is_sys_enable_email" class="btn-circle"><v-icon>mdi-check-circle</v-icon></v-btn>
+              <v-btn v-else  class="btn-circle delete"><v-icon >mid-close-circle</v-icon></v-btn> -->
+              <!-- <el-switch
                 v-model="scope.row.is_sys_enable_email"
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
               ></el-switch
-              ><br />
-              <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line
-              <el-switch
+              > -->
+              <br />
+              <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon> -->
+              <span style="width: 36px;display: inline-block;">Line</span>
+              <v-tooltip v-if="scope.row.is_sys_enable_line" bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>允許接收</span>
+              </v-tooltip>
+              <v-tooltip v-else bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle delete" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-close-circle-outline</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>禁止接收</span>
+              </v-tooltip>
+              <!-- <v-btn v-if="scope.row.is_sys_enable_line" class="btn-circle"><v-icon>mdi-check-circle</v-icon></v-btn>
+              <v-btn v-else  class="btn-circle delete"><v-icon >mid-close-circle</v-icon></v-btn> -->
+              <!-- <el-switch
                 v-model="scope.row.is_sys_enable_line"
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
-              ></el-switch><br />
-              <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB
-              <el-switch
+              ></el-switch> -->
+              <br />
+              <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon> -->
+              <span style="width: 36px;display: inline-block;">KB</span>
+              <v-tooltip v-if="scope.row.is_sys_enable_line_kb" bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>允許接收</span>
+              </v-tooltip>
+              <v-tooltip v-else bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle delete" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-close-circle-outline</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>禁止接收</span>
+              </v-tooltip>
+              <!-- <v-btn v-if="scope.is_sys_enable_line_kb" class="btn-circle"><v-icon>mdi-check-circle</v-icon></v-btn>
+              <v-btn v-else  class="btn-circle delete"><v-icon >mid-close-circle</v-icon></v-btn> -->
+              <!-- <el-switch
                 v-model="scope.row.is_sys_enable_line_kb"
                 active-color="#13ce66"
                 inactive-color="#eee"
                 @change="statchange(scope.$index, scope.row)"
-              ></el-switch>
+              ></el-switch> -->
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="line_notify"
+            label="個人通知允許"
+            align="left"
+          >
+            <template slot-scope="scope">
+              <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
+              <span style="width: 36px;display: inline-block;">Line</span>
+              <v-tooltip v-if="scope.row.line_notify" bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-check-circle</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>允許接收</span>
+              </v-tooltip>
+              <v-tooltip v-else bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-circle delete" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;">
+                          <v-icon>mdi-close-circle-outline</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>禁止接收</span>
+              </v-tooltip>
             </template>
           </el-table-column>
           <!-- 禁刪使用者所以強制隱藏 -->
-          <el-table-column
+          <!-- <el-table-column
             label="操作"
             v-if="
               [
@@ -220,289 +318,370 @@
                 'jeff.wang@idwater.com.tw'
               ].includes($auth.$state.user.email.toLowerCase())
             "
+          > -->
+          <el-table-column
+            label="操作"
           >
             <template slot-scope="scope">
+              <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-icon"
+                              title="編輯" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;"
+                              @click="handleEdit(scope.$index, scope.row)">
+                          <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>編輯</span>
+              </v-tooltip>
+              <v-tooltip v-if="
+                  [
+                    'jianwei.wen@idwater.com.tw',
+                    'jeff.wang@idwater.com.tw'
+                  ].includes($auth.$state.user.email.toLowerCase())
+                " bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-icon delete"
+                              title="刪除" 
+                              v-bind="attrs" v-on="on"
+                              style="pointer-events: inherit;"
+                              @click="handleDelete(scope.$index, scope.row)">
+                          <v-icon>mdi-trash-can</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>刪除</span>
+              </v-tooltip>
               <!-- <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)"
-                >编辑</el-button
-              > -->
-              <el-button
+                  v-if="
+                  [
+                    'jianwei.wen@idwater.com.tw',
+                    'jeff.wang@idwater.com.tw'
+                  ].includes($auth.$state.user.email.toLowerCase())
+                "
                 size="mini"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
                 >删除</el-button
-              >
+              > -->
               <!-- <el-button size="mini" type="warning" @click="() => {}"
                 >停用</el-button
               > -->
             </template>
           </el-table-column>
         </el-table>
-
-        <v-dialog v-model="addDialog" max-width="500px">
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-card>
-              <v-toolbar flat>
-                <v-toolbar-title>
-                  <span class="text-h5"
-                    >新增使用者帳號
-                    <v-icon>mdi-account-plus-outline</v-icon></span
-                  ></v-toolbar-title
-                >
-              </v-toolbar>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12"
-                    ><v-text-field
-                      v-model="addform.username"
-                      :rules="rules.require"
-                      label="帳號"
-                      placeholder="xxx@idwater.com.tw"
-                    ></v-text-field
-                  ></v-col>
-                  <v-col cols="12"
-                    ><v-text-field
-                      v-model="addform.account_name"
-                      :rules="rules.require"
-                      label="使用者名稱"
-                      placeholder="王小明"
-                    ></v-text-field
-                  ></v-col>
-                  <v-col cols="12" md="6"
-                    ><v-text-field
-                      v-model="addform.password"
-                      :rules="rules.require"
-                      label="設定密碼"
-                      type="password"
-                    ></v-text-field
-                  ></v-col>
-                  <v-col cols="12" md="6"
-                    ><v-text-field
-                      v-model="addform.password2"
-                      :rules="rules.require.concat(rules.eqpwd)"
-                      label="確認密碼"
-                      type="password"
-                    ></v-text-field
-                  ></v-col>
-
-                  <v-col cols="12" md="6">
-                    帳號預設狀態：<br />
-                    <el-tag
-                      :type="addform.is_active ? 'success' : 'info'"
-                      disable-transitions
-                      >{{ addform.is_active ? "啟用" : "停用" }}</el-tag
-                    >
-                    <el-switch
-                      v-model="addform.is_active"
-                      active-color="#13ce66"
-                      inactive-color="#eee"
-                    ></el-switch>
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    允許接收通知<br />
-                    <v-icon color="#EA4335">mdi-gmail</v-icon>Mail
-                    <el-switch
-                      v-model="addform.is_sys_enable_email"
-                      active-color="#13ce66"
-                      inactive-color="#eee"
-                    ></el-switch
-                    ><br />
-                    <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon
-                    >Line
-                    <el-switch
-                      v-model="addform.is_sys_enable_line"
-                      active-color="#13ce66"
-                      inactive-color="#eee"
-                    ></el-switch><br />
-                    <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB
-                    <el-switch
-                      v-model="addform.is_sys_enable_line_kb"
-                      active-color="#13ce66"
-                      inactive-color="#eee"
-                    ></el-switch>
-                    <v-autocomplete
-                      dense
-                      :items="maindata"
-                      item-text="name"
-                      item-value="id"
-                      v-model="addform.factory_id"
-                      filled
-                      multiple
-                      placeholder="所屬場別"
-                    ></v-autocomplete>
-                  </v-col>
-                  <v-col cols="12">
-                    職位
-                    <treeselect
-                      v-model="addform.position_id"
-                      :multiple="true"
-                      :options="options"
-                      :flat="true"
-                      :default-expand-level="1"
-                      placeholder="請選擇職位"
-                      :disable-branch-nodes="true"
-                    >
-                      <div slot="value-label" slot-scope="{ node }">
-                        {{ node.raw.unit }}-{{ node.raw.label }}
-                      </div>
-                    </treeselect>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-footer color="white">
-                <v-spacer></v-spacer>
-                <v-btn color="primary" dark tile @click="addsubmit">
-                  確認
-                </v-btn>
-              </v-footer>
-            </v-card>
-          </v-form>
-        </v-dialog>
-        <v-dialog v-model="editDialog" max-width="500px">
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">edit</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                {{ editedData }}
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="editDialog = false">
-                Cancel
+      </div>
+    </v-card>
+    <!-- 發布公告 -->
+    <v-dialog v-model="annDialog" max-width="500px">
+      <v-form ref="annform" v-model="annvalid" lazy-validation>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              發佈公告
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="annDialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
               </v-btn>
-              <v-btn color="blue darken-1" text @click="editDialog = false">
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="edititemDialog" max-width="500px">
-          <v-card>
-            <v-card-title
-              >修改：{{accCols.filter(x=>x.value==edititem.item).length==1?accCols.filter(x=>x.value==edititem.item)[0].text:edititem.item}}</v-card-title
-            >
-            <v-card-subtitle>{{ edititem.username }}</v-card-subtitle>
-            <v-card-text>
-              <v-text-field v-model="edititem.value" v-if="edititem.item!='factory_id'"> </v-text-field>
-              <!-- 開放接收哪些場的通知 -->
-              <v-autocomplete
-                      v-if="edititem.item=='factory_id'"
-                      v-model="edititem.value"
-                      filled
-                      clearable
-                      multiple
-                      :items="maindata"
-                      item-text="name"
-                      item-value="id"
-                      dense
-                      deletable-chips
-                      chips
-                      style="width:600px"
-                      ></v-autocomplete>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn @click="submitedititem" class="primary" dark tile
-                >確認</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="positDialog" max-width="500px">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>
-                <span class="text-h5"
-                  >修改：{{
-                    edititem.item == "position" ? "職位" : edititem.item
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <div class="card-title">
+              <div class="title">
+                  <v-card-title>＊模擬畫面＊</v-card-title>
+              </div>
+              <!-- <div class="chevron" >
+                <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
+                <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
+              </div> -->
+            </div>
+            <div class="basic" style="padding-left: 8px;">
+              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                <v-alert
+                  type="success"
+                  dense
+                  icon="mdi-bell-outline"
+                  class="multi-line"
+                  >【IDWaterExpert】 
+                  公告者：{{
+                    $auth.$state.user.name.replace(
+                      $auth.$state.user.family_name,
+                      ""
+                    )
                   }}
-                </span></v-toolbar-title
-              >
-            </v-toolbar>
-            <v-card-text>
-              <v-row
-                ><v-col cols="12">
-                  <treeselect
-                    v-model="edititem.position"
-                    :multiple="true"
-                    :options="options"
-                    :flat="true"
-                    :default-expand-level="3"
-                    placeholder="請選擇職位"
-                    :disable-branch-nodes="true"
-                  >
-                    <div slot="value-label" slot-scope="{ node }">
-                      {{ node.raw.unit }}-{{ node.raw.label }}
-                    </div>
-                  </treeselect> </v-col
-                ><v-spacer></v-spacer
-              ></v-row>
-              <table style="height:300px;"></table>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-footer color="white">
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="submitposit">
-                確認
-              </v-btn>
-            </v-footer>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="annDialog" max-width="500px">
-          <v-form ref="annform" v-model="annvalid" lazy-validation>
-            <v-card>
-              <v-toolbar flat>
-                <v-toolbar-title>
-                  <span class="text-h5"
-                    >發佈公告 <v-icon>mdi-cellphone-message</v-icon></span
-                  ></v-toolbar-title
-                >
-              </v-toolbar>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12">
-                    <h2>＊模擬畫面＊</h2>
-                    <v-alert
-                      type="success"
-                      dense
-                      icon="mdi-bell-outline"
-                      class="multi-line"
-                      >【IDWaterExpert】 
-                      公告者：{{
-                        $auth.$state.user.name.replace(
-                          $auth.$state.user.family_name,
-                          ""
-                        )
-                      }}
-                      內容：{{ (annmsg!= undefined && annmsg.length>0)?annmsg:'...' }}
-                    </v-alert>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-textarea v-model="annmsg" filled clearable> </v-textarea>
-                  </v-col>
-                </v-row>
+                  內容：{{ (annmsg!= undefined && annmsg.length>0)?annmsg:'...' }}
+                </v-alert>
               </v-card-text>
-              <v-divider></v-divider>
-              <v-footer color="white">
-                <v-spacer></v-spacer>
-                <v-btn color="primary" tile @click="annsubmit" :loading="annsubmitbtn" :disabled="annmsg== undefined || annmsg.length<=0">
-                  發佈
-                </v-btn>
-              </v-footer>
-            </v-card>
-          </v-form>
-        </v-dialog>
-      </v-col>
-    </v-row>
+            </div>
+          </v-card-text>
+          <v-card-text>
+            <!-- <div class="card-title">
+              <div class="title">
+                  <v-card-title>公告內容</v-card-title>
+              </div>
+            </div> -->
+            <div class="basic" style="padding-left: 8px;">
+              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                <v-textarea v-model="annmsg" filled clearable placeholder="請輸入內容..."> </v-textarea>
+              </v-card-text>
+            </div>
+          </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="annDialog = false">取消</v-btn>
+            <v-btn class="btn-primary" :loading="annsubmitbtn" @click="annsubmit" :class="{'disabled':annmsg== undefined || annmsg.length<=0}">發佈</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 新增帳號 -->
+    <v-dialog v-model="addDialog" max-width="500px">
+      <v-form ref="form" v-model="valid" lazy-validation>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              新增使用者帳號
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="addDialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <!-- <div class="card-title">
+              <div class="title">
+                  <v-card-title>＊模擬畫面＊</v-card-title>
+              </div>
+              
+            </div> -->
+            <div class="basic" style="padding-left: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                  v-model="addform.username"
+                  :rules="rules.require"
+                  label="帳號"
+                  placeholder="xxx@idwater.com.tw"
+                ></v-text-field>
+                <v-text-field
+                  v-model="addform.account_name"
+                  :rules="rules.require"
+                  label="使用者名稱"
+                  placeholder="王小明"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                  v-model="addform.password"
+                  :rules="rules.require"
+                  label="設定密碼"
+                  type="password"
+                ></v-text-field>
+                <v-text-field
+                  v-model="addform.password2"
+                  :rules="rules.require.concat(rules.eqpwd)"
+                  label="確認密碼"
+                  type="password"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                帳號預設狀態：
+                <div class="input-group" style="margin-left: 8px;">
+                  <el-tag
+                    :type="addform.is_active ? 'success' : 'info'"
+                    disable-transitions
+                    >{{ addform.is_active ? "啟用" : "停用" }}</el-tag
+                  >
+                  <el-switch
+                    v-model="addform.is_active"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                  ></el-switch>
+                </div>
+                
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                允許接收通知：
+                <div class="input-group" style="display: flex;align-items: center;">
+                  <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
+                  Mail<el-switch
+                    v-model="addform.is_sys_enable_email"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                    style="margin: 16px 16px 16px 8px;"
+                  ></el-switch>
+                  <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
+                  Line<el-switch
+                    v-model="addform.is_sys_enable_line"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                    style="margin: 16px 16px 16px 8px;"
+                  ></el-switch>
+                  <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
+                  KB<el-switch
+                    v-model="addform.is_sys_enable_line_kb"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                    style="margin: 16px 16px 16px 8px;"
+                  ></el-switch>
+                </div>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;width: 100%;">
+                <v-select
+                  :items="maindata"
+                  item-text="name"
+                  item-value="id"
+                  v-model="addform.factory_id"
+                  multiple
+                  chips
+                  placeholder="所屬場別"
+                  style="width: 100%;"
+                  class="mutiselect"
+                ></v-select>
+                <treeselect
+                  v-model="addform.position_id"
+                  :multiple="true"
+                  :options="options"
+                  :flat="true"
+                  :default-expand-level="1"
+                  placeholder="請選擇職位"
+                  :disable-branch-nodes="true"
+                  class="select-template"
+                  style="width: 100%;"
+                >
+                  <div slot="value-label" slot-scope="{ node }">
+                    {{ node.raw.unit }}-{{ node.raw.label }}
+                  </div>
+                </treeselect>
+              </v-card-text>
+            </div>
+            
+          </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="addDialog = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="addsubmit">確認</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 修改 -->
+    <v-dialog v-model="editDialog" max-width="500px">
+      <v-card  class="custom-dialog">
+        <v-card-title class="add-title" style="display: block;width: 100%;">
+          <div style="display: inline-block;">
+            修改
+          </div>
+          <div class="add" style="float: right;display: inline-block;">
+            <v-btn  class="btn-secondary close"
+                    title="取消" 
+                    @click="editDialog = false" 
+                    style="border: none;min-width: 0;padding: 0 4px;">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
+        </v-card-title>
+        <v-card-text>
+          <div class="basic" style="padding-left: 8px;">
+            <v-card-text>
+              <v-card-subtitle style="padding-left: 0;">{{ editedData.username }}</v-card-subtitle>
+              <v-text-field :rules="rules.require"
+                  label="使用者名稱" v-model="editedData.account_name"> </v-text-field>
+              <v-autocomplete
+                v-model="editedData.factory_id"
+                filled
+                clearable
+                multiple
+                :items="maindata"
+                item-text="name"
+                item-value="id"
+                dense
+                deletable-chips
+                chips
+                style="width:600px;margin-top: 8px;"
+                class="mutiselect"
+                label="所屬場別"
+                ></v-autocomplete>
+              <treeselect
+                v-model="editedData.position"
+                :multiple="true"
+                :options="options"
+                :flat="true"
+                :default-expand-level="3"
+                placeholder="請選擇職位"
+                label="職位"
+                :disable-branch-nodes="true"
+                class="select-template"
+              >
+                <div slot="value-label" slot-scope="{ node }">
+                  {{ node.raw.unit }}-{{ node.raw.label }}
+                </div>
+              </treeselect>
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              帳號狀態：
+              <div class="input-group" style="margin-left: 8px;">
+                <el-tag
+                  :type="editedData.is_active ? 'success' : 'info'"
+                  disable-transitions
+                  >{{ editedData.is_active ? "啟用" : "停用" }}</el-tag
+                >
+                <el-switch
+                  v-model="editedData.is_active"
+                  active-color="#13ce66"
+                  inactive-color="#eee"
+                  @change="changeState()"
+                ></el-switch>
+              </div>
+              
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                允許接收通知：
+                <div class="input-group" style="display: flex;align-items: center;">
+                  <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
+                  Mail<el-switch
+                    v-model="editedData.is_sys_enable_email"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                    style="margin: 16px 16px 16px 8px;"
+                    @change="changeState()"
+                  ></el-switch>
+                  <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
+                  Line<el-switch
+                    v-model="editedData.is_sys_enable_line"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                    style="margin: 16px 16px 16px 8px;"
+                    @change="changeState()"
+                  ></el-switch>
+                  <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
+                  KB<el-switch
+                    v-model="editedData.is_sys_enable_line_kb"
+                    active-color="#13ce66"
+                    inactive-color="#eee"
+                    style="margin: 16px 16px 16px 8px;"
+                    @change="changeState()"
+                  ></el-switch>
+                </div>
+              </v-card-text>
+          </div>
+        </v-card-text>
+        <v-card-actions style="padding-bottom: 24px;">
+          <v-spacer></v-spacer>
+          <v-btn class="btn-secondary" @click="editDialog = false">取消</v-btn>
+          <v-btn @click="submitEdit" class="btn-primary" tile
+            >修改</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -513,7 +692,7 @@ const agent = new https.Agent({
   rejectUnauthorized: false
 });
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   head(){
     return {
@@ -681,6 +860,10 @@ export default {
         )
         .then(res => {
           this.accdata = res.data;
+          this.accdata.forEach(async (acc,cid)=>{
+            await this.getUser(acc.username,cid);
+          })
+          console.log('acc',this.accdata);
           console.log("accList api：" + res.request.responseURL);
         })
         .catch(error => {
@@ -709,6 +892,7 @@ export default {
           this.maindata = res.data;
           // this.sel_main = 1;
         });
+      // this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱
@@ -736,7 +920,51 @@ export default {
     handleEdit(index, row) {
       console.log(index, row);
       Object.assign(this.editedData, row);
+      // this.editedData.value = row.account_name;
+      this.editedData.position = row.position.map(x => {
+        return x["position_id"];
+      });
       this.editDialog = true;
+    },
+    changeState() {
+      console.log('change state',this.editedData);
+      let data = _.cloneDeep(this.editedData);
+      this.editedData = {};
+      this.editedData = _.cloneDeep(data);
+    },
+    async submitEdit() {
+      const updUser = this.$auth.$state.user.email;
+      this.editedData["updated_user"] = updUser;
+      let parm = _.cloneDeep(this.editedData);
+      parm.position_id = _.cloneDeep(parm.position);
+      delete parm.position;
+      delete parm.department;
+      delete parm.highest_position_id;
+      delete parm.id;
+      console.log(parm);
+      await this.$axios
+        .patch(
+          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.editedData.id}/`,
+          parm,
+          { httpsAgent: agent }
+        )
+        .then(async res => {
+          if (res.data == "修改成功") {
+            this.editDialog = false;
+            console.log('accdata',this.accdata);
+            await this.getaccList();
+            this.$toast.success("修改成功", { duration: 2000 });
+          } else {
+            this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+          }
+          console.log("api：" + res.request.responseURL);
+        })
+        .catch(error => {
+          this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+        })
+        .finally(() => {});
+
+      
     },
     handleDelete: async function(index, row) {
       if (confirm("是否確認刪除？")) {
@@ -832,6 +1060,7 @@ export default {
     showaddDialog: function() {
       if (this.$refs.form != undefined) {
         this.$refs.form.reset();
+        this.addform.position_id = [];
       }
 
       const updUser = this.$auth.$state.user.email;
@@ -893,10 +1122,11 @@ export default {
       this.edititem.username = data.username;
       this.edititem.item = item;
       this.edititem.value = data[item];
-      this.edititem.position = data.position.map(x => {
-        return x["id"];
-      });
+      // this.edititem.position = data.position.map(x => {
+      //   return x["id"];
+      // });
       this.edititemDialog = true;
+      console.log('field',this.edititem,this.options);
     },
     submitedititem: async function() {
       let parm = {};
@@ -1000,7 +1230,31 @@ export default {
       // }else{
       //   return `background-color:${bgcolor};`;
       // }
-    }
+    },
+    getUser: async function(account,id) {
+      let accheader = { account: account };
+      await this.$axios
+        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
+          headers: accheader
+        })
+        .then(res => {
+          if (res.data != "帳號資料不存在") {
+            // console.log('getUser',res.data);
+            this.accdata[id].line_notify = res.data.is_personal_enable_line
+            
+            // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
+          } else {
+            return false;
+            // this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
+          }
+        })
+        .catch(error => {
+          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+        })
+        .finally(() => {
+          //this.getdata();
+        });
+    },
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
@@ -1011,8 +1265,80 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .multi-line {
   white-space: pre-line;
+  width: 100%;
+}
+
+.v-card.result-card {
+  &.bg-card {
+    background-color: #fff;
+  }
+  .card-title {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    .title {
+      width: 100%;
+    }
+    .chevron {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+::v-deep {
+  .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 0 8px;
+  }
+  .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
+  .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
+  .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+    border-color: transparent;
+  }
+  .v-dialog.v-dialog--active {
+    overflow-y: initial;
+  }
+  .v-input {
+    margin-top: 0;
+  }
+  .select-template.vue-treeselect {
+    .vue-treeselect__multi-value-label {
+      line-height: 0;
+    }
+  }
+  .mutiselect .v-chip .v-chip__content {
+    font-size: 12px;
+    .mdi-close-circle::before {
+      color: white;
+    }
+  }
+  .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
+      color: #fff;
+  }
+  .v-dialog .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+      padding-top: 0;
+  }
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder::before,
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder::after {
+    content:'';
+  }
+  .v-btn.btn-circle {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    background-color: transparent;
+    box-shadow: none;
+    .theme--light.v-icon {
+      color: $color-green !important;
+    }
+    &.delete {
+      .theme--light.v-icon {
+        color: $color-accent !important;
+      }
+    }
+  }
 }
 </style>
