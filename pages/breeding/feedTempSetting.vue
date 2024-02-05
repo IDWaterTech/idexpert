@@ -62,12 +62,11 @@
             </v-col>
         </v-row>
         
-        <div class="content" style="padding: 0;margin-top: 24px;">
+        <div class="content" style="padding: 0;margin-top: 24px;margin-right: 16px;margin-left: 16px;">
             <div class="result">
                 <v-card class="result-card">
-                     <!-- 表頭 -->
+                    <!-- 表頭 -->
                     <div class="card-title">
-                       
                         <div class="title">
                             <v-row style="align-items: center;margin-bottom: 0;justify-content: space-between;">
                                 <!-- <v-col cols="4" md="4" sm="4" style="padding: 0;"> -->

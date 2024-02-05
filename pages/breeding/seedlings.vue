@@ -1,9 +1,12 @@
 <template>
     <div>
-        <div class="content" style="padding: 0;margin-top: 24px;">
+        <v-overlay :value="!isLoading" :absolute="true">
+            <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+        <div class="content" style="padding: 0;margin-top: 24px;margin-right: 16px;margin-left: 16px;">
             <div class="result">
                 <v-card class="result-card">
-                     <!-- 表頭 -->
+                    <!-- 表頭 -->
                     <div class="card-title">
                         <div class="title">
                             <v-card-title>種苗清單</v-card-title>
@@ -33,6 +36,9 @@
                             hide-default-footer
                             disable-pagination
                             style="height: 64vh;overflow-y: scroll;">
+                            <template v-slot:[`item.species_id`]="{item}">
+                                <span v-if="item.species_id">{{ species.filter(x=>x.id==item.species_id)[0].name_ch }}</span>
+                            </template>
                             <template v-slot:[`item.manufacturer_id`]="{item}">
                                 <span v-if="manu.length>0">{{ manu.filter(x=>x.id==item.manufacturer_id)[0].name_ch }}</span>
                             </template>
@@ -96,6 +102,9 @@
                         <v-text-field filled dense v-model="seedFormData.characteristic" :rules="rules.require">
                             <span style="width:100px" slot="prepend">品牌特性</span>
                         </v-text-field>
+                        <v-autocomplete v-model="seedFormData.species_id" :rules="rules.require" style="width" :items="species" item-text="name_ch" item-value="id" dense filled
+                            label="選擇品種" clearable><span style="width:100px" slot="prepend">品種<v-icon class="mx-1" @click="getSpeciesData(true)">
+                                    mdi-reload</v-icon></span></v-autocomplete>
                         <v-autocomplete v-model="seedFormData.manufacturer_id" :rules="rules.require" style="width" :items="manu" item-text="name_ch" item-value="id" dense filled
                             label="選擇廠商" clearable><span style="width:100px" slot="prepend">廠商id<v-icon class="mx-1" @click="getmanudata">
                                     mdi-reload</v-icon></span></v-autocomplete>
@@ -151,7 +160,8 @@
                     created_user: "",
                     created_time: "",
                     updated_user: null,
-                    updated_time: ""
+                    updated_time: "",
+                    species_id: null
                 },
                 manvalid: true,
                 //廠商
@@ -172,16 +182,38 @@
                     { text: '名稱(中)', value: 'name_ch', sortable: true,width:"10%"},
                     { text: "名稱(英)", value: "name_en", groupable: false, sortable: true,width:"10%"},
                     { text: "產地", value: "origin", groupable: false, sortable: true,width:"10%"},
+                    { text: "品種", value: "species_id", groupable: false, sortable: false,width:"5%"},
                     { text: "品牌特行", value: "characteristic", groupable: false, sortable: false,width:"15%"},
                     { text: '廠商', value: 'manufacturer_id', sortable: true,width:"10%"},
-                    { text: '市價', value: 'price', sortable: true,width:"10%"},
+                    { text: '市價', value: 'price', sortable: true,width:"5%"},
                     { text: '備註', value: 'remark', sortable: false,width:"10%"},
                     { text: '修改時間', value: 'updated_time', sortable: true,width:"15%"},
                     { text: '操作', value: 'udactions', sortable: false,width:"10%"},
                 ],
+                species:[],
+                isLoading: false
             }
         },
         methods: {
+            // 品種資料
+            async getSpeciesData(bool=false) {
+                await this.$axios
+                    .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`)
+                    .then(async res => {
+                        this.species = _.cloneDeep(res.data);
+                        console.log("物種清單:", res.request.responseURL);
+                        console.log('species',this.nowData);
+                    })
+                    .catch(error => {
+                        console.log("error:" + error.message);
+                    })
+                    .finally(()=>{
+                        if(!bool) {
+                            this.getSeedlingData();//取得苗清單
+                        }
+                        
+                    })
+            },
             addsave:async function(){
                 let val = this.$refs.manform.validate();
                 if(val){
@@ -193,7 +225,8 @@
                         manufacturer_id: this.seedFormData.manufacturer_id,
                         remark: this.seedFormData.remark,
                         price: this.seedFormData.price,
-                        created_user: this.$auth.$state.user.email
+                        created_user: this.$auth.$state.user.email,
+                        species_id: this.seedFormData.species_id
                     };
                     let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
                     await this.$axios.post(url, parm).then(res => {
@@ -252,6 +285,7 @@
                         manufacturer_id: this.seedFormData.manufacturer_id,
                         remark: this.seedFormData.remark,
                         price: this.seedFormData.price,
+                        species_id: this.seedFormData.species_id,
                         updated_user: this.$auth.$state.user.email
                     };
                     var id = this.seedFormData.id;
@@ -277,14 +311,35 @@
             },
             //打開新增
             openAdd:function(){
+                this.getSpeciesData(true);
                 this.seedFormData.mode ='add';
                 this.dialog.seedForm=true;
                 if (this.$refs.manform != undefined) {
                     this.$refs.manform.reset();
                 }
+                setTimeout(()=>{
+                    this.seedFormData = {
+                        mode:'add',
+                        id:'',
+                        name_ch: "",
+                        name_en: "",
+                        origin: "",
+                        characteristic: "",
+                        manufacturer_id: null,
+                        remark: "",
+                        price: 0.0,
+                        created_user: "",
+                        created_time: "",
+                        updated_user: null,
+                        updated_time: "",
+                        species_id: null
+                    };
+                },100)
+                
             },
             //打開苗清單編輯
             openEdit:function(evt){
+                this.getSpeciesData(true);
                 console.log('Edit',evt);
                 this.SeedlingModel = evt;
                 Object.assign(this.seedFormData,this.SeedlingData.filter(x=>x.id==this.SeedlingModel)[0]);
@@ -302,14 +357,16 @@
             await this.$axios
                 .get(url)
                 .then(res => {
-                this.manu = res.data;
-                console.log("取得廠商資料API:" + res.request.responseURL);
+                    this.manu = res.data;
+                    
+                    console.log("取得廠商資料API:" + res.request.responseURL);
                 })
                 .catch(error => {
-                this.$toast.error(`取得廠商資料失敗:${error}`, { duration: 2000 });
+                    this.$toast.error(`取得廠商資料失敗:${error}`, { duration: 2000 });
                 })
                 .finally(() => {
-                //this.getdata();
+                    this.getSpeciesData();
+                    //this.getdata();
                 });
             },
             //取得苗清單
@@ -320,15 +377,17 @@
                     .get(url)
                     .then(res => {
                         this.SeedlingData = res.data;
+                        console.log("取得苗資料API:" + res.request.responseURL);
                     })
                     .finally(() => {
-                /* 不論失敗成功皆會執行 */ 
+                        /* 不論失敗成功皆會執行 */ 
+                        this.isLoading = true;
                     });
             }
         },
         mounted() {
-            this.getSeedlingData();//取得苗清單
             this.getmanudata();//取得廠商清單
+            
         },
     }
 </script>
