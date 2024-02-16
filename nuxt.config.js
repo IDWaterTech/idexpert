@@ -65,6 +65,7 @@ export default {
     { src: "~/plugins/speedometer.js", ssr: false },
     { src: "~/plugins/vue-particles.js", ssr: false },
     { src: "~/plugins/antdesign.js", ssr: false },//暫時不用
+    { src: "~/plugins/service/basic.js", ssr: false },
     // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
     // { src: "~/plugins/chart", mode: 'client' },

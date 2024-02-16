@@ -189,46 +189,72 @@
             //this.$toast.success(`hello`, { duration: 2000 });
         },
         getFactoryData: async function () {
-            await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
-                .then(res => {
-                    console.log("architecture data", res);
-                    let isData = false;
-                    this.fatoryData = res.data;
-                    for (let i = 0; i < this.fatoryData.length; i++) {
-                    if(this.field!==null) {
-                        if(this.fatoryData[i].id==this.field) {
-                            this.fatorys.push(this.fatoryData[i].name);
-                            this.nowFactory = this.fatoryData[i].name;
-                            isData = true;
-                            this.isField = true;
-                        }
-                    }else {
-                        this.fatorys.push(this.fatoryData[i].name);
-                    }
-                    }
-                    if(this.field !== null && !isData) {
-                        this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
-                        this.isError = true;
-                        // window.location.href='/map';
-                    }else {
-                        this.nowFactory = this.fatorys[0];
-                        this.nowAreaId.factory_id = this.fatoryData[0].id;
+            // await this.$axios
+            //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+            //     .then(res => {
+            //         console.log("architecture data", res);
+            //         let isData = false;
+            //         this.fatoryData = res.data;
+            //         for (let i = 0; i < this.fatoryData.length; i++) {
+            //         if(this.field!==null) {
+            //             if(this.fatoryData[i].id==this.field) {
+            //                 this.fatorys.push(this.fatoryData[i].name);
+            //                 this.nowFactory = this.fatoryData[i].name;
+            //                 isData = true;
+            //                 this.isField = true;
+            //             }
+            //         }else {
+            //             this.fatorys.push(this.fatoryData[i].name);
+            //         }
+            //         }
+            //         if(this.field !== null && !isData) {
+            //             this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+            //             this.isError = true;
+            //             // window.location.href='/map';
+            //         }else {
+            //             this.nowFactory = this.fatorys[0];
+            //             this.nowAreaId.factory_id = this.fatoryData[0].id;
 
-                        this.changeFactory(this.nowFactory);
-                        console.log('factorys', this.fatorys);
-                    }
-                    this.isLoad = true;
-                })
-                .catch(error => {
-                    if(this.field !== null && !isData) {
+            //             this.changeFactory(this.nowFactory);
+            //             console.log('factorys', this.fatorys);
+            //         }
+            //         this.isLoad = true;
+            //     })
+            //     .catch(error => {
+            //         if(this.field !== null && !isData) {
 
-                    }else {
-                        // this.$toast.error("error:" + error, { duration: 2000 });
-                        console.log('error', error);
-                    }
+            //         }else {
+            //             // this.$toast.error("error:" + error, { duration: 2000 });
+            //             console.log('error', error);
+            //         }
                     
-                })
+            //     })
+            let isData = false;
+            this.fatoryData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+            for (let i = 0; i < this.fatoryData.length; i++) {
+            if(this.field!==null) {
+                if(this.fatoryData[i].id==this.field) {
+                    this.fatorys.push(this.fatoryData[i].name);
+                    this.nowFactory = this.fatoryData[i].name;
+                    isData = true;
+                    this.isField = true;
+                }
+            }else {
+                this.fatorys.push(this.fatoryData[i].name);
+            }
+            }
+            if(this.field !== null && !isData) {
+                this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+                this.isError = true;
+                // window.location.href='/map';
+            }else {
+                this.nowFactory = this.fatorys[0];
+                this.nowAreaId.factory_id = this.fatoryData[0].id;
+
+                this.changeFactory(this.nowFactory);
+                console.log('factorys', this.fatorys);
+            }
+            this.isLoad = true;
         },
         changeFactory(evt) {
             console.log('changeFactory',evt.split('_')[0]);

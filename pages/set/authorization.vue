@@ -494,6 +494,47 @@ export default {
       }
       if(data) {
         this.privdata = data.data;
+        this.privdata.forEach(p=>{
+          if(p.type.toLowerCase()=='menu') {
+            if(p.children&&p.children.length>0) {
+              p.children.unshift({
+                  "name": "選單檢視",
+                  "icon": "",
+                  "type": "Page",
+                  "is_show": false
+              })
+              p.children.forEach(child=>{
+                if(child.type.toLowerCase() == 'menu') {
+                  if(child.children&&child.children.length>0) {
+                    child.children.unshift({
+                        "name": "選單檢視",
+                        "icon": "",
+                        "type": "Page",
+                        "is_show": false
+                    })
+                  }else {
+                    child.children=[];
+                    child.children.unshift({
+                        "name": "選單檢視",
+                        "icon": "",
+                        "type": "Page",
+                        "is_show": false
+                    })
+                  }
+                  
+                }
+              })
+            }else {
+              p.children = [];
+              p.children.unshift({
+                  "name": "選單檢視",
+                  "icon": "",
+                  "type": "Page",
+                  "is_show": false
+              })
+            }
+          }
+        })
         if(this.privdata&&this.privdata.length>0) {
           this.privdatadisable = this.setNestedDisabled(
             _.cloneDeep(this.privdata)

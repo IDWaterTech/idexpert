@@ -1491,20 +1491,30 @@ export default {
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
-    await this.$axios
-      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
-      .then(res => {
-        console.log("architecture:", res.request.responseURL);
-        this.maindata = res.data;
-        this.sel_main = undefined;
-        this.defaultPool = '';
-        if(this.maindata.length>0) {
-          this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
-        }else {
-          this.defaultPool = '';
-        }
-        console.log(this.defaultPool);
-      });
+    // await this.$axios
+    //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
+    //   .then(res => {
+    //     console.log("architecture:", res.request.responseURL);
+    //     this.maindata = res.data;
+    //     this.sel_main = undefined;
+    //     this.defaultPool = '';
+    //     if(this.maindata.length>0) {
+    //       this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
+    //     }else {
+    //       this.defaultPool = '';
+    //     }
+    //     console.log(this.defaultPool);
+    //   });
+    this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+    this.sel_main = undefined;
+    this.defaultPool = '';
+    if(this.maindata.length>0) {
+      this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
+    }else {
+      this.defaultPool = '';
+    }
+    console.log(this.defaultPool);
+      
     //get all cols
     await this.$axios
       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, { httpsAgent: agent })

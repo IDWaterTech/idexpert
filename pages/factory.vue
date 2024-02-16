@@ -549,15 +549,16 @@ export default {
   },
   methods: {
     getmain: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
-        .then(res => {
-          this.maindata = res.data;
-          console.log("API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
+      //   .then(res => {
+      //     this.maindata = res.data;
+      //     console.log("API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //   });
+      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
     },
     getpoolstat: async function() {
       //取得池狀態清單

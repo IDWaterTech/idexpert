@@ -884,15 +884,15 @@ export default {
         });
     },
     getmainData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, {
-          httpsAgent: agent
-        })
-        .then(res => {
-          this.maindata = res.data;
-          // this.sel_main = 1;
-        });
-      // this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, {
+      //     httpsAgent: agent
+      //   })
+      //   .then(res => {
+      //     this.maindata = res.data;
+      //     // this.sel_main = 1;
+      //   });
+      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱

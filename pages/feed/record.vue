@@ -475,48 +475,53 @@ export default {
     },
     //取得場架構
     getarchitecture: async function() {
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.factoryData = res.data;
-          this.factoryid = res.data[0].id;
-          //   var item = [];
-          //   res.data.forEach(element => {
-          //     //#[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
-          //     if (element.hasOwnProperty("node")) {
-          //       const factory_id = element.id;
-          //       for (let i = 0; i < element.node.length; i++) {
-          //         const ele = element.node[i];
-          //         //# ele.node
-          //         //#   .filter(x => x.visible == true)
-          //         //#   .map(x => (x.area_name = ele.name)); //把天府名稱放入area_name,把池名稱放入pond_name
-          //         ele.node
-          //           .filter(x => x.visible == true)
-          //           .map(x => {
-          //             (x.area_name = ele.name),
-          //               (x.pond_name = x.name),
-          //               (x.pond_id = x.id);
-          //           }); //#把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
-          //         ele.node
-          //           .filter(x => x.visible == true)
-          //           .map(x => (x.factory_id = factory_id)); //把場id放入
-          //         var getdata = ele.node.filter(x => x.visible == true);
-          //         item.push(..._.cloneDeep(getdata));
-          //       }
-          //     }
-          // });
-          //   this.desserts = item;
-          console.log("取得場架構API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得場架構失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.factoryData = res.data;
+      //     this.factoryid = res.data[0].id;
+      //     //   var item = [];
+      //     //   res.data.forEach(element => {
+      //     //     //#[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
+      //     //     if (element.hasOwnProperty("node")) {
+      //     //       const factory_id = element.id;
+      //     //       for (let i = 0; i < element.node.length; i++) {
+      //     //         const ele = element.node[i];
+      //     //         //# ele.node
+      //     //         //#   .filter(x => x.visible == true)
+      //     //         //#   .map(x => (x.area_name = ele.name)); //把天府名稱放入area_name,把池名稱放入pond_name
+      //     //         ele.node
+      //     //           .filter(x => x.visible == true)
+      //     //           .map(x => {
+      //     //             (x.area_name = ele.name),
+      //     //               (x.pond_name = x.name),
+      //     //               (x.pond_id = x.id);
+      //     //           }); //#把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
+      //     //         ele.node
+      //     //           .filter(x => x.visible == true)
+      //     //           .map(x => (x.factory_id = factory_id)); //把場id放入
+      //     //         var getdata = ele.node.filter(x => x.visible == true);
+      //     //         item.push(..._.cloneDeep(getdata));
+      //     //       }
+      //     //     }
+      //     // });
+      //     //   this.desserts = item;
+      //     console.log("取得場架構API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得場架構失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
+      this.factoryData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      if(this.factoryData.length>0) {
+        this.factoryid = this.factoryData[0].id;
+      }
+      
     },
     //取得帶入的資料
     getimptimedata: async function() {

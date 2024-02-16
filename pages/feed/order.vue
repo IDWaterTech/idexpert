@@ -928,114 +928,208 @@ export default {
           }
         });
       */
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.factoryData = res.data;
-          // this.factoryid = res.data[0].id;
-          var item = [];
+
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.factoryData = res.data;
+      //     // this.factoryid = res.data[0].id;
+      //     var item = [];
           
-          res.data.forEach(element => {
-            //[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
-            if (element.hasOwnProperty("node")) {
-              const factory_id = element.id;
-              for (let i = 0; i < element.node.length; i++) {
-                const ele = element.node[i];
-                // ele.node
-                //   .filter(x => x.visible == true)
-                //   .map(x => (x.area_name = ele.name));
-                //把天府名稱放入area_name,把池名稱放入pond_name
-                //把事件放入feed_event_settings_id
-                //把放置觀察網放入has_observation
-                //把是否執行放入is_executed
-                ele.node
-                  .filter(x => x.visible == true)
-                  .map(x => {
-                    (x.area_name = ele.name),
-                      (x.pond_name = x.name),
-                      (x.pond_id = x.id),
-                      (x.feed_event_settings_id = ""),
-                      (x.has_observation = false),
-                      (x.is_executed = false);
-                  }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
+      //     res.data.forEach(element => {
+      //       //[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
+      //       if (element.hasOwnProperty("node")) {
+      //         const factory_id = element.id;
+      //         for (let i = 0; i < element.node.length; i++) {
+      //           const ele = element.node[i];
+      //           // ele.node
+      //           //   .filter(x => x.visible == true)
+      //           //   .map(x => (x.area_name = ele.name));
+      //           //把天府名稱放入area_name,把池名稱放入pond_name
+      //           //把事件放入feed_event_settings_id
+      //           //把放置觀察網放入has_observation
+      //           //把是否執行放入is_executed
+      //           ele.node
+      //             .filter(x => x.visible == true)
+      //             .map(x => {
+      //               (x.area_name = ele.name),
+      //                 (x.pond_name = x.name),
+      //                 (x.pond_id = x.id),
+      //                 (x.feed_event_settings_id = ""),
+      //                 (x.has_observation = false),
+      //                 (x.is_executed = false);
+      //             }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
 
                 
                 
-                ele.node
-                  .filter(x => x.visible == true)
-                  .map(x => (x.factory_id = factory_id)); //把場id放入
+      //           ele.node
+      //             .filter(x => x.visible == true)
+      //             .map(x => (x.factory_id = factory_id)); //把場id放入
                 
-                ele.node.filter(x=>x.visible==true)//把飼料百分比放入
-                    .map(x=>(
-                      x.observation_feed_pct = (this.feed_pct_list.filter(y=>y.id==x.id).length==1)?this.feed_pct_list.filter(y=>y.id==x.id)[0].observation_feed_pct:0
-                    ));
+      //           ele.node.filter(x=>x.visible==true)//把飼料百分比放入
+      //               .map(x=>(
+      //                 x.observation_feed_pct = (this.feed_pct_list.filter(y=>y.id==x.id).length==1)?this.feed_pct_list.filter(y=>y.id==x.id)[0].observation_feed_pct:0
+      //               ));
 
-                  // ele.node內容
-                  //{
-                  //     "id": 1,
-                  //     "name": "A1",
-                  //     "level": "3",
-                  //     "visible": true,
-                  //     "area_name": "武曲",
-                  //     "pond_name": "A1",
-                  //     "pond_id": 1,
-                  //     "feed_event_settings_id": "",
-                  //     "has_observation": false,
-                  //     "is_executed": false,
-                  //     "factory_id": 1,
-                  //     "observation_feed_pct": 40
-                  // }
+      //             // ele.node內容
+      //             //{
+      //             //     "id": 1,
+      //             //     "name": "A1",
+      //             //     "level": "3",
+      //             //     "visible": true,
+      //             //     "area_name": "武曲",
+      //             //     "pond_name": "A1",
+      //             //     "pond_id": 1,
+      //             //     "feed_event_settings_id": "",
+      //             //     "has_observation": false,
+      //             //     "is_executed": false,
+      //             //     "factory_id": 1,
+      //             //     "observation_feed_pct": 40
+      //             // }
                     
                     
-                //把池狀態放入
-                //all
-                ele.node.filter(x=>x.visible== true)
-                  .map(x=>{
-                    x.state = (all_state.filter(y => y.id == x.pond_id).length == 1)? (all_state.filter(y => y.id == x.id)[0].state) : ""
-                  });
-                  /*
-                //wc
-                ele.node.filter(x => x.visible == true && x.area_name=='武曲')
-                  .map(x => (
-                    x.state = (wc_state.filter(y => y.id == x.pond_id).length == 1) ? (wc_state.filter(y => y.id == x.id)[0].state) : ""
-                  ));
-                //tf
-                ele.node.filter(x => x.visible == true && x.area_name=='天府')
-                  .map(x => (
-                    x.state = (tf_state.filter(y => y.id == x.pond_id).length == 1) ? (tf_state.filter(y => y.id == x.id)[0].state) : ""
-                  ));
-                //zw
-                ele.node.filter(x => x.visible == true && x.area_name=='紫微')
-                  .map(x => (
-                    x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
-                  ));
-                //sp
-                ele.node.filter(x => x.visible == true && x.area_name=='救地球')
-                  .map(x => (
-                    x.state = (sp_state.filter(y => y.id == x.pond_id).length == 1) ? (sp_state.filter(y => y.id == x.id)[0].state) : ""
-                  ));
-                */
+      //           //把池狀態放入
+      //           //all
+      //           ele.node.filter(x=>x.visible== true)
+      //             .map(x=>{
+      //               x.state = (all_state.filter(y => y.id == x.pond_id).length == 1)? (all_state.filter(y => y.id == x.id)[0].state) : ""
+      //             });
+      //             /*
+      //           //wc
+      //           ele.node.filter(x => x.visible == true && x.area_name=='武曲')
+      //             .map(x => (
+      //               x.state = (wc_state.filter(y => y.id == x.pond_id).length == 1) ? (wc_state.filter(y => y.id == x.id)[0].state) : ""
+      //             ));
+      //           //tf
+      //           ele.node.filter(x => x.visible == true && x.area_name=='天府')
+      //             .map(x => (
+      //               x.state = (tf_state.filter(y => y.id == x.pond_id).length == 1) ? (tf_state.filter(y => y.id == x.id)[0].state) : ""
+      //             ));
+      //           //zw
+      //           ele.node.filter(x => x.visible == true && x.area_name=='紫微')
+      //             .map(x => (
+      //               x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
+      //             ));
+      //           //sp
+      //           ele.node.filter(x => x.visible == true && x.area_name=='救地球')
+      //             .map(x => (
+      //               x.state = (sp_state.filter(y => y.id == x.pond_id).length == 1) ? (sp_state.filter(y => y.id == x.id)[0].state) : ""
+      //             ));
+      //           */
 
-                var getdata = ele.node.filter(x => x.visible == true);
-                item.push(..._.cloneDeep(getdata));
+      //           var getdata = ele.node.filter(x => x.visible == true);
+      //           item.push(..._.cloneDeep(getdata));
                   
-              }
-            }
-          });
-          this.desserts = item;
-          this.has_observe = false;
-          // console.log("完整資料：",this.desserts);
-          console.log("取得場架構API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得場架構失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      //         }
+      //       }
+      //     });
+      //     this.desserts = item;
+      //     this.has_observe = false;
+      //     // console.log("完整資料：",this.desserts);
+      //     console.log("取得場架構API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得場架構失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
+      this.factoryData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      // this.factoryid = res.data[0].id;
+      var item = [];
+      let data = _.cloneDeep(this.factoryData);
+      data.forEach(element => {
+        //[{id:1,level:"1",name:一場,node:[area_no: "tf",id: 1,level: "2",name: "天府",node: Array(36)]}]
+        if (element.hasOwnProperty("node")) {
+          const factory_id = element.id;
+          for (let i = 0; i < element.node.length; i++) {
+            const ele = element.node[i];
+            // ele.node
+            //   .filter(x => x.visible == true)
+            //   .map(x => (x.area_name = ele.name));
+            //把天府名稱放入area_name,把池名稱放入pond_name
+            //把事件放入feed_event_settings_id
+            //把放置觀察網放入has_observation
+            //把是否執行放入is_executed
+            ele.node
+              .filter(x => x.visible == true)
+              .map(x => {
+                (x.area_name = ele.name),
+                  (x.pond_name = x.name),
+                  (x.pond_id = x.id),
+                  (x.feed_event_settings_id = ""),
+                  (x.has_observation = false),
+                  (x.is_executed = false);
+              }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
+
+            
+            
+            ele.node
+              .filter(x => x.visible == true)
+              .map(x => (x.factory_id = factory_id)); //把場id放入
+            
+            ele.node.filter(x=>x.visible==true)//把飼料百分比放入
+                .map(x=>(
+                  x.observation_feed_pct = (this.feed_pct_list.filter(y=>y.id==x.id).length==1)?this.feed_pct_list.filter(y=>y.id==x.id)[0].observation_feed_pct:0
+                ));
+
+              // ele.node內容
+              //{
+              //     "id": 1,
+              //     "name": "A1",
+              //     "level": "3",
+              //     "visible": true,
+              //     "area_name": "武曲",
+              //     "pond_name": "A1",
+              //     "pond_id": 1,
+              //     "feed_event_settings_id": "",
+              //     "has_observation": false,
+              //     "is_executed": false,
+              //     "factory_id": 1,
+              //     "observation_feed_pct": 40
+              // }
+                
+                
+            //把池狀態放入
+            //all
+            ele.node.filter(x=>x.visible== true)
+              .map(x=>{
+                x.state = (all_state.filter(y => y.id == x.pond_id).length == 1)? (all_state.filter(y => y.id == x.id)[0].state) : ""
+              });
+              /*
+            //wc
+            ele.node.filter(x => x.visible == true && x.area_name=='武曲')
+              .map(x => (
+                x.state = (wc_state.filter(y => y.id == x.pond_id).length == 1) ? (wc_state.filter(y => y.id == x.id)[0].state) : ""
+              ));
+            //tf
+            ele.node.filter(x => x.visible == true && x.area_name=='天府')
+              .map(x => (
+                x.state = (tf_state.filter(y => y.id == x.pond_id).length == 1) ? (tf_state.filter(y => y.id == x.id)[0].state) : ""
+              ));
+            //zw
+            ele.node.filter(x => x.visible == true && x.area_name=='紫微')
+              .map(x => (
+                x.state = (zw_state.filter(y => y.id == x.pond_id).length == 1) ? (zw_state.filter(y => y.id == x.id)[0].state) : ""
+              ));
+            //sp
+            ele.node.filter(x => x.visible == true && x.area_name=='救地球')
+              .map(x => (
+                x.state = (sp_state.filter(y => y.id == x.pond_id).length == 1) ? (sp_state.filter(y => y.id == x.id)[0].state) : ""
+              ));
+            */
+
+            var getdata = ele.node.filter(x => x.visible == true);
+            item.push(..._.cloneDeep(getdata));
+              
+          }
+        }
+      });
+      this.desserts = item;
+      this.has_observe = false;
     },
     //刪除帶入的資料
     delimpsubmit: async function() {

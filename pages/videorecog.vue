@@ -422,14 +422,18 @@ export default {
       let getedItem = {};
       //取得整場架構資料
       //visible寫死名稱含^=false，寫死池的狀態=無=false
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
-        .then(res => {
-          this.maindata = res.data;
-          var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-          this.maindata = data;
-          this.isLoading = true;
-        });
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+      //   .then(res => {
+      //     this.maindata = res.data;
+      //     var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      //     this.maindata = data;
+      //     this.isLoading = true;
+      //   });
+      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      this.maindata = data;
+      this.isLoading = true;
       //用id抓到name
       this.maindata.forEach(x => {
         x.node.forEach(y => {

@@ -289,32 +289,49 @@ export default {
     getmain: async function() {
       let reqid = "";
       let getedItem = {};
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
-        .then(res => {
-          // this.maindata = res.data;
-          var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
-          this.maindata = data;
-          //用id抓到name
-          this.maindata.forEach(x => {
-            x.node.forEach(y => {
-              var item = y.node.filter(z => z.id == reqid);
-              if (item.length == 1) {
-                getedItem = item[0];
-                return;
-              }
-            });
-          });
-          //把區域名稱加進去
-          if (getedItem.hasOwnProperty("name")) {
-            this.poolName = getedItem.name;
-            console.log(getedItem);
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+      //   .then(res => {
+      //     // this.maindata = res.data;
+      //     var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
+      //     this.maindata = data;
+      //     //用id抓到name
+      //     this.maindata.forEach(x => {
+      //       x.node.forEach(y => {
+      //         var item = y.node.filter(z => z.id == reqid);
+      //         if (item.length == 1) {
+      //           getedItem = item[0];
+      //           return;
+      //         }
+      //       });
+      //     });
+      //     //把區域名稱加進去
+      //     if (getedItem.hasOwnProperty("name")) {
+      //       this.poolName = getedItem.name;
+      //       console.log(getedItem);
+      //     }
+      //     console.log("場 API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //   });
+      var data = this.setNestedDisabled(_.cloneDeep(typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture()), "");
+      this.maindata = data;
+      //用id抓到name
+      this.maindata.forEach(x => {
+        x.node.forEach(y => {
+          var item = y.node.filter(z => z.id == reqid);
+          if (item.length == 1) {
+            getedItem = item[0];
+            return;
           }
-          console.log("場 API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
         });
+      });
+      //把區域名稱加進去
+      if (getedItem.hasOwnProperty("name")) {
+        this.poolName = getedItem.name;
+        console.log(getedItem);
+      }
     }
   },
   async mounted() {

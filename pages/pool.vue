@@ -25,7 +25,7 @@
                       id="search"
                       class="select-template"
                       :dataScope="'pool'" 
-                      :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:'49'" 
+                      :defaultSelect="$route.query.id&&$route.query.id!==''?$route.query.id:''" 
                       :isMulti="false"
                       @scopeSel_data="get_scopeData($event);getCircleData()"
                       ></locate-select>
@@ -1649,13 +1649,16 @@ export default {
       await this.getCircleData();
     },
     getMainData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
-        .then(res => {
-            this.maindata = res.data;
-            var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-            this.maindata = data;
-        });
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+      //   .then(res => {
+      //       this.maindata = res.data;
+      //       var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      //       this.maindata = data;
+      //   });
+      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      this.maindata = data;
       // let reqid = this.req.id;
       // let getedItem = {};
       // //取得整場架構資料
@@ -3823,9 +3826,9 @@ export default {
     if(this.poolid!==''&&this.poolid!==undefined) {
       this.get_scopeData(this.poolid);
     }else {
-      this.poolid = 49;
-      this.get_scopeData(this.poolid);
-      this.getCircleData();
+      // this.poolid = 49;
+      // this.get_scopeData(this.poolid);
+      // this.getCircleData();
     }
   },
   watch: {

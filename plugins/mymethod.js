@@ -17,7 +17,7 @@ import https from "https";
               console.log("mixin methods");
             },
           _pageCheck:async function(){
-           if (this.$auth.$state.loggedIn) {
+            if (this.$auth.$state.loggedIn) {
               let acclist = [];
               const agent = new https.Agent({
                 rejectUnauthorized: false
@@ -34,6 +34,7 @@ import https from "https";
               var acc = acclist.filter(
                 x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
               );
+              localStorage.setItem('factory_id',JSON.stringify(acc[0].factory_id));
               console.log("ACC DATA:",acc);
               //登入成功
               if (acc.length == 1) {

@@ -2542,37 +2542,37 @@ export default {
             
         },
         getAllData: async function () {
-            await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
-                .then(res=>{
-                    this.allData = res.data;
-                    this.querrySelectedLst = {};
-                    this.querryDataLst = {}
-                    this.allData.forEach(f=>{
-                        f.node.forEach(a=>{
-                            a.node.forEach(p=>{
-                                this.querrySelectedLst[`${p.id}`] = '';
-                                this.querryDataLst[`${p.id}`] = [];
-                            })
-                        })
-                    })
-                    console.log('architecture',res);
-                    // console.log('querrySelectedLst',this.querrySelectedLst);
-                })
-                .catch(error=>{
-                    console.log(error);
-                })
-            // this.allData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
-            // this.querrySelectedLst = {};
-            // this.querryDataLst = {}
-            // this.allData.forEach(f=>{
-            //     f.node.forEach(a=>{
-            //         a.node.forEach(p=>{
-            //             this.querrySelectedLst[`${p.id}`] = '';
-            //             this.querryDataLst[`${p.id}`] = [];
+            // await this.$axios
+            //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+            //     .then(res=>{
+            //         this.allData = res.data;
+            //         this.querrySelectedLst = {};
+            //         this.querryDataLst = {}
+            //         this.allData.forEach(f=>{
+            //             f.node.forEach(a=>{
+            //                 a.node.forEach(p=>{
+            //                     this.querrySelectedLst[`${p.id}`] = '';
+            //                     this.querryDataLst[`${p.id}`] = [];
+            //                 })
+            //             })
             //         })
+            //         console.log('architecture',res);
+            //         // console.log('querrySelectedLst',this.querrySelectedLst);
             //     })
-            // })
+            //     .catch(error=>{
+            //         console.log(error);
+            //     })
+            this.allData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+            this.querrySelectedLst = {};
+            this.querryDataLst = {}
+            this.allData.forEach(f=>{
+                f.node.forEach(a=>{
+                    a.node.forEach(p=>{
+                        this.querrySelectedLst[`${p.id}`] = '';
+                        this.querryDataLst[`${p.id}`] = [];
+                    })
+                })
+            })
         },
         getNowDate: function() {
             let mydate = dayjs().format("YYYY-MM-DD");
