@@ -853,22 +853,27 @@ export default {
   },
   methods: {
     getaccList: async function() {
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
-          { httpsAgent: agent }
-        )
-        .then(res => {
-          this.accdata = res.data;
-          this.accdata.forEach(async (acc,cid)=>{
-            await this.getUser(acc.username,cid);
-          })
-          console.log('acc',this.accdata);
-          console.log("accList api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("accList api ERR：" + error, { duration: 2000 });
-        });
+      this.accdata = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+      this.accdata.forEach(async (acc,cid)=>{
+        await this.getUser(acc.username,cid);
+      })
+      console.log('acc',this.accdata);
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
+      //     { httpsAgent: agent }
+      //   )
+      //   .then(res => {
+      //     this.accdata = res.data;
+      //     this.accdata.forEach(async (acc,cid)=>{
+      //       await this.getUser(acc.username,cid);
+      //     })
+      //     console.log('acc',this.accdata);
+      //     console.log("accList api：" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("accList api ERR：" + error, { duration: 2000 });
+      //   });
     },
     getorg: async function() {
       await this.$axios
@@ -942,53 +947,64 @@ export default {
       delete parm.highest_position_id;
       delete parm.id;
       console.log(parm);
-      await this.$axios
-        .patch(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.editedData.id}/`,
-          parm,
-          { httpsAgent: agent }
-        )
-        .then(async res => {
-          if (res.data == "修改成功") {
-            this.editDialog = false;
-            console.log('accdata',this.accdata);
-            await this.getaccList();
-            this.$toast.success("修改成功", { duration: 2000 });
-          } else {
-            this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
-          }
-          console.log("api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-        })
-        .finally(() => {});
+      var res = this.patchUserList(parm,this.editedData.id);
+      if(res) {
+        this.editDialog = false;
+        console.log('accdata',this.accdata);
+        await this.getaccList();
+      }
+      // await this.$axios
+      //   .patch(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.editedData.id}/`,
+      //     parm,
+      //     { httpsAgent: agent }
+      //   )
+      //   .then(async res => {
+      //     if (res.data == "修改成功") {
+      //       this.editDialog = false;
+      //       console.log('accdata',this.accdata);
+      //       await this.getaccList();
+      //       this.$toast.success("修改成功", { duration: 2000 });
+      //     } else {
+      //       this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+      //     }
+      //     console.log("api：" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {});
 
       
     },
     handleDelete: async function(index, row) {
       if (confirm("是否確認刪除？")) {
-        await this.$axios
-          .delete(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${row.id}/`,
-            {
-              httpsAgent: agent
-            }
-          )
-          .then(res => {
-            if (res.data == "刪除成功") {
-              this.getaccList(); //改畫面的資料
-              this.positDialog = false;
-              this.$toast.success("刪除成功", { duration: 2000 });
-            } else {
-              this.$toast.success("刪除失敗：" + res.data, { duration: 2000 });
-            }
-            console.log("api：" + res.request.responseURL);
-          })
-          .catch(error => {
-            this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-          })
-          .finally(() => {});
+        var res = this.deleteUserList(row.id);
+        if(res) {
+          this.getaccList(); //改畫面的資料
+          this.positDialog = false;
+        }
+        // await this.$axios
+        //   .delete(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${row.id}/`,
+        //     {
+        //       httpsAgent: agent
+        //     }
+        //   )
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.getaccList(); //改畫面的資料
+        //       this.positDialog = false;
+        //       this.$toast.success("刪除成功", { duration: 2000 });
+        //     } else {
+        //       this.$toast.success("刪除失敗：" + res.data, { duration: 2000 });
+        //     }
+        //     console.log("api：" + res.request.responseURL);
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+        //   })
+        //   .finally(() => {});
       }
     },
     statchange(index, row) {
@@ -1082,39 +1098,44 @@ export default {
       if (valid) {
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
-        await this.$axios
-          .post(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
-            this.addform,
-            {
-              httpsAgent: agent
-            }
-          )
-          .then(res => {
-            switch (res.data) {
-              case "資料建立有問題":
-                alert("新增結果：" + res.data + "(帳號可能已存在)");
-                break;
-              case "新增成功":
-                this.$toast.success("新增結果：" + res.data, {
-                  duration: 2000
-                });
-                this.addDialog = false;
-                break;
-              default:
-                this.$toast.success("新增結果：" + res.data, {
-                  duration: 2000
-                });
-                break;
-            }
-            console.log("新增api：" + res.request.responseURL);
-          })
-          .catch(error => {
-            this.$toast.success("新增失敗：" + error, { duration: 2000 });
-          })
-          .finally(() => {
-            this.getaccList();
-          });
+        var res = await this.postUserList(this.addform);
+        if(res) {
+          this.addDialog = false;
+          this.getaccList();
+        }
+        // await this.$axios
+        //   .post(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
+        //     this.addform,
+        //     {
+        //       httpsAgent: agent
+        //     }
+        //   )
+        //   .then(res => {
+        //     switch (res.data) {
+        //       case "資料建立有問題":
+        //         alert("新增結果：" + res.data + "(帳號可能已存在)");
+        //         break;
+        //       case "新增成功":
+        //         this.$toast.success("新增結果：" + res.data, {
+        //           duration: 2000
+        //         });
+        //         this.addDialog = false;
+        //         break;
+        //       default:
+        //         this.$toast.success("新增結果：" + res.data, {
+        //           duration: 2000
+        //         });
+        //         break;
+        //     }
+        //     console.log("新增api：" + res.request.responseURL);
+        //   })
+        //   .catch(error => {
+        //     this.$toast.success("新增失敗：" + error, { duration: 2000 });
+        //   })
+        //   .finally(() => {
+        //     this.getaccList();
+        //   });
       }
     },
     showedititemDialog: async function(data, item) {
@@ -1128,35 +1149,35 @@ export default {
       this.edititemDialog = true;
       console.log('field',this.edititem,this.options);
     },
-    submitedititem: async function() {
-      let parm = {};
-      parm[this.edititem.item] = this.edititem.value;//項目=值
-      const updUser = this.$auth.$state.user.email;
-      parm["updated_user"] = updUser;
-      console.log(parm);
-      await this.$axios
-        .patch(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.edititem.id}/`,
-          parm,
-          { httpsAgent: agent }
-        )
-        .then(res => {
-          if (res.data == "修改成功") {
-            this.edititemDialog = false;
-            this.accdata.filter(
-              x => x.id == this.edititem.id
-            )[0][this.edititem.item] = this.edititem.value; //改畫面的資料
-            this.$toast.success("修改成功", { duration: 2000 });
-          } else {
-            this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
-          }
-          console.log("api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-        })
-        .finally(() => {});
-    },
+    // submitedititem: async function() {
+    //   let parm = {};
+    //   parm[this.edititem.item] = this.edititem.value;//項目=值
+    //   const updUser = this.$auth.$state.user.email;
+    //   parm["updated_user"] = updUser;
+    //   console.log(parm);
+    //   await this.$axios
+    //     .patch(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.edititem.id}/`,
+    //       parm,
+    //       { httpsAgent: agent }
+    //     )
+    //     .then(res => {
+    //       if (res.data == "修改成功") {
+    //         this.edititemDialog = false;
+    //         this.accdata.filter(
+    //           x => x.id == this.edititem.id
+    //         )[0][this.edititem.item] = this.edititem.value; //改畫面的資料
+    //         this.$toast.success("修改成功", { duration: 2000 });
+    //       } else {
+    //         this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+    //       }
+    //       console.log("api：" + res.request.responseURL);
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+    //     })
+    //     .finally(() => {});
+    // },
     showpositDialog: function(data) {
       //編輯單位
       this.edititem.id = data.id;
@@ -1196,31 +1217,31 @@ export default {
       //   })
       //   .finally(() => {});
     },
-    postedit: async function(upd_id, parm) {
-      console.log("修改參數：", parm);
-      await this.$axios
-        .patch(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${upd_id}/`,
-          parm,
-          {
-            httpsAgent: agent
-          }
-        )
-        .then(res => {
-          if (res.data == "修改成功") {
-            this.getaccList(); //改畫面的資料
-            this.positDialog = false;
-            this.$toast.success("修改成功", { duration: 2000 });
-          } else {
-            this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
-          }
-          console.log("api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-        })
-        .finally(() => {});
-    },
+    // postedit: async function(upd_id, parm) {
+    //   console.log("修改參數：", parm);
+    //   await this.$axios
+    //     .patch(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${upd_id}/`,
+    //       parm,
+    //       {
+    //         httpsAgent: agent
+    //       }
+    //     )
+    //     .then(res => {
+    //       if (res.data == "修改成功") {
+    //         this.getaccList(); //改畫面的資料
+    //         this.positDialog = false;
+    //         this.$toast.success("修改成功", { duration: 2000 });
+    //       } else {
+    //         this.$toast.success("修改失敗：" + res.data, { duration: 2000 });
+    //       }
+    //       console.log("api：" + res.request.responseURL);
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+    //     })
+    //     .finally(() => {});
+    // },
     tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
       let bgcolor = $nuxt.$vuetify.theme.themes.light.cardtitle;
       return `font-weight:500;`;

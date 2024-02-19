@@ -24,6 +24,20 @@
                                     'marginTop':`${windowWidth>959.58?'0':'-16px'}`}">
                             <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
                         </v-col>
+                        <v-col cols="12" md="2" sm="12"
+                            v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0">
+                            <v-autocomplete
+                                    v-model="nowUser"
+                                    :items="userData"
+                                    item-value="username"
+                                    item-text="account_name"
+                                    dense filled
+                                    hide-details solo
+                                    class="mt-1"
+                                    @change="getUserQueryData()"
+                                    >
+                            </v-autocomplete>
+                        </v-col>
                         <!-- 選擇參數 -->
                         <v-col cols="12" md="3" sm="12"
                         :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
@@ -50,24 +64,10 @@
                             </v-autocomplete>
                         </v-col>
                         <!-- 查詢/清空/控制項 - result版面收合 -->
-                        <v-col cols="12" md="7" sm="12"
+                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="5" sm="12"
                             :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
                             style="display: flex;justify-content: space-between;align-items: center;">
                             <div class="btn-groups">
-                                <!-- <v-btn
-                                    tile
-                                    :disabled="querrySelected==''||querrySelected==null"
-                                    @click="importQuerry()"
-                                    class="btn-primary">
-                                    查詢
-                                </v-btn> -->
-                                <!-- <v-btn
-                                    tile
-                                    :disabled="querrySelected==''||querrySelected==null"
-                                    @click="importQuerry()"
-                                    class="btn-primary">
-                                    帶入數據
-                                </v-btn> -->
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <button class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default" @click="importBasicData();" v-bind="attrs" v-on="on">
@@ -82,16 +82,54 @@
                                     @click="resetParm();getSelectData(null)">
                                     清空
                                 </v-btn>
-                                <!-- <v-btn
-                                    fab dark x-small
-                                    color="blue-grey"
-                                    @click="importBasicData();">
-                                    <v-icon>
-                                        mdi-database-import
-                                    </v-icon>
-                                </v-btn> -->
-                                
-                                
+                            </div>
+                            <!-- 控制項 - result版面收合 -->
+                            <div class="control">
+                                <v-icon @click="dialog.pdf=true" title="公式">mdi-square-root-box</v-icon>
+                                <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
+                                <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
+                            </div>
+                            <v-dialog v-model="dialog.pdf"
+                                        scrollable
+                                        max-width="75%"
+                                        >
+                                <v-card>
+                                    <v-card-title>計算公式
+                                        <v-switch
+                                            v-model="formulaData"
+                                            :label="formulaData?'pdf':'xls'"
+                                            ></v-switch>
+                                    </v-card-title>
+                                    <v-card-text style="height: 600px;">
+                                        <v-responsive>
+                                            <iframe :src="formulaUrl" style="overflow:hidden;height:600px;width:100%;" ></iframe>
+                                        </v-responsive>
+                                    </v-card-text>
+                                    <!-- <v-card-actions>
+                                        <v-btn>Close</v-btn>
+                                    </v-card-actions> -->
+                                </v-card>
+                            </v-dialog>
+                        </v-col>
+                        <!-- 查詢/清空/控制項 - result版面收合 -->
+                        <v-col v-else cols="12" md="7" sm="12"
+                            :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
+                            style="display: flex;justify-content: space-between;align-items: center;">
+                            <div class="btn-groups">
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <button class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default" @click="importBasicData();" v-bind="attrs" v-on="on">
+                                            基本資料
+                                        </button>
+                                    </template>
+                                    <span>帶入基本資料</span>
+                                </v-tooltip>
+                                <v-btn
+                                    tile
+                                    class="btn-secondary reset"
+                                    @click="resetParm();getSelectData(null)">
+                                    清空
+                                </v-btn>
                             </div>
                             <!-- 控制項 - result版面收合 -->
                             <div class="control">
@@ -190,6 +228,9 @@
                             'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
                             'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
                             'marginTop':`${windowWidth<959.58&&isSearch?'8px':'4px'}`}">
+                    <v-overlay :value="!isLoading" :absolute="true">
+                        <v-progress-circular indeterminate size="64"></v-progress-circular>
+                    </v-overlay>
                     <v-row style="margin-bottom: 0;">
                         <!-- 參數設定 -->
                         <v-col cols="12" md="6" sm="12" id="params">
@@ -210,7 +251,7 @@
                                             </template>
                                             <span>查詢</span>
                                         </v-tooltip>
-                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null">
+                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button class="btn-add" @click="postParm(true)" v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-plus</v-icon>
@@ -218,7 +259,7 @@
                                             </template>
                                             <span>新增並查詢</span>
                                         </v-tooltip>
-                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch">
+                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button class="btn-add save" @click="patchQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-check</v-icon>
@@ -226,7 +267,7 @@
                                             </template>
                                             <span>儲存並查詢</span>
                                         </v-tooltip>
-                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch">
+                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch&&nowUser==$auth.$state.user.email" >
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button class="btn-add delete" @click="delQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-trash-can</v-icon>
@@ -424,13 +465,15 @@
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
+                                                                                    <!-- FeedParm['LastFeedDatetime'] = $moment(new Date(), 'YYYY-MM-DD HH:mm') -->
+                                                                                    <v-icon @click="showDate=false;FeedParm['LastFeedDatetime'] = getNowDateTime();showDate=true">mdi-calendar</v-icon>
                                                                                     <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去一天最後一筆的飼料投餵時間->內存量(體重投餌率)、存活率、預計間補日期、0號料">上一餐時間</span>
                                                                                 </div>
                                                                                     
                                                                             </v-col> 
                                                                             <v-col cols="12" md="10" sm="10">
                                                                                 <div class="date-time-picker">
-                                                                                    <a-date-picker v-model="FeedParm['LastFeedDatetime']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                    <a-date-picker v-if="showDate" v-model="FeedParm['LastFeedDatetime']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk" style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
                                                                                 </div>
                                                                                     
                                                                             </v-col>
@@ -1136,6 +1179,7 @@
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
+                                                                                    <v-icon @click="showDate=false;ObservationData['SamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                                                                                     <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天最後一筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">打樣時間</span>
                                                                                 </div>
                                                                                     
@@ -1159,6 +1203,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
+                                                                                    <v-icon @click="showDate=false;ObservationData['LastSamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                                                                                     <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天倒數第二筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次打樣時間</span>
                                                                                 </div>
                                                                             </v-col>
@@ -1557,6 +1602,16 @@
                                         <v-card-title>AI 建議</v-card-title>
                                     </div>
                                     <div class="btn-groups" >
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <button @click="openRemark" v-bind="attrs" v-on="on" 
+                                                    :class="{'btn-secondary':inputRemark.DynamicData==''&&inputRemark.WaterQuality==''&&inputRemark.Material==''&&inputRemark.MakeWater==''&&inputRemark.Feed==null,
+                                                    'btn-primary':inputRemark.DynamicData!==''||inputRemark.WaterQuality!==''||inputRemark.Material!==''||inputRemark.MakeWater!==''||inputRemark.Feed!==null}">
+                                                    <v-icon>mdi-clipboard-edit-outline</v-icon>
+                                                </button>
+                                            </template>
+                                            <span>實際作動紀錄</span>
+                                        </v-tooltip>
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button v-if="!aiOpen" class="only-icon" @click="aiOpen=!aiOpen" v-bind="attrs" v-on="on">
@@ -2054,7 +2109,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend"  title="累計飼料量、蝦子長度、水體體積、放養密度">FCR(換肉率)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend"  title="累計飼料量、水體體積、放養密度">FCR(換肉率)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <v-text-field v-model="suggData.DynamicData['FCR']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -2077,7 +2132,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(體重投餌率)</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(體重投餌率)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.DynamicData['Biomass']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -2089,7 +2144,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算存活率，因為需要內存量">存活率</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算存活率，因為需要內存量">存活率</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <v-text-field v-model="suggData.DynamicData['SurvivalRate']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">%</span></v-text-field>
@@ -2111,7 +2166,7 @@
                                                                 <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
-                                                                            <span class="pa-0 ma-0" slot="prepend" title="蝦子長度、水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">觀察網網上料量</span>
+                                                                            <span class="pa-0 ma-0" slot="prepend" title="水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">建議觀察網上料量</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6" style="display: flex;align-items: center;">
                                                                             <v-text-field v-model="suggData.DynamicData['FeedAmountInObservation']" disabled dense hide-details class="mt-0"></v-text-field>
@@ -2131,7 +2186,8 @@
                                                                     </v-row>
                                                                     <!-- <v-text-field v-model="suggData.DynamicData['WeightFeedRate']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">每日體重投餌率</span><span class="pa-0 ma-0" slot="append">%</span></v-text-field> -->
                                                                 </v-col>
-                                                                <v-col cols=12 md="6" sm="6">
+                                                                <!-- 蝦長換算蝦重用先隱藏 -->
+                                                                <!-- <v-col cols=12 md="6" sm="6">
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend">蝦子重量</span>
@@ -2141,8 +2197,7 @@
                                                                             <a-tooltip placement="topLeft" :title="suggData.DynamicData['ShrimpWeight']&&typeof(suggData.DynamicData['ShrimpWeight'])=='number'?((suggData.DynamicData['ShrimpWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip>
                                                                         </v-col>
                                                                     </v-row>
-                                                                    <!-- <v-text-field v-model="suggData.DynamicData['ShrimpWeight']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度">蝦子重量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
-                                                                </v-col>
+                                                                </v-col> -->
                                                             </v-row>
                                                             <!-- <v-text-field v-model="suggData.DynamicData['FCR']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend"  title="累計飼料量、蝦子長度、水體體積、放養密度">FCR(換肉率)</span></v-text-field> -->
                                                             <!-- <v-text-field v-model="suggData.DynamicData['ADG']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" title="蝦子長度、養殖天數、養殖起始日">ADG(每日增重量)(g/day)</span></v-text-field> -->
@@ -2333,9 +2388,17 @@
         <!-- 參數設定選項填入視窗 -->
         <v-dialog id="chipsDialog" v-model="chipsDialog" max-width="500px" style="z-index: 9999;">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: flex;align-items: center;">
-                    <div class="dialog-title">
-                        {{ chipsDialogTitle.name }}
+                <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <div style="display: inline-block;">
+                        <span>{{ chipsDialogTitle.name }}</span> 
+                    </div>
+                    <div class="add" style="float: right;display: inline-block;">
+                        <v-btn class="btn-secondary close"
+                                title="取消" 
+                                @click="chipsDialog = false;" 
+                                style="border: none;min-width: 0;padding: 0 4px;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
                     </div>
                 </v-card-title>
                 <div class="basic" style="padding: 24px 12px;">
@@ -2367,6 +2430,88 @@
                 </v-card-actions>
             </v-card>
         </v-dialog> 
+        <!-- 備註欄 -->
+        <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" style="z-index: 9999;">
+            <v-card class="custom-dialog">
+                <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <div style="display: inline-block;">
+                        <span>紀錄</span> 
+                    </div>
+                    <div class="add" style="float: right;display: inline-block;">
+                        <v-btn class="btn-secondary close"
+                                title="取消" 
+                                @click="remarkDialog = false;" 
+                                style="border: none;min-width: 0;padding: 0 4px;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card-title>
+                <div class="basic" style="padding:  0 12px 24px 12px;">
+                    <v-card-text style="padding: 0 8px;">
+                        <div class="card-title">
+                            <div class="title">
+                                <v-card-title>警示：</v-card-title>
+                                <!-- <span v-for="item in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
+                                <!-- <span v-for="item in suggData.Observation" :key="'ob'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
+                                
+                                <v-textarea v-model="remark.WaterQuality" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                            </div>
+                        </div>
+                        
+                    </v-card-text>
+                    <v-card-text style="padding: 0 8px;">
+                        <div class="card-title">
+                            <div class="title">
+                                <v-card-title>投餌量：</v-card-title>
+                                <v-text-field v-model.number="remark.Feed" type="number" min="0" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width:80px">實際投餌量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                            </div>
+                        </div>
+                        
+                    </v-card-text>
+                    <v-card-text style="padding: 0 8px;">
+                        <div class="card-title">
+                            <div class="title">
+                                <v-card-title>投料判斷列表：</v-card-title>
+                                <v-textarea v-model="remark.Material" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                            </div>
+                        </div>
+                        
+                    </v-card-text>
+                    <v-card-text style="padding: 0 8px;">
+                        <div class="card-title">
+                            <div class="title">
+                                <v-card-title>動態數據資訊：</v-card-title>
+                                <v-textarea v-model="remark.DynamicData" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                            </div>
+                        </div>
+                        
+                    </v-card-text>
+                    <v-card-text style="padding: 0 8px;">
+                        <div class="card-title">
+                            <div class="title">
+                                <v-card-title>養殖前期做水添加物：</v-card-title>
+                                <v-textarea v-model="remark.MakeWater" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                            </div>
+                        </div>
+                        
+                    </v-card-text>
+                    <v-card-text style="padding: 0 8px;">
+                        <div class="card-title">
+                            <div class="title">
+                                <v-card-title>其他：</v-card-title>
+                                <v-textarea v-model="remark.Others" hide-details filled clearable placeholder="請輸入其他作動..." style="overflow-y: scroll;"></v-textarea>
+                            </div>
+                        </div>
+                        
+                    </v-card-text>
+                </div>
+                <v-card-actions style="padding: 24px 12px;">
+                    <v-spacer spacer></v-spacer>
+                    <v-btn class="btn-secondary" @click="remarkDialog = false;">取消</v-btn>
+                    <v-btn class="btn-primary" @click="save();patchQuerry(nowSelectPool);">儲存</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -2462,8 +2607,14 @@ export default {
                 pdf:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
                 xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLS_4p8BhJ1yNhmqv4_pVEt7CUCDueo6r51pyT7fcaNIVdGWYA2b6oCTBQSoH-rrBrEMdQ05QVGebk/pubhtml?widget=true&amp;headers=false'
             },
-            observationKey:{}
-
+            observationKey:{},
+            remarkDialog: false,
+            remark:{ DynamicData: '', WaterQuality: '', Feed: null, Material: '', MakeWater: '', Other:''},
+            inputRemark:{ DynamicData: '', WaterQuality: '', Feed: null, Material: '', MakeWater: '', Other:''},
+            userData:[],
+            nowUser: (this.$auth.$state.user==null)?"":this.$auth.$state.user.email,
+            showDate: true,
+            isLoading:false,
         }
     },
     methods: {
@@ -2476,10 +2627,12 @@ export default {
         // locateSelect
         async get_scopeData(evt) {
             console.log('select pool',evt);
+            // await this.getQuerry();
             if(this.nowSelectPool!==evt) {
                 this.nowSelectPool = evt;
                 this.querrySelected = '';
                 this.isSearch = false;
+                
                 this.resetParm();
                 this.importBasicData();//帶入數據
             }
@@ -2582,6 +2735,12 @@ export default {
             let mytime = dayjs().format("HH:mm");
             return mytime;
         },
+        getNowDateTime() {
+            console.log('FeedParm',this.FeedParm['LastFeedDatetime']);
+
+            return this.$moment(new Date(), 'YYYY-MM-DD HH:mm');
+            
+        },
         addFeedQty:function(){
             // console.log('LastFeedInput',this.FeedParm['LastFeedInput']);
             if(typeof(this.FeedParm['LastFeedInput'])=='number'){
@@ -2680,6 +2839,16 @@ export default {
                     // this.optData.IsBacteriumInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
                 });
         },
+        async getAllUser() {
+            this.userData = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+            this.isLoading = true;
+            // console.log('User',this.userData);
+        },
+        async getUserQueryData() {
+            await this.getQuerry();
+            this.querrySelected='';
+            await this.importBasicData();
+        },
         getQuerry:async function(isAdd){
             // if(this.querryData.length>0){
             //     return;
@@ -2687,71 +2856,73 @@ export default {
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/query-log/`;
             var allParm = {
                 IsLast:false,
-                Username:(this.$auth.$state.user==null)?"":this.$auth.$state.user.email
+                Username: this.nowUser
             };
             if(this.$auth.$state.user==null){
                 this.$toast.error(`需重新登入`, { duration: 2000 });
-                return;
-            }
-            await this.$axios.get(url, {params:allParm}).then(res => {
-                if(res.status==200){
-                    this.querryData = res.data;
-                    this.querryDataLst = {};
-                    for(let i=0;i<this.querryData.length;i++) {
-                        this.allData.forEach(f=>{
-                            if(f.name == this.querryData[i].factory_name) {
-                                f.node.forEach(a=>{
-                                    if(a.name == this.querryData[i].pond_area_name){
-                                        a.node.forEach(p=>{
-                                            if(p.name == this.querryData[i].pond_name) {
-                                                if(!this.querryDataLst[p.id]) {
-                                                    this.querryDataLst[p.id] = [];
+                // return;
+            }else {
+                await this.$axios.get(url, {params:allParm}).then(res => {
+                    if(res.status==200){
+                        this.querryData = res.data;
+                        this.querryDataLst = {};
+                        for(let i=0;i<this.querryData.length;i++) {
+                            this.allData.forEach(f=>{
+                                if(f.name == this.querryData[i].factory_name) {
+                                    f.node.forEach(a=>{
+                                        if(a.name == this.querryData[i].pond_area_name){
+                                            a.node.forEach(p=>{
+                                                if(p.name == this.querryData[i].pond_name) {
+                                                    if(!this.querryDataLst[p.id]) {
+                                                        this.querryDataLst[p.id] = [];
+                                                    }
+                                                    this.querryDataLst[p.id].push(this.querryData[i]);
                                                 }
-                                                this.querryDataLst[p.id].push(this.querryData[i]);
-                                            }
-                                        })
-                                    }
-                                    
-                                })
-                            }
+                                            })
+                                        }
+                                        
+                                    })
+                                }
+                                
+                            })
+                        }
+                        this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
+                        console.log('querryData',this.querryData);
+                        console.log('querydatalst',this.querryDataLst);
+                        console.log('nowSelectDataLst',this.nowSelectDataLst);
+                        this.get_scopeData(this.nowSelectPool);
+                        if(isAdd) {
+                            let alldate = [];
+                            this.nowSelectDataLst.forEach(p=>{
+                                alldate.push(p.created_time);
+                            })
+                            let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
+                            this.querrySelected = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                            this.getSelectData(this.querrySelected);
+                            this.importQuerry();
+                        }
+                        if(this.windowWidth<959.58) {
+                            setTimeout(()=>{
+                                this.goAnchor('#aiwatermin');
+                            },100)
+                        }
                             
-                        })
                     }
-                    this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
-                    console.log('querryData',this.querryData);
-                    console.log('querydatalst',this.querryDataLst);
-                    console.log('nowSelectDataLst',this.nowSelectDataLst);
-                    this.get_scopeData(this.nowSelectPool);
-                    if(isAdd) {
-                        let alldate = [];
-                        this.nowSelectDataLst.forEach(p=>{
-                            alldate.push(p.created_time);
-                        })
-                        let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
-                        this.querrySelected = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
-                        this.getSelectData(this.querrySelected);
-                        this.importQuerry();
+                    else if(res.status == 400){
+                        this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                     }
-                    if(this.windowWidth<959.58) {
-                        setTimeout(()=>{
-                            this.goAnchor('#aiwatermin');
-                        },100)
+                    else{
+                        this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                     }
-                        
-                }
-                else if(res.status == 400){
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
-                else{
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
 
-            }).catch(error => {
-                this.$toast.error(`資料Fail:${error}\n${JSON.stringify(error.response.data)}`, { duration: 5000 });
-            })
-            .finally(() => {
-                    //this.getdata();
-            });
+                }).catch(error => {
+                    this.$toast.error(`資料Fail:${error}\n${JSON.stringify(error.response.data)}`, { duration: 5000 });
+                })
+                .finally(() => {
+                        //this.getdata();
+                });
+            }
+            
 
         },
         importQuerry:async function(_input_data = null,bool=false){
@@ -2770,7 +2941,13 @@ export default {
                 console.log('import',input_data);
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
-                this.FeedParm = input_data.FeedParm;
+                this.FeedParm = _.cloneDeep(input_data.FeedParm);
+                if(input_data.remark) {
+                    this.inputRemark = _.cloneDeep(input_data.remark);
+                }else {
+                    this.inputRemark = { DynamicData: '', WaterQuality: '', Feed: undefined, Material: '', MakeWater: '', Other:''}
+                }
+                console.log('新增',input_data,this.inputRemark);
                 //自動查表計算飼料CN比
                 this.changeCrudeProteinPct();
                 if(this.FeedParm['LastFeedDatetime']) {
@@ -2832,13 +3009,13 @@ export default {
                 }
                 //reset suggData
                 //suggData: { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {} },//ai建議
-                var output_data = { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {} };
+                var output_data = { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {}};
                 if(_input_data==null){
                     output_data = _.cloneDeep(this.querryDataLst[this.nowSelectPool].filter(x => x.created_time == this.querrySelected)[0].output_data);
                 }else{
                     
                 }
-                console.log('querryDataLst[this.nowSelectPool]',output_data)
+                console.log('querryDataLst[this.nowSelectPool]',this.ObservationData,this.FeedParm);
                 this.suggData = {
                     "DynamicData": output_data.DynamicData,
                     "WaterQuality": output_data.WaterQuality,//ai建議-水質
@@ -2942,7 +3119,8 @@ export default {
                         'WaterQualityData': this.WaterQualityData,
                         'ObservationData': _.cloneDeep(this.ObservationData),
                         'BacteriaData': this.BacteriaData,
-                        'UserData': this.UserData
+                        'UserData': this.UserData,
+                        'remark': _.cloneDeep(this.inputRemark)
                     };
                     // console.log('bacteriaDataObject',this.bacteriaDataObject)
                     input_data.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
@@ -3018,7 +3196,8 @@ export default {
                 'WaterQualityData':this.WaterQualityData,
                 'ObservationData':_.cloneDeep(this.ObservationData),
                 'BacteriaData':this.BacteriaData,
-                'UserData':this.UserData
+                'UserData':this.UserData,
+                'remark': _.cloneDeep(this.inputRemark),
             };
             // console.log('bacteriaDataObject',this.bacteriaDataObject)
             allParm.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
@@ -3420,8 +3599,9 @@ export default {
                 "Observation": [],//ai建議-觀察網
                 "Feed": { "feed_amount": {}, "statistics": {}, "status": "" },//ai建議-投餌量
                 "Material": {},//投料判斷列表
-                "MakeWater": {}//養殖前期做水添加物
+                "MakeWater": {},//養殖前期做水添加物
             };
+            this.inputRemark={ DynamicData: '', WaterQuality: '', Feed: undefined, Material: '', MakeWater: '', Other:''}
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
                 if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
@@ -3464,7 +3644,7 @@ export default {
                         }
                         
                     })
-                    
+                    console.log('FeedParm',this.FeedParm);
                     this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
@@ -3670,6 +3850,14 @@ export default {
                 this.chipsDialogData.sort((a,b)=>{return b.value-a.value});
                 this.ObservationData[this.chipsDialogTitle.param] = _.cloneDeep(this.chipsDialogData);
             }
+        },
+        openRemark() {
+            this.remarkDialog = true;
+            this.remark = _.cloneDeep(this.inputRemark);
+        },
+        save() {
+            this.inputRemark = _.cloneDeep(this.remark);
+            this.remarkDialog = false;
         }
     },
     async created() {
@@ -3681,6 +3869,7 @@ export default {
         await this.getlightData();
         await this.getAllData();
         await this.getQuerry();
+        await this.getAllUser();
         
         if(document.getElementsByClassName('ant-calendar-picker')) {
             let calendar = document.getElementsByClassName('ant-calendar-picker');
@@ -3720,7 +3909,7 @@ export default {
         windowHeight:function(){
             return window.innerHeight;
         },
-    }
+    },
 }
 </script>
 
@@ -4328,6 +4517,16 @@ export default {
   }
   // dialog
   .v-dialog {
+    .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 4px;
+        padding: 0 8px;
+    }
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+        border-color: transparent;
+    }
     .v-sheet.v-card {
       border-radius: 4px 0 0 4px;
     }

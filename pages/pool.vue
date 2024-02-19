@@ -2050,20 +2050,23 @@ export default {
     },
     //帳號清單
     getaccList: async function() {
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
-          { httpsAgent: agent }
-        )
-        .then(res => {
-          var data = res.data;
-          var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
-          this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
-          console.log("accList api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("accList api ERR：" + error, { duration: 2000 });
-        });
+      var data = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+      var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
+      this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
+      //     { httpsAgent: agent }
+      //   )
+      //   .then(res => {
+      //     var data = res.data;
+      //     var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
+      //     this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
+      //     console.log("accList api：" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("accList api ERR：" + error, { duration: 2000 });
+      //   });
     },
     //取得選項-水源、水源鹽度
     getOptData:async function(){
