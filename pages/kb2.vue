@@ -1602,23 +1602,31 @@
                                         <v-card-title>AI 建議</v-card-title>
                                     </div>
                                     <div class="btn-groups" >
-                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&isSearch&&nowUser==$auth.$state.user.email">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <button @click="openRemark" v-bind="attrs" v-on="on" 
+                                                    :class="{'btn-secondary':inputRemark.DynamicData==''&&inputRemark.WaterQuality==''&&inputRemark.Material==''&&inputRemark.MakeWater==''&&inputRemark.Feed=='',
+                                                    'btn-primary':inputRemark.DynamicData!==''||inputRemark.WaterQuality!==''||inputRemark.Material!==''||inputRemark.MakeWater!==''||inputRemark.Feed!==''}">
+                                                    <v-icon>mdi-clipboard-edit-outline</v-icon>
+                                                </button>
+                                            </template>
+                                            <span>實際作動紀錄</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&nowUser==$auth.$state.user.email">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <button class="btn-add" @click="postParm(true)" v-bind="attrs" v-on="on">
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </button>
+                                            </template>
+                                            <span>新增並查詢</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button class="btn-add save" @click="patchQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-check</v-icon>
                                                 </button>
                                             </template>
                                             <span>儲存並查詢</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <button @click="openRemark" v-bind="attrs" v-on="on" 
-                                                    :class="{'btn-secondary':inputRemark.DynamicData==''&&inputRemark.WaterQuality==''&&inputRemark.Material==''&&inputRemark.MakeWater==''&&inputRemark.Feed==null,
-                                                    'btn-primary':inputRemark.DynamicData!==''||inputRemark.WaterQuality!==''||inputRemark.Material!==''||inputRemark.MakeWater!==''||inputRemark.Feed!==null}">
-                                                    <v-icon>mdi-clipboard-edit-outline</v-icon>
-                                                </button>
-                                            </template>
-                                            <span>實際作動紀錄</span>
                                         </v-tooltip>
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
