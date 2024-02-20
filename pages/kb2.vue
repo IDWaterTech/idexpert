@@ -1602,6 +1602,14 @@
                                         <v-card-title>AI 建議</v-card-title>
                                     </div>
                                     <div class="btn-groups" >
+                                        <v-tooltip bottom v-if="nowSelectPool!==''&&nowSelectPool!==null&&isSearch&&nowUser==$auth.$state.user.email">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <button class="btn-add save" @click="patchQuerry(nowSelectPool)" v-bind="attrs" v-on="on">
+                                                    <v-icon>mdi-check</v-icon>
+                                                </button>
+                                            </template>
+                                            <span>儲存並查詢</span>
+                                        </v-tooltip>
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button @click="openRemark" v-bind="attrs" v-on="on" 
@@ -2463,7 +2471,8 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>投餌量：</v-card-title>
-                                <v-text-field v-model.number="remark.Feed" type="number" min="0" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width:80px">實際投餌量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
+                                <v-textarea v-model="remark.Feed" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <!-- <v-text-field v-model.number="remark.Feed" type="number" min="0" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width:80px">實際投餌量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
                             </div>
                         </div>
                         
@@ -2508,7 +2517,7 @@
                 <v-card-actions style="padding: 24px 12px;">
                     <v-spacer spacer></v-spacer>
                     <v-btn class="btn-secondary" @click="remarkDialog = false;">取消</v-btn>
-                    <v-btn class="btn-primary" @click="save();patchQuerry(nowSelectPool);">儲存</v-btn>
+                    <v-btn class="btn-primary" @click="saveRemark()">確認</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -2609,8 +2618,8 @@ export default {
             },
             observationKey:{},
             remarkDialog: false,
-            remark:{ DynamicData: '', WaterQuality: '', Feed: null, Material: '', MakeWater: '', Other:''},
-            inputRemark:{ DynamicData: '', WaterQuality: '', Feed: null, Material: '', MakeWater: '', Other:''},
+            remark:{ DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''},
+            inputRemark:{ DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''},
             userData:[],
             nowUser: (this.$auth.$state.user==null)?"":this.$auth.$state.user.email,
             showDate: true,
@@ -2945,7 +2954,7 @@ export default {
                 if(input_data.remark) {
                     this.inputRemark = _.cloneDeep(input_data.remark);
                 }else {
-                    this.inputRemark = { DynamicData: '', WaterQuality: '', Feed: undefined, Material: '', MakeWater: '', Other:''}
+                    this.inputRemark = { DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''}
                 }
                 console.log('新增',input_data,this.inputRemark);
                 //自動查表計算飼料CN比
@@ -3601,7 +3610,7 @@ export default {
                 "Material": {},//投料判斷列表
                 "MakeWater": {},//養殖前期做水添加物
             };
-            this.inputRemark={ DynamicData: '', WaterQuality: '', Feed: undefined, Material: '', MakeWater: '', Other:''}
+            this.inputRemark={ DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''}
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
                 if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
@@ -3858,7 +3867,11 @@ export default {
         save() {
             this.inputRemark = _.cloneDeep(this.remark);
             this.remarkDialog = false;
-        }
+        },
+        saveRemark() {
+            this.inputRemark = _.cloneDeep(this.remark);
+            this.remarkDialog = false;
+        },
     },
     async created() {
         for(let i=0;i<this.bacteriaAll.length;i++) {
