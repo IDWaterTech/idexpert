@@ -467,7 +467,7 @@
                                                                                 <div class="date-time-picker">
                                                                                     <!-- FeedParm['LastFeedDatetime'] = $moment(new Date(), 'YYYY-MM-DD HH:mm') -->
                                                                                     <v-icon @click="showDate=false;FeedParm['LastFeedDatetime'] = getNowDateTime();showDate=true">mdi-calendar</v-icon>
-                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去一天最後一筆的飼料投餵時間->內存量(體重投餌率)、存活率、預計間補日期、0號料">上一餐時間</span>
+                                                                                    <span style="font-size: 14px;margin-right: 9px;padding-left: 4px;" title="過去一天最後一筆的飼料投餵時間->內存量(體重投餌率)、存活率、預計間補日期、0號料">上一餐時間</span>
                                                                                 </div>
                                                                                     
                                                                             </v-col> 
@@ -1180,7 +1180,7 @@
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
                                                                                     <v-icon @click="showDate=false;ObservationData['SamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
-                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天最後一筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">打樣時間</span>
+                                                                                    <span style="font-size: 14px;margin-right: 9px;padding-left: 4px;" title="過去90天最後一筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">打樣時間</span>
                                                                                 </div>
                                                                                     
                                                                             </v-col> 
@@ -1204,7 +1204,7 @@
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
                                                                                     <v-icon @click="showDate=false;ObservationData['LastSamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
-                                                                                    <span style="font-size: 16px;margin-right: 9px;padding-left: 4px;" title="過去90天倒數第二筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次打樣時間</span>
+                                                                                    <span style="font-size: 14px;margin-right: 9px;padding-left: 4px;" title="過去90天倒數第二筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次打樣時間</span>
                                                                                 </div>
                                                                             </v-col>
                                                                             <v-col cols="12" md="10" sm="10">
@@ -2448,7 +2448,7 @@
         </v-dialog> 
         <!-- 備註欄 -->
         <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" style="z-index: 9999;">
-            <v-card class="custom-dialog">
+            <v-card class="custom-dialog" :disabled="nowUser!==$auth.$state.user.email">
                 <v-card-title class="add-title" style="display: block;width: 100%;">
                     <div style="display: inline-block;">
                         <span>紀錄</span> 
@@ -2858,8 +2858,9 @@ export default {
         },
         async getAllUser() {
             this.userData = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+            this.userData = this.userData.filter(x=>x.is_active==true);
             this.isLoading = true;
-            // console.log('User',this.userData);
+            console.log('User',this.userData);
         },
         async getUserQueryData() {
             await this.getQuerry();
