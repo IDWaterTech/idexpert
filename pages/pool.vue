@@ -247,10 +247,10 @@
                         </treeselect>
                       </div>
                       <div class="open" style="padding-right: 12px;">
-                        <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;resultCycleOpen = !resultCycleOpen">
+                        <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
                           <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
                         </v-btn>
-                        <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;resultCycleOpen = !resultCycleOpen">
+                        <v-btn class="btn-icon just-icon" v-else title="收縮" @click="nowExpand = false;">
                           <v-icon style="font-size: 1.2rem;">mdi-view-stream</v-icon>
                         </v-btn>
                       </div>

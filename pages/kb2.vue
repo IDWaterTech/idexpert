@@ -2878,6 +2878,7 @@ export default {
             };
             if(this.$auth.$state.user==null){
                 this.$toast.error(`需重新登入`, { duration: 2000 });
+                window.location.href='/login';
                 // return;
             }else {
                 await this.$axios.get(url, {params:allParm}).then(res => {
