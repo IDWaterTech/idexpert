@@ -2467,10 +2467,19 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>警示：</v-card-title>
-                                <!-- <span v-for="item in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
                                 <!-- <span v-for="item in suggData.Observation" :key="'ob'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
-                                
+                                <span class="record-title">水質：</span>
+                                <span v-for="(item,id) in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">{{ id+1 }}. {{ item.status }}<br></span>
                                 <v-textarea v-model="remark.WaterQuality" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                            </div>
+                            
+                        </div>
+                        <div class="card-title">
+                            <div class="title">
+                                <!-- <span v-for="item in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
+                                <span class="record-title">觀察網：</span>
+                                <span v-for="(item,id) in suggData.Observation" :key="'ob'+item.id" style="font-size: 0.85rem;line-height: 14px">{{ id+1 }}. {{ item.status }}<br></span>
+                                <v-textarea v-model="remark.Observation" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
                             </div>
                         </div>
                         
@@ -4659,6 +4668,16 @@ export default {
 }
 #ai {
     padding-right: 12px;
+}
+.record-title {
+    font-size: 14px;
+    background-color:#E6B8BE;
+    font-weight: bold;
+    display:block;
+    margin-bottom:8px;
+    border-radius:4px 4px 0 0;
+    padding-left: 4px;
+    margin-right: 4px;
 }
 // scrollbar
 ::-webkit-scrollbar {
