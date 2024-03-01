@@ -25,7 +25,6 @@
                             <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
                         </v-col>
                         <!-- 限技術部顯示元件 -->
-                        {{userData.filter(x=>x.id=='1039')}}
                         <v-col cols="12" md="2" sm="12"
                             v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0">
                             <v-autocomplete
