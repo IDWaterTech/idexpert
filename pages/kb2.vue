@@ -24,18 +24,24 @@
                                     'marginTop':`${windowWidth>959.58?'0':'-16px'}`}">
                             <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)"></locate-select>
                         </v-col>
+                        <!-- 限技術部顯示元件 -->
+                        {{userData.filter(x=>x.id=='1039')}}
                         <v-col cols="12" md="2" sm="12"
                             v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0">
                             <v-autocomplete
                                     v-model="nowUser"
                                     :items="userData"
                                     item-value="username"
-                                    item-text="account_name"
+                                    
                                     dense filled
                                     hide-details solo
                                     class="mt-1"
                                     @change="getUserQueryData()"
+                                    :filter="customFilter"
                                     >
+                                    <!-- item-text="account_name" -->
+                                    <template slot="item" slot-scope="data">{{data.item.account_name}}({{ data.item.username.match(/(.*)@/)[1] }})</template>
+                                    <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
                             </v-autocomplete>
                         </v-col>
                         <!-- 選擇參數 -->
@@ -2644,6 +2650,19 @@ export default {
         }
     },
     methods: {
+        //補上客制搜尋
+        customFilter(item, queryText, itemText) {
+            const searchText = queryText.toLowerCase();
+            const username = item.username.toLowerCase();
+            const account_name = item.account_name.toLowerCase();
+            // console.log(`customFilter:item=${JSON.stringify(item)},queryText=${queryText},itemText=${itemText}`);
+            return username.indexOf(searchText) > -1 || account_name.indexOf(searchText) > -1;
+            // return true;
+            // const textOne = item.name.toLowerCase()
+            // const textTwo = item.abbr.toLowerCase()
+            // return textOne.indexOf(searchText) > -1 ||
+            //     textTwo.indexOf(searchText) > -1
+        },
         onChange(value,dateString) {
             console.log(value,dateString);
         },
@@ -2874,7 +2893,7 @@ export default {
         async getUserQueryData() {
             await this.getQuerry();
             this.querrySelected='';
-            await this.importBasicData();
+            // await this.importBasicData();
         },
         getQuerry:async function(isAdd){
             // if(this.querryData.length>0){
