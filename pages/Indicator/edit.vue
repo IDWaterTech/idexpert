@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <div ref="main" id="main" style="width: 600px;height:400px;"></div> -->
     <v-card class="bg-card">
         <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
@@ -9,6 +10,10 @@
                 </div>
             </v-row>
         </div> -->
+        <v-overlay :value="!isLoading" :absolute="true">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+
         <div class="content" style="padding-top:12px">
           <div class="search">
             <v-row style="margin-bottom: 12px;">
@@ -76,176 +81,6 @@
                   height=""
                   ><v-icon>mdi-text-box-plus-outline</v-icon></v-btn
                 >
-                <v-dialog
-                  v-model="addDialog"
-                  max-width="500px"
-                  :persistent="keepswitch"
-                  class="indicator-dialog"
-                >
-                  <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-card v-if="addDialog"
-                      ><v-card-title>新增</v-card-title>
-                      <v-card-subtitle class="title"
-                        >{{maindata.filter(x=>x.id==sel_main)[0].name}}-{{maindata.filter(x=>x.id==sel_main)[0].node.filter(x=>x.id==sel_area)[0].name}}-<span class="font-weight-black" style="color:red;">{{
-                          defitem
-                        }}</span
-                        ></v-card-subtitle>
-                      <v-card-text>
-                        <v-row>
-                          <v-col cols="12" md="6">
-                            <v-switch
-                              v-model="keepswitch"
-                              color="red darken-3" dense
-                              :label="
-                                keepswitch ? '保留數值不關閉：on' : '保留數值不關閉：off'
-                              "
-                            ></v-switch>
-                          </v-col>
-                          <v-col cols="12" md="6">
-                            <v-autocomplete
-                              v-model="defitem"
-                              :items="waterdatacols"
-                              item-text="name"
-                              item-value="name"
-                              no-data-text="查無資料"
-                              placeholder="指定項目(必選)"
-                              dense
-                            >
-                              <template v-slot:item="data">{{`　${data.item.name}`}}</template>
-                            </v-autocomplete>
-                          </v-col>
-                          <!-- 日期 -->
-                          <v-col cols="12" md="6">
-                            <v-menu
-                              v-model="menu_adate"
-                              :close-on-content-click="false"
-                              :nudge-right="40"
-                              transition="scale-transition"
-                              offset-y
-                              min-width="auto"
-                            >
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                  v-model="adate"
-                                  label="選擇日期"
-                                  prepend-icon="mdi-calendar"
-                                  readonly dense
-                                  v-bind="attrs"
-                                  v-on="on"
-                                  :rules="rules.require"
-                                  @click:prepend="() => (adate = getNowDate())"
-                                ></v-text-field>
-                              </template>
-                              <v-date-picker
-                                v-model="adate" locale="zh-tw" no-title
-                                @input="menu_adate = false"
-                              ></v-date-picker>
-                            </v-menu>
-                          </v-col>
-                          <!-- 時間 -->
-                          <v-col cols="12" md="6">
-                            <v-text-field
-                              label="時間"
-                              v-model="atime"
-                              value="" dense
-                              type="time"
-                              prepend-icon="mdi-timeline-clock-outline"
-                              @click:prepend="() => (atime = getNowTime())"
-                              :rules="rules.require"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col cols="12">
-                            <v-row>
-                              <v-col md="9">
-                                <v-text-field v-model="formula"  hide-details dense filled clearable title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(20+5)]，預設為相乘"></v-text-field>
-                              </v-col>
-                              <v-col md="3">
-                                <v-btn block color="primary" :disabled="!formula" @click="reCalc" tile>計算</v-btn>
-                              </v-col>
-                            </v-row>
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <v-row>
-                          <v-col
-                            cols="12"
-                            md="6"
-                            v-for="(item,id) in mainpool.items"
-                            :key="'pool-'+id"
-                          >
-                            {{ item.name}}
-                            <el-input-number
-                              :id="item.name"
-                              :ref="item.name"
-                              @keyup.enter.native="gofocusNxt2(item.name)"
-                              class="ml-2"
-                              v-model="num[item.name]"
-                              size="mini"
-                              :precision="2"
-                              :step="0.1"
-                              :min="num_min"
-                              :max="num_max"
-                            ></el-input-number>
-                          </v-col>
-                          <!-- @keyup="getAddData" -->
-                        </v-row>
-                      </v-card-text>
-
-                      <v-card-text>
-                        <v-chip
-                          class="ma-2"
-                          color="indigo darken-3"
-                          outlined
-                          v-for="(item,id) in addData"
-                          :key="'add-'+id"
-                        >
-                          <v-icon left>
-                            mdi-new-box
-                          </v-icon>
-                          {{ item.name }} [{{ item.value }}]
-                        </v-chip>
-                      </v-card-text>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <v-chip
-                          class="ma-2"
-                          color="indigo darken-3"
-                          outlined
-                          v-for="(key, index) in Object.keys(num)"
-                          :key="'object-'+index"
-                          v-show="typeof num[key] == 'number'"
-                        >
-                          <div v-if="typeof num[key] == 'number'">
-                            <v-icon left>
-                              mdi-new-box
-                            </v-icon>
-                            {{ key }} [{{ num[key] }}]
-                          </div>
-                        </v-chip>
-                      </v-card-text>
-                      <v-divider></v-divider>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          @click="addDialog = false"
-                          tile
-                          v-show="keepswitch"
-                          style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;"
-                          >取消</v-btn
-                        >
-                        <v-btn
-                          @click="addsubmit"
-                          tile
-                          :disabled="!atime"
-                          style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;"
-                          >新增資料</v-btn
-                        >
-                      </v-card-actions>
-                    </v-card>
-                  </v-form>
-                </v-dialog>
                 <v-btn
                   icon
                   color="success"
@@ -366,21 +201,6 @@
                   >查詢</v-btn
                 >
               </div>
-              <!-- 批次刪除Dialog -->
-              <!-- <v-col cols="12"> -->
-              <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
-                <v-card height="230">
-                  <v-card-title>驗證碼</v-card-title>
-                  <v-card-text>
-                    <recaptcha />
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn tile @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-              <!-- </v-col> -->
             </v-row>
           </div>
           <!-- 搜尋結果 -->
@@ -410,8 +230,8 @@
                           :key="'tab-'+tid"
                           :value="tab"
                           style=";min-height: 48vh;">
-                           <!-- 圖表 -->
-                           <div v-show="nowTab=='圖表'" class="result-content">
+                          <!-- 圖表 -->
+                          <div v-show="nowTab=='圖表'" class="result-content">
                             <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
                               <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
                               <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
@@ -469,35 +289,8 @@
                                     :disabled="disabledAllDel"
                                   >
                                   </v-checkbox>
-                                  <v-btn tile small :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
+                                  <v-btn class="btn-primary delete" :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
                                 </v-toolbar>
-                                
-                                <!-- 刪除項目 -->  
-                                <v-dialog v-model="delDialog" max-width="500px" class="indicator-dialog">
-                                  <v-card>
-                                    <v-card-title>
-                                      <span class="text-h5">是否刪除該項目?</span>
-                                    </v-card-title>
-                                    <v-card-text>
-                                      <v-container>
-                                        <v-row>
-                                          <v-col cols="12" md="12">
-                                            <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"> <span style="width: 50px;">id：</span>{{ editedItem.id }}</div>
-                                            <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">時間：</span>{{ editedItem.inspected_date }}</div>
-                                            <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">值：</span>{{ editedItem.value }}</div>
-                                          </v-col>
-                                        </v-row>
-                                      </v-container>
-                                    </v-card-text>
-                                    <v-card-actions style="justify-self: flex-end;width: 100%;">
-                                      <v-spacer></v-spacer>
-                                      <v-btn text @click="delDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
-                                        取消</v-btn>
-                                      <v-btn text @click="delsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
-                                        確定刪除</v-btn>
-                                    </v-card-actions>
-                                  </v-card>
-                                </v-dialog>
                               </template>
                             </v-data-table>
                           </div>
@@ -539,11 +332,114 @@
                               </template>
                             </v-data-table>
                           </div>
-                          
-                         
                           <!-- 觀察網資訊 -->
                           <div v-show="nowTab=='觀察網資訊'" class="result-content">
-                            div 觀察網資訊
+                            <!-- 紀錄清單 -->
+                            <div class="result-list">
+                              <v-card class="result-card" style="box-shadow: none;border-radius: 0;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                <div class="added" style="display: flex;justify-content: space-between;">
+                                  <div class="card-title"  @click="listOpen = !listOpen" style="cursor: pointer;margin: 0;padding: 0;">
+                                    <div class="title">
+                                        <v-card-title style="padding: 8px;font-size: 16px;">紀錄清單</v-card-title>
+                                    </div>
+                                    <div class="chevron">
+                                      <v-icon v-if="listOpen">mdi-triangle-small-up</v-icon>
+                                      <v-icon v-if="!listOpen">mdi-triangle-small-down</v-icon>
+                                    </div>
+                                  </div>
+                                  <v-btn v-if="nowTab=='觀察網資訊'" class="btn-secondary green" :class="{'disabled':optData.length==0}" style="float:right" @click="editObservable('add')"><v-icon>mdi-plus</v-icon>新增</v-btn>
+                                </div>
+                                
+                              </v-card>
+                            </div>
+                            <v-data-table
+                              v-if="listOpen"
+                              class="edit-table"
+                              :headers="observableHeaders"
+                              :items="observableData" dense
+                              :footer-props="footerProps"
+                              no-data-text="查無資料"
+                              fixed-header>
+                              <template v-slot:[`item.is_shell`]="{ item }">
+                                  {{ item.is_shell?'是':'否' }}
+                              </template>
+                              <template v-slot:[`item.img`]="{ item }">
+                                  <img v-img="{ group: item.id }" v-for="(img,i) in item.img" :key="i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
+                              </template>
+                              <template v-slot:[`item.intestinal_color`]="{ item }">
+                                <v-chip v-for="(shape,id) in item.IntestinalColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                    {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </template>
+                              <template v-slot:[`item.hepatopancreas_color`]="{ item }">
+                                <v-chip v-for="(shape,id) in item.HepatopancreasColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                    {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </template>
+                              <template v-slot:[`item.muscle_color`]="{ item }">
+                                <v-chip v-for="(shape,id) in item.MuscleColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                    {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </template>
+                              <template v-slot:[`item.body_color`]="{ item }">
+                                <v-chip v-for="(shape,id) in item.BodyColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                    {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </template>
+                              <template v-slot:[`item.body_shape`]="{ item }">
+                                <v-chip v-for="(shape,id) in item.BodyShape" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                    {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </template>
+                              <!-- 編輯/刪除 -->
+                              <template v-slot:[`item.action`]="{ index }">
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn  class="btn-icon"
+                                            title="編輯"
+                                            @click="editObservable('edit',index)"
+                                            v-bind="attrs" v-on="on"
+                                            style="pointer-events: inherit;">
+                                            <v-icon>mdi-pencil</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>編輯</span>
+                                </v-tooltip>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn  class="btn-icon delete"
+                                            title="刪除"
+                                            v-bind="attrs" v-on="on"
+                                            style="pointer-events: inherit;"
+                                            @click="delObservable(index)">
+                                            <v-icon>mdi-trash-can</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span>刪除</span>
+                                </v-tooltip>
+                            </template>
+                            </v-data-table>
+                            <!-- 圖表 -->
+                            <div v-if="observableData.length>0&&chartShow" class="result-list">
+                              <v-card class="result-card" style="box-shadow: none;border-radius: 0;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                <div class="card-title" style="cursor: pointer;margin: 0;padding: 0;">
+                                    <div class="title">
+                                        <v-card-title style="padding: 8px;font-size: 16px;">圖表</v-card-title>
+                                    </div>
+                                </div>
+                              </v-card>
+                            </div>
+                            <v-row v-if="observableData.length>0&&chartShow" style="width: 100%;overflow-x:scroll;">
+                              <!-- <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeLineData" :key="'chart_'+item.name_en+id">
+                                <h3 class="pool-name">{{ item.name_ch }}</h3>
+                                <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="null"></Stackbar>
+                              </v-col> -->
+                              <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeChartData" :key="'chart_'+item.name_en+id">
+                                <h3 class="pool-name">{{ item.name_ch }}{{item.name_en=='feed_amount'?'':'(%)'}}</h3>
+                                <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="item.name_en=='feed_amount'?null:100"></Stackbar>
+                                
+                              </v-col>
+                            </v-row>
                           </div>
                         </v-tab-item>
                       </v-tabs-items>
@@ -552,61 +448,504 @@
                 </v-card>
               </v-col>
             </v-row>
-          
-            <!-- 編輯項目 -->
-            <v-dialog v-model="editDialog" max-width="500px" class="indicator-dialog">
-              <v-card>
-                <v-card-title>
-                  <span class="text-h5">編輯項目</span>
-                </v-card-title>
-                <v-card-text>
-                  <v-container>
+          </div>
+        </div>
+        <!-- 新增 -->
+        <v-dialog
+          v-model="addDialog"
+          max-width="500px"
+          :persistent="keepswitch"
+          class="indicator-dialog"
+        >
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card class="custom-dialog" v-if="addDialog"
+              >
+              <v-card-title class="add-title" style="display: block;width: 100%;">
+                <div style="display: inline-block;">
+                  新增
+                </div>
+                <div class="add" style="float: right;display: inline-block;">
+                  <v-btn  class="btn-secondary close"
+                          title="取消" 
+                          @click="addDialog = false" 
+                          style="border: none;min-width: 0;padding: 0 4px;">
+                      <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </div>
+              </v-card-title>
+              <v-card-text style="padding-top: 24px">
+                <div class="basic" style="padding-left: 8px;">
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;font-size: 18px;">
+                    {{maindata.filter(x=>x.id==sel_main)[0].name}}-{{maindata.filter(x=>x.id==sel_main)[0].node.filter(x=>x.id==sel_area)[0].name}}-
+                    <span class="error-text font-weight-black" style="font-size: 18px;">{{defitem}}</span>
+                  </v-card-text>
+                </div></v-card-text>
+              <v-card-text style="padding-top: 8px">
+                <div class="basic" style="padding-left: 8px;font-size: 16px;">
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;">
                     <v-row>
-                      <v-col cols="12" md="12">
+                      <v-col cols="12" md="6">
+                        <v-switch
+                          v-model="keepswitch"
+                          color="red darken-3" dense
+                          :label="
+                            keepswitch ? '保留數值不關閉：on' : '保留數值不關閉：off'
+                          "
+                          hide-details
+                        ></v-switch>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-autocomplete
+                          v-model="defitem"
+                          :items="waterdatacols"
+                          item-text="name"
+                          item-value="name"
+                          no-data-text="查無資料"
+                          placeholder="指定項目(必選)"
+                          hide-details
+                          dense
+                        >
+                          <template v-slot:item="data">{{`　${data.item.name}`}}</template>
+                        </v-autocomplete>
+                      </v-col>
+                      <!-- 日期 -->
+                      <v-col cols="12" md="6">
+                        <v-menu
+                          v-model="menu_adate"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="adate"
+                              label="選擇日期"
+                              prepend-icon="mdi-calendar"
+                              readonly dense
+                              v-bind="attrs"
+                              v-on="on"
+                              :rules="rules.require"
+                              @click:prepend="() => (adate = getNowDate())"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="adate" locale="zh-tw" no-title
+                            @input="menu_adate = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                      <!-- 時間 -->
+                      <v-col cols="12" md="6">
                         <v-text-field
-                          v-model="editedItem.id"
-                          disabled dense filled
-                          class="edit-disabled"
-                        ><span style="width:50px;" slot="prepend">id</span></v-text-field>
-                        <v-text-field
-                          v-model="editedItem.inspected_date"
-                          disabled dense filled
-                          class="edit-disabled"
-                        ><span style="width:50px;" slot="prepend">日期</span></v-text-field>
-                        <!-- <v-text-field
-                          v-model="editedItem.value"
-                          autocomplate="off"
-                          type="number" dense filled
-                        ><span style="width:50px;" slot="prepend">值</span></v-text-field> -->
-                        <div style="display: flex;align-items: center;">
-                          <span style="width:50px;" slot="prepend">值</span>
+                          label="時間"
+                          v-model="atime"
+                          value="" dense
+                          type="time"
+                          prepend-icon="mdi-timeline-clock-outline"
+                          @click:prepend="() => (atime = getNowTime())"
+                          :rules="rules.require"
+                        ></v-text-field>
+                      </v-col>
+                      <!-- 計算 -->
+                      <v-col cols="12" style="border-top: 1px solid rgba(0,0,0,0.1);">
+                        <v-row>
+                          <v-col md="9">
+                            <v-text-field v-model="formula"  hide-details dense filled clearable title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(20+5)]，預設為相乘"></v-text-field>
+                          </v-col>
+                          <v-col md="3" style="float: right;">
+                            <v-btn class="btn-primary" :disabled="!formula" @click="reCalc" tile>計算</v-btn>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </div>
+              </v-card-text>
+              <v-card-text style="padding-top: 16px">
+                  <div class="basic" style="padding-left: 16px;font-size: 16px;">
+                    <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                      <v-row>
+                        <v-col
+                          cols="12"
+                          md="6"
+                          v-for="(item,id) in mainpool.items"
+                          :key="'pool-'+id"
+                        >
+                          {{ item.name}}
                           <el-input-number
+                            :id="item.name"
+                            :ref="item.name"
+                            @keyup.enter.native="gofocusNxt2(item.name)"
                             class="ml-2"
-                            v-model="editedItem.value"
-                            size="medium"
+                            v-model="num[item.name]"
+                            size="mini"
                             :precision="2"
                             :step="0.1"
                             :min="num_min"
                             :max="num_max"
                           ></el-input-number>
-                        </div>
-                      </v-col>
+                        </v-col>
+                        <!-- @keyup="getAddData" -->
+                      </v-row>
+                    </v-card-text>
+                    
+                  </div>
+              </v-card-text>
+                
+
+              <v-card-text>
+                <v-chip
+                  class="ma-2 add-chip"
+                  v-for="(item,id) in addData"
+                  :key="'add-'+id"
+                >
+                  <v-icon left>
+                    mdi-new-box
+                  </v-icon>
+                  {{ item.name }} [{{ item.value }}]
+                </v-chip>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-text>
+                <v-chip
+                  class="ma-2 add-chip"
+                  v-for="(key, index) in Object.keys(num)"
+                  :key="'object-'+index"
+                  v-show="typeof num[key] == 'number'"
+                >
+                  <div v-if="typeof num[key] == 'number'">
+                    <v-icon left style="color: #fff !important">
+                      mdi-new-box
+                    </v-icon>
+                    {{ key }} [{{ num[key] }}]
+                  </div>
+                </v-chip>
+              </v-card-text>
+              <v-card-actions style="padding: 24px 12px;">
+                <v-spacer></v-spacer>
+                <v-btn class="btn-secondary" @click="addDialog = false">取消</v-btn>
+                <v-btn class="btn-primary" @click="addsubmit">新增</v-btn>
+              </v-card-actions>
+              <!-- <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  @click="addDialog = false"
+                  tile
+                  v-show="keepswitch"
+                  style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;"
+                  >取消</v-btn
+                >
+                <v-btn
+                  @click="addsubmit"
+                  tile
+                  :disabled="!atime"
+                  style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;"
+                  >新增資料</v-btn
+                >
+              </v-card-actions> -->
+            </v-card>
+          </v-form>
+        </v-dialog>
+        <!-- 刪除項目 -->  
+        <v-dialog v-model="delDialog" max-width="500px" class="indicator-dialog">
+          <v-card class="custom-dialog">
+            <v-card-title class="add-title" style="display: block;width: 100%;">
+              <div style="display: inline-block;">
+                是否刪除該項目?
+              </div>
+              <div class="add" style="float: right;display: inline-block;">
+                <v-btn  class="btn-secondary close"
+                        title="取消" 
+                        @click="delDialog = false" 
+                        style="border: none;min-width: 0;padding: 0 4px;">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </div>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" md="12">
+                    <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"> <span style="width: 50px;">id：</span>{{ editedItem.id }}</div>
+                    <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">時間：</span>{{ editedItem.inspected_date }}</div>
+                    <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">值：</span>{{ editedItem.value }}</div>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions style="padding: 24px 12px;">
+                <v-spacer></v-spacer>
+                <v-btn class="btn-secondary" @click="delDialog = false">取消</v-btn>
+                <v-btn class="btn-primary" @click="delsubmit">新增</v-btn>
+            </v-card-actions>
+            <!-- <v-card-actions style="justify-self: flex-end;width: 100%;">
+              <v-spacer></v-spacer>
+              <v-btn text @click="delDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
+                取消</v-btn>
+              <v-btn text @click="delsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
+                確定刪除</v-btn>
+            </v-card-actions> -->
+          </v-card>
+        </v-dialog>
+        <!-- 批次刪除Dialog -->
+        <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
+          <v-card height="230"  class="custom-dialog">
+            <v-card-title>驗證碼</v-card-title>
+            <v-card-text>
+              <recaptcha />
+            </v-card-text>
+            <v-card-actions style="padding: 24px 12px;">
+              <v-spacer></v-spacer>
+              <v-btn class="btn-secondary" @click="captchaDialog = false">取消</v-btn>
+              <v-btn class="btn-primary" @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        
+        <!-- 編輯項目 -->
+        <v-dialog v-model="editDialog" max-width="500px" class="indicator-dialog">
+          <v-card class="custom-dialog">
+            <v-card-title class="add-title" style="display: block;width: 100%;">
+              <div style="display: inline-block;">
+                編輯項目
+              </div>
+              <div class="add" style="float: right;display: inline-block;">
+                <v-btn  class="btn-secondary close"
+                        title="取消" 
+                        @click="editDialog = false" 
+                        style="border: none;min-width: 0;padding: 0 4px;">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </div>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" md="12">
+                    <v-text-field
+                      v-model="editedItem.id"
+                      disabled dense filled
+                      class="edit-disabled"
+                    ><span style="width:50px;" slot="prepend">id</span></v-text-field>
+                    <v-text-field
+                      v-model="editedItem.inspected_date"
+                      disabled dense filled
+                      class="edit-disabled"
+                    ><span style="width:50px;" slot="prepend">日期</span></v-text-field>
+                    <!-- <v-text-field
+                      v-model="editedItem.value"
+                      autocomplate="off"
+                      type="number" dense filled
+                    ><span style="width:50px;" slot="prepend">值</span></v-text-field> -->
+                    <div style="display: flex;align-items: center;">
+                      <span style="width:50px;" slot="prepend">值</span>
+                      <el-input-number
+                        class="ml-2"
+                        v-model="editedItem.value"
+                        size="medium"
+                        :precision="2"
+                        :step="0.1"
+                        :min="num_min"
+                        :max="num_max"
+                      ></el-input-number>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions style="padding: 24px 12px;">
+              <v-spacer></v-spacer>
+              <v-btn tile @click="editDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
+                取消
+              </v-btn>
+              <v-btn tile @click="editsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
+                確定
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- 觀察網 -->
+        <v-dialog v-model="observeDialog" max-width="500px">
+          <v-form ref="observeform" v-model="observevalid" lazy-validation>
+            <v-card class="custom-dialog">
+              <v-card-title class="add-title" style="display: block;width: 100%;">
+                <div style="display: inline-block;">
+                  {{ nowObserve=='edit'?'編輯':'新增' }}
+                </div>
+                <div class="add" style="float: right;display: inline-block;">
+                  <v-btn  class="btn-secondary close"
+                          title="取消" 
+                          @click="observeDialog = false" 
+                          style="border: none;min-width: 0;padding: 0 4px;">
+                      <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </div>
+              </v-card-title>
+              <v-card-text style="padding-top: 8px">
+                <div class="basic" style="padding-left: 8px;">
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;padding-bottom: 0;">
+                    <span class="pa-0 ma-0" slot="prepend" style="width: 92px;font-size: 16px;color: rgba(0, 0, 0, 0.87);">養殖池</span>
+                    <locate-select :dataScope="'pool'" :defaultSelect="observeEdit['pond_id']?observeEdit['pond_id'].toString():''" :isMulti="false" @scopeSel_data="selectObserveData($event)" class="select-template"></locate-select>
+                  </v-card-text>
+                  <span v-if="isPondId" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必填項目</span>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
+                    <span class="pa-0 ma-0" style="width:120px;font-size: 16px;color: rgba(0, 0, 0, 0.87);"><v-icon @click="showDate=false;observeEdit['inspected_time'] = getNowDateTime();showDate=true;" slot="prepend" style="color:#006AA6">mdi-calendar</v-icon>檢測時間</span>
+                    <div class="date-time-picker" style="width:100%">
+                      <a-date-picker v-model="observeEdit['inspected_time']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk"  style="min-width: none;width: 100%;" />
+                    </div>                                                 
+                  </v-card-text>
+                  <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必填項目</span>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
+                    <v-text-field v-model.number="observeEdit['observation_qty']" min="0" type="number" dense class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網隻數</span></v-text-field>
+                    <v-select v-model="observeEdit['is_shell']" :items="isShellData" filled dense class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">是否脫殼</span></v-select>
+                  </v-card-text>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                    <v-text-field v-model.number="observeEdit['feed_amount']" type="number" min="0" dense class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網殘餌量(g)</span></v-text-field>
+                    <v-text-field v-model.number="observeEdit['dead_shrimp_qty']" type="number" min="0" filled dense class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">死蝦數量</span></v-text-field>
+                  </v-card-text>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                    <v-text-field v-model.number="observeEdit['shrimp_weight']" type="number" min="0" dense class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">蝦隻重量(g)</span></v-text-field>
+                  </v-card-text>
+                  
+                  <div class="card-title">
+                    <div class="title"  style="display: flex;align-items: center;">
+                        <v-card-title>腸線顏色</v-card-title>
+                        <span v-if="isOver.ic" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
+                    </div>
+                  </div>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-row style="width: 100%;align-items: center;">
+                        <v-col cols="6" v-for="(item,id) in observeEdit.IntestinalColor" :key="'IntestinalColor_'+id" style="width: 100%;">
+                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                              <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                <el-input-number
+                                    class="ml-2"
+                                    v-model="item.value"
+                                    size="mini"
+                                    :step="1"
+                                    :min="0"
+                                    prop="number"
+                                    @change="changeChips"
+                                ></el-input-number>
+                            </div>
+                        </v-col>
                     </v-row>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions style="justify-self: flex-end;width: 100%;">
-                  <v-spacer></v-spacer>
-                  <v-btn tile @click="editDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
-                    取消
-                  </v-btn>
-                  <v-btn tile @click="editsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
-                    確定
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </div>
-        </div>
+                  </v-card-text>
+                  <div class="card-title">
+                    <div class="title"  style="display: flex;align-items: center;">
+                        <v-card-title>肝胰臟顏色</v-card-title>
+                        <span v-if="isOver.hc" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
+                    </div>
+                  </div>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-row style="width: 100%;align-items: center;">
+                        <v-col cols="6" v-for="(item,id) in observeEdit.HepatopancreasColor" :key="'HepatopancreasColor_'+id" style="width: 100%;">
+                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                <el-input-number
+                                    class="ml-2"
+                                    v-model="item.value"
+                                    size="mini"
+                                    :step="1"
+                                    :min="0"
+                                    prop="number"
+                                ></el-input-number>
+                            </div>
+                        </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <div class="card-title">
+                    <div class="title"  style="display: flex;align-items: center;">
+                        <v-card-title>肌肉顏色</v-card-title>
+                        <span v-if="isOver.mc" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
+                    </div>
+                  </div>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-row style="width: 100%;align-items: center;">
+                        <v-col cols="6" v-for="(item,id) in observeEdit.MuscleColor" :key="'MuscleColor_'+id" style="width: 100%;">
+                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                <el-input-number
+                                    class="ml-2"
+                                    v-model="item.value"
+                                    size="mini"
+                                    :step="1"
+                                    :min="0"
+                                    prop="number"
+                                ></el-input-number>
+                            </div>
+                        </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <div class="card-title">
+                    <div class="title"  style="display: flex;align-items: center;">
+                        <v-card-title>蝦體顏色</v-card-title>
+                        <span v-if="isOver.bc" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
+                    </div>
+                  </div>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-row style="width: 100%;align-items: center;">
+                        <v-col cols="6" v-for="(item,id) in observeEdit.BodyColor" :key="'BodyColor_'+id" style="width: 100%;">
+                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                <el-input-number
+                                    class="ml-2"
+                                    v-model="item.value"
+                                    size="mini"
+                                    :step="1"
+                                    :min="0"
+                                    prop="number"
+                                ></el-input-number>
+                            </div>
+                        </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <div class="card-title">
+                    <div class="title"  style="display: flex;align-items: center;">
+                        <v-card-title>蝦體形狀</v-card-title>
+                        <span v-if="isOver.bs" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
+                    </div>
+                  </div>
+                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-row style="width: 100%;align-items: center;">
+                        <v-col cols="6" v-for="(item,id) in observeEdit.BodyShape" :key="'BodyShape_'+id" style="width: 100%;">
+                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                <el-input-number
+                                    class="ml-2"
+                                    v-model="item.value"
+                                    size="mini"
+                                    :step="1"
+                                    :min="0"
+                                    prop="number"
+                                ></el-input-number>
+                            </div>
+                        </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <div class="card-title">
+                    <div class="title"  style="display: flex;align-items: center;">
+                        <v-card-title>觀察網影像</v-card-title>
+                        <span v-if="nowObserve=='edit'" class="error-text ml-2" style="font-size: 12px;">*欲編輯照片請刪除後重新新增</span>
+                    </div>
+                  </div>
+                  <v-card-text style="display: flex;flex-direction:column;align-items: center;padding-top: 0;">
+                    <v-file-input v-if="nowObserve=='add'" v-model="observeEdit.img_a" accept="image/*" label="上傳影像(限*jpg/*png)" style="margin-top: 0;width: 100%;"></v-file-input>
+                    <v-file-input v-if="nowObserve=='add'" v-model="observeEdit.img_b" accept="image/*" label="上傳影像(限*jpg/*png)" style="margin-top: 0;width: 100%"></v-file-input>
+                    <v-file-input v-if="nowObserve=='add'" v-model="observeEdit.img_c" accept="image/*" label="上傳影像(限*jpg/*png)" style="margin-top: 0;width: 100%;"></v-file-input>
+                  </v-card-text>
+                </div>
+              </v-card-text>
+              <v-card-actions style="padding: 24px 12px;">
+                <v-spacer></v-spacer>
+                <v-btn class="btn-secondary" @click="observeDialog = false">取消</v-btn>
+                <v-btn class="btn-primary" @click="observeSubmit">{{ nowObserve=='edit'?'編輯':'新增' }}</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-dialog>
     </v-card>
   </div>
 </template>
@@ -617,6 +956,7 @@ import dayjs from "dayjs";
 import "element-ui/lib/theme-chalk/index.css";
 import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
 import _ from "lodash";
+import Stackbar from '~/components/stackbar.vue';
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -625,7 +965,8 @@ export default {
   layout: "emptynologin2",
   middleware: "auth",
   components: {
-    WaterQuality_Vcharts2
+    WaterQuality_Vcharts2,
+    Stackbar,
   },
   head(){
     return{
@@ -752,7 +1093,146 @@ export default {
       //編修紀錄checkbox disable判斷
       disabledAllDel:true,
       // select
-      nowArea:''
+      nowArea:'',
+      observableHeaders:[
+        {groupable: false,text: "檢測時間",value: "inspected_time",width:"10%", sortable: true},
+        //{groupable: false,text: "池",value: "pond",width:"5%", sortable: false },
+        {groupable: false,text: "觀察網隻數",value: "observation_qty",width:"8%", sortable: false },
+        {groupable: false,text: "蝦子重量(g)",value: "shrimp_weight",width:"6%", sortable: false },
+        {groupable: false,text: "觀察網殘餌量(g)",value: "feed_amount",width:"7%", sortable: false },
+        {groupable: false,text: "腸線顏色",value: "intestinal_color",width:"5%", sortable: false },
+        {groupable: false,text: "肝胰臟顏色",value: "hepatopancreas_color",width:"12%", sortable: false },
+        {groupable: false,text: "肌肉顏色",value: "muscle_color",width:"5%", sortable: false },
+        {groupable: false,text: "蝦體顏色",value: "body_color",width:"5%", sortable: false },
+        {groupable: false,text: "蝦體形狀",value: "body_shape",width:"5%", sortable: false },
+        {groupable: false,text: "是否脫殼",value: "is_shell",width:"5%", sortable: false },
+        {groupable: false,text: "死蝦數量",value: "dead_shrimp_qty",width:"5%", sortable: false },
+        {groupable: false,text: "觀察網影像",value: "img",width:"10%", sortable: false },
+        {groupable: false,text: "操作",value: "action",width:"15%", sortable: false },
+      ],
+      observableData:[
+      // {
+      //   "IntestinalColor": {
+      //       "Brown": 3,
+      //       "Black": 0,
+      //       "Red": 0,
+      //       "White": 0,
+      //       "Empty": 0
+      //   },
+      //   "HepatopancreasColor": {
+      //       "Black": 0,
+      //       "Brown": 0,
+      //       "Red": 0,
+      //       "Orange": 0,
+      //       "White": 0,
+      //       "Gray": 0,
+      //       "Yellow": 0,
+      //       "Green": 0
+      //   },
+      //   "MuscleColor": {
+      //       "Translucent": 0,
+      //       "Turbidity": 0,
+      //       "TurbidityCottonLike": 0
+      //   },
+      //   "BodyColor": {
+      //       "Transparent": 0,
+      //       "Red": 0
+      //   },
+      //   "BodyShape": {
+      //       "Deformity": 0
+      //   },
+      //   "observation_qty": 50,
+      //   "is_shell": false,
+      //   "dead_shrimp_qty": 33,
+      //   "shrimp_weight": 3,
+      //   "inspected_time": '2024-02-06 13:22:11',
+      //   "created_user": 'XXX',
+      //   "feed_amount": 0.3,
+      //   "pond_id": 1,
+      //   "pond":'',
+      //   "img_a": 'https://www.idwatertech.com:8011/media/observation/20230912192249_1_1/feed_result.jpg',
+      //   "img_b":'https://www.idwatertech.com:8011/media/observation/20230913202700_1_1/feed_result.jpg',
+      //   "img_c":'https://www.idwatertech.com:8011/media/observation/20230913202700_1_2/feed_result.jpg',
+      //   "img":[]
+      // },{
+      //   "IntestinalColor": {
+      //       "Brown": 3,
+      //       "Black": 23,
+      //       "Red": 0,
+      //       "White": 22,
+      //       "Empty": 0
+      //   },
+      //   "HepatopancreasColor": {
+      //       "Black": 0,
+      //       "Brown": 0,
+      //       "Red": 0,
+      //       "Orange": 0,
+      //       "White": 0,
+      //       "Gray": 0,
+      //       "Yellow": 0,
+      //       "Green": 0
+      //   },
+      //   "MuscleColor": {
+      //       "Translucent": 0,
+      //       "Turbidity": 0,
+      //       "TurbidityCottonLike": 0
+      //   },
+      //   "BodyColor": {
+      //       "Transparent": 0,
+      //       "Red": 0
+      //   },
+      //   "BodyShape": {
+      //       "Deformity": 0
+      //   },
+      //   "observation_qty": 34,
+      //   "is_shell": false,
+      //   "dead_shrimp_qty": 33,
+      //   "shrimp_weight": 3,
+      //   "inspected_time": '2024-02-02 13:22:11',
+      //   "created_user": 'XXX',
+      //   "feed_amount": 0.3,
+      //   "pond_id": 1,
+      //   "pond":'',
+      //   "img_a": '',
+      //   "img_b":'',
+      //   "img_c":'https://www.idwatertech.com:8011/media/observation/20230913170000_1_1/feed_result.jpg',
+      //   "img":[]
+      //   }
+      ],
+      optData:[],
+      editObservalbe:{},
+      windowWidth: window.innerWidth,
+      observeDialog: false,
+      observevalid: false,
+      rules: {
+        require: [v => !!v || "*必要項目"]
+      },
+      observeEdit:{},
+      nowObserve:'edit',
+      isShellData:[{
+        name_en: true,
+        name_ch: '是'
+      },{
+        name_en: false,
+        name_ch: '否'
+      }],
+      showDate: true,
+      isPondId: false,
+      // 送出前檢查個顏色數量有無超過隻數
+      isOver:{
+        ic:false,
+        hc:false,
+        mc:false,
+        bc:false,
+        bs:false
+      },
+      listOpen: true,
+      observeChartData:[],
+      observeLineData:[],
+      isSearch: false,
+      chartShow: false,
+      isInspectedTime: false,
+      isLoading: false,
     };
   },
   async created() {
@@ -826,38 +1306,16 @@ export default {
       // this.waterdatacols = allitems;
       this.allcols = Object.assign({}, res.data);//{adv:{每日成長量: "每日成長量(cm)",...},...}
       console.log("子項目 api",this.allcols);
+      this.isLoading = true;
     });
 
     // //參數代入
     if (Object.keys(this.req).length > 0) {
       await this.getdata();
     }
+    this.getOptData();
   },
   computed: {
-    // areadata: function() {
-    //   let filtermain = [];
-    //   filtermain = this.maindata;
-    //   if (
-    //     //看有沒有選場
-    //     this.sel_main != undefined &&
-    //     this.sel_main > 0 &&
-    //     this.maindata.length > 0
-    //   ) {
-    //     filtermain = filtermain.filter(main => main.id == this.sel_main);
-    //   }
-    //   var area = [];
-
-    //   filtermain.forEach(function(x) {
-    //     x.node.forEach(function(y) {
-    //       var yitem = { id: y.id, name: y.name };
-    //       if (area.indexOf(yitem) == -1) {
-    //         //沒找到
-    //         area.push(yitem);
-    //       }
-    //     });
-    //   });
-    //   return area;
-    // },
   },
   methods: {
     get_scopeData:function(evt){
@@ -1103,7 +1561,9 @@ export default {
       // var result2 = await this.getEventData(2);
       // var result3 = await this.getEventData(3);
       // this.eventsData = result1.concat(result2,result3);
-
+      
+      // 抓觀察網資料
+      this.getObservationData();
       
     },
     //抓事件資料
@@ -1494,6 +1954,567 @@ export default {
           });
       }
     },
+    // 觀察網
+    // 取得顏色的項目
+    getOptData:async function(){
+        if(this.optData.length==0) {
+          let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
+          await this.$axios.get(url).then(res => {
+              if(res.status==200){
+                  this.optData = res.data;
+                  console.log(this.optData);
+
+                  let datas = _.cloneDeep(this.observableData);
+                  this.observableData = [];
+                  datas.forEach(odata=>{
+                    this.getFilter(odata);
+                  })
+
+                  this.observableData = _.cloneDeep(datas);
+                  if(this.observableData.length>0) {
+                    this.getChartData();
+                  }
+                  this.isSearch = true;
+                  
+                }else{
+                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                }
+              })
+              .catch(error=>{
+                  this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+              })
+              .finally(() => {
+                  });
+        }else {
+          let datas = _.cloneDeep(this.observableData);
+          this.observableData = [];
+          datas.forEach(odata=>{
+            this.getFilter(odata);
+          })
+          this.observableData = _.cloneDeep(datas);
+          if(this.observableData.length>0) {
+            this.getChartData();
+          }
+          this.isSearch = true;
+        }
+        
+    },
+    async getObservationData() {
+      this.chartShow = false;
+      let parm = {
+        started_date: this.sdate,
+        ended_date: this.edate,
+        pond_id: this.sel_pool,
+      };
+      let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/observation-record/`;
+      await this.$axios
+        .get(apiurl, { params: parm }, { httpsAgent: agent })
+        .then(res=>{
+          console.log('觀察網資料',res)
+          console.log("觀察網資料取得API:" + res.request.responseURL);
+          this.observableData = [];
+          if(res.status==200 && typeof(res.data)!=='string') {
+            res.data.sort((a,b)=>{return b.inspected_time-a.inspected_time});
+            this.observableData = res.data;
+            this.getOptData();
+          }
+        })
+        .catch(err => {
+          alert("查詢失敗：" + err.message);
+        });
+    },
+    getFilter(odata) {
+      this.maindata.forEach(x=>{
+        x.node.forEach(y=>{
+          y.node.forEach(z=>{
+            if(z.id==odata.pond_id) {
+              odata.pond=y.name+'_'+z.name;
+            }
+          })
+        })
+      })
+      var keyLst = Object.keys(this.optData);
+      let num = 0;
+      keyLst.forEach(k=>{
+          if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+            if(odata[k]) {
+              let data = [];
+              var keys = Object.keys(odata[k]);
+              keys.forEach((s,sid)=>{
+                  this.optData[k].forEach(x=>{
+                      if(x.name_en.toUpperCase() == s.toUpperCase()) {
+                          data[sid] = _.cloneDeep(x);
+                          data[sid].value = odata[k][s];
+                      }
+                  })
+
+              })
+              console.log(k,data);
+              odata[k] = data;
+              odata[k].sort((a,b)=>{return b.value-a.value});
+              num++;
+            }else {
+              odata[k] = _.cloneDeep(this.optData[k]);
+              odata[k].forEach(c=>{
+                    c.value=0;
+                })
+            }
+              
+              
+          }
+          
+      })
+      odata.img=[];
+      if(odata.img_a!==null&&odata.img_a.length>0) {
+        odata.img.push(odata.img_a);
+      }
+      if(odata.img_b!==null&&odata.img_b.length>0) {
+        odata.img.push(odata.img_b);
+      }
+      if(odata.img_c!==null&&odata.img_c.length>0) {
+        odata.img.push(odata.img_c);
+      }
+      // console.log('observabledata',odata);
+    },
+    getChartData() {
+      var keyLst = Object.keys(this.optData);
+      
+      this.observeChartData = [];
+      this.observeLineData = [];
+      let datas = _.cloneDeep(this.observableData);
+      datas.sort((a,b)=>{return new Date(a.inspected_time)-new Date(b.inspected_time)});
+      // console.log('obserbe',this.observeChartData)
+
+      // 觀察網殘餌
+      this.observeLineData.push({
+        name_en: 'feed_amount',
+        name_ch: '觀察網殘餌量(g)',
+        chartData: {
+          xAxis: new Array(),
+          legend: new Array(),
+          series: new Array()
+        }
+      })
+      this.observeLineData.push({
+        name_en: 'shrimp_weight',
+        name_ch: '蝦隻重量(g)',
+        chartData: {
+          xAxis: new Array(),
+          legend: new Array(),
+          series: new Array()
+        }
+      })
+      this.observeLineData[0].chartData.series.push({
+        name: '殘餌量',
+        smooth: true,
+        type: 'line',
+        data: new Array()
+      })
+      this.observeLineData[1].chartData.series.push({
+        name: '重量',
+        type: 'line',
+        smooth: true,
+        data: new Array()
+      })
+      datas.forEach((observe,oid)=>{
+        this.observeLineData[0].chartData.legend=['殘餌量'];
+        this.observeLineData[0].chartData.xAxis.push(observe['inspected_time']);
+        this.observeLineData[0].chartData.series[0].data[oid]=observe['feed_amount'];
+
+        this.observeLineData[1].chartData.legend=['重量'];
+        this.observeLineData[1].chartData.xAxis.push(observe['inspected_time']);
+        this.observeLineData[1].chartData.series[0].data[oid]=observe['shrimp_weight'];
+      })
+      // 蝦隻狀態
+      let num = 0;
+      keyLst.forEach(k=>{
+          if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+              let name_ch = k=='BodyColor'?'蝦體顏色':k=='BodyShape'?'蝦體形狀':k=='HepatopancreasColor'?'肝胰臟顏色':k=='IntestinalColor'?'腸線顏色':'肌肉顏色';
+              this.observeChartData[num] = {
+                name_en: k,
+                name_ch: name_ch,
+                chartData: {}
+              }
+              let xAxis = [];
+              let series = [];
+              // series= [{name: '棕色',type: 'bar',stack: 'stack分群',data: [120, 132](不同時間的棕色資料)},]
+              datas.forEach((observe,oid)=>{
+                this.observeChartData[num].data = _.cloneDeep(observe[k]);
+                let legend = [];
+                
+                xAxis.push(observe['inspected_time']);
+                observe[k].forEach(oitem=>{
+                  // console.log(oitem.value);
+                  legend.push(oitem.name_ch);
+                })
+                this.observeChartData[num].chartData.legend = legend;
+                // this.observeChartData[num].myColors = colors;
+              })
+              this.observeChartData[num].chartData.xAxis = xAxis;
+              this.observeChartData[num].chartData.legend.forEach(l=>{
+                series.push({
+                  name: l,
+                  type: 'bar',
+                  stack: 'stack',
+                  data: new Array()
+                })
+              })
+              datas.forEach((observe,oid)=>{
+                observe[k].forEach(oitem=>{
+                  series.forEach(s=>{
+                    if(oitem.name_ch == s.name) {
+                      s.data[oid] = ((oitem.value/observe.observation_qty)*100).toFixed(2);
+                    }
+                  })
+                })
+              })
+              this.observeChartData[num].chartData.series=_.cloneDeep(series);
+
+              // 顏色
+              if(k=='IntestinalColor'||k=='HepatopancreasColor'||k=='BodyColor') {
+                this.observeChartData[num].chartData.colors = [];
+                if(k=='IntestinalColor') {
+                  this.observeChartData[num].data.forEach(color=>{
+                    if(color.name_en.toLowerCase()=='empty') {
+                      this.observeChartData[num].chartData.colors.push('#ccc')
+                    }else {
+                      this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
+                    }
+                  })
+                }else if(k=='HepatopancreasColor') {
+                  this.observeChartData[num].data.forEach(color=>{
+                    this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
+                  })
+                }else if(k=='BodyColor') {
+                  this.observeChartData[num].data.forEach(color=>{
+                    if(color.name_en.toLowerCase()=='transparent') {
+                      this.observeChartData[num].chartData.colors.push('#ccc')
+                    }else {
+                      this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
+                    }
+                  })
+                }
+              }else {
+                this.observeChartData[num].chartData.colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']
+              }
+              
+              num++;
+          }
+      })
+      this.chartShow = true;
+      
+    },
+    editObservable(type,index) {
+      this.nowObserve = type;
+      this.isOver = {
+        ic: false,
+        hc: false,
+        mc: false,
+        bc: false,
+        bs: false
+      }
+      this.isPondId = false;
+      this.isInspectedTime = false;
+      if(type=='edit') {
+        this.observeDialog = true;
+        this.observeEdit={};
+        this.observeEdit = _.cloneDeep(this.observableData[index]);
+        this.observeEdit['inspected_time'] = this.$moment(new Date(this.observeEdit['inspected_time']), 'YYYY-MM-DD HH:mm');
+        // this.observeEdit['pond_id'] = this.observeEdit['pond_id'].toString();
+        console.log('observeEdit',this.observeEdit);
+      }else {
+        this.observeEdit = {
+          "observation_qty": 0,
+          "is_shell": false,
+          "dead_shrimp_qty": 0,
+          "shrimp_weight": 0,
+          "inspected_time": null,
+          "feed_amount": null,
+          "pond_id": '',
+          "img_a": null,
+          "img_b": null,
+          "img_c": null,
+        }
+        this.getFilter(this.observeEdit);
+        this.observeDialog = true;
+        console.log('observeEdit',this.observeEdit)
+      }
+    },
+    selectObserveData(evt) {
+      // console.log(evt);
+      this.observeEdit.pond_id = evt;
+    },
+    onChange(value,dateString) {
+        console.log(value,dateString);
+    },
+    onOk(value) {
+        console.log(value);
+    },
+    getNowDateTime() {
+      return this.$moment(new Date(), 'YYYY-MM-DD HH:mm');
+    },
+    changeChips() {
+      // 蝦隻狀態隻數更改要清空重新給定，避免資料未刷新
+      let data = _.cloneDeep(this.observeEdit);
+      this.observeEdit = {};
+      this.observeEdit = data;
+    },
+    // 蝦隻狀態新增/編輯
+    async observeSubmit() {
+      let isError = false;
+      if(!this.observeEdit.pond_id || this.observeEdit.pond_id==null) {
+        this.isPondId=true;
+        isError = true;
+      }else {
+        this.isPondId = false;
+      }
+      if(!this.observeEdit.inspected_time||this.observeEdit.inspected_time==null) {
+        this.isInspectedTime = true;
+        isError = true;
+      }else {
+        this.isInspectedTime = false;
+      }
+      let parm = _.cloneDeep(this.observeEdit);
+      // 計算是否超過觀察網隻數
+      let num = {ic: 0,hc: 0,mc: 0,bc: 0,bs: 0}
+      this.isOver = {ic: false,hc: false,mc: false,bc: false,bs: false}
+      var keyLst = Object.keys(this.optData);
+      keyLst.forEach(k=>{
+        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+          parm[k] = {};
+          this.observeEdit[k].forEach(o=>{
+            parm[k][o.name_en] = o.value;
+            if(k=='BodyColor') {
+              num.bc+=parseInt(o.value);
+            }else if(k=='BodyShape') {
+              num.bs+=parseInt(o.value);
+            }else if(k=='HepatopancreasColor') {
+              num.hc+=parseInt(o.value);
+            }else if(k=='IntestinalColor') {
+              num.ic+=parseInt(o.value);
+            }else if(k=='MuscleColor') {
+              num.mc+=parseInt(o.value);
+            }
+          })
+          if(num.bc>parm.observation_qty) {
+            this.isOver.bc = true;
+            isError = true;
+          }
+          if(num.bs>parm.observation_qty) {
+            this.isOver.bs = true;
+            isError = true;
+          }
+          if(num.hc>parm.observation_qty) {
+            this.isOver.hc = true;
+            isError = true;
+          }
+          if(num.ic>parm.observation_qty) {
+            this.isOver.ic = true;
+            isError = true;
+          }
+          if(num.mc>parm.observation_qty) {
+            this.isOver.mc = true;
+            isError = true;
+          }
+        }
+      })
+      
+      if(!isError) {
+        // 回傳資料整合
+        delete parm.img;
+        delete parm.feed_amount;
+        if(this.nowObserve=='edit') {
+          delete parm.shrimp_id;
+          delete parm.leftover_id;
+        }
+        parm.pond_id = parseInt(parm.pond_id);
+        if(this.nowObserve=='edit') {
+          parm.updated_user = this.$auth.$state.user.email;
+          delete parm.created_user;
+        }else {
+          parm.created_user = this.$auth.$state.user.email;
+        }
+        
+        parm.inspected_time = dayjs(parm.inspected_time).format("YYYY-MM-DD HH:mm:ss");
+        let formData = new FormData();
+        console.log('submit',parm)
+        Object.keys(parm).forEach(x=>{
+          if(x=='BodyColor'||x=='BodyShape'||x=='HepatopancreasColor'||x=='IntestinalColor'||x=='MuscleColor') {
+            formData.append(x,JSON.stringify(parm[x]));
+          }else {
+            formData.append(x,parm[x]);
+          }
+          
+        })
+
+        let config = { headers: { "Content-Type": "multipart/form-data" } };
+        let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'
+                    :this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observeEdit.shrimp_id+'/'}`;
+        if(this.nowObserve=='add') {
+          await this.$axios.post(url, formData,config)
+          .then(res => {
+              if(res.data=='新增成功'){
+                // this.observeDialog = false;
+                // this.getObservationData();
+                // this.$toast.success("新增成功", { duration: 2000 });
+                if(this.observeEdit.feed_amount!==null) { 
+                  this.postObservable(this.observeEdit);
+                }else {
+                  this.observeDialog = false;
+                  this.getObservationData();
+                  this.$toast.success("成功", { duration: 2000 });
+                }
+                
+              }else{
+                  this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+              }
+
+              console.log("新增API:" + res.request.responseURL);
+          })
+          .catch(error => {
+              this.$toast.error("error:" + error, { duration: 2000 });
+          })
+          .finally(() => {
+          });
+        }else {
+          await this.$axios.patch(url, formData,config)
+          .then(res => {
+              if(res.data=='修改成功'){
+                // this.observeDialog = false;
+                // this.getObservationData();
+                // this.$toast.success("新增成功", { duration: 2000 });
+                let observe = this.observableData.filter(x=>x.shrimp_id==this.observeEdit.shrimp_id)[0]
+                if(observe.feed_amount!==this.observeEdit.feed_amount) {
+                  if(this.observeEdit.feed_amount!==null && this.observeEdit.feed_amount!== '') {
+                    this.nowObserve = 'add';
+                    this.postObservable(this.observeEdit);
+                  }else {
+                    this.deleteObservable(this.observeEdit.leftover_id);
+                  }
+                  
+                }else {
+                  this.observeDialog = false;
+                  this.getObservationData();
+                }
+                
+              }else{
+                  this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+              }
+
+              console.log("修改API:" + res.request.responseURL);
+          })
+          .catch(error => {
+              this.$toast.error("error:" + error, { duration: 2000 });
+          })
+          .finally(() => {
+          });
+        }
+      }
+      
+    },
+    // 殘餌量新增/編輯
+    async postObservable(observeItem) {
+      let parm = {
+        feed_amount:parseFloat(observeItem.feed_amount),
+        inspected_time:dayjs(observeItem.inspected_time).format("YYYY-MM-DD HH:mm:ss"),
+        pond_id: parseInt(observeItem.pond_id),
+        // created_user: this.$auth.$state.user.email
+      }
+      let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'
+                    :this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+this.observeEdit.leftover_id+'/'}`;
+      if(this.nowObserve=='add') {
+        parm.created_user = this.$auth.$state.user.email;
+        await this.$axios.post(url,parm)
+        .then(res => {
+            if(res.data=='新增成功'){
+              this.observeDialog = false;
+              this.getObservationData();
+              this.$toast.success("成功", { duration: 2000 });
+            }else{
+              this.observeDialog = false;
+              this.getObservationData();
+              this.$toast.error("新增觀察網殘餌失敗:" + res.data, { duration: 2000 });
+            }
+
+            console.log("新增觀察網殘餌API:" + res.request.responseURL);
+        })
+        .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+        })
+        .finally(() => {
+        });
+      }else {
+        parm.updated_user = this.$auth.$state.user.email
+        await this.$axios.patch(url,parm)
+        .then(res => {
+            if(res.data=='修改成功'){
+              this.observeDialog = false;
+              this.getObservationData();
+              this.$toast.success("成功", { duration: 2000 });
+            }else{
+              this.observeDialog = false;
+              this.getObservationData();
+              this.$toast.error("修改觀察網殘餌失敗:" + res.data, { duration: 2000 });
+            }
+
+            console.log("修改觀察網殘餌API:" + res.request.responseURL);
+        })
+        .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+        })
+        .finally(() => {
+        });
+      }
+      
+    },
+    // 蝦隻狀態刪除
+    async delObservable(index) {
+      if (confirm(`確認刪除此觀察網紀錄?`)) {
+        let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observableData[index].shrimp_id+'/'}`;
+        await this.$axios.delete(url)
+          .then(res => {
+            if(res.data=='刪除成功'){
+              if(this.observableData[index].leftover_id==null) {
+                this.getObservationData();
+              }else {
+                this.deleteObservable(this.observableData[index].leftover_id);
+              }
+              
+            }else{
+                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+            }
+
+            console.log("修改API:" + res.request.responseURL);
+        })
+        .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+        })
+        .finally(() => {
+        });
+      }
+    
+    },
+    // 殘餌量刪除
+    async deleteObservable(id) {
+      let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+id+'/'}`;
+        await this.$axios.delete(url)
+          .then(res => {
+            if(res.data=='刪除成功'){
+              this.observeDialog = false;
+              this.getObservationData();
+              this.$toast.success("成功", { duration: 2000 });
+            }else{
+                this.$toast.error("失敗:" + res.data, { duration: 2000 });
+            }
+
+            console.log("修改API:" + res.request.responseURL);
+        })
+        .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+        })
+        .finally(() => {
+        });
+    },
   },
   watch: {
     nowTab() {
@@ -1504,9 +2525,27 @@ export default {
         this.item = {};
         setTimeout(()=>{this.item = data},500)
 
+      }else if(this.nowTab=='觀察網資訊') {
+        // if(this.observableData.length>0) {
+        //   this.listOpen = false;
+        // }else {
+        //   this.listOpen = true;
+        // }
+        this.listOpen = true;
+        
       }
-    }
-  } 
+    },
+    windowWidth:function(){
+        return window.innerWidth;
+    },
+  },
+  mounted() {
+    //監控視窗
+    window.addEventListener('resize', () => {
+        this.windowWidth = window.innerWidth;
+    });
+
+  },
 };
 </script>
 
@@ -1580,6 +2619,11 @@ export default {
     }
   }
 }
+.pool-name {
+  color: $color-dark;
+  padding-left: 4px;
+  font-weight: bold;
+}
 ::v-deep {
   .select-color{
     &.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
@@ -1632,6 +2676,59 @@ export default {
     &.v-text-field .v-input__slot {
       border-radius: 4px;
     }
+  }
+  .theme--light.v-data-table.v-data-table--fixed-header thead th {
+    background: transparent;
+  }
+  .v-chip.add-chip.v-size--default {
+    font-size: 12px;
+    height: 24px;
+    padding: 0 8px;
+    background: $color-primary;
+    color: #fff !important;
+  }
+  .v-chip.v-size--default {
+      cursor: pointer;
+      font-size: 12px;
+      height: 20px;
+      padding: 0 8px;
+      background: rgba($color-dark-50,0.8);
+      color: #fff !important;
+  }
+  .v-chip.chips-value.v-size--default {
+      background: $color-primary-75;
+      // background: rgba($color-accent,0.35);
+      // color: $color-dark;
+  }
+  .date-time-picker {
+      display: flex;
+      align-items: center;
+      // margin: 0 8px;
+      & > span {
+          flex: 1;
+      }
+  }
+  .ant-calendar-picker {
+      // padding: 0 20px;
+  }
+  .ant-calendar-picker-input.ant-input {
+      border: none;
+      background-color: transparent;
+      border-bottom: 1px solid rgba(0,0,0,0.42);
+      border-radius: 0;
+      // margin-left: 20px;
+      // margin-right: 4px;
+      color: rgba(0,0,0,0.87);
+      padding: 4px;
+  }
+  .ant-calendar-picker:hover {
+      border-color: $color-form;
+  } 
+  .ant-calendar-picker-clear {
+      background: $color-lighten;
+  }
+  .ant-calendar-picker-icon {
+      display: none;
   }
 }
 

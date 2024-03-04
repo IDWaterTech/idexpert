@@ -11,7 +11,6 @@
       :judge-width="true"
       v-show="chtData_new_1.rows.length > 0"
       :mark-line="markLine"
-      :colors="myColors"
       :after-config="afterConfig"
     ></ve-line>
     <div class="text-center" style="font-size: 0.875rem;padding-bottom: 40px;color: rgba(0, 0, 0, 0.38);" v-show="chtData_new_1.rows.length <= 0">查無資料</div>
