@@ -1762,7 +1762,7 @@ export default {
           console.log(res.data);
           console.log("循環資料 api",res.request.responseURL);
           if (this.circleData.length > 0) {
-            this.getwarnData();
+            // this.getwarnData();
             // this.getDetectData();
             this.getshirimpData();
           }
@@ -1810,24 +1810,24 @@ export default {
       //     this.shirimpData = res.data;
       //   });
     },
-    getwarnData: async function() {
-      //警示區
-      this.warnLoading = true;
-      this.warnData = []; //clear
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/pond-abnormal-log/?pond_id=${this.poolid}`
-        )
-        .then(res => {
-          this.warnData = res.data;
-          this.warnDataDt = dayjs().format("HH:mm:ss");
-          console.log("警示區api:", res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
-      this.warnLoading = false;
-    },
+    // getwarnData: async function() {
+    //   //警示區
+    //   this.warnLoading = true;
+    //   this.warnData = []; //clear
+    //   await this.$axios
+    //     .get(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/pond-abnormal-log/?pond_id=${this.poolid}`
+    //     )
+    //     .then(res => {
+    //       this.warnData = res.data;
+    //       this.warnDataDt = dayjs().format("HH:mm:ss");
+    //       console.log("警示區api:", res.request.responseURL);
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("error:" + error, { duration: 2000 });
+    //     });
+    //   this.warnLoading = false;
+    // },
     showadd: async function(bool=false) {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
@@ -2220,39 +2220,39 @@ export default {
       this.warnDataSel.is_add_to_event_log = false; //switch 結案時加入重要紀事
       this.warnDialog = true;
     },
-    warnsubmit: async function(pra_is_closed = false) {
-      if (pra_is_closed == true && !confirm("結案後[警示區]不再顯示")) {
-        return;
-      }
-      const updUser = this.$auth.$state.user.email;
-      let parm = {
-        warning_reason: this.warnDataSel.warning_reason,
-        handling_method: this.warnDataSel.handling_method,
-        maintenance_user: this.warnDataSel.maintenance_user,
-        is_closed: pra_is_closed,
-        is_add_to_event_log: this.warnDataSel.is_add_to_event_log,
-        updated_user: updUser
-      };
-      console.log(this.warnDataSel.id, parm);
-      await this.$axios
-        .patch(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/pond-abnormal-log/${this.warnDataSel.id}`,
-          parm
-        )
-        .then(res => {
-          console.log("警示修改API:" + res.request.responseURL);
-          if (res.data == "修改成功") {
-            this.getwarnData(); //重取得警示資料
-            this.warnDialog = false;
-            this.$toast.success("修改成功", { duration: 2000 });
-          } else {
-            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
-    },
+    // warnsubmit: async function(pra_is_closed = false) {
+    //   if (pra_is_closed == true && !confirm("結案後[警示區]不再顯示")) {
+    //     return;
+    //   }
+    //   const updUser = this.$auth.$state.user.email;
+    //   let parm = {
+    //     warning_reason: this.warnDataSel.warning_reason,
+    //     handling_method: this.warnDataSel.handling_method,
+    //     maintenance_user: this.warnDataSel.maintenance_user,
+    //     is_closed: pra_is_closed,
+    //     is_add_to_event_log: this.warnDataSel.is_add_to_event_log,
+    //     updated_user: updUser
+    //   };
+    //   console.log(this.warnDataSel.id, parm);
+    //   await this.$axios
+    //     .patch(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/pond-abnormal-log/${this.warnDataSel.id}`,
+    //       parm
+    //     )
+    //     .then(res => {
+    //       console.log("警示修改API:" + res.request.responseURL);
+    //       if (res.data == "修改成功") {
+    //         this.getwarnData(); //重取得警示資料
+    //         this.warnDialog = false;
+    //         this.$toast.success("修改成功", { duration: 2000 });
+    //       } else {
+    //         this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+    //       }
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("error:" + error, { duration: 2000 });
+    //     });
+    // },
     submit_imgdialog: async function() {
       // let parm = this.imgdata;
       let formData = new FormData();
@@ -2354,6 +2354,7 @@ export default {
     },
     // 循環清單點擊
     async clickRow(val, column, event) {
+      this.submit = 0;
       console.log('click',val, column, event);
       this.passObj.filter=[1,2,3];
       if(column.label !== '操作') {
@@ -2672,8 +2673,6 @@ export default {
               }
               
               this.getDisease();
-              this.getWater();
-              this.getEvent();
               this.passObj.nowId = this.poolid;
               if(this.circleData.filter(x=>x.id==val.id)[0].ended_date!==null && this.circleData.filter(x=>x.id==val.id)[0].ended_date!=='' ) {
                 this.passObj.nowEnd = true;
@@ -2683,7 +2682,7 @@ export default {
               }
               
               
-              console.log(tempMain);
+              // console.log(tempMain);
               // this.passObj["tempMain"] = tempMain;
               // this.passObj["tempContent"] = await this.getTemp(val.id);
               this.getTemp(val.id);
@@ -2821,7 +2820,7 @@ export default {
               d.bacteriaSelect.push(x.name_en);
             })
             d.method = this.bacteriaAll[0].test.filter(x=>x.id == d.method_id)[0].name_ch;
-
+            this.getWater();
             // const blob = new Blob([d.file]);
             // const objectUrl = URL.createObjectURL(blob);
             // d.file = objectUrl;
@@ -2835,7 +2834,6 @@ export default {
           console.log("疾病檢驗清單", res.request.responseURL);
         })
         .catch(err => {
-          alert("疾病失敗：" + err.message);
         });
       this.diseaseReport.sort((a,b)=>{
           return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
@@ -2900,6 +2898,7 @@ export default {
           console.log('水質檢驗清單',this.diseaseReport);
           // this.goAnchor('#chart'); 
           console.log("水質檢驗清單", res.request.responseURL);
+          this.getEvent();
         })
         .catch(err => {
           alert("水質失敗：" + err.message);
@@ -3805,7 +3804,7 @@ export default {
    
     if (this.req.id != undefined){
       
-      await this.getwarnData();//取得警示區資料
+      // await this.getwarnData();//取得警示區資料
       await this.getCircleData();//取得循環資料
     }
     
