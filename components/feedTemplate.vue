@@ -118,7 +118,7 @@
                                                         <span>僅可編輯/刪除『其他』、『疾病檢驗』、『水質檢驗』項目</span>
                                                     </v-tooltip>
                                                 </div>
-                                                <span v-else :key="'header_'+hid+id">{{ header.text }}</span>
+                                                <span v-else :key="'header_'+hid">{{ header.text }}</span>
                                             </template>
                                             <!-- <template v-slot:[`item.name`]="{ item }">
                                                 <v-tooltip bottom>
@@ -1039,7 +1039,7 @@ export default {
             this.mainItems.forEach(m=>{
                 m.stepList.forEach(s=>{
                     if(s.executor&&s.executor!=='') {
-                        console.log(this.accdata,s.executor);
+                        // console.log(this.accdata,s.executor);
                         s.deft_executor = this.accdata.filter(x=>x.username==s.executor)[0].position+'-'+this.accdata.filter(x=>x.username==s.executor)[0].account_name;
                     }else {
                         s.deft_executor = '';
