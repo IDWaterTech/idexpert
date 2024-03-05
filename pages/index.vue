@@ -101,7 +101,7 @@ export default {
         console.log(error);
       }
       if(datalst) {
-          if(datalst.status==200) {
+          if(datalst.status==200 && datalst.data.length>0) {
             this.menuList = datalst.data;
             // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
             // 有子層的父層增加isOpen參數，用來開合子層

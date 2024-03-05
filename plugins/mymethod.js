@@ -36,12 +36,12 @@ import https from "https";
                 var acc = acclist.filter(
                   x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
                 );
-                localStorage.setItem('factory_id',JSON.stringify(acc[0].factory_id));
                 console.log("ACC DATA:",acc);
                 //登入成功
                 if (acc.length == 1) {
                   //增加身份判別---
                   //帳號被授權進入的項目
+                  localStorage.setItem('factory_id',JSON.stringify(acc[0].factory_id));
                   let accheader = { account: this.$auth.$state.user.email };
                   let accPagelst = [];
                   let datalst;
