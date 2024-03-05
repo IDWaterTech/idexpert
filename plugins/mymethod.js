@@ -9,7 +9,7 @@ import https from "https";
       data () {
         return {
           moment_format: 'DD/MM/YYYY HH:mm',
-          
+          isUser: false
         }
       },
       methods: {
@@ -39,6 +39,7 @@ import https from "https";
                 console.log("ACC DATA:",acc);
                 //登入成功
                 if (acc.length == 1) {
+                  this.isUser = true;
                   //增加身份判別---
                   //帳號被授權進入的項目
                   localStorage.setItem('factory_id',JSON.stringify(acc[0].factory_id));
@@ -160,7 +161,8 @@ import https from "https";
             });
             const accheader = { account: this.$auth.$state.user.email };
             const url = bool?`/user-access/authorization-items/?is_all=true`:`/user-access/authorization-items/`;
-            return await this.$axios
+            if(this.isUser) {
+              return await this.$axios
               .get(`${this.$store.state.mydata.gobal_api.apiUrl+url}`, { httpsAgent: agent,headers:accheader })
               // .then(res => {
               //   console.log("authorization-items api：" + res.request.responseURL);
@@ -169,6 +171,8 @@ import https from "https";
               // .catch(error => {
               //   this.$toast.error("錯誤：" + error, { duration: 2000 });
               // });
+            }
+            
           },
           // 取得使用者清單
           getUserList:async function() {
