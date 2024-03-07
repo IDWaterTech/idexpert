@@ -28,19 +28,19 @@
                         <v-col cols="12" md="2" sm="12"
                             v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0">
                             <v-autocomplete
-                                    v-model="nowUser"
-                                    :items="userData"
-                                    item-value="username"
-                                    
-                                    dense filled
-                                    hide-details solo
-                                    class="mt-1"
-                                    @change="getUserQueryData()"
-                                    :filter="customFilter"
-                                    >
-                                    <!-- item-text="account_name" -->
-                                    <template slot="item" slot-scope="data">{{data.item.account_name}}({{ data.item.username.match(/(.*)@/)[1] }})</template>
-                                    <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
+                                v-model="nowUser"
+                                :items="userData"
+                                item-value="username"
+                                clearable
+                                dense filled
+                                hide-details solo
+                                class="mt-1"
+                                @change="getUserQueryData()"
+                                :filter="customFilter"
+                                >
+                                <!-- item-text="account_name" -->
+                                <template slot="item" slot-scope="data">{{data.item.account_name}}({{ data.item.username.match(/(.*)@/)[1] }})</template>
+                                <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
                             </v-autocomplete>
                         </v-col>
                         <!-- 選擇參數 -->
@@ -2453,7 +2453,7 @@
         </v-dialog> 
         <!-- 備註欄 -->
         <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" style="z-index: 9999;">
-            <v-card class="custom-dialog" :disabled="nowUser!==$auth.$state.user.email">
+            <v-card class="custom-dialog">
                 <v-card-title class="add-title" style="display: block;width: 100%;">
                     <div style="display: inline-block;">
                         <span>紀錄</span> 
@@ -2475,7 +2475,7 @@
                                 <!-- <span v-for="item in suggData.Observation" :key="'ob'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
                                 <span class="record-title">水質：</span>
                                 <span v-for="(item,id) in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">{{ id+1 }}. {{ item.status }}<br></span>
-                                <v-textarea v-model="remark.WaterQuality" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.WaterQuality" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                             </div>
                             
                         </div>
@@ -2484,7 +2484,7 @@
                                 <!-- <span v-for="item in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
                                 <span class="record-title">觀察網：</span>
                                 <span v-for="(item,id) in suggData.Observation" :key="'ob'+item.id" style="font-size: 0.85rem;line-height: 14px">{{ id+1 }}. {{ item.status }}<br></span>
-                                <v-textarea v-model="remark.Observation" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.Observation" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                             </div>
                         </div>
                         
@@ -2493,7 +2493,7 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>投餌量：</v-card-title>
-                                <v-textarea v-model="remark.Feed" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.Feed" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                                 <!-- <v-text-field v-model.number="remark.Feed" type="number" min="0" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width:80px">實際投餌量</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
                             </div>
                         </div>
@@ -2503,7 +2503,7 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>投料判斷列表：</v-card-title>
-                                <v-textarea v-model="remark.Material" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.Material" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                             </div>
                         </div>
                         
@@ -2512,7 +2512,7 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>動態數據資訊：</v-card-title>
-                                <v-textarea v-model="remark.DynamicData" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.DynamicData" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                             </div>
                         </div>
                         
@@ -2521,7 +2521,7 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>養殖前期做水添加物：</v-card-title>
-                                <v-textarea v-model="remark.MakeWater" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.MakeWater" hide-details filled clearable placeholder="請輸入實際作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                             </div>
                         </div>
                         
@@ -2530,7 +2530,7 @@
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>其他：</v-card-title>
-                                <v-textarea v-model="remark.Others" hide-details filled clearable placeholder="請輸入其他作動..." style="overflow-y: scroll;"></v-textarea>
+                                <v-textarea v-model="remark.Others" hide-details filled clearable placeholder="請輸入其他作動..." style="overflow-y: scroll;" :disabled="nowUser!==$auth.$state.user.email"></v-textarea>
                             </div>
                         </div>
                         
@@ -2539,7 +2539,7 @@
                 <v-card-actions style="padding: 24px 12px;">
                     <v-spacer spacer></v-spacer>
                     <v-btn class="btn-secondary" @click="remarkDialog = false;">取消</v-btn>
-                    <v-btn class="btn-primary" @click="saveRemark()">確認</v-btn>
+                    <v-btn class="btn-primary" v-if="nowUser==$auth.$state.user.email" @click="saveRemark()">確認</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
