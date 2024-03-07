@@ -229,7 +229,7 @@
                           v-for="(tab,tid) in tabs"
                           :key="'tab-'+tid"
                           :value="tab"
-                          style=";min-height: 48vh;">
+                          style="min-height: 48vh;">
                           <!-- 圖表 -->
                           <div v-show="nowTab=='圖表'" class="result-content">
                             <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
@@ -785,9 +785,9 @@
               </v-card-title>
               <v-card-text style="padding-top: 8px">
                 <div class="basic" style="padding-left: 8px;">
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;padding-bottom: 0;">
+                  <v-card-text v-if="showlocate" style="display: flex;align-items: center;padding-top: 0;padding-bottom: 0;">
                     <span class="pa-0 ma-0" slot="prepend" style="width: 92px;font-size: 16px;color: rgba(0, 0, 0, 0.87);">養殖池</span>
-                    <locate-select :dataScope="'pool'" :defaultSelect="observeEdit['pond_id']?observeEdit['pond_id'].toString():''" :isMulti="false" @scopeSel_data="selectObserveData($event)" class="select-template"></locate-select>
+                    <locate-select :dataScope="'pool'" :defaultSelect="observeEdit['pond_id']&&observeEdit['pond_id']!==''?observeEdit['pond_id'].toString():''" :isMulti="false" @scopeSel_data="selectObserveData($event)" class="select-template"></locate-select>
                   </v-card-text>
                   <span v-if="isPondId" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必填項目</span>
                   <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
@@ -1233,6 +1233,7 @@ export default {
       chartShow: false,
       isInspectedTime: false,
       isLoading: false,
+      showlocate: true,
     };
   },
   async created() {
@@ -2205,6 +2206,7 @@ export default {
       
     },
     editObservable(type,index) {
+      this.showlocate = false;
       this.nowObserve = type;
       this.isOver = {
         ic: false,
@@ -2237,6 +2239,7 @@ export default {
         }
         this.getFilter(this.observeEdit);
         this.observeDialog = true;
+        this.showlocate = true;
         console.log('observeEdit',this.observeEdit)
       }
     },

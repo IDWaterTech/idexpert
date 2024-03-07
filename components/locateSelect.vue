@@ -84,6 +84,7 @@ export default {
     methods: {
         setDefault:function(){
             if(this.defaultSelect=='') {
+                this.dataid = undefined;
                 return;
             }else{
                 console.log('default select',this.defaultSelect);
