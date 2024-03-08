@@ -452,17 +452,26 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 sum-field" append-outer-icon="mdi-plus" @click:append-outer="addFeedQty()"><span class="pa-0 ma-0" slot="prepend">累計飼料量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
                                                                     </v-col>
-                                                                    <v-col cols=12 md="6" sm="6">
+                                                                    <!-- <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend">下餐增料百分比</span>
-                                                                                <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
-                                                                        <!-- <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span></v-select> -->
+                                                                    </v-col> -->
+                                                                    <v-col cols=12 md="6" sm="6">
+                                                                        <v-row class="item-row item"> 
+                                                                            <v-col cols="12" md="4" sm="4">
+                                                                                <span class="pa-0 ma-0" slot="prepend">養殖方案</span>
+                                                                                <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
+                                                                            </v-col>
+                                                                            <v-col cols="12" md="8" sm="8">
+                                                                                <v-select v-model="BaseParm['FeedingPlan']" type="number" clearable :items="optData.FeedingPlan" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                            </v-col>
+                                                                        </v-row>
                                                                     </v-col>
                                                                 </v-row>
                                                                 <v-row class="item-row">
