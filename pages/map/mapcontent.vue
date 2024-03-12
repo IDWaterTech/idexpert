@@ -230,7 +230,7 @@
                     
             //     })
             let isData = false;
-            this.fatoryData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+            this.fatoryData = typeof (await this.getArchitecture(this.field))=='string'?[]:await this.getArchitecture(this.field);
             for (let i = 0; i < this.fatoryData.length; i++) {
             if(this.field!==null) {
                 if(this.fatoryData[i].id==this.field) {
@@ -245,6 +245,7 @@
             }
             if(this.field !== null && !isData) {
                 this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+                console.log(this.fatoryData);
                 this.isError = true;
                 // window.location.href='/map';
             }else {
