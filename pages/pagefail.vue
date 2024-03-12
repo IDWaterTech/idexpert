@@ -1,32 +1,52 @@
 <template>
     <div>
-        
-        <v-row class="text-center mt-10">
+        <v-card class="bg-card img-error">
+            <div class="content">
+                <h1>
+                    未授權無法進入此頁 !
+                </h1>
+                <h3>請管理人員開通權限</h3>
+                <v-btn class="btn-primary" @click="toHomePage()" style="margin-top: 24px;">
+                    返回首頁
+                </v-btn>
+            </div>
             
-            <v-col></v-col>
-            <v-col cols="6">
-                <v-card elevation="2" outlined shaped>
-                    <v-card-title class="text-center">
-                         <v-icon large>mdi-lock-outline</v-icon>無法進入頁面
-                    </v-card-title>
-                    <v-divider></v-divider>
-                     <v-card-text class="my-15">
-                        <h2>您未被授權存取頁面</h2>
-                        <v-btn class="mt-3 title" text color="primary" to="/">返回系統主頁面</v-btn>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-            <v-col></v-col>
-        </v-row>
+        </v-card>
     </div>
 </template>
 
 <script>
-    export default {
-        layout: "emptynologin"
-    }
+export default {
+    layout: "emptynologin2",
+    methods: {
+        toHomePage() {
+            window.location.href='/';
+        }
+    },
+}
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.img-error {
+  background-image: url('../assets/Error-bg.png');
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  background-size: cover;
+  background-position: 60% bottom;
+}
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,calc(-50% - 64px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  h1,h3 {
+    color: $color-dark;
+    font-weight: bold;
+  }
+}
 </style>

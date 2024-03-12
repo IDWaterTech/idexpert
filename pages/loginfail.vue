@@ -1,41 +1,32 @@
 <template>
   <div>
-    <v-row style="font-family: DFKai-sb;">
-      <v-spacer></v-spacer>
-      <v-col cols="6">
-        <v-card img="/letter_bg.jpg" class="mt-10">
-          <v-card-title
-            >Dear&nbsp;
-            <span
-              ><u
-                ><strong>{{ ($auth.$state.user)?$auth.$state.user.name:'username' }}</strong></u
-              ></span
-            >
-            &nbsp;先生/女士 您好：</v-card-title
-          >
-          <v-card-text style="font-size:16pt;">
-            您的帳號：<span style="color:red;">{{ ($auth.$state.user)?$auth.$state.user.email:'usermail' }}</span>，未授權登入。<br />
-            可以使用以下2種方式解決
-            <ol class="mx-5 my-2">
-              <li>向主管提出申請</li>
-              <li>以其他帳號登入</li>
-            </ol>
-            感謝您的協助。
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-spacer></v-spacer>
-    </v-row>
+    <v-card class="bg-card img-error">
+        <div class="content">
+            <h1>
+              帳號未授權登入
+            </h1>
+            <h3>{{ ($auth.$state.user)?$auth.$state.user.email:'usermail' }} <br>請向主管提出申請 或 以其他帳號登入</h3>
+            <v-btn class="btn-primary" @click="toHomePage()" style="margin-top: 24px;">
+                返回首頁
+            </v-btn>
+        </div>
+        
+    </v-card>
   </div>
 </template>
 
 <script>
 export default {
-  layout: "emptynologin"
-};
+  layout: "emptynologin2",
+  methods: {
+      toHomePage() {
+        window.location.href='/';
+      }
+  }
+}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 form {
   background: #f7f2ec url("/letter_bg.jpg");
   height: 200px;
@@ -58,5 +49,28 @@ form {
   -moz-box-shadow: inset 0 0 1px #726959;
   -webkit-box-shadow: inset 0 0 1px #b3a895;
   box-shadow: inset 0 0 1px #b3a895;
+}
+.img-error {
+  background-image: url('../assets/Error-bg.png');
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  background-size: cover;
+  background-position: 60% bottom;
+}
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,calc(-50% - 64px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  h1,h3 {
+    color: $color-dark;
+    font-weight: bold;
+    text-align: center;
+  }
 }
 </style>
