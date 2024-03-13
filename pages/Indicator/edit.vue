@@ -360,9 +360,9 @@
                               :footer-props="footerProps"
                               no-data-text="查無資料"
                               fixed-header>
-                              <template v-slot:[`item.is_shell`]="{ item }">
+                              <!-- <template v-slot:[`item.is_shell`]="{ item }">
                                   {{ item.is_shell?'是':'否' }}
-                              </template>
+                              </template> -->
                               <template v-slot:[`item.img`]="{ item }">
                                   <img v-img="{ group: item.id }" v-for="(img,i) in item.img" :key="i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
                               </template>
@@ -593,8 +593,6 @@
                     
                   </div>
               </v-card-text>
-                
-
               <v-card-text>
                 <v-chip
                   class="ma-2 add-chip"
@@ -798,133 +796,150 @@
                   </v-card-text>
                   <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必填項目</span>
                   <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
-                    <v-text-field v-model.number="observeEdit['observation_qty']" min="0" type="number" dense class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網隻數</span></v-text-field>
-                    <v-select v-model="observeEdit['is_shell']" :items="isShellData" filled dense class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">是否脫殼</span></v-select>
+                    <v-row style="margin-bottom: 0;">
+                      <v-col cols="12" md="6">
+                        <v-text-field v-model.number="observeEdit['observation_qty']" min="0" type="number" dense class="mt-0 mr-2" hide-details><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網隻數</span></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field v-model.number="observeEdit['feed_amount']" type="number" min="0" dense class="mt-0 mr-2" hide-details><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網殘餌量(g)</span></v-text-field>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;">
-                    <v-text-field v-model.number="observeEdit['feed_amount']" type="number" min="0" dense class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網殘餌量(g)</span></v-text-field>
-                    <v-text-field v-model.number="observeEdit['dead_shrimp_qty']" type="number" min="0" filled dense class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">死蝦數量</span></v-text-field>
+                  <v-card-text v-if="observeEdit['observation_qty']>0" style="display: flex;align-items: center;padding-top: 0;">
+                    <v-row style="margin-bottom: 0;">
+                      <v-col cols="12" md="6">
+                        <v-text-field v-model.number="observeEdit['shell_qty']" min="0" type="number" dense class="mt-0 mr-2" hide-details><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">脫殼數量</span></v-text-field>
+                        <!-- <v-select v-model="observeEdit['is_shell']" :items="isShellData" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch" style="width: calc(100% - 24px);"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">是否脫殼</span></v-select> -->
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field v-model.number="observeEdit['dead_shrimp_qty']" type="number" min="0" filled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">死蝦數量</span></v-text-field>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;">
-                    <v-text-field v-model.number="observeEdit['shrimp_weight']" type="number" min="0" dense class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">蝦隻重量(g)</span></v-text-field>
+                  <v-card-text v-if="observeEdit['observation_qty']>0" style="display: flex;align-items: center;padding-top: 0;" @click="openShrimps()">
+                    <v-text-field v-model.number="observeEdit['shrimp_weight']" type="number" min="0" dense class="mt-0 mr-2" hide-details  @click="openShrimps()"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">蝦隻重量(g)</span></v-text-field>
+                    <!-- <v-btn class="btn-secondary btn-small">填寫</v-btn> -->
                   </v-card-text>
+                  <div v-if="observeEdit['observation_qty']>0" class="shrimp-statue">
+                    <div class="card-title">
+                      <div class="title"  style="display: flex;align-items: center;">
+                          <v-card-title>腸線顏色</v-card-title>
+                          <span v-if="isOver.ic" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
+                      </div>
+                    </div>
+                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                      <v-row style="width: 100%;align-items: center;">
+                          <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.IntestinalColor" :key="'IntestinalColor_'+id" style="width: 100%;">
+                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                  <el-input-number
+                                      class="ml-2"
+                                      v-model="item.value"
+                                      size="mini"
+                                      :step="1"
+                                      :min="0"
+                                      prop="number"
+                                      @change="changeChips"
+                                  ></el-input-number>
+                              </div>
+                          </v-col>
+                      </v-row>
+                    </v-card-text>
+                    <div class="card-title">
+                      <div class="title"  style="display: flex;align-items: center;">
+                          <v-card-title>肝胰臟顏色</v-card-title>
+                          <span v-if="isOver.hc" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
+                      </div>
+                    </div>
+                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                      <v-row style="width: 100%;align-items: center;">
+                          <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.HepatopancreasColor" :key="'HepatopancreasColor_'+id" style="width: 100%;">
+                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                  <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                  <el-input-number
+                                      class="ml-2"
+                                      v-model="item.value"
+                                      size="mini"
+                                      :step="1"
+                                      :min="0"
+                                      prop="number"
+                                  ></el-input-number>
+                              </div>
+                          </v-col>
+                      </v-row>
+                    </v-card-text>
+                    <div class="card-title">
+                      <div class="title"  style="display: flex;align-items: center;">
+                          <v-card-title>肌肉顏色</v-card-title>
+                          <span v-if="isOver.mc" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
+                      </div>
+                    </div>
+                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                      <v-row style="width: 100%;align-items: center;">
+                          <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.MuscleColor" :key="'MuscleColor_'+id" style="width: 100%;">
+                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                  <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                  <el-input-number
+                                      class="ml-2"
+                                      v-model="item.value"
+                                      size="mini"
+                                      :step="1"
+                                      :min="0"
+                                      prop="number"
+                                  ></el-input-number>
+                              </div>
+                          </v-col>
+                      </v-row>
+                    </v-card-text>
+                    <div class="card-title">
+                      <div class="title"  style="display: flex;align-items: center;">
+                          <v-card-title>蝦體顏色</v-card-title>
+                          <span v-if="isOver.bc" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
+                      </div>
+                    </div>
+                    <v-card-text v-show="showBodyColor" style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                      <v-row style="width: 100%;align-items: center;">
+                          <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.BodyColor" :key="'BodyColor_'+id" style="width: 100%;">
+                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                  <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                  <el-input-number
+                                      class="ml-2"
+                                      v-model="item.value"
+                                      size="mini"
+                                      :step="1"
+                                      :min="0"
+                                      prop="number"
+                                  ></el-input-number>
+                              </div>
+                          </v-col>
+                      </v-row>
+                    </v-card-text>
+                    <div class="card-title">
+                      <div class="title"  style="display: flex;align-items: center;">
+                          <v-card-title>蝦體形狀</v-card-title>
+                          <span v-if="isOver.bs" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
+                      </div>
+                    </div>
+                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                      <v-row style="width: 100%;align-items: center;">
+                          <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.BodyShape" :key="'BodyShape_'+id" style="width: 100%;">
+                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                  <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
+                                  <el-input-number
+                                      class="ml-2"
+                                      v-model="item.value"
+                                      size="mini"
+                                      :step="1"
+                                      :min="0"
+                                      prop="number"
+                                      @change="change('BodyShape',item.name_en)"
+                                  ></el-input-number>
+                              </div>
+                          </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </div>
                   
-                  <div class="card-title">
-                    <div class="title"  style="display: flex;align-items: center;">
-                        <v-card-title>腸線顏色</v-card-title>
-                        <span v-if="isOver.ic" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
-                    </div>
-                  </div>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
-                    <v-row style="width: 100%;align-items: center;">
-                        <v-col cols="6" v-for="(item,id) in observeEdit.IntestinalColor" :key="'IntestinalColor_'+id" style="width: 100%;">
-                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
-                              <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
-                                <el-input-number
-                                    class="ml-2"
-                                    v-model="item.value"
-                                    size="mini"
-                                    :step="1"
-                                    :min="0"
-                                    prop="number"
-                                    @change="changeChips"
-                                ></el-input-number>
-                            </div>
-                        </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <div class="card-title">
-                    <div class="title"  style="display: flex;align-items: center;">
-                        <v-card-title>肝胰臟顏色</v-card-title>
-                        <span v-if="isOver.hc" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
-                    </div>
-                  </div>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
-                    <v-row style="width: 100%;align-items: center;">
-                        <v-col cols="6" v-for="(item,id) in observeEdit.HepatopancreasColor" :key="'HepatopancreasColor_'+id" style="width: 100%;">
-                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
-                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
-                                <el-input-number
-                                    class="ml-2"
-                                    v-model="item.value"
-                                    size="mini"
-                                    :step="1"
-                                    :min="0"
-                                    prop="number"
-                                ></el-input-number>
-                            </div>
-                        </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <div class="card-title">
-                    <div class="title"  style="display: flex;align-items: center;">
-                        <v-card-title>肌肉顏色</v-card-title>
-                        <span v-if="isOver.mc" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
-                    </div>
-                  </div>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
-                    <v-row style="width: 100%;align-items: center;">
-                        <v-col cols="6" v-for="(item,id) in observeEdit.MuscleColor" :key="'MuscleColor_'+id" style="width: 100%;">
-                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
-                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
-                                <el-input-number
-                                    class="ml-2"
-                                    v-model="item.value"
-                                    size="mini"
-                                    :step="1"
-                                    :min="0"
-                                    prop="number"
-                                ></el-input-number>
-                            </div>
-                        </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <div class="card-title">
-                    <div class="title"  style="display: flex;align-items: center;">
-                        <v-card-title>蝦體顏色</v-card-title>
-                        <span v-if="isOver.bc" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
-                    </div>
-                  </div>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
-                    <v-row style="width: 100%;align-items: center;">
-                        <v-col cols="6" v-for="(item,id) in observeEdit.BodyColor" :key="'BodyColor_'+id" style="width: 100%;">
-                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
-                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
-                                <el-input-number
-                                    class="ml-2"
-                                    v-model="item.value"
-                                    size="mini"
-                                    :step="1"
-                                    :min="0"
-                                    prop="number"
-                                ></el-input-number>
-                            </div>
-                        </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <div class="card-title">
-                    <div class="title"  style="display: flex;align-items: center;">
-                        <v-card-title>蝦體形狀</v-card-title>
-                        <span v-if="isOver.bs" class="error-text ml-2" style="font-size: 12px;">*超過觀察網隻數</span>
-                    </div>
-                  </div>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
-                    <v-row style="width: 100%;align-items: center;">
-                        <v-col cols="6" v-for="(item,id) in observeEdit.BodyShape" :key="'BodyShape_'+id" style="width: 100%;">
-                            <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
-                                <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
-                                <el-input-number
-                                    class="ml-2"
-                                    v-model="item.value"
-                                    size="mini"
-                                    :step="1"
-                                    :min="0"
-                                    prop="number"
-                                ></el-input-number>
-                            </div>
-                        </v-col>
-                    </v-row>
-                  </v-card-text>
                   <div class="card-title">
                     <div class="title"  style="display: flex;align-items: center;">
                         <v-card-title>觀察網影像</v-card-title>
@@ -942,6 +957,68 @@
                 <v-spacer></v-spacer>
                 <v-btn class="btn-secondary" @click="observeDialog = false">取消</v-btn>
                 <v-btn class="btn-primary" @click="observeSubmit">{{ nowObserve=='edit'?'編輯':'新增' }}</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-dialog>
+        <!-- 蝦隻記錄 -->
+        <v-dialog v-model="shrimpDialog" max-width="500px">
+          <v-form ref="shrimpform" v-model="shrimpvalid" lazy-validation>
+            <v-card class="custom-dialog" id="shrimpDialog">
+              <v-card-title class="add-title" style="display: block;width: 100%;">
+                <div style="display: inline-block;">
+                  {{ nowObserve=='edit'?'編輯':'新增' }} 蝦隻紀錄
+                </div>
+                <div class="add" style="float: right;">
+                  <v-btn  class="btn-secondary close"
+                    title="取消" 
+                    @click="shrimpDialog = false" 
+                    style="border: none;min-width: 0;padding: 0 4px;">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </div>
+              </v-card-title>
+              <v-card-text style="padding-top: 8px">
+                <div class="basic" style="padding-left: 8px;">
+                  <span v-if="isShrimp" class="error-text" style="margin-bottom: 16px;">*長度與重量須大於0</span>
+                  <v-card-text style="display: flex;align-items: center;padding: 0;" v-for="(s,sid) in shrimp" :key="'shrimp_'+sid">
+                    <span style="margin-top: -16px;">{{ sid+1 }}.</span>
+                    <v-row style="margin-bottom: 0;">
+                      <v-col cols="6" style="padding-right: 8px;">
+                        <span class="pa-0 ma-0" style="width:60px;min-height:inherit">長度(cm)</span>
+                        <el-input-number
+                            class="ml-2"
+                            v-model="s['length']"
+                            size="mini"
+                            :step="0.1"
+                            :min="0"
+                            prop="number"
+                            :class="{'shrimp-error':isShrimp&&s['length']==0}"
+                        ></el-input-number>
+                      </v-col>
+                      <v-col cols="6" style="padding-right: 8px;">
+                        <span class="pa-0 ma-0" style="width:60px;min-height:inherit">重量(g)</span>
+                        <el-input-number
+                            class="ml-2"
+                            v-model="s['weight']"
+                            size="mini"
+                            :step="0.1"
+                            :min="0"
+                            prop="number"
+                            :class="{'shrimp-error':isShrimp&&s['weight']==0}"
+                        ></el-input-number>
+                      </v-col>
+                    </v-row>
+                    
+                    <!-- <v-text-field v-model.number="s['length']" type="number" min="0" step="0.1" dense hide-details class="mt-0 mr-2"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">長度(cm)</span></v-text-field>
+                    <v-text-field v-model.number="s['weight']" type="number" min="0" step="0.1" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">重量(g)</span></v-text-field> -->
+                  </v-card-text>
+                </div>
+              </v-card-text>
+              <v-card-actions style="padding: 24px 12px;">
+                <v-spacer></v-spacer>
+                <v-btn class="btn-secondary" @click="shrimpDialog = false">取消</v-btn>
+                <v-btn class="btn-primary" @click="confirmShrimps">{{ nowObserve=='edit'?'編輯':'新增' }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-form>
@@ -1105,7 +1182,7 @@ export default {
         {groupable: false,text: "肌肉顏色",value: "muscle_color",width:"5%", sortable: false },
         {groupable: false,text: "蝦體顏色",value: "body_color",width:"5%", sortable: false },
         {groupable: false,text: "蝦體形狀",value: "body_shape",width:"5%", sortable: false },
-        {groupable: false,text: "是否脫殼",value: "is_shell",width:"5%", sortable: false },
+        {groupable: false,text: "脫殼數量",value: "shell_qty",width:"5%", sortable: false },
         {groupable: false,text: "死蝦數量",value: "dead_shrimp_qty",width:"5%", sortable: false },
         {groupable: false,text: "觀察網影像",value: "img",width:"10%", sortable: false },
         {groupable: false,text: "操作",value: "action",width:"15%", sortable: false },
@@ -1234,27 +1311,32 @@ export default {
       isInspectedTime: false,
       isLoading: false,
       showlocate: true,
+      showBodyColor: true,
+      shrimpDialog: false,
+      shrimp:[],
+      isShrimp: false,
+      shrimpvalid:true
     };
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
     //抓欄位資料 waterdatacols ，coldata
     var myitem=[];
-     await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`).then(res=>{
-       var group =  Array.from(new Set(res.data.map(x=>x.group))); 
-       for (let i = 0; i < group.length; i++) {
+    await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`).then(res=>{
+      var group =  Array.from(new Set(res.data.map(x=>x.group))); 
+      for (let i = 0; i < group.length; i++) {
         const element = group[i];
         if (i!=0) {
-           myitem.push({ divider: true });
+          myitem.push({ divider: true });
         }
-         myitem.push({ header: element });//group name
-         myitem.push(...res.data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
-       }
+        myitem.push({ header: element });//group name
+        myitem.push(...res.data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
+      }
       //  myitem = res.data.map(x=>({'name':x.name_ch,'value':x.name_en}));
-       this.waterdatacols = myitem;
-       this.coldata = Object.assign([], res.data);
-     }).catch(err => {
-        alert("失敗：" + err.message);
+      this.waterdatacols = myitem;
+      this.coldata = Object.assign([], res.data);
+    }).catch(err => {
+      alert("失敗：" + err.message);
     });
     let myurl = [
       `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`,
@@ -1300,8 +1382,8 @@ export default {
         if (i!=0) {
               allitems.push({ divider: true });
             }
-             allitems.push({ header: colsclass });//group name
-             allitems.push(...Object.keys(res.data[colsclass]));
+            allitems.push({ header: colsclass });//group name
+            allitems.push(...Object.keys(res.data[colsclass]));
       }
 
       // this.waterdatacols = allitems;
@@ -1963,7 +2045,7 @@ export default {
           await this.$axios.get(url).then(res => {
               if(res.status==200){
                   this.optData = res.data;
-                  console.log(this.optData);
+                  // console.log(this.optData);
 
                   let datas = _.cloneDeep(this.observableData);
                   this.observableData = [];
@@ -2017,6 +2099,13 @@ export default {
           if(res.status==200 && typeof(res.data)!=='string') {
             res.data.sort((a,b)=>{return b.inspected_time-a.inspected_time});
             this.observableData = res.data;
+            this.observableData.forEach(x=>{
+              if(x.shrimps!==null && x.shrimps.length>0) {
+                let num = 0;
+                x.shrimps.forEach(y=>num=num+y.weight);
+                x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
+              }
+            })
             this.getOptData();
           }
         })
@@ -2050,7 +2139,7 @@ export default {
                   })
 
               })
-              console.log(k,data);
+              // console.log(k,data);
               odata[k] = data;
               odata[k].sort((a,b)=>{return b.value-a.value});
               num++;
@@ -2148,7 +2237,17 @@ export default {
                   // console.log(oitem.value);
                   legend.push(oitem.name_ch);
                 })
-                this.observeChartData[num].chartData.legend = legend;
+                // this.observeChartData[num].chartData.legend = legend;
+
+                // 3/8養殖組要求黑色在最下方白色在最上方
+                if(k=='HepatopancreasColor') {
+                  let legendFirst = legend.filter(x=>x=='黑色');
+                  let legendLast = legend.filter(x=>x=='白色');
+                  let legendCenter = legend.filter(x=>x!=='黑色'&&x!=='白色');
+                  this.observeChartData[num].chartData.legend = [...legendFirst,...legendCenter,...legendLast];
+                }else {
+                  this.observeChartData[num].chartData.legend = legend;
+                }
                 // this.observeChartData[num].myColors = colors;
               })
               this.observeChartData[num].chartData.xAxis = xAxis;
@@ -2170,26 +2269,50 @@ export default {
                 })
               })
               this.observeChartData[num].chartData.series=_.cloneDeep(series);
-
               // 顏色
               if(k=='IntestinalColor'||k=='HepatopancreasColor'||k=='BodyColor') {
                 this.observeChartData[num].chartData.colors = [];
                 if(k=='IntestinalColor') {
                   this.observeChartData[num].data.forEach(color=>{
                     if(color.name_en.toLowerCase()=='empty') {
-                      this.observeChartData[num].chartData.colors.push('#ccc')
+                      this.observeChartData[num].chartData.colors.push('#ccc');
+                    }else if(color.name_en.toLowerCase()=='uncertain'){
+                      this.observeChartData[num].chartData.colors.push('#45d8c7');
                     }else {
                       this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
                     }
                   })
                 }else if(k=='HepatopancreasColor') {
+                  // this.observeChartData[num].data.forEach(color=>{
+                  //   this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
+                  // })
+
+                  // 3/8養殖組要求黑色在最下方白色在最上方
+                  let dataFirst = this.observeChartData[num].chartData.series.filter(x=>x.name=='黑色');
+                  let dataLast = this.observeChartData[num].chartData.series.filter(x=>x.name=='白色');
+                  let dataCenter = this.observeChartData[num].chartData.series.filter(x=>x.name!=='黑色'&&x.name!=='白色');
+                  this.observeChartData[num].chartData.series = [];
+                  this.observeChartData[num].chartData.series = [...dataFirst,...dataCenter,...dataLast];
+                  let colors = [];
                   this.observeChartData[num].data.forEach(color=>{
-                    this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
+                    // this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
+                    if(color.name_en.toLowerCase()=='uncertain'){
+                      colors.push('#45d8c7');
+                    }else  {
+                      colors.push(color.name_en.toLowerCase());
+                    }
+                    
                   })
+                  let colorFirst = colors.filter(x=>x=='black');
+                  let colorLast = colors.filter(x=>x=='white');
+                  let colorCenter = colors.filter(x=>x!=='black'&&x!=='white');
+                  this.observeChartData[num].chartData.colors = [...colorFirst,...colorCenter,...colorLast];
                 }else if(k=='BodyColor') {
                   this.observeChartData[num].data.forEach(color=>{
                     if(color.name_en.toLowerCase()=='transparent') {
                       this.observeChartData[num].chartData.colors.push('#ccc')
+                    }else if(color.name_en.toLowerCase()=='uncertain'){
+                      this.observeChartData[num].chartData.colors.push('#45d8c7');
                     }else {
                       this.observeChartData[num].chartData.colors.push(color.name_en.toLowerCase());
                     }
@@ -2227,7 +2350,7 @@ export default {
       }else {
         this.observeEdit = {
           "observation_qty": 0,
-          "is_shell": false,
+          "shell_qty": 0,
           "dead_shrimp_qty": 0,
           "shrimp_weight": 0,
           "inspected_time": null,
@@ -2261,6 +2384,56 @@ export default {
       let data = _.cloneDeep(this.observeEdit);
       this.observeEdit = {};
       this.observeEdit = data;
+    },
+    change(item,name) {
+      this.showBodyColor = false;
+      var num = this.observeEdit[item].filter(x=>x.name_en==name)[0].value;
+      this.observeEdit[item].forEach(i=>{
+        if(i.name_en!==name) {
+          i.value = parseInt(this.observeEdit.observation_qty)-parseInt(num);
+        }
+      })
+      this.showBodyColor = true;
+    },
+    // 蝦隻重量個別輸入長度和重量的Dialog
+    openShrimps() {
+      this.shrimpDialog = true;
+      this.isShrimp = false;
+      this.shrimp = [];
+      if(this.observeEdit.shrimps&& this.observeEdit.shrimps.length>0) {
+        this.shrimp = _.cloneDeep(this.observeEdit.shrimps);
+      }else {
+        for(let i=0;i<this.observeEdit.observation_qty;i++) {
+          this.shrimp.push({length:0,weight:0})
+        }
+      }
+      
+    },
+    // 蝦隻重量個別輸入長度和重量
+    confirmShrimps() {
+      this.isShrimp = false;
+      this.shrimp.forEach(x=>{
+        if(x.length==0 || x.weight==0) {
+          this.isShrimp=true;
+        }
+      })
+      if(!this.isShrimp) {
+        this.observeEdit.shrimps = _.cloneDeep(this.shrimp);
+        let num=0;
+        this.shrimp.forEach(s=>{
+          num=num+s.weight;
+        })
+        this.observeEdit.shrimp_weight = (((num / this.observeEdit.observation_qty)*100)/100).toFixed(2);
+        this.shrimpDialog = false;
+      }else {
+        // alert('長度與重量須大於0');
+        document.getElementById('shrimpDialog').scrollTop = 0;
+      }
+      
+      this.$nextTick(() => {
+        this.$refs.shrimpform.reset();
+      })
+      
     },
     // 蝦隻狀態新增/編輯
     async observeSubmit() {
@@ -2299,28 +2472,30 @@ export default {
               num.mc+=parseInt(o.value);
             }
           })
-          if(num.bc>parm.observation_qty) {
-            this.isOver.bc = true;
-            isError = true;
-          }
-          if(num.bs>parm.observation_qty) {
-            this.isOver.bs = true;
-            isError = true;
-          }
-          if(num.hc>parm.observation_qty) {
-            this.isOver.hc = true;
-            isError = true;
-          }
-          if(num.ic>parm.observation_qty) {
-            this.isOver.ic = true;
-            isError = true;
-          }
-          if(num.mc>parm.observation_qty) {
-            this.isOver.mc = true;
-            isError = true;
-          }
+          console.log('num',num,parm.observation_qty)
+          
         }
       })
+      if(num.bc!==parm.observation_qty) {
+        this.isOver.bc = true;
+        isError = true;
+      }
+      if(num.bs!==parm.observation_qty) {
+        this.isOver.bs = true;
+        isError = true;
+      }
+      if(num.hc!==parm.observation_qty) {
+        this.isOver.hc = true;
+        isError = true;
+      }
+      if(num.ic!==parm.observation_qty) {
+        this.isOver.ic = true;
+        isError = true;
+      }
+      if(num.mc!==parm.observation_qty) {
+        this.isOver.mc = true;
+        isError = true;
+      }
       
       if(!isError) {
         // 回傳資料整合
@@ -2342,14 +2517,13 @@ export default {
         let formData = new FormData();
         console.log('submit',parm)
         Object.keys(parm).forEach(x=>{
-          if(x=='BodyColor'||x=='BodyShape'||x=='HepatopancreasColor'||x=='IntestinalColor'||x=='MuscleColor') {
+          if(x=='BodyColor'||x=='BodyShape'||x=='HepatopancreasColor'||x=='IntestinalColor'||x=='MuscleColor'||x=='shrimps') {
             formData.append(x,JSON.stringify(parm[x]));
           }else {
             formData.append(x,parm[x]);
           }
           
         })
-
         let config = { headers: { "Content-Type": "multipart/form-data" } };
         let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'
                     :this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observeEdit.shrimp_id+'/'}`;
@@ -2412,6 +2586,8 @@ export default {
           .finally(() => {
           });
         }
+      }else {
+        alert('請再次檢查是否有數值輸入錯誤')
       }
       
     },
@@ -2732,6 +2908,12 @@ export default {
   }
   .ant-calendar-picker-icon {
       display: none;
+  }
+  .shrimp-error {
+    .el-input__inner {
+      border-color: red;
+    }
+    
   }
 }
 
