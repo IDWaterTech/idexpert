@@ -2103,7 +2103,12 @@ export default {
               if(x.shrimps!==null && x.shrimps.length>0) {
                 let num = 0;
                 x.shrimps.forEach(y=>num=num+y.weight);
-                x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
+                if(num>0) {
+                  x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
+                }else {
+                  x.shrimp_weight = null;
+                }
+                
               }
             })
             this.getOptData();
@@ -2352,13 +2357,14 @@ export default {
           "observation_qty": 0,
           "shell_qty": 0,
           "dead_shrimp_qty": 0,
-          "shrimp_weight": 0,
+          "shrimp_weight": null,
           "inspected_time": null,
           "feed_amount": null,
           "pond_id": '',
           "img_a": null,
           "img_b": null,
           "img_c": null,
+          "shrimps":[]
         }
         this.getFilter(this.observeEdit);
         this.observeDialog = true;
