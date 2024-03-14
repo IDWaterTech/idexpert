@@ -816,8 +816,17 @@
                       </v-col>
                     </v-row>
                   </v-card-text>
-                  <v-card-text v-if="observeEdit['observation_qty']>0" style="display: flex;align-items: center;padding-top: 0;" @click="openShrimps()">
-                    <v-text-field v-model.number="observeEdit['shrimp_weight']" type="number" min="0" dense class="mt-0 mr-2" hide-details  @click="openShrimps()"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">蝦隻重量(g)</span></v-text-field>
+                  <v-card-text v-if="observeEdit['observation_qty']>0" style="display: flex;align-items: center;padding-top: 0;">
+                    <v-row style="margin-bottom: 0;">
+                      <v-col cols="12" md="6" @click="openShrimps()">
+                        <v-text-field v-model.number="observeEdit['shrimp_weight']" type="number" min="0" dense class="mt-0 mr-2" hide-details  @click="openShrimps()"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">蝦隻重量(g)</span></v-text-field>
+                        
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-checkbox class="checkbox" v-model="observeEdit['is_sample']" hide-details label="是否為打樣" style="margin-top: 0;padding-top: 0;"></v-checkbox>
+                      </v-col>
+                    </v-row>
+                    
                     <!-- <v-btn class="btn-secondary btn-small">填寫</v-btn> -->
                   </v-card-text>
                   <div v-if="observeEdit['observation_qty']>0" class="shrimp-statue">
@@ -2364,7 +2373,8 @@ export default {
           "img_a": null,
           "img_b": null,
           "img_c": null,
-          "shrimps":[]
+          "shrimps":[],
+          "is_sample":false,
         }
         this.getFilter(this.observeEdit);
         this.observeDialog = true;
@@ -2482,23 +2492,23 @@ export default {
           
         }
       })
-      if(num.bc!==parm.observation_qty) {
+      if(!parm.is_sample&&num.bc!==parm.observation_qty) {
         this.isOver.bc = true;
         isError = true;
       }
-      if(num.bs!==parm.observation_qty) {
+      if(!parm.is_sample&&num.bs!==parm.observation_qty) {
         this.isOver.bs = true;
         isError = true;
       }
-      if(num.hc!==parm.observation_qty) {
+      if(!parm.is_sample&&num.hc!==parm.observation_qty) {
         this.isOver.hc = true;
         isError = true;
       }
-      if(num.ic!==parm.observation_qty) {
+      if(!parm.is_sample&&num.ic!==parm.observation_qty) {
         this.isOver.ic = true;
         isError = true;
       }
-      if(num.mc!==parm.observation_qty) {
+      if(!parm.is_sample&&num.mc!==parm.observation_qty) {
         this.isOver.mc = true;
         isError = true;
       }
@@ -2920,6 +2930,9 @@ export default {
       border-color: red;
     }
     
+  }
+  .checkbox .theme--light.v-label {
+    color: $color-dark;
   }
 }
 
