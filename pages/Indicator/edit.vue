@@ -823,7 +823,7 @@
                         
                       </v-col>
                       <v-col cols="12" md="6">
-                        <v-checkbox class="checkbox" v-model="observeEdit['is_sample']" hide-details label="是否為打樣" style="margin-top: 0;padding-top: 0;"></v-checkbox>
+                        <v-checkbox class="checkbox" v-model="observeEdit['is_sample']" hide-details label="是否人工打樣" style="margin-top: 0;padding-top: 0;"></v-checkbox>
                       </v-col>
                     </v-row>
                     
