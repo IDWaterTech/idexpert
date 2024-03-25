@@ -2694,6 +2694,7 @@ export default {
         }
       }
     },
+    // 結束養殖循環
     end() {
       let data = _.cloneDeep(this.circleData.filter(x=>x.id==this.currentDataId)[0]);
       console.log('end',data);
@@ -2703,9 +2704,7 @@ export default {
       data.ended_date = dayjs( new Date()).format("YYYY-MM-DD");
       this.editparm = _.cloneDeep(data);
       this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
-      this.submitEdit(true);
-
-      
+      this.submitEdit(true);//編輯執行結束的時間及更改養殖狀態
     },
     getTemp(id) {
       let para={breeding_record_id:id}
@@ -3373,6 +3372,7 @@ export default {
       this.editDialog = false;
     },
     async submitEdit(bool=false) {
+      // bool=true 結束循環的日期變更 bool=false 編輯循環
       let parm = _.cloneDeep(this.editparm);
       parm.person_in_charge = this.editperson_in_charge;
       delete parm.estimated_num;//刪除初始放苗量
@@ -3383,12 +3383,16 @@ export default {
             .then(res => {
                 if(res.data=='修改成功'){
                     this.$toast.success("修改成功", { duration: 2000 });
-                    let status={
-                      id:new Array(),
-                      status: '空池'
+                    // 結束循環要將池更改為空池
+                    if(bool == true) {
+                      console.log('bool',bool);
+                      let status={
+                        id:new Array(),
+                        status: '空池'
+                      }
+                      status.id.push(this.poolid);
+                      this.compareStatus(status);
                     }
-                    status.id.push(this.poolid);
-                    this.compareStatus(status);
                     this.editDialog = false;
                     this.getCircleData();
                     
