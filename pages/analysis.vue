@@ -1505,7 +1505,8 @@ export default {
     //     }
     //     console.log(this.defaultPool);
     //   });
-    this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+    let architectureData = await this.getArchitecture();
+    this.maindata = typeof (architectureData)=='string'?[]:architectureData;
     this.sel_main = undefined;
     this.defaultPool = '';
     if(this.maindata.length>0) {

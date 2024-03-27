@@ -517,7 +517,8 @@ export default {
       //   .finally(() => {
       //     //this.getdata();
       //   });
-      this.factoryData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      let architectureData = await this.getArchitecture();
+      this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
       if(this.factoryData.length>0) {
         this.factoryid = this.factoryData[0].id;
       }

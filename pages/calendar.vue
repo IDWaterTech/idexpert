@@ -922,7 +922,8 @@ export default {
       //   .catch(error=>{
       //     this.$toast.error(`資料取得失敗:${error.message}`, { duration: 2000 });
       //   });
-      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      let architectureData = await this.getArchitecture();
+      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
       var data = this.setNestedDisabled(
         _.cloneDeep(this.maindata),
         "",

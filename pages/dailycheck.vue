@@ -178,6 +178,8 @@ export default {
     methods: {
         // 取得所有帳號
         getaccList: async function() {
+            let getuserData = await this.getUserList();
+            var data = typeof (getuserData)=='string'?[]:getuserData;
             var data = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
             var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
             this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物

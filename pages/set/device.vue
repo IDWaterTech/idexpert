@@ -315,7 +315,8 @@ export default {
       //   .catch(error => {
       //     this.$toast.error("error:" + error, { duration: 2000 });
       //   });
-      var data = this.setNestedDisabled(_.cloneDeep(typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture()), "");
+      let architectureData = await this.getArchitecture();
+      var data = this.setNestedDisabled(_.cloneDeep(typeof (architectureData)=='string'?[]:architectureData), "");
       this.maindata = data;
       //用id抓到name
       this.maindata.forEach(x => {

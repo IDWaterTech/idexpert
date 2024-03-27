@@ -558,7 +558,8 @@ export default {
       //   .catch(error => {
       //     this.$toast.error("error:" + error, { duration: 2000 });
       //   });
-      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      let architectureData = await this.getArchitecture();
+      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
     },
     getpoolstat: async function() {
       //取得池狀態清單

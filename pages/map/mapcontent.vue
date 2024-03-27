@@ -230,7 +230,8 @@
                     
             //     })
             let isData = false;
-            this.fatoryData = typeof (await this.getArchitecture(this.field))=='string'?[]:await this.getArchitecture(this.field);
+            let architectureData = await this.getArchitecture();
+            this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
             for (let i = 0; i < this.fatoryData.length; i++) {
             if(this.field!==null) {
                 if(this.fatoryData[i].id==this.field) {

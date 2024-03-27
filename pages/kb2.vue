@@ -2829,7 +2829,8 @@ export default {
             //     .catch(error=>{
             //         console.log(error);
             //     })
-            this.allData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+            let architectureData = await this.getArchitecture();
+            this.allData = typeof (architectureData)=='string'?[]:architectureData;
             this.querrySelectedLst = {};
             this.querryDataLst = {}
             this.allData.forEach(f=>{
@@ -2954,7 +2955,8 @@ export default {
                 });
         },
         async getAllUser() {
-            this.userData = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+            let getuserData = await this.getUserList();
+            this.userData = typeof (getuserData)=='string'?[]:getuserData;
             this.userData = this.userData.filter(x=>x.is_active==true);
             this.isLoading = true;
             console.log('User',this.userData);

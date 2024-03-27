@@ -853,7 +853,8 @@ export default {
   },
   methods: {
     getaccList: async function() {
-      this.accdata = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+      let getuserData = await this.getUserList();
+      this.accdata = typeof (getuserData)=='string'?[]:getuserData;
       this.accdata.forEach(async (acc,cid)=>{
         await this.getUser(acc.username,cid);
       })
@@ -897,7 +898,8 @@ export default {
       //     this.maindata = res.data;
       //     // this.sel_main = 1;
       //   });
-      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      let architectureData = await this.getArchitecture();
+      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱

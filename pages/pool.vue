@@ -1656,7 +1656,8 @@ export default {
       //       var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
       //       this.maindata = data;
       //   });
-      this.maindata = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      let architectureData = await this.getArchitecture();
+      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
       var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
       this.maindata = data;
       // let reqid = this.req.id;
@@ -2050,7 +2051,8 @@ export default {
     },
     //帳號清單
     getaccList: async function() {
-      var data = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+      let getuserData = await this.getUserList();
+      var data = typeof (getuserData)=='string'?[]:getuserData;
       var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
       this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
       // await this.$axios

@@ -22,7 +22,8 @@ import https from "https";
               // const agent = new https.Agent({
               //   rejectUnauthorized: false
               // });
-              acclist = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
+              let getuserData = await this.getUserList();
+              acclist = typeof (getuserData)=='string'?[]:getuserData;
               // await this.$axios
               //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent }) //所有使用者的清單
               //   .then(res => {

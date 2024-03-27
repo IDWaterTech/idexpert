@@ -1037,7 +1037,9 @@ export default {
       //   .finally(() => {
       //     //this.getdata();
       //   });
-      this.factoryData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
+      
+      let architectureData = await this.getArchitecture();
+      this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
       // this.factoryid = res.data[0].id;
       var item = [];
       let data = _.cloneDeep(this.factoryData);
