@@ -778,6 +778,7 @@ export default {
                 r.water = this.water.filter(x=>x.id==r.id)[0].value;
                 r.level = this.water.filter(x=>x.id==r.id)[0].level;
                 r.parm_name = this.water.filter(x=>x.id==r.id)[0].parm_name;
+                r.inspected_time = this.water.filter(x=>x.id==r.id)[0].inspected_time;
               }
             })
           }else {
@@ -795,6 +796,7 @@ export default {
               b.water = this.water.filter(x=>x.id==b.id)[0].value;
               b.level = this.water.filter(x=>x.id==b.id)[0].level;
               b.parm_name = this.water.filter(x=>x.id==b.id)[0].parm_name;
+              b.inspected_time = this.water.filter(x=>x.id==b.id)[0].inspected_time;
             }
           }
           b.center = false;

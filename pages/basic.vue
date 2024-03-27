@@ -190,7 +190,7 @@
                     <v-icon>mdi-alert-outline</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        警示
+                        警示 {{ total.warning }}
                       </div>
                     </div>
 
@@ -212,7 +212,7 @@
                     <v-icon>mdi-focus-field</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        養殖池
+                        養殖池 {{ total.pool }}
                       </div>
                     </div>
                   </div>
@@ -233,7 +233,7 @@
                     <v-icon>mdi-dots-grid</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        小池數
+                        小池數 {{ total.pond }}
                       </div>
                     </div>
                   </div>
@@ -264,7 +264,7 @@
                     </svg>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        預估放養
+                        預估放養 {{ total.predict }}
                       </div>
                     </div>
                   </div>
@@ -392,6 +392,9 @@
                           class="time-select"
                           ></v-select>
                       </div> -->
+                    <div v-if="newest!==''" class="newest-date">
+                      <span style="margin-left: 16px;">最新數據日期：{{ newest }}</span>
+                    </div>
                     <poollayout v-if="sel_main!==''&&sel_area!==''" class="poollayout" :water="water"
                       :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]"
                       :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"
@@ -602,6 +605,8 @@ export default {
       windowWidth: window.innerWidth,
       defaultPool: undefined,
       showPredict: true,
+      showPond:true,
+      showBreed:true,
       showAlert: true,
       // 水質地圖
       statcolor: [
@@ -635,6 +640,7 @@ export default {
         {id:0,name_ch:'5分鐘內最新數據',value:5},
         {id:1,name_ch:'30分鐘內最新數據',value:30},
         {id:2,name_ch:'8小時內最新數據',value:480},
+        // {id:4,name_ch:'8小時內最新數據',value:1000000},
         
         // {id:4,name_ch:'30000',value:800000},
         // {id:5,name_ch:'40000',value:1000000}
@@ -643,7 +649,8 @@ export default {
       timeSelect:0,
       alertAllData:[],
       nowClickRow:'',
-      originData:[]
+      originData:[],
+      newest:''
     };
   },
   methods: {
@@ -1085,8 +1092,8 @@ export default {
         let num=0;
         keys.forEach(async k=>{
           let parm = {
-            factoryid: this.sel_main,
-            areaid: this.sel_area,
+            factory_id: this.sel_main,
+            pond_area_id: this.sel_area,
             time_range: this.timekb.filter(x=>x.id==this.timeSelect)[0].value,
             col_name: k
           };
@@ -1111,11 +1118,13 @@ export default {
                 this.waterParm[parm.col_name] = _.cloneDeep(res.data);
                 // 測試用
                 // this.water.forEach(w=>{
-                //     w.value= 50
+                //     w.value= 25
+                //     w.inspected_time = '2024-03-25 23:00:00'
                 // })
                 // this.water.forEach(w=>{
                 //   if(w.id==50) {
                 //     w.value= 20
+                //     w.inspected_time = '2024-03-25 23:00:00'
                 //   }  
                 // })
                 this.waterParm[parm.col_name].forEach(w=>{
@@ -1124,7 +1133,18 @@ export default {
                 })
                 if(parm.col_name == nowTab) {
                   this.water = _.cloneDeep(this.waterParm[nowTab]);
-                  console.log('parm',this.water)
+                  this.newest = '';
+                  if(this.water && this.water.length>0) {
+                    this.water.forEach(w=>{
+                      if(this.newest=='') {
+                        this.newest = w.inspected_time.slice(0,10);
+                      }else {
+                        if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
+                          this.newest = w.inspected_time.slice(0,10);
+                        }
+                      }
+                    })
+                  }
                   this.waterloading = true;
                 }
                 num++;
@@ -1738,7 +1758,20 @@ export default {
         default:
           break;
       }
+      this.newest = '';
       this.water = this.waterParm[nowTab];
+      if(this.water && this.water.length>0) {
+        this.water.forEach(w=>{
+          if(this.newest=='') {
+            this.newest = w.inspected_time.slice(0,10);
+          }else {
+            if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
+              this.newest = w.inspected_time.slice(0,10);
+            }
+          }
+        })
+      }
+      
       if(nowTab=='NH4') {
         this.nowAreaId.range = this.lightData['AmmoniaN'];
       }else if(nowTab=='Temperature') {
