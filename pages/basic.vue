@@ -190,7 +190,7 @@
                     <v-icon>mdi-alert-outline</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        警示 {{ total.warning }}
+                        警示
                       </div>
                     </div>
 
@@ -212,7 +212,7 @@
                     <v-icon>mdi-focus-field</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        養殖池 {{ total.pool }}
+                        養殖池
                       </div>
                     </div>
                   </div>
@@ -233,7 +233,7 @@
                     <v-icon>mdi-dots-grid</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        小池數 {{ total.pond }}
+                        小池數
                       </div>
                     </div>
                   </div>
@@ -264,7 +264,7 @@
                     </svg>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
-                        預估放養 {{ total.predict }}
+                        預估放養
                       </div>
                     </div>
                   </div>
