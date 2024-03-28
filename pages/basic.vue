@@ -328,7 +328,7 @@
                   <div v-if="resultListOpen" class="content">
                     <v-row style="margin-bottom: 16px;">
                       <v-col cols="12">
-                        <el-table :data="mainpool.items.filter(x=>x.state!=isHideEmpty)" style="width: 100%;" max-height="240" show-summary size="mini"
+                        <el-table v-if="showAlert" :data="mainpool.items.filter(x=>x.state!=isHideEmpty)" style="width: 100%;" max-height="240" show-summary size="mini"
                           :summary-method="getSummaries" :row-style="isTagColor">
                           <!-- headers{ text: "name", value: "name", groupable: false }, -->
                           <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
@@ -605,8 +605,6 @@ export default {
       windowWidth: window.innerWidth,
       defaultPool: undefined,
       showPredict: true,
-      showPond:true,
-      showBreed:true,
       showAlert: true,
       // 水質地圖
       statcolor: [
@@ -825,7 +823,6 @@ export default {
                 this.nowAreaId.range = this.lightData[nowTab];
             }
             this.getAlertNum();
-            
             setTimeout(()=>{
               if(document.getElementsByClassName('el-table__body-wrapper')) {
                 document.getElementsByClassName('el-table__body-wrapper')[0].scrollTop = 0;
@@ -979,64 +976,73 @@ export default {
       // console.log('param',param);
       const { columns, data } = param;
       const sums = [];
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = `共${data.length}池`;
-          return;
-        }
-        const values = data.map(item => Number(item[column.property]));
-        var hiddenlist = ["體積(頓)", "狀態"];
-        if (hiddenlist.filter(x => x == column.label).length > 0) {
-          sums[index] = "";
-          return;
-        }
-        if (!values.every(value => isNaN(value))) {
-          sums[index] = values.reduce((prev, curr) => {
-            const value = Number(curr);
-            if (!isNaN(value)) {
-              if(column.label == '體積/水量(噸)') {
-                return (parseFloat(prev) + parseFloat(curr)).toFixed(2);
-              }else {
-                return prev + curr;
-              }
-            } else {
-              if(column.label == '體積/水量(噸)') {
-                return prev.toFixed(2);
-              }else {
-                return prev;
-              }
-              
-            }
-          }, 0);
-          var itemunit = [
-            { name: "深度(m)", unit: "m" },
-            { name: "小池數(個)", unit: "個" },
-            { name: "曝氣盤數(個)", unit: "個" },
-            { name: "預估放養隻數", unit: "隻" }
-          ];
-          if (itemunit.filter(x => x.name == column.label).length > 0) {
-            if(column.label == '小池數(個)') {
-              this.total.pond = sums[index];
-            }
-            if(column.label == '預估放養隻數') {
-              sums[index] = sums[index].toFixed(2)
-              this.total.predict = sums[index];
-              this.showPredict = true;
-            }
-            if(column.label == '深度(m)') {
-              sums[index] = sums[index].toFixed(2);
-            }
-            sums[index] +=
-              " " + itemunit.filter(x => x.name == column.label)[0].unit;
-          } else {
-            sums[index] += "";
+      // 需判斷data資料，否則卡片總計數會無數字
+      if(data.length>0) {
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = `共${data.length}池`;
+            return;
           }
-          
-        } else {
-          sums[index] = "N/A";
-        }
-        this.total.pool = data.length;
-      });
+          const values = data.map(item => Number(item[column.property]));
+          var hiddenlist = ["體積(頓)", "狀態"];
+          if (hiddenlist.filter(x => x == column.label).length > 0) {
+            sums[index] = "";
+            return;
+          }
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                if(column.label == '體積/水量(噸)') {
+                  return (parseFloat(prev) + parseFloat(curr)).toFixed(2);
+                }else {
+                  return prev + curr;
+                }
+              } else {
+                if(column.label == '體積/水量(噸)') {
+                  return prev.toFixed(2);
+                }else {
+                  return prev;
+                }
+                
+              }
+            }, 0);
+            var itemunit = [
+              { name: "深度(m)", unit: "m" },
+              { name: "小池數(個)", unit: "個" },
+              { name: "曝氣盤數(個)", unit: "個" },
+              { name: "預估放養隻數", unit: "隻" }
+            ];
+            if (itemunit.filter(x => x.name == column.label).length > 0) {
+              if(column.label == '小池數(個)') {
+                this.total.pond = sums[index];
+              }
+              if(column.label == '預估放養隻數') {
+                sums[index] = sums[index].toFixed(2)
+                this.total.predict = sums[index];
+                this.showPredict = true;
+              }
+              if(column.label == '深度(m)') {
+                sums[index] = sums[index].toFixed(2);
+              }
+              sums[index] +=
+                " " + itemunit.filter(x => x.name == column.label)[0].unit;
+            } else {
+              sums[index] += "";
+            }
+            
+          } else {
+            sums[index] = "N/A";
+          }
+          this.total.pool = data.length;
+        });
+      }else {
+        this.total.pond = 0;
+        this.total.pool = 0;
+        this.total.predict = 0;
+        this.showPredict = true;
+      }
+      
       return sums;
     },
     totalSum(values,bool) {
@@ -1779,6 +1785,13 @@ export default {
       }else {
           this.nowAreaId.range = this.lightData[nowTab];
       }
+    },
+    isHideEmpty() {
+      console.log('isHideEmpty');
+      this.showPredict = false;
+      setTimeout(()=>{
+        this.showPredict = true;
+      },500)
     }
   }
 };
