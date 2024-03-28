@@ -1,7 +1,7 @@
 <template>
     <div class="setting-layout">
         <!-- 欄位 -->
-        <v-row v-if="areas.ponds.length>0" style="align-items: center;margin-bottom: 12px;flex-wrap: nowrap;">
+        <v-row v-if="areas.ponds?.length>0" style="align-items: center;margin-bottom: 12px;flex-wrap: nowrap;">
             <div class="icon-group" style="width: 60px;margin-bottom: 8px;">
                 <!-- <div v-if="!edit" class="icons">
                     <v-tooltip bottom>
@@ -61,7 +61,7 @@
                 </div>
             </div>
         </v-row>
-        <div v-if="areas.ponds.length>0" style="width: 100%;">
+        <div v-if="areas.ponds?.length>0" style="width: 100%;">
             <v-row v-for="(pond,pid) in ponds" :key="pid" class="parent-row" id="rowL">
             <!-- 列 -->
                 <div class="title-col text-center" style="min-width: 60px;justify-content: center;">
@@ -146,7 +146,7 @@
                 </div>
             </v-row>
         </div>
-        <div v-if="areas.ponds.length==0">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
+        <div v-if="areas.ponds?.length==0">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
         <!-- dialog -->
         <v-dialog v-model="addDialog">
             <v-card style="max-height: inherit;">
@@ -263,7 +263,9 @@ export default {
     props:{
         areas:{
             type: Object,
-            default: {}
+            default(rawProps) {
+            return { }
+            }
         }
     },
     created() {
@@ -967,7 +969,7 @@ export default {
         this.isSetting = false;
         let areaData = _.cloneDeep(this.areas);
         let deleteSet = [];
-        for(let i=0;i<areaData.ponds.length;i++) {
+        for(let i=0;i<areaData.ponds?.length;i++) {
             this.ponds.push({pond:[]});
             this.originalData.push({pond:[]});
             let data1 = [];
