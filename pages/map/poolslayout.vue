@@ -147,7 +147,7 @@
 // import mappoolelement from "@/components/mapPoolElement.vue";
 import dayjs from "dayjs";
 import https from "https";
-import settingcolor from "~/pages/map/settingcolor.vue";
+import settingcolor from "@/pages/map/settingcolor.vue";
 import settinglayout from "@/pages/map/settinglayout.vue";
 export default {
   layout: "emptynoheaderdrawer2",
@@ -159,7 +159,7 @@ export default {
   },
   data() {
     return {
-      windowWidth:window.innerWidth,
+      windowWidth:800,
       allData:[],
       ponds:[
         {
@@ -438,13 +438,11 @@ export default {
       type: Boolean,
       default: false
     },
-  //   statcolor: {
-  //     type: Array,
-  //     default: []
-  //   },
     successData: {
       type: Array,
-      default: []
+      default(rawProps) {
+      return []
+    }
     },
     nowAreaTag: {
       type: String,
@@ -452,22 +450,24 @@ export default {
     },
     areas:{
       type: Array,
-      default: []
+      default(rawProps) {
+      return []
+    }
     },
     layout:{
       type: Array,
-      default: []
+      default(rawProps) {
+      return []
+    }
     },
-    // nowLayout: {
-    //   type: String,
-    //   default: ''
-    // },
     nowAreaId: {
       type: Object,
-      default: {
-        factory_id: null,
-        pond_area_id: null,
-        range: null
+      default(rawProps) {
+        return {
+          factory_id: null,
+          pond_area_id: null,
+          range: null
+        }
       }
     }
   },
@@ -483,7 +483,7 @@ export default {
   async mounted() {
     //監控視窗
      window.addEventListener('resize', () => {
-      this.windowWidth = window.innerWidth
+      this.windowWidth = 800;
     });
     // if(this.nowAreaTag!=='setting') {
     //   this.getPondData();
@@ -957,22 +957,23 @@ export default {
     },
     areas() {
       this.setting = 'color';
-      // if(this.$route.path!=='/basic') {
+      if(this.$route.path!=='/basic') {
         this.getPondData();
-      // }
+      }
     },
     nowLayout() {
       this.getLayoutData();
       // console.log('change layout',this.areas1);
     },
-    // water: {
-    //   handler(val){
-    //     this.isLoad = this.waterloading;
-    //    // do stuff
-    //   },
-    //   deep: true
+    water: {
+      handler(val){
+        // this.isLoad = this.waterloading;
+        this.getPondData();
+       // do stuff
+      },
+      deep: true
 
-    // },
+    },
     waterloading() {
       this.isLoad = true;
     },
