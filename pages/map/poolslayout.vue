@@ -19,7 +19,7 @@
             :title="getTitle(b)"
             @click="goIndicator(b)">
             <!-- ((b.id==''&&b.name=='road')||(b.id==''&&b.state==''))?`width:${getWidth(b)}`:b.state == '無'? `width: ${getWidth(b)}`: b.state.length == 0 || b.rows.length==0 ? `background: ${getItemColor(b.state)};${getWidth(b)}`: b.rows.length==0?`background:transparent;width: ${getWidth(b)}`:`background:${getItemColor(b.state)};width: ${getWidth(b)};padding-top:12px` -->
-            <mappoolelement
+            <map-pool-element
               v-if="b.rows.length==0 && b.name!=='road' && b.isSetting"
               :item="b"
               :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
@@ -32,7 +32,7 @@
               :successDataID="successDataID"
               @editPool="edit($event)"
               @saveSuccess="saveDelete($event)"
-            ></mappoolelement>
+            ></map-pool-element>
 
             <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="sub-row" :class="{'mx-3':$route.path=='/map'}">
               <v-row v-for="(row,sid) in b.rows" :key="sid" style="margin-bottom: 0;">
@@ -43,7 +43,7 @@
                       "
                       :title="getTitle(row)"
                       @click="goIndicator(row)">
-                      <mappoolelement
+                      <map-pool-element
                           :item="row"
                           :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
                           "
@@ -56,7 +56,7 @@
                           @editPool="edit($event)"
                           @saveSuccess="saveDelete($event)"
                           v-if="row.name!=='tank'&&row.name!=='road'&& row.isSetting"
-                      ></mappoolelement>
+                      ></map-pool-element>
                       <div v-else-if="row.name=='tank'">生化槽</div>
                       <div v-else>
 
@@ -144,7 +144,7 @@
 </template>
 
 <script>
-import mappoolelement from "@/components/mapPoolElement.vue";
+// import mappoolelement from "@/components/mapPoolElement.vue";
 import dayjs from "dayjs";
 import https from "https";
 import settingcolor from "~/pages/map/settingcolor.vue";
@@ -153,7 +153,7 @@ export default {
   layout: "emptynoheaderdrawer2",
   middleware: "auth",
   components: {
-    mappoolelement,
+    // mappoolelement,
     settingcolor,
     settinglayout
   },
