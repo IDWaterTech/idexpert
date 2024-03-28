@@ -392,9 +392,9 @@
                           class="time-select"
                           ></v-select>
                       </div> -->
-                    <div v-if="newest!==''" class="newest-date">
+                    <!-- <div v-if="newest!==''" class="newest-date">
                       <span style="margin-left: 16px;">最新數據日期：{{ newest }}</span>
-                    </div>
+                    </div> -->
                     <poollayout v-if="sel_main!==''&&sel_area!==''" class="poollayout" :water="water"
                       :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]"
                       :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"
