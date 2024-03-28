@@ -957,9 +957,9 @@ export default {
     },
     areas() {
       this.setting = 'color';
-      if(this.$route.path!=='/basic') {
+      // if(this.$route.path!=='/basic') {
         this.getPondData();
-      }
+      // }
     },
     nowLayout() {
       this.getLayoutData();
