@@ -929,7 +929,9 @@ export default {
             }
           }
         }
-        this.getPondData();
+        if(this.$route.path!=='/basic') {
+          this.getPondData();
+        }
       }
     },
     showedit() {
@@ -944,7 +946,10 @@ export default {
       // 如果前一個是點選setting後，點選池，需重新撈取資料，避免設定修改未即時呈現
       if(this.oldAreaTag=='setting' && this.oldAreaTag!==this.nowAreaTag) {
         this.isLoad = false;
-        this.getPondData();
+        if(this.$route.path!=='/basic') {
+          this.getPondData();
+        }
+        
       }
       this.dataPrepare();
       
@@ -952,7 +957,9 @@ export default {
     },
     areas() {
       this.setting = 'color';
-      this.getPondData();
+      if(this.$route.path!=='/basic') {
+        this.getPondData();
+      }
     },
     nowLayout() {
       this.getLayoutData();
