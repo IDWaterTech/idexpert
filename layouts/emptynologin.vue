@@ -216,18 +216,8 @@
   };
   </script>
   <style lang="scss">
-  // #app {
-  //   background: url('~/assets/bg_blue_papper.jpg')
-  //     repeat center center fixed !important;
-  //   background-size: cover;
-  // }
   #app{
     background: var(--linear-gradient-dark, linear-gradient(179deg, #00324E 0.78%, #40657A 197.21%));
-  }
-  .papper {
-    background: url('~/assets/bg_blue_papper.jpg')
-      repeat center center fixed !important;
-    background-size: cover;
   }
   .nuxt-link-active {
     padding: 8px;

@@ -1739,11 +1739,6 @@ export default {
    }
   }
 }
-.papper_blue {
-  background: url('~/assets/papper_grape.jpg')
-    repeat center center fixed !important;
-  background-size: cover;
-}
 .v-expansion-panel::before{
   box-shadow: none !important;
 }

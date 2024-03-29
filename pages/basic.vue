@@ -421,7 +421,7 @@
 <script>
 import treelst from "~/components/treeList.vue";
 import _ from "lodash";
-import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
+// import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
 import dayjs from "dayjs";
 import https from "https";
 import poollayout from "@/pages/map/poolslayout.vue";
@@ -434,7 +434,7 @@ export default {
   middleware: "auth",
   components: {
     treelst,
-    WaterQuality_Vcharts2,
+    // WaterQuality_Vcharts2,
     poollayout
   },
   head(){
@@ -1836,11 +1836,6 @@ export default {
       display: none !important;
    }
   }
-}
-.papper_blue {
-  background: url('~/assets/papper_grape.jpg')
-    repeat center center fixed !important;
-  background-size: cover;
 }
 .v-expansion-panel::before{
   box-shadow: none !important;
