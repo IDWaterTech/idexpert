@@ -968,11 +968,22 @@ export default {
     water: {
       handler(val){
         // this.isLoad = this.waterloading;
-        this.getPondData();
+        this.dataPrepare();
+        this.getLayoutData();
+        
        // do stuff
       },
       deep: true
-
+    },
+    nowAreaId: {
+      handler(val){
+        if(this.nowAreaId.factory_id!==this.oldAreaId.factory_id && this.oldAreaId.factory_id!==null) {
+          this.getPondData();
+        }
+        this.oldAreaId = _.cloneDeep(this.nowAreaId);
+       // do stuff
+      },
+      deep: true
     },
     waterloading() {
       this.isLoad = true;
