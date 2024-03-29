@@ -2320,20 +2320,20 @@ export default {
     }
     .card-title {
         padding: 4px 12px !important;
-        cursor: pointer;
+    //     cursor: pointer;
         .title {
-            width: 100%;
+    //         width: 100%;
             .v-card__title {
-                font-size: 1rem;
+    //             font-size: 1rem;
                 padding: 0;
             }
         }
         
-        .chevron {
-            .v-icon {
-                color: $color-dark;
-            }
-        }      
+    //     .chevron {
+    //         .v-icon {
+    //             color: $color-dark;
+    //         }
+    //     }      
     } 
 }
 .add-step {

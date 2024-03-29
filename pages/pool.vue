@@ -3917,41 +3917,8 @@ export default {
         padding: 0;
         margin: 12px 16px;
         .title {
-          width: 100%;
           .v-card__title {
-            font-size: 1rem;
             padding: 12px;
-          }
-        }
-        .chevron {
-          .v-icon {
-            color: $color-dark;
-          }
-        }
-      }
-      button {
-        width: 24px;
-        height: 24px;
-        background-color: #006AA6;
-        border-radius: 4px;
-        position: relative;
-        margin: 4px;
-        transition: all 0.3s;
-        &:hover {
-            background-color: lighten($color: #006AA6, $amount: 3);
-        }
-        .theme--light.v-icon {
-            font-size: 1rem;
-            color: #fff;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-        }
-        &.delete {
-          background-color: #A60017;
-          &:hover {
-              background-color: lighten($color: rgba(#A60017,0.9), $amount: 3);
           }
         }
       }

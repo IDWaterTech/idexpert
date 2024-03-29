@@ -2334,24 +2334,6 @@ export default {
     &.item-card.theme--light {
         background-color: #fff;
     }
-    .card-title {
-        padding: 12px 16px !important;
-        cursor: pointer;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        .title {
-            width: 100%;
-            .v-card__title {
-                font-size: 1rem;
-                padding: 0;
-            }
-        }
-        
-        .chevron {
-            .v-icon {
-                color: $color-dark;
-            }
-        }      
-    }
 }
 .chips {
   margin: 0 8px;

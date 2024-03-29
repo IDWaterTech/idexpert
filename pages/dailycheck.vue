@@ -365,20 +365,7 @@ export default {
 
 .v-card.result-card {
     .card-title {
-        padding: 4px 12px !important;
-        cursor: pointer;
-        .title {
-            width: 100%;
-            .v-card__title {
-                font-size: 1rem;
-                padding: 0;
-            }
-        }
-        .chevron {
-            .v-icon {
-                color: $color-dark;
-            }
-        }      
+        
     } 
 }
 

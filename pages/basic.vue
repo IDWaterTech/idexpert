@@ -1919,18 +1919,6 @@ export default {
     border-bottom: 1px solid rgba(0,0,0,0.1);
     background-color: rgba($color-primary,0.1);
   }
-  .v-card__title {
-    font-size: 1rem;
-  }
-  .title {
-    width: 100%;
-  }
-  .chevron {
-    // padding: 16px;
-    .v-icon {
-      color: $color-dark;
-    }
-  }
   .content .col-12 {
     padding: 0;
     

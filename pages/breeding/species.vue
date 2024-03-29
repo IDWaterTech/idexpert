@@ -30,7 +30,7 @@
                             hide-default-footer
                             disable-pagination
                             style="overflow-y: scroll;height: 57vh;"
-                            class="data-table bg-tansparent">
+                            class="data-table bg-transparent">
                             <template v-slot:[`item.disease_chip`]="{ item }">
                                 <div v-if="item.disease && item.disease.length>0" class="items">
                                     <v-chip
@@ -475,27 +475,10 @@ export default {
     } 
 }
 ::v-deep {
-    .theme--light.v-data-table {
-        background-color: transparent;
-    }
-    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-        background-color: rgba($color: $color-primary, $alpha: 0.1);
-    }
     .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
         border: 1px solid rgba(0,0,0,0.1);
         border-radius: 4px;
         padding: 0 8px;
-    }
-    .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
-    .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
-    .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-        border-color: transparent;
-    }
-    .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
-        color: #fff;
-    }
-    .v-dialog .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
-        padding-top: 0;
     }
 }
 </style>
