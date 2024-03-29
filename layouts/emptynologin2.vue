@@ -217,18 +217,8 @@
   };
   </script>
   <style lang="scss">
-  // #app {
-  //   background: url('~/assets/bg_blue_papper.jpg')
-  //     repeat center center fixed !important;
-  //   background-size: cover;
-  // }
   #app{
     background-color: transparent !important;
-  }
-  .papper {
-    background: url('~/assets/bg_blue_papper.jpg')
-      repeat center center fixed !important;
-    background-size: cover;
   }
   .nuxt-link-active {
     padding: 8px;
