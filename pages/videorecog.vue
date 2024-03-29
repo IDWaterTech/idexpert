@@ -86,7 +86,7 @@
                   <!-- 觀察網 -->
                   <v-data-table
                     v-if="dataClass == '觀察網'"
-                    class="edit-table"
+                    class="edit-table data-table bg-transparent"
                     :headers="headers"
                     :items="recogData.items" dense
                     :footer-props="footerProps"
@@ -529,10 +529,6 @@ export default {
     }
   }
   .edit-table {
-    &.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper),
-    &.theme--light.v-data-table tbody tr.v-data-table__selected {
-      background: rgba($color-primary-25,0.3);
-    }
     input[type="checkbox"] {
       accent-color: $color-primary;
     }

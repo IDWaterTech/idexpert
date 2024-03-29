@@ -7,7 +7,7 @@
     <v-row>
         <v-col cols="12">
             <el-table ref="recogtable" style="width:100%" :data="recogData.items" highlight-current-row
-                :header-cell-style="tableHeaderStyle" :max-height="tableHeight" class="primary"
+                :header-cell-style="tableHeaderStyle" :max-height="tableHeight" class="primary table-el"
                 :header-cell-name="cellClass">
                 <template slot="empty"><span class="headline" style="color:lightblue;">暫無資料</span></template>
                 <el-table-column label="資料" align="center" width="200">

@@ -77,7 +77,8 @@
                             no-data-text="查無資料"
                             fixed-header
                             maxHeight="55vh"
-                            style="height: 55vh;overflow-y: scroll;">
+                            style="height: 55vh;overflow-y: scroll;"
+                            class="data-table bg-transparent">
                             <template  v-slot:[`item.actions`]="{item}">
                                   <v-tooltip bottom>
                                       <template v-slot:activator="{ on, attrs }">
@@ -260,7 +261,8 @@
                             no-data-text="查無資料"
                             fixed-header
                             maxHeight="55vh"
-                            style="height: 55vh;overflow-y: scroll;">
+                            style="height: 55vh;overflow-y: scroll;"
+                            class="data-table bg-transparent">
                             <template v-slot:[`item.manufacturer`]="{ item }">
                                 {{manu.filter(x=>x.id==item.manufacturer_id)[0].name_ch}}
                             </template>
@@ -371,7 +373,8 @@
                             no-data-text="查無資料"
                             fixed-header
                             maxHeight="55vh"
-                            style="height: 55vh;overflow-y: scroll;">
+                            style="height: 55vh;overflow-y: scroll;"
+                            class="data-table bg-transparent">
                             
                             <template  v-slot:[`item.main`]="{item}">
                               <v-chip
@@ -2376,9 +2379,7 @@ export default {
   .result .header-bar .theme--light.v-tabs > .v-tabs-bar {
     background: #fff;
   }
-  .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-      background-color: rgba($color: $color-primary, $alpha: 0.1);
-  }
+  
   .theme--light.v-data-table.v-data-table--fixed-header thead th {
     background: $color-lighten;
   }
@@ -2433,81 +2434,6 @@ export default {
 
   .v-chip .v-chip__content {
     justify-content: center;
-  }
-  .el-table .el-table__cell {
-    padding: 4px 0;
-  }
-  .el-table__row.el-table__row--level-1 .cell {
-    // font-size: 0.875rem;
-    // min-height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 8px;
-  }
-  .el-table,.el-table tr,
-  .el-table th.el-table__cell,
-  .el-table__expanded-cell,
-  .el-table__body tr.el-table__row.el-table__row--level-1.hover-row>td.el-table__cell {
-    background-color: transparent;
-  }
-  .el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell {
-    background-color: rgba($color-primary-25,0.3);
-  }
-  .el-table td.el-table__cell {
-    border-bottom: thin solid rgba(0, 0, 0, 0.12);
-  }
-  .el-table-column--selection .cell {
-    justify-content: center;
-  }
-  .el-table th.el-table__cell.is-leaf {
-    border-color: rgba(0,0,0,0.1)
-  }
-  .el-table .cell {
-    font-size: 0.875rem;
-    color: rgba(0, 0, 0, 0.7);
-  }
-  .el-table .el-table__header-wrapper th.el-table__cell>.cell {
-    font-size: 0.75rem ;
-    color: rgba(0, 0, 0, 0.7);
-  }
-  .el-form--inline .el-form-item__content {
-    width: 80%;
-  }
-  
-  .el-table.main-table,.el-table.sub-table {
-    border-radius: 4px;
-    background-color: #fff;
-    margin-bottom: 8px;
-    border: 1px solid $color-primary-75;
-    .el-table__header {
-      tr {
-        line-height: 24px !important;
-      }
-      th.el-table__cell {
-        padding: 0;
-      }
-      
-    }
-    .cell {
-      font-size: 0.75rem;
-    }
-  }
-  .el-table.sub-table {
-    border-color: $color-dark-50;
-  }
-  .el-table.main-table .el-table__header th.el-table__cell {
-    // background-color: $color-primary-75;
-  }
-  .el-table.main-table .el-table__header-wrapper th.el-table__cell > .cell {
-    color: $color-primary;
-    // color: #fff;
-  }
-  .el-table.sub-table .el-table__header th.el-table__cell {
-    // background-color: $color-dark-25;
-  }
-  .el-table.sub-table .el-table__header-wrapper th.el-table__cell > .cell {
-    // color: $color-dark;
-    color: $color-dark-50;
   }
   .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
     padding-top: 8px;

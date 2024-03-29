@@ -29,7 +29,8 @@
                             :no-data-text="'無資料'"
                             hide-default-footer
                             disable-pagination
-                            style="overflow-y: scroll;height: 57vh;">
+                            style="overflow-y: scroll;height: 57vh;"
+                            class="data-table bg-tansparent">
                             <template v-slot:[`item.disease_chip`]="{ item }">
                                 <div v-if="item.disease && item.disease.length>0" class="items">
                                     <v-chip

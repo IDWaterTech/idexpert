@@ -254,7 +254,7 @@
                           <!-- 編修紀錄 -->
                           <div v-show="nowTab=='編修紀錄'" class="result-content">
                             <v-data-table
-                              class="edit-table revise"
+                              class="edit-table revise data-table bg-transparent"
                               v-model="selected"
                               :headers="headers"
                               :items="item2.items" dense
@@ -299,7 +299,7 @@
                           <div v-show="nowTab=='事件紀錄'" class="result-content event">
                             <v-data-table
                               v-if="nowTab == '事件紀錄'"
-                              class="edit-table"
+                              class="edit-table data-table bg-transparent"
                               :headers="eventHeaders"
                               :items="eventTableData" dense
                               :footer-props="footerProps"
@@ -354,7 +354,7 @@
                             </div>
                             <v-data-table
                               v-if="listOpen"
-                              class="edit-table"
+                              class="edit-table data-table bg-transparent"
                               :headers="observableHeaders"
                               :items="observableData" dense
                               :footer-props="footerProps"
@@ -2846,11 +2846,6 @@ export default {
     }
     &.revise table {
       min-height: 21vh;
-    }
-    &.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper),
-    &.theme--light.v-data-table tbody tr.v-data-table__selected {
-      // background: #BFD9E8;
-      background: rgba($color-primary-25,0.3);
     }
     input[type="checkbox"] {
       accent-color: #006AA6;

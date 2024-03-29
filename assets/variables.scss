@@ -533,6 +533,17 @@ $color-green: #00A660;
   .v-chip {
     padding: 0 8px;
   }
+  // v-data-table
+  .data-table {
+    &.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+        background-color: rgba($color: $color-primary, $alpha: 0.1);
+    }
+
+    &.bg-transparent.theme--light.v-data-table {
+        background-color: transparent;
+    }
+  }
+
 }
 
 // pages background card 白底最大底板

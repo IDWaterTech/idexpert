@@ -49,7 +49,7 @@
                   :items="allcols.filter(x => x.group == item)"
                   :headers="headers"
                   :footer-props="footerProps"
-                  class="edit-table"
+                  class="edit-table data-table bg-transparent"
                 >
                 <template v-slot:[`item.is_enable_alert`]="{ item }">
                     <v-chip
@@ -1073,12 +1073,6 @@ export default {
 }
 
 ::v-deep {
-  .edit-table.theme--light.v-data-table {
-    background-color: transparent;
-  }
-  .edit-table.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-    background-color: rgba($color-primary,0.1);
-  }
   .chevron {
       .v-icon {
           color: $color-dark;
