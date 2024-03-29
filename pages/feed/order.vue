@@ -43,7 +43,7 @@
                   item-key="pond_id"
                   sort-by="pond_name"
                   group-by="area_name"
-                  class="elevation-1"
+                  class="elevation-1 data-table bg-transparent"
                   :height="`${windowHeight>880?'56vh':'48vh'}`"
                   :show-group-by="false"
                   :footer-props="{
@@ -1492,9 +1492,7 @@ export default {
         color: $color-dark;
       }
     }
-    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-      background: rgba($color-primary-25,0.3);
-    }
+
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.v-row-group__header:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
       background: $color-primary-25;
     }
@@ -1502,9 +1500,7 @@ export default {
     .v-text-field--filled.v-input--dense.v-text-field--single-line > .v-input__control > .v-input__slot {
       min-height: 36px;
     }
-    .theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
-      background: transparent;
-    }
+
     .theme--light.v-data-table > .v-data-table__wrapper > table .observe {
       display: flex;
       align-items: center;

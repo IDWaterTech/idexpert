@@ -35,7 +35,8 @@
                             no-data-text=""
                             hide-default-footer
                             disable-pagination
-                            style="height: 64vh;overflow-y: scroll;">
+                            style="height: 64vh;overflow-y: scroll;"
+                            class="data-table bg-transparent">
                             <template v-slot:[`item.species_id`]="{item}">
                                 <span v-if="item.species_id">{{ species.filter(x=>x.id==item.species_id)[0].name_ch }}</span>
                             </template>
@@ -416,12 +417,5 @@
         }      
     } 
 }
-::v-deep {
-    .theme--light.v-data-table {
-        background-color: transparent;
-    }
-    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-        background-color: rgba($color: $color-primary, $alpha: 0.1);
-    }
-}
+
 </style>

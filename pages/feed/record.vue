@@ -87,7 +87,7 @@
                         ref="feedtable"
                         :headers="detailHeaders"
                         :items="comboTotal"
-                        class="elevation-1"
+                        class="elevation-1 data-table bg-transparent"
                         no-data-text="查無資料"
                         :footer-props="{
                           'items-per-page-text': '每頁',
@@ -1035,15 +1035,12 @@ export default {
       }
     }
     .theme--light.v-data-table {
-      background-color: transparent;
       box-shadow: none !important;
     }
     .v-expansion-panel-content__wrap {
       padding: 0 12px 16px;
     }
-    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-      background: rgba($color-primary-25,0.3);
-    }
+
     .v-data-table > .v-data-table__wrapper > table > thead > tr > th {
       font-size: 0.8rem;
     }

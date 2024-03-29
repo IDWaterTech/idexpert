@@ -102,7 +102,8 @@
                                             disable-pagination
                                             style="max-height: 300px;overflow-y: scroll;"
                                             :item-class="itemRowBackground"
-                                            :item-key="'table_'+id">
+                                            :item-key="'table_'+id"
+                                            class="data-table">
                                             <!-- <template v-slot:[`column.udactions`]="{ column }">
                                                 <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
                                             </template> -->
@@ -2341,9 +2342,9 @@ export default {
     padding-bottom: 24px;
 }
 ::v-deep {
-    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-        background-color: rgba($color: $color-primary, $alpha: 0.1);
-    }
+    // .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+    //     background-color: rgba($color: $color-primary, $alpha: 0.1);
+    // }
     
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.danger-bg {
         background-color: #FBEEEE;

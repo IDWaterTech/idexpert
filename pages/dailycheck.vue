@@ -59,7 +59,8 @@
                                     :items="daily.todo"
                                     no-data-text=""
                                     hide-default-footer
-                                    disable-pagination>
+                                    disable-pagination
+                                    class="data-table bg-transparent">
                                     <template  v-slot:[`item.execute`]="{item}">
                                         <div v-if="item.check==1">已執行</div>
                                         <div v-if="item.check==2">不執行</div>
@@ -382,12 +383,7 @@ export default {
 }
 
 ::v-deep {
-    .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-        background-color: rgba($color: $color-primary, $alpha: 0.1);
-    }
-    .theme--light.v-data-table {
-        background-color: transparent;
-    }
+    
 
 }
 
