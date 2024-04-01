@@ -1515,15 +1515,18 @@ export default {
     //取得苗清單
     getSeedlingData:async function(){
       this.SeedlingModel = undefined;
-      var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
-      await this.$axios
-          .get(url)
-          .then(res => {
-              this.SeedlingData = res.data;
-          })
-          .finally(() => {
-      /* 不論失敗成功皆會執行 */ 
-          });
+      let getSeedlingList = await this.getSeedlingList();
+      let data = typeof (getSeedlingList)=='string'?[]:getSeedlingList;
+      this.SeedlingData = data;
+      // var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
+      // await this.$axios
+      //     .get(url)
+      //     .then(res => {
+      //         this.SeedlingData = res.data;
+      //     })
+      //     .finally(() => {
+      // /* 不論失敗成功皆會執行 */ 
+      //     });
     },
     cellClass: function(row) {
       if (row.columnIndex == 0) {
@@ -3102,17 +3105,21 @@ export default {
     getTemplateData: async function () {
       this.tempSelect = undefined;
       this.addparm.temp_id = undefined;
-      var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.template_items = res.data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain);
-          this.template_all = res.data;
-          console.log('template',this.template_all)
-        })
-        .finally(() => {
-          /* 不論失敗成功皆會執行 */
-        });
+      let getTemplateList = await this.getTemplateList();
+      let data = typeof (getTemplateList)=='string'?[]:getTemplateList;
+      this.template_items = data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain);
+      this.template_all = data;
+      // var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.template_items = res.data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain);
+      //     this.template_all = res.data;
+      //     console.log('template',this.template_all)
+      //   })
+      //   .finally(() => {
+      //     /* 不論失敗成功皆會執行 */
+      //   });
     },
     // 選擇樣板
     tempChange: function () {
@@ -3736,39 +3743,53 @@ export default {
     // 取得物種清單
     async getType() {
       this.isLoading= false;
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`, { httpsAgent: agent })
-        .then(async res => {
-          console.log('getType',res.data);
-          // 跟著目前的池物種
-          if(res.data.length>0) {
-            this.bacteriaAll = res.data;
-            this.addReport[0].species = this.bacteriaAll[0].id;
-            await this.getMethod();
-            console.log("物種清單:", res.request.responseURL,this.bacteriaAll);
-          }else {
-            this.isLoading = true;
-          }
+      let getSpeciesList = await this.getSpeciesList();
+      let data = typeof (getSpeciesList)=='string'?[]:getSpeciesList;
+      if(data.length>0) {
+        this.bacteriaAll = data;
+        this.addReport[0].species = this.bacteriaAll[0].id;
+        await this.getMethod();
+      }else {
+        this.isLoading = true;
+      }
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`, { httpsAgent: agent })
+      //   .then(async res => {
+      //     console.log('getType',res.data);
+      //     // 跟著目前的池物種
+      //     if(res.data.length>0) {
+      //       this.bacteriaAll = res.data;
+      //       this.addReport[0].species = this.bacteriaAll[0].id;
+      //       await this.getMethod();
+      //       console.log("物種清單:", res.request.responseURL,this.bacteriaAll);
+      //     }else {
+      //       this.isLoading = true;
+      //     }
           
-        })
-        .catch(error => {
-          console.log("error:" + error.message);
-        });
+      //   })
+      //   .catch(error => {
+      //     console.log("error:" + error.message);
+      //   });
     },
     // 取得檢驗方法
     async getMethod() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`, { httpsAgent: agent })
-        .then(async res => {
-          // console.log('getColor',res.data);
-          // 跟著目前的池物種
-          this.bacteriaAll.forEach(x=>x.test=res.data);
-          await this.getReportDisease();
-          console.log("檢驗方法清單:", res.request.responseURL);
-        })
-        .catch(error => {
-          console.log("error:" + error.message);
-        });
+      let getMethodList = await this.getMethodList();
+      let data = typeof (getMethodList)=='string'?[]:getMethodList;
+      // 跟著目前的池物種
+      this.bacteriaAll.forEach(x=>x.test=data);
+      await this.getReportDisease();
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`, { httpsAgent: agent })
+      //   .then(async res => {
+      //     // console.log('getColor',res.data);
+      //     // 跟著目前的池物種
+      //     this.bacteriaAll.forEach(x=>x.test=res.data);
+      //     await this.getReportDisease();
+      //     console.log("檢驗方法清單:", res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     console.log("error:" + error.message);
+      //   });
     },
     // 取得檢驗的疾病
     async getReportDisease() {
@@ -3777,22 +3798,32 @@ export default {
         species_id: this.addReport[0].species,
       };
       console.log('report',this.addReport);
-      await this.$axios
-        .get(apiURL, { params: parm })
-        .then(res => {
-          this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test.forEach(y=>{
-            y.disease = [];
-            res.data.forEach(d=>{
-              y.disease.push(d);
-            })
-          })
-          this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
-          this.isLoading = true;
-          console.log("檢驗疾病清單:", res.request.responseURL)
+      let getDiseaseList = await this.getDiseaseList(parm);
+      let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
+      this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test.forEach(y=>{
+        y.disease = [];
+        data.forEach(d=>{
+          y.disease.push(d);
         })
-        .catch(err => {
-          alert("檢驗疾病失敗：" + err.message);
-        });
+      })
+      this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
+      this.isLoading = true;
+      // await this.$axios
+      //   .get(apiURL, { params: parm })
+      //   .then(res => {
+      //     this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test.forEach(y=>{
+      //       y.disease = [];
+      //       res.data.forEach(d=>{
+      //         y.disease.push(d);
+      //       })
+      //     })
+      //     this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
+      //     this.isLoading = true;
+      //     console.log("檢驗疾病清單:", res.request.responseURL)
+      //   })
+      //   .catch(err => {
+      //     alert("檢驗疾病失敗：" + err.message);
+      //   });
     },
     // 過濾篩選
     filterChange(evt) {

@@ -198,22 +198,28 @@
         methods: {
             // 品種資料
             async getSpeciesData(bool=false) {
-                await this.$axios
-                    .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`)
-                    .then(async res => {
-                        this.species = _.cloneDeep(res.data);
-                        console.log("物種清單:", res.request.responseURL);
-                        console.log('species',this.nowData);
-                    })
-                    .catch(error => {
-                        console.log("error:" + error.message);
-                    })
-                    .finally(()=>{
-                        if(!bool) {
-                            this.getSeedlingData();//取得苗清單
-                        }
+                let getSpeciesList = await this.getSpeciesList();
+                let data = typeof (getSpeciesList)=='string'?[]:getSpeciesList;
+                this.species = _.cloneDeep(data);
+                if(!bool) {
+                    this.getSeedlingData();//取得苗清單
+                }
+                // await this.$axios
+                //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`)
+                //     .then(async res => {
+                //         this.species = _.cloneDeep(res.data);
+                //         console.log("物種清單:", res.request.responseURL);
+                //         console.log('species',this.nowData);
+                //     })
+                //     .catch(error => {
+                //         console.log("error:" + error.message);
+                //     })
+                //     .finally(()=>{
+                //         if(!bool) {
+                //             this.getSeedlingData();//取得苗清單
+                //         }
                         
-                    })
+                //     })
             },
             addsave:async function(){
                 let val = this.$refs.manform.validate();
@@ -229,24 +235,33 @@
                         created_user: this.$auth.$state.user.email,
                         species_id: this.seedFormData.species_id
                     };
-                    let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
-                    await this.$axios.post(url, parm).then(res => {
-                        if(res.data=='新增成功'){
+                    var res = false;
+                    res = this.postSeedlingList(parm);
+                    setTimeout(()=>{
+                        if(res) {
                             this.dialog.seedForm = false;
                             this.getSeedlingData();//取得苗清單
-                            this.$toast.success(`新增成功`, {
-                                duration: 2000
-                            });
-                        }else{
-                            this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
                         }
-                        console.log("新增API:" + res.request.responseURL);
-                    }).catch(error => {
-                        this.$toast.error(`新增失敗:${error}`, { duration: 2000 });
-                    })
-                        .finally(() => {
-                            //this.getdata();
-                        });
+                    },50)
+                    
+                    // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
+                    // await this.$axios.post(url, parm).then(res => {
+                    //     if(res.data=='新增成功'){
+                    //         this.dialog.seedForm = false;
+                    //         this.getSeedlingData();//取得苗清單
+                    //         this.$toast.success(`新增成功`, {
+                    //             duration: 2000
+                    //         });
+                    //     }else{
+                    //         this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
+                    //     }
+                    //     console.log("新增API:" + res.request.responseURL);
+                    // }).catch(error => {
+                    //     this.$toast.error(`新增失敗:${error}`, { duration: 2000 });
+                    // })
+                    //     .finally(() => {
+                    //         //this.getdata();
+                    //     });
                 }
             },
             //刪除
@@ -255,23 +270,31 @@
                 var title = this.SeedlingData.filter(x=>x.id==this.SeedlingModel)[0].name_ch;
                 if(confirm(`確定刪除? [${title}]`)){
                     var id = this.SeedlingModel;
-                    let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/${id}/`;
-                    await this.$axios
-                        .delete(url)
-                        .then(res => {
-                            if(res.data=='刪除成功'){
-                                this.getSeedlingData();//取得苗清單
-                                this.$toast.error(`刪除成功`, { duration: 2000 });
-                            }else{
-                                this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
-                            }
-                        })
-                        .catch(error => {
-                            this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
-                        })
-                        .finally(() => {
-                            //this.getdata();
-                        });
+                    var res = false;
+                    res = this.deleteSeedlingList(id);
+                    setTimeout(()=>{
+                        if(res) {
+                            this.getSeedlingData();//取得苗清單
+                        }
+                    },50)
+                    
+                    // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/${id}/`;
+                    // await this.$axios
+                    //     .delete(url)
+                    //     .then(res => {
+                    //         if(res.data=='刪除成功'){
+                    //             this.getSeedlingData();//取得苗清單
+                    //             this.$toast.error(`刪除成功`, { duration: 2000 });
+                    //         }else{
+                    //             this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
+                    //         }
+                    //     })
+                    //     .catch(error => {
+                    //         this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
+                    //     })
+                    //     .finally(() => {
+                    //         //this.getdata();
+                    //     });
                 }
             },
             //編輯
@@ -290,24 +313,33 @@
                         updated_user: this.$auth.$state.user.email
                     };
                     var id = this.seedFormData.id;
-                    let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/${id}/`;
-                    await this.$axios.patch(url, parm).then(res => {
-                        if(res.data=='修改成功'){
+                    var res = false;
+                    res = this.patchSeedlingList(parm,id);
+                    setTimeout(()=>{
+                        if(res) {
                             this.dialog.seedForm = false;
                             this.getSeedlingData();//取得苗清單
-                            this.$toast.success(`修改成功`, {
-                                duration: 2000
-                            });
-                        }else{
-                            this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
                         }
-                        console.log("修改API:" + res.request.responseURL);
-                    }).catch(error => {
-                        this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
-                    })
-                        .finally(() => {
-                            //this.getdata();
-                        });
+                    },50)
+                    
+                    // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/${id}/`;
+                    // await this.$axios.patch(url, parm).then(res => {
+                    //     if(res.data=='修改成功'){
+                    //         this.dialog.seedForm = false;
+                    //         this.getSeedlingData();//取得苗清單
+                    //         this.$toast.success(`修改成功`, {
+                    //             duration: 2000
+                    //         });
+                    //     }else{
+                    //         this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
+                    //     }
+                    //     console.log("修改API:" + res.request.responseURL);
+                    // }).catch(error => {
+                    //     this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
+                    // })
+                    //     .finally(() => {
+                    //         //this.getdata();
+                    //     });
                 }
             },
             //打開新增
@@ -373,17 +405,21 @@
             //取得苗清單
             getSeedlingData:async function(){
                 this.SeedlingModel = undefined;
-                var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
-                await this.$axios
-                    .get(url)
-                    .then(res => {
-                        this.SeedlingData = res.data;
-                        console.log("取得苗資料API:" + res.request.responseURL);
-                    })
-                    .finally(() => {
-                        /* 不論失敗成功皆會執行 */ 
-                        this.isLoading = true;
-                    });
+                let getSeedlingList = await this.getSeedlingList();
+                let data = typeof (getSeedlingList)=='string'?[]:getSeedlingList;
+                this.SeedlingData = data;
+                this.isLoading = true;
+                // var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/seedling/`;
+                // await this.$axios
+                //     .get(url)
+                //     .then(res => {
+                //         this.SeedlingData = res.data;
+                //         console.log("取得苗資料API:" + res.request.responseURL);
+                //     })
+                //     .finally(() => {
+                //         /* 不論失敗成功皆會執行 */ 
+                //         this.isLoading = true;
+                //     });
             }
         },
         mounted() {

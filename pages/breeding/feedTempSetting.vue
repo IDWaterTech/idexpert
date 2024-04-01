@@ -160,23 +160,31 @@ export default {
                 return;
             }
             var id= this.tempSelect;
-            var url=`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`;
-            await this.$axios
-                .delete(url)
-                .then(res => {
-                    if (res.data == '刪除成功') {
-                        this.$toast.success("刪除成功", { duration: 2000 });
-                    }else{
-                        this.$toast.error("刪除 error:" + res.data, { duration: 2000 });
-                    }
-                })
-                .catch(error => {
-                    this.$toast.error("刪除 error:" + error, { duration: 2000 });
-                })
-                .finally(() => {
-                    // this.tempSelect = undefined;
+            var res = false;
+            res = this.deleteTemplateList(id);
+            setTimeout(()=>{
+                if(res) {
                     this.getTemplateData();
-                });
+                }
+            },50)
+            
+            // var url=`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`;
+            // await this.$axios
+            //     .delete(url)
+            //     .then(res => {
+            //         if (res.data == '刪除成功') {
+            //             this.$toast.success("刪除成功", { duration: 2000 });
+            //         }else{
+            //             this.$toast.error("刪除 error:" + res.data, { duration: 2000 });
+            //         }
+            //     })
+            //     .catch(error => {
+            //         this.$toast.error("刪除 error:" + error, { duration: 2000 });
+            //     })
+            //     .finally(() => {
+            //         // this.tempSelect = undefined;
+            //         this.getTemplateData();
+            //     });
         },
         //樣版清單
         getTemplateData:async function () {
@@ -193,47 +201,64 @@ export default {
             //     }
             // ];
             this.tempSelect = undefined;
-            var url=`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
-            await this.$axios
-                .get(url)
-                .then(res => {
-                    this.template_items = res.data.map(x=>x.tempMain);
-                    this.template_all = res.data;
+            let getTemplateList = await this.getTemplateList();
+            let data = typeof (getTemplateList)=='string'?[]:getTemplateList;
+            this.template_items = data.map(x=>x.tempMain);
+            this.template_all = data;
+            this.checkTemp();
+            // var url=`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
+            // await this.$axios
+            //     .get(url)
+            //     .then(res => {
+            //         this.template_items = res.data.map(x=>x.tempMain);
+            //         this.template_all = res.data;
                     
-                    this.checkTemp();
+            //         this.checkTemp();
                     
-                })
-              .finally(() => {
-                /* 不論失敗成功皆會執行 */
-              });
+            //     })
+            //   .finally(() => {
+            //     /* 不論失敗成功皆會執行 */
+            //   });
         },
         async cancelTemp(bool) {
             var id= this.tempSelect;
             let para = _.cloneDeep(this.passObj);
             para.tempMain.is_enable = bool;
             if (confirm((bool?"請確認是否啟用 - ":"請確認是否停用 - ") + para.tempMain.name_ch+"?")) {
-                await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
-                .then(res => {
-                    console.log(res);
-                    if(res.data=='修改成功'){
-                        this.$toast.success("修改成功", { duration: 2000 });
+                var res = false;
+                res = this.patchTemplateList(para,id);
+                setTimeout(()=>{
+                    if(res) {
                         this.tempSelect = this.filterTemplate[0].id;
                         this.tempChange();
                         this.editmode = 'edit';
-                    }else{
-                        this.$toast.error("修改樣板失敗:" + res.data, { duration: 2000 });
                     }
-
-                    console.log("修改樣板API:" + res.request.responseURL);
-                })
-                .catch(error => {
-                    this.$toast.error("error:" + error, { duration: 2000 });
-                })
-                .finally(() => {
                     this.tempSelect = undefined;
                     this.getTemplateData();
-                });
+                },50)
+                
+                // await this.$axios
+                // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
+                // .then(res => {
+                //     console.log(res);
+                //     if(res.data=='修改成功'){
+                //         this.$toast.success("修改成功", { duration: 2000 });
+                //         this.tempSelect = this.filterTemplate[0].id;
+                //         this.tempChange();
+                //         this.editmode = 'edit';
+                //     }else{
+                //         this.$toast.error("修改樣板失敗:" + res.data, { duration: 2000 });
+                //     }
+
+                //     console.log("修改樣板API:" + res.request.responseURL);
+                // })
+                // .catch(error => {
+                //     this.$toast.error("error:" + error, { duration: 2000 });
+                // })
+                // .finally(() => {
+                //     this.tempSelect = undefined;
+                //     this.getTemplateData();
+                // });
             }
             
         },

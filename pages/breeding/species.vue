@@ -218,39 +218,53 @@ export default {
         },
         // 檢驗資料
         async getMethodData() {
-            await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`)
-                .then(async res => {
-                    this.nowData = _.cloneDeep(res.data);
-                    console.log("檢驗方法清單:", res.request.responseURL);
-                    console.log('now Data',this.nowData);
-                })
-                .catch(error => {
-                    console.log("error:" + error.message);
-                });
+            // await this.$axios
+            //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`)
+            //     .then(async res => {
+            //         this.nowData = _.cloneDeep(res.data);
+            //         console.log("檢驗方法清單:", res.request.responseURL);
+            //         console.log('now Data',this.nowData);
+            //     })
+            //     .catch(error => {
+            //         console.log("error:" + error.message);
+            //     });
+            let getMethodList = await this.getMethodList();
+            let data = typeof (getMethodList)=='string'?[]:getMethodList;
+            this.nowData = _.cloneDeep(data);
         },
         // 品種資料
         async getSpeciesData() {
-            await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`)
-                .then(async res => {
-                    this.nowData = [];
-                    let data = res.data;
-                    this.species = _.cloneDeep(res.data);
-                    data.forEach(x=>{
-                        x.disease = [];
-                    })
-                    this.nowData = _.cloneDeep(data);
-                    if(this.nowCata=='疾病') {
-                        this.getDieaseData();
-                    }
+            // await this.$axios
+            //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`)
+            //     .then(async res => {
+            //         this.nowData = [];
+            //         let data = res.data;
+            //         this.species = _.cloneDeep(res.data);
+            //         data.forEach(x=>{
+            //             x.disease = [];
+            //         })
+            //         this.nowData = _.cloneDeep(data);
+            //         if(this.nowCata=='疾病') {
+            //             this.getDieaseData();
+            //         }
                     
-                    console.log("物種清單:", res.request.responseURL);
-                    console.log('species',this.nowData);
-                })
-                .catch(error => {
-                console.log("error:" + error.message);
-                });
+            //         console.log("物種清單:", res.request.responseURL);
+            //         console.log('species',this.nowData);
+            //     })
+            //     .catch(error => {
+            //     console.log("error:" + error.message);
+            //     });
+            let getSpeciesList = await this.getSpeciesList();
+            let data = typeof (getSpeciesList)=='string'?[]:getSpeciesList;
+            this.nowData = [];
+            this.species = _.cloneDeep(data);
+            data.forEach(x=>{
+                x.disease = [];
+            })
+            this.nowData = _.cloneDeep(data);
+            if(this.nowCata=='疾病') {
+                this.getDieaseData();
+            }
         },
         // 疾病資料
         async getDieaseData() {
@@ -260,26 +274,38 @@ export default {
                 let parm = {
                     species_id: n.id,
                 };
-                await this.$axios
-                .get(apiURL, { params: parm })
-                .then(res => {
-                    res.data.forEach(d=>{
-                        n.disease.push(d);
+                // await this.$axios
+                // .get(apiURL, { params: parm })
+                // .then(res => {
+                //     res.data.forEach(d=>{
+                //         n.disease.push(d);
                         
-                    })
-                    nownum++;
-                    if(nownum == this.nowData.length) {
-                        if(this.nowCata == '疾病') {
-                            this.diseaseData();
-                        }
-                    }
+                //     })
+                //     nownum++;
+                //     if(nownum == this.nowData.length) {
+                //         if(this.nowCata == '疾病') {
+                //             this.diseaseData();
+                //         }
+                //     }
                     
-                    console.log('疾病檢驗',res.data,nownum)
-                    console.log("檢驗疾病清單:", res.request.responseURL)
+                //     console.log('疾病檢驗',res.data,nownum)
+                //     console.log("檢驗疾病清單:", res.request.responseURL)
+                // })
+                // .catch(err => {
+                //     alert("檢驗疾病失敗：" + err.message);
+                // });
+                let getDiseaseList = await this.getDiseaseList(parm);
+                let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
+                data.forEach(d=>{
+                    n.disease.push(d);
+                    
                 })
-                .catch(err => {
-                    alert("檢驗疾病失敗：" + err.message);
-                });
+                nownum++;
+                if(nownum == this.nowData.length) {
+                    if(this.nowCata == '疾病') {
+                        this.diseaseData();
+                    }
+                }
             })
             
             
@@ -352,38 +378,45 @@ export default {
         },
         async deleteItem(item) {
             let url = '';
-            if(this.nowCata=='品種') {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${item.id}/`
-            }else if(this.nowCata=='疾病') {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${item.id}/`
-            }else {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${item.id}/`
-            }
-            console.log(url)
-            await this.$axios.delete(url)
-                .then((res)=>{
-                    if(res.data=='刪除成功'){
-                        this.cataChange();
-                        this.$toast.success(`刪除成功`, { duration: 2000 });
-                    }else{
-                        this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
+            var res = false;
+            var title = item.name_ch;
+                if(confirm(`確定刪除 ${title} ?`)){
+                    if(this.nowCata=='品種') {
+                        // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${item.id}/`
+                        res = this.deleteSpeciesList(item.id);
+                    }else if(this.nowCata=='疾病') {
+                        // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${item.id}/`
+                        res = this.deleteDiseaseList(item.id);
+                    }else {
+                        // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${item.id}/`
+                        res = this.deleteMethodList(item.id);
                     }
+                    setTimeout(()=>{
+                        if(res) {
+                            this.cataChange();
+                        }
+                    },50)
                     
-                    console.log("刪除:", res.request.responseURL);
-                })
-                .catch((err)=>{
-                    this.$toast.error(`刪除失敗，${res.data}`, { duration: 2000 });
-                })
+                }
+            
+            // await this.$axios.delete(url)
+            //     .then((res)=>{
+            //         if(res.data=='刪除成功'){
+            //             this.cataChange();
+            //             this.$toast.success(`刪除成功`, { duration: 2000 });
+            //         }else{
+            //             this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
+            //         }
+                    
+            //         console.log("刪除:", res.request.responseURL);
+            //     })
+            //     .catch((err)=>{
+            //         this.$toast.error(`刪除失敗，${res.data}`, { duration: 2000 });
+            //     })
         },
         async edit() {
-            let url = '';
-            if(this.nowCata=='品種') {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${this.edititem.id}/`
-            }else if(this.nowCata=='疾病') {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${this.edititem.id}/`
-            }else {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${this.edititem.id}/`
-            }
+            // let url = '';
+            var res = false;
             let parm = _.cloneDeep(this.edititem);
             parm.updated_user = this.$auth.$state.user.name;
             delete parm.created_user;
@@ -393,58 +426,85 @@ export default {
             delete parm.updated_time;
             delete parm.disease;
             console.log(parm)
-            await this.$axios.patch(url, parm)
-                .then(res => {
-                    if(res.data=='修改成功'){
-                        this.editDialog = false;
-                        this.cataChange();//取得清單
-                        this.$toast.success(`修改成功`, {
-                            duration: 2000
-                        });
-                    }else{
-                        this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
-                    }
-                    console.log("修改API:" + res.request.responseURL);
-                })
-                .catch(error => {
-                    this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
-                })
-                .finally(() => {
-                    //this.getdata();
-                });
+            if(this.nowCata=='品種') {
+                // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${this.edititem.id}/`
+                res = this.patchSpeciesList(parm,this.edititem.id);
+            }else if(this.nowCata=='疾病') {
+                // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${this.edititem.id}/`
+                res = this.patchDiseaseList(parm,this.edititem.id);
+            }else {
+                // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${this.edititem.id}/`
+                res = this.patchMethodList(parm,this.edititem.id);
+            }
+            setTimeout(()=>{
+                if(res) {
+                    this.editDialog = false;
+                    this.cataChange();//取得清單
+                }
+            },50)
+            // await this.$axios.patch(url, parm)
+            //     .then(res => {
+            //         if(res.data=='修改成功'){
+            //             this.editDialog = false;
+            //             this.cataChange();//取得清單
+            //             this.$toast.success(`修改成功`, {
+            //                 duration: 2000
+            //             });
+            //         }else{
+            //             this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
+            //         }
+            //         console.log("修改API:" + res.request.responseURL);
+            //     })
+            //     .catch(error => {
+            //         this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
+            //     })
+            //     .finally(() => {
+            //         //this.getdata();
+            //     });
         },
         async added() {
+            var res = false;
             if(!this.edititem.remark) {
                 this.edititem.remark='';
             }
             let parm = _.cloneDeep(this.edititem);
             parm.created_user = this.$auth.$state.user.name;
+            console.log(parm);
             let url = '';
             if(this.nowCata=='品種') {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`
+                // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`
+                res = this.postSpeciesList(parm);
             }else if(this.nowCata=='疾病') {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/`
+                // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/`
+                res = this.postDiseaseList(parm);
             }else {
-                url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`
+                // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`
+                res = this.postMethodList(parm);
             }
-            console.log(parm);
-            await this.$axios.post(url, parm)
-                .then(res => {
-                    if(res.data=='新增成功'){
-                        this.editDialog = false;
-                        this.cataChange();
-                        this.$toast.success(`新增成功`, {
-                            duration: 2000
-                        });
-                    }else{
-                        this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
-                    }
-                    console.log("新增API:" + res.request.responseURL);
-                }).catch(error => {
-                    this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-                })
-                .finally(() => {
-                });
+            setTimeout(()=>{
+                if(res) {
+                    this.editDialog = false;
+                    this.cataChange();
+                }
+            },50)
+            
+            // await this.$axios.post(url, parm)
+            //     .then(res => {
+            //         if(res.data=='新增成功'){
+            //             this.editDialog = false;
+            //             this.cataChange();
+            //             this.$toast.success(`新增成功`, {
+            //                 duration: 2000
+            //             });
+            //         }else{
+            //             this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
+            //         }
+            //         console.log("新增API:" + res.request.responseURL);
+            //     }).catch(error => {
+            //         this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            //     })
+            //     .finally(() => {
+            //     });
         }
     }
 }
