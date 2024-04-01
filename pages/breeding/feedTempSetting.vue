@@ -264,6 +264,10 @@ export default {
     &.item-card.theme--light {
         background-color: #fff;
     }
+    .card-title {
+        padding: 12px 16px !important;
+     
+    } 
 }
 ::v-deep {
     .theme--light.v-data-table {

@@ -2890,36 +2890,7 @@ export default {
       // background: rgba($color-accent,0.35);
       // color: $color-dark;
   }
-  .date-time-picker {
-      display: flex;
-      align-items: center;
-      // margin: 0 8px;
-      & > span {
-          flex: 1;
-      }
-  }
-  .ant-calendar-picker {
-      // padding: 0 20px;
-  }
-  .ant-calendar-picker-input.ant-input {
-      border: none;
-      background-color: transparent;
-      border-bottom: 1px solid rgba(0,0,0,0.42);
-      border-radius: 0;
-      // margin-left: 20px;
-      // margin-right: 4px;
-      color: rgba(0,0,0,0.87);
-      padding: 4px;
-  }
-  .ant-calendar-picker:hover {
-      border-color: $color-form;
-  } 
-  .ant-calendar-picker-clear {
-      background: $color-lighten;
-  }
-  .ant-calendar-picker-icon {
-      display: none;
-  }
+  
   .shrimp-error {
     .el-input__inner {
       border-color: red;

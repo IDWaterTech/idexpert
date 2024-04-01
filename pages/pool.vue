@@ -1853,8 +1853,6 @@ export default {
       //   return;
       // }
       //
-
-      
       await this.getCycleData();
       await this.getPondData(bool);
       // await this.$axios
@@ -1920,42 +1918,42 @@ export default {
           .then(res => {
             this.allPondsData = _.cloneDeep(res.data);
             var items = res.data.filter(x => x.id == this.poolid);
-            if (items.length == 1) {
-              if(!bool) {
-                this.addDialog = true; 
+            if(!bool) {
+              this.addDialog = true;
+            }
+            if(this.bacteriaAll.length>0) {
+              let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+              let date1 = date[0].split('-').concat(date[1].split(':'));
+              // date1
+              console.log('date',date1);
+              this.addparm.name = '';
+              date1.forEach(x=>this.addparm.name+=x);
+              this.addparm.name = this.addparm.name+'_{pool}'
+              this.addparm.estimated_survival_rate = 70;
+              this.tempSelect = this.template_items[0].id;
+              this.addparm.temp_id = null;
+              this.dataVolumn = [];
+              if (items.length == 1) {
+                this.add_volume = items[0].volume;
+              } else {
+                // this.$toast.success(
+                //   `失敗：無法取得體積資料，池id:${this.poolid}}`,
+                //   {
+                //     duration: 2000
+                //   }
+                // );
                 
               }
-              if(this.bacteriaAll.length>0) {
-                let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
-                let date1 = date[0].split('-').concat(date[1].split(':'));
-                // date1
-                console.log('date',date1);
-                this.addparm.name = '';
-                date1.forEach(x=>this.addparm.name+=x);
-                this.addparm.name = this.addparm.name+'_{pool}'
-                this.add_volume = items[0].volume;
-                this.addparm.estimated_survival_rate = 70;
-                this.tempSelect = this.template_items[0].id;
-                this.addparm.temp_id = null;
-                this.dataVolumn = [];
-
-                // 關掉Dialog再開啟不會重置scrollbar位置 
-                setTimeout(()=>{
-                    if(document.getElementsByClassName('v-dialog--active')) {
-                      document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
-                    }
-                  },100)
-                }else {
-                  alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
-                }
-            } else {
-              this.$toast.success(
-                `失敗：無法取得體積資料，池id:${this.poolid}}`,
-                {
-                  duration: 2000
-                }
-              );
-            }
+              // 關掉Dialog再開啟不會重置scrollbar位置 
+              setTimeout(()=>{
+                  if(document.getElementsByClassName('v-dialog--active')) {
+                    document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+                  }
+                },100)
+              }else {
+                alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
+              }
+            
           })
           .finally(() => {
             /* 不論失敗成功皆會執行 */
@@ -3997,82 +3995,6 @@ export default {
     justify-content: center;
   }
 
-
-  .theme--light.v-input {
-    margin-top: 0;
-  }
-  
-  .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
-    background: transparent;
-  }
-  .v-text-field--filled.v-input--dense > .v-input__control > .v-input__slot,.v-text-field--filled > .v-input__control > .v-input__slot {
-    min-height: 36px;
-  }
-  .v-text-field--filled:not(.v-text-field--single-line) input {
-    margin-top: 0;
-  }
-  .v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
-    margin-top: 4px;
-  }
-  .v-text-field input {
-    // padding: 0;
-  }
-  .v-text-field > .v-input__control > .v-input__slot > .v-text-field__slot {
-    align-items: center;
-  }
-  .v-text-field--filled.v-input--dense .v-label {
-    top: 8px;
-  }
-  .v-text-field--filled.v-input--dense .v-label.v-label--active {
-    top: 0;
-    color: $color-form;
-  }
-  
-  .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
-      box-shadow: none;
-      border: 1px solid $color-form;
-  }
-  .theme--light.v-icon {
-    color: $color-form;
-  }
-  .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-    border-color: $color-form;
-  }
-  .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__append-inner,
-  .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__prepend-outer {
-    margin-top: 8px;
-  }
-  .theme--light.v-input--is-disabled input {
-    background-color: transparent;
-  }
-  .theme--light.v-input--is-disabled.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before,
-  .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
-    border: 1px solid $color-dark-25;
-    border-width: thin 0 0 0;
-  }
-  .v-label.theme--light {
-    color: $color-dark;
-  }
-  .v-label.v-label--active.theme--light {
-    color: $color-form;
-  }
-  .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
-    padding-top: 0;
-  }
-  .v-label.v-label--is-disabled.theme--light {
-    color: $color-dark-25;
-  }
-  
-  .v-input--dense > .v-input__control > .v-input__slot {
-    margin-bottom: 8px;
-  }
-  .v-text-field.v-input--dense:not(.v-text-field--outlined) input {
-    padding: 4px 0;
-  }
-  .v-autocomplete.v-text-field--enclosed:not(.v-text-field--solo):not(.v-text-field--single-line):not(.v-text-field--outlined).v-input--dense .v-select__slot > input {
-    margin-top: 0;
-    padding-top: 0;
-  }
   .select-type {
         .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
             padding-top: 8px;
@@ -4091,49 +4013,20 @@ export default {
     .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
         color: #fff;
     }
-    .date-time-picker {
-        display: flex;
-        align-items: center;
-        // margin: 0 8px;
-        & > span {
-            flex: 1;
-        }
-    }
-    .ant-calendar-picker {
-        // padding: 0 20px;
-        margin-left: 0 !important;
-    }
-    .ant-calendar-picker-input.ant-input {
-        border: none;
+    .select-template {
+      &.error-text .vue-treeselect__control .vue-treeselect__placeholder {
+        color: red;
+      }
+      .vue-treeselect__control .vue-treeselect__multi-value-item {
+        padding: 0 4px;
+      }
+      .vue-treeselect__control .vue-treeselect__placeholder::before,
+      .vue-treeselect__control .vue-treeselect__placeholder::after {
+        content: '';
+      }
+      .vue-treeselect__control {
         background-color: transparent;
-        border-bottom: 1px solid rgba(0,0,0,0.42);
-        border-radius: 0;
-        // margin-left: 20px;
-        // margin-right: 4px;
-        color: rgba(0,0,0,0.87);
-        padding: 4px;
-    }
-    .ant-calendar-picker:hover {
-        border-color: $color-form;
-    } 
-    .ant-calendar-picker-clear {
-        background: $color-lighten;
-    }
-    .ant-calendar-picker-icon {
-        display: none;
-    }
-    .select-template .vue-treeselect__control .vue-treeselect__multi-value-item {
-      padding: 0 4px;
-    }
-    .select-template.error-text .vue-treeselect__control .vue-treeselect__placeholder {
-      color: red;
-    }
-    .select-template .vue-treeselect__control .vue-treeselect__placeholder::before,
-    .select-template .vue-treeselect__control .vue-treeselect__placeholder::after {
-      content: '';
-    }
-    .select-template .vue-treeselect__control {
-      background-color: transparent;
+      }
     }
 }
 
