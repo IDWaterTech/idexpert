@@ -46,29 +46,29 @@ Vue.mixin({
         },
         // 刪除使用者
         deleteUserList:async function(id) {
-        try {
-            const agent = new https.Agent({
-            rejectUnauthorized: false
-            });
-            let data = await this.$axios
-            .delete(
-                `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${id}/`,
-                {
-                httpsAgent: agent
+            try {
+                const agent = new https.Agent({
+                rejectUnauthorized: false
+                });
+                let data = await this.$axios
+                .delete(
+                    `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${id}/`,
+                    {
+                    httpsAgent: agent
+                    }
+                )
+                console.log("刪除使用者的清單:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                this.$toast.success("刪除成功", { duration: 2000 });
+                return true;
+                }else {
+                this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
                 }
-            )
-            console.log("刪除使用者的清單:" + data.request.responseURL);
-            if(data.data == "刪除成功") {
-            this.$toast.success("刪除成功", { duration: 2000 });
-            return true;
-            }else {
-            this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
-            }
 
-        }catch(error) {
-            this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-            console.log(error);
-        }
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
         },
         // 新增使用者
         postUserList:async function(addform) {
@@ -78,13 +78,12 @@ Vue.mixin({
             });
             let data = await this.$axios
             .post(
-                `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
-                this.addform,
+                `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,addform,
                 {
-                httpsAgent: agent
+                    httpsAgent: agent
                 }
             )
-            console.log("刪除使用者的清單:" + data.request.responseURL);
+            console.log("新增使用者:" + data.request.responseURL);
             if (data.data == "資料建立有問題") {
                 alert("新增結果：" + data.data + "(帳號可能已存在)");
             }else if(data.data == "新增成功") {
