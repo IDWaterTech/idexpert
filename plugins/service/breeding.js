@@ -3,6 +3,7 @@ import https from "https";
 Vue.mixin({
 	methods: {
         /* 養殖設定 */
+        //===== 種苗 =====//
         // 取得種苗清單
         getSeedlingList:async function() {
             try {
@@ -29,13 +30,13 @@ Vue.mixin({
                     });
                     return true;
                 }else {
-                    this.$toast.success("新增結果：" + data.data, {
+                    this.$toast.error("新增失敗：" + data.data, {
                         duration: 2000
                     });
                 }
     
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
             }
         },
@@ -74,6 +75,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //=====品種=====//
 	    // 取得品種清單
         getSpeciesList:async function() {
             try {
@@ -100,13 +102,13 @@ Vue.mixin({
                     });
                     return true;
                 }else {
-                    this.$toast.success("新增結果：" + data.data, {
+                    this.$toast.error("新增失敗：" + data.data, {
                         duration: 2000
                     });
                 }
     
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
             }
         },
@@ -145,6 +147,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 疾病 =====//
         // 取得疾病檢驗清單
         getDiseaseList:async function(parm) {
             try {
@@ -171,13 +174,13 @@ Vue.mixin({
                     });
                     return true;
                 }else {
-                    this.$toast.success("新增結果：" + data.data, {
+                    this.$toast.error("新增失敗：" + data.data, {
                         duration: 2000
                     });
                 }
     
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
             }
         },
@@ -216,6 +219,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 檢驗 =====//
         // 取得檢驗方法清單
         getMethodList:async function() {
             try {
@@ -242,13 +246,13 @@ Vue.mixin({
                     });
                     return true;
                 }else {
-                    this.$toast.success("新增結果：" + data.data, {
+                    this.$toast.error("新增失敗：" + data.data, {
                         duration: 2000
                     });
                 }
     
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
             }
         },
@@ -287,6 +291,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 樣板設定 =====//
         // 取得樣板清單
         getTemplateList:async function() {
             try {

@@ -405,6 +405,9 @@ $color-green: #00A660;
     .v-text-field {
       .theme--light.v-icon {
         color: $color-form;
+        &.v-chip__close {
+          color: #fff;
+        }
       }
     }
     
