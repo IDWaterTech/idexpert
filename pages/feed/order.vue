@@ -637,15 +637,18 @@ export default {
     },
     // 飼料表設定-清單
     eventSetGet:async function(){
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
-        .then(res => {
-          this.eventSetData = res.data;
-          console.log("飼料表設定-清單 api:", res.request.responseURL);
-        })
-        .catch(err => {
-          this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
-        });
+      let getFeedEventSettingList = await this.getFeedEventSettingList();
+      let feedSettingData = typeof (getFeedEventSettingList)=='string'?[]:getFeedEventSettingList;
+      this.eventSetData = feedSettingData;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+      //   .then(res => {
+      //     this.eventSetData = res.data;
+      //     console.log("飼料表設定-清單 api:", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //     this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
+      //   });
     },
     //觀察網全選
     has_observe_click: async function() {
@@ -676,23 +679,28 @@ export default {
     //取得套餐清單(飼料設定)
     getcombodata: async function() {
       this.combo = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.combo = res.data.filter(x=>x.is_enable==true);
-          this.comboidx = null;
-          this.combofield = {};
-          console.log("取得得套餐清單(飼料設定)API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得得套餐清單(飼料設定)失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      let getFeedSettingList = await this.getFeedSettingList();
+      let feedSettingData = typeof (getFeedSettingList)=='string'?[]:getFeedSettingList;
+      this.combo = feedSettingData.filter(x=>x.is_enable==true);
+      this.comboidx = null;
+      this.combofield = {};
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.combo = res.data.filter(x=>x.is_enable==true);
+      //     this.comboidx = null;
+      //     this.combofield = {};
+      //     console.log("取得得套餐清單(飼料設定)API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得得套餐清單(飼料設定)失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     showimport: function() {
       this.importdialog = true;
@@ -761,24 +769,33 @@ export default {
       }
       var datecount = 0;
       var errormsg = "";
-      await this.$axios
-      .get(feedurl,{params:feedparm})
-      .then(res=>{
-        if(res.status==200){
-          datecount = res.data.data_rows;
-          this.imptimedata = []; //清空取得的帶入資料
-          this.sdate = '';
-          this.stime = '';
-          console.log('feedparm',feedparm);
-        }else{
-          datecount = -1;
-          errormsg = res.data;
-        }
-      })
-      .catch(error=>{
-        datecount=-1;
-        errormsg = error
-      });
+      let getFeedRecordRowsList = await this.getFeedRecordRowsList(feedparm);
+      let feedRecordRowsData = typeof (getFeedRecordRowsList)=='string'?[]:getFeedRecordRowsList;
+      datecount = feedRecordRowsData.success?feedRecordRowsData.data.data_rows:-1;
+      if(!feedRecordRowsData.success) {
+        errormsg = feedRecordRowsData.data;
+      }
+      this.imptimedata = []; //清空取得的帶入資料
+      this.sdate = '';
+      this.stime = '';
+      // await this.$axios
+      // .get(feedurl,{params:feedparm})
+      // .then(res=>{
+      //   if(res.status==200){
+      //     datecount = res.data.data_rows;
+      //     this.imptimedata = []; //清空取得的帶入資料
+      //     this.sdate = '';
+      //     this.stime = '';
+      //     console.log('feedparm',feedparm);
+      //   }else{
+      //     datecount = -1;
+      //     errormsg = res.data;
+      //   }
+      // })
+      // .catch(error=>{
+      //   datecount=-1;
+      //   errormsg = error
+      // });
       if(datecount==-1){
         this.$toast.error(`發生錯誤：${errormsg}`,{duration:2000});
           return
@@ -802,31 +819,40 @@ export default {
       console.log("parm", parm);
       // 有資料再進行新增
       if(data.length>0) {
-        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
-        await this.$axios
-          .post(url, parm)
-          .then(res => {
-            if (res.data == "新增成功") {
-              this.dataclear(); //清除資料
-              this.submitdig = false;//關閉dialog
-              this.$toast.success(`新增成功`, {
-                duration: 2000
-              });
-            } else {
-              this.$toast.error(`新增失敗:${res.data}`, {
-                duration: 2000
-              });
-            }
-            console.log("新增API:" + res.request.responseURL);
-          })
-          .catch(error => {
-            this.$toast.error(`新增失敗:${error}`, {
-              duration: 2000
-            });
-          })
-          .finally(() => {
-            //
-          });
+        var res = false;
+        res = this.postFeedRecordList(parm);
+        setTimeout(()=>{
+          if(res) {
+            this.dataclear(); //清除資料
+            this.submitdig = false;//關閉dialog
+          }
+        },50)
+        
+        // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
+        // await this.$axios
+        //   .post(url, parm)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       this.dataclear(); //清除資料
+        //       this.submitdig = false;//關閉dialog
+        //       this.$toast.success(`新增成功`, {
+        //         duration: 2000
+        //       });
+        //     } else {
+        //       this.$toast.error(`新增失敗:${res.data}`, {
+        //         duration: 2000
+        //       });
+        //     }
+        //     console.log("新增API:" + res.request.responseURL);
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`新增失敗:${error}`, {
+        //       duration: 2000
+        //     });
+        //   })
+        //   .finally(() => {
+        //     //
+        //   });
       }else {
         this.$toast.success(`新增失敗:請先設定養殖池的料量`, {
           duration: 2000
@@ -836,19 +862,24 @@ export default {
     },
     //取得的觀察網飼料百分比
     getfeedpct:async function(){
-      let pondurl = `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`;
-      await this.$axios
-        .get(pondurl)
-        .then(res=>{
-          if(res.data.length>0){
-            this.feed_pct_list = res.data;
-          }
-        })
-        .catch(error => {
-          this.$toast.error(`取得觀察網飼料百分比失敗:${error}`, {
-            duration: 2000
-          });
-        });
+      let getFeedRecordList = await this.getFeedRecordList();
+      let feedRecordData = typeof (getFeedRecordList)=='string'?[]:getFeedRecordList;
+      if(feedRecordData.length>0){
+        this.feed_pct_list = feedRecordData;
+      }
+      // let pondurl = `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`;
+      // await this.$axios
+      //   .get(pondurl)
+      //   .then(res=>{
+      //     if(res.data.length>0){
+      //       this.feed_pct_list = res.data;
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得觀察網飼料百分比失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   });
         
     },
     //取得場架構
@@ -863,15 +894,18 @@ export default {
       var all_state=[];
       //#region 池狀態
       //all
-      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/state-of-all-pools/`)
-        .then(res => {
-          all_state = res.data;
-          /**
-           * [
-              {id: 82, name: '0-1', area_name: '紫微', state: '無'},...
-              ]
-           */
-        });
+      let getAllPoolStateList = await this.getAllPoolStateList();
+      let stateData = typeof (getAllPoolStateList)=='string'?[]:getAllPoolStateList;
+      all_state = stateData;
+      // await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/state-of-all-pools/`)
+      //   .then(res => {
+      //     all_state = res.data;
+      //     /**
+      //      * [
+      //         {id: 82, name: '0-1', area_name: '紫微', state: '無'},...
+      //         ]
+      //      */
+      //   });
       /*
       await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/wc-state/`)
         .then(res => {
@@ -1148,36 +1182,46 @@ export default {
         )
       ) {
         console.log(parm);
-        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-batch-delete/`;
-        await this.$axios
-          .post(url, parm)
-          .then(res => {
-            if (res.data == "刪除成功") {
+        var res = false;
+        res = this.deleteFeedRecordList(parm);
+        setTimeout(()=>{
+            if(res) {
               this.dataclear(); //清除資料
               this.imptimedata = []; //清空取得的帶入資料
               this.sdate = '';
               this.stime = '';
-              this.$toast.success(
-                `刪除${factory_name}[${parm.feed_time}]成功`,
-                {
-                  duration: 2000
-                }
-              );
-            } else {
-              this.$toast.success(`刪除失敗:${res.data}`, {
-                duration: 2000
-              });
             }
-            console.log("刪除API:" + res.request.responseURL);
-          })
-          .catch(error => {
-            this.$toast.error(`刪除失敗:${error}`, {
-              duration: 2000
-            });
-          })
-          .finally(() => {
-            //
-          });
+        },50)
+        // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-batch-delete/`;
+        // await this.$axios
+        //   .post(url, parm)
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.dataclear(); //清除資料
+        //       this.imptimedata = []; //清空取得的帶入資料
+        //       this.sdate = '';
+        //       this.stime = '';
+        //       this.$toast.success(
+        //         `刪除${factory_name}[${parm.feed_time}]成功`,
+        //         {
+        //           duration: 2000
+        //         }
+        //       );
+        //     } else {
+        //       this.$toast.success(`刪除失敗:${res.data}`, {
+        //         duration: 2000
+        //       });
+        //     }
+        //     console.log("刪除API:" + res.request.responseURL);
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`刪除失敗:${error}`, {
+        //       duration: 2000
+        //     });
+        //   })
+        //   .finally(() => {
+        //     //
+        //   });
       }
     },
     //取得帶入的資料-取得料表
@@ -1266,28 +1310,39 @@ export default {
         feed_date: this.sdate,
         factory_id: this.factoryid
       };
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
-          params: para
-        })
-        .then(res => {
-          this.imptimedata = res.data;
-          res.data.sort(function(a,b){
-            var a1 = a.time.replace(":","");
-            var b1 = b.time.replace(":","");
-            if(a1 > b1){return 1};
-            if(a1 < b1){return -1};
-            return 0;
-          });
-          console.log("取得帶入的資料API:" + res.request.responseURL);
-          console.log("取資料",this.imptimedata);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(() => {
-          this.imploading=false;
-        });
+      let getFeedRecordList = await this.getFeedRecordList(para);
+      let feedRecordData = typeof (getFeedRecordList)=='string'?[]:getFeedRecordList;
+      this.imptimedata = feedRecordData;
+      feedRecordData.sort(function(a,b){
+        var a1 = a.time.replace(":","");
+        var b1 = b.time.replace(":","");
+        if(a1 > b1){return 1};
+        if(a1 < b1){return -1};
+        return 0;
+      });
+      this.imploading=false;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
+      //     params: para
+      //   })
+      //   .then(res => {
+      //     this.imptimedata = res.data;
+      //     res.data.sort(function(a,b){
+      //       var a1 = a.time.replace(":","");
+      //       var b1 = b.time.replace(":","");
+      //       if(a1 > b1){return 1};
+      //       if(a1 < b1){return -1};
+      //       return 0;
+      //     });
+      //     console.log("取得帶入的資料API:" + res.request.responseURL);
+      //     console.log("取資料",this.imptimedata);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     this.imploading=false;
+      //   });
     },
     //設定帶入資料
     settabledata: async function(item) {
@@ -1464,19 +1519,11 @@ export default {
     .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
       background: transparent;
     }
-    .theme--light.v-card {
-      background-color: $color-lighten;
-    }
-    .theme--light.v-data-table,.theme--light.v-data-table thead th {
-      background: $color-lighten;
-    }
+
     .theme--light.v-data-table > .v-data-table__wrapper > table > thead > tr:last-child > th {
       border-bottom: none;
     }
-    .theme--light.v-data-table tbody {
-      border-radius: 4px;
-      color: $color-dark;
-    }
+    // 標題群
     .theme--light.v-data-table .v-row-group__header {
       background: $color-primary-25;
       border-radius: 4px 4px 0 0 !important;
@@ -1492,7 +1539,6 @@ export default {
         color: $color-dark;
       }
     }
-
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.v-row-group__header:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
       background: $color-primary-25;
     }
@@ -1517,48 +1563,8 @@ export default {
       .theme--light.v-data-table,.theme--light.v-toolbar.v-sheet {
           background-color: $color-lighten;
       }
-      .v-toolbar__content, .v-toolbar__extension {
-        padding: 0;
-        button {
-          // height: 36px;
-          border-radius: 4px;
-        }
-        .v-btn--is-elevated {
-          box-shadow: none;
-          background-color: $color-primary;
-          color: #fff;
-        }
-        .theme--light.v-btn.v-btn--disabled {
-          color: $color-dark-50;
-        }
-      }
       .v-toolbar__content {
         width: 100%;
-      }
-      .v-tab {
-        font-size: 18px;
-        font-weight: bold;
-        color: $color-dark-50 !important;
-        .icons {
-          margin-right: 4px;
-          i {
-            color: $color-dark-50;
-          }
-          
-        }
-      }
-      .v-tab.v-tab--active {
-        color: $color-primary !important;
-        .icons {
-          margin-right: 4px;
-          i {
-            color: $color-primary;
-          }
-          
-        }
-      }
-      .theme--light.v-tabs .v-tab--active:hover::before,.theme--light.v-tabs .v-tab:hover::before {
-        border-radius: 4px;
       }
       
       // top
@@ -1579,12 +1585,7 @@ export default {
         }
       }
     }
-  }
-  // .v-card.card-dialog {
-  //   .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
-  //     background: transparent;
-  //   }
-  // }  
+  } 
 }
 
 </style>

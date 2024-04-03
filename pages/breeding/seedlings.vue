@@ -386,21 +386,25 @@
             // this.manmode = "add"; //還原成add
             // this.manfield = {}; //還原成空白
             this.manu = [];
-            let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/`;
-            await this.$axios
-                .get(url)
-                .then(res => {
-                    this.manu = res.data;
+            let getManufacturerList = await this.getManufacturerList();
+            let data = typeof (getManufacturerList)=='string'?[]:getManufacturerList;
+            this.manu = data;
+            this.getSpeciesData();
+            // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/`;
+            // await this.$axios
+            //     .get(url)
+            //     .then(res => {
+            //         this.manu = res.data;
                     
-                    console.log("取得廠商資料API:" + res.request.responseURL);
-                })
-                .catch(error => {
-                    this.$toast.error(`取得廠商資料失敗:${error}`, { duration: 2000 });
-                })
-                .finally(() => {
-                    this.getSpeciesData();
-                    //this.getdata();
-                });
+            //         console.log("取得廠商資料API:" + res.request.responseURL);
+            //     })
+            //     .catch(error => {
+            //         this.$toast.error(`取得廠商資料失敗:${error}`, { duration: 2000 });
+            //     })
+            //     .finally(() => {
+            //         this.getSpeciesData();
+            //         //this.getdata();
+            //     });
             },
             //取得苗清單
             getSeedlingData:async function(){

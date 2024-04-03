@@ -37,5 +37,19 @@ Vue.mixin({
             }
             
         },
+        // 取得池資料清單
+        getPondDataList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
+                console.log("池資料清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
 	}
 })

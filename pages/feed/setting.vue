@@ -1319,25 +1319,35 @@ export default {
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/`;
         let parms = this.editItem;
         parms.created_user = this.$auth.$state.user.email;
-        await this.$axios
-          .post(url, parms)
-          .then(res => {
-            if (res.data == "新增成功") {
-              //this.getdata();新增未必有選到所有選項
-              this.$toast.success(`新增成功`, { duration: 2000 });
+        var res = false;
+        res = this.postManufacturerList(parms);
+        setTimeout(()=>{
+            if(res) {
               this.manisEditing = false;
               this.manfield = {};
               this.editForm = false;
-            } else {
-              alert("新增廠商失敗：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("新增廠商失敗：" + error.message);
-          })
-          .finally(() => {
             this.getmanudata(); //取得廠商資料
-          });
+        },50)
+        // await this.$axios
+        //   .post(url, parms)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       //this.getdata();新增未必有選到所有選項
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //       this.manisEditing = false;
+        //       this.manfield = {};
+        //       this.editForm = false;
+        //     } else {
+        //       alert("新增廠商失敗：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("新增廠商失敗：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getmanudata(); //取得廠商資料
+        //   });
       }
     },
     //刪除廠商
@@ -1346,21 +1356,26 @@ export default {
       let name = this.manu.filter(x=>x.id==i)[0].name_ch;
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/${id}/`;
       if (confirm("是否刪除?-" + name)) {
-        await this.$axios
-          .delete(url)
-          .then(res => {
-            if (res.data == "刪除成功") {
-              this.$toast.success(`刪除成功`, { duration: 2000 });
-            } else {
-              this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
-            }
-          })
-          .catch(error => {
-            alert("刪除失敗!：" + error.message);
-          })
-          .finally(() => {
-            this.getmanudata();
-          });
+        var res = false;
+        res = this.deleteManufacturerList(id);
+        setTimeout(()=>{
+          this.getmanudata();
+        },50)
+        // await this.$axios
+        //   .delete(url)
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.$toast.success(`刪除成功`, { duration: 2000 });
+        //     } else {
+        //       this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("刪除失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getmanudata();
+        //   });
       }
     },
     // 修改廠商
@@ -1377,27 +1392,39 @@ export default {
       delete parms["updated_time"];
       parms["updated_user"] = this.$auth.$state.user.email;
       // console.log('edit',parms);
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/${id}/`;
-      await this.$axios
-        .patch(url, parms)
-        .then(res => {
-          if (res.data == "修改成功") {
-            //this.getdata();新增未必有選到所有選項
-            this.$toast.success(`修改成功`, { duration: 2000 });
+      var res = false;
+      res = this.patchManufacturerList(parms,id);
+      setTimeout(()=>{
+          if(res) {
             this.manisEditing = false;
-            // this.manuidx = null;
             this.editForm = false;
             this.manfield = {};
-          } else {
-            alert("修改失敗!：" + res.data);
           }
-        })
-        .catch(error => {
-          alert("修改失敗!：" + error.message);
-        })
-        .finally(() => {
           this.getmanudata();
-        });
+      },50)
+      
+      
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/${id}/`;
+      // await this.$axios
+      //   .patch(url, parms)
+      //   .then(res => {
+      //     if (res.data == "修改成功") {
+      //       //this.getdata();新增未必有選到所有選項
+      //       this.$toast.success(`修改成功`, { duration: 2000 });
+      //       this.manisEditing = false;
+      //       // this.manuidx = null;
+      //       this.editForm = false;
+      //       this.manfield = {};
+      //     } else {
+      //       alert("修改失敗!：" + res.data);
+      //     }
+      //   })
+      //   .catch(error => {
+      //     alert("修改失敗!：" + error.message);
+      //   })
+      //   .finally(() => {
+      //     this.getmanudata();
+      //   });
     },
     //選擇成份類別
     ficselect: function() {
@@ -1459,35 +1486,43 @@ export default {
       this.manmode = "add"; //還原成add
       this.manfield = {}; //還原成空白
       this.manu = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.manu = res.data;
-          this.manu.forEach(m=>m.name = m.name_ch);
-          if(this.tablindex=='廠商設定') {
-            this.manuFilterData = _.cloneDeep(res.data);
-          }
+      let getManufacturerList = await this.getManufacturerList();
+      let data = typeof (getManufacturerList)=='string'?[]:getManufacturerList;
+      this.manu = data;
+      this.manu.forEach(m=>m.name = m.name_ch);
+      if(this.tablindex=='廠商設定') {
+        this.manuFilterData = _.cloneDeep(data);
+      }
+      this.manselect();
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/manufacturer/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.manu = res.data;
+      //     this.manu.forEach(m=>m.name = m.name_ch);
+      //     if(this.tablindex=='廠商設定') {
+      //       this.manuFilterData = _.cloneDeep(res.data);
+      //     }
           
           
-          // if (res.data == "新增成功") {
-          //   //this.getdata();新增未必有選到所有選項
-          //   this.$toast.success(`新增成功`, { duration: 2000 });
-          //   this.manisEditing = false;
-          //   this.manfield = {};
-          // } else {
-          //   alert("新增失敗!：" + res.data);
-          // }
-          console.log('get manu',this.manu);
-          console.log("取得廠商資料API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得廠商資料失敗:${error}`, { duration: 2000 });
-        })
-        .finally(() => {
-          //this.getdata();
-          this.manselect();
-        });
+      //     // if (res.data == "新增成功") {
+      //     //   //this.getdata();新增未必有選到所有選項
+      //     //   this.$toast.success(`新增成功`, { duration: 2000 });
+      //     //   this.manisEditing = false;
+      //     //   this.manfield = {};
+      //     // } else {
+      //     //   alert("新增失敗!：" + res.data);
+      //     // }
+      //     console.log('get manu',this.manu);
+      //     console.log("取得廠商資料API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得廠商資料失敗:${error}`, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //     this.manselect();
+      //   });
     },
     //刪除成份類別
     ficdelete: async function() {
@@ -1495,29 +1530,40 @@ export default {
       let name = this.feed_ingredient_category.filter(x=>x.id==id)[0].name_ch;
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient-category/${id}/`;
       if (confirm("是否刪除?-" + name)) {
-        await this.$axios
-          .delete(url)
-          .then(res => {
-            if (res.data == "刪除成功") {
-              this.$toast.success(`刪除成功`, { duration: 2000 });
+        var res = false;
+        res = this.deleteFeedIngredientCategoryList(id);
+        setTimeout(()=>{
+            if(res) {
               this.ficisEditing = false;
               this.fic_idx = null;
               this.ficfield = {};
               this.ficmode = "add"; //回到新增模式
-            } else {
-              if(res.data == "資料正在使用，無法刪除") {
-                this.$toast.error(`刪除失敗，請先刪除此類別下的成分`, { duration: 2000 });
-              }else {
-                this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
-              }
             }
-          })
-          .catch(error => {
-            alert("刪除失敗!：" + error.message);
-          })
-          .finally(() => {
             this.getficdata();
-          });
+        },50)
+        // await this.$axios
+        //   .delete(url)
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.$toast.success(`刪除成功`, { duration: 2000 });
+        //       this.ficisEditing = false;
+        //       this.fic_idx = null;
+        //       this.ficfield = {};
+        //       this.ficmode = "add"; //回到新增模式
+        //     } else {
+        //       if(res.data == "資料正在使用，無法刪除") {
+        //         this.$toast.error(`刪除失敗，請先刪除此類別下的成分`, { duration: 2000 });
+        //       }else {
+        //         this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
+        //       }
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("刪除失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getficdata();
+        //   });
       }
     },
     //修改成份類別
@@ -1534,27 +1580,37 @@ export default {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient-category/${id}/`;
       let val = this.$refs.ficform.validate();
       if (val) {
-        await this.$axios
-          .patch(url, parms)
-          .then(res => {
-            if (res.data == "修改成功") {
-              //this.getdata();新增未必有選到所有選項
-              this.$toast.success(`修改成功`, { duration: 2000 });
+        var res = false;
+        res = this.patchFeedIngredientCategoryList(parms,id);
+        setTimeout(()=>{
+            if(res) {
               this.ficisEditing = false;
-              // this.fic_idx = null;
-              // this.ficfield = {};
               this.ficfieldOrigin = _.cloneDeep(this.ficfield);
               this.ficEditOpen = false;
-            } else {
-              alert("修改失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("修改失敗!：" + error.message);
-          })
-          .finally(() => {
             this.getficdata();
-          });
+        },50)
+        // await this.$axios
+        //   .patch(url, parms)
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       //this.getdata();新增未必有選到所有選項
+        //       this.$toast.success(`修改成功`, { duration: 2000 });
+        //       this.ficisEditing = false;
+        //       // this.fic_idx = null;
+        //       // this.ficfield = {};
+        //       this.ficfieldOrigin = _.cloneDeep(this.ficfield);
+        //       this.ficEditOpen = false;
+        //     } else {
+        //       alert("修改失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("修改失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getficdata();
+        //   });
       }
       
     },
@@ -1569,78 +1625,100 @@ export default {
         if (this.ficfield.hasOwnProperty("is_main") == false) {
           parms["is_main"] = false;
         }
-         if (this.ficfield.hasOwnProperty("is_feed") == false) {
+        if (this.ficfield.hasOwnProperty("is_feed") == false) {
           parms["is_feed"] = false;
         }
-        await this.$axios
-          .post(url, parms)
-          .then(res => {
-            if (res.data == "新增成功") {
-              //this.getdata();新增未必有選到所有選項
-              this.$toast.success(`新增成功`, { duration: 2000 });
+        var res = false;
+        res = this.postFeedIngredientCategoryList(parms);
+        setTimeout(()=>{
+            if(res) {
               this.ficisEditing = false;
               this.ficfield = {};
               this.ficEditOpen = false;
-            } else {
-              alert("新增失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("新增失敗!：" + error.message);
-          })
-          .finally(() => {
             this.getficdata();
-          });
+        },50)
+        // await this.$axios
+        //   .post(url, parms)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       //this.getdata();新增未必有選到所有選項
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //       this.ficisEditing = false;
+        //       this.ficfield = {};
+        //       this.ficEditOpen = false;
+        //     } else {
+        //       alert("新增失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("新增失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getficdata();
+        //   });
       }
     },
     //取得成份類別及細項
     getficwithdetaildata: async function() {
-      // this.ficwithdetail = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-category-and-items/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.ficwithdetail = res.data;
+      this.ficwithdetail = [];
+      let getFeedCategoryItemList = await this.getFeedCategoryItemList();
+      let data = typeof (getFeedCategoryItemList)=='string'?[]:getFeedCategoryItemList;
+      this.ficwithdetail = data;
+      console.log('成份細項',this.ficwithdetail);
+      if(this.tablindex=='成份設定') {
+        this.manuFilterData = this.fing.filter(x => x.feed_ingredient_category_id == this.fic_idx);
+      }
+      this.isLoading = true;
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-category-and-items/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.ficwithdetail = res.data;
           
-          console.log('成份細項',this.ficwithdetail);
-          if(this.tablindex=='成份設定') {
-            this.manuFilterData = this.fing.filter(x => x.feed_ingredient_category_id == this.fic_idx);
+      //     console.log('成份細項',this.ficwithdetail);
+      //     if(this.tablindex=='成份設定') {
+      //       this.manuFilterData = this.fing.filter(x => x.feed_ingredient_category_id == this.fic_idx);
             
-          }
-          this.isLoading = true;
-          console.log("取得成份類別及細項API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.ficwithdetail = [];
-          this.$toast.error(`取得成份類別及細項失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      //     }
+      //     this.isLoading = true;
+      //     console.log("取得成份類別及細項API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.ficwithdetail = [];
+      //     this.$toast.error(`取得成份類別及細項失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     //取得成份類別清單
     getficdata: async function() {
       // this.fic_idx = null; //還原成未選
       this.feed_ingredient_category = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient-category/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.feed_ingredient_category = res.data;
-          this.ficselect();
-          console.log('成份類別',this.feed_ingredient_category);
-          console.log("取得成份類別清單API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得成份類別清單失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      let getFeedIngredientCategoryList = await this.getFeedIngredientCategoryList();
+      let data = typeof (getFeedIngredientCategoryList)=='string'?[]:getFeedIngredientCategoryList;
+      this.feed_ingredient_category = data;
+      this.ficselect();
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient-category/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.feed_ingredient_category = res.data;
+      //     this.ficselect();
+      //     console.log('成份類別',this.feed_ingredient_category);
+      //     console.log("取得成份類別清單API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得成份類別清單失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     mainchange: async function() {
       var formula = {};
@@ -1703,35 +1781,45 @@ export default {
         delete parms.created_user;
         delete parms.id;
         delete parms.updated_time;
-
-        await this.$axios
-          .patch(url, parms)
-          .then(res => {
-            if (res.data == "修改成功") {
-              this.$toast.success(`修改套餐清單(飼料設定)成功`, {
-                duration: 2000
-              });
+        var res = false;
+        res = this.patchFeedSettingList(parms,id);
+        setTimeout(()=>{
+            if(res) {
               this.combofield = {};
-              // this.comboidx = null;
               this.comboisEditing = false;
               this.combomode = "add";
               this.editForm = false;
               this.getcombodata();
-              console.log(
-                "修改套餐清單(飼料設定)API:" + res.request.responseURL
-              );
-            } else {
-              this.$toast.error(`修改套餐清單(飼料設定)失敗:${res.data}`, {
-                duration: 2000
-              });
             }
-          })
-          .catch(error => {
-            this.$toast.error(`修改套餐清單(飼料設定)失敗:${error}`, {
-              duration: 2000
-            });
-          })
-          .finally(() => {});
+        },50)
+        // await this.$axios
+        //   .patch(url, parms)
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       this.$toast.success(`修改套餐清單(飼料設定)成功`, {
+        //         duration: 2000
+        //       });
+        //       this.combofield = {};
+        //       // this.comboidx = null;
+        //       this.comboisEditing = false;
+        //       this.combomode = "add";
+        //       this.editForm = false;
+        //       this.getcombodata();
+        //       console.log(
+        //         "修改套餐清單(飼料設定)API:" + res.request.responseURL
+        //       );
+        //     } else {
+        //       this.$toast.error(`修改套餐清單(飼料設定)失敗:${res.data}`, {
+        //         duration: 2000
+        //       });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`修改套餐清單(飼料設定)失敗:${error}`, {
+        //       duration: 2000
+        //     });
+        //   })
+        //   .finally(() => {});
       }
     },
     expandSelect(row, expandedRows) {
@@ -1752,26 +1840,37 @@ export default {
       var name = this.combo.filter(x=>x.id==id)[0].name_ch;
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
       if (confirm("是否刪除?-" + name)) {
-        await this.$axios
-          .delete(url)
-          .then(res => {
-            if (res.data == "刪除成功") {
-              this.$toast.success(`刪除成功`, { duration: 2000 });
+        var res = false;
+        res = this.deleteFeedSettingList(id);
+        setTimeout(()=>{
+            if(res) {
               this.comboisEditing = false;
               this.comboidx = null;
               this.combofield = {};
               this.combomode = "add"; //回到新增模式
               this.getcombodata();
-            } else {
-              this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            alert("刪除失敗!：" + error.message);
-          })
-          .finally(() => {
-            // this.getcombodata();
-          });
+        },50)
+        // await this.$axios
+        //   .delete(url)
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.$toast.success(`刪除成功`, { duration: 2000 });
+        //       this.comboisEditing = false;
+        //       this.comboidx = null;
+        //       this.combofield = {};
+        //       this.combomode = "add"; //回到新增模式
+        //       this.getcombodata();
+        //     } else {
+        //       this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("刪除失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     // this.getcombodata();
+        //   });
       }
     },
     async comboenable(item,bool) {
@@ -1809,30 +1908,36 @@ export default {
         delete parms.created_user;
         delete parms.id;
         delete parms.updated_time;
-
-        await this.$axios
-          .patch(url, parms)
-          .then(res => {
-            if (res.data == "修改成功") {
-              this.$toast.success(`修改套餐清單(飼料設定)成功`, {
-                duration: 2000
-              });
+        var res = false;
+        res = this.patchFeedSettingList(parms,id);
+        setTimeout(()=>{
+            if(res) {
               this.getcombodata();
-              console.log(
-                "修改套餐清單(飼料設定)API:" + res.request.responseURL
-              );
-            } else {
-              this.$toast.error(`修改套餐清單(飼料設定)失敗:${res.data}`, {
-                duration: 2000
-              });
             }
-          })
-          .catch(error => {
-            this.$toast.error(`修改套餐清單(飼料設定)失敗:${error}`, {
-              duration: 2000
-            });
-          })
-          .finally(() => {});
+        },50)
+        // await this.$axios
+        //   .patch(url, parms)
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       this.$toast.success(`修改套餐清單(飼料設定)成功`, {
+        //         duration: 2000
+        //       });
+        //       this.getcombodata();
+        //       console.log(
+        //         "修改套餐清單(飼料設定)API:" + res.request.responseURL
+        //       );
+        //     } else {
+        //       this.$toast.error(`修改套餐清單(飼料設定)失敗:${res.data}`, {
+        //         duration: 2000
+        //       });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`修改套餐清單(飼料設定)失敗:${error}`, {
+        //       duration: 2000
+        //     });
+        //   })
+        //   .finally(() => {});
       }
       
     },
@@ -1939,63 +2044,78 @@ export default {
         }
         parms.sub_items = sub;
         parms.created_user = this.$auth.$state.user.email;
-
-        await this.$axios
-          .post(url, parms)
-          .then(res => {
-            if (res.data == "新增成功") {
-              this.$toast.success(`新增套餐清單(飼料設定)成功`, {
-                duration: 2000
-              });
+        var res = false;
+        res = this.postFeedSettingList(parms);
+        setTimeout(()=>{
+            if(res) {
               this.combofield = {};
               // this.comboidx = null;
               this.comboisEditing = false;
               this.editForm = false;
               this.getcombodata();
-              console.log(
-                "新增套餐清單(飼料設定)API:" + res.request.responseURL
-              );
-            } else {
-              this.$toast.error(`新增套餐清單(飼料設定)失敗:${res.data}`, {
-                duration: 2000
-              });
             }
-          })
-          .catch(error => {
-            this.$toast.error(`新增套餐清單(飼料設定)失敗:${error}`, {
-              duration: 2000
-            });
-          })
-          .finally(() => {});
+        },50)
+        // await this.$axios
+        //   .post(url, parms)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       this.$toast.success(`新增套餐清單(飼料設定)成功`, {
+        //         duration: 2000
+        //       });
+        //       this.combofield = {};
+        //       // this.comboidx = null;
+        //       this.comboisEditing = false;
+        //       this.editForm = false;
+        //       this.getcombodata();
+        //       console.log(
+        //         "新增套餐清單(飼料設定)API:" + res.request.responseURL
+        //       );
+        //     } else {
+        //       this.$toast.error(`新增套餐清單(飼料設定)失敗:${res.data}`, {
+        //         duration: 2000
+        //       });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`新增套餐清單(飼料設定)失敗:${error}`, {
+        //       duration: 2000
+        //     });
+        //   })
+        //   .finally(() => {});
       }
     },
     //取得套餐清單(飼料設定)
     getcombodata: async function() {
       this.combo = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.combo = res.data;
-          // this.comboidx = null;
-          this.combofield = {};
-          this.comboselect();
-          // if(this.comboidx==null) {
-          //   this.manuFilterData = _.cloneDeep(this.combo);
-          // }else {
-          //   this.manuFilterData = _.cloneDeep(this.combo.filter(x=>x.id==this.comboidx)[0]);
-          // }
+      let getFeedSettingList = await this.getFeedSettingList();
+      let feedSettingData = typeof (getFeedSettingList)=='string'?[]:getFeedSettingList;
+      this.combo = feedSettingData;
+      this.combofield = {};
+      this.comboselect();
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.combo = res.data;
+      //     // this.comboidx = null;
+      //     this.combofield = {};
+      //     this.comboselect();
+      //     // if(this.comboidx==null) {
+      //     //   this.manuFilterData = _.cloneDeep(this.combo);
+      //     // }else {
+      //     //   this.manuFilterData = _.cloneDeep(this.combo.filter(x=>x.id==this.comboidx)[0]);
+      //     // }
           
-          console.log("取得得套餐清單(飼料設定)API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得得套餐清單(飼料設定)失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      //     console.log("取得得套餐清單(飼料設定)API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得得套餐清單(飼料設定)失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     //成份編輯狀態改變
     fingeditchange: function() {
@@ -2049,31 +2169,44 @@ export default {
       if (val) {
         let id = parms["id"];
         delete parms["id"];
-
-        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/  `;
-        await this.$axios
-          .patch(url, parms)
-          .then(res => {
-            if (res.data == "修改成功") {
-              this.$toast.success(`修改成功`, { duration: 2000 });
-              this.fingfield = {};
-              this.editItem = {};
-              this.fingisEditing = false;
-              this.fingchip = null;
-              this.fingparam = []; //成份參數
-              this.fingparamitem = {};
-              this.editForm = false;
-            } else {
-              alert("修改失敗!：" + res.data);
-            }
-          })
-          .catch(error => {
-            alert("修改失敗!：" + error.message);
-          })
-          .finally(() => {
-            this.getfingdata(); //成份清單
-            // this.getficwithdetaildata(); //取得成份類別及細項
-          });
+        var res = false;
+        res = this.patchFeedIngredientList(parms,id);
+        setTimeout(()=>{
+          if(res) {
+            this.fingfield = {};
+            this.editItem = {};
+            this.fingisEditing = false;
+            this.fingchip = null;
+            this.fingparam = []; //成份參數
+            this.fingparamitem = {};
+            this.editForm = false;
+          }
+          this.getfingdata(); //成份清單
+        },50)
+        // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/  `;
+        // await this.$axios
+        //   .patch(url, parms)
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       this.$toast.success(`修改成功`, { duration: 2000 });
+        //       this.fingfield = {};
+        //       this.editItem = {};
+        //       this.fingisEditing = false;
+        //       this.fingchip = null;
+        //       this.fingparam = []; //成份參數
+        //       this.fingparamitem = {};
+        //       this.editForm = false;
+        //     } else {
+        //       alert("修改失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("修改失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getfingdata(); //成份清單
+        //     // this.getficwithdetaildata(); //取得成份類別及細項
+        //   });
       }
     },
     //刪除成份
@@ -2083,24 +2216,33 @@ export default {
       let name = this.manuFilterData.filter(x=>x.id==id)[0].name;
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/`;
       if (confirm("是否刪除?-" + name)) {
-        await this.$axios
-          .delete(url)
-          .then(res => {
-            if (res.data == "刪除成功") {
-              this.$toast.success(`刪除成功`, { duration: 2000 });
+        var res = false;
+        res = this.deleteFeedIngredientList(id);
+        setTimeout(()=>{
+            if(res) {
               this.fingfield = {};
               this.fingisEditing = false;
-            } else {
-              this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            alert(`刪除失敗：${error.message}`);
-          })
-          .finally(() => {
             this.getfingdata(); //成份清單
-            // this.getficwithdetaildata(); //取得成份類別及細項
-          });
+        },50)
+        // await this.$axios
+        //   .delete(url)
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.$toast.success(`刪除成功`, { duration: 2000 });
+        //       this.fingfield = {};
+        //       this.fingisEditing = false;
+        //     } else {
+        //       this.$toast.error(`刪除失敗${res.data}`, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert(`刪除失敗：${error.message}`);
+        //   })
+        //   .finally(() => {
+        //     this.getfingdata(); //成份清單
+        //     // this.getficwithdetaildata(); //取得成份類別及細項
+        //   });
       }
     },
     //新增成份
@@ -2120,48 +2262,65 @@ export default {
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/`;
         let parms = this.fingfield;
         parms.created_user = this.$auth.$state.user.email;
-        await this.$axios
-          .post(url, parms)
-          .then(res => {
-            if (res.data == "新增成功") {
-              this.$toast.success(`新增成功`, { duration: 2000 });
+        var res = false;
+        res = this.postFeedIngredientList(parms);
+        setTimeout(()=>{
+            if(res) {
               this.fingfield = {};
               this.fingfield.feed_ingredient_category_id = this.fic_idx;//並沒有清空類別，所以保留
               this.fingparam = []; //成份參數
               this.fingparamitem = {};
               this.fingisEditing = false;
               this.editForm = false;
-            } else {
-              alert("新增失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("新增失敗!：" + error.message);
-          })
-          .finally(() => {
             this.getfingdata();
-            // this.getficwithdetaildata(); //取得成份類別及細項
-          });
+        },50)
+        // await this.$axios
+        //   .post(url, parms)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //       this.fingfield = {};
+        //       this.fingfield.feed_ingredient_category_id = this.fic_idx;//並沒有清空類別，所以保留
+        //       this.fingparam = []; //成份參數
+        //       this.fingparamitem = {};
+        //       this.fingisEditing = false;
+        //       this.editForm = false;
+        //     } else {
+        //       alert("新增失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("新增失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getfingdata();
+        //     // this.getficwithdetaildata(); //取得成份類別及細項
+        //   });
       }
     },
     //取得成份清單
     getfingdata: async function() {
       // this.fiidx=null;//還原成未選
       this.fing = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.fing = res.data;
-          console.log("取得成份清單API:" + res.request.responseURL);
-          this.getficwithdetaildata();
-        })
-        .catch(error => {
-          this.$toast.error(`取得成份清單失敗:${error}`, { duration: 2000 });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      let getFeedIngredientList = await this.getFeedIngredientList();
+      let data = typeof (getFeedIngredientList)=='string'?[]:getFeedIngredientList;
+      this.fing = data;
+      this.getficwithdetaildata();
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.fing = res.data;
+      //     console.log("取得成份清單API:" + res.request.responseURL);
+      //     this.getficwithdetaildata();
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得成份清單失敗:${error}`, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     //顯示參數視窗
     showparam: function() {
@@ -2171,17 +2330,20 @@ export default {
     //取得參數清單
     getparmdata: async function() {
       this.parmdata = [];
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/parameter/`;
-      await this.$axios
-        .get(url)
-        .then(res => {
-          this.parmdata = res.data;
-          console.log("取得參數清單API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`取得參數清單失敗:${error}`, { duration: 2000 });
-        })
-        .finally(() => {});
+      let getParameterList = await this.getParameterList();
+      let data = typeof (getParameterList)=='string'?[]:getParameterList;
+      this.parmdata = data;
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/parameter/`;
+      // await this.$axios
+      //   .get(url)
+      //   .then(res => {
+      //     this.parmdata = res.data;
+      //     console.log("取得參數清單API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得參數清單失敗:${error}`, { duration: 2000 });
+      //   })
+      //   .finally(() => {});
     },
     //新增參數
     parmsubmit: async function() {
@@ -2190,24 +2352,33 @@ export default {
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/parameter/`;
         let parms = this.parmfield;
         parms.created_user = this.$auth.$state.user.email;
-        await this.$axios
-          .post(url, parms)
-          .then(res => {
-            if (res.data == "新增成功") {
-              //this.getdata();新增未必有選到所有選項
+        var res = false;
+        res = this.postParameterList(parms);
+        setTimeout(()=>{
+            if(res) {
               this.parmfield = {};
               this.dialog.param = false;
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            } else {
-              this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            alert("新增成份參數失敗!：" + error.message);
-          })
-          .finally(() => {
             this.getparmdata();
-          });
+        },50)
+        // await this.$axios
+        //   .post(url, parms)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       //this.getdata();新增未必有選到所有選項
+        //       this.parmfield = {};
+        //       this.dialog.param = false;
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //     } else {
+        //       this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("新增成份參數失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     this.getparmdata();
+        //   });
       }
     },
     // getRnd:function(){

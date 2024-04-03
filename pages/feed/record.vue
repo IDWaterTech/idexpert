@@ -539,55 +539,91 @@ export default {
         feed_date: this.sdate,
         factory_id: this.factoryid,
       };
-
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
-          params: para
+      let getFeedRecordList = await this.getFeedRecordList(para);
+      let feedRecordData = typeof (getFeedRecordList)=='string'?[]:getFeedRecordList;
+      console.log('get record',feedRecordData);
+      feedRecordData.sort(function(a,b){
+        var a1 = a.time.replace(":","");
+        var b1 = b.time.replace(":","");
+        if(a1 > b1){return 1};
+        if(a1 < b1){return -1};
+        return 0;
+      });
+      let newData = [];
+      feedRecordData.forEach((d,id)=>{
+        newData.push({
+          time: d.time,
+          data: new Array()
         })
-        .then(res => {
-          console.log('get record',res);
-          res.data.sort(function(a,b){
-            var a1 = a.time.replace(":","");
-            var b1 = b.time.replace(":","");
-            if(a1 > b1){return 1};
-            if(a1 < b1){return -1};
-            return 0;
-          });
-          let newData = [];
-          res.data.forEach((d,id)=>{
-            newData.push({
-              time: d.time,
-              data: new Array()
-            })
-            d.data.forEach(s=>{
-              if(s.factory_id == this.factoryid) {
-                newData[id].data.push(s);
-              }
-            })
-          })
-          // this.imptimedata = res.data;
-          this.imptimedata = [];
-          newData.forEach(n=>{
-            if(n.data.length>0) {
-              this.imptimedata.push(n);
-            }
-          })
+        d.data.forEach(s=>{
+          if(s.factory_id == this.factoryid) {
+            newData[id].data.push(s);
+          }
+        })
+      })
+      // this.imptimedata = res.data;
+      this.imptimedata = [];
+      newData.forEach(n=>{
+        if(n.data.length>0) {
+          this.imptimedata.push(n);
+        }
+      })
+      
+      // if(this.sdate && this.stime) {
+      //   this.getfeedData();
+      // }else {
+        this.stime = ''
+        this.gettotalData();
+      // }
+      this.stime_loading = false;//loading
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
+      //     params: para
+      //   })
+      //   .then(res => {
+      //     console.log('get record',res);
+      //     res.data.sort(function(a,b){
+      //       var a1 = a.time.replace(":","");
+      //       var b1 = b.time.replace(":","");
+      //       if(a1 > b1){return 1};
+      //       if(a1 < b1){return -1};
+      //       return 0;
+      //     });
+      //     let newData = [];
+      //     res.data.forEach((d,id)=>{
+      //       newData.push({
+      //         time: d.time,
+      //         data: new Array()
+      //       })
+      //       d.data.forEach(s=>{
+      //         if(s.factory_id == this.factoryid) {
+      //           newData[id].data.push(s);
+      //         }
+      //       })
+      //     })
+      //     // this.imptimedata = res.data;
+      //     this.imptimedata = [];
+      //     newData.forEach(n=>{
+      //       if(n.data.length>0) {
+      //         this.imptimedata.push(n);
+      //       }
+      //     })
           
-          // if(this.sdate && this.stime) {
-          //   this.getfeedData();
-          // }else {
-            this.stime = ''
-            this.gettotalData();
-          // }
-          console.log("取得帶入的資料API:" + res.request.responseURL);
-          // console.log("取出資料",this.imptimedata);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(() => {
-          this.stime_loading = false;//loading
-        });
+      //     // if(this.sdate && this.stime) {
+      //     //   this.getfeedData();
+      //     // }else {
+      //       this.stime = ''
+      //       this.gettotalData();
+      //     // }
+      //     console.log("取得帶入的資料API:" + res.request.responseURL);
+      //     // console.log("取出資料",this.imptimedata);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     this.stime_loading = false;//loading
+      //   });
     },
     //取得料表
     getfeedData: async function(bool) {
@@ -621,28 +657,32 @@ export default {
         factory_id: this.factoryid,
         feed_time: `${this.sdate} ${this.stime}`
       };
-      await this.$axios
-        .get(url, { params: parm })
-        .then(res => {
-          this.feedData = res.data;
-          this.gettotalData(); //取得合計
+      let getFeedCheckList = await this.getFeedCheckList(parm,bool);
+      let feedCheckData = typeof (getFeedCheckList)=='string'?[]:getFeedCheckList;
+      this.feedData = feedCheckData;
+      this.gettotalData(); //取得合計
+      // await this.$axios
+      //   .get(url, { params: parm })
+      //   .then(res => {
+      //     this.feedData = res.data;
+      //     this.gettotalData(); //取得合計
 
-          // 點選執行成功後，不顯示取得料表成功，太多資訊
-          if(bool!==true) {
-            this.$toast.success(`取得料表成功`, { duration: 2000 });
-          }
+      //     // 點選執行成功後，不顯示取得料表成功，太多資訊
+      //     if(bool!==true) {
+      //       this.$toast.success(`取得料表成功`, { duration: 2000 });
+      //     }
           
-          console.log("取得料表API:" + res.request.responseURL);
-          console.log('取得料表',this.feedData);
-        })
-        .catch(error => {
-          this.$toast.error(`取得料表失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      //     console.log("取得料表API:" + res.request.responseURL);
+      //     console.log('取得料表',this.feedData);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得料表失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     //取得合計
     gettotalData: async function() {
@@ -651,22 +691,25 @@ export default {
         feed_date: `${this.sdate}`,
         factory_id: this.factoryid
       };
-      await this.$axios
-        .get(url, { params: parm })
-        .then(res => {
-          // this.feedData = res.data;
-          this.totalData = res.data;
+      let getRecordTotalList = await this.getRecordTotalList(parm);
+      let recordTotalData = typeof (getRecordTotalList)=='string'?[]:getRecordTotalList;
+      this.totalData = recordTotalData;
+      // await this.$axios
+      //   .get(url, { params: parm })
+      //   .then(res => {
+      //     // this.feedData = res.data;
+      //     this.totalData = res.data;
 
-          // this.$toast.success(`取得合計成功`, { duration: 2000 });
-          console.log("取得合計API:" + res.request.responseURL);
-          console.log("取得合計",this.totalData);
-        })
-        .catch(error => {
-          this.$toast.error(`取得合計失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {});
+      //     // this.$toast.success(`取得合計成功`, { duration: 2000 });
+      //     console.log("取得合計API:" + res.request.responseURL);
+      //     console.log("取得合計",this.totalData);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`取得合計失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {});
     },
     //執行
     execsubmit: async function() {
@@ -675,34 +718,43 @@ export default {
         id: this.multipleSelection.map(x => x.id),
         is_executed: true
       };
-      // console.log(parm);
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`;
-      await this.$axios
-        .post(url, parm)
-        .then(res => {
-          if (res.data == "修改成功") {
-            // this.feedData = []; //清空表格資料
-            // this.stime = "";
-
+      var res = false;
+        res = this.postFeedCheckUpdateList(parm);
+        setTimeout(()=>{
+          if(res) {
             // 原本是清空資料，怪怪der，因此更改為重新撈取資料(因為要執行者和是否執行的資訊)
             this. getfeedData(true);
-
-            this.$toast.success(`執行成功：${parm.id.length}筆`, {
-              duration: 2000
-            });
-          } else {
-            this.$toast.error(`執行失敗：${res.data}`, { duration: 2000 });
           }
-          console.log("執行API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error(`執行失敗:${error}`, {
-            duration: 2000
-          });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+        },50)
+      
+      // console.log(parm);
+      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`;
+      // await this.$axios
+      //   .post(url, parm)
+      //   .then(res => {
+      //     if (res.data == "修改成功") {
+      //       // this.feedData = []; //清空表格資料
+      //       // this.stime = "";
+
+      //       // 原本是清空資料，怪怪der，因此更改為重新撈取資料(因為要執行者和是否執行的資訊)
+      //       this. getfeedData(true);
+
+      //       this.$toast.success(`執行成功：${parm.id.length}筆`, {
+      //         duration: 2000
+      //       });
+      //     } else {
+      //       this.$toast.error(`執行失敗：${res.data}`, { duration: 2000 });
+      //     }
+      //     console.log("執行API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`執行失敗:${error}`, {
+      //       duration: 2000
+      //     });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     //多選用
     handleSelectionChange(val) {
@@ -1006,7 +1058,7 @@ export default {
   }
 }
 .v-application.v-application--is-ltr .v-card.bg-card .content .title .theme--light.v-icon {
- font-size: 1.25rem;
+  font-size: 1.25rem;
 }
 .v-application.v-application--is-ltr .v-card.bg-card .content .title .theme--light.v-icon.mdi-format-color-text {
   padding-top: 6px;
