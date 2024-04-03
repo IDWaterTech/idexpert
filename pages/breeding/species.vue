@@ -205,7 +205,7 @@ export default {
             species:[]
         }
     },
-    created() {
+    mounted() {
         this.cataChange();
     },
     methods:{
