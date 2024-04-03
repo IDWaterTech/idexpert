@@ -1140,17 +1140,17 @@ export default {
                 if(parm.col_name == nowTab) {
                   this.water = _.cloneDeep(this.waterParm[nowTab]);
                   this.newest = '';
-                  if(this.water && this.water.length>0) {
-                    this.water.forEach(w=>{
-                      if(this.newest=='') {
-                        this.newest = w.inspected_time.slice(0,10);
-                      }else {
-                        if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
-                          this.newest = w.inspected_time.slice(0,10);
-                        }
-                      }
-                    })
-                  }
+                  // if(this.water && this.water.length>0) {
+                  //   this.water.forEach(w=>{
+                  //     if(this.newest=='') {
+                  //       this.newest = w.inspected_time.slice(0,10);
+                  //     }else {
+                  //       if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
+                  //         this.newest = w.inspected_time.slice(0,10);
+                  //       }
+                  //     }
+                  //   })
+                  // }
                   this.waterloading = true;
                 }
                 num++;
@@ -1766,17 +1766,17 @@ export default {
       }
       this.newest = '';
       this.water = this.waterParm[nowTab];
-      if(this.water && this.water.length>0) {
-        this.water.forEach(w=>{
-          if(this.newest=='') {
-            this.newest = w.inspected_time.slice(0,10);
-          }else {
-            if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
-              this.newest = w.inspected_time.slice(0,10);
-            }
-          }
-        })
-      }
+      // if(this.water && this.water.length>0) {
+      //   this.water.forEach(w=>{
+      //     if(this.newest=='') {
+      //       this.newest = w.inspected_time.slice(0,10);
+      //     }else {
+      //       if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
+      //         this.newest = w.inspected_time.slice(0,10);
+      //       }
+      //     }
+      //   })
+      // }
       
       if(nowTab=='NH4') {
         this.nowAreaId.range = this.lightData['AmmoniaN'];
