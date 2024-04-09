@@ -866,10 +866,11 @@
               <v-text-field filled dense v-model="editparm.remark" hide-details label="備註(選)">
               </v-text-field>
             </v-card-text>
-            <v-card-text>
+            <!-- <v-card-text>
               <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
               </v-autocomplete>
-            </v-card-text>
+            </v-card-text> -->
+
             <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
             <span class="error-text" style="margin-left: 8px;">Note:撈不出此資料樣板資訊</span> -->
             <!-- <v-col cols="12"> -->
@@ -1557,23 +1558,23 @@ export default {
       let mytime = dayjs().format("HH:mm");
       return mytime;
     },
-    geteventData: async function() {
-      //取得事件紀錄清單
-      //this.poolid
-      // this.cirid
-      console.log("事件紀錄");
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/?pond_record_head_id=${this.cirid}`
-        )
-        .then(res => {
-          this.eventData = res.data;
-          console.log("event api:", res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
-    },
+    // geteventData: async function() {
+    //   //取得事件紀錄清單
+    //   //this.poolid
+    //   // this.cirid
+    //   console.log("事件紀錄");
+    //   await this.$axios
+    //     .get(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/?pond_record_head_id=${this.cirid}`
+    //     )
+    //     .then(res => {
+    //       this.eventData = res.data;
+    //       console.log("event api:", res.request.responseURL);
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("error:" + error, { duration: 2000 });
+    //     });
+    // },
     delcircle: async function(data) {
       setTimeout(()=>{
         this.resultListOpen = true;
@@ -1589,33 +1590,51 @@ export default {
       )
         .then(() => {
           let id = data.id;
-          this.$axios
-            .delete(
-              `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`
-            )
-            .then(res => {
-              console.log("循環刪除 API:" + res.request.responseURL);
-              if (res.data == "刪除成功") {
-                if(data.ended_date==null || data.ended_date=='') {
-                  let status={
-                    id: new Array(),
-                    status:'空池'
-                  }
-                  status.id.push(this.poolid);
-                  this.compareStatus(status);
+          var res = false;
+          res = this.deleteBreedingRecordList(id);
+          setTimeout(()=>{
+            if(res) {
+              if(data.ended_date==null || data.ended_date=='') {
+                let status={
+                  id: new Array(),
+                  status:'空池'
                 }
-                
-                this.getCircleData();
-                this.$toast.success("刪除成功", { duration: 2000 });
-                this.currentDataId = null;
-                this.resultCycleOpen = false;
-              } else {
-                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+                status.id.push(this.poolid);
+                this.compareStatus(status);
               }
-            })
-            .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-            });
+              
+              this.getCircleData();
+              this.currentDataId = null;
+              this.resultCycleOpen = false;
+            }
+          },50)
+          // this.$axios
+          //   .delete(
+          //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`
+          //   )
+          //   .then(res => {
+          //     console.log("循環刪除 API:" + res.request.responseURL);
+          //     if (res.data == "刪除成功") {
+          //       if(data.ended_date==null || data.ended_date=='') {
+          //         let status={
+          //           id: new Array(),
+          //           status:'空池'
+          //         }
+          //         status.id.push(this.poolid);
+          //         this.compareStatus(status);
+          //       }
+                
+          //       this.getCircleData();
+          //       this.$toast.success("刪除成功", { duration: 2000 });
+          //       this.currentDataId = null;
+          //       this.resultCycleOpen = false;
+          //     } else {
+          //       this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+          //     }
+          //   })
+          //   .catch(error => {
+          //     this.$toast.error("error:" + error, { duration: 2000 });
+          //   });
         })
         .catch(err => {
           // this.$message({
@@ -1692,26 +1711,26 @@ export default {
       
     },
     //取得項目子清單
-    getItemData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`)
-        .then(res => {
-          //拆主要類別，保留子項目
-          var allitems = [];
-          for (let i = 0; i < Object.keys(res.data).length; i++) {
-            let colsclass = Object.keys(res.data)[i]; //water,env...;
-            if (i != 0) {
-              allitems.push({ divider: true });
-            }
-            allitems.push({ header: colsclass }); //group name
-            allitems.push(...Object.keys(res.data[colsclass]));
-          }
-          this.waterdatacols = allitems;
-          this.allcols = Object.assign({}, res.data);
-          console.log("子項目 api", res.request.responseURL);
-          // console.log("waterdatacols 子項目", this.waterdatacols);
-        });
-    },
+    // getItemData: async function() {
+    //   await this.$axios
+    //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`)
+    //     .then(res => {
+    //       //拆主要類別，保留子項目
+    //       var allitems = [];
+    //       for (let i = 0; i < Object.keys(res.data).length; i++) {
+    //         let colsclass = Object.keys(res.data)[i]; //water,env...;
+    //         if (i != 0) {
+    //           allitems.push({ divider: true });
+    //         }
+    //         allitems.push({ header: colsclass }); //group name
+    //         allitems.push(...Object.keys(res.data[colsclass]));
+    //       }
+    //       this.waterdatacols = allitems;
+    //       this.allcols = Object.assign({}, res.data);
+    //       console.log("子項目 api", res.request.responseURL);
+    //       // console.log("waterdatacols 子項目", this.waterdatacols);
+    //     });
+    // },
     getCircleData: async function() {
       //取得循環資料-取得檢測數據、取得蝦況
       //歸零
@@ -1730,79 +1749,94 @@ export default {
       var parm_url = Object.keys(parm)
         .map(key => key + "=" + parm[key])
         .join("&");
-        await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/?${parm_url}`
-        )
-        .then(res => {
-          this.circleData = res.data;
-          // this.circleData.push({
+      let getBreedingRecordList = await this.getBreedingRecordList(parm_url);
+      let data = typeof (getBreedingRecordList)=='string'?[]:getBreedingRecordList;
+      this.circleData = data;
+      console.log(data);
+      if (this.circleData.length > 0) {
+        // this.getwarnData();
+        // this.getDetectData();
+        this.getshirimpData();
+      }
+      this.resultListOpen = true;
+      this.resultCycleOpen = false;
+      this.currentDataId = null;
+      this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
+      this.passObj.tempMain = {};
+      this.passObj.tempContent = [];
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/?${parm_url}`
+      //   )
+      //   .then(res => {
+      //     this.circleData = res.data;
+      //     // this.circleData.push({
             
-          //   "id": 99999,
-          //   "name": "1112",
-          //   "num_per_unit": 222,
-          //   "started_date": "2023-10-19",
-          //   "ended_date": null,
-          //   "stocked_date": "2023-10-02",
-          //   "water_source": "Seawater",
-          //   "water_source_salinity": 1,
-          //   "cn": 0,
-          //   "initial_weight": 0,
-          //   "estimated_survival_rate": "70.0%",
-          //   "estimated_fcr": 0,
-          //   "estimated_harvest_weight": 0,
-          //   "remark": "",
-          //   "pond_id": 1,
-          //   "seedling_id": 5,
-          //   "seedling_name": "A-2苗",
-          //   "person_in_charge": "技術部-李遠菖",
-          //   "created_user": "技術部-溫健偉",
-          //   "created_time": "2023-10-19 08:24:58",
-          //   "updated_user": "技術部-溫健偉",
-          //   "updated_time": "2023-10-19 08:24:58",
-          //   "total": 31080,
-          //   "days": 5
-          // })
-          console.log(res.data);
-          console.log("循環資料 api",res.request.responseURL);
-          if (this.circleData.length > 0) {
-            // this.getwarnData();
-            // this.getDetectData();
-            this.getshirimpData();
-          }
-          this.resultListOpen = true;
-          this.resultCycleOpen = false;
-          this.currentDataId = null;
-        })
-        .catch(error=>{
-          this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(async () => {
-          this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
-          this.passObj.tempMain = {};
-          this.passObj.tempContent = []
-        });
+      //     //   "id": 99999,
+      //     //   "name": "1112",
+      //     //   "num_per_unit": 222,
+      //     //   "started_date": "2023-10-19",
+      //     //   "ended_date": null,
+      //     //   "stocked_date": "2023-10-02",
+      //     //   "water_source": "Seawater",
+      //     //   "water_source_salinity": 1,
+      //     //   "cn": 0,
+      //     //   "initial_weight": 0,
+      //     //   "estimated_survival_rate": "70.0%",
+      //     //   "estimated_fcr": 0,
+      //     //   "estimated_harvest_weight": 0,
+      //     //   "remark": "",
+      //     //   "pond_id": 1,
+      //     //   "seedling_id": 5,
+      //     //   "seedling_name": "A-2苗",
+      //     //   "person_in_charge": "技術部-李遠菖",
+      //     //   "created_user": "技術部-溫健偉",
+      //     //   "created_time": "2023-10-19 08:24:58",
+      //     //   "updated_user": "技術部-溫健偉",
+      //     //   "updated_time": "2023-10-19 08:24:58",
+      //     //   "total": 31080,
+      //     //   "days": 5
+      //     // })
+      //     console.log(res.data);
+      //     console.log("循環資料 api",res.request.responseURL);
+      //     if (this.circleData.length > 0) {
+      //       // this.getwarnData();
+      //       // this.getDetectData();
+      //       this.getshirimpData();
+      //     }
+      //     this.resultListOpen = true;
+      //     this.resultCycleOpen = false;
+      //     this.currentDataId = null;
+      //   })
+      //   .catch(error=>{
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //   })
+      //   .finally(async () => {
+      //     this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
+      //     this.passObj.tempMain = {};
+      //     this.passObj.tempContent = []
+      //   });
 
-      // this.getDetectData(); //無論如何都要抓 事件紀錄清單
+      // // this.getDetectData(); //無論如何都要抓 事件紀錄清單
     },
-    getDetectData: async function() {
-      this.detectloading = true;
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/timely-data/?pond_id=${this.poolid}`
-        )
-        .then(res => {
-          this.detectData = res.data;
-          console.log("24小時資料 api:", res.request.responseURL);
-        })
-        .catch(error=>{
-          console.log("24小時資料-" + error);
-          console.log("24小時資料 api:", error.config.url);
-        })
-        .finally(() => {
-          this.detectloading = false;
-        });
-    },
+    // getDetectData: async function() {
+    //   this.detectloading = true;
+    //   await this.$axios
+    //     .get(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/timely-data/?pond_id=${this.poolid}`
+    //     )
+    //     .then(res => {
+    //       this.detectData = res.data;
+    //       console.log("24小時資料 api:", res.request.responseURL);
+    //     })
+    //     .catch(error=>{
+    //       console.log("24小時資料-" + error);
+    //       console.log("24小時資料 api:", error.config.url);
+    //     })
+    //     .finally(() => {
+    //       this.detectloading = false;
+    //     });
+    // },
     getshirimpData: async function() {
       //暫無蝦況api
       //蝦況
@@ -1896,160 +1930,204 @@ export default {
       //   });
     },
     getCycleData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
-        .then(res=>{
-          if(res.status==200) {
-            console.log('可新增循環的池',res);
-            // 新增循環的池選擇
-            var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
-            this.addPoolData = data;
-          }else {
-            var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-            this.addPoolData = data;
-          }
+      let getArchitecture = await this.getArchitecture(null,true);
+      let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
+      console.log('可新增循環的池',data);
+      // 新增循環的池選擇
+      this.addPoolData = this.setNestedDisabled(_.cloneDeep(data), "");
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
+      //   .then(res=>{
+      //     if(res.status==200) {
+      //       console.log('可新增循環的池',res);
+      //       // 新增循環的池選擇
+      //       var data = this.setNestedDisabled(_.cloneDeep(res.data), "");
+      //       this.addPoolData = data;
+      //     }else {
+      //       var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      //       this.addPoolData = data;
+      //     }
           
-        })
-        .finally(()=>{
+      //   })
+      //   .finally(()=>{
 
-        })
+      //   })
     },
     getPondData: async function(bool=false) {
       if(this.template_items.length>0) {
-        await this.$axios
-          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
-          .then(res => {
-            this.allPondsData = _.cloneDeep(res.data);
-            var items = res.data.filter(x => x.id == this.poolid);
-            if(!bool) {
-              this.addDialog = true;
-            }
-            if(this.bacteriaAll.length>0) {
-              let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
-              let date1 = date[0].split('-').concat(date[1].split(':'));
-              // date1
-              console.log('date',date1);
-              this.addparm.name = '';
-              date1.forEach(x=>this.addparm.name+=x);
-              this.addparm.name = this.addparm.name+'_{pool}'
-              this.addparm.estimated_survival_rate = 70;
-              this.tempSelect = this.template_items[0].id;
-              this.addparm.temp_id = null;
-              this.dataVolumn = [];
-              if (items.length == 1) {
-                this.add_volume = items[0].volume;
-              } else {
-                // this.$toast.success(
-                //   `失敗：無法取得體積資料，池id:${this.poolid}}`,
-                //   {
-                //     duration: 2000
-                //   }
-                // );
-                
-              }
-              // 關掉Dialog再開啟不會重置scrollbar位置 
-              setTimeout(()=>{
-                  if(document.getElementsByClassName('v-dialog--active')) {
-                    document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
-                  }
-                },100)
-              }else {
-                alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
-              }
+        let getPondDataList = await this.getPondDataList();
+        let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+        this.allPondsData = _.cloneDeep(data);
+        var items = data.filter(x => x.id == this.poolid);
+        if(!bool) {
+          this.addDialog = true;
+        }
+        if(this.bacteriaAll.length>0) {
+          let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+          let date1 = date[0].split('-').concat(date[1].split(':'));
+          // date1
+          console.log('date',date1);
+          this.addparm.name = '';
+          date1.forEach(x=>this.addparm.name+=x);
+          this.addparm.name = this.addparm.name+'_{pool}'
+          this.addparm.estimated_survival_rate = 70;
+          this.tempSelect = this.template_items[0].id;
+          this.addparm.temp_id = null;
+          this.dataVolumn = [];
+          if (items.length == 1) {
+            this.add_volume = items[0].volume;
+          } else {
+            // this.$toast.success(
+            //   `失敗：無法取得體積資料，池id:${this.poolid}}`,
+            //   {
+            //     duration: 2000
+            //   }
+            // );
             
-          })
-          .finally(() => {
-            /* 不論失敗成功皆會執行 */
-          });    
+          }
+          // 關掉Dialog再開啟不會重置scrollbar位置 
+          setTimeout(()=>{
+              if(document.getElementsByClassName('v-dialog--active')) {
+                document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+              }
+            },100)
+          }else {
+            alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
+          }
+        // await this.$axios
+        //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
+        //   .then(res => {
+        //     this.allPondsData = _.cloneDeep(res.data);
+        //     var items = res.data.filter(x => x.id == this.poolid);
+        //     if(!bool) {
+        //       this.addDialog = true;
+        //     }
+        //     if(this.bacteriaAll.length>0) {
+        //       let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
+        //       let date1 = date[0].split('-').concat(date[1].split(':'));
+        //       // date1
+        //       console.log('date',date1);
+        //       this.addparm.name = '';
+        //       date1.forEach(x=>this.addparm.name+=x);
+        //       this.addparm.name = this.addparm.name+'_{pool}'
+        //       this.addparm.estimated_survival_rate = 70;
+        //       this.tempSelect = this.template_items[0].id;
+        //       this.addparm.temp_id = null;
+        //       this.dataVolumn = [];
+        //       if (items.length == 1) {
+        //         this.add_volume = items[0].volume;
+        //       } else {
+        //         // this.$toast.success(
+        //         //   `失敗：無法取得體積資料，池id:${this.poolid}}`,
+        //         //   {
+        //         //     duration: 2000
+        //         //   }
+        //         // );
+                
+        //       }
+        //       // 關掉Dialog再開啟不會重置scrollbar位置 
+        //       setTimeout(()=>{
+        //           if(document.getElementsByClassName('v-dialog--active')) {
+        //             document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+        //           }
+        //         },100)
+        //       }else {
+        //         alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
+        //       }
+            
+        //   })
+        //   .finally(() => {
+        //     /* 不論失敗成功皆會執行 */
+        //   });    
       }else {
         alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!')
       }
       
     },
-    showlogDialog: async function() {
-      if (this.$refs.logform != undefined) {
-        this.$refs.logform.reset();
-      }
-      if (this.eventCategory.length <= 0) {
-        await this.$axios
-          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
-          .then(res => {
-            console.log("事件類型 API:" + res.request.responseURL);
-            this.eventCategory = res.data;
-          })
-          .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-          });
-      }
-      this.logDialog = true;
-    },
-    submitlog: async function() {
-      if (!this.$refs.logform.validate()) {
-        return;
-      }
-      var parm = this.logData;
-      parm.pond_record_head_id = this.cirid;
-      parm.created_user = this.$auth.$state.user.email;
-      // console.log(parm);
-      await this.$axios
-        .post(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/`,
-          parm
-        )
-        .then(res => {
-          console.log("新增 log API:" + res.request.responseURL);
-          if (res.data == "新增成功") {
-            this.geteventData(); //取得事件紀錄清單
-            this.logDialog = false;
-            this.$toast.success("新增成功", { duration: 2000 });
-          } else {
-            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
-    },
+    // showlogDialog: async function() {
+    //   if (this.$refs.logform != undefined) {
+    //     this.$refs.logform.reset();
+    //   }
+    //   if (this.eventCategory.length <= 0) {
+    //     await this.$axios
+    //       .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
+    //       .then(res => {
+    //         console.log("事件類型 API:" + res.request.responseURL);
+    //         this.eventCategory = res.data;
+    //       })
+    //       .catch(error => {
+    //         this.$toast.error("error:" + error, { duration: 2000 });
+    //       });
+    //   }
+    //   this.logDialog = true;
+    // },
+    // submitlog: async function() {
+    //   if (!this.$refs.logform.validate()) {
+    //     return;
+    //   }
+    //   var parm = this.logData;
+    //   parm.pond_record_head_id = this.cirid;
+    //   parm.created_user = this.$auth.$state.user.email;
+    //   // console.log(parm);
+    //   await this.$axios
+    //     .post(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/`,
+    //       parm
+    //     )
+    //     .then(res => {
+    //       console.log("新增 log API:" + res.request.responseURL);
+    //       if (res.data == "新增成功") {
+    //         this.geteventData(); //取得事件紀錄清單
+    //         this.logDialog = false;
+    //         this.$toast.success("新增成功", { duration: 2000 });
+    //       } else {
+    //         this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+    //       }
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("error:" + error, { duration: 2000 });
+    //     });
+    // },
     cancelDialog() {
       this.addDialog = false;
     },
-    dellog: async function(data) {
-      console.log(data);
-      this.$confirm(`將永久删除該紀錄[${data.title}], 是否繼續?`, "提示", {
-        confirmButtonText: "確定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$axios
-            .delete(
-              `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/${data.id}`
-            )
-            .then(res => {
-              console.log("刪除 log API:" + res.request.responseURL);
-              if (res.data == "刪除成功") {
-                this.geteventData(); //取得事件紀錄清單
-                this.$toast.success("刪除成功", { duration: 2000 });
-              } else {
-                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
-              }
-            })
-            .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-            });
-          // this.$message({
-          //   type: 'success',
-          //   message: '删除成功!'
-          // });
-        })
-        .catch(err => {
-          // this.$message({
-          //   type: 'info',
-          //   message: '已取消删除'
-          // });
-          this.$toast.error(err, { duration: 2000 });
-        });
-    },
+    // dellog: async function(data) {
+    //   console.log(data);
+    //   this.$confirm(`將永久删除該紀錄[${data.title}], 是否繼續?`, "提示", {
+    //     confirmButtonText: "確定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(() => {
+    //       this.$axios
+    //         .delete(
+    //           `${this.$store.state.mydata.gobal_api.apiUrl}/pond-event-log/${data.id}`
+    //         )
+    //         .then(res => {
+    //           console.log("刪除 log API:" + res.request.responseURL);
+    //           if (res.data == "刪除成功") {
+    //             this.geteventData(); //取得事件紀錄清單
+    //             this.$toast.success("刪除成功", { duration: 2000 });
+    //           } else {
+    //             this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+    //           }
+    //         })
+    //         .catch(error => {
+    //           this.$toast.error("error:" + error, { duration: 2000 });
+    //         });
+    //       // this.$message({
+    //       //   type: 'success',
+    //       //   message: '删除成功!'
+    //       // });
+    //     })
+    //     .catch(err => {
+    //       // this.$message({
+    //       //   type: 'info',
+    //       //   message: '已取消删除'
+    //       // });
+    //       this.$toast.error(err, { duration: 2000 });
+    //     });
+    // },
     //帳號清單
     getaccList: async function() {
       let getuserData = await this.getUserList();
@@ -2073,28 +2151,42 @@ export default {
     },
     //取得選項-水源、水源鹽度
     getOptData:async function(){
-      let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
-        await this.$axios.get(url).then(res => {
-            if(res.status==200){
-                this.optData = res.data;
-                
-                //ObservationData
-                this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      let getFieldOtptionList = await this.getFieldOtptionList();
+      let data = typeof (getFieldOtptionList)=='string'?[]:getFieldOtptionList;
+      this.optData = data;
+      
+      //ObservationData
+      this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
 
-                //BacteriaData
-                this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                this.optData.IsVirusInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                this.optData.IsBacteriumInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      //BacteriaData
+      this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      this.optData.IsVirusInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      this.optData.IsBacteriumInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      
+      console.log("opt",this.optData);
+      // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
+      //   await this.$axios.get(url).then(res => {
+      //       if(res.status==200){
+      //           this.optData = res.data;
                 
-                console.log("opt",this.optData);
-            }else{
-                this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-            }
-        })
-        .catch(error=>{
-            this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-        });
+      //           //ObservationData
+      //           this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+
+      //           //BacteriaData
+      //           this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      //           this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      //           this.optData.IsVirusInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+      //           this.optData.IsBacteriumInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                
+      //           console.log("opt",this.optData);
+      //       }else{
+      //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+      //       }
+      //   })
+      //   .catch(error=>{
+      //       this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+      //   });
     },
     //新增循環
     submitadd: async function() {
@@ -2204,25 +2296,25 @@ export default {
         }
       }
     },
-    showdialog_imgdialog: async function() {
-      // this.imgdata.imgdate="";
-      // this.imgdata.imgtime="";
-      this.imgdata.item.forEach(item => {
-        item.value = undefined;
-      });
-      // this.imgfiles = [];
-      // this.showimgurl="";
+    // showdialog_imgdialog: async function() {
+    //   // this.imgdata.imgdate="";
+    //   // this.imgdata.imgtime="";
+    //   this.imgdata.item.forEach(item => {
+    //     item.value = undefined;
+    //   });
+    //   // this.imgfiles = [];
+    //   // this.showimgurl="";
 
-      if (this.$refs.imgform != undefined) {
-        this.$refs.imgform.reset();
-      }
-      this.imgdialog = true;
-    },
-    showwarning: function(data) {
-      this.warnDataSel = data;
-      this.warnDataSel.is_add_to_event_log = false; //switch 結案時加入重要紀事
-      this.warnDialog = true;
-    },
+    //   if (this.$refs.imgform != undefined) {
+    //     this.$refs.imgform.reset();
+    //   }
+    //   this.imgdialog = true;
+    // },
+    // showwarning: function(data) {
+    //   this.warnDataSel = data;
+    //   this.warnDataSel.is_add_to_event_log = false; //switch 結案時加入重要紀事
+    //   this.warnDialog = true;
+    // },
     // warnsubmit: async function(pra_is_closed = false) {
     //   if (pra_is_closed == true && !confirm("結案後[警示區]不再顯示")) {
     //     return;
@@ -2256,67 +2348,67 @@ export default {
     //       this.$toast.error("error:" + error, { duration: 2000 });
     //     });
     // },
-    submit_imgdialog: async function() {
-      // let parm = this.imgdata;
-      let formData = new FormData();
-      const updUser = this.$auth.$state.user.email;
-      let additem = [];
-      for (const key in Object.keys(this.imgdata.item)) {
-        if (
-          this.imgdata.item[key].hasOwnProperty("value") &&
-          this.imgdata.item[key].value != undefined
-        ) {
-          additem.push(this.imgdata.item[key]);
-        }
-      }
-      let param = {
-        inspected_time: `${this.imgdata.imgdate} ${this.imgdata.imgtime}:00`,
-        pond_id: parseInt(this.poolid), //需要int
-        created_user: updUser,
-        item: additem
-        // image:this.imgfiles
-      };
-      console.log(param);
-      formData.append("param", JSON.stringify(param));
-      // parm全部加入
-      // for (const key in parm) {
-      //   formData.append(key,parm[key]);
-      // }
-      if (!this.$refs.imgform.validate()) {
-        return;
-      }
+    // submit_imgdialog: async function() {
+    //   // let parm = this.imgdata;
+    //   let formData = new FormData();
+    //   const updUser = this.$auth.$state.user.email;
+    //   let additem = [];
+    //   for (const key in Object.keys(this.imgdata.item)) {
+    //     if (
+    //       this.imgdata.item[key].hasOwnProperty("value") &&
+    //       this.imgdata.item[key].value != undefined
+    //     ) {
+    //       additem.push(this.imgdata.item[key]);
+    //     }
+    //   }
+    //   let param = {
+    //     inspected_time: `${this.imgdata.imgdate} ${this.imgdata.imgtime}:00`,
+    //     pond_id: parseInt(this.poolid), //需要int
+    //     created_user: updUser,
+    //     item: additem
+    //     // image:this.imgfiles
+    //   };
+    //   console.log(param);
+    //   formData.append("param", JSON.stringify(param));
+    //   // parm全部加入
+    //   // for (const key in parm) {
+    //   //   formData.append(key,parm[key]);
+    //   // }
+    //   if (!this.$refs.imgform.validate()) {
+    //     return;
+    //   }
 
-      formData.append("image", this.imgfiles); //required
+    //   formData.append("image", this.imgfiles); //required
 
-      let config = { headers: { "Content-Type": "multipart/form-data" } };
-      await this.$axios
-        .post(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-status/`,
-          formData,
-          config
-        )
-        .then(res => {
-          console.log("API:" + res.request.responseURL);
-          if (res.data == "新增成功") {
-            this.getshirimpData(); //更新蝦況
-            this.imgdialog = false;
-            this.$toast.success("新增成功", { duration: 2000 });
-          } else {
-            this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
-    },
-    chgimgurl: function() {
-      this.imgurlkey += 1;
-      this.showimgurl = "";
-      this.showimgurl =
-        this.imgfiles != null && this.imgfiles.length != 0
-          ? URL.createObjectURL(this.imgfiles)
-          : "";
-    },
+    //   let config = { headers: { "Content-Type": "multipart/form-data" } };
+    //   await this.$axios
+    //     .post(
+    //       `${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-status/`,
+    //       formData,
+    //       config
+    //     )
+    //     .then(res => {
+    //       console.log("API:" + res.request.responseURL);
+    //       if (res.data == "新增成功") {
+    //         this.getshirimpData(); //更新蝦況
+    //         this.imgdialog = false;
+    //         this.$toast.success("新增成功", { duration: 2000 });
+    //       } else {
+    //         this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+    //       }
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("error:" + error, { duration: 2000 });
+    //     });
+    // },
+    // chgimgurl: function() {
+    //   this.imgurlkey += 1;
+    //   this.showimgurl = "";
+    //   this.showimgurl =
+    //     this.imgfiles != null && this.imgfiles.length != 0
+    //       ? URL.createObjectURL(this.imgfiles)
+    //       : "";
+    // },
     handleSelectionChange: async function(selection, row) {
       console.log('select',selection,row)
       //清除
@@ -2709,205 +2801,209 @@ export default {
       this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
       this.submitEdit(true);//編輯執行結束的時間及更改養殖狀態
     },
-    getTemp(id) {
+    async getTemp(id) {
       let para={breeding_record_id:id}
-      this.$axios
-      .get(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`,
-            { params: para },
-            { httpsAgent: agent }
-          )
-          .then(res => {
-            console.log('get temp',res);
-            if(res.data=='養殖循環樣板資料不存在') {
-              this.$toast.error("error:" + res.data, { duration: 2000 });
+      let getBreedingRecordTemplateList = await this.getBreedingRecordTemplateList(para);
+      let data = typeof (getBreedingRecordTemplateList)=='string'?[]:getBreedingRecordTemplateList;
+      data.forEach(data=>{
+        if(data.phase_name_ch!=='空池') {
+          data.stepList.forEach(async (step,sid)=>{
+            // 排序id原為項目隸屬id更改('step_id'+'_'+'數字'->step_+'在階段中的index')
+            // 因檢疫時間須按照時間進行排列，因此更改排序的方式
+            if(step.step_name_ch !== '其他') {
+              step.type = 0;
             }else {
-              res.data.forEach(data=>{
-                if(data.phase_name_ch!=='空池') {
-                  data.stepList.forEach(async (step,sid)=>{
-                    // 排序id原為項目隸屬id更改('step_id'+'_'+'數字'->step_+'在階段中的index')
-                    // 因檢疫時間須按照時間進行排列，因此更改排序的方式
-                    if(step.step_name_ch !== '其他') {
-                      step.type = 0;
-                    }else {
-                      step.type = null;
-                    }
-                    
-                    if(!step.seq_id.includes('step_')) {
-                      step.seq_id = 'step_'+sid;
-                      await this.reviseSeqid(step);
-                    }
-                    // if(step.step_name_ch !== '其他' && step.seq_id=='1') {
-                    //   step.seq_id = step.step_id.toString();
-                    //   await this.reviseSeqid(step);
-                    // }
-                  })
-                }
-                
-              })
-              this.passObj["tempContent"] = [];
-              // this.passObj["tempContent"] = res.data;
-              res.data.forEach(d=>{
-                if(d.phase_name_ch!=='空池') {
-                  this.passObj["tempContent"].push(d);
-                }
-              })
-
-              this.resultListOpen = false;
-              this.resultCycleOpen = true;
-              this.currentDataId = id;
-              // return res.data;
+              step.type = null;
             }
             
+            if(!step.seq_id.includes('step_')) {
+              step.seq_id = 'step_'+sid;
+              await this.reviseSeqid(step);
+            }
           })
-          .finally(() => {
-            /* 不論失敗成功皆會執行 */ 
-          });
+        }
+        
+      })
+      this.passObj["tempContent"] = [];
+      // this.passObj["tempContent"] = res.data;
+      data.forEach(d=>{
+        if(d.phase_name_ch!=='空池') {
+          this.passObj["tempContent"].push(d);
+        }
+      })
+
+      this.resultListOpen = false;
+      this.resultCycleOpen = true;
+      this.currentDataId = id;
+
+      // this.$axios
+      // .get(
+      //       `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`,
+      //       { params: para },
+      //       { httpsAgent: agent }
+      //     )
+      //     .then(res => {
+      //       console.log('get temp',res);
+      //       if(res.data=='養殖循環樣板資料不存在') {
+      //         this.$toast.error("error:" + res.data, { duration: 2000 });
+      //       }else {
+      //         res.data.forEach(data=>{
+      //           if(data.phase_name_ch!=='空池') {
+      //             data.stepList.forEach(async (step,sid)=>{
+      //               // 排序id原為項目隸屬id更改('step_id'+'_'+'數字'->step_+'在階段中的index')
+      //               // 因檢疫時間須按照時間進行排列，因此更改排序的方式
+      //               if(step.step_name_ch !== '其他') {
+      //                 step.type = 0;
+      //               }else {
+      //                 step.type = null;
+      //               }
+                    
+      //               if(!step.seq_id.includes('step_')) {
+      //                 step.seq_id = 'step_'+sid;
+      //                 await this.reviseSeqid(step);
+      //               }
+      //               // if(step.step_name_ch !== '其他' && step.seq_id=='1') {
+      //               //   step.seq_id = step.step_id.toString();
+      //               //   await this.reviseSeqid(step);
+      //               // }
+      //             })
+      //           }
+                
+      //         })
+      //         this.passObj["tempContent"] = [];
+      //         // this.passObj["tempContent"] = res.data;
+      //         res.data.forEach(d=>{
+      //           if(d.phase_name_ch!=='空池') {
+      //             this.passObj["tempContent"].push(d);
+      //           }
+      //         })
+
+      //         this.resultListOpen = false;
+      //         this.resultCycleOpen = true;
+      //         this.currentDataId = id;
+      //         // return res.data;
+      //       }
+            
+      //     })
+      //     .finally(() => {
+      //       /* 不論失敗成功皆會執行 */ 
+      //     });
     },
     // 取得疾病檢驗報告
     async getDisease() {
-      this.diseaseReport = [
-      // {
-      //   step_name_ch: "疾病檢驗",
-      //   step_name_en: "disease",
-      //   status: '異常',
-      //   position:'艾滴0',
-      //   method:'PCR',
-      //   bacteriaSelect:['MMM'],
-      //   files:'',
-      //   msg:'0000',
-      //   type:1,
-      //   execute_time:'2023-12-25 12:09:09'
-      // },{
-      //   step_name_ch: "疾病檢驗",
-      //   step_name_en: "disease",  
-      //   status: '警告',
-      //   position:'艾滴1',
-      //   method:'PCRii',
-      //   bacteriaSelect:['ddd'],
-      //   files:'',
-      //   msg:'1111',
-      //   type:1,
-      //   execute_time:'2023-12-22 08:09:09'
-      // },{
-      //   step_name_ch: "疾病檢驗",
-      //   step_name_en: "disease",
-      //   status: '正常',
-      //   position:'艾滴2',
-      //   method:'PCRii',
-      //   bacteriaSelect:['ddd','445'],
-      //   files:'',
-      //   msg:'2222',
-      //   type:1,
-      //   execute_time:'2023-12-22 12:09:09'
-      // },
-      ]
+      this.diseaseReport = []
       let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/`;
       let parm = {
         started_date: this.searchDate.start,
         ended_date: this.searchDate.end,
         pond_id: this.poolid,
       };
-      await this.$axios
-        .get(apiURL, { params: parm }, { httpsAgent: agent })
-        .then(res => {
-          this.diseaseReport = _.cloneDeep(res.data);
-          this.diseaseReport.forEach(d=>{
-            d.execute_time = d.execute_date+' 00:00:00';
-            d.step_name_ch = '疾病檢驗';
-            d.step_name_en = 'disease';
-            d.type = 1;
-            d.bacteriaSelect = [];
-            d.disease.forEach(x=>{
-              d.bacteriaSelect.push(x.name_en);
-            })
-            d.method = this.bacteriaAll[0].test.filter(x=>x.id == d.method_id)[0].name_ch;
-            this.getWater();
-            // const blob = new Blob([d.file]);
-            // const objectUrl = URL.createObjectURL(blob);
-            // d.file = objectUrl;
-            
-            // const binaryData = [];
-            // binaryData.push(d.file);       
-            // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
-          })
-          console.log('疾病檢驗清單',this.diseaseReport);
-          // this.goAnchor('#chart'); 
-          console.log("疾病檢驗清單", res.request.responseURL);
+      let getDiseaseTestingRecordList = await this.getDiseaseTestingRecordList(parm);
+      let data = typeof (getDiseaseTestingRecordList)=='string'?[]:getDiseaseTestingRecordList;
+      this.diseaseReport = _.cloneDeep(data);
+      this.diseaseReport.forEach(d=>{
+        d.execute_time = d.execute_date+' 00:00:00';
+        d.step_name_ch = '疾病檢驗';
+        d.step_name_en = 'disease';
+        d.type = 1;
+        d.bacteriaSelect = [];
+        d.disease.forEach(x=>{
+          d.bacteriaSelect.push(x.name_en);
         })
-        .catch(err => {
-        });
+        d.method = this.bacteriaAll[0].test.filter(x=>x.id == d.method_id)[0].name_ch;
+      })
       this.diseaseReport.sort((a,b)=>{
           return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
       })
+      console.log('疾病檢驗清單',this.diseaseReport);
+      this.getWater();
+      // await this.$axios
+      //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+      //   .then(res => {
+      //     this.diseaseReport = _.cloneDeep(res.data);
+      //     this.diseaseReport.forEach(d=>{
+      //       d.execute_time = d.execute_date+' 00:00:00';
+      //       d.step_name_ch = '疾病檢驗';
+      //       d.step_name_en = 'disease';
+      //       d.type = 1;
+      //       d.bacteriaSelect = [];
+      //       d.disease.forEach(x=>{
+      //         d.bacteriaSelect.push(x.name_en);
+      //       })
+      //       d.method = this.bacteriaAll[0].test.filter(x=>x.id == d.method_id)[0].name_ch;
+      //       // const blob = new Blob([d.file]);
+      //       // const objectUrl = URL.createObjectURL(blob);
+      //       // d.file = objectUrl;
+            
+      //       // const binaryData = [];
+      //       // binaryData.push(d.file);       
+      //       // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
+      //     })
+      //     console.log('疾病檢驗清單',this.diseaseReport);
+      //     // this.goAnchor('#chart'); 
+      //     console.log("疾病檢驗清單", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //   })
+      //   .finally(() => {
+      //     this.getWater();
+      //   });
+      // this.diseaseReport.sort((a,b)=>{
+      //     return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
+      // })
     },
     // 取得水質檢驗報告
     async getWater() {
-      this.waterReport = [
-        // {
-        //   step_name_ch: "水質檢驗",
-        //   step_name_en: "water",
-        //   status: '異常',
-        //   position:'艾滴water0',
-        //   files:'',
-        //   msg:'0000water',
-        //   type:2,
-        //   execute_time:'2023-12-21 09:09:09'
-        // },{
-        //   step_name_ch: "水質檢驗",
-        //   step_name_en: "water",
-        //   status: '警告',
-        //   position:'艾滴water1',
-        //   files:'',
-        //   msg:'1111water',
-        //   type:2,
-        //   execute_time:'2023-12-22 11:09:09'
-        // },{
-        //   step_name_ch: "水質檢驗",
-        //   step_name_en: "water",
-        //   status: '正常',
-        //   position:'艾滴water2',
-        //   files:'',
-        //   msg:'2222water',
-        //   type:2,
-        //   execute_time:'2023-12-26 12:09:09'
-        // },
-      ]
+      this.waterReport = []
       let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/water-quality-testing-record/`;
       let parm = {
         started_date: this.searchDate.start,
         ended_date: this.searchDate.end,
         pond_id: this.poolid,
       };
-      await this.$axios
-        .get(apiURL, { params: parm }, { httpsAgent: agent })
-        .then(res => {
-          this.waterReport = _.cloneDeep(res.data);
-          this.waterReport.forEach(d=>{
-            d.execute_time = d.execute_date+' 00:00:00';
-            d.step_name_ch = '水質檢驗';
-            d.step_name_en = 'water';
-            d.type = 2;
-
-            // const blob = new Blob([d.file]);
-            // const objectUrl = URL.createObjectURL(blob);
-            // d.file = objectUrl;
-
-            // const binaryData = [];
-            // binaryData.push(d.file);       
-            // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
-          })
-          console.log('水質檢驗清單',this.diseaseReport);
-          // this.goAnchor('#chart'); 
-          console.log("水質檢驗清單", res.request.responseURL);
-          this.getEvent();
-        })
-        .catch(err => {
-          alert("水質失敗：" + err.message);
-        });
+      let getWaterTestingRecordList = await this.getWaterTestingRecordList(parm);
+      let data = typeof (getWaterTestingRecordList)=='string'?[]:getWaterTestingRecordList;
+      this.waterReport = _.cloneDeep(data);
+      this.waterReport.forEach(d=>{
+        d.execute_time = d.execute_date+' 00:00:00';
+        d.step_name_ch = '水質檢驗';
+        d.step_name_en = 'water';
+        d.type = 2;
+      })
       this.waterReport.sort((a,b)=>{
           return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
       })
+      this.getEvent();
+      console.log('水質檢驗清單',this.waterReport);
+      // await this.$axios
+      //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+      //   .then(res => {
+      //     this.waterReport = _.cloneDeep(res.data);
+      //     this.waterReport.forEach(d=>{
+      //       d.execute_time = d.execute_date+' 00:00:00';
+      //       d.step_name_ch = '水質檢驗';
+      //       d.step_name_en = 'water';
+      //       d.type = 2;
+
+      //       // const blob = new Blob([d.file]);
+      //       // const objectUrl = URL.createObjectURL(blob);
+      //       // d.file = objectUrl;
+
+      //       // const binaryData = [];
+      //       // binaryData.push(d.file);       
+      //       // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
+      //     })
+      //     console.log('水質檢驗清單',this.diseaseReport);
+      //     // this.goAnchor('#chart'); 
+      //     console.log("水質檢驗清單", res.request.responseURL);
+      //     this.getEvent();
+      //   })
+      //   .catch(err => {
+      //     alert("水質失敗：" + err.message);
+      //   });
+      // this.waterReport.sort((a,b)=>{
+      //     return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
+      // })
         
     },
     // 取得事件
@@ -2918,41 +3014,55 @@ export default {
         ended_date: this.searchDate.end,
         pond_id: this.poolid,
       };
-      await this.$axios
-        .get(apiURL, { params: parm }, { httpsAgent: agent })
-        .then(res => {
-          this.eventReport = _.cloneDeep(res.data);
-          this.eventReport.forEach(d=>{
-            d.execute_time = d.started_date;
-            d.step_name_ch = '事件';
-            d.step_name_en = 'event';
-            d.type = 3;
-            d.msg=`[ `+d.event_category_name+` ] `+d.title
-          })
-          console.log('event',this.eventReport);
-          // this.goAnchor('#chart'); 
-          console.log("eventReport:", res.request.responseURL);
-        })
-        .catch(err => {
-          alert("事件失敗：" + err.message);
-        });
+      let getEventList = await this.getEventList(parm);
+      let data = typeof (getEventList)=='string'?[]:getEventList;
+      this.eventReport = _.cloneDeep(data);
+      this.eventReport.forEach(d=>{
+        d.execute_time = d.started_date;
+        d.step_name_ch = '事件';
+        d.step_name_en = 'event';
+        d.type = 3;
+        d.msg=`[ `+d.event_category_name+` ] `+d.title
+      })
+      console.log('event',this.eventReport);
+      // await this.$axios
+      //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+      //   .then(res => {
+      //     this.eventReport = _.cloneDeep(res.data);
+      //     this.eventReport.forEach(d=>{
+      //       d.execute_time = d.started_date;
+      //       d.step_name_ch = '事件';
+      //       d.step_name_en = 'event';
+      //       d.type = 3;
+      //       d.msg=`[ `+d.event_category_name+` ] `+d.title
+      //     })
+      //     console.log('event',this.eventReport);
+      //     // this.goAnchor('#chart'); 
+      //     console.log("eventReport:", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //     alert("事件失敗：" + err.message);
+      //   });
     },
     async reviseSeqid(step) {
       step.updated_user = this.$auth.$state.user.email;
-      await this.$axios
-        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
-            .then(res => {
-                if(res.data=='修改成功'){
-                    // this.$emit('getTemp');
-                    // this.$toast.success("更新成功!",{ duration: 2000 });
-                }
+      var res = false;
+      res = this.patchRecordStepList(step,step.step_id);
+
+      // await this.$axios
+      //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
+      //       .then(res => {
+      //           if(res.data=='修改成功'){
+      //               // this.$emit('getTemp');
+      //               // this.$toast.success("更新成功!",{ duration: 2000 });
+      //           }
                 
-            })
-            .catch(error => {
-                this.$toast.error("error:" + error, { duration: 2000 });
-            })
-            .finally(() => {
-            });
+      //       })
+      //       .catch(error => {
+      //           this.$toast.error("error:" + error, { duration: 2000 });
+      //       })
+      //       .finally(() => {
+      //       });
     },
     // async openCycle(val) {
     //   await this.getTemp(val.id);
@@ -2970,136 +3080,136 @@ export default {
       }
     },
     //
-    getLimitData: async function(item) {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`)
-        .then(res => {
-          // this.allcols = Object.assign([], res.data);
-          var lmtitem = res.data.filter(x => x.name_ch == item);
-          if (lmtitem.length > 0) {
-            //不可以有null值
-            this.markdata.maxline =
-              lmtitem[0].critical_max == null ? -999 : lmtitem[0].critical_max;
-            this.markdata.minline =
-              lmtitem[0].critical_min == null ? -999 : lmtitem[0].critical_min;
-          } else {
-            this.markdata.maxline = -999;
-            this.markdata.minline = -999;
-          }
-        });
-    },
+    // getLimitData: async function(item) {
+    //   await this.$axios
+    //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`)
+    //     .then(res => {
+    //       // this.allcols = Object.assign([], res.data);
+    //       var lmtitem = res.data.filter(x => x.name_ch == item);
+    //       if (lmtitem.length > 0) {
+    //         //不可以有null值
+    //         this.markdata.maxline =
+    //           lmtitem[0].critical_max == null ? -999 : lmtitem[0].critical_max;
+    //         this.markdata.minline =
+    //           lmtitem[0].critical_min == null ? -999 : lmtitem[0].critical_min;
+    //       } else {
+    //         this.markdata.maxline = -999;
+    //         this.markdata.minline = -999;
+    //       }
+    //     });
+    // },
     //折線圖資料
-    getdata: async function() {
-      //mark line 先歸零
-      this.markdata.maxline = -999;
-      this.markdata.minline = -999;
-      //清空itm
-      this.item = [];
+    // getdata: async function() {
+    //   //mark line 先歸零
+    //   this.markdata.maxline = -999;
+    //   this.markdata.minline = -999;
+    //   //清空itm
+    //   this.item = [];
 
-      this.chartmin = undefined;
-      this.chartmax = undefined;
-      //指定的項目是歸屬於哪個類別，水質/投餵
-      let itemclass = await this.getItemClass(this.defitem); //判斷項目是屬於水質還是投餵用
-      //判斷項目是屬於水質還是投餵用
-      //抓折線圖資料囉
-      let parm = {
-        started_date: this.chart_started_date,
-        ended_date: this.chart_ended_date,
-        // factory_id: this.sel_main,
-        // pond_area_id: this.sel_area,
-        pond_id: this.poolid,
-        items: this.defitem,
-        data_group: itemclass
-      };
-      this.waterloading = true;
-      let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
-      await this.$axios
-        .get(apiURL, { params: parm }, { httpsAgent: agent })
-        .then(res => {
-          console.log("chart data api:", res.request.responseURL);
-          // let data2 = _.cloneDeep(res.data); //原始資料
-          //整理資料長相
-          res.data.items.forEach(function(x) {
-            //給折線圖用的資料
-            delete x.id; //"刪掉id欄位"
-            delete x.updated_user; //"刪掉updated_user欄位"
-            delete x.group; //"刪掉group欄位"
-          });
+    //   this.chartmin = undefined;
+    //   this.chartmax = undefined;
+    //   //指定的項目是歸屬於哪個類別，水質/投餵
+    //   let itemclass = await this.getItemClass(this.defitem); //判斷項目是屬於水質還是投餵用
+    //   //判斷項目是屬於水質還是投餵用
+    //   //抓折線圖資料囉
+    //   let parm = {
+    //     started_date: this.chart_started_date,
+    //     ended_date: this.chart_ended_date,
+    //     // factory_id: this.sel_main,
+    //     // pond_area_id: this.sel_area,
+    //     pond_id: this.poolid,
+    //     items: this.defitem,
+    //     data_group: itemclass
+    //   };
+    //   this.waterloading = true;
+    //   let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
+    //   await this.$axios
+    //     .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //     .then(res => {
+    //       console.log("chart data api:", res.request.responseURL);
+    //       // let data2 = _.cloneDeep(res.data); //原始資料
+    //       //整理資料長相
+    //       res.data.items.forEach(function(x) {
+    //         //給折線圖用的資料
+    //         delete x.id; //"刪掉id欄位"
+    //         delete x.updated_user; //"刪掉updated_user欄位"
+    //         delete x.group; //"刪掉group欄位"
+    //       });
 
-          this.item = res.data;
-          console.log("chart data count:", this.item.items.length);
-          // this.item2 = data2;
-          //抓上下限資料
-          if (res.data.items.length > 0) {
-            this.getLimitData(this.defitem);
-          }
-        })
-        .catch(err => {
-          alert("折線圖失敗：" + err.message);
-        })
-        .finally(() => {
-          this.waterloading = false;
-        });
-    },
+    //       this.item = res.data;
+    //       console.log("chart data count:", this.item.items.length);
+    //       // this.item2 = data2;
+    //       //抓上下限資料
+    //       if (res.data.items.length > 0) {
+    //         this.getLimitData(this.defitem);
+    //       }
+    //     })
+    //     .catch(err => {
+    //       alert("折線圖失敗：" + err.message);
+    //     })
+    //     .finally(() => {
+    //       this.waterloading = false;
+    //     });
+    // },
     //氣象
-    getWeather: async function() {
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          this.gettingLocation = false;
-          this.loc.longitude = pos.coords.longitude;
-          this.loc.latitude = pos.coords.latitude;
-        },
-        err => {
-          this.gettingLocation = false;
-          this.errorStr = err.message;
-          //預設在公司
-          this.loc.longitude = "121.82030882702146";
-          this.loc.latitude = "24.83616577553079";
-        }
-      );
-      var parm ={
-           longitude: this.loc.longitude,
-           latitude: this.loc.latitude,
-      };
-      await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm,{
-            httpsAgent: agent
-          })
-        .then(res => {
-          let weadata = JSON.parse(res.data.d);
-          this.weatherdata.main = weadata.main;
-          this.weatherdata.wind = weadata.wind;
-          this.weatherdata.weather = weadata.weather;
-        //   this.weatherdata.rain.h_1 = weadata.rain.1h;
-          // console.log("weather api：" + res.request.responseURL);
-          this.getLocation();
-        })
-        .catch(error => {
-          this.$toast.error("weather error:" + error, { duration: 2000 });
-        });
+    // getWeather: async function() {
+    //   navigator.geolocation.getCurrentPosition(
+    //     pos => {
+    //       this.gettingLocation = false;
+    //       this.loc.longitude = pos.coords.longitude;
+    //       this.loc.latitude = pos.coords.latitude;
+    //     },
+    //     err => {
+    //       this.gettingLocation = false;
+    //       this.errorStr = err.message;
+    //       //預設在公司
+    //       this.loc.longitude = "121.82030882702146";
+    //       this.loc.latitude = "24.83616577553079";
+    //     }
+    //   );
+    //   var parm ={
+    //        longitude: this.loc.longitude,
+    //        latitude: this.loc.latitude,
+    //   };
+    //   await this.$axios
+    //     .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm,{
+    //         httpsAgent: agent
+    //       })
+    //     .then(res => {
+    //       let weadata = JSON.parse(res.data.d);
+    //       this.weatherdata.main = weadata.main;
+    //       this.weatherdata.wind = weadata.wind;
+    //       this.weatherdata.weather = weadata.weather;
+    //     //   this.weatherdata.rain.h_1 = weadata.rain.1h;
+    //       // console.log("weather api：" + res.request.responseURL);
+    //       this.getLocation();
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("weather error:" + error, { duration: 2000 });
+    //     });
      
-    },
-    getLocation:async function(){
-      var parm ={
-           longitude: this.loc.longitude,
-           latitude: this.loc.latitude,
-      };
-      await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/location`, parm ,{
-            httpsAgent: agent
-          })
-        .then(res => {
-          let loc = JSON.parse(res.data.d);
-          // var max = Math.max.apply(Math, loc.map(function(o) { return o.cnt; }));
-          this.location = loc.sort((a,b) => (a.cnt > b.cnt) ? 1 : ((b.cnt > a.cnt) ? -1 : 0));
-          // var xx = loc.map(function(o) { return o.cnt; });
-        //   this.weatherdata.rain.h_1 = weadata.rain.1h;
-          console.log("location api：" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("location error:" + error, { duration: 2000 });
-        });
-    },
+    // },
+    // getLocation:async function(){
+    //   var parm ={
+    //        longitude: this.loc.longitude,
+    //        latitude: this.loc.latitude,
+    //   };
+    //   await this.$axios
+    //     .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/location`, parm ,{
+    //         httpsAgent: agent
+    //       })
+    //     .then(res => {
+    //       let loc = JSON.parse(res.data.d);
+    //       // var max = Math.max.apply(Math, loc.map(function(o) { return o.cnt; }));
+    //       this.location = loc.sort((a,b) => (a.cnt > b.cnt) ? 1 : ((b.cnt > a.cnt) ? -1 : 0));
+    //       // var xx = loc.map(function(o) { return o.cnt; });
+    //     //   this.weatherdata.rain.h_1 = weadata.rain.1h;
+    //       console.log("location api：" + res.request.responseURL);
+    //     })
+    //     .catch(error => {
+    //       this.$toast.error("location error:" + error, { duration: 2000 });
+    //     });
+    // },
     //樣板
     //樣版清單
     getTemplateData: async function () {
@@ -3385,36 +3495,53 @@ export default {
       delete parm.estimated_num;//刪除初始放苗量
       console.log('>>>edit',parm);
       if(bool || this.$refs.editform.validate()){
-        await this.$axios
-            .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${this.editparm.id}/`, parm)
-            .then(res => {
-                if(res.data=='修改成功'){
-                    this.$toast.success("修改成功", { duration: 2000 });
-                    // 結束循環要將池更改為空池
-                    if(bool == true) {
-                      console.log('bool',bool);
-                      let status={
-                        id:new Array(),
-                        status: '空池'
-                      }
-                      status.id.push(this.poolid);
-                      this.compareStatus(status);
-                    }
-                    this.editDialog = false;
-                    this.getCircleData();
-                    
-                    // this.updateouterAction('done');
-                }else{
-                    this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+        var res = false;
+        res = this.patchBreedingRecordList(parm,this.editparm.id);
+        setTimeout(()=>{
+            if(res) {
+              // 結束循環要將池更改為空池
+              if(bool == true) {
+                let status={
+                  id:new Array(),
+                  status: '空池'
                 }
+                status.id.push(this.poolid);
+                this.compareStatus(status);
+              }
+              this.editDialog = false;
+              this.getCircleData();
+            }
+        },50)
+        // await this.$axios
+        //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${this.editparm.id}/`, parm)
+        //     .then(res => {
+        //         if(res.data=='修改成功'){
+        //             this.$toast.success("修改成功", { duration: 2000 });
+        //             // 結束循環要將池更改為空池
+        //             if(bool == true) {
+        //               console.log('bool',bool);
+        //               let status={
+        //                 id:new Array(),
+        //                 status: '空池'
+        //               }
+        //               status.id.push(this.poolid);
+        //               this.compareStatus(status);
+        //             }
+        //             this.editDialog = false;
+        //             this.getCircleData();
+                    
+        //             // this.updateouterAction('done');
+        //         }else{
+        //             this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+        //         }
 
-                console.log("修改API:" + res.request.responseURL);
-            })
-            .catch(error => {
-                this.$toast.error("error:" + error, { duration: 2000 });
-            })
-            .finally(() => {
-            });
+        //         console.log("修改API:" + res.request.responseURL);
+        //     })
+        //     .catch(error => {
+        //         this.$toast.error("error:" + error, { duration: 2000 });
+        //     })
+        //     .finally(() => {
+        //     });
 
       }
     },
@@ -3617,32 +3744,44 @@ export default {
           let config = { headers: { "Content-Type": "multipart/form-data" } };
           let url=this.addReport[0].type==1?`/breeding/disease-testing-record/${this.addReport[0].id}/`:`/breeding/water-quality-testing-record/${this.addReport[0].id}/`;
           console.log('parm',parm);
-          await this.$axios
-          .patch(
-                `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
-                formData,
-                config
-              )
-              .then(async res => {
-                  if(res.data=='修改成功'){
-                    this.reportDialog = false;
-                    if(this.addReport[0].type == 1) {
-                      await this.getDisease();
-                    }else if(this.addReport[0].type == 2) {
-                      await this.getWater();
-                    }
-                    this.$toast.success("修改成功", { duration: 2000 });
-                  }else{
-                      this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
-                  }
+          var res = false;
+          res = this.addReport[0].type==1?this.patchDiseaseTestingRecordList(formData,this.addReport[0].id):this.patchWaterTestingRecordList(formData,this.addReport[0].id);
+          setTimeout(async ()=>{
+              if(res) {
+                this.reportDialog = false;
+                if(this.addReport[0].type == 1) {
+                  await this.getDisease();
+                }else if(this.addReport[0].type == 2) {
+                  await this.getWater();
+                }
+              }
+          },50)
+          // await this.$axios
+          // .patch(
+          //       `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
+          //       formData,
+          //       config
+          //     )
+          //     .then(async res => {
+          //         if(res.data=='修改成功'){
+          //           this.reportDialog = false;
+          //           if(this.addReport[0].type == 1) {
+          //             await this.getDisease();
+          //           }else if(this.addReport[0].type == 2) {
+          //             await this.getWater();
+          //           }
+          //           this.$toast.success("修改成功", { duration: 2000 });
+          //         }else{
+          //             this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+          //         }
 
-                  console.log("修改步驟API:" + res.request.responseURL);
-              })
-              .catch(error => {
-                  this.$toast.error("error:" + error, { duration: 2000 });
-              })
-              .finally(() => {
-              });
+          //         console.log("修改步驟API:" + res.request.responseURL);
+          //     })
+          //     .catch(error => {
+          //         this.$toast.error("error:" + error, { duration: 2000 });
+          //     })
+          //     .finally(() => {
+          //     });
         }else {
           parm.created_user = this.$auth.$state.user.email;
         // parm.disease_id=parm.disease_id.length>0? parm.disease_id.toString():'';
@@ -3663,29 +3802,41 @@ export default {
         let config = { headers: { "Content-Type": "multipart/form-data" } };
         let url=this.addReport[0].type==1?'/breeding/disease-testing-record/':'/breeding/water-quality-testing-record/';
         console.log('report',formData,parm);
-        await this.$axios
-          .post(
-            `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
-            formData,
-            config
-          )
-          .then(async res => {
-            console.log("API:" + res.request.responseURL);
-            if (res.data == "新增成功") {
+        var res = false;
+        res = this.addReport[0].type==1?this.postDiseaseTestingRecordList(formData):this.postWaterTestingRecordList(formData);
+        setTimeout(async ()=>{
+            if(res) {
               this.reportDialog = false;
               if(this.addReport[0].type == 1) {
                 await this.getDisease();
               }else if(this.addReport[0].type == 2) {
                 await this.getWater();
               }
-              this.$toast.success("新增成功", { duration: 2000 });
-            } else {
-              this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-          });
+        },50)
+        // await this.$axios
+        //   .post(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}`+`${url}`,
+        //     formData,
+        //     config
+        //   )
+        //   .then(async res => {
+        //     console.log("API:" + res.request.responseURL);
+        //     if (res.data == "新增成功") {
+        //       this.reportDialog = false;
+        //       if(this.addReport[0].type == 1) {
+        //         await this.getDisease();
+        //       }else if(this.addReport[0].type == 2) {
+        //         await this.getWater();
+        //       }
+        //       this.$toast.success("新增成功", { duration: 2000 });
+        //     } else {
+        //       this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error("error:" + error, { duration: 2000 });
+        //   });
           console.log('submit report',this.addReport);
         }
         
@@ -3694,20 +3845,23 @@ export default {
     },
     // 取得狀態顏色
     async getStateColor() {
-      const agent = new https.Agent({
-          rejectUnauthorized: false
-      });
-      //取得池況顏色設定
-      await this.$axios
-          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
-          .then(res => {
-            // console.log('getColor',res.data);
-            this.statcolor = res.data;
-            console.log("池況狀態顏色:", res.request.responseURL);
-          })
-          .catch(error => {
-            console.log("error:" + error.message);
-          });
+      let getPondStateList = await this.getPondStateList();
+      let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
+      this.statcolor = data;
+      // const agent = new https.Agent({
+      //     rejectUnauthorized: false
+      // });
+      // //取得池況顏色設定
+      // await this.$axios
+      //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
+      //     .then(res => {
+      //       // console.log('getColor',res.data);
+      //       this.statcolor = res.data;
+      //       console.log("池況狀態顏色:", res.request.responseURL);
+      //     })
+      //     .catch(error => {
+      //       console.log("error:" + error.message);
+      //     });
     },
     // 比對池況狀態id與地圖撈取出的id
     compareStatus(status) {
@@ -3718,25 +3872,28 @@ export default {
           id: statusid,
           updated_user: this.$auth.$state.user.email
         }
-        await this.$axios
-          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${x}/`, parm)
-          .then(res => {
-              if (res.data == "修改成功") {
-              // let evt={
-              //     item: this.item,
-              //     value: this.selectedItem
-              // }
-              // this.item.state = this.selectedItem;
-              // this.$toast.success(`修改成功`, { duration: 2000 });
-              // this.$emit('saveSuccess',evt);
-              // this.selectedItem = '';
-              } else {
-                  alert(res.data);
-              }
-          })
-          .catch(error => {
-              alert("error:" + error.message);
-          });
+        var res = false;
+        res = this.patchPondStateList(x,parm);
+
+        // await this.$axios
+        //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${x}/`, parm)
+        //   .then(res => {
+        //       if (res.data == "修改成功") {
+        //       // let evt={
+        //       //     item: this.item,
+        //       //     value: this.selectedItem
+        //       // }
+        //       // this.item.state = this.selectedItem;
+        //       // this.$toast.success(`修改成功`, { duration: 2000 });
+        //       // this.$emit('saveSuccess',evt);
+        //       // this.selectedItem = '';
+        //       } else {
+        //           alert(res.data);
+        //       }
+        //   })
+        //   .catch(error => {
+        //       alert("error:" + error.message);
+        //   });
       })
       
     },
@@ -3836,7 +3993,6 @@ export default {
 
   },
   async mounted() {
-   
     if (this.req.id != undefined){
       
       // await this.getwarnData();//取得警示區資料
@@ -3844,7 +4000,7 @@ export default {
     }
     
     await this.getMainData();//取得整場架構資料
-    await this.getItemData(); //取得指標子項目
+    // await this.getItemData(); //取得指標子項目
     
     await this.getSeedlingData();//取得苗清單
     await this.getaccList();//帳號清單
@@ -3853,7 +4009,7 @@ export default {
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getAuth();
-    await this.getWeather(); //氣象
+    // await this.getWeather(); //氣象
     await this.getOptData(); //選項
     await this.getStateColor();
     await this.getType();
@@ -3942,9 +4098,7 @@ export default {
     padding: 8px 12px;
     .v-card.result-card {
       .card-title {
-        border-bottom: 1px solid rgba(0,0,0,0.1);
         padding: 0;
-        margin: 12px 16px;
         .title {
           .v-card__title {
             padding: 12px;
@@ -4025,7 +4179,9 @@ export default {
   .el-table-column--selection .cell {
     justify-content: center;
   }
-
+  .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+    padding-top: 0;
+  }
   .select-type {
         .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
             padding-top: 8px;

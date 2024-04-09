@@ -1226,58 +1226,84 @@ export default {
                     switch (this.stepmode) {
                         case 'add':
                             console.log('step add',this.stepitem);
-                            
-                            await this.$axios
-                                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
-                                .then(res => {
-                                    if(res.data=='新增成功'){
-                                        this.dialog.additem = false;
-                                        this.dialog.phaseform = false;
-                                        this.getstepdata(true);
+                            var res = false;
+                            res = this.postBreedingStepList(this.stepformedit);
+                            setTimeout(()=>{
+                                if(res) {
+                                    this.dialog.additem = false;
+                                    this.dialog.phaseform = false;
+                                    this.getstepdata(true);
+                                }
+                            },50)
+                            // await this.$axios
+                            //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
+                            //     .then(res => {
+                            //         if(res.data=='新增成功'){
+                            //             this.dialog.additem = false;
+                            //             this.dialog.phaseform = false;
+                            //             this.getstepdata(true);
                                         
-                                        this.$toast.success("新增成功", { duration: 2000 });
-                                    }else{
-                                        this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
-                                    }
+                            //             this.$toast.success("新增成功", { duration: 2000 });
+                            //         }else{
+                            //             this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
+                            //         }
 
-                                    console.log("新增步驟API:" + res.request.responseURL);
-                                })
-                                .catch(error => {
-                                    this.$toast.error("error:" + error, { duration: 2000 });
-                                })
-                                .finally(() => {
-                                });
+                            //         console.log("新增步驟API:" + res.request.responseURL);
+                            //     })
+                            //     .catch(error => {
+                            //         this.$toast.error("error:" + error, { duration: 2000 });
+                            //     })
+                            //     .finally(() => {
+                            //     });
                             break;
                         case 'edit':
                             var id = this.stepitem.id;
-                            await this.$axios
-                            .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
-                                .then(res => {
-                                    if(res.data=='修改成功'){
-                                        this.dialog.phaseform = false;
-                                        var stepformedit = this.stepformedit;
-                                        //同步把畫面上的資料修改成一致
-                                        this.mainItems.forEach(element => {
-                                            var step = element.stepList;
-                                            step.filter(x=>x.step_id==id).forEach(stepele => {
-                                                stepele.step_name_ch = stepformedit.name_ch;
-                                            });
+                            var res = false;
+                            res = this.patchBreedingStepList(this.stepformedit,id);
+                            setTimeout(()=>{
+                                if(res) {
+                                    this.dialog.phaseform = false;
+                                    var stepformedit = this.stepformedit;
+                                    //同步把畫面上的資料修改成一致
+                                    this.mainItems.forEach(element => {
+                                        var step = element.stepList;
+                                        step.filter(x=>x.step_id==id).forEach(stepele => {
+                                            stepele.step_name_ch = stepformedit.name_ch;
                                         });
-                                        //this.stepformedit 要把同id所有名稱
-                                        this.stepitem.id = undefined;
-                                        this.getstepdata(true);
-                                        // this.$toast.success("修改成功", { duration: 2000 });
-                                    }else{
-                                        this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
-                                    }
+                                    });
+                                    //this.stepformedit 要把同id所有名稱
+                                    this.stepitem.id = undefined;
+                                    this.getstepdata(true);
+                                }
+                            },50)
+                            // await this.$axios
+                            // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
+                            //     .then(res => {
+                            //         if(res.data=='修改成功'){
+                            //             this.dialog.phaseform = false;
+                            //             var stepformedit = this.stepformedit;
+                            //             //同步把畫面上的資料修改成一致
+                            //             this.mainItems.forEach(element => {
+                            //                 var step = element.stepList;
+                            //                 step.filter(x=>x.step_id==id).forEach(stepele => {
+                            //                     stepele.step_name_ch = stepformedit.name_ch;
+                            //                 });
+                            //             });
+                            //             //this.stepformedit 要把同id所有名稱
+                            //             this.stepitem.id = undefined;
+                            //             this.getstepdata(true);
+                            //             // this.$toast.success("修改成功", { duration: 2000 });
+                            //         }else{
+                            //             this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+                            //         }
 
-                                    console.log("修改步驟API:" + res.request.responseURL);
-                                })
-                                .catch(error => {
-                                    this.$toast.error("error:" + error, { duration: 2000 });
-                                })
-                                .finally(() => {
-                                });
+                            //         console.log("修改步驟API:" + res.request.responseURL);
+                            //     })
+                            //     .catch(error => {
+                            //         this.$toast.error("error:" + error, { duration: 2000 });
+                            //     })
+                            //     .finally(() => {
+                            //     });
                             break;
                     }
                 }
@@ -1387,25 +1413,23 @@ export default {
             let api = [];
             let fail = [];
             other.forEach(async o=>{
-                await this.$axios
-                    .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/`, o)
-                    .then(res => {
-                        console.log(res);
-                        if(res.data=='新增成功'){
-                            this.otherApi++;
-                            api.push(o);
-                            if(this.otherApi == other.length) {
-                                if(api.length == other.length) {
-                                    // 新增成功後，因其他項目的seq_id更改，需串api修改
-                                    this.reviseData(datas,id);
-                                    this.dialog.additem = false;
-                                    this.$toast.success("新增成功", { duration: 2000 });
-                                }else {
-                                    this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
-                                }
+                var res = false;
+                res = this.postRecordStepList(o);
+                setTimeout(()=>{
+                    if(res) {
+                        this.otherApi++;
+                        api.push(o);
+                        if(this.otherApi == other.length) {
+                            if(api.length == other.length) {
+                                // 新增成功後，因其他項目的seq_id更改，需串api修改
+                                this.reviseData(datas,id);
+                                this.dialog.additem = false;
+                                this.$toast.success("新增成功", { duration: 2000 });
+                            }else {
+                                this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
                             }
-                            
-                        }else{
+                        }
+                    }else{
                             this.otherApi++;
                             fail.push(o);
                             if(this.otherApi==other.length) {
@@ -1416,14 +1440,44 @@ export default {
                                 }
                             }
                         }
+                },50)
+                // await this.$axios
+                //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/`, o)
+                //     .then(res => {
+                //         console.log(res);
+                //         if(res.data=='新增成功'){
+                //             this.otherApi++;
+                //             api.push(o);
+                //             if(this.otherApi == other.length) {
+                //                 if(api.length == other.length) {
+                //                     // 新增成功後，因其他項目的seq_id更改，需串api修改
+                //                     this.reviseData(datas,id);
+                //                     this.dialog.additem = false;
+                //                     this.$toast.success("新增成功", { duration: 2000 });
+                //                 }else {
+                //                     this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
+                //                 }
+                //             }
+                            
+                //         }else{
+                //             this.otherApi++;
+                //             fail.push(o);
+                //             if(this.otherApi==other.length) {
+                //                 if(fail.length==other.length) {
+                //                     this.$toast.error("新增步驟失敗", { duration: 2000 });
+                //                 }else {
+                //                     this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
+                //                 }
+                //             }
+                //         }
 
-                        console.log("新增步驟API:" + res.request.responseURL);
-                    })
-                    .catch(error => {
-                        this.$toast.error("error:" + error, { duration: 2000 });
-                    })
-                    .finally(() => {
-                    });
+                //         console.log("新增步驟API:" + res.request.responseURL);
+                //     })
+                //     .catch(error => {
+                //         this.$toast.error("error:" + error, { duration: 2000 });
+                //     })
+                //     .finally(() => {
+                //     });
                 
             })
         },
@@ -1440,28 +1494,43 @@ export default {
                             delete d.deft_executor;
                             delete d.deft_verifier;
                             delete d.execute_disabled;
-                            await this.$axios
-                                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${d.step_id}/`, d)
-                                    .then(res => {
-                                        if(res.data=='修改成功'){
-                                            item++;
-                                            console.log(datas.length,item);
-                                            if(item == datas.length) {
-                                                // if(title=='add') {
-                                                    // 需重新取得歷程，因為新增的項目需取得step_id
-                                                    this.$emit('getTemp');
-                                                // }
-                                                
-                                            }
-                                            
-                                        }
+                            var res = false;
+                            res = this.patchRecordStepList(d,d.step_id);
+                            setTimeout(()=>{
+                                if(res) {
+                                    item++;
+                                    console.log(datas.length,item);
+                                    if(item == datas.length) {
+                                        // if(title=='add') {
+                                            // 需重新取得歷程，因為新增的項目需取得step_id
+                                            this.$emit('getTemp');
+                                        // }
                                         
-                                    })
-                                    .catch(error => {
-                                        this.$toast.error("error:" + error, { duration: 2000 });
-                                    })
-                                    .finally(() => {
-                                    });
+                                    }
+                                }
+                            },50)
+                            // await this.$axios
+                            //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${d.step_id}/`, d)
+                            //         .then(res => {
+                            //             if(res.data=='修改成功'){
+                            //                 item++;
+                            //                 console.log(datas.length,item);
+                            //                 if(item == datas.length) {
+                            //                     // if(title=='add') {
+                            //                         // 需重新取得歷程，因為新增的項目需取得step_id
+                            //                         this.$emit('getTemp');
+                            //                     // }
+                                                
+                            //                 }
+                                            
+                            //             }
+                                        
+                            //         })
+                            //         .catch(error => {
+                            //             this.$toast.error("error:" + error, { duration: 2000 });
+                            //         })
+                            //         .finally(() => {
+                            //         });
                         }else {
                             item++;
                             if(item == datas.length) {
@@ -1522,31 +1591,18 @@ export default {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
                         // step_id
                         if(sub_item.type==null) {
-                            await this.$axios
-                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${sub_item.step_id}/`)
-                            .then(res => {
-                                if(res.data=='刪除成功'){
+                            var res = false;
+                            res = this.deleteRecordStepList(sub_item.step_id);
+                            setTimeout(()=>{
+                                if(res) {
                                     let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
                                     // let datas = _.cloneDeep(this.mainItems);
                                     let datas = _.cloneDeep(this.justStep);
                                     datas.forEach((item,id)=>{
-                                        // stepId.push({
-                                        //     "phase_id": item.phase_id,
-                                        //     "phase_name_ch": item.phase_name_ch,
-                                        //     "open": item.open,
-                                        //     "color": item.color,
-                                        //     "newest": item.newest,
-                                        //     "stepList": new Array(),
-                                        // })
-                                        
                                         if(item.phase_id == phase_id) {
                                             let sindex = 0;
                                             item.stepList.forEach((step,sid)=>{
                                                 if(sub_item.step_id!==step.step_id) {
-                                                    // if(sid>index) {
-                                                    //     step.seq_id = 'step_'+(sindex);
-                                                    //     sindex++;
-                                                    // }
                                                     stepId.push(step);
                                                 }
                                             })
@@ -1555,63 +1611,113 @@ export default {
                                         
 
                                     })
-                                    // datas = stepId;
-                                    // this.reviseCycleData(datas,phase_id,'delete');
                                     console.log('delete',stepId);
+                                }
+                            },50)
+                            // await this.$axios
+                            // .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${sub_item.step_id}/`)
+                            // .then(res => {
+                            //     if(res.data=='刪除成功'){
+                            //         let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
+                            //         // let datas = _.cloneDeep(this.mainItems);
+                            //         let datas = _.cloneDeep(this.justStep);
+                            //         datas.forEach((item,id)=>{
+                            //             // stepId.push({
+                            //             //     "phase_id": item.phase_id,
+                            //             //     "phase_name_ch": item.phase_name_ch,
+                            //             //     "open": item.open,
+                            //             //     "color": item.color,
+                            //             //     "newest": item.newest,
+                            //             //     "stepList": new Array(),
+                            //             // })
+                                        
+                            //             if(item.phase_id == phase_id) {
+                            //                 let sindex = 0;
+                            //                 item.stepList.forEach((step,sid)=>{
+                            //                     if(sub_item.step_id!==step.step_id) {
+                            //                         // if(sid>index) {
+                            //                         //     step.seq_id = 'step_'+(sindex);
+                            //                         //     sindex++;
+                            //                         // }
+                            //                         stepId.push(step);
+                            //                     }
+                            //                 })
+                            //                 this.reviseData(stepId,phase_id);
+                            //             }
+                                        
+
+                            //         })
+                            //         // datas = stepId;
+                            //         // this.reviseCycleData(datas,phase_id,'delete');
+                            //         console.log('delete',stepId);
 
                                     
-                                    this.$toast.success("刪除成功", { duration: 2000 });
-                                }else{
-                                    this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
-                                }
+                            //         this.$toast.success("刪除成功", { duration: 2000 });
+                            //     }else{
+                            //         this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
+                            //     }
 
-                                console.log("刪除步驟API:" + res.request.responseURL);
-                            })
-                            .catch(error => {
-                                this.$toast.error("error:" + error, { duration: 2000 });
-                            })
-                            .finally(() => {
-                            });
+                            //     console.log("刪除步驟API:" + res.request.responseURL);
+                            // })
+                            // .catch(error => {
+                            //     this.$toast.error("error:" + error, { duration: 2000 });
+                            // })
+                            // .finally(() => {
+                            // });
                         }else if(sub_item.type==1) {
-                            await this.$axios
-                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/${sub_item.id}/`)
-                            .then(res => {
-                                if(res.data=='刪除成功'){
+                            var res = false;
+                            res = this.deleteDiseaseTestingRecordList(sub_item.id);
+                            setTimeout(()=>{
+                                if(res) {
                                     this.$emit('getDisease')
+                                }
+                            },50)
+                            // await this.$axios
+                            // .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/${sub_item.id}/`)
+                            // .then(res => {
+                            //     if(res.data=='刪除成功'){
+                            //         this.$emit('getDisease')
 
                                     
-                                    this.$toast.success("刪除成功", { duration: 2000 });
-                                }else{
-                                    this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
-                                }
+                            //         this.$toast.success("刪除成功", { duration: 2000 });
+                            //     }else{
+                            //         this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
+                            //     }
 
-                                console.log("刪除步驟API:" + res.request.responseURL);
-                            })
-                            .catch(error => {
-                                this.$toast.error("error:" + error, { duration: 2000 });
-                            })
-                            .finally(() => {
-                            });
+                            //     console.log("刪除步驟API:" + res.request.responseURL);
+                            // })
+                            // .catch(error => {
+                            //     this.$toast.error("error:" + error, { duration: 2000 });
+                            // })
+                            // .finally(() => {
+                            // });
                         }else if(sub_item.type==2) {
-                            await this.$axios
-                            .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/water-quality-testing-record/${sub_item.id}/`)
-                            .then(res => {
-                                if(res.data=='刪除成功'){
+                            var res = false;
+                            res = this.deleteWaterTestingRecordList(sub_item.id);
+                            setTimeout(()=>{
+                                if(res) {
                                     this.$emit('getWater')
+                                }
+                            },50)
+                            // await this.$axios
+                            // .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/water-quality-testing-record/${sub_item.id}/`)
+                            // .then(res => {
+                            //     if(res.data=='刪除成功'){
+                            //         this.$emit('getWater')
 
                                     
-                                    this.$toast.success("刪除成功", { duration: 2000 });
-                                }else{
-                                    this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
-                                }
+                            //         this.$toast.success("刪除成功", { duration: 2000 });
+                            //     }else{
+                            //         this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
+                            //     }
 
-                                console.log("刪除步驟API:" + res.request.responseURL);
-                            })
-                            .catch(error => {
-                                this.$toast.error("error:" + error, { duration: 2000 });
-                            })
-                            .finally(() => {
-                            });
+                            //     console.log("刪除步驟API:" + res.request.responseURL);
+                            // })
+                            // .catch(error => {
+                            //     this.$toast.error("error:" + error, { duration: 2000 });
+                            // })
+                            // .finally(() => {
+                            // });
                         }
                         
                         
@@ -1647,24 +1753,32 @@ export default {
                 delete parm.deft_verifier;
                 delete parm.step_id;
                 parm.updated_user = this.$auth.$state.user.email;
-                await this.$axios
-                    .patch(
-                    `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${this.addStep[0].step_id}/`,
-                        parm
-                    )
-                    .then(res => {
-                    // console.log("警示修改API:" + res.request.responseURL);
-                    if (res.data == "修改成功") {
+                var res = false;
+                res = this.patchRecordStepList(parm,this.addStep[0].step_id,true);
+                setTimeout(()=>{
+                    if(res) {
                         this.$emit('getTemp');
                         this.editem = false;
-                        this.$toast.success("修改成功", { duration: 2000 });
-                    } else {
-                        this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
                     }
-                    })
-                    .catch(error => {
-                    this.$toast.error("error:" + error, { duration: 2000 });
-                    });
+                },50)
+                // await this.$axios
+                //     .patch(
+                //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${this.addStep[0].step_id}/`,
+                //         parm
+                //     )
+                //     .then(res => {
+                //     // console.log("警示修改API:" + res.request.responseURL);
+                //     if (res.data == "修改成功") {
+                //         this.$emit('getTemp');
+                //         this.editem = false;
+                //         this.$toast.success("修改成功", { duration: 2000 });
+                //     } else {
+                //         this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+                //     }
+                //     })
+                //     .catch(error => {
+                //     this.$toast.error("error:" + error, { duration: 2000 });
+                //     });
             }
             
         },
@@ -1867,28 +1981,38 @@ export default {
             delete item.execute_disabled;
             delete item.type;
             // delete item.step_id;
-
-            await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${item.step_id}/`, item)
-                    .then(res => {
-                        if(res.data=='修改成功'){
-                            // this.$emit('getTemp');
-                            // this.$toast.success("更新成功!",{ duration: 2000 });
+            var res = false;
+            res = this.patchRecordStepList(item,item.step_id);
+            setTimeout(()=>{
+                if(res) {
+                    if(title=='cancel') {
+                        this.$emit('getTemp');
+                    }else {
+                        this.disabledData();
+                    }
+                }
+            },50)
+            // await this.$axios
+            //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${item.step_id}/`, item)
+            //         .then(res => {
+            //             if(res.data=='修改成功'){
+            //                 // this.$emit('getTemp');
+            //                 // this.$toast.success("更新成功!",{ duration: 2000 });
                             
-                            if(title=='cancel') {
-                                this.$emit('getTemp');
-                            }else {
-                                this.disabledData();
-                            }
+            //                 if(title=='cancel') {
+            //                     this.$emit('getTemp');
+            //                 }else {
+            //                     this.disabledData();
+            //                 }
                             
-                        }
+            //             }
                         
-                    })
-                    .catch(error => {
-                        this.$toast.error("error:" + error, { duration: 2000 });
-                    })
-                    .finally(() => {
-                    });
+            //         })
+            //         .catch(error => {
+            //             this.$toast.error("error:" + error, { duration: 2000 });
+            //         })
+            //         .finally(() => {
+            //         });
         },
         // 結束養殖循環
         endCycle() {
@@ -1902,32 +2026,43 @@ export default {
                 return;
             }
             var id = this.stepitem.id;
-            await this.$axios
-                .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`)
-                .then(res => {
-                    if(res.data=='刪除成功'){
-                        this.getstepdata();
-                        this.stepformedit = {};
-                        this.stepitem.id = undefined;
-                        this.stepmode = 'add';
-                        this.dialog.additem = false;
-                        // let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
-                        // this.stepitem = _.cloneDeep(this.stepdata[0]);
-                        // this.stepitem.phase_id = submit.phase_id;
-                        // this.stepitem.addidx = submit.addidx;
-                        // this.showstep('edit');
-                        this.$toast.success("刪除成功", { duration: 2000 });
-                    }else{
-                        this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
-                    }
+            var res = false;
+            res = this.deleteBreedingStepList(id);
+            setTimeout(()=>{
+                if(res) {
+                    this.getstepdata();
+                    this.stepformedit = {};
+                    this.stepitem.id = undefined;
+                    this.stepmode = 'add';
+                    this.dialog.additem = false;
+                }
+            },50)
+            // await this.$axios
+            //     .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`)
+            //     .then(res => {
+            //         if(res.data=='刪除成功'){
+            //             this.getstepdata();
+            //             this.stepformedit = {};
+            //             this.stepitem.id = undefined;
+            //             this.stepmode = 'add';
+            //             this.dialog.additem = false;
+            //             // let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
+            //             // this.stepitem = _.cloneDeep(this.stepdata[0]);
+            //             // this.stepitem.phase_id = submit.phase_id;
+            //             // this.stepitem.addidx = submit.addidx;
+            //             // this.showstep('edit');
+            //             this.$toast.success("刪除成功", { duration: 2000 });
+            //         }else{
+            //             this.$toast.error("刪除步驟失敗:" + res.data, { duration: 2000 });
+            //         }
 
-                    console.log("刪除步驟API:" + res.request.responseURL);
-                })
-                .catch(error => {
-                    this.$toast.error("error:" + error, { duration: 2000 });
-                })
-                .finally(() => {
-                });
+            //         console.log("刪除步驟API:" + res.request.responseURL);
+            //     })
+            //     .catch(error => {
+            //         this.$toast.error("error:" + error, { duration: 2000 });
+            //     })
+            //     .finally(() => {
+            //     });
         },
         // 顯示step編輯視窗(add、edit)
         showstep:function(mode){
@@ -2047,67 +2182,101 @@ export default {
                     }
                 });
                 // console.log(para);
-                await this.$axios
-                        .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`, para)
-                        .then(res => {
-                            console.log('新增',res)
-                            if(res.data=='新增成功'){
-                                // this.dialog.phaseform = false;
-                                // this.getstepdata();
-                                this.$toast.success("新增成功", { duration: 2000 });
-                                this.updateouterAction('done');
-                            }else{
-                                this.$toast.error("新增樣板失敗:" + res.data, { duration: 2000 });
-                            }
+                var res = false;
+                res = this.postTemplateList(para);
+                setTimeout(()=>{
+                    if(res) {
+                        this.updateouterAction('done');
+                    }
+                },50)
+                // await this.$axios
+                //         .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`, para)
+                //         .then(res => {
+                //             console.log('新增',res)
+                //             if(res.data=='新增成功'){
+                //                 // this.dialog.phaseform = false;
+                //                 // this.getstepdata();
+                //                 this.$toast.success("新增成功", { duration: 2000 });
+                //                 this.updateouterAction('done');
+                //             }else{
+                //                 this.$toast.error("新增樣板失敗:" + res.data, { duration: 2000 });
+                //             }
 
-                            console.log("新增樣板API:" + res.request.responseURL);
-                        })
-                        .catch(error => {
-                            this.$toast.error("error:" + error, { duration: 2000 });
-                        })
-                        .finally(() => {
-                        });
+                //             console.log("新增樣板API:" + res.request.responseURL);
+                //         })
+                //         .catch(error => {
+                //             this.$toast.error("error:" + error, { duration: 2000 });
+                //         })
+                //         .finally(() => {
+                //         });
 
             }
 
         },
         // 取得步驟清單
         getstepdata: async function (bool=false) {
-            await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
-                .then(res => {
-                    this.stepdataAll = res.data;
-                    let data = _.cloneDeep(this.mainItems);
-                    this.mainItems = [];
-                    data.forEach(m=>{
-                        m.stepList.forEach(s=>{
-                            this.stepdataAll.forEach(a=>{
-                                if(s.step_id == a.id) {
-                                    s.step_name_ch = a.name_ch;
-                                    s.step_name_en = a.name_en;
-                                    s.remark = a.remark;
-                                }
-                            })
-                        })
+            let getBreedingStepList = await this.getBreedingStepList();
+            let stepData = typeof (getBreedingStepList)=='string'?[]:getBreedingStepList;
+            this.stepdataAll = stepData;
+            let data = _.cloneDeep(this.mainItems);
+            this.mainItems = [];
+            data.forEach(m=>{
+                m.stepList.forEach(s=>{
+                    this.stepdataAll.forEach(a=>{
+                        if(s.step_id == a.id) {
+                            s.step_name_ch = a.name_ch;
+                            s.step_name_en = a.name_en;
+                            s.remark = a.remark;
+                        }
                     })
-                    this.mainItems = _.cloneDeep(data);
-                    console.log('getStep',this.mainItems)
-                    if(bool) {
-                        console.log('get Step',this.stepitem,this.stepformedit,this.stepdataAll);
-                        let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
-                        this.stepitem = _.cloneDeep(this.stepformedit);
-                        this.stepitem.id = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0].id;
-                        this.stepitem.phase_id = submit.phase_id;
-                        this.stepitem.addidx = submit.addidx;
-                        this.insertStep();
-                    }
-                    console.log("取得步驟清單API:" + res.request.responseURL);
                 })
-                .catch(error => {
-                    this.$toast.error("error:" + error, { duration: 2000 });
-                })
-                .finally(() => {
-                });
+            })
+            this.mainItems = _.cloneDeep(data);
+            console.log('getStep',this.mainItems)
+            if(bool) {
+                console.log('get Step',this.stepitem,this.stepformedit,this.stepdataAll);
+                let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
+                this.stepitem = _.cloneDeep(this.stepformedit);
+                this.stepitem.id = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0].id;
+                this.stepitem.phase_id = submit.phase_id;
+                this.stepitem.addidx = submit.addidx;
+                this.insertStep();
+            }
+            // await this.$axios
+            //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
+            //     .then(res => {
+            //         this.stepdataAll = res.data;
+            //         let data = _.cloneDeep(this.mainItems);
+            //         this.mainItems = [];
+            //         data.forEach(m=>{
+            //             m.stepList.forEach(s=>{
+            //                 this.stepdataAll.forEach(a=>{
+            //                     if(s.step_id == a.id) {
+            //                         s.step_name_ch = a.name_ch;
+            //                         s.step_name_en = a.name_en;
+            //                         s.remark = a.remark;
+            //                     }
+            //                 })
+            //             })
+            //         })
+            //         this.mainItems = _.cloneDeep(data);
+            //         console.log('getStep',this.mainItems)
+            //         if(bool) {
+            //             console.log('get Step',this.stepitem,this.stepformedit,this.stepdataAll);
+            //             let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
+            //             this.stepitem = _.cloneDeep(this.stepformedit);
+            //             this.stepitem.id = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0].id;
+            //             this.stepitem.phase_id = submit.phase_id;
+            //             this.stepitem.addidx = submit.addidx;
+            //             this.insertStep();
+            //         }
+            //         console.log("取得步驟清單API:" + res.request.responseURL);
+            //     })
+            //     .catch(error => {
+            //         this.$toast.error("error:" + error, { duration: 2000 });
+            //     })
+            //     .finally(() => {
+            //     });
         },
         // 選擇步驟
         selectStep:function(){
