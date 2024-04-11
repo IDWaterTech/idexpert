@@ -1,210 +1,305 @@
 <template>
   <div>
-    <v-row no-gutters>
-      <v-col cols="12" sm="4">
-        <v-row no-gutters align="center" dense>
-          <v-col cols="6"
-            ><v-select
-              v-model="sel_main"
-              :items="maindata"
-              item-value="id"
-              item-text="name"
-              placeholder="選擇場"
-              clearable dark
-              @change="
-                () => {
-                  sel_area = undefined;
-                  sel_pool = undefined;
-                  pooldata = [];
-                  // if (sel_main) {
-                  // } else {
-                  //   sel_area = undefined;
-                  //   pooldata = [];
-                  // }
-                }
-              "
-              dense
-            >
-            </v-select
-          ></v-col>
-          <v-col cols="6">
-            <v-btn icon color="success" @click="showdialog('add', 'main')" dark
-              ><v-icon>mdi-plus</v-icon></v-btn
-            >
-            <v-btn
-              icon
-              color="success"
-              :disabled="!sel_main"
-              @click="showdialog('edit', 'main')" dark
-              ><v-icon>mdi-pencil-outline</v-icon></v-btn
-            >
-            <v-btn
-              icon
-              :disabled="!sel_main"
-              color="error"
-              @click="
-                delsubmit(
-                  'main',
-                  maindata.filter(x => x.id == sel_main)[0].name
-                )
-              " dark
-              ><v-icon>mdi-delete</v-icon></v-btn
-            >
-            <v-btn dark color="info" icon :disabled="!sel_main" @click="showdialog('','ip')"><v-icon>mdi-ip</v-icon></v-btn>
-          </v-col>
-        </v-row>
+    <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
+      <div class="content" style="padding-left: 0;padding-top:12px;padding-bottom: 0;">
+        <!-- 搜尋 -->
+        <div class="search">
+          <v-row style="margin-bottom: 0;margin-left: 4px;">
+            <!-- 選場 -->
+            <v-col cols="12" md="4" sm="5">
+              <v-row no-gutters align="center" dense style="margin-bottom: 0;">
+                <v-col cols="6">
+                  <v-select
+                    v-model="sel_main"
+                    :items="maindata"
+                    item-value="id"
+                    item-text="name"
+                    placeholder="選擇場"
+                    clearable
+                    hide-details
+                    @change="
+                      () => {
+                        sel_area = undefined;
+                        sel_pool = undefined;
+                        pooldata = [];
+                        // if (sel_main) {
+                        // } else {
+                        //   sel_area = undefined;
+                        //   pooldata = [];
+                        // }
+                      }
+                    "
+                    dense
+                  >
+                  </v-select
+                ></v-col>
+                <v-col cols="6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        class="btn-icon green"
+                        @click="showdialog('add', 'main')"
+                        v-bind="attrs" v-on="on"
+                        ><v-icon>mdi-plus</v-icon></v-btn
+                      >
+                    </template>
+                    <span>新增</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        class="btn-icon"
+                        :disabled="!sel_main"
+                        @click="showdialog('edit', 'main')"
+                        v-bind="attrs" v-on="on"
+                        ><v-icon>mdi-pencil-outline</v-icon></v-btn
+                      >
+                    </template>
+                    <span>修改</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        class="btn-icon delete"
+                        :disabled="!sel_main"
+                        v-bind="attrs" v-on="on"
+                        @click="
+                          delsubmit(
+                            'main',
+                            maindata.filter(x => x.id == sel_main)[0].name
+                          )
+                        " 
+                        ><v-icon>mdi-trash-can</v-icon></v-btn
+                      >
+                    </template>
+                    <span>刪除</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn class="btn-icon clear" v-bind="attrs" v-on="on" :disabled="!sel_main" @click="showdialog('','ip')" style="color: #fff !important;">IP</v-btn>
+                    </template>
+                    <span>IP設定</span>
+                  </v-tooltip>
+                  
+                </v-col>
+              </v-row>
+            </v-col>
+            <!-- 選區 -->
+            <v-col cols="12" md="4" sm="5">
+              <v-row no-gutters align="center" style="margin-bottom: 0;">
+                <v-col cols="6">
+                  <v-select
+                    v-model="sel_area"
+                    :items="areadata"
+                    item-value="id"
+                    item-text="name"
+                    clearable
+                    dense
+                    hide-details
+                    placeholder="選擇區域"
+                    no-data-text="查無資料"
+                    :disabled="!sel_main"
+                    @change="getPoolData"
+                  ></v-select>
+                </v-col>
+                <v-col cols="6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        class="btn-icon green"
+                        :disabled="!sel_main"
+                        @click="showdialog('add', 'area')"
+                        v-bind="attrs" v-on="on"
+                        ><v-icon>mdi-plus</v-icon></v-btn
+                      >
+                    </template>
+                    <span>新增</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        class="btn-icon"
+                        :disabled="!sel_area"
+                        @click="showdialog('edit', 'area')"
+                        v-bind="attrs" v-on="on"
+                        ><v-icon>mdi-pencil-outline</v-icon></v-btn
+                      >
+                    </template>
+                    <span>修改</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        class="btn-icon delete"
+                        :disabled="!sel_area"
+                        v-bind="attrs" v-on="on"
+                        @click="
+                          delsubmit(
+                            'area',
+                            areadata.filter(x => x.id == sel_area)[0].name
+                          )
+                        "
+                        ><v-icon>mdi-trash-can</v-icon></v-btn
+                      >
+                    </template>
+                    <span>刪除</span>
+                  </v-tooltip>
+                  
+                </v-col>
+              </v-row>
+            </v-col>
+            <!-- 池資料/地圖配置 -->
+            <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="4" sm="2" style="display: flex;align-items: center;">
+              <v-btn v-if="nowSetting=='map'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="nowSetting = 'pool';getPoolData()">池資料</v-btn>
+              <v-btn v-if="nowSetting=='pool'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="getMapData()">地圖配置</v-btn>
+            </v-col>
+          </v-row>
+        </div>
+        <!-- 搜尋結果 -->
+        <div class="content">
+          <div class="result">
+            <!-- 池 -->
+            <v-card v-if="nowSetting=='pool'" class="result-card">
+              <!-- 表頭 -->
+              <div class="card-title">
+                <div class="title" style="display: flex;align-items: center;">
+                  <v-card-title style="margin-right: 24px;">池清單</v-card-title>
+                  <div class="search" style="display: flex;align-items: center;">
+                    <!-- <v-autocomplete
+                      v-model="sel_pool"
+                      :items="pooldata"
+                      item-text="name"
+                      item-value="id"
+                      no-data-text="查無資料"
+                      placeholder="請選擇養殖池"
+                      :disabled="!sel_area"
+                      clearable
+                      hide-details
+                      style="margin-top: 0;padding-top: 0;margin-left: 8px;"
+                      @change="changePool"
+                    ></v-autocomplete> -->
 
-        <!-- @change="sel_main > 0 ? '' : (showmp = false)" -->
-      </v-col>
-      <v-col cols="12" sm="4">
-        <v-row no-gutters align="center">
-          <v-col cols="6">
-            <v-select
-              v-model="sel_area"
-              :items="areadata"
-              item-value="id"
-              item-text="name"
-              clearable
-              dense dark
-              placeholder="選擇區域"
-              no-data-text="查無資料"
-              :disabled="!sel_main"
-              @change="getPoolData"
-            ></v-select>
-          </v-col>
-          <v-col cols="6">
-            <v-btn
-              icon
-              :disabled="!sel_main"
-              color="success"
-              @click="showdialog('add', 'area')" dark
-              ><v-icon>mdi-plus</v-icon></v-btn
-            >
-            <v-btn
-              icon
-              color="success"
-              :disabled="!sel_area"
-              @click="showdialog('edit', 'area')" dark
-              ><v-icon>mdi-pencil-outline</v-icon></v-btn
-            >
-            <v-btn
-              icon
-              :disabled="!sel_area"
-              color="error"
-              @click="
-                delsubmit(
-                  'area',
-                  areadata.filter(x => x.id == sel_area)[0].name
-                )
-              " dark
-              ><v-icon>mdi-delete</v-icon></v-btn
-            >
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="12" sm="4">
-        <v-row no-gutters align="center">
-          <v-col cols="6">
-            <v-autocomplete
-              v-model="sel_pool"
-              :items="pooldata"
-              item-text="name"
-              item-value="id"
-              no-data-text="查無資料"
-              placeholder="請選擇養殖池"
-              :disabled="!sel_area"
-              clearable
-              dense dark
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="6">
-            <v-btn
-              icon
-              :disabled="!sel_area"
-              color="success"
-              @click="showdialog_pool('add')" dark
-              ><v-icon>mdi-plus</v-icon></v-btn
-            >
-            <v-btn
-              icon
-              :disabled="!sel_pool"
-              color="success"
-              @click="showdialog_pool('edit')" dark
-              ><v-icon>mdi-pencil-outline</v-icon></v-btn
-            >
-            <v-btn
-              icon
-              :disabled="!sel_pool"
-              color="error"
-              @click="
-                delsubmit(
-                  'pool',
-                  pooldata.filter(x => x.id == sel_pool)[0].name
-                )
-              " dark
-              ><v-icon>mdi-delete</v-icon></v-btn
-            >
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-spacer></v-spacer>
-    </v-row>
-    <v-row>
-      <v-col cols="12"><v-checkbox v-model="sortbyid" dark label="以id排序"></v-checkbox></v-col>
-      <v-col
-        cols="12"
-        sm="3"
-        v-for="item in ((sortbyid)?pooldata_sorted:pooldata)"
-        :key="item.id"
-      >
-      <!-- v-for="item in pooldata.filter(
-          x => x.id == sel_pool || sel_pool == undefined || sel_pool == ''
-        )" -->
-        <v-card tile>
-          <v-card-subtitle>
-            {{ item.name }}
-            <v-btn
-              icon
-              color="success"
-              @click="()=>{sel_pool=item.id;showdialog_pool('edit');}" dark
-              ><v-icon>mdi-pencil-outline</v-icon></v-btn
-            >
-          </v-card-subtitle>
-          <v-divider></v-divider>
-          <v-card-text>
-            <ol>
-              <div
-                v-for="it in Object.keys(item).filter(
-                  x => !['estimated_num', 'num_per_unit'].includes(x)
-                )"
-                :key="it"
-              >
-                <li
-                  v-if="
-                    itemname.filter(x => x.name == it).length > 0 &&
-                      itemname.filter(x => x.name == it)[0].visible == true
-                  "
-                  style="font-weight:500;"
-                >
-                  {{ itemname.filter(x => x.name == it)[0].text }}：{{
-                    item[it]
-                  }}
-                </li>
-                <li v-if="itemname.filter(x => x.name == it).length == 0">
-                  {{ it }}-{{ item[it] }}
-                </li>
+                    <v-btn class="btn-small" :class="{'btn-primary':!tableview,'btn-secondary':tableview}" @click="tableview=false">卡片式</v-btn>
+                    <v-btn class="btn-small" :class="{'btn-primary':tableview,'btn-secondary':!tableview}" @click="tableview=true">表格式</v-btn>
+                    
+                  </div>
+                </div>
+                
+                <div class="chevron" style="display: flex;align-items: center;margin-left: 8px;">
+                  <v-btn class="btn-secondary green" :class="{'disabled':!sel_area}" @click="showdialog_pool('add')" style="padding: 0 8px;background-color: transparent !important;;">
+                      <v-icon>mdi-plus</v-icon>新增池
+                  </v-btn>
+                  
+                </div>
+                
               </div>
-            </ol>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
+              <div class="content">
+                <v-row v-if="pooldata.length>0 && !tableview">
+                  <v-col cols="12"><v-checkbox v-model="sortbyid" hide-details label="以id排序" style="margin-top: 0;padding-top: 0;display: inline-block"></v-checkbox></v-col>
+                  
+                  <v-col cols="12" md="3" sm="6"
+                    v-for="item in ((sortbyid)?pooldata_sorted:pooldata)"
+                    :key="item.id"
+                  >
+                    <v-card style="background-color: #fff;">
+                      <v-card-subtitle style="display: flex;align-items: center;justify-content: space-between;">
+                        {{ item.name }}
+                        <div class="btn-groups">
+                          <v-btn
+                            class="btn-icon "
+                            @click="showdialog_pool('edit',item)" 
+                            ><v-icon>mdi-pencil</v-icon></v-btn
+                          >
+                          <v-btn
+                            class="btn-icon delete"
+                            @click="delsubmit(
+                                    'pool',
+                                    pooldata.filter(x => x.id == item.id)[0].name
+                                  )" 
+                            ><v-icon>mdi-trash-can</v-icon></v-btn
+                          >
+                        </div>
+                        
+                      </v-card-subtitle>
+                      <v-divider></v-divider>
+                      <v-card-text>
+                        <ol>
+                          <div
+                            v-for="it in Object.keys(item).filter(
+                              x => !['estimated_num', 'num_per_unit'].includes(x)
+                            )"
+                            :key="it"
+                          >
+                            <li
+                              v-if="
+                                itemname.filter(x => x.name == it).length > 0 &&
+                                  itemname.filter(x => x.name == it)[0].visible == true
+                              "
+                              style="font-weight:500;"
+                            >
+                              {{ itemname.filter(x => x.name == it)[0].text }}：{{
+                                item[it]
+                              }}
+                            </li>
+                            <li v-if="itemname.filter(x => x.name == it).length == 0">
+                              {{ it }}-{{ item[it] }}
+                            </li>
+                          </div>
+                        </ol>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
+                <v-row v-if="pooldata.length==0 && !tableview"><div class="content" style="height: 56vh;width: 100%;display: flex;align-items: center;justify-content: center;">無資料</div></v-row>
+                <v-data-table light
+                  v-if="tableview"
+                  class="flex-table data-table bg-transparent"
+                  :headers="headers"
+                  :items="nowpooldata"
+                  no-data-text="無資料"
+                  hide-default-footer
+                  disable-pagination
+                  style="height: 64vh;overflow-y: scroll;"
+                  fixed-header>
+                    <template  v-slot:[`item.udactions`]="{item}">
+                      <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                              <button class="btn-icon" @click="showdialog_pool('edit',item)" v-bind="attrs" v-on="on">
+                                  <v-icon>mdi-pencil</v-icon>
+                              </button>
+                          </template>
+                          <span>修改</span>
+                      </v-tooltip>
+                      <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                              <button class="btn-icon delete" 
+                              @click="
+                                delsubmit(
+                                  'pool',
+                                  pooldata.filter(x => x.id == item.id)[0].name
+                                )" v-bind="attrs" v-on="on">
+                                  <v-icon>mdi-trash-can</v-icon>
+                              </button>
+                          </template>
+                          <span>刪除</span>
+                      </v-tooltip>
+                  </template>
+                </v-data-table>
+              </div>
+            </v-card>
+            <!-- 地圖配置 -->
+            <settinglayout v-else class="mx-3" style="width: 100%;margin-top: 24px;" :areas="areas1"></settinglayout>
+          </div>
+        </div>
+      </div>
+    </v-card>
+    <!-- 場區編輯/新增 -->
     <v-dialog v-model="dialog.main" width="500px">
       <v-form ref="mainform" v-model="mainvalid" lazy-validation>
-        <v-card>
-          <v-card-title
-            >{{
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              {{
               edititem.type == "add"
                 ? "新增"
                 : edititem.type == "edit"
@@ -216,26 +311,42 @@
                 : edititem.class == "area"
                 ? "區域"
                 : "養殖池"
-            }}</v-card-title
-          >
+            }}
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="dialog.main = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
           <v-card-text>
-            <v-text-field
-              placeholder="請輸入名稱"
-              v-model="edititem.value"
-              :rules="rules.require"
-              autocomplete="off" clearable filled dense
-            ><span style="width:50px;" slot="prepend">名稱</span></v-text-field>
-            <v-text-field
-              v-if="edititem.class == 'area'"
-              placeholder="請輸入英文代稱(wc、tf、zw...)"
-              v-model="edititem.value_en"
-              :rules="rules.require"
-              autocomplete="off" clearable filled dense
-            ><span style="width:100px;" slot="prepend">英文代稱</span></v-text-field>
+            <div class="basic search" style="padding-left: 8px;padding-top: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                  placeholder="請輸入名稱"
+                  v-model="edititem.value"
+                  :rules="rules.require"
+                  autocomplete="off" clearable filled dense
+                ><span style="width:80px;" slot="prepend">名稱</span></v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                  v-if="edititem.class == 'area'"
+                  placeholder="請輸入英文代稱(wc、tf、zw...)"
+                  v-model="edititem.value_en"
+                  :rules="rules.require"
+                  autocomplete="off" clearable filled dense
+                ><span style="width:80px;" slot="prepend">英文代稱</span></v-text-field>
+              </v-card-text>
+            </div>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions style="padding: 24px 12px;">
             <v-spacer></v-spacer>
-            <v-btn tile color="primary" @click="editsubmit">送出</v-btn>
+            <v-btn class="btn-secondary" @click="dialog.main = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="editsubmit">送出</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -243,17 +354,25 @@
     <!-- 池編輯/新增 -->
     <v-dialog v-model="dialog.pool" width="500px">
       <v-form ref="poolform" v-model="poolvalid" lazy-validation>
-        <v-card v-if="sel_area && areadata">
-          <v-card-title
-            >{{ areadata.filter(x => x.id == sel_area)[0].name }}-養殖池-{{
-              edititem_pool.type == "add" ? "新增" : "編輯"
-            }}</v-card-title
-          >
-          <v-divider></v-divider>
+        <v-card v-if="sel_area && areadata" class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              {{ areadata.filter(x => x.id == sel_area)[0].name }}-養殖池-{{
+                edititem_pool.type == "add" ? "新增" : "編輯"
+              }}
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="dialog.pool = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
           <v-card-text>
-            <v-row>
-              <!-- 名稱 -->
-              <v-col cols="12">
+            <div class="basic search" style="padding-left: 8px;padding-top: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
                 <v-text-field
                   autocomplete="off"
                   v-model="edititem_pool.parm.name"
@@ -261,12 +380,12 @@
                   clearable
                   filled
                   dense
+                  style="margin-right: 16px;"
                 >
                   <span style="width:50px;" slot="prepend">名稱</span>
                 </v-text-field>
-              </v-col>
-              <!-- 體積 -->
-              <v-col cols="12" sm="6">
+              </v-card-text>
+              <v-card-text style="display: flex;padding-top: 0;">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.volume"
@@ -275,13 +394,11 @@
                   clearable
                   filled
                   dense
+                  style="margin-right: 16px;"
                 >
                   <span style="width:50px;" slot="prepend">體積</span>
                   <span style="width:25px;" slot="append">m<sup>3</sup></span>
                 </v-text-field>
-              </v-col>
-              <!-- 深度 -->
-              <v-col cols="12" sm="6">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.depth"
@@ -290,13 +407,13 @@
                   clearable
                   filled
                   dense
+                  style="margin-right: 16px;"
                 >
                   <span style="width:50px;" slot="prepend">深度</span>
                   <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
-              </v-col>
-              <!-- 池子數 -->
-              <v-col cols="12" sm="6">
+              </v-card-text>
+              <v-card-text style="display: flex;padding-top: 0;">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.num"
@@ -306,12 +423,10 @@
                   @keypress="(evt)=>{if(evt.key=='.'){ evt.preventDefault();}else{return true;}}"
                   filled
                   dense
+                  style="margin-right: 16px;"
                   ><span style="width:50px;" slot="prepend">池子數</span>
                   <span style="width:25px;" slot="append">個</span>
                 </v-text-field>
-              </v-col>
-              <!-- 曝氣盤數 -->
-              <v-col cols="12" sm="6">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.aeration_tray_num"
@@ -322,13 +437,13 @@
                   filled
                   dense
                   required
+                  style="margin-right: 16px;"
                 >
                   <span style="width:50px;" slot="prepend">曝氣盤</span>
                   <span style="width:25px;" slot="append">個</span>
                 </v-text-field>
-              </v-col>
-              <!-- 最大水位高度 v-model.number=""-->
-              <v-col cols="12" sm="6">
+              </v-card-text>
+              <v-card-text style="display: flex;padding-top: 0;">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.max_water_level"
@@ -338,13 +453,11 @@
                   filled
                   dense
                   required
+                  style="margin-right: 16px;"
                 >
                   <span style="width:70px;" slot="prepend">最大水位高度</span>
                   <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
-              </v-col>
-              <!-- 感測到水底高度 -->
-              <v-col cols="12" sm="6">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.sensor_to_pond_bottom"
@@ -354,13 +467,13 @@
                   filled
                   dense
                   required
+                  style="margin-right: 16px;"
                 >
                   <span style="width:70px;" slot="prepend">感測到水底高度</span>
                   <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
-              </v-col>
-              <!-- 底面積 -->
-              <v-col cols="12" sm="6">
+              </v-card-text>
+              <v-card-text style="display: flex;padding-top: 0;">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.bottom_area"
@@ -370,13 +483,11 @@
                   filled
                   dense
                   required
+                  style="margin-right: 16px;"
                 >
                   <span style="width:70px;" slot="prepend">底面積</span>
                   <span style="width:25px;" slot="append">m<sup>2</sup></span>
                 </v-text-field>
-              </v-col>
-              <!-- 觀察觀飼料百分比 -->
-              <v-col cols="12" sm="6">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.observation_feed_pct"
@@ -386,14 +497,42 @@
                   filled
                   dense
                   required
+                  style="margin-right: 16px;"
                 >
                   <span style="width:70px;" slot="prepend">觀察觀飼料百分比</span>
                   <span style="width:10px;" slot="append">%</span>
                 </v-text-field>
-              </v-col>
-            </v-row>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field
+                  autocomplete="off"
+                  v-model="edititem_pool.parm.video_url"
+                  clearable
+                  placeholder="輸入影像IP(例：武曲171)"
+                  style="margin-right: 16px;margin-top: 0;"
+                >
+                  <template slot="prepend"
+                    ><span style="width:50px;">觀察網影像</span></template
+                  >
+                </v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-select
+                  v-model="edititem_pool.parm.pond_state_id"
+                  :items="poolstat"
+                  :rules="rules.require"
+                  item-text="name"
+                  item-value="id"
+                  :disabled="true"
+                  style="margin-right: 16px;margin-top: 0;"
+                  ><template slot="prepend"
+                    ><span style="width:50px;">狀態</span></template
+                  ></v-select
+                >
+              </v-card-text>
+            </div>
           </v-card-text>
-          <v-card-text>
+          <!-- <v-card-text> -->
             <!-- <v-text-field
               autocomplete="off"
               v-model="edititem_pool.parm.density"
@@ -405,35 +544,14 @@
               >
             </v-text-field> -->
 
-            <v-text-field
-              autocomplete="off"
-              v-model="edititem_pool.parm.video_url"
-              clearable
-              placeholder="輸入影像IP(例：武曲171)"
-            >
-              <template slot="prepend"
-                ><span style="width:50px;">觀察網影像</span></template
-              >
-            </v-text-field>
+            
             <!-- v-if="edititem_pool.type == `add`" -->
-            <v-select
-              v-model="edititem_pool.parm.pond_state_id"
-              :items="poolstat"
-              :rules="rules.require"
-              item-text="name"
-              item-value="id"
-              :disabled="true"
-              ><template slot="prepend"
-                ><span style="width:50px;">狀態</span></template
-              ></v-select
-            >
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
+            
+          <!-- </v-card-text> -->
+          <v-card-actions style="padding: 24px 12px;">
             <v-spacer></v-spacer>
-            <v-btn tile color="primary" @click="poolsubmit(edititem_pool.type)"
-              >送出</v-btn
-            >
+            <v-btn class="btn-secondary" @click="dialog.pool = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="poolsubmit(edititem_pool.type)">送出</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -441,31 +559,51 @@
     <!-- 場 ip設定 -->
     <v-dialog v-model="dialog.ip" width="500px">
       <v-form ref="ipform" v-model="ipvalid" lazy-validation>
-        <v-card >
-          <v-card-title>ip設定</v-card-title>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">ip設定</div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="dialog.ip = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          
           <v-card-text>
             <!-- <span>{{ `${this.selected_ip.factory_name}_${this.selected_ip.pond_area_name}` }}</span> -->
-            <div>
-                  <v-textarea
-                    height="400"
-                    outlined
-                    name="input-7-4"
-                    label=""
-                    v-model="editedip_content"
-                    hide-details
-                    placeholder='{"factory_name": "案場名稱-XXXXID001","version": 1.0}'
-                  >
-                </v-textarea>  
-                </div>
+            <div class="basic search" style="padding-left: 8px;padding-top: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-textarea
+                  height="400"
+                  outlined
+                  name="input-7-4"
+                  label=""
+                  v-model="editedip_content"
+                  hide-details
+                  placeholder='{"factory_name": "案場名稱-XXXXID001","version": 1.0}'
+                  class="text-area"
+                >
+                </v-textarea>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-text-field class="text-area" v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
+              </v-card-text>
+            </div>
           </v-card-text>
-          <v-card-actions>
-            <v-text-field v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
+          <v-card-actions style="padding: 24px 12px;">
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="updateip">更新</v-btn>
+            <v-btn class="btn-secondary" @click="dialog.ip = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="updateip">更新</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
     </v-dialog>
+    
+
+    
   </div>
 </template>
 
@@ -473,13 +611,17 @@
 import https from "https";
 import _ from "lodash";
 import md5 from "md5";
+import settinglayout from "@/pages/map/settinglayout.vue";
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
 
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
+  components: {
+    settinglayout,
+  },
   head(){
     return {
       title:"場域設定",
@@ -538,16 +680,65 @@ export default {
       ipdata:[],
       selected_ip:{},
       ipadminpwd:'',
-      editedip_content:''
+      editedip_content:'',
+      headers:[
+        { value: "name", text: "名稱", visible: true, sortable: true },
+        { value: "id", text: "id", visible: true, sortable: true },
+        { value: "volume", text: "體積(頓)", visible: true, sortable: false },
+        { value: "depth", text: "深度(m)", visible: true, sortable: false },
+        { value: "max_water_level", text: "最大水位高", visible: false, sortable: false },/* 先隱藏，之後有用到再開 */
+        { value: "sensor_to_pond_bottom", text: "感測到水底高", visible: false, sortable: false },/* 先隱藏，之後有用到再開 */
+        { value: "num", text: "小池數(個)", visible: true, sortable: false },
+        { value: "aeration_tray_num", text: "曝氣盤數(個)", visible: true, sortable: false },
+        { value: "state", text: "狀態", visible: true, sortable: true },
+        { value: "video_url", text: "觀察網影像", visible: true, sortable: false },
+        { value: "observation_feed_pct", text: "觀察觀飼料百分比", visible: true, sortable: false },
+        { value: "bottom_area", text: "底面積", visible: true },
+        { text: '操作', value: 'udactions', sortable: false,width:"10%"},
+        // { text: 'id', value: 'id', sortable: true,width:"10%"},
+        // { text: "名稱(英)", value: "name_en", groupable: false, sortable: true,width:"10%"},
+        // { text: "產地", value: "origin", groupable: false, sortable: true,width:"10%"},
+        // { text: "品牌特行", value: "characteristic", groupable: false, sortable: false,width:"15%"},
+        // { text: '廠商', value: 'manufacturer_id', sortable: true,width:"10%"},
+        // { text: '市價', value: 'price', sortable: true,width:"10%"},
+        // { text: '備註', value: 'remark', sortable: false,width:"10%"},
+        // { text: '修改時間', value: 'updated_time', sortable: true,width:"15%"},
+        // { text: '操作', value: 'udactions', sortable: false,width:"10%"},
+      ],
+      nowpooldata:[],
+      nowSetting: 'pool',
+      areas:[],
+      layout:[],
+      nowAreaId:{
+        factory_id: null,
+        pond_area_id: null
+      },
+      nowAreaTag:'',
+      allData: [],
+      areas1:{
+        areaNo: '',
+        name: '',
+        id: null,
+        ponds: []},
+      userData: [],
+      tableview: false
     };
   },
   async created() {
-    await this._pageCheck(); //驗證頁面是否可檢視
+    //await this._pageCheck(); //驗證頁面是否可檢視
     await this.getmain();
     await this.getpoolstat(); //取得池狀態清單
     await this.getipdata();//取得ip設定
+    await this.getAllUser(); // 取得所有使用者資料，比對是否為技術部
   },
   methods: {
+    async getAllUser() {
+      let getuserData = await this.getUserList();
+      this.userData = typeof (getuserData)=='string'?[]:getuserData;
+        this.userData = this.userData.filter(x=>x.is_active==true);
+        // this.isLoading = true;
+        console.log('User',this.userData);
+    },
     getmain: async function() {
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
@@ -573,33 +764,109 @@ export default {
         });
     },
     getPoolData: async function() {
-      this.sel_pool = "";
-      let pool = [];
-      if (!this.sel_area) {
-        this.pooldata = pool;
-        return;
-      }
-      var para = {
-        id: this.sel_area
-      };
+      if(this.nowSetting=='pool') {
+        this.sel_pool = "";
+        let pool = [];
+        if (!this.sel_area) {
+          this.pooldata = pool;
+          this.nowpooldata = pool
+          return;
+        }
+        var para = {
+          id: this.sel_area
+        };
 
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
-          { params: para },
-          { httpsAgent: agent }
-        )
-        .then(res => {
-          console.log("API:" + res.request.responseURL);
-          pool = res.data;
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-          pool = [];
-        })
-        .finally(() => {
-          /* 不論失敗成功皆會執行 */ this.pooldata = pool;
-        });
+        await this.$axios
+          .get(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
+            { params: para },
+            { httpsAgent: agent }
+          )
+          .then(res => {
+            console.log("API:" + res.request.responseURL);
+            pool = res.data;
+          })
+          .catch(error => {
+            this.$toast.error("error:" + error, { duration: 2000 });
+            pool = [];
+          })
+          .finally(() => {
+            /* 不論失敗成功皆會執行 */ 
+            this.pooldata = pool;
+            this.nowpooldata = _.cloneDeep(pool);
+          });
+      }else {
+        this.getMapData();
+      }
+      
+    },
+    async getMapData() {
+      this.nowSetting = 'map';
+      this.areas = []
+      for (let i = 0; i < this.maindata.length; i++) {
+        if (this.maindata[i].id == this.sel_main) {
+        this.nowAreaId.factory_id = this.maindata[i].id;
+          for (let x = 0; x < this.maindata[i].node.length; x++) {
+            // this.areas.push(this.maindata[i].node[x].name);
+            this.areas.push({
+                areaNo: this.maindata[i].node[x].area_no,
+                name: this.maindata[i].node[x].name,
+                id: this.maindata[i].node[x].id
+            });
+          }
+        }
+      }
+      console.log("areas:",this.areas)
+      this.layout = [];
+      if (this.areas.length > 0) {
+        this.areas.forEach(a=>this.layout.push(a.name));
+        this.nowAreaId.pond_area_id = this.sel_area;
+        this.nowAreaTag = this.areas.filter(x=>x.id==this.sel_area)[0].areaNo;
+      }
+      let parm = {
+        factory_id: this.nowAreaId.factory_id,
+        pond_area_id: null
+
+      }
+      if(this.nowAreaId.factory_id!==null) {
+          await this.$axios
+            .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
+            .then(res => {
+              // this.ponds = res.data;
+              console.log('getData',res.data);
+              this.allData = res.data;
+              this.getLayoutData();
+              
+            })
+            .catch(error => {
+              // alert("error:" + error.message);
+            });
+      }    
+      console.log("areas:" + this.areas,this.nowAreaId,this.nowAreaTag);
+    },
+    getLayoutData() {
+      // 將地圖資料傳遞給配置設定
+      let areaid = null;
+      let name = '';
+      // this.nowLayout = this.areas[0].name;
+      this.areas.forEach(a=>{
+        if(a.id == this.sel_area) {
+          areaid = a.id;
+          name = a.name;
+        }
+      })
+      this.allData.forEach(data=>{
+        if(data.id==areaid) {
+          this.areas1 = {
+            areaNo: data.area_no,
+            name: name,
+            id: data.id,
+            ponds: data.ponds
+          }
+        }
+      })
+      
+      console.log('getLayout',this.areas1);
     },
     editsubmit: async function() {
       if (this.$refs.mainform.validate() == false) {
@@ -763,7 +1030,7 @@ export default {
 
       
     },
-    showdialog_pool: function(data) {
+    showdialog_pool: function(data,item=null) {
       // if (this.$refs.poolform != undefined) {
       //     this.$refs.poolform.reset();
       //   }
@@ -777,7 +1044,7 @@ export default {
         
       }
       if (data == "edit") {
-        var pool = this.pooldata.filter(x => x.id == this.sel_pool)[0];
+        var pool = this.pooldata.filter(x => x.id == item.id)[0];
         this.edititem_pool.parm = _.cloneDeep(pool);
         var mystatename = this.edititem_pool.parm.state;
         this.edititem_pool.parm.pond_state_id = (mystatename=="")?3:this.poolstat.filter(x=>x.name==mystatename)[0].id;
@@ -803,6 +1070,20 @@ export default {
       }
       this.dialog.pool = true;
     },
+    changePool() {
+      this.nowpooldata = [];
+      console.log(this.pooldata)
+      if(this.sel_area) {
+        if(this.sel_pool!==null) {
+          let pool = _.cloneDeep(this.pooldata);
+          pool = pool.filter(x=>x.id==this.sel_pool);
+          this.nowpooldata = pool;
+        }else {
+          this.nowpooldata = _.cloneDeep(this.pooldata);
+        }
+        
+      }
+    },
     delsubmit: async function(location, value) {
       if (confirm(`是否刪除 ${value}`)) {
         //  location, //main場、區、水池
@@ -820,7 +1101,8 @@ export default {
             apiUrl = "pond-area";
             break;
           case "pool":
-            id = this.sel_pool;
+            // id = this.sel_pool;
+            id = _.cloneDeep(this.pooldata.filter(x=>x.name==value)[0].id);
             apiUrl = "pond";
             break;
           default:
@@ -1002,8 +1284,33 @@ export default {
      var temp  = _.cloneDeep(this.pooldata); 
      return temp.sort((a1,b1)=>{return (a1.id<b1.id)?-1:1});
     }
+  },
+  watch: {
+    sel_area() {
+      this.sel_pool = null;
+      this.nowpooldata = [];
+    },
+    sel_main() {
+      this.sel_pool = null;
+      this.nowpooldata = [];
+    }
   }
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+
+
+::v-deep {
+  .v-textarea.v-text-field--enclosed.text-area .v-text-field__slot textarea,
+  .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--outlined.text-area .v-input__prepend-inner {
+    margin-left: 8px;
+  }
+  .v-data-table .v-data-table__wrapper {
+    overflow: unset;
+  }
+  .theme--light.v-data-table.v-data-table--fixed-header thead th {
+    background: $color-lighten;
+  }
+}        
+</style>
