@@ -2,6 +2,7 @@ import Vue from "vue";
 
 Vue.mixin({
 	methods: {
+        // 取得場架構
 	    getArchitecture: async function(_factoryid,isAll=false) {
             // _factoryid 預設只帶該場資料，其他不需要
             try {
@@ -49,9 +50,9 @@ Vue.mixin({
             
         },
         // 取得池資料清單
-        getPondDataList:async function() {
+        getPondDataList:async function(parm=undefined) {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
+                let data =  parm?await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`, { params: parm }):await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
                 console.log("池資料清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
@@ -101,21 +102,6 @@ Vue.mixin({
                 console.log(error);
             }
         },
-        // 取得水源/蝦況選項項目
-        getFieldOtptionList:async function() {
-            try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`)
-                console.log("取得水源/蝦況選項項目清單:" + data.request.responseURL);
-                if(data.status==200) {
-                    return data.data;
-                }else {
-                    this.$toast.error("錯誤：" + error, { duration: 2000 });
-                    return [];
-                }
-            }catch(error) {
-                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            }
-        },
         // 取得事件清單
         getEventList:async function(parm) {
             try {
@@ -132,5 +118,273 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        // 取得水質欄位清單
+        getAllColForSearchList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`)
+                console.log("水質欄位清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得水質折線圖清單
+        getAllDataList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`, { params: parm })
+                console.log("折線圖清單:" + data.request.responseURL);
+                if(data.data=='欄位資料有誤'){
+                    this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+                    return [];
+                }else{
+                    return data.data;
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得水質紀錄清單
+        getColDataList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`)
+                console.log("水質欄位清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增水質紀錄
+        postColDataList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`,addform,)
+                console.log("新增水質紀錄:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改水質紀錄
+        patchColDataList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`,parm,)
+                console.log("修改種苗:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除水質紀錄清單
+        deleteColDataList:async function(id,parm) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`, { data: parm })
+                console.log("刪除水質紀錄:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    // this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    return false;
+                    // this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 機器人確認
+        getRecaptchacheckList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm})
+                console.log("機器人確認:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得觀察網清單
+        getObservationRecordList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/observation-record/`,{ params: parm })
+                console.log("觀察網清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增觀察網
+        postObservationRecordList:async function(addform) {
+            try {
+                let config = { headers: { "Content-Type": "multipart/form-data" } };
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-record/`,addform,config)
+                console.log("新增觀察網:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改觀察網
+        patchObservationRecordList:async function(parm,id) {
+            try {
+                let config = { headers: { "Content-Type": "multipart/form-data" } };
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-record/${id}/`,parm,config)
+                console.log("修改觀察網:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除觀察網
+        deleteObservationRecordList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-record/${id}/`)
+                console.log("刪除觀察網:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增殘餌
+        postLeftoverRecordList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/leftover-record/`,addform,)
+                console.log("新增殘餌:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改殘餌
+        patchLeftoverRecordList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/leftover-record/${id}/`,parm,)
+                console.log("修改殘餌:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除殘餌
+        deleteLeftoverRecordList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/leftover-record/${id}/`)
+                console.log("刪除殘餌:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得水質在時間範圍內的數值
+        getLastDataInCurrentTimeList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/last-data-in-current-time-range/`, { params: parm })
+                console.log("水質在時間範圍內的數值清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+                return [];
+            }
+        },
+        
 	}
 })

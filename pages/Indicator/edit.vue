@@ -676,7 +676,7 @@
             <v-card-actions style="padding: 24px 12px;">
                 <v-spacer></v-spacer>
                 <v-btn class="btn-secondary" @click="delDialog = false">取消</v-btn>
-                <v-btn class="btn-primary" @click="delsubmit">新增</v-btn>
+                <v-btn class="btn-primary" @click="delsubmit">刪除</v-btn>
             </v-card-actions>
             <!-- <v-card-actions style="justify-self: flex-end;width: 100%;">
               <v-spacer></v-spacer>
@@ -1331,22 +1331,36 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     //抓欄位資料 waterdatacols ，coldata
     var myitem=[];
-    await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`).then(res=>{
-      var group =  Array.from(new Set(res.data.map(x=>x.group))); 
-      for (let i = 0; i < group.length; i++) {
-        const element = group[i];
-        if (i!=0) {
-          myitem.push({ divider: true });
-        }
-        myitem.push({ header: element });//group name
-        myitem.push(...res.data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
+    let getAllColForSearchList = await this.getAllColForSearchList();
+    let data = typeof (getAllColForSearchList)=='string'?[]:getAllColForSearchList;
+    var group =  Array.from(new Set(data.map(x=>x.group))); 
+    for (let i = 0; i < group.length; i++) {
+      const element = group[i];
+      if (i!=0) {
+        myitem.push({ divider: true });
       }
-      //  myitem = res.data.map(x=>({'name':x.name_ch,'value':x.name_en}));
-      this.waterdatacols = myitem;
-      this.coldata = Object.assign([], res.data);
-    }).catch(err => {
-      alert("失敗：" + err.message);
-    });
+      myitem.push({ header: element });//group name
+      myitem.push(...data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
+    }
+    //  myitem = data.map(x=>({'name':x.name_ch,'value':x.name_en}));
+    this.waterdatacols = myitem;
+    this.coldata = Object.assign([], data);
+    // await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`).then(res=>{
+    //   var group =  Array.from(new Set(res.data.map(x=>x.group))); 
+    //   for (let i = 0; i < group.length; i++) {
+    //     const element = group[i];
+    //     if (i!=0) {
+    //       myitem.push({ divider: true });
+    //     }
+    //     myitem.push({ header: element });//group name
+    //     myitem.push(...res.data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
+    //   }
+    //   //  myitem = res.data.map(x=>({'name':x.name_ch,'value':x.name_en}));
+    //   this.waterdatacols = myitem;
+    //   this.coldata = Object.assign([], res.data);
+    // }).catch(err => {
+    //   alert("失敗：" + err.message);
+    // });
     let myurl = [
       `${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`,
       `${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`
@@ -1488,19 +1502,22 @@ export default {
       console.log('sel_area',this.sel_area);
       if (this.sel_area) {
         //水池基本資料
-        await this.$axios
-          .get(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
-            { params: para },
-            { httpsAgent: agent }
-          )
-          .then(res => {
-            console.log("ponds-data",res.data);
-            this.mainpool.items = res.data;
-          })
-          .catch(err => {
-            alert("失敗：" + err.message);
-          });
+        let getPondDataList = await this.getPondDataList(para);
+        let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+        this.mainpool.items = data;
+        // await this.$axios
+        //   .get(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
+        //     { params: para },
+        //     { httpsAgent: agent }
+        //   )
+        //   .then(res => {
+        //     console.log("ponds-data",res.data);
+        //     this.mainpool.items = res.data;
+        //   })
+        //   .catch(err => {
+        //     alert("失敗：" + err.message);
+        //   });
       } else {
         this.mainpool.items = [];
       }
@@ -1581,70 +1598,118 @@ export default {
       //   .catch(err => {
       //     alert("失敗：" + err.message);
       //   });
+      
 
       let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
       //歸零
       this.item = "";
       this.headers = [];
       //抓資料
-      await this.$axios
-        .get(apiurl, { params: parm }, { httpsAgent: agent })
-        .then(res => {
-          console.log("API:" + res.request.responseURL);
-          if(res.data=='欄位資料有誤'){
-            this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
-            window.location.href='/indicator/index2'
-          }else{
-            let data2 = _.cloneDeep(res.data);
-            this.item = _.cloneDeep(res.data);
-            this.item.items.forEach(function(x) {//給折線圖用的資料
-              delete x.id; //"刪掉id欄位"
-              delete x.updated_user; //"刪掉updated_user欄位"
-              delete x.group;//"刪掉group欄位"
-            });
-            if (data2.items.length > 0) {
-              let cols = Object.keys(data2.items[0]);
-              for (const key in cols) {
-                this.headers.push({
-                  text: cols[key],
-                  value: cols[key],
-                  align: "center",
-                  width: "20%",
-                  groupable: false
-                });
-              }
-            }
-            for(let i=0;i<this.headers.length;i++) {
-              if(this.headers[i].text == 'group') {
-                this.headers[i].width = '10%';
-              }
-            }
-            this.headers.push({
-              text: "動作",
-              value: "actions",
-              sortable: false,
-              width: "20%",
-            });
+      let getAllDataList = await this.getAllDataList(parm);
+      let data = typeof (getAllDataList)=='string'?[]:getAllDataList;
+      let data2 = _.cloneDeep(data);
+      this.item = _.cloneDeep(data);
+      this.item.items.forEach(function(x) {//給折線圖用的資料
+        delete x.id; //"刪掉id欄位"
+        delete x.updated_user; //"刪掉updated_user欄位"
+        delete x.group;//"刪掉group欄位"
+      });
+      if (data2.items.length > 0) {
+        let cols = Object.keys(data2.items[0]);
+        for (const key in cols) {
+          this.headers.push({
+            text: cols[key],
+            value: cols[key],
+            align: "center",
+            width: "20%",
+            groupable: false
+          });
+        }
+      }
+      for(let i=0;i<this.headers.length;i++) {
+        if(this.headers[i].text == 'group') {
+          this.headers[i].width = '10%';
+        }
+      }
+      this.headers.push({
+        text: "動作",
+        value: "actions",
+        sortable: false,
+        width: "20%",
+      });
+      
+      this.item2 = data2;
+      if ( this.item.items.length>0) {
+        this.getLimitData();
+      }
+      // 批次刪除，無資料時disable1不可勾選chexkbox
+      if(this.item2.items.length>0) {
+        this.disabledAllDel = false;
+      }else {
+        this.disabledAllDel = true;
+      }
+      this.loading = false;
+      console.log('item',this.item);
+      console.log('item2',this.item2)
+      console.log('headers',this.headers)
+      // await this.$axios
+      //   .get(apiurl, { params: parm }, { httpsAgent: agent })
+      //   .then(res => {
+      //     console.log("API:" + res.request.responseURL);
+      //     if(res.data=='欄位資料有誤'){
+      //       this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+      //       window.location.href='/indicator/index2'
+      //     }else{
+      //       let data2 = _.cloneDeep(res.data);
+      //       this.item = _.cloneDeep(res.data);
+      //       this.item.items.forEach(function(x) {//給折線圖用的資料
+      //         delete x.id; //"刪掉id欄位"
+      //         delete x.updated_user; //"刪掉updated_user欄位"
+      //         delete x.group;//"刪掉group欄位"
+      //       });
+      //       if (data2.items.length > 0) {
+      //         let cols = Object.keys(data2.items[0]);
+      //         for (const key in cols) {
+      //           this.headers.push({
+      //             text: cols[key],
+      //             value: cols[key],
+      //             align: "center",
+      //             width: "20%",
+      //             groupable: false
+      //           });
+      //         }
+      //       }
+      //       for(let i=0;i<this.headers.length;i++) {
+      //         if(this.headers[i].text == 'group') {
+      //           this.headers[i].width = '10%';
+      //         }
+      //       }
+      //       this.headers.push({
+      //         text: "動作",
+      //         value: "actions",
+      //         sortable: false,
+      //         width: "20%",
+      //       });
             
-            this.item2 = data2;
-            if ( this.item.items.length>0) {
-              this.getLimitData();
-            }
-            // 批次刪除，無資料時disable1不可勾選chexkbox
-            if(this.item2.items.length>0) {
-              this.disabledAllDel = false;
-            }else {
-              this.disabledAllDel = true;
-            }
-            this.loading = false;
-            console.log('item',this.item);
-            console.log('item2',this.item2)
-            console.log('headers',this.headers)
-          }
-        })
-        .catch(err => {
-          alert("查詢失敗：" + err.message);
-        });
+      //       this.item2 = data2;
+      //       if ( this.item.items.length>0) {
+      //         this.getLimitData();
+      //       }
+      //       // 批次刪除，無資料時disable1不可勾選chexkbox
+      //       if(this.item2.items.length>0) {
+      //         this.disabledAllDel = false;
+      //       }else {
+      //         this.disabledAllDel = true;
+      //       }
+      //       this.loading = false;
+      //       console.log('item',this.item);
+      //       console.log('item2',this.item2)
+      //       console.log('headers',this.headers)
+      //     }
+      //   })
+      //   .catch(err => {
+      //     alert("查詢失敗：" + err.message);
+      //   });
 
       //抓事件資料
       this.eventsData.splice(0,this.eventsData.length);
@@ -1659,7 +1724,7 @@ export default {
       
     },
     //抓事件資料
-    getEventData(level) {
+    async getEventData(level) {
       var parms = {};
       var poolidcpd = [];
       var result =[];
@@ -1682,70 +1747,122 @@ export default {
           parms.pond_id = poolidcpd.join();
           break;
       }
-      this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`, {
-          params: parms
-        })
-        .then(res => {
-          result = res.data;
-          // console.log(level,this.eventsData);
-          // console.log('result',result);
-          // 因為會有重複抓取問題，需剔除重複id
-          let newEvent = [];
-          this.eventsData.forEach(d=>{
-            if(!newEvent.includes(d.id)) {
-              newEvent.push(d.id);
-            }
+      let getEventList = await this.getEventList(parms);
+      let eventData = typeof (getEventList)=='string'?[]:getEventList;
+      result = eventData;
+      // 因為會有重複抓取問題，需剔除重複id
+      let newEvent = [];
+      this.eventsData.forEach(d=>{
+        if(!newEvent.includes(d.id)) {
+          newEvent.push(d.id);
+        }
+      })
+      result.forEach(r=>{
+        if(!newEvent.includes(r.id)) {
+          this.eventsData.push(r);
+          newEvent.push(r.id);
+        }
+      })
+      if(level==1) {
+        this.getEventData(2);
+      }else if(level==2) {
+        this.getEventData(3);
+      }else {
+        // 事件資料整理，要符合表格欄位
+        if(this.eventsData.length>0) {
+          this.eventHeaders = [
+            {align: "center",groupable: false,text: "id",value: "id",width:"10%"},
+            {align: "center",groupable: false,text: "事件等級",value: "event_level_name",width:"10%"},
+            {align: "center",groupable: false,text: "事件類別",value: "event_category_name",width:"10%"},
+            {align: "center",groupable: false,text: "時間",value: "time",width:"20%"},
+            {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
+            {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
+        }
+        for(let i=0;i<this.eventsData.length;i++) {
+          this.eventTableData.push({
+            id: this.eventsData[i].id,
+            event_level_name: this.eventsData[i].event_level_name,
+            event_category_name: this.eventsData[i].event_category_name,
+            time: `起：${this.eventsData[i].started_date}<br> 訖：${this.eventsData[i].ended_date}`,
+            content:`全日事件：${this.eventsData[i].is_all_day}<br> 標題：${this.eventsData[i].title}[最後編輯者：${this.eventsData[i].created_user}]<br> 內容：${this.eventsData[i].content}`,
+            name: '',
+            color: this.eventsData[i].color
           })
-          result.forEach(r=>{
-            if(!newEvent.includes(r.id)) {
-              this.eventsData.push(r);
-              newEvent.push(r.id);
+          if(this.eventsData[i].items.length>0) {
+            let data = []
+            for(let x=0;x<this.eventsData[i].items.length;x++) {
+              data.push(this.eventsData[i].items[x].name);
             }
-          })
-          if(level==1) {
-            this.getEventData(2);
-          }else if(level==2) {
-            this.getEventData(3);
-          }else {
-            // 事件資料整理，要符合表格欄位
-            if(this.eventsData.length>0) {
-              this.eventHeaders = [
-                {align: "center",groupable: false,text: "id",value: "id",width:"10%"},
-                {align: "center",groupable: false,text: "事件等級",value: "event_level_name",width:"10%"},
-                {align: "center",groupable: false,text: "事件類別",value: "event_category_name",width:"10%"},
-                {align: "center",groupable: false,text: "時間",value: "time",width:"20%"},
-                {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
-                {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
-            }
-            for(let i=0;i<this.eventsData.length;i++) {
-              this.eventTableData.push({
-                id: this.eventsData[i].id,
-                event_level_name: this.eventsData[i].event_level_name,
-                event_category_name: this.eventsData[i].event_category_name,
-                time: `起：${this.eventsData[i].started_date}<br> 訖：${this.eventsData[i].ended_date}`,
-                content:`全日事件：${this.eventsData[i].is_all_day}<br> 標題：${this.eventsData[i].title}[最後編輯者：${this.eventsData[i].created_user}]<br> 內容：${this.eventsData[i].content}`,
-                name: '',
-                color: this.eventsData[i].color
-              })
-              if(this.eventsData[i].items.length>0) {
-                let data = []
-                for(let x=0;x<this.eventsData[i].items.length;x++) {
-                  data.push(this.eventsData[i].items[x].name);
-                }
-                this.eventTableData[i].name = data.toString().replace(',','<br>');
-              }
-            }
-            console.log("event data:",this.eventsData);
-            console.log("event table:",this.eventTableData);
+            this.eventTableData[i].name = data.toString().replace(',','<br>');
           }
-          console.log("event api:", res.request.responseURL);
+        }
+        console.log("event data:",this.eventsData);
+        console.log("event table:",this.eventTableData);
+      }
+      // this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`, {
+      //     params: parms
+      //   })
+      //   .then(res => {
+      //     result = res.data;
+      //     // console.log(level,this.eventsData);
+      //     // console.log('result',result);
+      //     // 因為會有重複抓取問題，需剔除重複id
+      //     let newEvent = [];
+      //     this.eventsData.forEach(d=>{
+      //       if(!newEvent.includes(d.id)) {
+      //         newEvent.push(d.id);
+      //       }
+      //     })
+      //     result.forEach(r=>{
+      //       if(!newEvent.includes(r.id)) {
+      //         this.eventsData.push(r);
+      //         newEvent.push(r.id);
+      //       }
+      //     })
+      //     if(level==1) {
+      //       this.getEventData(2);
+      //     }else if(level==2) {
+      //       this.getEventData(3);
+      //     }else {
+      //       // 事件資料整理，要符合表格欄位
+      //       if(this.eventsData.length>0) {
+      //         this.eventHeaders = [
+      //           {align: "center",groupable: false,text: "id",value: "id",width:"10%"},
+      //           {align: "center",groupable: false,text: "事件等級",value: "event_level_name",width:"10%"},
+      //           {align: "center",groupable: false,text: "事件類別",value: "event_category_name",width:"10%"},
+      //           {align: "center",groupable: false,text: "時間",value: "time",width:"20%"},
+      //           {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
+      //           {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
+      //       }
+      //       for(let i=0;i<this.eventsData.length;i++) {
+      //         this.eventTableData.push({
+      //           id: this.eventsData[i].id,
+      //           event_level_name: this.eventsData[i].event_level_name,
+      //           event_category_name: this.eventsData[i].event_category_name,
+      //           time: `起：${this.eventsData[i].started_date}<br> 訖：${this.eventsData[i].ended_date}`,
+      //           content:`全日事件：${this.eventsData[i].is_all_day}<br> 標題：${this.eventsData[i].title}[最後編輯者：${this.eventsData[i].created_user}]<br> 內容：${this.eventsData[i].content}`,
+      //           name: '',
+      //           color: this.eventsData[i].color
+      //         })
+      //         if(this.eventsData[i].items.length>0) {
+      //           let data = []
+      //           for(let x=0;x<this.eventsData[i].items.length;x++) {
+      //             data.push(this.eventsData[i].items[x].name);
+      //           }
+      //           this.eventTableData[i].name = data.toString().replace(',','<br>');
+      //         }
+      //       }
+      //       console.log("event data:",this.eventsData);
+      //       console.log("event table:",this.eventTableData);
+      //     }
+      //     console.log("event api:", res.request.responseURL);
           
-        })
-        .catch(err => {
-          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
-          // window.location.href='/indicator/index2'
-        });
+      //   })
+      //   .catch(err => {
+      //     this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+      //     // window.location.href='/indicator/index2'
+      //   });
         return result;
     },
     gofocusNxt2: function(id) {
@@ -1768,20 +1885,30 @@ export default {
       return mytime;
     },
     getLimitData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`)
-        .then(res => {
-          // this.allcols = Object.assign([], res.data);
-          var lmtitem =  res.data.filter(x=>x.name_ch==this.defitem);
-          if(lmtitem.length>0){//不可以有null值
-            this.markdata.maxline = (lmtitem[0].critical_max==null)?-999:lmtitem[0].critical_max;
-            this.markdata.minline = (lmtitem[0].critical_min==null)?-999:lmtitem[0].critical_min;
-          }else{
-            this.markdata.maxline = -999;
-            this.markdata.minline = -999;
-          }
-          console.log("col data:",res.request.responseURL);
-        });
+      let getColDataList = await this.getColDataList();
+      let data = typeof (getColDataList)=='string'?[]:getColDataList;
+      var lmtitem =  data.filter(x=>x.name_ch==this.defitem);
+      if(lmtitem.length>0){//不可以有null值
+        this.markdata.maxline = (lmtitem[0].critical_max==null)?-999:lmtitem[0].critical_max;
+        this.markdata.minline = (lmtitem[0].critical_min==null)?-999:lmtitem[0].critical_min;
+      }else{
+        this.markdata.maxline = -999;
+        this.markdata.minline = -999;
+      }
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`)
+      //   .then(res => {
+      //     // this.allcols = Object.assign([], res.data);
+      //     var lmtitem =  res.data.filter(x=>x.name_ch==this.defitem);
+      //     if(lmtitem.length>0){//不可以有null值
+      //       this.markdata.maxline = (lmtitem[0].critical_max==null)?-999:lmtitem[0].critical_max;
+      //       this.markdata.minline = (lmtitem[0].critical_min==null)?-999:lmtitem[0].critical_min;
+      //     }else{
+      //       this.markdata.maxline = -999;
+      //       this.markdata.minline = -999;
+      //     }
+      //     console.log("col data:",res.request.responseURL);
+      //   });
     },
     getItemClass: function(item) {//依項目回傳主要類別是什麼
       let colclass = "";
@@ -1807,25 +1934,37 @@ export default {
       let deldata = { data_group: this.editedItem.class };
       console.log("DEL data:", deldata);
       console.log("DEL:" + url);
-      await this.$axios
-        .delete(url, { data: deldata }, { httpsAgent: agent })
-        .then(res => {
-          if (res.data == "刪除成功") {
-            // this.getdata();
-            this.delDialog = false; //close dialog
-            this.$toast.success(`刪除成功`, { duration: 2000 });
-            this.getdata();//重取得資料
-          } else {
-            alert("刪除失敗!：" + res.data);
-          }
-        })
-        .catch(error => {
-          alert("刪除失敗!：" + error.message);
-        });
+      var res = false;
+      res = this.deleteColDataList(this.editedItem.id,deldata);
+      setTimeout(()=>{
+        if(res) {
+          this.delDialog = false; //close dialog
+          this.$toast.success(`刪除成功`, { duration: 2000 });
+          this.getdata();//重取得資料
+        }else {
+          alert("刪除失敗!");
+        }
+      },50)
+      // await this.$axios
+      //   .delete(url, { data: deldata }, { httpsAgent: agent })
+      //   .then(res => {
+      //     if (res.data == "刪除成功") {
+      //       // this.getdata();
+      //       this.delDialog = false; //close dialog
+      //       this.$toast.success(`刪除成功`, { duration: 2000 });
+      //       this.getdata();//重取得資料
+      //     } else {
+      //       alert("刪除失敗!：" + res.data);
+      //     }
+      //   })
+      //   .catch(error => {
+      //     alert("刪除失敗!：" + error.message);
+      //   });
     },
     delItems:async function(){
       if(confirm(`批次刪除${this.selected.length}筆資料？`)){
         var delsuccess = 0;
+        var record = 0;
         for (let i = 0; i < this.selected.length; i++) {
           const item = this.selected[i];
           const editedItem = item;
@@ -1834,25 +1973,47 @@ export default {
           let deldata = { data_group: editedItem.class };
           // console.log("DEL data:", deldata);
           // console.log("DEL:" + url);
-          await this.$axios
-            .delete(url, { data: deldata }, { httpsAgent: agent })
-            .then(res => {
-              if (res.data == "刪除成功") {
-                delsuccess += 1;
-              } else {
-                console.log(`刪除失敗：${editedItem.id}-${res.data}`);
-                alert(`刪除失敗!：${editedItem.id}-` + res.data);
+          var res = false;
+          res = this.deleteColDataList(editedItem.id, deldata);
+          setTimeout(()=>{
+            if(res) {
+              record+=1;
+              delsuccess += 1;
+              if(record==this.selected.length) {
+                this.getdata();
+                this.showselect = false;
+                this.$toast.success(`刪除結果 成功筆數/總筆數：${delsuccess}/${this.selected.length}`, { duration: 2000 });
+                this.selected = [];
               }
-            })
-            .catch(error => {
-               console.log(`刪除失敗：${editedItem.id}-${error.message}`);
-              alert(`刪除失敗!：${editedItem.id}-` + error.message);
-            });
+              
+            }else {
+              record+=1;
+              alert(`刪除失敗!：${editedItem.id}`);
+              if(record==this.selected.length-1) {
+                this.getdata();
+                this.showselect = false;
+                this.$toast.success(`刪除結果 成功筆數/總筆數：${delsuccess}/${this.selected.length}`, { duration: 2000 });
+                this.selected = [];
+              }
+            }
+            
+          },50)
+          // await this.$axios
+          //   .delete(url, { data: deldata }, { httpsAgent: agent })
+          //   .then(res => {
+          //     if (res.data == "刪除成功") {
+          //       delsuccess += 1;
+          //     } else {
+          //       console.log(`刪除失敗：${editedItem.id}-${res.data}`);
+          //       alert(`刪除失敗!：${editedItem.id}-` + res.data);
+          //     }
+          //   })
+          //   .catch(error => {
+          //      console.log(`刪除失敗：${editedItem.id}-${error.message}`);
+          //     alert(`刪除失敗!：${editedItem.id}-` + error.message);
+          //   });
         }
-        this.getdata();
-        this.showselect = false;
-        this.$toast.success(`刪除結果 成功筆數/總筆數：${delsuccess}/${this.selected.length}`, { duration: 2000 });
-        this.selected = [];
+        
       }
     },
     editItem: async function(item) {
@@ -1913,21 +2074,29 @@ export default {
           updated_user: updUser,
           data_group: this.editedItem.class
         };
-        await this.$axios
-          .patch(url, data, { httpsAgent: agent })
-          .then(res => {
-            if (res.data == "修改成功") {
+        var res = false;
+        res = this.patchColDataList(data,this.editedItem.id);
+        setTimeout(()=>{
+            if(res) {
               this.getdata();
               this.editDialog = false; //close dialog
-              this.$toast.success(`修改成功`, { duration: 2000 });
-            } else {
-              alert("修改失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("修改失敗!：" + error.message);
-          })
-          .finally(() => {});
+        },50)
+        // await this.$axios
+        //   .patch(url, data, { httpsAgent: agent })
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       this.getdata();
+        //       this.editDialog = false; //close dialog
+        //       this.$toast.success(`修改成功`, { duration: 2000 });
+        //     } else {
+        //       alert("修改失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("修改失敗!：" + error.message);
+        //   })
+        //   .finally(() => {});
       } else {
       }
     },
@@ -1937,17 +2106,23 @@ export default {
     captchacheck:async function(){
       const token = await this.$recaptcha.getResponse();
       var parm = {token:token};
-        await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm}
-        )
-        .then(res => {
-          var resdata = JSON.parse(res.data);
-          if(resdata.success){
-            this.captchaDialog=false;
-            this.delItems();
-          }
-        });
+      let getRecaptchacheckList = await this.getRecaptchacheckList(parm);
+      var resdata = JSON.parse(getRecaptchacheckList);
+      if(resdata.success){
+        this.captchaDialog=false;
+        this.delItems();
+      }
+        // await this.$axios
+        // .get(
+        //   `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm}
+        // )
+        // .then(res => {
+        //   var resdata = JSON.parse(res.data);
+        //   if(resdata.success){
+        //     this.captchaDialog=false;
+        //     this.delItems();
+        //   }
+        // });
       await this.$recaptcha.reset();
     },
     formula_eval: function(feed, formula) {
@@ -2021,62 +2196,92 @@ export default {
         }
         parms.data = submitData;
         console.log("adddata aparms", parms);
-        await this.$axios
-          .post(url, parms, { httpsAgent: agent })
-          .then(res => {
-            if (res.data == "新增成功") {
-              if(this.sdate&&this.edate&&this.sel_main&&this.sel_area&&this.sel_pool&&this.defitem) {
-                this.getdata();//新增未必有選到所有選項
+        var res = false;
+          res = this.postColDataList(parms);
+          setTimeout(()=>{
+              if(res) {
+                if(this.sdate&&this.edate&&this.sel_main&&this.sel_area&&this.sel_pool&&this.defitem) {
+                  this.getdata();//新增未必有選到所有選項
+                }
+                
+                this.atime = "";
+                if (this.keepswitch == false) {
+                  this.addDialog = false; //close dialog
+                }
               }
+          },50)
+        // await this.$axios
+        //   .post(url, parms, { httpsAgent: agent })
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       if(this.sdate&&this.edate&&this.sel_main&&this.sel_area&&this.sel_pool&&this.defitem) {
+        //         this.getdata();//新增未必有選到所有選項
+        //       }
               
-              this.atime = "";
-              if (this.keepswitch == false) {
-                this.addDialog = false; //close dialog
-              }
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            } else {
-              alert("新增失敗!：" + res.data);
-            }
-          })
-          .catch(error => {
-            alert("新增失敗!：" + error.message);
-          })
-          .finally(() => {
-            //this.getdata();
-          });
+        //       this.atime = "";
+        //       if (this.keepswitch == false) {
+        //         this.addDialog = false; //close dialog
+        //       }
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //     } else {
+        //       alert("新增失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("新增失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     //this.getdata();
+        //   });
       }
     },
     // 觀察網
     // 取得顏色的項目
     getOptData:async function(){
         if(this.optData.length==0) {
-          let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
-          await this.$axios.get(url).then(res => {
-              if(res.status==200){
-                  this.optData = res.data;
-                  // console.log(this.optData);
+          let getFieldOtptionList = await this.getFieldOtptionList();
+          let data = typeof (getFieldOtptionList)=='string'?[]:getFieldOtptionList;
+          this.optData = data;
+          // console.log(this.optData);
 
-                  let datas = _.cloneDeep(this.observableData);
-                  this.observableData = [];
-                  datas.forEach(odata=>{
-                    this.getFilter(odata);
-                  })
+          let datas = _.cloneDeep(this.observableData);
+          this.observableData = [];
+          datas.forEach(odata=>{
+            this.getFilter(odata);
+          })
 
-                  this.observableData = _.cloneDeep(datas);
-                  if(this.observableData.length>0) {
-                    this.getChartData();
-                  }
-                  this.isSearch = true;
+          this.observableData = _.cloneDeep(datas);
+          if(this.observableData.length>0) {
+            this.getChartData();
+          }
+          this.isSearch = true;
+          // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
+          // await this.$axios.get(url).then(res => {
+          //     if(res.status==200){
+          //         this.optData = res.data;
+          //         // console.log(this.optData);
+
+          //         let datas = _.cloneDeep(this.observableData);
+          //         this.observableData = [];
+          //         datas.forEach(odata=>{
+          //           this.getFilter(odata);
+          //         })
+
+          //         this.observableData = _.cloneDeep(datas);
+          //         if(this.observableData.length>0) {
+          //           this.getChartData();
+          //         }
+          //         this.isSearch = true;
                   
-                }else{
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
-              })
-              .catch(error=>{
-                  this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-              })
-              .finally(() => {
-                  });
+          //       }else{
+          //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+          //       }
+          //     })
+          //     .catch(error=>{
+          //         this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+          //     })
+          //     .finally(() => {
+          //         });
         }else {
           let datas = _.cloneDeep(this.observableData);
           this.observableData = [];
@@ -2098,34 +2303,52 @@ export default {
         ended_date: this.edate,
         pond_id: this.sel_pool,
       };
-      let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/observation-record/`;
-      await this.$axios
-        .get(apiurl, { params: parm }, { httpsAgent: agent })
-        .then(res=>{
-          console.log('觀察網資料',res)
-          console.log("觀察網資料取得API:" + res.request.responseURL);
-          this.observableData = [];
-          if(res.status==200 && typeof(res.data)!=='string') {
-            res.data.sort((a,b)=>{return b.inspected_time-a.inspected_time});
-            this.observableData = res.data;
-            this.observableData.forEach(x=>{
-              if(x.shrimps!==null && x.shrimps.length>0) {
-                let num = 0;
-                x.shrimps.forEach(y=>num=num+y.weight);
-                if(num>0) {
-                  x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
-                }else {
-                  x.shrimp_weight = null;
-                }
-                
-              }
-            })
-            this.getOptData();
+      let getObservationRecordList = await this.getObservationRecordList(parm);
+      let data = typeof (getObservationRecordList)=='string'?[]:getObservationRecordList;
+      this.observableData = [];
+      data.sort((a,b)=>{return b.inspected_time-a.inspected_time});
+      this.observableData = data;
+      this.observableData.forEach(x=>{
+        if(x.shrimps!==null && x.shrimps.length>0) {
+          let num = 0;
+          x.shrimps.forEach(y=>num=num+y.weight);
+          if(num>0) {
+            x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
+          }else {
+            x.shrimp_weight = null;
           }
-        })
-        .catch(err => {
-          alert("查詢失敗：" + err.message);
-        });
+          
+        }
+      })
+      this.getOptData();
+      // let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/observation-record/`;
+      // await this.$axios
+      //   .get(apiurl, { params: parm }, { httpsAgent: agent })
+      //   .then(res=>{
+      //     console.log('觀察網資料',res)
+      //     console.log("觀察網資料取得API:" + res.request.responseURL);
+      //     this.observableData = [];
+      //     if(res.status==200 && typeof(res.data)!=='string') {
+      //       res.data.sort((a,b)=>{return b.inspected_time-a.inspected_time});
+      //       this.observableData = res.data;
+      //       this.observableData.forEach(x=>{
+      //         if(x.shrimps!==null && x.shrimps.length>0) {
+      //           let num = 0;
+      //           x.shrimps.forEach(y=>num=num+y.weight);
+      //           if(num>0) {
+      //             x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
+      //           }else {
+      //             x.shrimp_weight = null;
+      //           }
+                
+      //         }
+      //       })
+      //       this.getOptData();
+      //     }
+      //   })
+      //   .catch(err => {
+      //     alert("查詢失敗：" + err.message);
+      //   });
     },
     getFilter(odata) {
       this.maindata.forEach(x=>{
@@ -2541,15 +2764,12 @@ export default {
           
         })
         let config = { headers: { "Content-Type": "multipart/form-data" } };
-        let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'
-                    :this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observeEdit.shrimp_id+'/'}`;
-        if(this.nowObserve=='add') {
-          await this.$axios.post(url, formData,config)
-          .then(res => {
-              if(res.data=='新增成功'){
-                // this.observeDialog = false;
-                // this.getObservationData();
-                // this.$toast.success("新增成功", { duration: 2000 });
+        var res = false;
+        res = this.nowObserve=='add'?await this.postObservationRecordList(formData):
+          await this.patchObservationRecordList(formData,this.observeEdit.shrimp_id);
+        setTimeout(()=>{
+            if(res) {
+              if(this.nowObserve=='add') {
                 if(this.observeEdit.feed_amount!==null) { 
                   this.postObservable(this.observeEdit);
                 }else {
@@ -2557,25 +2777,7 @@ export default {
                   this.getObservationData();
                   this.$toast.success("成功", { duration: 2000 });
                 }
-                
               }else{
-                  this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-              }
-
-              console.log("新增API:" + res.request.responseURL);
-          })
-          .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-          })
-          .finally(() => {
-          });
-        }else {
-          await this.$axios.patch(url, formData,config)
-          .then(res => {
-              if(res.data=='修改成功'){
-                // this.observeDialog = false;
-                // this.getObservationData();
-                // this.$toast.success("新增成功", { duration: 2000 });
                 let observe = this.observableData.filter(x=>x.shrimp_id==this.observeEdit.shrimp_id)[0]
                 if(observe.feed_amount!==this.observeEdit.feed_amount) {
                   if(this.observeEdit.feed_amount!==null && this.observeEdit.feed_amount!== '') {
@@ -2589,19 +2791,71 @@ export default {
                   this.observeDialog = false;
                   this.getObservationData();
                 }
-                
-              }else{
-                  this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
               }
+            }
+        },50)
+        
+        // let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'
+        //             :this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observeEdit.shrimp_id+'/'}`;
+        // if(this.nowObserve=='add') {
+        //   await this.$axios.post(url, formData,config)
+        //   .then(res => {
+        //       if(res.data=='新增成功'){
+        //         // this.observeDialog = false;
+        //         // this.getObservationData();
+        //         // this.$toast.success("新增成功", { duration: 2000 });
+        //         if(this.observeEdit.feed_amount!==null) { 
+        //           this.postObservable(this.observeEdit);
+        //         }else {
+        //           this.observeDialog = false;
+        //           this.getObservationData();
+        //           this.$toast.success("成功", { duration: 2000 });
+        //         }
+                
+        //       }else{
+        //           this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+        //       }
 
-              console.log("修改API:" + res.request.responseURL);
-          })
-          .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-          })
-          .finally(() => {
-          });
-        }
+        //       console.log("新增API:" + res.request.responseURL);
+        //   })
+        //   .catch(error => {
+        //       this.$toast.error("error:" + error, { duration: 2000 });
+        //   })
+        //   .finally(() => {
+        //   });
+        // }else {
+        //   await this.$axios.patch(url, formData,config)
+        //   .then(res => {
+        //       if(res.data=='修改成功'){
+        //         // this.observeDialog = false;
+        //         // this.getObservationData();
+        //         // this.$toast.success("新增成功", { duration: 2000 });
+        //         let observe = this.observableData.filter(x=>x.shrimp_id==this.observeEdit.shrimp_id)[0]
+        //         if(observe.feed_amount!==this.observeEdit.feed_amount) {
+        //           if(this.observeEdit.feed_amount!==null && this.observeEdit.feed_amount!== '') {
+        //             this.nowObserve = 'add';
+        //             this.postObservable(this.observeEdit);
+        //           }else {
+        //             this.deleteObservable(this.observeEdit.leftover_id);
+        //           }
+                  
+        //         }else {
+        //           this.observeDialog = false;
+        //           this.getObservationData();
+        //         }
+                
+        //       }else{
+        //           this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+        //       }
+
+        //       console.log("修改API:" + res.request.responseURL);
+        //   })
+        //   .catch(error => {
+        //       this.$toast.error("error:" + error, { duration: 2000 });
+        //   })
+        //   .finally(() => {
+        //   });
+        // }
       }else {
         alert('請再次檢查是否有數值輸入錯誤')
       }
@@ -2615,100 +2869,130 @@ export default {
         pond_id: parseInt(observeItem.pond_id),
         // created_user: this.$auth.$state.user.email
       }
-      let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'
-                    :this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+this.observeEdit.leftover_id+'/'}`;
       if(this.nowObserve=='add') {
         parm.created_user = this.$auth.$state.user.email;
-        await this.$axios.post(url,parm)
-        .then(res => {
-            if(res.data=='新增成功'){
-              this.observeDialog = false;
-              this.getObservationData();
-              this.$toast.success("成功", { duration: 2000 });
-            }else{
-              this.observeDialog = false;
-              this.getObservationData();
-              this.$toast.error("新增觀察網殘餌失敗:" + res.data, { duration: 2000 });
-            }
-
-            console.log("新增觀察網殘餌API:" + res.request.responseURL);
-        })
-        .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(() => {
-        });
       }else {
         parm.updated_user = this.$auth.$state.user.email
-        await this.$axios.patch(url,parm)
-        .then(res => {
-            if(res.data=='修改成功'){
-              this.observeDialog = false;
-              this.getObservationData();
-              this.$toast.success("成功", { duration: 2000 });
-            }else{
-              this.observeDialog = false;
-              this.getObservationData();
-              this.$toast.error("修改觀察網殘餌失敗:" + res.data, { duration: 2000 });
-            }
-
-            console.log("修改觀察網殘餌API:" + res.request.responseURL);
-        })
-        .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(() => {
-        });
       }
+      let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'
+                    :this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+this.observeEdit.leftover_id+'/'}`;
+      var res = false;
+      res = this.nowObserve=='add'?this.postLeftoverRecordList(parm):this.patchLeftoverRecordList(parm,this.observeEdit.leftover_id);
+      setTimeout(()=>{
+        this.observeDialog = false;
+        this.getObservationData();
+      },50)
+      // if(this.nowObserve=='add') {
+      //   parm.created_user = this.$auth.$state.user.email;
+      //   await this.$axios.post(url,parm)
+      //   .then(res => {
+      //       if(res.data=='新增成功'){
+      //         this.observeDialog = false;
+      //         this.getObservationData();
+      //         this.$toast.success("成功", { duration: 2000 });
+      //       }else{
+      //         this.observeDialog = false;
+      //         this.getObservationData();
+      //         this.$toast.error("新增觀察網殘餌失敗:" + res.data, { duration: 2000 });
+      //       }
+
+      //       console.log("新增觀察網殘餌API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //       this.$toast.error("error:" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //   });
+      // }else {
+      //   parm.updated_user = this.$auth.$state.user.email
+      //   await this.$axios.patch(url,parm)
+      //   .then(res => {
+      //       if(res.data=='修改成功'){
+      //         this.observeDialog = false;
+      //         this.getObservationData();
+      //         this.$toast.success("成功", { duration: 2000 });
+      //       }else{
+      //         this.observeDialog = false;
+      //         this.getObservationData();
+      //         this.$toast.error("修改觀察網殘餌失敗:" + res.data, { duration: 2000 });
+      //       }
+
+      //       console.log("修改觀察網殘餌API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //       this.$toast.error("error:" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //   });
+      // }
       
     },
     // 蝦隻狀態刪除
     async delObservable(index) {
       if (confirm(`確認刪除此觀察網紀錄?`)) {
-        let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observableData[index].shrimp_id+'/'}`;
-        await this.$axios.delete(url)
-          .then(res => {
-            if(res.data=='刪除成功'){
+        var res = false;
+        res = this.deleteObservationRecordList(this.observableData[index].shrimp_id);
+        setTimeout(()=>{
+            if(res) {
               if(this.observableData[index].leftover_id==null) {
                 this.getObservationData();
               }else {
                 this.deleteObservable(this.observableData[index].leftover_id);
               }
-              
-            }else{
-                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
             }
+        },50)
+        // let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observableData[index].shrimp_id+'/'}`;
+        // await this.$axios.delete(url)
+        //   .then(res => {
+        //     if(res.data=='刪除成功'){
+        //       if(this.observableData[index].leftover_id==null) {
+        //         this.getObservationData();
+        //       }else {
+        //         this.deleteObservable(this.observableData[index].leftover_id);
+        //       }
+              
+        //     }else{
+        //         this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+        //     }
 
-            console.log("修改API:" + res.request.responseURL);
-        })
-        .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(() => {
-        });
+        //     console.log("修改API:" + res.request.responseURL);
+        // })
+        // .catch(error => {
+        //     this.$toast.error("error:" + error, { duration: 2000 });
+        // })
+        // .finally(() => {
+        // });
       }
     
     },
     // 殘餌量刪除
     async deleteObservable(id) {
-      let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+id+'/'}`;
-        await this.$axios.delete(url)
-          .then(res => {
-            if(res.data=='刪除成功'){
-              this.observeDialog = false;
-              this.getObservationData();
-              this.$toast.success("成功", { duration: 2000 });
-            }else{
-                this.$toast.error("失敗:" + res.data, { duration: 2000 });
-            }
+      var res = false;
+      res = this.deleteLeftoverRecordList(id);
+      setTimeout(()=>{
+          if(res) {
+            this.observeDialog = false;
+            this.getObservationData();
+          }
+      },50)
+      // let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+id+'/'}`;
+      //   await this.$axios.delete(url)
+      //     .then(res => {
+      //       if(res.data=='刪除成功'){
+      //         this.observeDialog = false;
+      //         this.getObservationData();
+      //         this.$toast.success("成功", { duration: 2000 });
+      //       }else{
+      //           this.$toast.error("失敗:" + res.data, { duration: 2000 });
+      //       }
 
-            console.log("修改API:" + res.request.responseURL);
-        })
-        .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-        })
-        .finally(() => {
-        });
+      //       console.log("修改API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //       this.$toast.error("error:" + error, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //   });
     },
   },
   watch: {

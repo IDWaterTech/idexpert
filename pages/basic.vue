@@ -781,178 +781,221 @@ export default {
       });
       if (this.sel_area) {
         this.tableloading = true;
-        await this.$axios
-          .get(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
-            { params: para },
-            { httpsAgent: agent }
-          )
-          .then(async res => {
-            this.mainpool.items = _.cloneDeep(res.data);
-            console.log(this.mainpool.items);
-            this.mainpool.items.forEach(x=>{
-              x.estimated_num = x.estimated_num==null?x.estimated_num:(parseFloat(x.estimated_num).toFixed(2))
-            })
-            this.originData = _.cloneDeep(this.mainpool.items);
-            // await this.getWaterData();
-            let nowTab = ''
-            switch (this.currenttab) {
-              case "亞硝酸鹽濃度":
-                nowTab = 'NO2';
-                break;
-              case "氨氮濃度":
-                nowTab = 'NH4';
-                break;
-              case "溶氧濃度":
-                nowTab = 'Do';
-                break;
-              case "酸鹼值":
-                nowTab = 'pH';
-                break;
-              case "水溫":
-                nowTab = 'Temperature';
-                break;
-              default:
-                break;
-            }
-            if(nowTab=='NH4') {
-              this.nowAreaId.range = this.lightData['AmmoniaN'];
-            }else if(nowTab=='Temperature') {
-              this.nowAreaId.range = this.lightData['Temp'];
-            }else {
-                this.nowAreaId.range = this.lightData[nowTab];
-            }
-            this.getAlertNum();
-            setTimeout(()=>{
-              if(document.getElementsByClassName('el-table__body-wrapper')) {
-                document.getElementsByClassName('el-table__body-wrapper')[0].scrollTop = 0;
-              }
-            },100)
-          })
-          .finally(() => {
-            /* 不論失敗成功皆會執行 */ this.tableloading = false;
-          });
+        let getPondDataList = await this.getPondDataList(para);
+        let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+        this.mainpool.items = _.cloneDeep(data);
+        console.log(this.mainpool.items);
+        this.mainpool.items.forEach(x=>{
+          x.estimated_num = x.estimated_num==null?x.estimated_num:(parseFloat(x.estimated_num).toFixed(2))
+        })
+        this.originData = _.cloneDeep(this.mainpool.items);
+        // await this.getWaterData();
+        let nowTab = ''
+        switch (this.currenttab) {
+          case "亞硝酸鹽濃度":
+            nowTab = 'NO2';
+            break;
+          case "氨氮濃度":
+            nowTab = 'NH4';
+            break;
+          case "溶氧濃度":
+            nowTab = 'Do';
+            break;
+          case "酸鹼值":
+            nowTab = 'pH';
+            break;
+          case "水溫":
+            nowTab = 'Temperature';
+            break;
+          default:
+            break;
+        }
+        if(nowTab=='NH4') {
+          this.nowAreaId.range = this.lightData['AmmoniaN'];
+        }else if(nowTab=='Temperature') {
+          this.nowAreaId.range = this.lightData['Temp'];
+        }else {
+            this.nowAreaId.range = this.lightData[nowTab];
+        }
+        this.getAlertNum();
+        setTimeout(()=>{
+          if(document.getElementsByClassName('el-table__body-wrapper')) {
+            document.getElementsByClassName('el-table__body-wrapper')[0].scrollTop = 0;
+          }
+        },100)
+        this.tableloading = false;
+        // await this.$axios
+        //   .get(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
+        //     { params: para },
+        //     { httpsAgent: agent }
+        //   )
+        //   .then(async res => {
+        //     this.mainpool.items = _.cloneDeep(res.data);
+        //     console.log(this.mainpool.items);
+        //     this.mainpool.items.forEach(x=>{
+        //       x.estimated_num = x.estimated_num==null?x.estimated_num:(parseFloat(x.estimated_num).toFixed(2))
+        //     })
+        //     this.originData = _.cloneDeep(this.mainpool.items);
+        //     // await this.getWaterData();
+        //     let nowTab = ''
+        //     switch (this.currenttab) {
+        //       case "亞硝酸鹽濃度":
+        //         nowTab = 'NO2';
+        //         break;
+        //       case "氨氮濃度":
+        //         nowTab = 'NH4';
+        //         break;
+        //       case "溶氧濃度":
+        //         nowTab = 'Do';
+        //         break;
+        //       case "酸鹼值":
+        //         nowTab = 'pH';
+        //         break;
+        //       case "水溫":
+        //         nowTab = 'Temperature';
+        //         break;
+        //       default:
+        //         break;
+        //     }
+        //     if(nowTab=='NH4') {
+        //       this.nowAreaId.range = this.lightData['AmmoniaN'];
+        //     }else if(nowTab=='Temperature') {
+        //       this.nowAreaId.range = this.lightData['Temp'];
+        //     }else {
+        //         this.nowAreaId.range = this.lightData[nowTab];
+        //     }
+        //     this.getAlertNum();
+        //     setTimeout(()=>{
+        //       if(document.getElementsByClassName('el-table__body-wrapper')) {
+        //         document.getElementsByClassName('el-table__body-wrapper')[0].scrollTop = 0;
+        //       }
+        //     },100)
+        //   })
+        //   .finally(() => {
+        //     /* 不論失敗成功皆會執行 */ this.tableloading = false;
+        //   });
       } else {
         this.mainpool.items = [];
       }
     },
     //所有資料
-    getAll: async function (
-      start_date,
-      end_date,
-      sel_main,
-      sel_area,
-      data_group
-    ) {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
+    // getAll: async function (
+    //   start_date,
+    //   end_date,
+    //   sel_main,
+    //   sel_area,
+    //   data_group
+    // ) {
+    //   const agent = new https.Agent({
+    //     rejectUnauthorized: false
+    //   });
 
-      let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
-      let parm = {
-        started_date: start_date,
-        ended_date: end_date,
-        factory_id: sel_main,
-        pond_area_id: sel_area,
-        data_group: data_group
-      };
-      switch (data_group) {
-        case "water": //水質
-          this.waterloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.waterdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.waterloading = false;
-          break;
-        case "feed": //飼料
-          this.feedloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.feeddata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.feedloading = false;
-          break;
-        case "env": //環境
-          this.envloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.envdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.envloading = false;
-          break;
-        case "obs": //觀察網
-          this.obsloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.obsdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.obsloading = false;
-          break;
-        case "adv": //進階值
-          this.advloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.advdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.advloading = false;
-          break;
-        case "pbio": //益生菌
-          this.pbioloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.pbiodata = res.data;
-              // this.goAnchor('#chart');
-            });
-          this.pbioloading = false;
-          break;
-        case "material"://養殖用料
-          this.materialloading = true;
-          parm.data_group = 'breeding_material';
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.materialdata = res.data;
-              // this.goAnchor('#chart');
-            });
-          this.materialloading = false;
-        default:
-          break;
-      }
-    },
+    //   let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
+    //   let parm = {
+    //     started_date: start_date,
+    //     ended_date: end_date,
+    //     factory_id: sel_main,
+    //     pond_area_id: sel_area,
+    //     data_group: data_group
+    //   };
+    //   switch (data_group) {
+    //     case "water": //水質
+    //       this.waterloading = true;
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.waterdata = res.data;
+    //           // this.goAnchor('#chart');
+    //         })
+    //         .catch(err => {
+    //           alert("失敗：" + err.message);
+    //         });
+    //       this.waterloading = false;
+    //       break;
+    //     case "feed": //飼料
+    //       this.feedloading = true;
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.feeddata = res.data;
+    //           // this.goAnchor('#chart');
+    //         })
+    //         .catch(err => {
+    //           alert("失敗：" + err.message);
+    //         });
+    //       this.feedloading = false;
+    //       break;
+    //     case "env": //環境
+    //       this.envloading = true;
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.envdata = res.data;
+    //           // this.goAnchor('#chart');
+    //         })
+    //         .catch(err => {
+    //           alert("失敗：" + err.message);
+    //         });
+    //       this.envloading = false;
+    //       break;
+    //     case "obs": //觀察網
+    //       this.obsloading = true;
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.obsdata = res.data;
+    //           // this.goAnchor('#chart');
+    //         })
+    //         .catch(err => {
+    //           alert("失敗：" + err.message);
+    //         });
+    //       this.obsloading = false;
+    //       break;
+    //     case "adv": //進階值
+    //       this.advloading = true;
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.advdata = res.data;
+    //           // this.goAnchor('#chart');
+    //         })
+    //         .catch(err => {
+    //           alert("失敗：" + err.message);
+    //         });
+    //       this.advloading = false;
+    //       break;
+    //     case "pbio": //益生菌
+    //       this.pbioloading = true;
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.pbiodata = res.data;
+    //           // this.goAnchor('#chart');
+    //         });
+    //       this.pbioloading = false;
+    //       break;
+    //     case "material"://養殖用料
+    //       this.materialloading = true;
+    //       parm.data_group = 'breeding_material';
+    //       await this.$axios
+    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
+    //         .then(res => {
+    //           console.log("select:", res.request.responseURL);
+    //           this.materialdata = res.data;
+    //           // this.goAnchor('#chart');
+    //         });
+    //       this.materialloading = false;
+    //     default:
+    //       break;
+    //   }
+    // },
     showmpFun: function () {
       this.showmp = !this.showmp;
     },
@@ -1115,58 +1158,79 @@ export default {
           this.waterloading = false;
           this.mainpool.items = _.cloneDeep(this.originData);
           // console.log('water parm',parm);
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              // console.log("water:", res);
-              if(Array.isArray(res.data)) {
-                // this.water = res.data;
-                this.waterParm[parm.col_name] = _.cloneDeep(res.data);
-                // 測試用
-                // this.water.forEach(w=>{
-                //     w.value= 25
-                //     w.inspected_time = '2024-03-25 23:00:00'
-                // })
-                // this.water.forEach(w=>{
-                //   if(w.id==50) {
-                //     w.value= 20
-                //     w.inspected_time = '2024-03-25 23:00:00'
-                //   }  
-                // })
-                this.waterParm[parm.col_name].forEach(w=>{
-                  w.level = this.checkValue(parm.col_name,w.value);
-                  w.parm_name = parm.col_name;
-                })
-                if(parm.col_name == nowTab) {
-                  this.water = _.cloneDeep(this.waterParm[nowTab]);
-                  this.newest = '';
-                  // if(this.water && this.water.length>0) {
-                  //   this.water.forEach(w=>{
-                  //     if(this.newest=='') {
-                  //       this.newest = w.inspected_time.slice(0,10);
-                  //     }else {
-                  //       if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
-                  //         this.newest = w.inspected_time.slice(0,10);
-                  //       }
-                  //     }
-                  //   })
-                  // }
-                  this.waterloading = true;
-                }
-                num++;
-                if(num==keys.length) {
-                  this.getAlertNum();
-                  
-                }
-                
-              }
-              
-              // this.goAnchor('#chart');
+          let getLastDataInCurrentTimeList = await this.getLastDataInCurrentTimeList(parm);
+          let data = typeof (getLastDataInCurrentTimeList)=='string'?[]:getLastDataInCurrentTimeList;
+          if(Array.isArray(data)) {
+            this.waterParm[parm.col_name] = _.cloneDeep(data);
+            this.waterParm[parm.col_name].forEach(w=>{
+              w.level = this.checkValue(parm.col_name,w.value);
+              w.parm_name = parm.col_name;
             })
-            .catch(err => {
-              alert("失敗：" + err.message);
+            if(parm.col_name == nowTab) {
+              this.water = _.cloneDeep(this.waterParm[nowTab]);
+              this.newest = '';
               this.waterloading = true;
-            });
+            }
+            num++;
+            if(num==keys.length) {
+              this.getAlertNum();
+              
+            }
+            
+          }
+              
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     // console.log("water:", res);
+          //     if(Array.isArray(res.data)) {
+          //       // this.water = res.data;
+          //       this.waterParm[parm.col_name] = _.cloneDeep(res.data);
+          //       // 測試用
+          //       // this.water.forEach(w=>{
+          //       //     w.value= 25
+          //       //     w.inspected_time = '2024-03-25 23:00:00'
+          //       // })
+          //       // this.water.forEach(w=>{
+          //       //   if(w.id==50) {
+          //       //     w.value= 20
+          //       //     w.inspected_time = '2024-03-25 23:00:00'
+          //       //   }  
+          //       // })
+          //       this.waterParm[parm.col_name].forEach(w=>{
+          //         w.level = this.checkValue(parm.col_name,w.value);
+          //         w.parm_name = parm.col_name;
+          //       })
+          //       if(parm.col_name == nowTab) {
+          //         this.water = _.cloneDeep(this.waterParm[nowTab]);
+          //         this.newest = '';
+          //         // if(this.water && this.water.length>0) {
+          //         //   this.water.forEach(w=>{
+          //         //     if(this.newest=='') {
+          //         //       this.newest = w.inspected_time.slice(0,10);
+          //         //     }else {
+          //         //       if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
+          //         //         this.newest = w.inspected_time.slice(0,10);
+          //         //       }
+          //         //     }
+          //         //   })
+          //         // }
+          //         this.waterloading = true;
+          //       }
+          //       num++;
+          //       if(num==keys.length) {
+          //         this.getAlertNum();
+                  
+          //       }
+                
+          //     }
+              
+          //     // this.goAnchor('#chart');
+          //   })
+          //   .catch(err => {
+          //     alert("失敗：" + err.message);
+          //     this.waterloading = true;
+          //   });
         })
         // let parm = {
         //   factoryid: this.sel_main,
@@ -1295,23 +1359,29 @@ export default {
     },
     // 取得範圍
     async getWaterWarn() {
-      let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
-        await this.$axios.get(url).then(async res => {
-            if(res.status==200){
-                this.lightData = res.data;
-                console.log(this.lightData)
-                //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'}
-                await this.getWaterData();
-                // console.log("get lightData ok");
+      let getWarningRangeList = await this.getWarningRangeList();
+      let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
+      this.lightData = data;
+      console.log(this.lightData);
+      await this.getWaterData();
+      this.waterloading = true;
+      // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
+      //   await this.$axios.get(url).then(async res => {
+      //       if(res.status==200){
+      //           this.lightData = res.data;
+      //           console.log(this.lightData)
+      //           //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'}
+      //           await this.getWaterData();
+      //           // console.log("get lightData ok");
                 
-            }else{
-                this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-            }
-        })
-        .catch(error=>{
-          this.waterloading = true;
-          this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-        });
+      //       }else{
+      //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+      //       }
+      //   })
+      //   .catch(error=>{
+      //     this.waterloading = true;
+      //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+      //   });
     },
     getAlertNum() {
       // console.log('get alert item',this.waterParm);
@@ -1406,25 +1476,33 @@ export default {
       };
       
       console.log("all參數：",allParm);
-      let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
-      await this.$axios.post(url, allParm).then(res => {
-          if(res.status==200){
-              console.log('suggestion',res.data);
-              // console.log("suggData:",this.suggData);
-              this.alertAllData.push({
-                name: data.name,
-                suggestion: res.data
-              });
-          } else {
-              this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-          }
-          console.log("新增API:" + res.request.responseURL);
-      }).catch(error => {
-          this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-      })
-      .finally(() => {
-              //this.getdata();
+      let getSuggestionList = await this.getSuggestionList(allParm);
+      let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
+      console.log('suggestion',suggestionData);
+      // console.log("suggData:",this.suggData);
+      this.alertAllData.push({
+        name: data.name,
+        suggestion: suggestionData
       });
+      // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
+      // await this.$axios.post(url, allParm).then(res => {
+      //     if(res.status==200){
+      //         console.log('suggestion',res.data);
+      //         // console.log("suggData:",this.suggData);
+      //         this.alertAllData.push({
+      //           name: data.name,
+      //           suggestion: res.data
+      //         });
+      //     } else {
+      //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+      //     }
+      //     console.log("新增API:" + res.request.responseURL);
+      // }).catch(error => {
+      //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+      // })
+      // .finally(() => {
+      //         //this.getdata();
+      // });
     },
     clickRow(row) {
       console.log(row,this.waterParm);
@@ -1564,11 +1642,11 @@ export default {
     console.log(this.defaultPool);
 
     //get all cols
-    await this.$axios
-      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, { httpsAgent: agent })
-      .then(res => {
-        this.allcols = res.data;
-      });
+    // await this.$axios
+    //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, { httpsAgent: agent })
+    //   .then(res => {
+    //     this.allcols = res.data;
+    //   });
     this.currenttab = this.tabsMap[0].name;
     // await this.getWaterData();
     await this.getWaterWarn();
