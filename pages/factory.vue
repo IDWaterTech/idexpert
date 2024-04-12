@@ -149,9 +149,9 @@
               </v-row>
             </v-col>
             <!-- 池資料/地圖配置 -->
-            <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="4" sm="2" style="display: flex;align-items: center;">
+            <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="2" sm="2" style="display: flex;align-items: center;">
               <v-btn v-if="nowSetting=='map'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="nowSetting = 'pool';getPoolData()">池資料</v-btn>
-              <v-btn v-if="nowSetting=='pool'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="getMapData()">地圖配置</v-btn>
+              <v-btn v-if="nowSetting=='pool'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="getMapData()">配置</v-btn>
             </v-col>
           </v-row>
         </div>
@@ -287,8 +287,34 @@
                 </v-data-table>
               </div>
             </v-card>
-            <!-- 地圖配置 -->
-            <settinglayout v-else class="mx-3" style="width: 100%;margin-top: 24px;" :areas="areas1"></settinglayout>
+            <!-- 配置 -->
+            <div v-else class="header-bar">
+              <v-tabs v-model="nowTab" show-arrows>
+                <v-tab
+                  v-for="(tab,tid) in tabs"
+                  :key="'tabs-'+tid"
+                  :href="`#` + tab">
+                  {{ tab }}
+                </v-tab>
+                <v-tabs-items v-model="nowTab" touchless>
+                  <v-tab-item 
+                    v-for="(tab,tid) in tabs"
+                    :key="'tab-'+tid"
+                    :value="tab">
+                    <!-- 圖表 -->
+                    <div v-show="nowTab=='地圖配置'">
+                      <settinglayout  class="mx-3" style="width: 100%;margin-top: 24px;" :areas="areas1"></settinglayout>
+                    </div>
+                    <div v-show="nowTab=='池況顏色'">
+                      <settingcolor class="mx-3" style="width: 100%;"></settingcolor>
+                    </div>
+                  </v-tab-item>
+              </v-tabs-items>
+              </v-tabs>
+              
+            </div>
+            
+            
           </div>
         </div>
       </div>
@@ -612,6 +638,7 @@ import https from "https";
 import _ from "lodash";
 import md5 from "md5";
 import settinglayout from "@/pages/map/settinglayout.vue";
+import settingcolor from "@/pages/map/settingcolor.vue";
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -621,6 +648,7 @@ export default {
   middleware: "auth",
   components: {
     settinglayout,
+    settingcolor
   },
   head(){
     return {
@@ -721,11 +749,14 @@ export default {
         id: null,
         ponds: []},
       userData: [],
-      tableview: false
+      tableview: false,
+      // 配置
+      nowTab: '地圖配置',
+      tabs: ['地圖配置','池況顏色']
     };
   },
   async created() {
-    //await this._pageCheck(); //驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     await this.getmain();
     await this.getpoolstat(); //取得池狀態清單
     await this.getipdata();//取得ip設定
@@ -1311,6 +1342,13 @@ export default {
   }
   .theme--light.v-data-table.v-data-table--fixed-header thead th {
     background: $color-lighten;
+  }
+  .result .header-bar .theme--light.v-tabs > .v-tabs-bar,
+  .result .header-bar .theme--light.v-tabs-items {
+    background-color: #fff;
+  }
+  .v-window__container {
+    overflow: scroll;
   }
 }        
 </style>
