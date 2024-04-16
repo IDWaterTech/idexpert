@@ -798,7 +798,7 @@
                   <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
                     <v-row style="margin-bottom: 0;">
                       <v-col cols="12" md="6">
-                        <v-text-field v-model.number="observeEdit['observation_qty']" min="0" type="number" dense class="mt-0 mr-2" hide-details><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網隻數</span></v-text-field>
+                        <v-text-field v-model.number="observeEdit['observation_qty']" min="0" type="number" dense class="mt-0 mr-2" hide-details @change="changeQty()"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網隻數</span></v-text-field>
                       </v-col>
                       <v-col cols="12" md="6">
                         <v-text-field v-model.number="observeEdit['feed_amount']" type="number" min="0" dense class="mt-0 mr-2" hide-details><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網殘餌量(g)</span></v-text-field>
@@ -2618,6 +2618,29 @@ export default {
     getNowDateTime() {
       return this.$moment(new Date(), 'YYYY-MM-DD HH:mm');
     },
+    changeQty(){
+      if(this.observeEdit.observation_qty>0) {
+        if(this.observeEdit.shrimps&& this.observeEdit.shrimps.length>0) {
+          this.shrimp = _.cloneDeep(this.observeEdit.shrimps);
+          this.caculateShrimp();
+        }
+      }else {
+        this.shrimp = [];
+        this.observeEdit.shrimps = [];
+        this.shell_qty = 0;
+        this.dead_shrimp_qty = 0;
+        var keyLst = Object.keys(this.optData);
+        keyLst.forEach(k=>{
+          if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+            this.observeEdit[k].forEach(o=>{
+              o.value = 0;
+            })
+          }
+        })
+      }
+      
+      
+    },
     changeChips() {
       // 蝦隻狀態隻數更改要清空重新給定，避免資料未刷新
       let data = _.cloneDeep(this.observeEdit);
@@ -2641,12 +2664,31 @@ export default {
       this.shrimp = [];
       if(this.observeEdit.shrimps&& this.observeEdit.shrimps.length>0) {
         this.shrimp = _.cloneDeep(this.observeEdit.shrimps);
+        this.caculateShrimp();
       }else {
         for(let i=0;i<this.observeEdit.observation_qty;i++) {
           this.shrimp.push({length:0,weight:0})
         }
       }
       
+    },
+    caculateShrimp() {
+      if(this.shrimp.length<this.observeEdit.observation_qty) {
+        for(let i=this.shrimp.length;i<this.observeEdit.observation_qty;i++) {
+          this.shrimp.push({length:0,weight:0})
+        }
+      }else if(this.shrimp.length>this.observeEdit.observation_qty) {
+        this.shrimp = [];
+        for(let i=0;i<this.observeEdit.observation_qty;i++) {
+          this.shrimp.push(this.observeEdit.shrimps[i]);
+        }
+        this.observeEdit.shrimps = _.cloneDeep(this.shrimp);
+      }
+      let num=0;
+        this.shrimp.forEach(s=>{
+          num=num+s.weight;
+        })
+        this.observeEdit.shrimp_weight = (((num / this.observeEdit.observation_qty)*100)/100).toFixed(2);
     },
     // 蝦隻重量個別輸入長度和重量
     confirmShrimps() {
