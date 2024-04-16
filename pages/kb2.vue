@@ -99,29 +99,12 @@
                                         max-width="75%"
                                         >
                                 <v-card>
-                                    <v-card-title class="add-title" style="display: flex;width: 100%;">
-                                        <div style="display: flex;align-items: center;width: calc(100% - 40px);">
-                                            <span>計算公式</span> 
-                                            <v-switch
-                                            v-model="formulaData"
-                                            :label="formulaData?'pdf':'xls'"
-                                            ></v-switch>
-                                        </div>
-                                        <div class="add" style="float: right;">
-                                            <v-btn class="btn-secondary close"
-                                                    title="取消" 
-                                                    @click="dialog.pdf = false;" 
-                                                    style="border: none;min-width: 0;padding: 0 4px;">
-                                                <v-icon>mdi-close</v-icon>
-                                            </v-btn>
-                                        </div>
-                                    </v-card-title>
-                                    <!-- <v-card-title>計算公式
+                                    <v-card-title>計算公式
                                         <v-switch
                                             v-model="formulaData"
                                             :label="formulaData?'pdf':'xls'"
                                             ></v-switch>
-                                    </v-card-title> -->
+                                    </v-card-title>
                                     <v-card-text style="height: 600px;">
                                         <v-responsive>
                                             <iframe :src="formulaUrl" style="overflow:hidden;height:600px;width:100%;" ></iframe>
@@ -469,26 +452,17 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="FeedParm['CumulativeFeedAmountInput']" type="number" dense hide-details class="mt-0 sum-field" append-outer-icon="mdi-plus" @click:append-outer="addFeedQty()"><span class="pa-0 ma-0" slot="prepend">累計飼料量</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
                                                                     </v-col>
-                                                                    <!-- <v-col cols=12 md="6" sm="6">
+                                                                    <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend">下餐增料百分比</span>
+                                                                                <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
-                                                                    </v-col> -->
-                                                                    <v-col cols=12 md="6" sm="6">
-                                                                        <v-row class="item-row item"> 
-                                                                            <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">養殖方案</span>
-                                                                                <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
-                                                                            </v-col>
-                                                                            <v-col cols="12" md="8" sm="8">
-                                                                                <v-select v-model="BaseParm['FeedingPlan']" type="number" clearable :items="optData.FeedingPlan" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
-                                                                            </v-col>
-                                                                        </v-row>
+                                                                        <!-- <v-select v-model="BaseParm['NextFeedIncrementPct']" type="number" clearable :items="optData.NextFeedIncrementPct" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span></v-select> -->
                                                                     </v-col>
                                                                 </v-row>
                                                                 <v-row class="item-row">
@@ -1053,10 +1027,12 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">是否脫殼</span>
+                                                                                <!-- <span class="pa-0 ma-0" slot="prepend">是否脫殼</span> -->
+                                                                                <span class="pa-0 ma-0" slot="prepend">脫殼數量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <v-select v-model="ObservationData['IsShell']" clearable :items="optData.IsMoultingPeriod" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                <v-text-field v-model.number="ObservationData['ShellQty']" min="0" type="number" dense class="mt-0 mr-2" hide-details></v-text-field>
+                                                                                <!-- <v-select v-model="ObservationData['IsShell']" clearable :items="optData.IsMoultingPeriod" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-select v-model="ObservationData['IsShell']" clearable :items="optData.IsMoultingPeriod" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">是否脫殼</span></v-select> -->
@@ -1688,7 +1664,7 @@
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#aiinput')"> 養殖前期做水添加物</a>
                                     </v-row>
                                     <div class="table-content"
-                                        :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
+                                         :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
                                                 'height':`${windowWidth>959.58?'49vh':'100%'}`}">
                                         <!-- 警示(水質+觀察網) -->
                                         <v-expansion-panels v-if="windowWidth>959.98" accordion multiple v-model="panel.panel_row30" id="aiwater">
@@ -1832,17 +1808,12 @@
                                         <!-- 投餌量 -->
                                         <v-expansion-panels accordion multiple v-model="panel.panel_row31" id="aifeed">
                                             <v-expansion-panel class="my-1">
-                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌量
-                                                    <div style="margin-left: 4px;" title="計算方式">
-                                                        <v-btn class="btn-icon" style="border-radius: 4px;" @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
-                                                    </div>
-                                                    </v-expansion-panel-header>
-                                                
+                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌量</v-expansion-panel-header>
                                                 <v-expansion-panel-content>
                                                     <v-card tile>
                                                         <v-card-text class="pa-3 mx-0" style="padding-right: 4px !important;">
                                                             <div v-if="suggData.Feed.status!==''" class="suggestion-text">*建議：{{ suggData.Feed.status }}</div>
-                                                                    <!-- <v-simple-table fixed-header dense >
+                                                                    <v-simple-table fixed-header dense >
                                                                         <thead>
                                                                             <tr style="box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);height: 32px;">
                                                                                 <th style="text-align:left;">
@@ -1879,8 +1850,13 @@
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
                                                                             </tr>
                                                                             <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
-                                                                            
+                                                                            <!-- <tr>
+                                                                                <td>轉0號料第一餐</td>
+                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
+                                                                                <td></td>
+                                                                            </tr> -->
                                                                             <tr>
+                                                                                <!-- <td>前一餐飼料量</td> -->
                                                                                 <td title="上一餐飼料量">上一餐飼料量</td>
                                                                                 <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
                                                                                 <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
@@ -1958,13 +1934,8 @@
                                                                                 </tr>
                                                                             </tbody>
                                                                         </template>
-                                                                    </v-simple-table> -->
-                                                                <v-data-table light
-                                                                    :headers="headers"
-                                                                    :items="suggData.FeedingPlan"
-                                                                    no-data-text=""
-                                                                    hide-default-footer
-                                                                    disable-pagination></v-data-table>    
+                                                                    </v-simple-table>
+                                                                
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-expansion-panel-content>
@@ -2379,7 +2350,7 @@
                 </div>
             </div>
         </v-card>
-        <!-- AI alert dialog -->
+       <!-- AI alert dialog -->
         <v-dialog id="alertDialog" v-model="alertDialog" max-width="500px" style="z-index: 9999;">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title" style="display: flex;align-items: center;">
@@ -2387,7 +2358,7 @@
                         {{ dialogTitle }}
                     </div>
                     <!-- <div class="btn-groups" style="display: flex;align-items: center;"
-                        :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}">
+                          :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}">
                         <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
                         <v-btn icon @click="cellsize = 0.9"><v-icon>mdi-format-color-text</v-icon></v-btn>
                         <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
@@ -2574,38 +2545,6 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!-- 投餌料公式 -->
-        <v-dialog v-model="feedDialog"
-                scrollable
-                max-width="75%"
-                >
-        <v-card>
-            <!-- <v-card-title>計算公式
-                <v-switch
-                    v-model="formulaData"
-                    :label="formulaData?'pdf':'xls'"
-                    ></v-switch>
-            </v-card-title> -->
-            <v-card-title class="add-title" style="display: block;width: 100%;">
-                <div style="display: inline-block;">
-                    <span>計算方式</span> 
-                </div>
-                <div class="add" style="float: right;display: inline-block;">
-                    <v-btn class="btn-secondary close"
-                            title="取消" 
-                            @click="feedDialog = false;" 
-                            style="border: none;min-width: 0;padding: 0 4px;">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                </div>
-            </v-card-title>
-            <v-card-text style="height: 600px;">
-                <v-responsive>
-                    <iframe :src="formulaUrl" style="overflow:hidden;height:600px;width:100%;" ></iframe>
-                </v-responsive>
-            </v-card-text>
-        </v-card>
-    </v-dialog>
     </div>
 </template>
 
@@ -2632,7 +2571,7 @@ export default {
             WaterQualityData:{},//水質資訊
             ObservationData:{Leftover:0},//觀察網資訊
             BacteriaData:{},//水中菌相資訊
-            suggData: { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {},FeedingPlan:[] },//ai建議
+            suggData: { DynamicData: {}, WaterQuality: {}, Observation: {}, Feed: { feed_amount: {}, "statistics": {}, "status": "" }, Material: {}, MakeWater: {} },//ai建議
             optData:{},//選項
             querryData:[],//查詢紀錄
             querryDataLst:{"1":[],"2":[],"3":[],"4":[]},//查詢紀錄lst
@@ -2640,8 +2579,8 @@ export default {
             querrySelectedLst:{"1":"","2":"","3":"","4":""},
             pondNameLst:{1:'研發一場武曲A1',2:'研發一場武曲A3',3:'研發一場紫微3-2',4:'研發一場紫微4-6'},
             panel:{panel_row11:[0],panel_row12:[0],panel_row13:[0],panel_row14:[0],
-                panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],panel_row25:[0],
-                panel_row30:[0],panel_row31:[0],panel_row32:[0],panel_row33:[0,1]},
+                   panel_row21:[0],panel_row22:[0],panel_row23:[0],panel_row24:[0],panel_row25:[0],
+                   panel_row30:[0],panel_row31:[0],panel_row32:[0],panel_row33:[0,1]},
             lightColor:{'Do':'teal','pH':'teal','Temp':'teal','LastTemp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal','Mg':'teal','Ca':'teal','Alk':'teal'},
             lightData: {
                     Do: {
@@ -2709,13 +2648,6 @@ export default {
             nowUser: (this.$auth.$state.user==null)?"":this.$auth.$state.user.email,
             showDate: true,
             isLoading:false,
-            headers:[
-                { text: '方案', value: 'item', sortable: true,},
-                { text: '下一餐飼料(g)', value: 'next', sortable: true,},
-                { text: '增料百分比(%)', value: 'execute', sortable: true,},
-                { text: '建議料號', value: 'checkdate', sortable: false,},
-            ],
-            feedDialog: false
         }
     },
     methods: {
@@ -2829,8 +2761,7 @@ export default {
             //     .catch(error=>{
             //         console.log(error);
             //     })
-            let architectureData = await this.getArchitecture();
-            this.allData = typeof (architectureData)=='string'?[]:architectureData;
+            this.allData = typeof (await this.getArchitecture())=='string'?[]:await this.getArchitecture();
             this.querrySelectedLst = {};
             this.querryDataLst = {}
             this.allData.forEach(f=>{
@@ -2955,8 +2886,7 @@ export default {
                 });
         },
         async getAllUser() {
-            let getuserData = await this.getUserList();
-            this.userData = typeof (getuserData)=='string'?[]:getuserData;
+            this.userData = typeof (await this.getUserList())=='string'?[]:await this.getUserList();
             this.userData = this.userData.filter(x=>x.is_active==true);
             this.isLoading = true;
             console.log('User',this.userData);
@@ -3090,6 +3020,7 @@ export default {
                                         data[sid] = _.cloneDeep(x);
                                         data[sid].value = this.ObservationData[k][s];
                                     }
+                                     
                                 })
                             })
                             this.ObservationData[k] = data;
@@ -3747,20 +3678,20 @@ export default {
             await this.$axios.get(url, {params:parm}).then(res => {
                 if (res.status == 200) {
                     this.getSampleData();
-                    res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
-                    res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
+                    this.ObservationData['LastShrimpWeight'] = res.data.ObservationData['LastShrimpWeight'];
+                    this.ObservationData['LastSamplingDatetime'] = res.data.ObservationData['LastSamplingDatetime'];
                     this.importQuerry(res.data,true);//導入資料
                     this.postParm(false,null,true);//查詢ai回饋資訊
-                    var keyLst = Object.keys(this.optData);
-                    keyLst.forEach(k=>{
-                        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
-                            this.ObservationData[k] = _.cloneDeep(this.optData[k]);
-                            this.ObservationData[k].forEach(c=>{
-                                c.value=0;
-                            })
-                        }
+                    // var keyLst = Object.keys(this.optData);
+                    // keyLst.forEach(k=>{
+                    //     if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                    //         this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                    //         this.ObservationData[k].forEach(c=>{
+                    //             c.value=0;
+                    //         })
+                    //     }
                         
-                    })
+                    // })
                     console.log('FeedParm',this.FeedParm);
                     this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
@@ -3887,6 +3818,7 @@ export default {
                     }
                 });
             }
+           
             if(checkstate_bool[1]==true){
                 this.lightColor[item] = 'red';
             }else if(checkstate_bool[0]==true){
@@ -4010,7 +3942,7 @@ export default {
             var PondArea = (this.BaseParm["PondArea"]==undefined)?'':this.BaseParm["PondArea"];
             var Pond = (this.BaseParm["Pond"]==undefined)?'':this.BaseParm["Pond"];
 
-            return Factory + "_" + PondArea + "_" + Pond;
+             return Factory + "_" + PondArea + "_" + Pond;
         },
     },
     mounted() {
@@ -4197,6 +4129,7 @@ export default {
                             &.search {
                                 background-color: transparent;
                                 border: 1px solid $color-primary;
+                               
                                 .theme--light.v-icon {
                                     color: $color-primary !important;
                                 }
@@ -4206,8 +4139,8 @@ export default {
                             }
                         }
                         &.save {
-                            background-color: #006AA6;
-                            &:hover {
+                           background-color: #006AA6;
+                           &:hover {
                                 background-color: lighten($color: #006AA6, $amount: 3);
                             }
                         }
@@ -4397,340 +4330,340 @@ export default {
     
 }
 ::v-deep {
-    .search {
-        // locateSelect
-        .font-size-large {
-            font-size: 16px;
+  .search {
+    // locateSelect
+    .font-size-large {
+      font-size: 16px;
+    }
+    .vue-treeselect__menu {
+        max-height: 200px !important;
+    }
+    .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .vue-treeselect__control {
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid #6c9bcd;
+      .vue-treeselect__placeholder {
+        color: #00273E;
+        padding: 0 4px;
+        &::before {
+          content: '*'
         }
-        .vue-treeselect__menu {
-            max-height: 200px !important;
+        &::after {
+          content: '(必選)';
         }
-        .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
-            padding-left: 0;
-            padding-right: 0;
+      }
+      .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
+        color: #6c9bcd;
+      }
+      .vue-treeselect__x-container {
+        display: none;
+      }
+    }
+    .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover {
+      border-color: #6c9bcd;
+    }
+    .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused {
+      font-size: 14px;
+      color: #00273E;
+    }
+    // param select
+    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
+        box-shadow: none;
+        border: 1px solid #6c9bcd;
+    }
+    .theme--light.v-icon {
+        color: #6c9bcd;
+    }
+    .theme--light.v-label {
+        color: #00273E;
+    }
+    .v-autocomplete.v-select.v-input--is-focused input {
+        min-width: 0;
+    }
+    .v-input--is-disabled {
+        
+        .theme--light.v-label {
+            color: $color-dark-50;
         }
-        .vue-treeselect__control {
-            border: none;
-            border-radius: 0;
-            border-bottom: 1px solid #6c9bcd;
-            .vue-treeselect__placeholder {
-                color: #00273E;
+        &.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
+            border-color: $color-dark-50;
+        }
+    }
+  }
+  .result {
+    .v-card.result-card {
+        .content {
+            .v-expansion-panel-content__wrap {
+                padding: 0 0 16px;
+            }
+            .v-input__prepend-outer {
+                width: 100% !important;
+                span {
+                    display: flex;
+                    align-items: center;
+                    button.v-icon {
+                        margin-right: 4px;
+                    }
+                }
+            }
+            .v-text-field--filled.v-input--dense.v-text-field--single-line > .v-input__control > .v-input__slot {
+                min-height: 0;
+            }
+            .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
+                background-color: transparent;
+            }
+            .v-text-field.v-input--dense:not(.v-text-field--outlined) input {
+                padding: 0px 4px 2px;
+            }
+            .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--single-line .v-input__prepend-outer,
+            .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--single-line .v-input__append-inner {
+                margin-top: 4px;
+            }
+            .v-text-field {
+                display: flex;
+                align-items: center;
+            }
+            .v-text-field .v-input__append-inner {
+                font-size: 14px;
+            }
+            // 累計+按鈕
+            .v-text-field.sum-field {
+                display: flex;
+                align-items: center;
+            }   
+            .v-text-field.sum-field .v-input__control {
+                // margin-left: 32px;   
+                
+            }
+            .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
                 padding: 0 4px;
-                &::before {
-                content: '*'
-                }
-                &::after {
-                content: '(必選)';
+            }
+            .v-icon.v-icon.v-icon--link.mdi-plus {
+                width: 20px;
+                height: 20px;
+                font-size: 14px;
+                background-color: #006AA6;
+                border-radius: 50%;
+                color: #fff;
+                margin-top: 2px;
+            }
+            // .v-input__prepend-outer span button.v-icon.mdi-plus {
+            //     width: 24px;
+            //     height: 24px;
+            //     background-color: #006AA6;
+            //     color: #fff;
+            //     border-radius: 50%;
+            //     font-size: 1rem;
+            // }
+            // .v-btn--fab.v-size--x-small {
+            //     width: 24px;
+            //     height: 24px;
+            // }
+            // .v-btn--is-elevated.v-btn--fab {
+            //     box-shadow: none;
+            // }
+            .v-badge__badge {
+                height: 14px;
+                min-width: 14px;
+            }
+            .date-time-picker {
+                display: flex;
+                align-items: center;
+                // margin: 0 8px;
+                & > span {
+                    flex: 1;
                 }
             }
-            .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-                color: #6c9bcd;
+            .ant-calendar-picker {
+                // padding: 0 20px;
             }
-            .vue-treeselect__x-container {
+            .ant-calendar-picker-input.ant-input {
+                border: none;
+                background-color: transparent;
+                border-bottom: 1px solid rgba(0,0,0,0.42);
+                border-radius: 0;
+                // margin-left: 20px;
+                // margin-right: 4px;
+                color: rgba(0,0,0,0.87);
+                padding: 4px;
+            }
+            .ant-calendar-picker:hover {
+                border-color: $color-form;
+            } 
+            .ant-calendar-picker-clear {
+                background: $color-lighten;
+            }
+            .ant-calendar-picker-icon {
                 display: none;
             }
-        }
-        .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover {
-            border-color: #6c9bcd;
-        }
-        .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused {
-            font-size: 14px;
-            color: #00273E;
-        }
-        // param select
-        .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
-            box-shadow: none;
-            border: 1px solid #6c9bcd;
-        }
-        .theme--light.v-icon {
-            color: #6c9bcd;
-        }
-        .theme--light.v-label {
-            color: #00273E;
-        }
-        .v-autocomplete.v-select.v-input--is-focused input {
-            min-width: 0;
-        }
-        .v-input--is-disabled {
-            
-            .theme--light.v-label {
-                color: $color-dark-50;
+            // .theme--light.v-data-table {
+            //     background-color: transparent;
+            //     &.v-data-table--fixed-header thead th {
+            //         background-color: transparent;
+            //     }
+            // }
+            .v-data-table--fixed-header > .v-data-table__wrapper {
+                border-radius: 4px;
+                overflow-x: hidden;
             }
-            &.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
-                border-color: $color-dark-50;
-            }
-        }
-    }
-    .result {
-        .v-card.result-card {
-            .content {
-                .v-expansion-panel-content__wrap {
-                    padding: 0 0 16px;
-                }
-                .v-input__prepend-outer {
-                    width: 100% !important;
-                    span {
-                        display: flex;
-                        align-items: center;
-                        button.v-icon {
-                            margin-right: 4px;
-                        }
-                    }
-                }
-                .v-text-field--filled.v-input--dense.v-text-field--single-line > .v-input__control > .v-input__slot {
-                    min-height: 0;
-                }
-                .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
-                    background-color: transparent;
-                }
-                .v-text-field.v-input--dense:not(.v-text-field--outlined) input {
-                    padding: 0px 4px 2px;
-                }
-                .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--single-line .v-input__prepend-outer,
-                .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--single-line .v-input__append-inner {
-                    margin-top: 4px;
-                }
-                .v-text-field {
-                    display: flex;
-                    align-items: center;
-                }
-                .v-text-field .v-input__append-inner {
-                    font-size: 14px;
-                }
-                // 累計+按鈕
-                .v-text-field.sum-field {
-                    display: flex;
-                    align-items: center;
-                }   
-                .v-text-field.sum-field .v-input__control {
-                    // margin-left: 32px;   
-                    
-                }
-                .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-                    padding: 0 4px;
-                }
-                .v-icon.v-icon.v-icon--link.mdi-plus {
-                    width: 20px;
-                    height: 20px;
-                    font-size: 14px;
-                    background-color: #006AA6;
-                    border-radius: 50%;
-                    color: #fff;
-                    margin-top: 2px;
-                }
-                // .v-input__prepend-outer span button.v-icon.mdi-plus {
-                //     width: 24px;
-                //     height: 24px;
-                //     background-color: #006AA6;
-                //     color: #fff;
-                //     border-radius: 50%;
-                //     font-size: 1rem;
-                // }
-                // .v-btn--fab.v-size--x-small {
-                //     width: 24px;
-                //     height: 24px;
-                // }
-                // .v-btn--is-elevated.v-btn--fab {
-                //     box-shadow: none;
-                // }
-                .v-badge__badge {
-                    height: 14px;
-                    min-width: 14px;
-                }
-                .date-time-picker {
-                    display: flex;
-                    align-items: center;
-                    // margin: 0 8px;
-                    & > span {
-                        flex: 1;
-                    }
-                }
-                .ant-calendar-picker {
-                    // padding: 0 20px;
-                }
-                .ant-calendar-picker-input.ant-input {
-                    border: none;
-                    background-color: transparent;
-                    border-bottom: 1px solid rgba(0,0,0,0.42);
-                    border-radius: 0;
-                    // margin-left: 20px;
-                    // margin-right: 4px;
-                    color: rgba(0,0,0,0.87);
-                    padding: 4px;
-                }
-                .ant-calendar-picker:hover {
-                    border-color: $color-form;
-                } 
-                .ant-calendar-picker-clear {
-                    background: $color-lighten;
-                }
-                .ant-calendar-picker-icon {
-                    display: none;
-                }
-                // .theme--light.v-data-table {
-                //     background-color: transparent;
-                //     &.v-data-table--fixed-header thead th {
-                //         background-color: transparent;
-                //     }
-                // }
-                .v-data-table--fixed-header > .v-data-table__wrapper {
-                    border-radius: 4px;
-                    overflow-x: hidden;
-                }
 
-                .input-chips {
-                    max-height: 48px;
-                    overflow-y: scroll;
-                    border-bottom: 1px solid rgba(0,0,0,0.4);
+            .input-chips {
+                max-height: 48px;
+                overflow-y: scroll;
+                border-bottom: 1px solid rgba(0,0,0,0.4);
+                cursor: pointer;
+                .v-chip.v-size--default {
                     cursor: pointer;
-                    .v-chip.v-size--default {
-                        cursor: pointer;
-                        font-size: 12px;
-                        height: 20px;
-                        padding: 0 8px;
-                        background: rgba($color-dark-50,0.8);
-                        color: #fff;
-                    }
-                    .v-chip.chips-value.v-size--default {
-                        background: $color-primary-75;
-                        // background: rgba($color-accent,0.35);
-                        // color: $color-dark;
-                    }
+                    font-size: 12px;
+                    height: 20px;
+                    padding: 0 8px;
+                    background: rgba($color-dark-50,0.8);
+                    color: #fff;
+                }
+                .v-chip.chips-value.v-size--default {
+                    background: $color-primary-75;
+                    // background: rgba($color-accent,0.35);
+                    // color: $color-dark;
                 }
             }
         }
-        .v-card.result-card.ai-suggestion {
-            .content {
-                .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
-                    font-size: 16px;
-                }
-                .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > td:not(.v-data-table__mobile-row), .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > th:not(.v-data-table__mobile-row) {
-                    border: none;
-                }
-                .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
-                    padding: 0;
-                }
-                // #aiwater,#ainet {
-                //     .v-data-table > .v-data-table__wrapper > table > tbody > tr {
-                //         // border-bottom: 1px solid rgba(0,0,0,0.1);
-                //         box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
-                //     }
-                // }
-                // disable
-                .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
-                    border-image: none;
-                    border-color: rgba(0,0,0,0.1);
-                }
-                .theme--light.v-input--is-disabled input, .theme--light.v-input--is-disabled textarea {
-                    color: #00273E;
-                }
-            }
-            #aiwater,#ainet,#aiwatermin {
-                .v-data-table > .v-data-table__wrapper > table > tbody > tr {
-                    // border-bottom: 1px solid rgba(0,0,0,0.1);
-                    box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
-                }
-            }
-        }
-    
     }
+    .v-card.result-card.ai-suggestion {
+        .content {
+            .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
+                font-size: 16px;
+            }
+            .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > td:not(.v-data-table__mobile-row), .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > th:not(.v-data-table__mobile-row) {
+                border: none;
+            }
+            .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
+                padding: 0;
+            }
+            // #aiwater,#ainet {
+            //     .v-data-table > .v-data-table__wrapper > table > tbody > tr {
+            //         // border-bottom: 1px solid rgba(0,0,0,0.1);
+            //         box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
+            //     }
+            // }
+            // disable
+            .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
+                border-image: none;
+                border-color: rgba(0,0,0,0.1);
+            }
+            .theme--light.v-input--is-disabled input, .theme--light.v-input--is-disabled textarea {
+                color: #00273E;
+            }
+        }
+        #aiwater,#ainet,#aiwatermin {
+            .v-data-table > .v-data-table__wrapper > table > tbody > tr {
+                // border-bottom: 1px solid rgba(0,0,0,0.1);
+                box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
+            }
+        }
+    }
+    
+  }
   // dialog
-    .v-dialog {
-        .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 4px;
-            padding: 0 8px;
+  .v-dialog {
+    .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 4px;
+        padding: 0 8px;
+    }
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+        border-color: transparent;
+    }
+    .v-sheet.v-card {
+      border-radius: 4px 0 0 4px;
+    }
+    .v-card__title.add-title {
+      color: $color-dark;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      font-size: 1.1rem;
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      padding: 0;
+      margin: 12px 16px;
+      .title {
+        width: 100%;
+        .v-card__title {
+          font-size: 1rem;
+          padding: 0;
+          font-weight: bold;
+          color: $color-dark;
         }
-        .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
-        .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
-        .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-            border-color: transparent;
+      }
+      .chevron {
+        .v-icon {
+          color: $color-dark;
         }
-        .v-sheet.v-card {
-        border-radius: 4px 0 0 4px;
+      }
+    }
+    
+    .v-card__title + .v-card__text {
+      padding-bottom: 0;
+      padding-top: 0;
+    }
+    .v-card__text {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .dialog-text {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 8px 16px;
+        border-bottom:1px solid rgba(0,0,0,0.1);
+        font-size: 16px;
+        span {
+            font-size: 14px;
+            margin-top: 8px;
+            min-height: 40px;
         }
-        .v-card__title.add-title {
-        color: $color-dark;
-        font-weight: bold;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        font-size: 1.1rem;
+        // 顏色輸入
+        .el-input-number__decrease,
+        .el-input-number__increase {
+            margin-top: 0;
+            min-height: inherit;
         }
-        .card-title {
+        .el-input-number--mini {
+            width: initial;
+            max-width: 130px;
+        }
+    }
+    .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+      padding: 0;
+    }
+    .btn-groups {
         display: flex;
         align-items: center;
-        padding: 0;
-        margin: 12px 16px;
-        .title {
-            width: 100%;
-            .v-card__title {
-            font-size: 1rem;
-            padding: 0;
-            font-weight: bold;
-            color: $color-dark;
-            }
+        padding-bottom: 4px;
+        margin-left: 8px;
+        .v-icon.v-icon {
+            font-size: 1.25rem;
         }
-        .chevron {
-            .v-icon {
-            color: $color-dark;
-            }
+        .theme--light.v-icon {
+            color: #006AA6;
         }
+        .theme--light.v-icon.mdi-format-color-text {
+            padding-top: 6px;
+            font-size: 1.35rem;
         }
         
-        .v-card__title + .v-card__text {
-        padding-bottom: 0;
-        padding-top: 0;
-        }
-        .v-card__text {
-        padding-top: 0;
-        padding-bottom: 0;
-        }
-        .dialog-text {
-            display: flex;
-            align-items: flex-start;
-            flex-direction: column;
-            padding: 8px 16px;
-            border-bottom:1px solid rgba(0,0,0,0.1);
-            font-size: 16px;
-            span {
-                font-size: 14px;
-                margin-top: 8px;
-                min-height: 40px;
-            }
-            // 顏色輸入
-            .el-input-number__decrease,
-            .el-input-number__increase {
-                margin-top: 0;
-                min-height: inherit;
-            }
-            .el-input-number--mini {
-                width: initial;
-                max-width: 130px;
-            }
-        }
-        .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-        padding: 0;
-        }
-        .btn-groups {
-            display: flex;
-            align-items: center;
-            padding-bottom: 4px;
-            margin-left: 8px;
-            .v-icon.v-icon {
-                font-size: 1.25rem;
-            }
-            .theme--light.v-icon {
-                color: #006AA6;
-            }
-            .theme--light.v-icon.mdi-format-color-text {
-                padding-top: 6px;
-                font-size: 1.35rem;
-            }
-            
-        }
     }
+  }
 }
 .v-expansion-panel-content>>> .v-expansion-panel-content__wrap {
-    padding: 0 !important;
+  padding: 0 !important;
 }
 .circle {
     width: 20px;
