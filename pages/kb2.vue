@@ -1016,7 +1016,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">觀察網隻數</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">觀察網隻數</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="ObservationData['ObservationNum']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1028,7 +1028,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">是否脫殼</span> -->
-                                                                                <span class="pa-0 ma-0" slot="prepend">脫殼數量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">脫殼數量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="ObservationData['ShellQty']" min="0" type="number" dense class="mt-0 mr-2" hide-details></v-text-field>
@@ -1040,7 +1040,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span  class="pa-0 ma-0" slot="prepend">腸線顏色</span>
+                                                                                <span  class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">腸線顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('IntestinalColor')">
@@ -1057,7 +1057,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">肝胰臟顏色</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">肝胰臟顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('HepatopancreasColor')">
@@ -1074,7 +1074,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">肌肉顏色</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">肌肉顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('MuscleColor')">
@@ -1091,7 +1091,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">蝦體顏色</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">蝦體顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('BodyColor')">
@@ -1107,7 +1107,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">蝦體形狀</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">蝦體形狀</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <div class="input-chips" @click="chipsOpen('BodyShape')">
@@ -1123,7 +1123,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去一天最後一筆的飼料殘餘量(feed_surplus)->0號料、1號料、2號料">觀察網殘餌量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去24小時內最後一筆的飼料殘餘量(feed_surplus)->0號料、1號料、2號料">觀察網殘餌量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8" style="display: flex;align-items: center;">
                                                                                 <v-text-field v-model.number="ObservationData['Leftover']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1135,7 +1135,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">死蝦數量</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">死蝦數量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="ObservationData['DeadShrimpQty']" type="number" dense hide-details class="mt-0"></v-text-field>
@@ -1146,7 +1146,7 @@
                                                                     <v-col v-if="false" cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">蝦子長度</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend" title="過去30天最後一筆資料">蝦子長度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field v-model.number="ObservationData['ShrimpLength']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="append">cm</span></v-text-field>
