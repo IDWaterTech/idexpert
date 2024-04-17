@@ -2566,7 +2566,10 @@ export default {
       
     },
     editObservable(type,item) {
-      let index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
+      let index;
+      if(type=='edit') {
+        index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
+      }
       this.showlocate = false;
       this.nowObserve = type;
       this.isOver = {
