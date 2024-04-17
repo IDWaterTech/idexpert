@@ -392,12 +392,12 @@
                                 </v-chip>
                               </template>
                               <!-- 編輯/刪除 -->
-                              <template v-slot:[`item.action`]="{ index }">
+                              <template v-slot:[`item.action`]="{ item }">
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn  class="btn-icon"
                                             title="編輯"
-                                            @click="editObservable('edit',index)"
+                                            @click="editObservable('edit',item)"
                                             v-bind="attrs" v-on="on"
                                             style="pointer-events: inherit;">
                                             <v-icon>mdi-pencil</v-icon>
@@ -411,7 +411,7 @@
                                             title="刪除"
                                             v-bind="attrs" v-on="on"
                                             style="pointer-events: inherit;"
-                                            @click="delObservable(index)">
+                                            @click="delObservable(item)">
                                             <v-icon>mdi-trash-can</v-icon>
                                         </v-btn>
                                     </template>
@@ -2565,7 +2565,8 @@ export default {
       this.chartShow = true;
       
     },
-    editObservable(type,index) {
+    editObservable(type,item) {
+      let index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
       this.showlocate = false;
       this.nowObserve = type;
       this.isOver = {
@@ -2685,26 +2686,36 @@ export default {
         this.observeEdit.shrimps = _.cloneDeep(this.shrimp);
       }
       let num=0;
-        this.shrimp.forEach(s=>{
+      let nowShrimp=0
+      this.shrimp.forEach(s=>{
+        if(s.weight>0) {
           num=num+s.weight;
-        })
-        this.observeEdit.shrimp_weight = (((num / this.observeEdit.observation_qty)*100)/100).toFixed(2);
+          nowShrimp++;
+        }
+        
+      })
+      this.observeEdit.shrimp_weight = (((num / nowShrimp)*100)/100).toFixed(2);
     },
     // 蝦隻重量個別輸入長度和重量
     confirmShrimps() {
       this.isShrimp = false;
       this.shrimp.forEach(x=>{
-        if(x.length==0 || x.weight==0) {
+        if(x.length==0 && x.weight==0) {
           this.isShrimp=true;
         }
       })
       if(!this.isShrimp) {
         this.observeEdit.shrimps = _.cloneDeep(this.shrimp);
         let num=0;
+        let nowShrimp=0
         this.shrimp.forEach(s=>{
-          num=num+s.weight;
+          if(s.weight>0) {
+            num=num+s.weight;
+            nowShrimp++;
+          }
+          
         })
-        this.observeEdit.shrimp_weight = (((num / this.observeEdit.observation_qty)*100)/100).toFixed(2);
+        this.observeEdit.shrimp_weight = (((num / nowShrimp)*100)/100).toFixed(2);
         this.shrimpDialog = false;
       }else {
         // alert('長度與重量須大於0');
@@ -2970,9 +2981,10 @@ export default {
       
     },
     // 蝦隻狀態刪除
-    async delObservable(index) {
+    async delObservable(item) {
       if (confirm(`確認刪除此觀察網紀錄?`)) {
         var res = false;
+        let index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
         res = this.deleteObservationRecordList(this.observableData[index].shrimp_id);
         setTimeout(()=>{
             if(res) {
