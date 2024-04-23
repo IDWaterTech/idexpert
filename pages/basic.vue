@@ -817,7 +817,8 @@ export default {
         }else {
             this.nowAreaId.range = this.lightData[nowTab];
         }
-        this.getAlertNum();
+        this.getWaterData();
+        // this.getAlertNum();
         setTimeout(()=>{
           if(document.getElementsByClassName('el-table__body-wrapper')) {
             document.getElementsByClassName('el-table__body-wrapper')[0].scrollTop = 0;
