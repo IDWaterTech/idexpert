@@ -4,9 +4,6 @@
             <v-col cols="12" v-if="templatemode!='cycleedit'">
                 <v-form ref="mainform">
                     <v-row dense class="text-center">
-                        <!-- <v-col cols="2"></v-col> -->
-                        <!-- <v-col cols="12"></v-col> -->
-                        <!-- <v-spacer></v-spacer> -->
                         <v-col cols="12" md="2" sm="3">
                             <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"
                                 label="樣板名稱(中)" clearable></v-text-field>
@@ -38,12 +35,7 @@
                 </v-form>
             </v-col>
             <!-- 主要樣版內容 -->
-            <!-- <v-col cols="12"  style="padding-left: 12px;"><b>資料架構(!!!!最後要上要記得清除!!!!)：</b>[{ "phase_id": 1, "phase_name_ch": "空池", "stepList": [ <br>&nbsp;&nbsp;&nbsp;{ "step_id": 23, "seq_id": 23, "step_name_ch": "新增循環", "execute_time": "2023-10-25 10:12:12", verify_time: '',executor:'',confirm:''},<br>&nbsp;&nbsp; { "step_id": 40,"seq_id": "23_01", "step_name_ch": "其他", "msg": "i am msg 1.", "execute_time": "", "verify_time": '',executor:'',confirm:''},]}]<br><br></v-col> -->
             <v-col cols="12">
-                <!-- {{ tempContent }}<br>
-                {{ mainItems }} -->
-                <!--:dense="$vuetify.breakpoint.smAndDown" -->
-                <div v-if="passObj.nowEnd" class="error-text" style="padding: 12px;"><b>此循環已結束({{ passObj.ended_date }})</b></div>
                 <div v-for="(mitem,id) in mainItems" :key="'status_'+mitem.phase_id" class="timeline">
                     <v-row class="template-outer" 
                         style="align-items: flex-start;margin-bottom: 0;"
@@ -85,7 +77,11 @@
                                         :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"
                                         @click="open(mitem,id)" >
                                         <div class="title">
-                                            <v-card-title>{{ templatemode=='cycleedit'?mitem.phase_name_ch:mitem.phase_name }}</v-card-title>
+                                            <v-btn v-if="mitem.stepList==undefined||mitem.stepList.length==0" class="btn-icon green" @click="open(mitem,id);addWorkDialogOpen(mitem.phase_id,0)"><v-icon>mdi-plus</v-icon></v-btn>
+                                            <v-card-title>
+                                                {{ templatemode=='cycleedit'?mitem.phase_name_ch:mitem.phase_name }}
+                                                <span> ． {{ mitem.day }} 天</span>
+                                            </v-card-title>
                                         </div>
                                         <div class="chevron">
                                             <v-icon v-if="adjustOpen(mitem,id)">mdi-triangle-small-up</v-icon>
@@ -93,188 +89,169 @@
                                         </div>
                                     </div>
                                     <!-- 內容 -->
-                                    <div v-if="adjustOpen(mitem,id)" class="content">
-                                        <v-data-table light 
-                                            :headers="headers.filter(x => x.showmode.includes(templatemode))"
-                                            :items="mitem.stepList"
-                                            :no-data-text="templatemode=='cycleedit'?'無':''"
-                                            hide-default-footer
-                                            disable-pagination
-                                            style="max-height: 300px;overflow-y: scroll;"
-                                            :item-class="itemRowBackground"
-                                            :item-key="'table_'+id"
-                                            class="data-table">
-                                            <!-- <template v-slot:[`column.udactions`]="{ column }">
-                                                <v-icon>plus-circle-outline</v-icon>{{ column.text }}123
-                                            </template> -->
-                                            <template v-for="(header,hid) in headers" v-slot:[`header.${header.value}`]>
-                                                <div v-if="header.text=='操作' && templatemode=='cycleedit'" class="tool" :key="'header_'+hid+id" style="display: flex;align-items: center;">
-                                                    {{ header.text }}
+                                    <div v-if="adjustOpen(mitem,id)&&mitem.stepList&&mitem.stepList.length>0" class="content">
+                                        <div class="work-content" v-for="(work,wid) in mitem.stepList" :key="'work_'+mitem.phase_id+'_'+wid">
+                                            <div class="card-title">
+                                                <div class="title" @click="work.open=!work.open" >
+                                                    <v-icon v-if="work.open">mdi-triangle-small-up</v-icon>
+                                                    <v-icon v-else>mdi-triangle-small-down</v-icon>
+                                                    <v-tooltip v-if="work.remark&&work.remark!==''" bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-card-title style="font-size: 0.9rem;" v-bind="attrs" v-on="on">{{work.step_name }}
+                                                                <span v-if="work.actions&&work.actions.length>0">． {{work.actions[work.actions.length-1].end}} 天</span> 
+                                                                <span v-else>． 0 天</span>
+                                                            </v-card-title>
+                                                        </template>
+                                                        <span>{{ work.remark }}</span>
+                                                    </v-tooltip>
+                                                    
+                                                    <v-card-title v-else style="font-size: 0.9rem;">{{work.step_name }}
+                                                        <span v-if="work.actions&&work.actions.length>0">． {{work.actions[work.actions.length-1].end}} 天</span>
+                                                        <span v-else>． 0 天</span>
+                                                    </v-card-title>
+                                                </div>
+                                                <div v-if="templatemode!=='cycleedit'" class="chevron" style="display: flex;align-items: center;">
                                                     <v-tooltip bottom>
-                                                        <template v-slot:activator="{ on }">
-                                                            <v-btn class="btn-icon just-icon" v-on="on">
-                                                                <v-icon>mdi-information-outline</v-icon>
-                                                            </v-btn>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <button class="btn-icon-secondary" v-bind="attrs" v-on="on" @click="editWorkDialogOpen(work,mitem.phase_id,wid)">
+                                                                <v-icon>mdi-pencil</v-icon>
+                                                            </button>
                                                         </template>
-                                                        <span>僅可編輯/刪除『其他』、『疾病檢驗』、『水質檢驗』項目</span>
+                                                        <span>編輯此工作</span>
+                                                    </v-tooltip>
+                                                    <v-tooltip bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <button class="btn-icon-secondary green" v-bind="attrs" v-on="on" @click="addWorkDialogOpen(mitem.phase_id,wid)">
+                                                                <v-icon>mdi-plus</v-icon>
+                                                            </button>
+                                                        </template>
+                                                        <span>在此之後新增工作</span>
                                                     </v-tooltip>
                                                 </div>
-                                                <span v-else :key="'header_'+hid">{{ header.text }}</span>
-                                            </template>
-                                            <!-- <template v-slot:[`item.name`]="{ item }">
-                                                <v-tooltip bottom>
-                                                    <span>{{ templatemode=='cycleedit'?item.step_name_ch:item.step_name}}</span>
-                                                </v-tooltip>
-                                            </template> -->
-                                            <!-- 新增 -->
-                                            <template v-slot:[`item.actions`]="{ index }">
-                                                <v-tooltip bottom>
-                                                    <template v-slot:activator="{ on, attrs }">
-                                                        <v-btn  class="btn-icon just-icon"
-                                                            title="下方新增其他" 
-                                                            @click="addsubitem(mitem.phase_id,index)"
-                                                            :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                                            v-bind="attrs" v-on="on">
-                                                            <v-icon>mdi-table-row-plus-after</v-icon>
-                                                        </v-btn>
-                                                    </template>
-                                                    <span>{{ templatemode=='cycleedit'?'下方新增其他':'下方新增項目'}}</span>
-                                                </v-tooltip>
-                                                <!-- <v-btn  class="btn-icon" title="在下方新增一列" @click="addsubitem(mitem.id,index)">
-                                                    <v-icon>mdi-table-row-plus-after</v-icon>
-                                                </v-btn> -->
-                                            </template>
-                                            <!-- 項目名稱 -->
-                                            <template v-slot:[`item.step_name_ch`]="{ item }">
-                                                <v-tooltip v-if="templatemode=='cycleedit' && (item.type==1 || item.type==2)" bottom>
-                                                    <template v-slot:activator="{ on, attrs }">
-                                                        <span v-bind="attrs" v-on="on">{{ item.step_name_ch }}</span>
-                                                    </template>
-                                                    <span>{{ item.status }}</span>
-                                                </v-tooltip>
-                                                <span v-else>{{ item.step_name_ch }}</span>
-                                                <!-- <v-btn  class="btn-icon" title="在下方新增一列" @click="addsubitem(mitem.id,index)">
-                                                    <v-icon>mdi-table-row-plus-after</v-icon>
-                                                </v-btn> -->
-                                            </template>
-                                            
-                                            <!-- 訊息 -->
-                                            <template v-slot:[`item.msg`]="{ item }">
-                                                {{ item.type==0?item.remark:item.msg }}
-                                                <div v-if="item.bacteriaSelect && item.bacteriaSelect.length>0" class="items">
-                                                    <v-chip
-                                                        v-for="(chip,cid) in item.bacteriaSelect"
-                                                        style="font-size: 12px;margin: 2px;color: #fff;"
-                                                        color="#408FBC"
-                                                        class="main"
-                                                        :key="'chip_'+chip+'_'+cid">  
-                                                        {{ chip }}
-                                                    </v-chip>
-                                                </div>
-                                                
-                                            </template>
-                                            <!-- 執行 -->
-                                            <template v-slot:[`item.deft_executor`]="{ item }">
-                                                <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span>
-                                                <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
-                                                <!-- {{ dateFormat(item.execute_time) }} -->
-                                            </template>
-                                            <!-- 確認 -->
-                                            <template v-slot:[`item.deft_verifier`]="{ item }">
-                                                {{ item.deft_verifier }} 
-                                                <span v-if="item.verify_time&&item.verify_time!==''" v-text="dateFormat(item.verify_time)"></span>
-                                                <!-- {{ dateFormat(item.execute_time) }} -->
-                                            </template>
-                                            <!-- 執行/確認 -->
-                                            <template v-slot:[`item.executed_actions`]="{ index }">
-                                                <div class="btn-groups" v-if="mitem.stepList[index].type == 0 || mitem.stepList[index].type == null">
-                                                    <v-tooltip v-if="!authorization.execute" bottom>
+                                            </div>
+                                            <v-data-table v-if="work.open" light 
+                                                :headers="headers.filter(x => x.showmode.includes(templatemode))"
+                                                :items="work.actions"
+                                                :no-data-text="templatemode=='cycleedit'?'無':'暫無動作，請點選編輯按鈕編輯動作'"
+                                                hide-default-footer
+                                                disable-pagination
+                                                style="max-height: 300px;overflow-y: scroll;"
+                                                :item-class="itemRowBackground"
+                                                :item-key="'table_'+id"
+                                                class="data-table">
+                                                <template v-for="(header,hid) in headers" v-slot:[`header.${header.value}`]>
+                                                    <div v-if="header.text=='操作' && templatemode=='cycleedit'" class="tool" :key="'header_'+hid+id" style="display: flex;align-items: center;">
+                                                        {{ header.text }}
+                                                        <v-tooltip bottom>
+                                                            <template v-slot:activator="{ on }">
+                                                                <v-btn class="btn-icon just-icon" v-on="on">
+                                                                    <v-icon>mdi-information-outline</v-icon>
+                                                                </v-btn>
+                                                            </template>
+                                                            <span>僅可編輯/刪除『疾病檢驗』及『水質檢驗』項目</span>
+                                                        </v-tooltip>
+                                                    </div>
+                                                    <span v-else :key="'header_'+hid">{{ header.text }}</span>
+                                                </template>
+                                                <!-- 新增 -->
+                                                <!-- <template v-slot:[`item.actions`]="{ index }">
+                                                    <v-tooltip bottom>
                                                         <template v-slot:activator="{ on, attrs }">
-                                                            <v-btn class="btn-secondary btn-small nonauth disabled"
-                                                                v-bind="attrs" v-on="on"
-                                                                >
-                                                                {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].verify_time!==''?'已執行':'取消':'執行' }}
-                                                            </v-btn>
-                                                        </template>
-                                                        <span>未授權</span>
-                                                    </v-tooltip>
-                                                    <v-btn v-else class="btn-secondary btn-small"
-                                                        :class="{'disabled':mitem.stepList[index].execute_disabled}"
-                                                        @click="execute(id,index)">
-                                                        {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''?mitem.stepList[index].verify_time!==''?'已執行':'取消':'執行' }}
-                                                    </v-btn>
-                                                    <v-tooltip v-if="!authorization.verify" bottom>
-                                                        <template v-slot:activator="{ on, attrs }">
-                                                            <v-btn class="btn-primary btn-small nonauth disabled"
+                                                            <v-btn  class="btn-icon just-icon"
+                                                                title="下方新增其他" 
+                                                                @click="addsubitem(mitem.phase_id,index)"
+                                                                :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                                                 v-bind="attrs" v-on="on">
-                                                                {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time!==''?'已確認':'確認' }}
-                                                            </v-btn> 
+                                                                <v-icon>mdi-table-row-plus-after</v-icon>
+                                                            </v-btn>
                                                         </template>
-                                                        <span>未授權</span>
+                                                        <span>{{ templatemode=='cycleedit'?'下方新增其他':'下方新增項目'}}</span>
                                                     </v-tooltip>
-                                                    <v-btn  v-else class="btn-primary btn-small"
-                                                        :class="`${(mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time=='')?'':'disabled'}`"
-                                                        @click="executeConfirm(id,index)">
-                                                        {{ mitem.stepList[index].execute_time&&mitem.stepList[index].execute_time!==''&&mitem.stepList[index].verify_time!==''?'已確認':'確認' }}
-                                                    </v-btn> 
-                                                </div>
-                                                <div class="btn-groups" v-if="mitem.stepList[index].type && mitem.stepList[index].type !== 0 && mitem.stepList[index].type !== null">
-                                                    <v-btn  class="btn-secondary btn-small green"
-                                                        @click="if(mitem.stepList[index].file || mitem.stepList[index].type == 3){viewOpen=true;viewDetail=mitem.stepList[index]}" 
-                                                        :class="{'disabled':mitem.stepList[index].type !== 3 && !mitem.stepList[index].file}"
-                                                        style="pointer-events: inherit;">
-                                                        檢視
-                                                    </v-btn>
-                                                </div>
-                                            </template>
-                                            <!-- 訊息 -->
-                                            <template v-slot:[`item.day`]="{ item }">
-                                                <span v-if="item.day">Day </span>{{ item.day }}
-                                            </template>
-                                            <!-- 編輯/刪除 -->
-                                            <template v-slot:[`item.udactions`]="{ index }">
-                                                <v-tooltip v-if="templatemode=='cycleedit'" bottom>
-                                                    <template v-slot:activator="{ on, attrs }">
-                                                        <v-btn  class="btn-icon"
-                                                            title="編輯" 
-                                                            @click="editsubitem(mitem.phase_id, index)" 
-                                                            v-bind="attrs" v-on="on"
-                                                            :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'}"
-                                                            style="pointer-events: inherit;">
-                                                            <v-icon>mdi-pencil</v-icon>
-                                                        </v-btn>
-                                                    </template>
-                                                    <span v-if="(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'">僅可編輯『其他』、『疾病檢驗』、『水質檢驗』項目</span>
-                                                    <span v-else>編輯</span>
-                                                </v-tooltip>
-                                                <v-tooltip bottom>
-                                                    <template v-slot:activator="{ on, attrs }">
-                                                        <v-btn  class="btn-icon delete"
-                                                            title="刪除" 
-                                                            @click="delsubitem(mitem.phase_id, index)" 
-                                                            v-bind="attrs" v-on="on"
-                                                            :class="{'disabled':(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'||templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                                            style="pointer-events: inherit;">
-                                                            <v-icon>mdi-trash-can</v-icon>
-                                                        </v-btn>
-                                                    </template>
-                                                    <span v-if="(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'">僅可刪除『其他』、『疾病檢驗』、『水質檢驗』項目</span>
-                                                    <span v-else>刪除</span>
-                                                </v-tooltip>
-                                                <!-- <v-btn class="btn-icon delete" title="刪除" @click="delsubitem(mitem.id, index)">
-                                                    <v-icon>mdi-trash-can</v-icon>
-                                                </v-btn> -->
-                                            </template>
-                                        </v-data-table>
-                                        <div v-if="templatemode!=='cycleedit' && mitem.stepList.length==0" class="add-step">
-                                            <v-btn class="btn-secondary"
-                                                :class="{'disabled':templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                                @click="addsubitem(mitem.phase_id, (mainItems.filter(x => x.phase_id == mitem.phase_id).length > 0) ? mainItems.filter(x => x.phase_id == mitem.phase_id)[0].stepList.length-1 : 0)">
-                                                <v-icon>mdi-plus</v-icon>
-                                                新增項目
-                                            </v-btn>
+                                                </template> -->
+                                                <!-- 項目名稱 -->
+                                                <template v-slot:[`item.step_name_ch`]="{ item }">
+                                                    <v-tooltip v-if="templatemode=='cycleedit' && (item.type==1 || item.type==2)" bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <span v-bind="attrs" v-on="on">{{ item.step_name }}</span>
+                                                        </template>
+                                                        <span>{{ item.status }}</span>
+                                                    </v-tooltip>
+                                                    <span v-else>{{ item.step_name }}</span>
+                                                </template>
+                                                <!-- 第幾天開始執行 -->
+                                                <template v-slot:[`item.start`]="{ item }">
+                                                    Day {{item.start}}
+                                                </template>
+                                                <!-- 第幾天完成執行 -->
+                                                <template v-slot:[`item.end`]="{ item }">
+                                                    Day {{item.end}}
+                                                </template>
+                                                <!-- 訊息 -->
+                                                <template v-slot:[`item.msg`]="{ item }">
+                                                    {{ item.type==0?item.remark:item.msg }}
+                                                    <div v-if="item.bacteriaSelect && item.bacteriaSelect.length>0" class="items">
+                                                        <v-chip
+                                                            v-for="(chip,cid) in item.bacteriaSelect"
+                                                            style="font-size: 12px;margin: 2px;color: #fff;"
+                                                            color="#408FBC"
+                                                            class="main"
+                                                            :key="'chip_'+chip+'_'+cid">  
+                                                            {{ chip }}
+                                                        </v-chip>
+                                                    </div>
+                                                    
+                                                </template>
+                                                <!-- 執行/不執行說明 -->
+                                                <template v-slot:[`item.executed_actions`]="{ item }">
+                                                    <div v-if="item.execute&&item.execute!==0">
+                                                        <span :style="{'color':`${item.execute==2?'red':'initial'}`}">{{ item.execute==1?'已執行':'不執行' }}</span>
+                                                        <span v-if="item.msg&&item.msg!==''"><br>{{ item.msg }}</span>
+                                                    </div>
+                                                    
+                                                </template>
+                                                
+                                                <!-- 執行 -->
+                                                <template v-slot:[`item.deft_executor`]="{ item }">
+                                                    
+                                                    <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
+                                                    <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span>
+                                                    <!-- {{ dateFormat(item.execute_time) }} -->
+                                                </template>
+                                                <!-- 編輯/刪除 -->
+                                                <template v-slot:[`item.udactions`]="{ index }">
+                                                    <v-tooltip v-if="templatemode=='cycleedit'" bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn  class="btn-icon"
+                                                                title="編輯" 
+                                                                @click="editsubitem(mitem.phase_id,wid, index)" 
+                                                                v-bind="attrs" v-on="on"
+                                                                style="pointer-events: inherit;"
+                                                                :class="{'disabled':work.actions[index].type==0}">
+                                                                <v-icon>mdi-pencil</v-icon>
+                                                            </v-btn>
+                                                        </template>
+                                                        <!-- <span v-if="(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'">僅可編輯『其他』、『疾病檢驗』、『水質檢驗』項目</span> -->
+                                                        <span>編輯</span>
+                                                    </v-tooltip>
+                                                    <v-tooltip bottom>
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn  class="btn-icon delete"
+                                                                title="刪除" 
+                                                                @click="delsubitem(mitem.phase_id,wid, index)" 
+                                                                v-bind="attrs" v-on="on"
+                                                                style="pointer-events: inherit;"
+                                                                :class="{'disabled':work.actions[index].type==0}">
+                                                                <v-icon>mdi-trash-can</v-icon>
+                                                            </v-btn>
+                                                        </template>
+                                                        <!-- <span v-if="(mitem.stepList[index].type==0||mitem.stepList[index].type==3)&&templatemode=='cycleedit'">僅可刪除『其他』、『疾病檢驗』、『水質檢驗』項目</span> -->
+                                                        <span>刪除</span>
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-data-table>
+                                            
                                         </div>
-                                        <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
+                                        <!-- <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
                                             <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
                                             <v-tooltip v-else bottom>
                                                 <template v-slot:activator="{ on, attrs }">
@@ -287,13 +264,10 @@
                                                 </template>
                                                 <span>未授權</span>
                                             </v-tooltip>
-                                        </div>
-                                        <!-- <span><b>最上方資料結構中的stepList資料整理(!!!!最後要上要記得清除!!!!)</b></span>
-                                        <span class="error-text"><b>Note:新增/刪除 其他 需重新給api資料 因seq_id會變更</b></span>
-                                        <div class="list" v-for="(step,i) in mitem.stepList" :key="'step_'+i">
-                                            {{ step }}
                                         </div> -->
+                                        
                                     </div>
+                                    <div v-if="adjustOpen(mitem,id)&&(mitem.stepList==undefined||mitem.stepList.length==0)" class="content no-work">尚未設定工作</div>
                                 </v-card>
                             </div>
                         </div>
@@ -401,7 +375,6 @@
                             
                             <v-text-field v-model="stepformedit.name_ch" @change="checkValue('name_ch')" filled dense :rules="rules.requireStepCn" label="階段名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
                             <v-text-field v-model="stepformedit.name_en" @change="checkValue('name_en')" filled dense :rules="rules.requireStepEn" label="階段名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
-                            <v-text-field v-model.number="stepformedit.day" type="number" :rules="rules.require" dense style="margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">第</span><span class="pa-0 ma-0" slot="append">天執行</span></v-text-field>
                             <v-text-field v-model="stepformedit.remark" @change="checkValue('remark')" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
                         </v-card-text>
                     </div>
@@ -536,6 +509,269 @@
                 </div>
             </v-card>
         </v-dialog>
+        <!-- 編輯工作項目 -->
+        <v-dialog v-model="editWorkDialog" max-width="500px">
+            <v-form v-model="editWorkvalid" ref="editWorkform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span>編輯：{{ editItem.step_name }}</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="editWorkDialog = false" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div class="card-title" style="margin-bottom: 0;">
+                            <div class="title">
+                                <v-card-title>備註說明</v-card-title>
+                            </div>
+                        </div>
+                        <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                            <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
+                            </v-text-field>
+                        </v-card-text>
+                        <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+                            <div class="title">
+                                <v-card-title>預設動作</v-card-title>
+                            </div>
+                            <div class="chevron">
+                                <v-btn class="btn-icon green" @click="editActionItemDialogOpen()"><v-icon>mdi-plus</v-icon></v-btn>
+                                <!-- <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <button class="btn-icon" v-bind="attrs" v-on="on">
+                                            <v-icon>mdi-plus</v-icon>
+                                        </button>
+                                    </template>
+                                    <span>新增動作</span>
+                                </v-tooltip> -->
+                            </div>
+                        </div>
+                        <div class="content">
+                            <v-card-text v-for="item in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                                <v-row style="display: flex;align-items: center;padding-top: 0;">
+                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
+                                    <v-col cols="4" style="padding: 4px 8px;">
+                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="4" style="padding: 4px 8px;">
+                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="第幾天完成執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
+                                </v-row>
+                            </v-card-text>
+                        </div>
+                        
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
+                        <v-btn class="btn-primary" @click="editWorkSubmit">編輯</v-btn>
+                        <v-btn class="btn-primary delete" @click="deleteWork">刪除</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
+        <!-- 調整動作項目增刪修 -->
+        <v-dialog v-model="editActionItemDialog" max-width="500px">
+            <v-form v-model="editActionItemvalid" ref="editActionItemform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span>加入動作</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="editActionItemDialog = false" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <v-card-text style="display: flex;align-items: center;">
+                            <v-autocomplete v-model="stepitem.id" dense filled :items="stepdata" item-text="name_ch"
+                                    item-value="id" @change="actionChange"></v-autocomplete>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn slot="append-outer" class="btn-icon" @click="showstep('edit')" v-bind="attrs" v-on="on"><v-icon>mdi-pencil-outline</v-icon></v-btn>
+                                </template>
+                                <span>編輯動作</span>
+                            </v-tooltip>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn slot="append-outer" class="btn-icon green" @click="showstep('add')" v-bind="attrs" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
+                                </template>
+                                <span>新增動作</span>
+                            </v-tooltip>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn slot="append-outer" :class="{'disabled':(stepitem.id==undefined)}" class="btn-icon delete" @click="deletestep" v-bind="attrs" v-on="on"><v-icon>mdi-trash-can</v-icon></v-btn>
+                                </template>
+                                <span>刪除動作</span>
+                            </v-tooltip>
+                        </v-card-text>
+                        <div v-if="stepmode!==''" class="card-title" style="margin-bottom: 0;">
+                            <div class="title">
+                                <v-card-title>{{stepmode=='edit'?'編輯動作':'新增動作'}}</v-card-title>
+                            </div>
+                        </div>
+                        <v-card-text v-if="actionInputShow">
+                            <v-text-field v-model="stepformedit.name_ch" @change="checkValue('name_ch')" filled dense :rules="rules.requireStepCn" label="動作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.name_en" @change="checkValue('name_en')" filled dense :rules="rules.requireStepEn" label="動作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.remark" @change="checkValue('remark')" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
+                        </v-card-text>
+                        
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-secondary" @click="editActionItemDialog=false">取消</v-btn>
+                        <v-btn class="btn-primary" @click="editActionItemSubmit">新增</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
+        <!-- 新增工作項目 -->
+        <v-dialog v-model="addWorkDialog" max-width="500px">
+            <v-form v-model="addWorkvalid" ref="addWorkform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span>新增工作</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="addWorkDialog = false" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div class="card-title" style="margin-bottom: 0;">
+                            <v-autocomplete v-model="editItem.step_id" dense filled :rules="rules.require" :items="addWorkList" item-text="step_name"
+                                    item-value="step_id" @change="addWorkItemChange"></v-autocomplete>
+                            <div class="chevron">
+                                <v-btn class="btn-icon green" @click="addWorkActionDialogOpen()"><v-icon>mdi-plus</v-icon></v-btn>
+                            </div>
+                        </div>
+                        
+                        <div class="card-title" style="margin-bottom: 0;">
+                            <div class="title">
+                                <v-card-title>備註說明</v-card-title>
+                            </div>
+                        </div>
+                        <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                            <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
+                            </v-text-field>
+                        </v-card-text>
+                        <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+                            <div class="title">
+                                <v-card-title>預設動作</v-card-title>
+                            </div>
+                        </div>
+                        <div class="content" v-if="editItem.actions&&editItem.actions.length>0">
+                            <v-card-text v-for="item in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                                <v-row style="display: flex;align-items: center;padding-top: 0;">
+                                    <v-col cols="6">{{ item.step_name }}</v-col>
+                                    <v-col cols="6">Day {{ item.start }} ~ Day {{ item.end }}</v-col>
+                                </v-row>
+                            </v-card-text>
+                        </div>
+                        <div class="content" v-else>
+                            <v-card-text>
+                                未設定預設動作，請新增工作後，點選編輯進行動作設定
+                            </v-card-text>
+                        </div>
+                        
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
+                        <v-btn class="btn-secondary" @click="addWorkDialog=false">取消</v-btn>
+                        <v-btn class="btn-primary" @click="addWorkSubmit">新增</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
+        <!-- 新增未曾新增的工作 -->
+        <v-dialog v-model="addWorkActionDialog" max-width="500px">
+            <v-form v-model="addWorkActionvalid" ref="addWorkActionform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span>新增工作</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="addWorkActionDialog = false" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div class="card-title" style="margin-bottom: 0;">
+                            <div class="title">
+                                <v-card-title>工作名稱</v-card-title>
+                            </div>
+                        </div>
+                        <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                            <v-text-field v-model="addItem.step_name" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
+                            </v-text-field>
+                        </v-card-text>
+                        <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+                            <div class="title">
+                                <v-card-title>預設動作</v-card-title>
+                            </div>
+                            <div class="chevron">
+                                <v-btn class="btn-icon green" @click="editActionItemDialogOpen()"><v-icon>mdi-plus</v-icon></v-btn>
+                                <!-- <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <button class="btn-icon" v-bind="attrs" v-on="on">
+                                            <v-icon>mdi-plus</v-icon>
+                                        </button>
+                                    </template>
+                                    <span>新增動作</span>
+                                </v-tooltip> -->
+                            </div>
+                        </div>
+                        <div class="content">
+                            <v-card-text v-for="item in addItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                                <v-row style="display: flex;align-items: center;padding-top: 0;">
+                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
+                                    <v-col cols="4" style="padding: 4px 8px;">
+                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="4" style="padding: 4px 8px;">
+                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="第幾天完成執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
+                                </v-row>
+                            </v-card-text>
+                        </div>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
+                        <v-btn class="btn-secondary" @click="addWorkActionDialog=false">取消</v-btn>
+                        <v-btn class="btn-primary" @click="addWorkActionSubmit">加入</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>       
     </div>
 </template>
 
@@ -655,22 +891,23 @@ export default {
             },
             //table
             headers: [
-                { text: '新增', value: 'actions', sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: '新增', value: 'actions', sortable: false,width:"5%",showmode: ['cycleedit']},
                 // { text: "step_id", value: "step_id", groupable: false, showmode: ['add', 'edit'] },
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
-                { text: "項目", value: "step_name_ch", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
-                { text: "項目", value: "step_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "動作", value: "step_name_ch", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: "動作", value: "step_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "第幾天開始執行", value: "start", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "第幾天完成執行", value: "end", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
-                
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                // { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: '執行員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
-                { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
+                // { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: '編輯', value: 'reactions', sortable: false,width:"7%",showmode: ['cycleedit']},
                 { text: '備註', value: 'remark', sortable: false,width:"20%",showmode: ['add', 'edit']},
-                { text: "第幾天執行", value: "day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
-                { text: '操作', value: 'udactions', sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
+                { text: '操作', value: 'udactions', sortable: false,width:"10%",showmode: ['cycleedit']},
             ],
             mainItems: [{
                 phase_id: 1,
@@ -721,7 +958,21 @@ export default {
             authorization: {
                 execute: false,
                 verify: false
-            }
+            },
+            editWorkDialog:false, // 編輯工作
+            editWorkvalid:false,
+            editActionItemDialog:false,// 動作
+            editActionItemvalid:false,
+            addWorkDialog: false, // 新增工作
+            addWorkvalid:false,
+            addWorkActionDialog: false, // 新增未有的工作
+            addWorkActionvalid:false,
+            editItem:{}, // 編輯工作資料暫存
+            addWorkList:[], // 所有的工作清單
+            addItem:{}, // 新增工作資料暫存
+            workType: 'edit', // 區別現在是在編輯還是新增，動作編輯用
+            addWorkIndex:{}, // 新增工作從哪一index往下新增
+            actionInputShow: false, // 編輯/新增動作 顯示欄位
         }
     },
     created(){
@@ -747,7 +998,8 @@ export default {
                     phase_id: data.id,
                     phase_name: data.text,
                     stepList: new Array(),
-                    open: this.nowExpand
+                    open: this.nowExpand,
+                    day: 0
                 })
             })
             if(this.templatemode=="edit"){
@@ -757,6 +1009,12 @@ export default {
                     main.forEach(m=>{
                         if(data.phase_id == m.phase_id) {
                             data.stepList = m.stepList;
+                            data.stepList.forEach(step=>{
+                                if(step.actions) {
+                                    data.day+=step.actions[step.actions.length-1].end;
+                                }
+                                
+                            })
                         }
                     })
                 })
@@ -770,6 +1028,12 @@ export default {
                     main.forEach(m=>{
                         if(data.phase_id == m.phase_id) {
                             data.stepList = m.stepList;
+                            data.stepList.forEach(step=>{
+                                if(step.actions) {
+                                    data.day+=step.actions[step.actions.length-1].end;
+                                }
+                                
+                            })
                         }
                     })
                 })
@@ -778,7 +1042,6 @@ export default {
                 //        tempContent: this.mainItems
             }
         }
-       
     },
     methods: {
         /* 資料整理 */
@@ -789,7 +1052,10 @@ export default {
             let data = _.cloneDeep(this.passObj.tempContent);
             this.mainItems = [];
             data.forEach(d=>{
-                d.stepList = d.stepList.filter(x=>x.type==0 || x.type==null);
+                d.stepList.forEach(step=>{
+                    step.actions = step.actions.filter(x=>x.type==0 || x.type==null);
+                })
+                
             })
             data.forEach((m,mid)=>{
                 stepId.push({
@@ -801,45 +1067,50 @@ export default {
                     "stepList": m.stepList,
                 })
                 
-                // 項目排序
-                stepId[mid].stepList.sort((a,b)=>{
-                    return parseInt(a.seq_id.split('_')[1]) - parseInt(b.seq_id.split('_')[1]);
-                })
+                // // 項目排序
+                // stepId[mid].stepList.sort((a,b)=>{
+                //     return parseInt(a.seq_id.split('_')[1]) - parseInt(b.seq_id.split('_')[1]);
+                // })
                 
             })
             // this.mainItems = stepId;
             this.justStep = data;
-            this.disabledData();
+            // this.disabledData();
             // this.dateData();
+            this.sortTime();
         },
         
-        sortTime() {
+        sortTime(filter=false) {
             let data = _.cloneDeep(this.justStep);
             if(this.passObj.filter==null || this.passObj.filter.includes(1) || this.passObj.filter.includes(11)|| this.passObj.filter.includes(12)|| this.passObj.filter.includes(13)) {
                 this.diseaseReport.forEach(dis=>{
                     let xid=0;
-                    let iid=0
+                    let iid=0;
+                    let yid=0;
                     for(let i=0;i<data.length;i++) {
                         for(let x=0;x<data[i].stepList.length;x++) {
-                            if(data[i].stepList[x].type==0 && data[i].stepList[x].execute_time && data[i].stepList[x].execute_time!=='') {
-                                // console.log(new Date(data[i].stepList[x].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                if(new Date(data[i].stepList[x].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                    iid = i;
-                                    xid = x+1;
-                                    
-                                    // break;
+                            for(let y=0;y<data[i].stepList[x].actions.length;y++){
+                                if(data[i].stepList[x].actions[y].type==0 && data[i].stepList[x].actions[y].execute_time && data[i].stepList[x].actions[y].execute_time!=='') {
+                                // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                    if(new Date(data[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                        iid = i;
+                                        xid = x;
+                                        yid=y+1;
+                                        // break;
+                                    }
                                 }
                             }
+                            
                         }
                     }
                     if(this.passObj.filter==null || (this.passObj.filter.includes(11) && dis.status=='異常')) {
-                        data[iid].stepList.splice(xid,0,dis);
+                        data[iid].stepList[xid].actions.splice(yid,0,dis);
                     }else if(this.passObj.filter==null ||(this.passObj.filter.includes(12) && dis.status=='警告')) {
-                        data[iid].stepList.splice(xid,0,dis);
+                        data[iid].stepList[xid].actions.splice(yid,0,dis);
                     }else if(this.passObj.filter==null ||(this.passObj.filter.includes(13) && dis.status=='正常')) {
-                        data[iid].stepList.splice(xid,0,dis);
+                        data[iid].stepList[xid].actions.splice(yid,0,dis);
                     }else if(this.passObj.filter==null || (!this.passObj.filter.includes(11)&&!this.passObj.filter.includes(12)&&!this.passObj.filter.includes(13))){
-                        data[iid].stepList.splice(xid,0,dis);
+                        data[iid].stepList[xid].actions.splice(yid,0,dis);
                     }
                     
                 })
@@ -847,28 +1118,32 @@ export default {
             if(this.passObj.filter==null || this.passObj.filter.includes(2)|| this.passObj.filter.includes(21)|| this.passObj.filter.includes(22)|| this.passObj.filter.includes(23)) {
                 this.waterReport.forEach(dis=>{
                     let yid=0;
-                    let wid=0
+                    let wid=0;
+                    let wxid=0;
                     for(let i=0;i<data.length;i++) {
                         for(let x=0;x<data[i].stepList.length;x++) {
-                            if(data[i].stepList[x].type!==null && data[i].stepList[x].execute_time && data[i].stepList[x].execute_time!=='') {
-                                // console.log(new Date(data[i].stepList[x].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                if(new Date(data[i].stepList[x].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                    wid = i;
-                                    yid = x+1;
-                                    
-                                    // break;
+                            for(let y=0;y<data[i].stepList[x].actions.length;y++) {
+                                if(data[i].stepList[x].actions[y].type!==null && data[i].stepList[x].actions[y].execute_time && data[i].stepList[x].actions[y].execute_time!=='') {
+                                    // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                    if(new Date(data[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                        wid = i;
+                                        yid = x;
+                                        wxid=y+1;
+                                        // break;
+                                    }
                                 }
                             }
+                            
                         }
                     }
                     if(this.passObj.filter==null ||(this.passObj.filter.includes(21) && dis.status=='異常')) {
-                        data[wid].stepList.splice(yid,0,dis);
+                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
                     }else if(this.passObj.filter==null ||(this.passObj.filter.includes(22) && dis.status=='警告')) {
-                        data[wid].stepList.splice(yid,0,dis);
+                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
                     }else if(this.passObj.filter==null ||(this.passObj.filter.includes(23) && dis.status=='正常')) {
-                        data[wid].stepList.splice(yid,0,dis);
+                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
                     }else if(this.passObj.filter==null || (!this.passObj.filter.includes(21)&&!this.passObj.filter.includes(22)&&!this.passObj.filter.includes(23))){
-                        data[wid].stepList.splice(yid,0,dis);
+                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
                     }
                     
                 })
@@ -877,25 +1152,31 @@ export default {
                 this.eventReport.forEach(dis=>{
                     let etid=0;
                     let eid=0
+                    let eyid=0;
                     for(let i=0;i<data.length;i++) {
                         for(let x=0;x<data[i].stepList.length;x++) {
-                            if(data[i].stepList[x].type!==null && data[i].stepList[x].execute_time && data[i].stepList[x].execute_time!=='') {
-                                // console.log(new Date(data[i].stepList[x].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                if(new Date(data[i].stepList[x].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                    eid = i;
-                                    etid = x+1;
-                                    // break;
+                            for(let y=0;y<data[i].stepList[x].actions.length;y++) {
+                                if(data[i].stepList[x].actions[y].type!==null && data[i].stepList[x].actions[y].execute_time && data[i].stepList[x].actions[y].execute_time!=='') {
+                                    // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                    if(new Date(data[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                        eid = i;
+                                        etid = x;
+                                        eyid = y+1;
+                                        // break;
+                                    }
                                 }
                             }
+                            
                         }
                     }
-                    data[eid].stepList.splice(etid,0,dis);
+                    data[eid].stepList[etid].actions.splice(eyid,0,dis);
                 })
             }
             
             this.mainItems = data;
             console.log('sort',this.mainItems);
             this.dateData();
+            
 
         },
         // 整理各階段最新時間
@@ -903,17 +1184,20 @@ export default {
             this.mainItems.forEach(s=>{
                 s.newest = ''; // 因為更新後只有時間變動太小，需先清空再給，才會更新html
                 s.stepList.forEach(p=>{
-                    if(p.execute_time&&p.execute_time!=='') {
-                        if(s.newest&&s.newest!=='') {
-                            let current = new Date(p.execute_time);
-                            let now = new Date(s.newest);
-                            if(current>now) {
-                                s.newest = p.execute_time;
+                    p.actions.forEach(action=>{
+                        if(action.execute_time&&action.execute_time!=='') {
+                            if(s.newest&&s.newest!=='') {
+                                let current = new Date(action.execute_time);
+                                let now = new Date(s.newest);
+                                if(current>now) {
+                                    s.newest = action.execute_time;
+                                }
+                            }else {
+                                s.newest = action.execute_time;
                             }
-                        }else {
-                            s.newest = p.execute_time;
                         }
-                    }
+                    })
+                    
                 })
             });
             console.log('data',this.mainItems);
@@ -930,29 +1214,28 @@ export default {
                             if(i.newest&& i.newest!=='') {
                                 i.color = st.color;
                             }else {
-                                if(id!==0) {
-                                    // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
-                                    // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
-                                    if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
-                                        if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time&&
-                                        this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time!=='') {
-                                            i.color = st.color;
-                                        }else {
-                                            i.color = '#BFCBD2'
-                                        }
+                                i.color = '#BFCBD2'
+                                // if(id!==0) {
+                                //     // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
+                                //     // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
+                                //     if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
+                                //         if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time&&
+                                //         this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time!=='') {
+                                //             i.color = st.color;
+                                //         }else {
+                                //             i.color = '#BFCBD2'
+                                //         }
                                         
-                                    }else {
-                                        i.color = '#BFCBD2'
-                                    }
-                                }else {
-                                    i.color = st.color;
-                                }
+                                //     }else {
+                                //         i.color = '#BFCBD2'
+                                //     }
+                                // }else {
+                                //     i.color = st.color;
+                                // }
                                 
                             }
                         }
                     })
-                }else {
-
                 }
                 
                 
@@ -1049,7 +1332,7 @@ export default {
                         this.justStep[cancel.id].stepList[cancel.index].execute_disabled = false;
                     }
 
-                 })
+                })
             }
             
             this.sortTime();
@@ -1058,17 +1341,14 @@ export default {
         executorData() {
             this.mainItems.forEach(m=>{
                 m.stepList.forEach(s=>{
-                    if(s.executor&&s.executor!=='') {
-                        // console.log(this.accdata,s.executor);
-                        s.deft_executor = this.accdata.filter(x=>x.username==s.executor)[0].position+'-'+this.accdata.filter(x=>x.username==s.executor)[0].account_name;
-                    }else {
-                        s.deft_executor = '';
-                    }
-                    if(s.verifier&&s.verifier!=='') {
-                        s.deft_verifier = this.accdata.filter(x=>x.username==s.verifier)[0].position+'-'+this.accdata.filter(x=>x.username==s.verifier)[0].account_name;
-                    }else {
-                        s.deft_verifier = '';
-                    }
+                    s.actions.forEach(action=>{
+                        if(action.executor&&action.executor!=='') {
+                            // console.log(this.accdata,s.executor);
+                            action.deft_executor = this.accdata.filter(x=>x.username==action.executor)[0].position+'-'+this.accdata.filter(x=>x.username==action.executor)[0].account_name;
+                        }else {
+                            action.deft_executor = '';
+                        }
+                    })
                 })
             })
         },
@@ -1097,9 +1377,9 @@ export default {
                 })
                 this.stepdata = [];
                 this.stepdataAll.forEach(s=>{
-                    // if(!phase.includes(s.id)) {
+                    if(!phase.includes(s.id)) {
                         this.stepdata.push(s);
-                    // }
+                    }
                 })
                 
                 // this.showstep('edit');
@@ -1123,10 +1403,7 @@ export default {
                     this.$refs.addform.reset();
                     
                 }
-                 
-                
             }
-           
             console.log('step add',this.mainItems,this.stepitem);
         },
         // 新增項目確認!!送出step項目
@@ -1602,9 +1879,9 @@ export default {
             this.reviseCycleData(apiData,id);
         },
         // 刪除其他項目
-        delsubitem: async function (phase_id, index) {
+        delsubitem: async function (phase_id,wid, index) {
             console.log('delete',phase_id, index);
-            var sub_item = this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList[index];
+            var sub_item = this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList[wid].actions[index];
             if(this.templatemode == 'cycleedit') {
                     if (confirm(`是否刪除 ${sub_item.step_name_ch}：${sub_item.msg} ？`)) {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
@@ -1738,9 +2015,6 @@ export default {
                             // .finally(() => {
                             // });
                         }
-                        
-                        
-                        
                     }
                 
             }else {
@@ -1748,11 +2022,11 @@ export default {
             }
         },
         // 編輯
-        editsubitem(phase_id, index) {
+        editsubitem(phase_id,wid, index) {
             // console.log("phase:", phase_id, "addidx:",addidx);
             // this.stepitem.phase_id = phase_id;
             // this.stepitem.addidx = addidx;
-            let item = _.cloneDeep(this.mainItems.filter(m=>m.phase_id==phase_id)[0].stepList[index]);
+            let item = _.cloneDeep(this.mainItems.filter(m=>m.phase_id==phase_id)[0].stepList[wid].actions[index]);
             if(item.type==null) {
                 this.editem = true;//show dialog
                 this.addStep = [];
@@ -1760,7 +2034,6 @@ export default {
             }else if(item.type == 1 || item.type==2) {
                 this.$emit('reportEditOpen',item);
             }
-            
         },
         async submitedit() {
             let parm = _.cloneDeep(this.addStep[0]);
@@ -1799,7 +2072,6 @@ export default {
                 //     this.$toast.error("error:" + error, { duration: 2000 });
                 //     });
             }
-            
         },
 
         /* 執行/確認 */
@@ -1835,8 +2107,6 @@ export default {
                                                 parm.id.push(this.passObj.nowId);
                                                 this.$emit("compareStatus",parm);
                                             }
-                                            
-                                            
                                         }
                                     }
                                 })
@@ -1869,9 +2139,7 @@ export default {
                         // }
                         await this.updateStatus(items[id].stepList[index],'cancel');
                         // this.dateData();
-                        
                     }
-                    
                 }else {
                     if (confirm(`確認已執行 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} ？`)) {
                         
@@ -2052,8 +2320,12 @@ export default {
                     this.getstepdata();
                     this.stepformedit = {};
                     this.stepitem.id = undefined;
-                    this.stepmode = 'add';
+                    // this.stepmode = 'add';
+                    this.stepmode = '';
+                    this.actionInputShow = false;
                     this.dialog.additem = false;
+                    this.actionInputShow = false;
+
                 }
             },50)
             // await this.$axios
@@ -2087,6 +2359,7 @@ export default {
         showstep:function(mode){
             this.stepmode=mode;
             this.stepformedit = {};
+            this.actionInputShow = true;
             if(mode=='edit'){//帶入資料
                 var step ;
                 console.log(this.stepitem);
@@ -2102,10 +2375,12 @@ export default {
                     // this.stepdata = _.cloneDeep(this.stepdataAll);
                     step = this.stepdata.filter(x=>x.id==this.stepitem.id)[0];
                 }
+                // this.stepformedit.name_ch = step.name_ch;
+                // this.stepformedit.name_en = step.name_en;
+                // this.stepformedit.remark = step.remark;
                 this.stepformedit.name_ch = step.name_ch;
                 this.stepformedit.name_en = step.name_en;
                 this.stepformedit.remark = step.remark;
-                this.stepformedit.day = step.day;
                 console.log('showStep',this.stepitem,);
             }else {
                 this.stepitem = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
@@ -2126,8 +2401,8 @@ export default {
                 this.tempMain.updated_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
                 var id = this.tempMain.id;
                 var para ={
-                   tempMain :  this.tempMain,
-                   tempContent: new Array()
+                    tempMain :  this.tempMain,
+                    tempContent: new Array()
                 }
                 this.mainItems.forEach(m=>{
                     if(m.phase_name!=='空池') {
@@ -2255,12 +2530,60 @@ export default {
             console.log('getStep',this.mainItems)
             if(bool) {
                 console.log('get Step',this.stepitem,this.stepformedit,this.stepdataAll);
-                let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
-                this.stepitem = _.cloneDeep(this.stepformedit);
-                this.stepitem.id = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0].id;
-                this.stepitem.phase_id = submit.phase_id;
-                this.stepitem.addidx = submit.addidx;
-                this.insertStep();
+                // let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
+                // this.stepitem = _.cloneDeep(this.stepformedit);
+                // this.stepitem.id = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0].id;
+                // this.stepitem.phase_id = submit.phase_id;
+                // this.stepitem.addidx = submit.addidx;
+                // this.insertStep();
+                let item = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0];
+                if(this.workType=='edit') {
+                    if(this.editItem.actions) {
+                        this.editItem.actions.push({
+                            "step_id": item.id,
+                            "step_name": item.name_ch,
+                            "remark":item.remark,
+                            "start":null,
+                            "end":null
+                        });
+                        this.editItem.actions.sort((a,b)=>{
+                            return a.start-b.start
+                        })
+                    }else {
+                        this.editItem.actions = [];
+                        this.editItem.actions.push({
+                            "step_id": item.id,
+                            "step_name": item.name_ch,
+                            "remark":item.remark,
+                            "start":null,
+                            "end":null
+                        });
+                    }
+                }else {
+                    if(this.addItem.actions) {
+                        this.addItem.actions.push({
+                            "step_id": item.id,
+                            "step_name": item.name_ch,
+                            "remark":item.remark,
+                            "start":null,
+                            "end":null
+                        });
+                        this.addItem.actions.sort((a,b)=>{
+                            return a.start-b.start
+                        })
+                    }else {
+                        this.addItem.actions = [];
+                        this.addItem.actions.push({
+                            "step_id": item.id,
+                            "step_name": item.name_ch,
+                            "remark":item.remark,
+                            "start":null,
+                            "end":null
+                        });
+                    }
+                }
+                
+                console.log(item);
             }
             // await this.$axios
             //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
@@ -2324,98 +2647,21 @@ export default {
                 step_name : this.stepitem.name_ch,
                 step_name_ch : this.stepitem.name_ch,
                 step_name_en : this.stepitem.name_en,
-                day: this.stepitem.day,
                 step_exec:undefined,//執行/確認人員
                 checktime:undefined,//確認時間
                 result:undefined,//結果
                 msg:undefined,//msg
                 remark: this.stepitem.remark,
             };
-            // if(this.mainItems.filter(x=>x.phase_id == phaseid).length==0){
-            //     var itemName = this.items.filter(x=>x.id == phaseid)[0].text;
-            //     var main_forPush = {
-            //         phase_id: phaseid,
-            //         phase_name:itemName,
-            //         stepList:[]
-            //     };
-            //     this.mainItems.push(main_forPush);
-            // }
-            // console.log('insert',this.mainItems)
-            
-            // 取得pahse_id的index
-            var phaseindex = 0;
-            this.mainItems.forEach((main,id)=>{
-                if(main.phase_id==phaseid) {
-                    phaseindex = id;
-                }
-            })
-
-            // this.mainItems.forEach((main,id)=>{
-            //     for(let i=0;i<main.stepList.length;i++) {
-            //         if(main.stepList[i].day==this.stepitem.day) {
-            //             phaseid =  main.phase_id;//項目的id
-            //             psubidx = i;
-            //             break;
-            //         }
-            //     }
-            // })
-
-            // 如果新增的天數大於原本排定的最後項目的天數，無條件放在最後的位置 
-            if(this.stepitem.day>this.mainItems[this.mainItems.length-1].stepList[this.mainItems[this.mainItems.length-1].stepList.length-1].day) {
-                phaseid =  this.mainItems[this.mainItems.length-1].phase_id;//項目的id
-                psubidx = this.mainItems[this.mainItems.length-1].stepList.length;
-            }else {
-                // 判斷前後的天數是否等於新增的天數，不等於得話就排在有相等day的第一個，等於的話按照新增的地方插入
-                if((psubidx==1&&(this.mainItems[phaseindex].stepList[psubidx+1].day!==this.stepitem.day))||
-                    (psubidx!==1&&this.mainItems[phaseindex].stepList[psubidx-1].day!==this.stepitem.day)) {
-                    this.mainItems.forEach((main,id)=>{
-                        for(let i=0;i<main.stepList.length;i++) {
-                            // 比對新增的天數大於項目且小於項目
-                            if(id==0) {
-                                if(main.stepList[i].day>this.stepitem.day) {
-                                    phaseid=main.phase_id;
-                                    psubidx=i==0?0:(i-1);
-                                    break;
-                                }
-                            }else {
-                                if(i==0) {
-                                    if(main.stepList[i].day>this.stepitem.day&&this.mainItems[id-1].stepList[this.mainItems[id-1].stepList.length-1].day<this.stepitem.day) {
-                                        phaseid=main.phase_id;
-                                        psubidx=i;
-                                        break;
-                                    }
-                                }else {
-                                    if(main.stepList[i].day>this.stepitem.day&&main.stepList[i-1].day<this.stepitem.day) {
-                                        phaseid=main.phase_id;
-                                        psubidx=i;
-                                        break;
-                                    }
-                                }
-                                
-                            }
-                            
-                            // 如果有相同的天數則放入第一個
-                            if(main.stepList[i].day==this.stepitem.day) {
-                                phaseid =  main.phase_id;//項目的id
-                                psubidx = i;
-                                break;
-                            }
-                        }
-                    })
-                }else {
-                    if(this.mainItems.filter(x=>x.phase_id == phaseid).length==0){
-                        var itemName = this.items.filter(x=>x.id == phaseid)[0].text;
-                        var main_forPush = {
-                            phase_id: phaseid,
-                            phase_name:itemName,
-                            stepList:[]
-                        };
-                        this.mainItems.push(main_forPush);
-                    }
-                }
-                
+            if(this.mainItems.filter(x=>x.phase_id == phaseid).length==0){
+                var itemName = this.items.filter(x=>x.id == phaseid)[0].text;
+                var main_forPush = {
+                    phase_id: phaseid,
+                    phase_name:itemName,
+                    stepList:[]
+                };
+                this.mainItems.push(main_forPush);
             }
-            
             this.mainItems.filter(x=>x.phase_id == phaseid)[0].stepList.splice(psubidx,0,pushitem);
             this.dialog.additem = false;
         },
@@ -2427,6 +2673,329 @@ export default {
                     this.isEdit = true;
                 }
             }
+        },
+        // 編輯工作
+        editWorkDialogOpen(work,phase_id,id) {
+            this.addWorkIndex = {
+                phase_id:phase_id,
+                id:id
+            }
+            this.editItem = _.cloneDeep(work);
+            this.workType = 'edit';
+            this.editWorkDialog = true;
+        },
+        // 選擇加入的動作
+        editActionItemDialogOpen() {
+            this.stepdata = [];
+            this.stepdataAll.forEach(s=>{
+                this.stepdata.push(s);
+            })
+            this.stepmode = '';
+            this.actionInputShow = false;
+            this.editActionItemDialog = true;
+        },
+        actionChange() {
+            this.stepformedit = this.stepdataAll.filter(x=>x.id == this.stepitem.id)[0];
+
+        },
+        // 確認加入動作
+        editActionItemSubmit() {
+            var valid = this.$refs.editActionItemform.validate();
+            if(valid) {
+                this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                    this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                    console.log('step',this.stepformedit,this.stepmode);
+                    switch (this.stepmode) {
+                        case 'add':
+                            console.log('step add',this.stepitem);
+                            var res = false;
+                            res = this.postBreedingStepList(this.stepformedit);
+                            setTimeout(()=>{
+                                if(res) {
+                                    this.getstepdata(true);
+                                }
+                            },50)
+                            break;
+                        case 'edit':
+                            var id = this.stepitem.id;
+                            var res = false;
+                            res = this.patchBreedingStepList(this.stepformedit,id);
+                            setTimeout(()=>{
+                                if(res) {
+                                    this.dialog.phaseform = false;
+                                    var stepformedit = this.stepformedit;
+                                    //同步把畫面上的資料修改成一致
+                                    this.mainItems.forEach(element => {
+                                        var step = element.stepList;
+                                        step.filter(x=>x.step_id==id).forEach(stepele => {
+                                            stepele.step_name_ch = stepformedit.name_ch;
+                                        });
+                                    });
+                                    //this.stepformedit 要把同id所有名稱
+                                    this.stepitem.id = undefined;
+                                    this.getstepdata(true);
+                                }
+                            },50)
+                            // await this.$axios
+                            // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
+                            //     .then(res => {
+                            //         if(res.data=='修改成功'){
+                            //             this.dialog.phaseform = false;
+                            //             var stepformedit = this.stepformedit;
+                            //             //同步把畫面上的資料修改成一致
+                            //             this.mainItems.forEach(element => {
+                            //                 var step = element.stepList;
+                            //                 step.filter(x=>x.step_id==id).forEach(stepele => {
+                            //                     stepele.step_name_ch = stepformedit.name_ch;
+                            //                 });
+                            //             });
+                            //             //this.stepformedit 要把同id所有名稱
+                            //             this.stepitem.id = undefined;
+                            //             this.getstepdata(true);
+                            //             // this.$toast.success("修改成功", { duration: 2000 });
+                            //         }else{
+                            //             this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+                            //         }
+
+                            //         console.log("修改步驟API:" + res.request.responseURL);
+                            //     })
+                            //     .catch(error => {
+                            //         this.$toast.error("error:" + error, { duration: 2000 });
+                            //     })
+                            //     .finally(() => {
+                            //     });
+                            break;
+                        case '':
+                            let item = this.stepdataAll.filter(x=>x.id == this.stepitem.id)[0];
+                            if(this.workType=='edit') {
+                                if(this.editItem.actions) {
+                                    this.editItem.actions.push({
+                                        "step_id": item.id,
+                                        "step_name": item.name_ch,
+                                        "remark":item.remark,
+                                        "start":null,
+                                        "end":null
+                                    });
+                                    this.editItem.actions.sort((a,b)=>{
+                                        return a.start-b.start
+                                    })
+                                }else {
+                                    this.editItem.actions = [];
+                                    this.editItem.actions.push({
+                                        "step_id": item.id,
+                                        "step_name": item.name_ch,
+                                        "remark":item.remark,
+                                        "start":null,
+                                        "end":null
+                                    });
+                                }
+                            }else {
+                                if(this.addItem.actions) {
+                                    this.addItem.actions.push({
+                                        "step_id": item.id,
+                                        "step_name": item.name_ch,
+                                        "remark":item.remark,
+                                        "start":null,
+                                        "end":null
+                                    });
+                                    this.addItem.actions.sort((a,b)=>{
+                                        return a.start-b.start
+                                    })
+                                }else {
+                                    this.addItem.actions = [];
+                                    this.addItem.actions.push({
+                                        "step_id": item.id,
+                                        "step_name": item.name_ch,
+                                        "remark":item.remark,
+                                        "start":null,
+                                        "end":null
+                                    });
+                                }
+                            }
+                    }
+                // if(this.workType=='edit') {
+                //     if(this.editItem.actions) {
+                //         this.editItem.actions.push({
+                //             "step_id": action.id,
+                //             "step_name": action.name_ch,
+                //             "remark":action.remark,
+                //             "start":null,
+                //             "end":null
+                //         });
+                //         this.editItem.actions.sort((a,b)=>{
+                //             return a.start-b.start
+                //         })
+                //     }else {
+                //         this.editItem.actions = [];
+                //         this.editItem.actions.push({
+                //             "step_id": action.id,
+                //             "step_name": action.name_ch,
+                //             "remark":action.remark,
+                //             "start":null,
+                //             "end":null
+                //         });
+                //     }
+                // }else {
+                //     if(this.addItem.actions) {
+                //         this.addItem.actions.push({
+                //             "step_id": action.id,
+                //             "step_name": action.name_ch,
+                //             "remark":action.remark,
+                //             "start":null,
+                //             "end":null
+                //         });
+                //         this.addItem.actions.sort((a,b)=>{
+                //             return a.start-b.start
+                //         })
+                //     }else {
+                //         this.addItem.actions = [];
+                //         this.addItem.actions.push({
+                //             "step_id": action.id,
+                //             "step_name": action.name_ch,
+                //             "remark":action.remark,
+                //             "start":null,
+                //             "end":null
+                //         });
+                //     }
+                // }
+                
+                
+                this.editActionItemDialog = false;
+            }
+            
+        },
+        // 確認加入工作
+        editWorkSubmit() {
+            var valid = this.$refs.editWorkform.validate();
+            if(valid) {
+                this.sortDay();
+                let items = _.cloneDeep(this.mainItems);
+                items.forEach((mitem,mid)=>{
+                    if(this.addWorkIndex.phase_id==mitem.phase_id) {
+                        mitem.stepList.forEach((step,sid)=>{
+                            if(sid == this.addWorkIndex.id) {
+                                this.editItem.open = true;
+                                items[mid].stepList[sid] = _.cloneDeep(this.editItem);
+                            }
+                        })
+                    }
+                    
+                })
+                this.mainItems = [];
+                this.mainItems = _.cloneDeep(items);
+                this.editWorkDialog = false;
+            }
+            
+        },
+        // 預設動作依據開始日排序
+        sortDay() {
+            if(this.workType=='edit') {
+                this.editItem.actions.sort((a,b)=>{
+                    return a.start-b.start || a.end-b.end
+                })
+            }else {
+                this.addItem.actions.sort((a,b)=>{
+                    return a.start-b.start || a.end-b.end
+                })
+            }
+            
+        },
+        // 移除預設動作
+        removeAction(id) {
+            let index;
+            if(this.workType=='edit') {
+                index = this.editItem.actions.map(e => e.step_id).indexOf(id);
+                let items = _.cloneDeep(this.editItem);
+                items.actions.splice(index,1);
+                this.editItem = {};
+                this.editItem = _.cloneDeep(items);
+            }else {
+                index = this.addItem.actions.map(e => e.step_id).indexOf(id);
+                let items = _.cloneDeep(this.addItem);
+                items.actions.splice(index,1);
+                this.addItem = {};
+                this.addItem = _.cloneDeep(items);
+            }
+            
+        },
+        // 刪除整個工作
+        deleteWork() {
+            if (confirm(`確認刪除${this.editItem.step_name} ？`)) {
+                let items = _.cloneDeep(this.mainItems);
+                items.forEach((mitem,mid)=>{
+                    if(mitem.phase_id==this.addWorkIndex.phase_id) {
+                        mitem.stepList.forEach((step,sid)=>{
+                            if(sid == this.addWorkIndex.id) {
+
+                                    mitem.stepList.splice(sid,1);
+                                    this.$toast.success("刪除成功", { duration: 2000 }); 
+
+                                
+                            }
+                        })
+                    }
+                    
+                })
+                this.mainItems = [];
+                this.mainItems = _.cloneDeep(items);
+                this.editWorkDialog = false;
+            }
+        },
+        // 新增工作
+        addWorkDialogOpen(phase_id,id) {
+            this.addWorkIndex = {
+                phase_id:phase_id,
+                id:id
+            };
+            this.editItem = {
+                "step_id": null,
+                "step_name": "",
+                "remark":"",
+                "day":null,
+                "open":true,
+                "actions":[]
+            }
+            this.workType='add';
+            this.addWorkDialog = true;
+        },
+        addWorkItemChange() {
+            this.editItem = _.cloneDeep(this.addWorkList.filter(x=>x.step_id==this.editItem.step_id)[0]);
+        },
+        // 新增尚未有的工作
+        addWorkActionDialogOpen() {
+            this.addItem = {
+                "step_id": null,
+                "step_name": "",
+                "remark":"",
+                "day":null,
+                "open":true,
+                "actions":[]
+            }
+            this.addWorkActionDialog = true;
+        },
+        // 確認尚未有的工作
+        addWorkActionSubmit() {
+            var valid = this.$refs.addWorkActionform.validate();
+            if(valid) {
+                this.addItem.step_id = Math.floor(Math.random()*999)+100;
+                this.addWorkList.push(this.addItem);
+                this.sortDay();
+                this.editItem = _.cloneDeep(this.addItem);
+                console.log('editItem',this.editItem);
+                this.addWorkActionDialog = false;
+            }
+        },
+        // 確認新增工作
+        addWorkSubmit() {
+            let items = _.cloneDeep(this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0]);
+            if(items.stepList&&items.stepList.length>0) {
+                this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.splice(this.addWorkIndex.id+1,0,this.editItem);
+            }else {
+                // 階段下無工作時的新增
+                this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.push(this.editItem);
+            }
+            
+            this.addWorkDialog = false;
         },
         
     },
@@ -2607,6 +3176,16 @@ export default {
     margin-top: -24px;
     padding-bottom: 24px;
 }
+.v-application.v-application--is-ltr .v-card.bg-card .content {
+    &.no-work {
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(0,0,0,0.38);
+    }
+}
+
 ::v-deep {
     // .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
     //     background-color: rgba($color: $color-primary, $alpha: 0.1);

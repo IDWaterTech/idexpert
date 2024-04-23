@@ -69,8 +69,12 @@
                     <div class="card-title">
                         <div class="title">
                             <v-row style="align-items: center;margin-bottom: 0;justify-content: space-between;">
+                                <!-- <v-col cols="4" md="4" sm="4" style="padding: 0;"> -->
+                                    <!-- <v-card-title>養殖歷程</v-card-title> -->
                                     <v-card-title v-if="editmode=='edit'">樣板編輯 <span v-if="tempSelect&&!filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable" class="error-text"> - 此樣板已停用</span></v-card-title>
                                     <v-card-title v-if="editmode=='add'">樣板新增</v-card-title>
+                                <!-- </v-col> -->
+                                <!-- <v-col cols="8" md="8" sm="8" style="padding: 0 8px;"> -->
                                     <div class="btn-groups" style="margin-right: 8px;">
                                         <div class="open">
                                             <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
@@ -81,13 +85,26 @@
                                             </v-btn>
                                         </div>
                                     </div>
+                                    
+                                <!-- </v-col> -->
                             </v-row>    
                         </div>
                     </div>
                     <div class="content">
                         <div class="search">
+                            <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" clearable @change="tempChange"> -->
+                                <!-- <span slot="append-outer">
+                                    <v-btn icon color="blue" @click="editmode='add'"  :disabled="tempSelect!=undefined" ><v-icon>mdi-plus-box</v-icon></v-btn>
+                                </span>
+                                <span slot="append-outer">
+                                    <v-btn icon color="error" @click="delTemp" :disabled="tempSelect==undefined"><v-icon>mdi-delete</v-icon></v-btn>
+                                </span> -->
+                                <!-- <span slot="prepend">
+                                    <v-btn icon color="blue" @click="getTemplateData"><v-icon>mdi-reload</v-icon></v-btn>
+                                </span> -->
+                            <!-- </v-autocomplete> -->
                             <div>
-                                <FeedTemplate2 v-if="editmode=='add'" @action="actionResult" :templatemode="editmode" :accdata="[]" :nowExpand="nowExpand" :passObj="passObj" :waterReport="[]" :diseaseReport="[]" :eventReport="[]"></FeedTemplate2>
+                                <FeedTemplate2 v-if="editmode=='add'" @action="actionResult" :templatemode="editmode" :accdata="[]" :nowExpand="nowExpand" :passObj="passObj"  :waterReport="[]" :diseaseReport="[]" :eventReport="[]"></FeedTemplate2>
                                 <FeedTemplate2 v-if="editmode=='edit'" @action="actionResult" :key="editKey" :templatemode="editmode" :passObj="passObj" :accdata="[]" :nowExpand="nowExpand" :waterReport="[]" :diseaseReport="[]" :eventReport="[]"></FeedTemplate2>
                             </div>
                         </div>
@@ -131,7 +148,11 @@ export default {
                 var myMain =this.template_items.filter(x=>x.id==this.tempSelect)[0];
                 var temp = this.template_all.filter(x=>x.tempMain==myMain)[0];
                 this.passObj= _.cloneDeep(temp);
-                console.log('Change Temp',this.passObj);
+                this.passObj.tempContent.forEach(mitem=>{
+                    mitem.stepList.forEach(step=>{
+                        step.open = false;
+                    })
+                })
             }else{
                 this.editmode=undefined;
                 this.passObj={};
@@ -266,521 +287,600 @@ export default {
             this.tempSelect= '';
             this.nowExpand = true;
             this.passObj.tempMain={};
+            // 取得預設樣板
             this.passObj.tempContent=[
-            {
-                "phase_id": 2,
-                "phase_name": "養殖審核",
-                "stepList": [
-                    {
-                        "step_id": 1,
-                        "step_name": "預計購買苗量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 2,
-                        "step_name": "預計購買次氯酸鈣量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 3,
-                        "step_name": "預計購買海波量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 4,
-                        "step_name": "預計購買尿素量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 5,
-                        "step_name": "預計購買葵四量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 6,
-                        "step_name": "預計購買弧立滅量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 7,
-                        "step_name": "預計購買粉料量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 8,
-                        "step_name": "預計購買0號料量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 9,
-                        "step_name": "預計購買1號料量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 10,
-                        "step_name": "預計購買紅料量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 11,
-                        "step_name": "預計購買砂糖量",
-                        "remark":"建立循環後系統給出",
-                        "day":1
-                    },{
-                        "step_id": 12,
-                        "step_name": "訂苗",
-                        "remark":"聯絡廠商確定送苗時間",
-                        "day":2
-                    },{
-                        "step_id": 13,
-                        "step_name": "購買次氯酸鈣",
-                        "remark":"聯絡廠商下單",
-                        "day":2
-                    },{
-                        "step_id": 14,
-                        "step_name": "購買海波",
-                        "remark":"聯絡廠商下單",
-                        "day":2
-                    },{
-                        "step_id": 15,
-                        "step_name": "購買葵四",
-                        "remark":"聯絡廠商下單",
-                        "day":2
-                    },{
-                        "step_id": 16,
-                        "step_name": "購買弧立滅",
-                        "remark":"聯絡廠商下單",
-                        "day":2
-                    },{
-                        "step_id": 17,
-                        "step_name": "購買粉料",
-                        "remark":"聯絡廠商下單",
-                        "day":2
-                    },{
-                        "step_id": 18,
-                        "step_name": "購買砂糖",
-                        "remark":"聯絡廠商下單",
-                        "day":2
-                    }
-                ]
-            },
-            {
-                "phase_id": 3,
-                "phase_name": "備池",
-                "stepList": [
-                    {
-                        "step_id": 19,
-                        "step_name": "檢查進水系統",
-                        "remark":"測試進水系統是否正常運作，管路、設備是否老舊失修",
-                        "day":3
-                    },{
-                        "step_id": 20,
-                        "step_name": "檢查曝氣系統",
-                        "remark":"測試進水系統是否正常運作，管路、設備是否老舊失修",
-                        "day":3
-                    },{
-                        "step_id": 21,
-                        "step_name": "檢查排污系統",
-                        "remark":"測試進水系統是否正常運作，管路、設備是否老舊失修",
-                        "day":3
-                    },{
-                        "step_id": 22,
-                        "step_name": "使用農用噴霧器進行氯消毒池體",
-                        "remark":"製備 30 ppm 次氯酸鈣水溶液噴灑於表面",
-                        "day":4
-                    },{
-                        "step_id": 23,
-                        "step_name": "使用農用噴霧器進行氯消毒走道",
-                        "remark":"製備 30 ppm 次氯酸鈣水溶液噴灑於表面",
-                        "day":4
-                    },{
-                        "step_id": 24,
-                        "step_name": "使用農用噴霧器進行鹼消毒池體",
-                        "remark":"製備飽和石灰水（pH14）溶液噴灑於表面",
-                        "day":5
-                    },{
-                        "step_id": 25,
-                        "step_name": "使用農用噴霧器進行鹼消毒走道",
-                        "remark":"製備飽和石灰水（pH14）溶液噴灑於表面",
-                        "day":5
-                    },
-                ]
-            },
-            {
-                "phase_id": 4,
-                "phase_name": "蓄水",
-                "stepList": [
-                    {
-                        "step_id": 26,
-                        "step_name": "池體注滿水",
-                        "remark":"",
-                        "day":6
-                    },{
-                        "step_id": 27,
-                        "step_name": "於池體內潑灑次氯酸鈣",
-                        "remark":"系統給出次氯酸鈣用量，使水體滿足 30 ppm 次氯酸鈣水溶液",
-                        "day":6
-                    },{
-                        "step_id": 28,
-                        "step_name": "開啟池子曝氣",
-                        "remark":"",
-                        "day":6
-                    },
-                ]
-            },
-            {
-                "phase_id": 5,
-                "phase_name": "做水",
-                "stepList": [
-                    {
-                        "step_id": 29,
-                        "step_name": "測定池水餘氯濃度",
-                        "remark":"",
-                        "day":7
-                    },{
-                        "step_id": 30,
-                        "step_name": "於池體內潑灑海波",
-                        "remark":"系統根據水體餘氯濃度給出海波用量。",
-                        "day":7
-                    },{
-                        "step_id": 31,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":7
-                    },{
-                        "step_id": 32,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":7
-                    },{
-                        "step_id": 33,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":7
-                    },{
-                        "step_id": 34,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":8
-                    },{
-                        "step_id": 35,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":8
-                    },{
-                        "step_id": 36,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":8
-                    },{
-                        "step_id": 37,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":9
-                    },{
-                        "step_id": 38,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":9
-                    },{
-                        "step_id": 39,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":9
-                    },{
-                        "step_id": 40,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":10
-                    },{
-                        "step_id": 41,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":10
-                    },{
-                        "step_id": 42,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":10
-                    },{
-                        "step_id": 43,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":11
-                    },{
-                        "step_id": 44,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":11
-                    },{
-                        "step_id": 45,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":11
-                    },{
-                        "step_id": 46,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":12
-                    },{
-                        "step_id": 47,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":12
-                    },{
-                        "step_id": 48,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":12
-                    },{
-                        "step_id": 49,
-                        "step_name": "醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":13
-                    },{
-                        "step_id": 50,
-                        "step_name": "潑灑尿素、砂糖",
-                        "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-                        "day":13
-                    },{
-                        "step_id": 51,
-                        "step_name": "潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":13
-                    },
-                ]
-            },
-            {
-                "phase_id": 7,
-                "phase_name": "放養中",
-                "stepList": [
-                    {
-                        "step_id": 52,
-                        "step_name": "準備氨氮水質機台",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 53,
-                        "step_name": "準備亞硝酸水質機台",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 54,
-                        "step_name": "準備鹽度計",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 55,
-                        "step_name": "準備手持式溶氧筆",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 56,
-                        "step_name": "準備體長體重測量工具",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 57,
-                        "step_name": "準備瑞基海洋疾病檢測套組",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 58,
-                        "step_name": "準備氧氣瓶",
-                        "remark":"",
-                        "day":14
-                    },{
-                        "step_id": 59,
-                        "step_name": "準備對水用具",
-                        "remark":"每個池子適宜的對水工具不同，請廠長負責",
-                        "day":14
-                    },{
-                        "step_id": 60,
-                        "step_name": "檢測苗袋內水體氨氮",
-                        "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-                        "day":14
-                    },{
-                        "step_id": 61,
-                        "step_name": "檢測苗袋內水體亞硝酸",
-                        "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-                        "day":14
-                    },{
-                        "step_id": 62,
-                        "step_name": "檢測苗袋內水體鹽度",
-                        "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-                        "day":14
-                    },{
-                        "step_id": 63,
-                        "step_name": "檢測苗袋內水體溶氧及溫度",
-                        "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-                        "day":14
-                    },{
-                        "step_id": 64,
-                        "step_name": "量長秤重",
-                        "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-                        "day":14
-                    },{
-                        "step_id": 65,
-                        "step_name": "檢測蝦苗疾病",
-                        "remark":"紀錄蝦苗檢測結果（WSSV、EMS toxic、EMS plasmid、EHP、INNV、IMNV、TSV、YHV），以利後續跟苗商溝通",
-                        "day":14
-                    },{
-                        "step_id": 66,
-                        "step_name": "對水",
-                        "remark":"待苗袋內的水體與池水水溫相同即可",
-                        "day":14
-                    },{
-                        "step_id": 67,
-                        "step_name": "拆袋倒苗",
-                        "remark":"待苗袋內的水體與池水水溫相同即可",
-                        "day":14
-                    },{
-                        "step_id": 68,
-                        "step_name": "整理收拾",
-                        "remark":"待苗袋內的水體與池水水溫相同即可",
-                        "day":14
-                    },{
-                        "step_id": 69,
-                        "step_name": "粉料期第一餐",
-                        "remark":"系統給出該餐料量",
-                        "day":15
-                    },{
-                        "step_id": 70,
-                        "step_name": "粉料期測水質",
-                        "remark":"使用機台檢測池水氨氮、亞硝酸、pH值、塗盤、點菌等參數",
-                        "day":15
-                    },{
-                        "step_id": 71,
-                        "step_name": "粉料期拌料",
-                        "remark":"根據系統提供之商品、數量、方法進行拌料。",
-                        "day":15
-                    },{
-                        "step_id": 72,
-                        "step_name": "粉料期醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-                        "day":15
-                    },{
-                        "step_id": 73,
-                        "step_name": "粉料期第二餐",
-                        "remark":"系統給出該餐料量",
-                        "day":15
-                    },{
-                        "step_id": 74,
-                        "step_name": "粉料期潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":15
-                    },{
-                        "step_id": 75,
-                        "step_name": "粉料期第三餐",
-                        "remark":"系統給出該餐料量。",
-                        "day":15
-                    },{
-                        "step_id": 76,
-                        "step_name": "粉料期第四餐",
-                        "remark":"系統給出該餐料量。",
-                        "day":15
-                    },{
-                        "step_id": 77,
-                        "step_name": "第一次打樣",
-                        "remark":"放養第12~16天，進行蝦隻長度測量及群秤",
-                        "day":15
-                    },{
-                        "step_id": 78,
-                        "step_name": "粉料期第一餐",
-                        "remark":"系統給出該餐料量",
-                        "day":16
-                    },{
-                        "step_id": 79,
-                        "step_name": "粉料期測水質",
-                        "remark":"使用機台檢測池水氨氮、亞硝酸、pH值、塗盤、點菌等參數",
-                        "day":16
-                    },{
-                        "step_id": 80,
-                        "step_name": "粉料期排污",
-                        "remark":"根據系統提供之排污時數進行排污。",
-                        "day":16
-                    },{
-                        "step_id": 81,
-                        "step_name": "粉料期拌料",
-                        "remark":"根據系統提供之商品、數量、方法進行拌料。",
-                        "day":16
-                    },{
-                        "step_id": 82,
-                        "step_name": "粉料期醒菌",
-                        "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌。",
-                        "day":16
-                    },{
-                        "step_id": 83,
-                        "step_name": "粉料期第二餐",
-                        "remark":"系統給出該餐料量",
-                        "day":16
-                    },{
-                        "step_id": 84,
-                        "step_name": "粉料期蝦隻觀察",
-                        "remark":"對觀察網上的蝦隻進行觀察，並將蝦況提供給系統",
-                        "day":16
-                    },{
-                        "step_id": 85,
-                        "step_name": "粉料期潑灑益生菌",
-                        "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-                        "day":16
-                    },{
-                        "step_id": 86,
-                        "step_name": "粉料期第三餐",
-                        "remark":"系統給出該餐料量",
-                        "day":16
-                    },{
-                        "step_id": 87,
-                        "step_name": "粉料期排污",
-                        "remark":"根據系統提供之排污時數進行排污。",
-                        "day":16
-                    },{
-                        "step_id": 88,
-                        "step_name": "粉料期第四餐",
-                        "remark":"系統給出該餐料量",
-                        "day":16
-                    },{
-                        "step_id": 89,
-                        "step_name": "第二次打樣",
-                        "remark":"距第一次打樣後 1 週，進行蝦隻長度測量及群秤",
-                        "day":16
-                    },
-                
-                ]
-            },
-            {
-                "phase_id": 8,
-                "phase_name": "清池",
-                "stepList": [
-                    {
-                        "step_id": 90,
-                        "step_name": "高壓水槍沖洗池壁",
-                        "remark":"將養殖期間的附著物清除",
-                        "day":107
-                    },{
-                        "step_id": 91,
-                        "step_name": "高壓水槍沖洗曝氣盤",
-                        "remark":"將養殖期間的附著物清除",
-                        "day":107
-                    },{
-                        "step_id": 92,
-                        "step_name": "高壓水槍沖洗管線",
-                        "remark":"將養殖期間的附著物清除",
-                        "day":107
-                    },{
-                        "step_id": 93,
-                        "step_name": "高壓水槍沖觀察網",
-                        "remark":"將養殖期間的附著物清除",
-                        "day":107
-                    },{
-                        "step_id": 94,
-                        "step_name": "大管水沖洗池底",
-                        "remark":"將高壓水槍沖洗下的附著物沖進排污管道",
-                        "day":107
-                    },
-                ]
-            }
-        ]
+                {
+                    "phase_id": 2,
+                    "phase_name": "養殖審核",
+                    "stepList": [
+                        {
+                            "step_id": 1,
+                            "step_name": "提交養殖計畫書",
+                            "remark":"建立循環後系統給出",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 1,
+                                "step_name": "預計購買苗量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 2,
+                                "step_name": "預計購買次氯酸鈣量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 3,
+                                "step_name": "預計購買海波量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 4,
+                                "step_name": "預計購買尿素量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 5,
+                                "step_name": "預計購買葵四量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 6,
+                                "step_name": "預計購買弧立滅量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 7,
+                                "step_name": "預計購買粉料量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 8,
+                                "step_name": "預計購買0號料量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 9,
+                                "step_name": "預計購買1號料量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 10,
+                                "step_name": "預計購買紅料量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 11,
+                                "step_name": "預計購買砂糖量",
+                                "remark":"建立循環後系統給出",
+                                "start":1,
+                                "end":1
+                            },]
+                        },{
+                            "step_id": 2,
+                            "step_name": "採購",
+                            "remark":"",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 12,
+                                "step_name": "訂苗",
+                                "remark":"聯絡廠商確定送苗時間",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 13,
+                                "step_name": "購買次氯酸鈣",
+                                "remark":"聯絡廠商下單",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 14,
+                                "step_name": "購買海波",
+                                "remark":"聯絡廠商下單",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 15,
+                                "step_name": "購買葵四",
+                                "remark":"聯絡廠商下單",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 16,
+                                "step_name": "購買弧立滅",
+                                "remark":"聯絡廠商下單",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 17,
+                                "step_name": "購買粉料",
+                                "remark":"聯絡廠商下單",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 18,
+                                "step_name": "購買砂糖",
+                                "remark":"聯絡廠商下單",
+                                "start":1,
+                                "end":1
+                            }]
+                        },
+                        
+                    ]
+                },
+                {
+                    "phase_id": 3,
+                    "phase_name": "備池",
+                    "stepList": [
+                        {
+                            "step_id": 3,
+                            "step_name": "檢察系統",
+                            "remark":"建立循環後系統給出",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 19,
+                                "step_name": "檢查進水系統",
+                                "remark":"測試進水系統是否正常運作，管路、設備是否老舊失修",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 20,
+                                "step_name": "檢查曝氣系統",
+                                "remark":"測試曝氣系統是否正常運作，管路、設備是否老舊失修",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 21,
+                                "step_name": "檢查排污系統",
+                                "remark":"測試排污系統是否正常運作，管路、設備是否老舊失修",
+                                "start":1,
+                                "end":1
+                            },]
+                        },{
+                            "step_id": 4,
+                            "step_name": "使用農用噴霧器進行氯消毒",
+                            "remark":"建立循環後系統給出",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 22,
+                                "step_name": "池體",
+                                "remark":"製備 30 ppm 次氯酸鈣水溶液噴灑於表面",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 23,
+                                "step_name": "走道",
+                                "remark":"製備 30 ppm 次氯酸鈣水溶液噴灑於表面",
+                                "start":1,
+                                "end":1
+                            },]
+                        },{
+                            "step_id": 5,
+                            "step_name": "使用農用噴霧器進行鹼消毒",
+                            "remark":"建立循環後系統給出",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 24,
+                                "step_name": "池體",
+                                "remark":"製備飽和石灰水（pH14）溶液噴灑於表面",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 25,
+                                "step_name": "走道",
+                                "remark":"製備飽和石灰水（pH14）溶液噴灑於表面",
+                                "start":1,
+                                "end":1
+                            },]
+                        },
+                        
+                    ]
+                },
+                {
+                    "phase_id": 4,
+                    "phase_name": "蓄水",
+                    "stepList": [
+                        {
+                            "step_id": 6,
+                            "step_name": "蓄水",
+                            "remark":"",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 26,
+                                "step_name": "池體注滿水",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 27,
+                                "step_name": "於池體內潑灑次氯酸鈣",
+                                "remark":"系統給出次氯酸鈣用量，使水體滿足 30 ppm 次氯酸鈣水溶液",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 28,
+                                "step_name": "開啟池子曝氣",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },]
+                        },
+                        
+                    ]
+                },
+                {
+                    "phase_id": 5,
+                    "phase_name": "做水",
+                    "stepList": [
+                        {
+                            "step_id": 7,
+                            "step_name": "做水",
+                            "remark":"",
+                            "day":7,
+                            "actions":[{
+                                "step_id": 29,
+                                "step_name": "測定池水餘氯濃度",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 30,
+                                "step_name": "於池體內潑灑海波",
+                                "remark":"系統根據水體餘氯濃度給出海波用量。",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 31,
+                                "step_name": "醒菌",
+                                "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
+                                "start":1,
+                                "end":7
+                            },{
+                                "step_id": 32,
+                                "step_name": "潑灑尿素、砂糖",
+                                "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
+                                "start":1,
+                                "end":7
+                            },{
+                                "step_id": 33,
+                                "step_name": "潑灑益生菌",
+                                "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
+                                "start":1,
+                                "end":7
+                            },]
+                        },
+                    ]
+                },
+                {
+                    "phase_id": 7,
+                    "phase_name": "放養中",
+                    "stepList": [
+                        {
+                            "step_id": 8,
+                            "step_name": "預備放養",
+                            "remark":"",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 52,
+                                "step_name": "準備氨氮水質機台",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 53,
+                                "step_name": "準備亞硝酸水質機台",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 54,
+                                "step_name": "準備鹽度計",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 55,
+                                "step_name": "準備手持式溶氧筆",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 56,
+                                "step_name": "準備體長體重測量工具",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 57,
+                                "step_name": "準備瑞基海洋疾病檢測套組",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 58,
+                                "step_name": "準備氧氣瓶",
+                                "remark":"",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 59,
+                                "step_name": "準備對水用具",
+                                "remark":"每個池子適宜的對水工具不同，請廠長負責",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 60,
+                                "step_name": "檢測苗袋內水體氨氮",
+                                "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 61,
+                                "step_name": "檢測苗袋內水體亞硝酸",
+                                "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 62,
+                                "step_name": "檢測苗袋內水體鹽度",
+                                "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 63,
+                                "step_name": "檢測苗袋內水體溶氧及溫度",
+                                "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 64,
+                                "step_name": "量長秤重",
+                                "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 65,
+                                "step_name": "檢測蝦苗疾病",
+                                "remark":"紀錄蝦苗檢測結果（WSSV、EMS toxic、EMS plasmid、EHP、INNV、IMNV、TSV、YHV），以利後續跟苗商溝通",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 66,
+                                "step_name": "對水",
+                                "remark":"待苗袋內的水體與池水水溫相同即可",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 67,
+                                "step_name": "拆袋倒苗",
+                                "remark":"待苗袋內的水體與池水水溫相同即可",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 68,
+                                "step_name": "整理收拾",
+                                "remark":"待苗袋內的水體與池水水溫相同即可",
+                                "start":1,
+                                "end":1
+                            },]
+                        },{
+                            "step_id": 9,
+                            "step_name": "粉料期",
+                            "remark":"",
+                            "day":14,
+                            "actions":[{
+                                "step_id": 69,
+                                "step_name": "粉料期第一餐",
+                                "remark":"系統給出該餐料量",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 70,
+                                "step_name": "粉料期測水質",
+                                "remark":"使用機台檢測池水氨氮、亞硝酸、pH值、塗盤、點菌等參數",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 71,
+                                "step_name": "粉料期拌料",
+                                "remark":"根據系統提供之商品、數量、方法進行拌料。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 72,
+                                "step_name": "粉料期醒菌",
+                                "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 73,
+                                "step_name": "粉料期第二餐",
+                                "remark":"系統給出該餐料量",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 74,
+                                "step_name": "粉料期潑灑益生菌",
+                                "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 75,
+                                "step_name": "粉料期第三餐",
+                                "remark":"系統給出該餐料量。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 76,
+                                "step_name": "粉料期第四餐",
+                                "remark":"系統給出該餐料量。",
+                                "start":1,
+                                "end":14
+                            },]
+                        },{
+                            "step_id": 10,
+                            "step_name": "第一次打樣",
+                            "remark":"",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 77,
+                                "step_name": "第一次打樣",
+                                "remark":"放養第12~16天，進行蝦隻長度測量及群秤",
+                                "start":1,
+                                "end":1
+                            },]
+                        },{
+                            "step_id": 11,
+                            "step_name": "粉料期",
+                            "remark":"",
+                            "day":14,
+                            "actions":[{
+                                "step_id": 78,
+                                "step_name": "粉料期第一餐",
+                                "remark":"系統給出該餐料量",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 79,
+                                "step_name": "粉料期測水質",
+                                "remark":"使用機台檢測池水氨氮、亞硝酸、pH值、塗盤、點菌等參數",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 80,
+                                "step_name": "粉料期排污",
+                                "remark":"根據系統提供之排污時數進行排污。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 81,
+                                "step_name": "粉料期拌料",
+                                "remark":"根據系統提供之商品、數量、方法進行拌料。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 82,
+                                "step_name": "粉料期醒菌",
+                                "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 83,
+                                "step_name": "粉料期第二餐",
+                                "remark":"系統給出該餐料量",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 84,
+                                "step_name": "粉料期蝦隻觀察",
+                                "remark":"對觀察網上的蝦隻進行觀察，並將蝦況提供給系統",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 85,
+                                "step_name": "粉料期潑灑益生菌",
+                                "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 86,
+                                "step_name": "粉料期第三餐",
+                                "remark":"系統給出該餐料量",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 87,
+                                "step_name": "粉料期排污",
+                                "remark":"根據系統提供之排污時數進行排污。",
+                                "start":1,
+                                "end":14
+                            },{
+                                "step_id": 88,
+                                "step_name": "粉料期第四餐",
+                                "remark":"系統給出該餐料量",
+                                "start":1,
+                                "end":14
+                            },]
+                        },{
+                            "step_id": 12,
+                            "step_name": "第二次打樣",
+                            "remark":"",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 89,
+                                "step_name": "第二次打樣",
+                                "remark":"距第一次打樣後 1 週，進行蝦隻長度測量及群秤",
+                                "start":1,
+                                "end":1
+                            },]
+                        },
+                        
+                    
+                    ]
+                },
+                {
+                    "phase_id": 8,
+                    "phase_name": "清池",
+                    "stepList": [
+                        {
+                            "step_id": 13,
+                            "step_name": "清池",
+                            "remark":"",
+                            "day":1,
+                            "actions":[{
+                                "step_id": 90,
+                                "step_name": "高壓水槍沖洗池壁",
+                                "remark":"將養殖期間的附著物清除",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 91,
+                                "step_name": "高壓水槍沖洗曝氣盤",
+                                "remark":"將養殖期間的附著物清除",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 92,
+                                "step_name": "高壓水槍沖洗管線",
+                                "remark":"將養殖期間的附著物清除",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 93,
+                                "step_name": "高壓水槍沖觀察網",
+                                "remark":"將養殖期間的附著物清除",
+                                "start":1,
+                                "end":1
+                            },{
+                                "step_id": 94,
+                                "step_name": "大管水沖洗池底",
+                                "remark":"將高壓水槍沖洗下的附著物沖進排污管道",
+                                "start":1,
+                                "end":1
+                            },]
+                        }
+                        
+                    ]
+                }
+            ];
+            this.passObj.tempContent.forEach(mitem=>{
+                // 計算各階段的天數
+                mitem.day=0;
+                // 各工作預設為收起，並計算各工作天數
+                mitem.stepList.forEach(step=>{
+                    step.open = false;
+                    mitem.day+=step.actions[step.actions.length-1].end;
+                })
+            })
 
         }
     },
