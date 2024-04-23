@@ -553,11 +553,12 @@
                             </div>
                         </div>
                         <div class="content">
-                            <v-card-text v-for="item in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                            <span v-if="editItem.actions&&editItem.actions.length>0" class="error-text" style="margin: 4px 16px;">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actions[0].start}}」天開始執行動作({{editItem.actions[0].step_name}})，持續執行到第「{{editItem.actions[0].end}}」天</span>
+                            <v-card-text v-for="(item,id) in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
@@ -627,7 +628,9 @@
                         <v-card-text v-if="actionInputShow">
                             <v-text-field v-model="stepformedit.name_ch" @change="checkValue('name_ch')" filled dense :rules="rules.requireStepCn" label="動作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
                             <v-text-field v-model="stepformedit.name_en" @change="checkValue('name_en')" filled dense :rules="rules.requireStepEn" label="動作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
-                            <v-text-field v-model="stepformedit.remark" @change="checkValue('remark')" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
+                        </v-card-text>
+                        <v-card-text style="padding-top: 0;">
+                            <v-text-field v-model="stepformedit.remark" :disabled="stepmode==''" @change="checkValue('remark')" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
                         </v-card-text>
                         
                     </div>
@@ -747,11 +750,12 @@
                             </div>
                         </div>
                         <div class="content">
-                            <v-card-text v-for="item in addItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                            <span v-if="addItem.actions&&addItem.actions.length>0" class="error-text" style="margin: 4px 16px;">*說明：工作({{addItem.step_name}})開始後第「{{addItem.actions[0].start}}」天開始執行動作({{addItem.actions[0].step_name}})，持續執行到第「{{addItem.actions[0].end}}」天</span>
+                            <v-card-text v-for="(item,id) in addItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
@@ -2357,36 +2361,42 @@ export default {
         },
         // 顯示step編輯視窗(add、edit)
         showstep:function(mode){
-            this.stepmode=mode;
-            this.stepformedit = {};
-            this.actionInputShow = true;
-            if(mode=='edit'){//帶入資料
-                var step ;
-                console.log(this.stepitem);
-                if(!this.stepitem.id) {
-                    let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
-                    this.stepitem = _.cloneDeep(this.stepdata[0]);
-                    this.stepitem.phase_id = submit.phase_id;
-                    console.log('showStep Undefined',this.stepitem);
-                    this.stepitem.addidx = submit.addidx;
-                    this.stepdata = _.cloneDeep(this.stepdataAll);
-                    step = this.stepdata[0];
-                }else {
-                    // this.stepdata = _.cloneDeep(this.stepdataAll);
-                    step = this.stepdata.filter(x=>x.id==this.stepitem.id)[0];
-                }
-                // this.stepformedit.name_ch = step.name_ch;
-                // this.stepformedit.name_en = step.name_en;
-                // this.stepformedit.remark = step.remark;
-                this.stepformedit.name_ch = step.name_ch;
-                this.stepformedit.name_en = step.name_en;
-                this.stepformedit.remark = step.remark;
-                console.log('showStep',this.stepitem,);
+            if(this.stepmode==mode) {
+                this.stepmode = '';
+                this.actionInputShow = false;
             }else {
-                this.stepitem = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
-                console.log('showStep add',this.stepformedit);
+                this.stepmode=mode;
+                this.stepformedit = {};
+                this.actionInputShow = true;
+                if(mode=='edit'){//帶入資料
+                    var step ;
+                    console.log(this.stepitem);
+                    if(!this.stepitem.id) {
+                        let submit = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
+                        this.stepitem = _.cloneDeep(this.stepdata[0]);
+                        this.stepitem.phase_id = submit.phase_id;
+                        console.log('showStep Undefined',this.stepitem);
+                        this.stepitem.addidx = submit.addidx;
+                        this.stepdata = _.cloneDeep(this.stepdataAll);
+                        step = this.stepdata[0];
+                    }else {
+                        // this.stepdata = _.cloneDeep(this.stepdataAll);
+                        step = this.stepdata.filter(x=>x.id==this.stepitem.id)[0];
+                    }
+                    // this.stepformedit.name_ch = step.name_ch;
+                    // this.stepformedit.name_en = step.name_en;
+                    // this.stepformedit.remark = step.remark;
+                    this.stepformedit.name_ch = step.name_ch;
+                    this.stepformedit.name_en = step.name_en;
+                    this.stepformedit.remark = step.remark;
+                    console.log('showStep',this.stepitem,);
+                }else {
+                    this.stepitem = {phase_id: this.stepitem.phase_id,addidx:this.stepitem.addidx};
+                    console.log('showStep add',this.stepformedit);
+                }
+                this.dialog.phaseform = true;  
             }
-            this.dialog.phaseform = true;              
+                        
         },
         // 通知上層重新撈取資料
         updateouterAction:function(val){
@@ -2872,11 +2882,17 @@ export default {
                 let items = _.cloneDeep(this.mainItems);
                 items.forEach((mitem,mid)=>{
                     if(this.addWorkIndex.phase_id==mitem.phase_id) {
+                        mitem.day=0;
                         mitem.stepList.forEach((step,sid)=>{
                             if(sid == this.addWorkIndex.id) {
                                 this.editItem.open = true;
                                 items[mid].stepList[sid] = _.cloneDeep(this.editItem);
+                                mitem.day+=parseInt(this.editItem.actions[this.editItem.actions.length-1].end);
+                            }else {
+                                mitem.day+=parseInt(step.actions[step.actions.length-1].end);
                             }
+                            
+                            
                         })
                     }
                     
@@ -2899,6 +2915,18 @@ export default {
                 })
             }
             
+        },
+        // 起始日>完成日，自動將完成日更改為起始日
+        detectEndDay(index) {
+            if(this.workType=='edit') {
+                if(this.editItem.actions[index].start>this.editItem.actions[index].end) {
+                    this.editItem.actions[index].end = this.editItem.actions[index].start;
+                }
+            }else {
+                if(this.addItem.actions[index].start>this.addItem.actions[index].end) {
+                    this.addItem.actions[index].end = this.addItem.actions[index].start;
+                }
+            }
         },
         // 移除預設動作
         removeAction(id) {
@@ -2926,15 +2954,18 @@ export default {
                     if(mitem.phase_id==this.addWorkIndex.phase_id) {
                         mitem.stepList.forEach((step,sid)=>{
                             if(sid == this.addWorkIndex.id) {
-
                                     mitem.stepList.splice(sid,1);
                                     this.$toast.success("刪除成功", { duration: 2000 }); 
-
-                                
                             }
                         })
                     }
                     
+                })
+                items.forEach((mitem)=>{
+                    mitem.day=0;
+                    mitem.stepList.forEach((step)=>{
+                        mitem.day+=parseInt(step.actions[step.actions.length-1].end);
+                    })
                 })
                 this.mainItems = [];
                 this.mainItems = _.cloneDeep(items);
@@ -2994,7 +3025,11 @@ export default {
                 // 階段下無工作時的新增
                 this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.push(this.editItem);
             }
-            
+            let item = this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0];
+            item.day = 0;
+            item.stepList.forEach(step=>{
+                item.day+=parseInt(step.actions[step.actions.length-1].end);
+            })
             this.addWorkDialog = false;
         },
         

@@ -202,6 +202,9 @@ $color-green: #00A660;
   .theme--light.v-icon {
     color: $color-primary !important;
   }
+  &:hover {
+    background-color: rgba($color-primary, 0.1) !important;
+  }
   &.delete {
     border: 1px solid $color-accent !important;
     .theme--light.v-icon {
@@ -209,6 +212,15 @@ $color-green: #00A660;
     }
     &:hover {
       background-color: rgba($color-accent, 0.1) !important;
+    }
+  }
+  &.green {
+    border: 1px solid $color-green !important;
+    .theme--light.v-icon {
+      color: $color-green !important;
+    }
+    &:hover {
+      background-color: rgba($color-green, 0.1) !important;
     }
   }
 }
