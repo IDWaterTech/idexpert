@@ -267,7 +267,7 @@
                                     <div class="btn-groups">
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add search" @click="postParm(false,null,true)" v-bind="attrs" v-on="on">
+                                                <button class="btn-add search" @click="postParm(false)" v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-magnify</v-icon>
                                                 </button>
                                             </template>
@@ -1842,125 +1842,10 @@
                                                 
                                                 <v-expansion-panel-content>
                                                     <v-card tile>
+                                                        <!-- 養殖多方案 -->
                                                         <v-card-text class="pa-3 mx-0" style="padding-right: 4px !important;">
                                                             <div v-if="suggData.Feed.status!==''" class="suggestion-text">*建議：{{ suggData.Feed.status }}</div>
-                                                                    <!-- <v-simple-table fixed-header dense >
-                                                                        <thead>
-                                                                            <tr style="box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);height: 32px;">
-                                                                                <th style="text-align:left;">
-                                                                                    項目
-                                                                                </th>
-                                                                                <th style="text-align:left;">
-                                                                                    數值
-                                                                                </th>
-                                                                                <th style="text-align:left;">
-                                                                                    單位
-                                                                                </th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <tr style="background-color:#E5F2E0;"><td colspan="3">飼料量</td></tr>
-                                                                            <tr>
-                                                                                <td title="水體體積、放養密度、養殖天數、水溫、蝦子重量">粉料</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td title="水體體積、放養密度、上一餐時間、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">0號料</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">1號料</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">2號料</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                            <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
-                                                                            
-                                                                            <tr>
-                                                                                <td title="上一餐飼料量">上一餐飼料量</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td title="參考上方粉料、0號料、1號料、2號料的Input">下一餐飼料量</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td title="累積飼料量">累計飼料量</td>
-                                                                                <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
-                                                                                <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </v-simple-table>
-                                                                    
-                                                                    <v-simple-table fixed-header dense height="200px" v-if="false">
-                                                                        <template v-slot:default>
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th style="text-align:left;">
-                                                                                        項目
-                                                                                    </th>
-                                                                                    <th style="text-align:left;">
-                                                                                        數值
-                                                                                    </th>
-                                                                                    <th style="text-align:left;">
-                                                                                        單位
-                                                                                    </th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr style="background-color:#E5F2E0;"><td colspan="3">飼料量</td></tr>
-                                                                                <tr>
-                                                                                    <td title="水體體積、放養密度、養殖天數、水溫、蝦子重量">粉料</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.PowderFeed"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.PowderFeed&&typeof(suggData.Feed.feed_amount.PowderFeed)=='number'?((suggData.Feed.feed_amount.PowderFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td title="水體體積、放養密度、上一餐時間、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">0號料</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.ZeroFeed"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.ZeroFeed&&typeof(suggData.Feed.feed_amount.ZeroFeed)=='number'?((suggData.Feed.feed_amount.ZeroFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">1號料</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.OneFeed"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.OneFeed&&typeof(suggData.Feed.feed_amount.OneFeed)=='number'?((suggData.Feed.feed_amount.OneFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td title="養殖池底面積、上一餐飼料量、下一餐飼料百分比、觀察網殘餌量、蝦子重量">2號料</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.feed_amount.TwoFeed"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.feed_amount.TwoFeed&&typeof(suggData.Feed.feed_amount.TwoFeed)=='number'?((suggData.Feed.feed_amount.TwoFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr style="background-color:#E5F2E0;"><td colspan="3">統計表</td></tr>
-                                                                                <tr>
-                                                                                    <td>轉0號料第一餐</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.ZeroFeedFirstMeal"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.ZeroFeedFirstMeal&&typeof(suggData.Feed.statistics.ZeroFeedFirstMeal)=='number'?((suggData.Feed.statistics.ZeroFeedFirstMeal/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>前一餐飼料量</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.LastFeed"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.LastFeed&&typeof(suggData.Feed.statistics.LastFeed)=='number'?((suggData.Feed.statistics.LastFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>下一餐飼料量</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.NextFeed"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.NextFeed&&typeof(suggData.Feed.statistics.NextFeed)=='number'?((suggData.Feed.statistics.NextFeed/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>累計飼料量</td>
-                                                                                    <td><v-text-field disabled dense hide-details filled v-model="suggData.Feed.statistics.CumulativeFeedAmount"></v-text-field></td>
-                                                                                    <td style="text-align:right;"><a-tooltip placement="topLeft" :title="suggData.Feed.statistics.CumulativeFeedAmount&&typeof(suggData.Feed.statistics.CumulativeFeedAmount)=='number'?((suggData.Feed.statistics.CumulativeFeedAmount/ 1000).toFixed(2)+'kg'):'0kg'"><span class="pa-0 ma-0">g</span></a-tooltip></td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </template>
-                                                                    </v-simple-table> -->
+                                                                   
                                                                 <v-data-table light
                                                                     :headers="headers"
                                                                     :items="suggData.FeedingPlan"
@@ -2675,7 +2560,7 @@ export default {
             // 是否感染
             bacteriaAll:['IsWSSV','IsEMSPlasmid','IsEMSToxin','IsEHP','IsTSV','IsIMNV','IsIHHNV'],
             bacteriaSelect:[],
-            bacteriaDataObject:{},
+            bacteriaDataObject:{'IsWSSV': 0,'IsEMSPlasmid': 0,'IsEMSToxin': 0,'IsEHP': 0,'IsTSV': 0,'IsIMNV': 0,'IsIHHNV': 0},
             bacteriaRecord: [],
             // Dialog
             alertDialog: false,
@@ -3120,7 +3005,7 @@ export default {
                 console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
                 
                 this.bacteriaSelect = [];
-                this.bacteriaDataObject = input_data.BacteriaData.DiseaseInfection;
+                this.bacteriaDataObject = (input_data.BacteriaData.DiseaseInfection==undefined)?this.bacteriaDataObject:input_data.BacteriaData.DiseaseInfection;
                 for(let i=0;i<this.bacteriaAll.length;i++) {
                     if(input_data.BacteriaData.DiseaseInfection != undefined && input_data.BacteriaData.DiseaseInfection[this.bacteriaAll[i]]==1) {
                         this.bacteriaSelect.push(this.bacteriaAll[i]);
@@ -3225,7 +3110,7 @@ export default {
             //     return;
             // } else {
                 //先查詢
-                await this.postParm(false,null,true);//isSaved=false,querrypool=null,isPatch=false
+                await this.postParm(false);//isSaved=false,querrypool=null,isPatch=false
                 //再儲存
                     //取參數
                     this.UserData.Username = (this.$auth.$state.user==null)?"":this.$auth.$state.user.email;
@@ -3257,7 +3142,8 @@ export default {
                     }
                     var keyLst = Object.keys(this.optData);
                     keyLst.forEach(k=>{
-                        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                        if(['BodyColor','BodyShape','HepatopancreasColor','IntestinalColor','MuscleColor'].includes(k)){
+                        // if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
                             let data = _.cloneDeep(input_data.ObservationData);
                             input_data.ObservationData[k] = {};
                             data[k].forEach(d=>{
@@ -3295,7 +3181,8 @@ export default {
                 }
             // }
         },
-        postParm:async function(isSaved=false,querrypool=null,isPatch=false){
+        postParm:async function(isSaved=false){
+            //isSaved是否新增
             this.UserData.IsSaved = isSaved;
             // console.log("養殖基本參數 BaseParm",this.BaseParm);
             // console.log("養殖參數 BreedingParm",this.BreedingParm);
@@ -3343,8 +3230,7 @@ export default {
                 }
             })
             console.log("all參數：",allParm);
-            let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
-            await this.$axios.post(url, allParm).then(res => {
+            await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
                 if(res.status==200){
                     this.suggData.DynamicData = res.data.DynamicData;
                     this.suggData.WaterQuality = res.data.WaterQuality;
@@ -3352,16 +3238,13 @@ export default {
                     this.suggData.Feed = res.data.Feed;
                     this.suggData.Material = res.data.Material;
                     this.suggData.MakeWater = res.data.MakeWater;
-                    if (isPatch == false) {
-                        this.$toast.success(`新增成功`, {
+                    this.$toast.success(`${(isSaved)?'新增':'查詢'}成功`, {
                             duration: 2000
                         });
-                    }
-                    // console.log("suggData:",this.suggData);
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
-                console.log("新增API:" + res.request.responseURL);
+                console.log(`${(isSaved)?'新增':'查詢'} api:` + res.request.responseURL);
             }).catch(error => {
                 this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
             })
@@ -3388,320 +3271,7 @@ export default {
             // BaseParm['Factory'] + BaseParm['PondArea']+ BaseParm['Pond']) == ['1']
             // this.getQuerry2();
         },
-        setParm: async function (poolbtn = 'a') {
-            this.resetParm();
-            if (poolbtn == 'a') {
-                this.BaseParm = {
-                    "Factory": "研發一場",
-                    "PondArea": "武曲",
-                    "Pond": "A1",
-                    "Shape": "Rectangle",
-                    "StartedDate": "2023-08-29",
-                    "WaterSource": "Groundwater",
-                    "WaterSourceSalinity": 15,
-                    "WaterBody": 123,
-                    "Density": 403,
-                    "InspectedDate":this.getNowDate(),
-                    "InspectedTime":this.getNowTime(),
-
-                    //"Days": 15
-                };
-                this.BreedingParm = {
-                    "CN": 12,
-                    // "EstimatedFCR": 1.6,
-                    // "EstimatedADG": 0.12,
-                    "InitialLength": 0.0018,
-                    // "EstimatedSurvivalRate": 90
-                };
-                this.FeedParm = {
-                    //"Brand": "健丞",
-                    //"Price": 630,
-                    "CrudeProteinPct": 40,
-                    "Nitrogen": 16,
-                    "SugarSourcePurity": 99.6,
-                    "SugarSourceCarbonPct": 42,
-                    "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
-                };
-                this.MakeWaterParm = {
-                    // "Urea": 30,
-                    "UreaEffectiveConcentration": 95,
-                    "BleachingPowderEffectiveConcentration": 70,
-                    // "Chlorine": 30,//餘氯
-                    "HypoEffectiveConcentration": 67.3
-                };
-                this.WaterQualityData = {
-                    // "Do": 6,
-                    // "pH": 7.8,
-                    // "Temp": 32,
-                    // "Salinity": 35,
-                    // "AmmoniaN": 2,
-                    // "NO2": 5,
-                    // "Mg": 1000,
-                    // "Ca": 450,
-                    // "Alk": 200,
-                    // "WaterColor": "DarkGreen"
-                };
-                this.ObservationData = {
-                    // "IsMoultingPeriod": false,
-                    // "IntestinalColor": "Black",
-                    // "HepatopancreasColor": "Dark",
-                    // "MuscleColor": "Turbidity",
-                    // "BodyIllnessLocation": "None",
-                    // "Moulting": "Normal",
-                    "Leftover": 0,
-                    // "DeadShrimpRate": 0.9,
-                    // "ShrimpLength": 2.5
-                };
-                this.BacteriaData = {
-                    // "Biofloc": 80,
-                    // "BacillusSubtilis": 4999,
-                    // "VibrioAlginolyticus": 500,
-                    // "VibrioCholerae": 500,
-                    // "VibrioEnteritidis": 500,
-                    // "VibrioVulnificus": 500,
-                    // "IsEMSInfected": false,
-                    // "IsEHPInfected": false,
-                    // "IsVirusInfected": false,
-                    // "IsBacteriumInfected": false
-                };
-                return;
-            }
-            if (poolbtn == 'b') {
-                this.BaseParm = {
-                    "Factory": "研發一場",
-                    "PondArea": "武曲",
-                    "Pond": "A3",
-                    "Shape": "Rectangle",
-                    "StartedDate": "2023-08-29",
-                    "WaterSource": "Groundwater",
-                    "WaterSourceSalinity": 15,
-                    "WaterBody": 114,
-                    "Density": 515,
-                    "InspectedDate":this.getNowDate(),
-                    "InspectedTime":this.getNowTime(),
-                    //"Days": 15
-                };
-                this.BreedingParm = {
-                    "CN": 12,
-                    // "EstimatedFCR": 1.6,
-                    // "EstimatedADG": 0.12,
-                    "InitialLength": 0.0018,
-                    // "EstimatedSurvivalRate": 90
-                };
-                this.FeedParm = {
-                    //"Brand": "健丞",
-                    //"Price": 630,
-                    "CrudeProteinPct": 40,
-                    "Nitrogen": 16,
-                    "SugarSourcePurity": 99.6,
-                    "SugarSourceCarbonPct": 42,
-                    "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
-                };
-                this.MakeWaterParm = {
-                    // "Urea": 30,
-                    "UreaEffectiveConcentration": 95,
-                    "BleachingPowderEffectiveConcentration": 70,
-                    // "Chlorine": 30,//餘氯
-                    "HypoEffectiveConcentration": 67.3
-                };
-                this.WaterQualityData = {
-                    // "Do": 6,
-                    // "pH": 7.8,
-                    // "Temp": 32,
-                    // "Salinity": 35,
-                    // "AmmoniaN": 2,
-                    // "NO2": 5,
-                    // "Mg": 1000,
-                    // "Ca": 450,
-                    // "Alk": 200,
-                    // "WaterColor": "DarkGreen"
-                };
-                this.ObservationData = {
-                    // "IsMoultingPeriod": false,
-                    // "IntestinalColor": "Black",
-                    // "HepatopancreasColor": "Dark",
-                    // "MuscleColor": "Turbidity",
-                    // "BodyIllnessLocation": "None",
-                    // "Moulting": "Normal",
-                    "Leftover": 0,
-                    // "DeadShrimpRate": 0.9,
-                    // "ShrimpLength": 2.5
-                };
-                this.BacteriaData = {
-                    // "Biofloc": 80,
-                    // "BacillusSubtilis": 4999,
-                    // "VibrioAlginolyticus": 500,
-                    // "VibrioCholerae": 500,
-                    // "VibrioEnteritidis": 500,
-                    // "VibrioVulnificus": 500,
-                    // "IsEMSInfected": false,
-                    // "IsEHPInfected": false,
-                    // "IsVirusInfected": false,
-                    // "IsBacteriumInfected": false
-                };
-                return;
-            }
-            if (poolbtn == 'c') {
-                this.BaseParm = {
-                    "Factory": "研發一場",
-                    "PondArea": "紫微",
-                    "Pond": "3-2",
-                    "Shape": "Rectangle",
-                    "StartedDate": "2023-08-29",
-                    "WaterSource": "Groundwater",
-                    "WaterSourceSalinity": 15,
-                    "WaterBody": 303,
-                    "Density": 223,
-                    "InspectedDate":this.getNowDate(),
-                    "InspectedTime":this.getNowTime(),
-                    //"Days": 15
-                };
-                this.BreedingParm = {
-                    "CN": 12,
-                    // "EstimatedFCR": 1.6,
-                    // "EstimatedADG": 0.12,
-                    "InitialLength": 0.0018,
-                    // "EstimatedSurvivalRate": 90
-                };
-                this.FeedParm = {
-                    //"Brand": "健丞",
-                    //"Price": 630,
-                    "CrudeProteinPct": 40,
-                    "Nitrogen": 16,
-                    "SugarSourcePurity": 99.6,
-                    "SugarSourceCarbonPct": 42,
-                    "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
-                };
-                this.MakeWaterParm = {
-                    // "Urea": 30,
-                    "UreaEffectiveConcentration": 95,
-                    "BleachingPowderEffectiveConcentration": 70,
-                    // "Chlorine": 30,//餘氯
-                    "HypoEffectiveConcentration": 67.3
-                };
-                this.WaterQualityData = {
-                    // "Do": 6,
-                    // "pH": 7.8,
-                    // "Temp": 32,
-                    // "Salinity": 35,
-                    // "AmmoniaN": 2,
-                    // "NO2": 5,
-                    // "Mg": 1000,
-                    // "Ca": 450,
-                    // "Alk": 200,
-                    // "WaterColor": "DarkGreen"
-                };
-                this.ObservationData = {
-                    // "IsMoultingPeriod": false,
-                    // "IntestinalColor": "Black",
-                    // "HepatopancreasColor": "Dark",
-                    // "MuscleColor": "Turbidity",
-                    // "BodyIllnessLocation": "None",
-                    // "Moulting": "Normal",
-                    "Leftover": 0,
-                    // "DeadShrimpRate": 0.9,
-                    // "ShrimpLength": 2.5
-                };
-                this.BacteriaData = {
-                    // "Biofloc": 80,
-                    // "BacillusSubtilis": 4999,
-                    // "VibrioAlginolyticus": 500,
-                    // "VibrioCholerae": 500,
-                    // "VibrioEnteritidis": 500,
-                    // "VibrioVulnificus": 500,
-                    // "IsEMSInfected": false,
-                    // "IsEHPInfected": false,
-                    // "IsVirusInfected": false,
-                    // "IsBacteriumInfected": false
-                };
-                return;
-            }
-            if (poolbtn == 'd') {
-                this.BaseParm = {
-                    "Factory": "研發一場",
-                    "PondArea": "紫微",
-                    "Pond": "4-6",
-                    "Shape": "Rectangle",
-                    "StartedDate": "2023-08-29",
-                    "WaterSource": "Groundwater",
-                    "WaterSourceSalinity": 15,
-                    "WaterBody": 228,
-                    "Density": 296,
-                    "InspectedDate":this.getNowDate(),
-                    "InspectedTime":this.getNowTime(),
-                    //"Days": 15
-                };
-                this.BreedingParm = {
-                    "CN": 12,
-                    // "EstimatedFCR": 1.6,
-                    // "EstimatedADG": 0.12,
-                    "InitialLength": 0.0018,
-                    // "EstimatedSurvivalRate": 90
-                };
-                this.FeedParm = {
-                    //"Brand": "健丞",
-                    //"Price": 630,
-                    "CrudeProteinPct": 40,
-                    "Nitrogen": 16,
-                    "SugarSourcePurity": 99.6,
-                    "SugarSourceCarbonPct": 42,
-                    "FeedCN": 7.8,
-                    // "LastFeedInput": 1.255,
-                    // "CumulativeFeedAmountInput": 2.525
-                };
-                this.MakeWaterParm = {
-                    // "Urea": 30,
-                    "UreaEffectiveConcentration": 95,
-                    "BleachingPowderEffectiveConcentration": 70,
-                    // "Chlorine": 30,//餘氯
-                    "HypoEffectiveConcentration": 67.3
-                };
-                this.WaterQualityData = {
-                    // "Do": 6,
-                    // "pH": 7.8,
-                    // "Temp": 32,
-                    // "Salinity": 35,
-                    // "AmmoniaN": 2,
-                    // "NO2": 5,
-                    // "Mg": 1000,
-                    // "Ca": 450,
-                    // "Alk": 200,
-                    // "WaterColor": "DarkGreen"
-                };
-                this.ObservationData = {
-                    // "IsMoultingPeriod": false,
-                    // "IntestinalColor": "Black",
-                    // "HepatopancreasColor": "Dark",
-                    // "MuscleColor": "Turbidity",
-                    // "BodyIllnessLocation": "None",
-                    // "Moulting": "Normal",
-                    "Leftover": 0,
-                    // "DeadShrimpRate": 0.9,
-                    // "ShrimpLength": 2.5
-                };
-                this.BacteriaData = {
-                    // "Biofloc": 80,
-                    // "BacillusSubtilis": 4999,
-                    // "VibrioAlginolyticus": 500,
-                    // "VibrioCholerae": 500,
-                    // "VibrioEnteritidis": 500,
-                    // "VibrioVulnificus": 500,
-                    // "IsEMSInfected": false,
-                    // "IsEHPInfected": false,
-                    // "IsVirusInfected": false,
-                    // "IsBacteriumInfected": false
-                };
-                return;
-            }
-            
-            this.$toast.error(`pool:${poolbtn}，未定義`, { duration: 2000 });
-        },
+        
         resetParm:async function(){
             this.querrySelectedLst={"1":"","2":"","3":"","4":""};
             this.BaseParm = {InspectedTime:'',InspectedDate:'',Factory:this.BaseParm['Factory']?this.BaseParm['Factory']:'',PondArea:this.BaseParm['PondArea']?this.BaseParm['PondArea']:'',Pond:this.BaseParm['Pond']?this.BaseParm['Pond']:''};
@@ -3752,7 +3322,7 @@ export default {
                     res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
                     res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
                     this.importQuerry(res.data,true);//導入資料
-                    this.postParm(false,null,true);//查詢ai回饋資訊
+                    this.postParm(false);//查詢ai回饋資訊
                     // var keyLst = Object.keys(this.optData);
                     // keyLst.forEach(k=>{
                     //     if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
@@ -3910,7 +3480,7 @@ export default {
         },
         select(evt,bool=false) {
             console.log(this.bacteriaSelect);
-            console.log(this.BacteriaData);
+            console.log(this.bacteriaDataObject);
             if(bool) {
                 var index = this.bacteriaSelect.indexOf(evt);
                 this.bacteriaSelect.splice(index,1);
