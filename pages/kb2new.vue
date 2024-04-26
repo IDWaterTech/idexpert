@@ -482,11 +482,22 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item"> 
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend">養殖方案</span>
+                                                                                <span class="pa-0 ma-0" slot="prepend">投餌方案</span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <v-select v-model="FeedParm['FeedingPlan']" type="string" multiple chips clearable :items="optData.FeedingPlan" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                <v-select v-model="FeedParm['FeedingPlan']" type="string" chips clearable :items="optData.FeedingPlan" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                            </v-col>
+                                                                        </v-row>
+                                                                    </v-col>
+                                                                    <v-col cols=12 md="6" sm="6">
+                                                                        <v-row class="item-row item"> 
+                                                                            <v-col cols="12" md="4" sm="4">
+                                                                                <span class="pa-0 ma-0" slot="prepend">過去四天單餐投餌量：</span>
+                                                                                <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
+                                                                            </v-col>
+                                                                            <v-col cols="12" md="8" sm="8">
+                                                                                <span>{{(FeedRecordData.FeedAmountForFourMeals!=undefined)?Object.values(FeedRecordData.FeedAmountForFourMeals).join(','):''}}</span>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
@@ -1835,7 +1846,7 @@
                                         <v-expansion-panels accordion multiple v-model="panel.panel_row31" id="aifeed">
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌方案
-                                                    <div style="margin-left: 4px;" title="計算方式">
+                                                    <div style="margin-left: 4px;" title="計算方式" v-if="false">
                                                         <v-btn class="btn-icon" style="border-radius: 4px;" @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
                                                     </div>
                                                     </v-expansion-panel-header>
@@ -2509,7 +2520,7 @@ export default {
     },
     data() {
         return {
-            FeedRecordData:{FeedAmountForFourMeals:{}},//從required-data api獲得，請附加在suggestion api
+            FeedRecordData:{FeedAmountForFourMeals:{}},//過去四天單餐投餌量，從required-data api獲得，請附加在suggestion api
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
@@ -2598,7 +2609,7 @@ export default {
             isLoading:false,
             headers:[
                 { text: '方案', value: 'Name', sortable: true,},
-                { text: '下一餐飼料(g)', value: 'NextFeed', sortable: true,},
+                { text: '建議此餐飼料(g)', value: 'NextFeed', sortable: true,},
                 { text: '增料百分比(%)', value: 'NextFeedIncrementPct', sortable: true,},
                 { text: '建議料號', value: 'FeedSize', sortable: false,},
             ],
@@ -2663,7 +2674,6 @@ export default {
             console.log('Change Select',evt);
             this.isSearch = false;
             if(evt==null) {
-                // console.log("evt parm:",this.BaseParm['InspectedDate'],this.BaseParm['InspectedTime']);
                 //如果BaseParm['InspectedDate']有資料，即保留下去查詢ai回饋
                 var tempDate = _.cloneDeep(this.BaseParm['InspectedDate']);
                 var tempTime = _.cloneDeep(this.BaseParm['InspectedTime']);
@@ -2978,7 +2988,8 @@ export default {
                 this.ObservationData = _.cloneDeep(input_data.ObservationData);
                 var keyLst = Object.keys(this.optData);
                 keyLst.forEach(k=>{
-                    if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                    if(['BodyColor','BodyShape','HepatopancreasColor','IntestinalColor','MuscleColor'].includes(k)){
+                        // k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
                         if(this.ObservationData[k]) {
                             let data = [];
                             var keys = Object.keys(this.ObservationData[k]);
@@ -3031,6 +3042,9 @@ export default {
                     
                 }
                 console.log('querryDataLst[this.nowSelectPool]',this.ObservationData,this.FeedParm);
+                // 預設投餌方案
+                this.FeedParm['FeedingPlan'] = this.optData.FeedingPlan[0]['name_ch'];
+
                 this.suggData = {
                     "DynamicData": output_data.DynamicData,
                     "WaterQuality": output_data.WaterQuality,//ai建議-水質
@@ -3295,6 +3309,7 @@ export default {
             this.ObservationData = {Leftover:0};
             this.BacteriaData={};
             this.bacteriaSelect = [];
+            this.FeedRecordData = {"FeedAmountForFourMeals": {}};
             this.suggData = {
                 "DynamicData": {},
                 "WaterQuality": [],//ai建議-水質
@@ -3322,8 +3337,6 @@ export default {
             }else {
                 this.getSelectData(null);
             }
-            console.log("BaseParm:",this.BaseParm['InspectedDate'],this.BaseParm['InspectedTime']);
-            // return;
             var parm ={
                 inspected_date:this.BaseParm['InspectedDate'],
                 inspected_time:this.BaseParm['InspectedTime'],
@@ -3338,7 +3351,8 @@ export default {
                     res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
                     res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
                     this.importQuerry(res.data,true);//導入資料
-                    this.postParm(false);//查詢ai回饋資訊
+                    // 先不幫查ai回饋資訊
+                    // this.postParm(false);//查詢ai回饋資訊
                     // var keyLst = Object.keys(this.optData);
                     // keyLst.forEach(k=>{
                     //     if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
@@ -3350,7 +3364,7 @@ export default {
                         
                     // })
                     console.log('FeedParm',this.FeedParm);
-                    this.$toast.success(`取得基本資料成功`, { duration: 2000 });
+                    this.$toast.success(`帶入基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
