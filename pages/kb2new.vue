@@ -486,7 +486,7 @@
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <v-select v-model="BaseParm['FeedingPlan']" type="number" clearable :items="optData.FeedingPlan" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
+                                                                                <v-select v-model="FeedParm['FeedingPlan']" type="string" multiple chips clearable :items="optData.FeedingPlan" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
@@ -1831,10 +1831,10 @@
                                             
                                             
                                         </v-expansion-panels>
-                                        <!-- 投餌量 -->
+                                        <!-- 投餌方案 -->
                                         <v-expansion-panels accordion multiple v-model="panel.panel_row31" id="aifeed">
                                             <v-expansion-panel class="my-1">
-                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌量
+                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-chevron-down">投餌方案
                                                     <div style="margin-left: 4px;" title="計算方式">
                                                         <v-btn class="btn-icon" style="border-radius: 4px;" @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
                                                     </div>
@@ -1844,12 +1844,11 @@
                                                     <v-card tile>
                                                         <!-- 養殖多方案 -->
                                                         <v-card-text class="pa-3 mx-0" style="padding-right: 4px !important;">
-                                                            <div v-if="suggData.Feed.status!==''" class="suggestion-text">*建議：{{ suggData.Feed.status }}</div>
-                                                                   
+                                                            <!-- <div v-if="suggData.Feed.status!==''" class="suggestion-text">*建議：{{ suggData.Feed.status }}</div> -->
                                                                 <v-data-table light
                                                                     :headers="headers"
-                                                                    :items="suggData.FeedingPlan"
-                                                                    no-data-text=""
+                                                                    :items="suggData.Feed.FeedingPlan"
+                                                                    no-data-text="查無方案，或請檢查1.資料時間往前推4天內是否有投餵紀錄、2.「資料日期/時間、上一餐飼料量、觀察網殘餌量、蝦子重量、池底面積、養殖方案」是否皆有值"
                                                                     hide-default-footer
                                                                     disable-pagination></v-data-table>    
                                                         </v-card-text>
@@ -2510,6 +2509,7 @@ export default {
     },
     data() {
         return {
+            FeedRecordData:{FeedAmountForFourMeals:{}},//從required-data api獲得，請附加在suggestion api
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
@@ -2597,10 +2597,10 @@ export default {
             showDate: true,
             isLoading:false,
             headers:[
-                { text: '方案', value: 'item', sortable: true,},
-                { text: '下一餐飼料(g)', value: 'next', sortable: true,},
-                { text: '增料百分比(%)', value: 'execute', sortable: true,},
-                { text: '建議料號', value: 'checkdate', sortable: false,},
+                { text: '方案', value: 'Name', sortable: true,},
+                { text: '下一餐飼料(g)', value: 'NextFeed', sortable: true,},
+                { text: '增料百分比(%)', value: 'NextFeedIncrementPct', sortable: true,},
+                { text: '建議料號', value: 'FeedSize', sortable: false,},
             ],
             feedDialog: false
         }
@@ -2663,7 +2663,17 @@ export default {
             console.log('Change Select',evt);
             this.isSearch = false;
             if(evt==null) {
-                this.resetParm();
+                // console.log("evt parm:",this.BaseParm['InspectedDate'],this.BaseParm['InspectedTime']);
+                //如果BaseParm['InspectedDate']有資料，即保留下去查詢ai回饋
+                var tempDate = _.cloneDeep(this.BaseParm['InspectedDate']);
+                var tempTime = _.cloneDeep(this.BaseParm['InspectedTime']);
+                if(['',null,undefined].includes(tempDate)==false){//有日期，照日期資料下去查詢回饋
+                    tempTime = (tempTime!='')?tempTime:'00:00';//有日期，但時間是空白，就給預設00:00
+                }
+                this.resetParm();//重設
+                this.BaseParm['InspectedDate'] = (['',null,undefined].includes(tempDate))?this.getNowDate():tempDate;//沒有日期，設定現在日期
+                this.BaseParm['InspectedTime'] = (['',null,undefined].includes(tempDate))?this.getNowTime():tempTime;//沒有日期，設定現在時間
+                // console.log("evt parm2:",this.BaseParm['InspectedDate'],this.BaseParm['InspectedTime']);
                 this.querrySelected = evt;
                 this.oldSelect = null;
             }
@@ -2947,6 +2957,7 @@ export default {
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = _.cloneDeep(input_data.FeedParm);
+                this.FeedRecordData = _.cloneDeep(input_data.FeedRecordData);//用來附加到suggestion api
                 if(input_data.remark) {
                     this.inputRemark = _.cloneDeep(input_data.remark);
                 }else {
@@ -3124,7 +3135,8 @@ export default {
                         'ObservationData': _.cloneDeep(this.ObservationData),
                         'BacteriaData': this.BacteriaData,
                         'UserData': this.UserData,
-                        'remark': _.cloneDeep(this.inputRemark)
+                        'remark': _.cloneDeep(this.inputRemark),
+                        'FeedRecordData':this.FeedRecordData,//從required-data api獲得，請附加在suggestion api
                     };
                     // console.log('bacteriaDataObject',this.bacteriaDataObject)
                     input_data.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
@@ -3204,6 +3216,7 @@ export default {
                 'BacteriaData':this.BacteriaData,
                 'UserData':this.UserData,
                 'remark': _.cloneDeep(this.inputRemark),
+                'FeedRecordData':this.FeedRecordData,//從required-data api獲得，請附加在suggestion api
             };
             // console.log('bacteriaDataObject',this.bacteriaDataObject)
             allParm.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
@@ -3309,12 +3322,15 @@ export default {
             }else {
                 this.getSelectData(null);
             }
+            console.log("BaseParm:",this.BaseParm['InspectedDate'],this.BaseParm['InspectedTime']);
+            // return;
             var parm ={
-                inspected_date:this.getNowDate(),
-                inspected_time: this.getNowTime(),
+                inspected_date:this.BaseParm['InspectedDate'],
+                inspected_time:this.BaseParm['InspectedTime'],
+                // inspected_date:this.getNowDate(),
+                // inspected_time: this.getNowTime(),
                 pond_id : this.nowSelectPool    
             };
-            // console.log("importBasicData parm:" , parm);
             let url =`${this.$store.state.mydata.gobal_api.apiUrl}/kb/required-data/`;
             await this.$axios.get(url, {params:parm}).then(res => {
                 if (res.status == 200) {
