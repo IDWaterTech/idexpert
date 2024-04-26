@@ -949,12 +949,15 @@ export default {
       delete parm.highest_position_id;
       delete parm.id;
       console.log(parm);
-      var res = this.patchUserList(parm,this.editedData.id);
-      if(res) {
-        this.editDialog = false;
-        console.log('accdata',this.accdata);
-        await this.getaccList();
-      }
+      var res = await this.patchUserList(parm,this.editedData.id);
+      setTimeout(async ()=>{
+        if(res) {
+          console.log('accdata',this.accdata);
+          await this.getaccList();
+          this.editDialog = false;
+        }
+      },50)
+      
       // await this.$axios
       //   .patch(
       //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/${this.editedData.id}/`,
