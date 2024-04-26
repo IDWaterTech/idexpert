@@ -2967,7 +2967,7 @@ export default {
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = _.cloneDeep(input_data.FeedParm);
-                this.FeedRecordData = _.cloneDeep(input_data.FeedRecordData);//用來附加到suggestion api
+                this.FeedRecordData = _.cloneDeep(input_data.FeedRecordData?input_data.FeedRecordData:{});//用來附加到suggestion api
                 if(input_data.remark) {
                     this.inputRemark = _.cloneDeep(input_data.remark);
                 }else {
