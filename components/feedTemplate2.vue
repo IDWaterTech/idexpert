@@ -934,8 +934,8 @@ export default {
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 // { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
-                { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
-                { text: '執行員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: "執行狀態", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                { text: '執行時間/人員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // 財務
                 // { text: "預估花費人力", value: "estimate_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
                 // { text: "預估花費金額", value: "estimate_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
