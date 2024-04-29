@@ -3105,7 +3105,10 @@ export default {
                 items.forEach((mitem)=>{
                     mitem.day=0;
                     mitem.stepList.forEach((step)=>{
-                        mitem.day+=parseInt(step.actions[step.actions.length-1].end);
+                        if(step.actions&&step.actions.length>0) {
+                            mitem.day+=parseInt(step.actions[step.actions.length-1].end);
+                        }
+                        
                     })
                 })
                 this.mainItems = [];
