@@ -1449,7 +1449,7 @@ export default {
           execute: false,
           verify: false
       }
-      try{datalst = await this.getMenuAuthorization(false)}catch{console.log(error)}
+      try{datalst = await this.getMenuAuthorization(false);console.log(datalst);}catch{console.log(error)}
       if(datalst) {
           auth = datalst.data;
       }
@@ -2852,6 +2852,16 @@ export default {
       this.passObj["tempContent"] = [];
       // this.passObj["tempContent"] = res.data;
       data.forEach(d=>{
+        d.stepList.forEach(step=>{
+          if(!step.step_name) {
+            step.step_name = step.step_name_ch;
+          }
+          if(!step.actions){
+            step.actions=new Array();
+          }
+        })
+      })
+      data.forEach(d=>{
         if(d.phase_name_ch!=='空池') {
           this.passObj["tempContent"].push(d);
         }
@@ -3750,16 +3760,18 @@ export default {
                 
             ]
         }]
-        let items = _.cloneDeep(this.passObj.tempContent)
+        let items = _.cloneDeep(this.passObj.tempContent);
         items.forEach(mitem=>{
         mitem.day=0;
         mitem.stepList.forEach(step=>{
           step.open=false;
-          mitem.day+=step.actions[step.actions.length-1].end;
-          step.actions.forEach(action=>{
-            action.type=0;
-          })
-          
+          if(step.actions.length>0) {
+            mitem.day+=step.actions[step.actions.length-1].end;
+            step.actions.forEach(action=>{
+              action.type=0;
+            })
+          }
+            
         })
         this.passObj.tempContent = [];
         this.passObj.tempContent = _.cloneDeep(items);

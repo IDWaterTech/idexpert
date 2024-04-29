@@ -231,7 +231,7 @@
                                                             <v-btn  class="btn-icon"
                                                                 title="編輯" 
                                                                 @click="editsubitem(mitem.phase_id,wid, index)"
-                                                                :class="{'disabled':work.actions[index].type==0}" 
+                                                                :class="{'disabled':work.actions[index].type==0||work.actions[index].type==3}" 
                                                                 v-bind="attrs" v-on="on">
                                                                 <v-icon>mdi-pencil</v-icon>
                                                             </v-btn>
@@ -245,7 +245,7 @@
                                                                 title="刪除" 
                                                                 @click="delsubitem(mitem.phase_id,wid, index)" 
                                                                 v-bind="attrs" v-on="on"
-                                                                :class="{'disabled':work.actions[index].type==0}">
+                                                                :class="{'disabled':work.actions[index].type==0||work.actions[index].type==3}">
                                                                 <v-icon>mdi-trash-can</v-icon>
                                                             </v-btn>
                                                         </template>
