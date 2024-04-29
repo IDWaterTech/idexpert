@@ -92,7 +92,7 @@
                                     <div v-if="adjustOpen(mitem,id)&&mitem.stepList&&mitem.stepList.length>0" class="content">
                                         <div class="work-content" v-for="(work,wid) in mitem.stepList" :key="'work_'+mitem.phase_id+'_'+wid">
                                             <div class="card-title">
-                                                <div class="title" @click="work.open=!work.open" >
+                                                <div class="title" @click="openWork(id,wid)" >
                                                     <v-icon v-if="work.open">mdi-triangle-small-up</v-icon>
                                                     <v-icon v-else>mdi-triangle-small-down</v-icon>
                                                     <v-tooltip v-if="work.remark&&work.remark!==''" bottom>
@@ -182,7 +182,7 @@
                                                 <template v-slot:[`item.start`]="{ item }">
                                                     Day {{item.start}}
                                                 </template>
-                                                <!-- 第幾天完成執行 -->
+                                                <!-- 持續執行至第幾天 -->
                                                 <template v-slot:[`item.end`]="{ item }">
                                                     Day {{item.end}}
                                                 </template>
@@ -207,7 +207,14 @@
                                                         <span :style="{'color':`${item.execute==2?'red':'initial'}`}">{{ item.execute==1?'已執行':'不執行' }}</span>
                                                         <span v-if="item.msg&&item.msg!==''"><br>{{ item.msg }}</span>
                                                     </div>
-                                                    
+                                                    <div class="btn-groups" v-if="item.type && item.type !== 0 && item.type !== null">
+                                                        <v-btn  class="btn-secondary btn-small green"
+                                                            @click="if(item.file || item.type == 3){viewOpen=true;viewDetail=item}" 
+                                                            :class="{'disabled':item.type !== 3 && !item.file}"
+                                                            style="pointer-events: inherit;">
+                                                            檢視
+                                                        </v-btn>
+                                                    </div>
                                                 </template>
                                                 
                                                 <!-- 執行 -->
@@ -223,10 +230,9 @@
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-btn  class="btn-icon"
                                                                 title="編輯" 
-                                                                @click="editsubitem(mitem.phase_id,wid, index)" 
-                                                                v-bind="attrs" v-on="on"
-                                                                style="pointer-events: inherit;"
-                                                                :class="{'disabled':work.actions[index].type==0}">
+                                                                @click="editsubitem(mitem.phase_id,wid, index)"
+                                                                :class="{'disabled':work.actions[index].type==0}" 
+                                                                v-bind="attrs" v-on="on">
                                                                 <v-icon>mdi-pencil</v-icon>
                                                             </v-btn>
                                                         </template>
@@ -239,7 +245,6 @@
                                                                 title="刪除" 
                                                                 @click="delsubitem(mitem.phase_id,wid, index)" 
                                                                 v-bind="attrs" v-on="on"
-                                                                style="pointer-events: inherit;"
                                                                 :class="{'disabled':work.actions[index].type==0}">
                                                                 <v-icon>mdi-trash-can</v-icon>
                                                             </v-btn>
@@ -251,7 +256,7 @@
                                             </v-data-table>
                                             
                                         </div>
-                                        <!-- <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
+                                        <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
                                             <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
                                             <v-tooltip v-else bottom>
                                                 <template v-slot:activator="{ on, attrs }">
@@ -264,7 +269,7 @@
                                                 </template>
                                                 <span>未授權</span>
                                             </v-tooltip>
-                                        </div> -->
+                                        </div>
                                         
                                     </div>
                                     <div v-if="adjustOpen(mitem,id)&&(mitem.stepList==undefined||mitem.stepList.length==0)" class="content no-work">尚未設定工作</div>
@@ -276,7 +281,7 @@
             </v-col>
         </v-row>
         <!-- 新增其他項目的dialog -->
-        <v-dialog v-model="dialog.additem" max-width="500px">
+        <!-- <v-dialog v-model="dialog.additem" max-width="500px">
             <v-form v-model="addvalid" ref="addform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
@@ -310,22 +315,6 @@
                     </v-card-title>
                     <div class="basic" v-if="templatemode=='cycleedit'">
                         <v-card-text v-for="(add,id) in addStep" :key="'addc_'+id" style="display: flex;flex-direction: column;padding: 8px 16px;">
-                            <!-- <div class="minus" style="width: 100%;">
-                                <span>其他</span>
-                                <v-tooltip v-if="addStep.length>1"  bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn  class="btn-secondary delete"
-                                                title="刪除項目" 
-                                                @click="addStep.push({msg:''})" 
-                                                v-bind="attrs" v-on="on"
-                                                style="border: none;float: right;">
-                                            <v-icon>mdi-minus</v-icon>
-                                            刪除
-                                        </v-btn>
-                                    </template>
-                                    <span>刪除項目</span>
-                                </v-tooltip>
-                            </div> -->
                             <div class="textfield" style="display: flex;align-items: center;">
                                 <v-text-field v-model="add.msg" label="項目說明" :rules="rules.require.concat(rules.checklength)" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
                                 <v-tooltip v-if="addStep.length>1"  bottom>
@@ -348,10 +337,6 @@
                             <div class="search" style="display: flex;align-items: center;margin-bottom: 16px;">
                                 <v-autocomplete :disabled="stepmode=='add'" v-model="stepitem.id" @change="selectStep" dense filled hide-details :items="stepdata" item-text="name_ch"
                                     item-value="id">
-                                    
-                                    <!-- <v-btn slot="append-outer"  class="btn-icon" @click="showstep('edit')"><v-icon>mdi-pencil-outline</v-icon></v-btn>
-                                    <v-btn slot="append-outer"  class="btn-icon green" @click="showstep('add')"><v-icon>mdi-plus</v-icon></v-btn>
-                                    <v-btn slot="append-outer" :class="{'disabled':(stepitem.id==undefined)}" class="btn-icon delete" @click="deletestep"><v-icon>mdi-trash-can</v-icon></v-btn> -->
                                 </v-autocomplete>
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
@@ -385,9 +370,9 @@
                     </v-card-actions>
                 </v-card>
             </v-form>
-        </v-dialog>
+        </v-dialog> -->
         <!-- 編輯其他項目的dialog -->
-        <v-dialog v-model="editem" max-width="500px">
+        <!-- <v-dialog v-model="editem" max-width="500px">
             <v-form v-model="editvalid" ref="editform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
@@ -405,22 +390,6 @@
                     </v-card-title>
                     <div class="basic">
                         <v-card-text v-for="(add,id) in addStep" :key="'addc_'+id" style="display: flex;flex-direction: column;padding: 8px 16px;">
-                            <!-- <div class="minus" style="width: 100%;">
-                                <span>其他</span>
-                                <v-tooltip v-if="addStep.length>1"  bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn  class="btn-secondary delete"
-                                                title="刪除項目" 
-                                                @click="addStep.push({msg:''})" 
-                                                v-bind="attrs" v-on="on"
-                                                style="border: none;float: right;">
-                                            <v-icon>mdi-minus</v-icon>
-                                            刪除
-                                        </v-btn>
-                                    </template>
-                                    <span>刪除項目</span>
-                                </v-tooltip>
-                            </div> -->
                             <div class="textfield" style="display: flex;align-items: center;">
                                 <v-text-field v-model="add.msg" label="項目說明" :rules="rules.require.concat(rules.checklength)" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
                                 <v-tooltip v-if="addStep.length>1"  bottom>
@@ -445,7 +414,7 @@
                     </v-card-actions>
                 </v-card>
             </v-form>
-        </v-dialog>
+        </v-dialog> -->
         <!-- 檢視pdf -->
         <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`">
             <v-card class="custom-dialog">
@@ -553,8 +522,10 @@
                             </div>
                         </div>
                         <div class="content">
-                            <span v-if="editItem.actions&&editItem.actions.length>0" class="error-text" style="margin: 4px 16px;">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actions[0].start}}」天開始執行動作({{editItem.actions[0].step_name}})，持續執行到第「{{editItem.actions[0].end}}」天</span>
-                            <v-card-text v-for="(item,id) in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                            <v-card-text v-if="editItem.actions&&editItem.actions.length>0">
+                                <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actions[0].start}}」天開始執行動作({{editItem.actions[0].step_name}})，持續執行到第「{{editItem.actions[0].end}}」天</span>
+                            </v-card-text>
+                            <v-card-text v-for="(item,id) in editItem.actions" :key="'editAction_'+item.step_id" class="work-item" style="padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
@@ -562,11 +533,32 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="第幾天完成執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
+                                <!-- 財務 -->
+                                <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;">
+                                    <v-col cols="12" style="padding: 4px 8px;">
+                                        {{ item.step_name }}
+                                    </v-col>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                        </v-text-field>
+                                    </div>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                        </v-text-field>
+                                    </div>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field type="number" v-model.number="item.member" min="0" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
+                                    </div>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field type="number" v-model.number="item.spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
+                                    </div>
+                                    <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
+                                </v-row> -->
                             </v-card-text>
                         </div>
                         
@@ -626,8 +618,8 @@
                             </div>
                         </div>
                         <v-card-text v-if="actionInputShow">
-                            <v-text-field v-model="stepformedit.name_ch" @change="checkValue('name_ch')" filled dense :rules="rules.requireStepCn" label="動作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
-                            <v-text-field v-model="stepformedit.name_en" @change="checkValue('name_en')" filled dense :rules="rules.requireStepEn" label="動作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.name_ch" @change="checkValue('name_ch')" filled dense :rules="rules.require" label="動作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.name_en" @change="checkValue('name_en')" filled dense :rules="rules.require" label="動作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
                         </v-card-text>
                         <v-card-text style="padding-top: 0;">
                             <v-text-field v-model="stepformedit.remark" :disabled="stepmode==''" @change="checkValue('remark')" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
@@ -664,7 +656,18 @@
                             <v-autocomplete v-model="editItem.step_id" dense filled :rules="rules.require" :items="addWorkList" item-text="step_name"
                                     item-value="step_id" @change="addWorkItemChange"></v-autocomplete>
                             <div class="chevron">
-                                <v-btn class="btn-icon green" @click="addWorkActionDialogOpen()"><v-icon>mdi-plus</v-icon></v-btn>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn slot="append-outer" class="btn-icon green" @click="addWorkActionDialogOpen" v-bind="attrs" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
+                                    </template>
+                                    <span>新增</span>
+                                </v-tooltip>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn slot="append-outer" :class="{'disabled':(editItem.step_id==undefined)}" class="btn-icon delete" @click="deleteWorkItem" v-bind="attrs" v-on="on"><v-icon>mdi-trash-can</v-icon></v-btn>
+                                    </template>
+                                    <span>刪除</span>
+                                </v-tooltip>
                             </div>
                         </div>
                         
@@ -685,8 +688,10 @@
                         <div class="content" v-if="editItem.actions&&editItem.actions.length>0">
                             <v-card-text v-for="item in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
-                                    <v-col cols="6">{{ item.step_name }}</v-col>
-                                    <v-col cols="6">Day {{ item.start }} ~ Day {{ item.end }}</v-col>
+                                    <v-col cols="3">{{ item.step_name }}</v-col>
+                                    <v-col cols="3">Day {{ item.start }} ~ Day {{ item.end }}</v-col>
+                                    <v-col cols="3">預估花費 {{item.member}} 人</v-col>
+                                    <v-col cols="3">預估花費 $ {{item.member}} </v-col>
                                 </v-row>
                             </v-card-text>
                         </div>
@@ -750,8 +755,10 @@
                             </div>
                         </div>
                         <div class="content">
-                            <span v-if="addItem.actions&&addItem.actions.length>0" class="error-text" style="margin: 4px 16px;">*說明：工作({{addItem.step_name}})開始後第「{{addItem.actions[0].start}}」天開始執行動作({{addItem.actions[0].step_name}})，持續執行到第「{{addItem.actions[0].end}}」天</span>
-                            <v-card-text v-for="(item,id) in addItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                            <v-card-text v-if="addItem.actions&&addItem.actions.length>0">
+                                <span class="error-text">*說明：工作({{addItem.step_name}})開始後第「{{addItem.actions[0].start}}」天開始執行動作({{addItem.actions[0].step_name}})，持續執行到第「{{addItem.actions[0].end}}」天</span>
+                            </v-card-text>
+                            <v-card-text v-for="(item,id) in addItem.actions"  class="work-item" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
@@ -759,11 +766,32 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="第幾天完成執行" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
+                                <!-- 財務 -->
+                                <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;">
+                                    <v-col cols="12" style="padding: 4px 8px;">
+                                        {{ item.step_name }}
+                                    </v-col>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                        </v-text-field>
+                                    </div>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                        </v-text-field>
+                                    </div>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field type="number" v-model.number="item.member" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
+                                    </div>
+                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                        <v-text-field type="number" v-model.number="item.spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
+                                    </div>
+                                    <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
+                                </v-row> -->
                             </v-card-text>
                         </div>
                     </div>
@@ -901,13 +929,18 @@ export default {
                 { text: "動作", value: "step_name_ch", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 { text: "動作", value: "step_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
                 { text: "第幾天開始執行", value: "start", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
-                { text: "第幾天完成執行", value: "end", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "持續執行至第幾天", value: "end", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 // { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: '執行員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
+                // 財務
+                // { text: "預估花費人力", value: "estimate_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "預估花費金額", value: "estimate_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "實際花費人力", value: "actual_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "實際花費金額", value: "actual_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
                 // { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: '編輯', value: 'reactions', sortable: false,width:"7%",showmode: ['cycleedit']},
                 { text: '備註', value: 'remark', sortable: false,width:"20%",showmode: ['add', 'edit']},
@@ -977,6 +1010,8 @@ export default {
             workType: 'edit', // 區別現在是在編輯還是新增，動作編輯用
             addWorkIndex:{}, // 新增工作從哪一index往下新增
             actionInputShow: false, // 編輯/新增動作 顯示欄位
+            workOpenStatus:[], // 養殖循環工作收合紀錄
+            dateList:[], // 額外儲存所有水質/疾病/事件順序資料，避免filter更動時階段時間跟著變動
         }
     },
     created(){
@@ -988,8 +1023,19 @@ export default {
             // this.tempMain = _.cloneDeep(this.passObj.tempMain);
             this.mainItems = _.cloneDeep(this.passObj.tempContent);
             this.mainItems.forEach(m=>m.open=this.nowExpand);
+            this.mainItems.forEach((mitem,mid)=>{
+                this.workOpenStatus.push({
+                    phase_id:mitem.phase_id,
+                    open: new Array()
+                })
+                mitem.stepList.forEach(step=>{
+                    this.workOpenStatus[mid].open.push(step.open);
+                })
+                
+            })
+
             this.authorization = _.cloneDeep(this.passObj.authorization);
-            console.log('mainItems',this.mainItems);
+            // console.log('mainItems',this.mainItems);
             // this.getAuth();
             // if(this.templatemode == 'cycleedit') {
             this.sortData();
@@ -1049,17 +1095,24 @@ export default {
     },
     methods: {
         /* 資料整理 */
-        // 排序其他
+        // 排序執行時間
         sortData() {
-             // 因有排序重整問題，須另外存取再取代原資料
             let stepId = [];
             let data = _.cloneDeep(this.passObj.tempContent);
             this.mainItems = [];
-            data.forEach(d=>{
-                d.stepList.forEach(step=>{
-                    step.actions = step.actions.filter(x=>x.type==0 || x.type==null);
-                })
+            // data.forEach(d=>{
+            //     d.stepList.forEach(step=>{
+            //         step.actions = step.actions.filter(x=>x.type==0 || x.type==null);
+            //     })
                 
+            // })
+            data.forEach((d,id)=>{
+                d.stepList.forEach((step,sid)=>{
+                    step.open = this.workOpenStatus[id].open[sid];
+                    step.actions.sort((a,b)=>{
+                        return new Date(a.execute_time) - new Date(b.execute_time);
+                    })
+                })
             })
             data.forEach((m,mid)=>{
                 stepId.push({
@@ -1083,10 +1136,11 @@ export default {
             // this.dateData();
             this.sortTime();
         },
-        
+        // 排序與篩選顯示疾病/水質/事件
         sortTime(filter=false) {
             let data = _.cloneDeep(this.justStep);
-            if(this.passObj.filter==null || this.passObj.filter.includes(1) || this.passObj.filter.includes(11)|| this.passObj.filter.includes(12)|| this.passObj.filter.includes(13)) {
+            this.dateList = _.cloneDeep(this.justStep);
+            if(this.passObj.filter==null || [1,11,12,13].some(x => this.passObj.filter.includes(x))) {
                 this.diseaseReport.forEach(dis=>{
                     let xid=0;
                     let iid=0;
@@ -1116,10 +1170,9 @@ export default {
                     }else if(this.passObj.filter==null || (!this.passObj.filter.includes(11)&&!this.passObj.filter.includes(12)&&!this.passObj.filter.includes(13))){
                         data[iid].stepList[xid].actions.splice(yid,0,dis);
                     }
-                    
                 })
             }
-            if(this.passObj.filter==null || this.passObj.filter.includes(2)|| this.passObj.filter.includes(21)|| this.passObj.filter.includes(22)|| this.passObj.filter.includes(23)) {
+            if(this.passObj.filter==null || [2,21,12,23].some(x => this.passObj.filter.includes(x))) {
                 this.waterReport.forEach(dis=>{
                     let yid=0;
                     let wid=0;
@@ -1176,16 +1229,81 @@ export default {
                     data[eid].stepList[etid].actions.splice(eyid,0,dis);
                 })
             }
-            
-            this.mainItems = data;
-            console.log('sort',this.mainItems);
-            this.dateData();
-            
 
+            // 額外儲存所有
+            this.diseaseReport.forEach(dis=>{
+                let xid=0;
+                let iid=0;
+                let yid=0;
+                for(let i=0;i<this.dateList.length;i++) {
+                    for(let x=0;x<this.dateList[i].stepList.length;x++) {
+                        for(let y=0;y<this.dateList[i].stepList[x].actions.length;y++){
+                            if(this.dateList[i].stepList[x].actions[y].type==0 && this.dateList[i].stepList[x].actions[y].execute_time && this.dateList[i].stepList[x].actions[y].execute_time!=='') {
+                            // console.log(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                if(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                    iid = i;
+                                    xid = x;
+                                    yid=y+1;
+                                    // break;
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                this.dateList[iid].stepList[xid].actions.splice(yid,0,dis);
+            })
+            this.waterReport.forEach(dis=>{
+                let yid=0;
+                let wid=0;
+                let wxid=0;
+                for(let i=0;i<this.dateList.length;i++) {
+                    for(let x=0;x<this.dateList[i].stepList.length;x++) {
+                        for(let y=0;y<this.dateList[i].stepList[x].actions.length;y++) {
+                            if(this.dateList[i].stepList[x].actions[y].type!==null && this.dateList[i].stepList[x].actions[y].execute_time && this.dateList[i].stepList[x].actions[y].execute_time!=='') {
+                                // console.log(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                if(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                    wid = i;
+                                    yid = x;
+                                    wxid=y+1;
+                                    // break;
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                this.dateList[wid].stepList[yid].actions.splice(wxid,0,dis);
+            })
+            this.eventReport.forEach(dis=>{
+                let etid=0;
+                let eid=0
+                let eyid=0;
+                for(let i=0;i<this.dateList.length;i++) {
+                    for(let x=0;x<this.dateList[i].stepList.length;x++) {
+                        for(let y=0;y<this.dateList[i].stepList[x].actions.length;y++) {
+                            if(this.dateList[i].stepList[x].actions[y].type!==null && this.dateList[i].stepList[x].actions[y].execute_time && this.dateList[i].stepList[x].actions[y].execute_time!=='') {
+                                // console.log(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                if(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                    eid = i;
+                                    etid = x;
+                                    eyid = y+1;
+                                    // break;
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                this.dateList[eid].stepList[etid].actions.splice(eyid,0,dis);
+            })
+            this.mainItems = data;
+            // console.log('sort',this.mainItems,this.dateList);
+            this.dateData();
         },
-        // 整理各階段最新時間
+        // 整理各階段最新時間(階段圓圈旁會顯示)
         dateData() {
-            this.mainItems.forEach(s=>{
+            this.dateList.forEach(s=>{
                 s.newest = ''; // 因為更新後只有時間變動太小，需先清空再給，才會更新html
                 s.stepList.forEach(p=>{
                     p.actions.forEach(action=>{
@@ -1204,7 +1322,10 @@ export default {
                     
                 })
             });
-            console.log('data',this.mainItems);
+            this.mainItems.forEach((mitem,mid)=>{
+                mitem.newest = this.dateList[mid].newest;
+            })
+            // console.log('data',this.mainItems);
             this.colorData();
         },
         // 各階段顏色存取(表頭顏色、時間軸顏色)
@@ -1241,12 +1362,10 @@ export default {
                         }
                     })
                 }
-                
-                
             })
-            
             this.executorData();
         },
+        // 階段收合
         open(data,id) {
             if(this.templatemode=='cycleedit') {
                 this.status.filter(x=>x.name==data.phase_name_ch)[0].open = !this.status.filter(x=>x.name==data.phase_name_ch)[0].open;
@@ -1255,6 +1374,7 @@ export default {
                 data.open = this.status[id].open;
             }
         },
+        // 判斷階段是否有展開
         adjustOpen(data,id) {
             if(this.templatemode=='cycleedit') {
                 return this.status.filter(x=>x.name==data.phase_name_ch)[0].open;
@@ -1265,83 +1385,90 @@ export default {
             }
             
         },
-        // 執行與確認disabled 整理
-        disabledData() {
-            // 如果項目已確認(isConfirm)=>不可取消執行(disabled = true)
-            // 因為要照著步驟，因此如果項目的前一項尚未執行(execute_time='')=>不可跳著執行(disabled = true)
-            // 承上，如果此時為狀態的第一項目，要看前一狀態的最後一項是否執行
-            // 不可多項取消，只有最後的一個可以點選，要從後面往前依序取消
-
-            let cancelId = []; // 存取目前取消狀態id，最後一項不disabled，前面的取消都要disabled
-            let isNowDetect = false; // 判斷是否現在已有未執行狀態，如有存在，後面的執行鈕都應disabled
-            this.justStep.forEach((m,mid)=>{
-                m.stepList.forEach((s,sid)=>{
-                    // 判斷現在的sid是否為0，如為0要額外判斷前一狀態的最後一項
-                    if(sid!==0) {
-                        if(s.verify_time!=='' || this.passObj.nowEnd) {
-                            s.execute_disabled = true;
-                        }else {
-                            if((m.stepList[sid-1].execute_time&&m.stepList[sid-1].execute_time!=='') || (s.execute_time&&s.execute_time!=='')) {
-                                // if(m.stepList[sid-1].verify_time=='') {
-                                //     s.execute_disabled = false;
-                                // }else {
-                                //     s.execute_disabled = false;
-                                // }
-                                s.execute_disabled = false;
-                                
-                            }else {
-                                s.execute_disabled = true;
-                            }
-                        }
-                    }else {
-                        if(s.verify_time!=='' || this.passObj.nowEnd) {
-                            s.execute_disabled = true;
-                        }else {
-                            if(mid !==0 ) {
-                                if((this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].execute_time && 
-                                this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].execute_time!=='') || 
-                                (this.justStep[mid].stepList[this.justStep[mid].stepList.length-1].execute_time && 
-                                this.justStep[mid].stepList[this.justStep[mid].stepList.length-1].execute_time!=='')) {
-                                    if(this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].verify_time=='') {
-                                        s.execute_disabled = true;
-                                    }else {
-                                        s.execute_disabled = false;
-                                    }
-                                    // s.execute_disabled = false;
-                                }else{
-                                    s.execute_disabled = true;
-                                }
-                            }else {
-                                s.execute_disabled = false;
-                            }
-                        }
-                        
-                    }
-
-                    // 判斷現在狀態是否為取消狀態，是的話，額外存取，並更改disabled
-                    if(s.execute_time && s.execute_time!=='' && s.verify_time=='') {
-                        cancelId.push({
-                            id: mid,
-                            index: sid
-                        })
-                        // console.log('cancel',cancelId);
-                    }
-                })
-            })
-            if(cancelId.length>0) {
-                cancelId.forEach((cancel,cid)=>{
-                    if(cid !== (cancelId.length-1)) {
-                        this.justStep[cancel.id].stepList[cancel.index].execute_disabled = true;
-                    }else {
-                        this.justStep[cancel.id].stepList[cancel.index].execute_disabled = false;
-                    }
-
-                })
+        // 工作收合
+        openWork(mid,wid) {
+            this.mainItems[mid].stepList[wid].open = !this.mainItems[mid].stepList[wid].open;
+            if(this.templatemode=='cycleedit') {
+                this.workOpenStatus[mid].open[wid] = !this.workOpenStatus[mid].open[wid];
             }
-            
-            this.sortTime();
         },
-        // 執行人員/確認人員的比對轉換
+        // 執行與確認disabled 整理
+        // disabledData() {
+        //     // 如果項目已確認(isConfirm)=>不可取消執行(disabled = true)
+        //     // 因為要照著步驟，因此如果項目的前一項尚未執行(execute_time='')=>不可跳著執行(disabled = true)
+        //     // 承上，如果此時為狀態的第一項目，要看前一狀態的最後一項是否執行
+        //     // 不可多項取消，只有最後的一個可以點選，要從後面往前依序取消
+
+        //     let cancelId = []; // 存取目前取消狀態id，最後一項不disabled，前面的取消都要disabled
+        //     let isNowDetect = false; // 判斷是否現在已有未執行狀態，如有存在，後面的執行鈕都應disabled
+        //     this.justStep.forEach((m,mid)=>{
+        //         m.stepList.forEach((s,sid)=>{
+        //             // 判斷現在的sid是否為0，如為0要額外判斷前一狀態的最後一項
+        //             if(sid!==0) {
+        //                 if(s.verify_time!=='' || this.passObj.nowEnd) {
+        //                     s.execute_disabled = true;
+        //                 }else {
+        //                     if((m.stepList[sid-1].execute_time&&m.stepList[sid-1].execute_time!=='') || (s.execute_time&&s.execute_time!=='')) {
+        //                         // if(m.stepList[sid-1].verify_time=='') {
+        //                         //     s.execute_disabled = false;
+        //                         // }else {
+        //                         //     s.execute_disabled = false;
+        //                         // }
+        //                         s.execute_disabled = false;
+                                
+        //                     }else {
+        //                         s.execute_disabled = true;
+        //                     }
+        //                 }
+        //             }else {
+        //                 if(s.verify_time!=='' || this.passObj.nowEnd) {
+        //                     s.execute_disabled = true;
+        //                 }else {
+        //                     if(mid !==0 ) {
+        //                         if((this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].execute_time && 
+        //                         this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].execute_time!=='') || 
+        //                         (this.justStep[mid].stepList[this.justStep[mid].stepList.length-1].execute_time && 
+        //                         this.justStep[mid].stepList[this.justStep[mid].stepList.length-1].execute_time!=='')) {
+        //                             if(this.justStep[mid-1].stepList[this.justStep[mid-1].stepList.length-1].verify_time=='') {
+        //                                 s.execute_disabled = true;
+        //                             }else {
+        //                                 s.execute_disabled = false;
+        //                             }
+        //                             // s.execute_disabled = false;
+        //                         }else{
+        //                             s.execute_disabled = true;
+        //                         }
+        //                     }else {
+        //                         s.execute_disabled = false;
+        //                     }
+        //                 }
+                        
+        //             }
+
+        //             // 判斷現在狀態是否為取消狀態，是的話，額外存取，並更改disabled
+        //             if(s.execute_time && s.execute_time!=='' && s.verify_time=='') {
+        //                 cancelId.push({
+        //                     id: mid,
+        //                     index: sid
+        //                 })
+        //                 // console.log('cancel',cancelId);
+        //             }
+        //         })
+        //     })
+        //     if(cancelId.length>0) {
+        //         cancelId.forEach((cancel,cid)=>{
+        //             if(cid !== (cancelId.length-1)) {
+        //                 this.justStep[cancel.id].stepList[cancel.index].execute_disabled = true;
+        //             }else {
+        //                 this.justStep[cancel.id].stepList[cancel.index].execute_disabled = false;
+        //             }
+
+        //         })
+        //     }
+            
+        //     this.sortTime();
+        // },
+        // 執行人員email轉換成部門+帳號名稱
         executorData() {
             this.mainItems.forEach(m=>{
                 m.stepList.forEach(s=>{
@@ -1355,533 +1482,534 @@ export default {
                     })
                 })
             })
+            // console.log('mainItems',this.mainItems);
         },
-        // 表格顏色判斷
+        // 疾病/水質表格顏色判斷
         itemRowBackground(evt) {
             return evt.status&&evt.status=='異常'?'danger-bg':evt.status&&evt.status=='警告'?'warning-bg':'';
         },
 
         /* 其他項目 */
         // 新增項目Dialog打開
-        addsubitem: function (phase_id, addidx = undefined) {
-            // phase_id 主要項目是哪個：空池
-            console.log("phase:", phase_id, "addidx:",addidx);
-            this.stepitem.phase_id = phase_id;
-            this.stepitem.addidx = addidx;
-            this.dialog.additem = true;//show dialog
+        // addsubitem: function (phase_id, addidx = undefined) {
+        //     // phase_id 主要項目是哪個：空池
+        //     console.log("phase:", phase_id, "addidx:",addidx);
+        //     this.stepitem.phase_id = phase_id;
+        //     this.stepitem.addidx = addidx;
+        //     this.dialog.additem = true;//show dialog
             
-            this.addStep = [{msg:''}];
-            if(this.templatemode !== 'cycleedit') {
-                // console.log(this.stepdata)
-                let phase = [];
-                this.mainItems.forEach(m=>{
-                    if(m.phase_id==phase_id){
-                        m.stepList.forEach(s=>phase.push(s.step_id));
-                    }
-                })
-                this.stepdata = [];
-                this.stepdataAll.forEach(s=>{
-                    if(!phase.includes(s.id)) {
-                        this.stepdata.push(s);
-                    }
-                })
+        //     this.addStep = [{msg:''}];
+        //     if(this.templatemode !== 'cycleedit') {
+        //         // console.log(this.stepdata)
+        //         let phase = [];
+        //         this.mainItems.forEach(m=>{
+        //             if(m.phase_id==phase_id){
+        //                 m.stepList.forEach(s=>phase.push(s.step_id));
+        //             }
+        //         })
+        //         this.stepdata = [];
+        //         this.stepdataAll.forEach(s=>{
+        //             if(!phase.includes(s.id)) {
+        //                 this.stepdata.push(s);
+        //             }
+        //         })
                 
-                // this.showstep('edit');
-                if(this.stepdata.length>0) {
-                    this.stepitem = _.cloneDeep(this.stepdata[0]);
-                    this.stepitem.phase_id = phase_id;
-                    this.stepitem.addidx = addidx;
-                    console.log('openDialog',this.stepitem);
-                    this.stepmode = 'edit';
-                    this.selectStep();
-                }else {
-                    // this.stepmode = 'add';
-                    this.stepitem.phase_id = phase_id;
-                    this.stepitem.addidx = addidx;
-                    this.showstep('add');
-                }
+        //         // this.showstep('edit');
+        //         if(this.stepdata.length>0) {
+        //             this.stepitem = _.cloneDeep(this.stepdata[0]);
+        //             this.stepitem.phase_id = phase_id;
+        //             this.stepitem.addidx = addidx;
+        //             console.log('openDialog',this.stepitem);
+        //             this.stepmode = 'edit';
+        //             this.selectStep();
+        //         }else {
+        //             // this.stepmode = 'add';
+        //             this.stepitem.phase_id = phase_id;
+        //             this.stepitem.addidx = addidx;
+        //             this.showstep('add');
+        //         }
                 
-            }else {
-                // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
-                if (this.$refs.addform != undefined) {
-                    this.$refs.addform.reset();
+        //     }else {
+        //         // 關掉Dialog重新開啟，原先的表格判斷或資料要清除
+        //         if (this.$refs.addform != undefined) {
+        //             this.$refs.addform.reset();
                     
-                }
-            }
-            console.log('step add',this.mainItems,this.stepitem);
-        },
+        //         }
+        //     }
+        //     console.log('step add',this.mainItems,this.stepitem);
+        // },
         // 新增項目確認!!送出step項目
-        submitstep:async function(){
-            var valid = this.$refs.addform.validate();
-            const updUser = this.$auth.$state.user.email;
-            console.log('valid form',valid);
-            if(valid) {
-                if(this.templatemode=='cycleedit') {
-                    let datas = _.cloneDeep(this.justStep);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
-                    let stepId = [];// 因會有其他的排序id問題，必須要另外存取(主要是新增的項目下)
-                    let other = _.cloneDeep(this.addStep);// 不能直接用addStep，如果重新開dialog新增會清空會連動影響
-                    other.forEach((step,sid)=>{
-                        step.phase_id =  this.stepitem.phase_id;
-                        step.seq_id = '';
-                        step.msg = step.msg;
-                        step.step_name_ch = '其他';
-                        step.step_name_en = 'others';
-                        step.verify_time='';
-                        step.executor = '';
-                        step.verifier = '';
-                        step.created_user = this.$auth.$state.user.email;
-                    })
-                    let addidx = this.getId();
-                    console.log('now',addidx)
-                    datas.forEach((data,did)=>{
-                        if(data.phase_id == this.stepitem.phase_id) {
-                            if(addidx==-1) {
-                                other.forEach((o,oid)=>{
-                                    // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
-                                    if(datas[did].stepList[0].execute_time&&datas[did].stepList[0].execute_time!=='' || this.passObj.nowEnd) {
-                                        o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                        o.executor = updUser; 
-                                    }
-                                    if(datas[did]&&datas[did].stepList[0].verify_time&&datas[did].stepList[0].verify_time!=='' || this.passObj.nowEnd) {
-                                        o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                        o.verifier = updUser; 
-                                    }
-                                    console.log('now addidx=-1');
+        // submitstep:async function(){
+        //     var valid = this.$refs.addform.validate();
+        //     const updUser = this.$auth.$state.user.email;
+        //     console.log('valid form',valid);
+        //     if(valid) {
+        //         if(this.templatemode=='cycleedit') {
+        //             // let datas = _.cloneDeep(this.justStep);// 因要確認是否成功傳出，需額外存參數，避免失敗但頁面資料更改的狀況
+        //             // let stepId = [];// 因會有其他的排序id問題，必須要另外存取(主要是新增的項目下)
+        //             // let other = _.cloneDeep(this.addStep);// 不能直接用addStep，如果重新開dialog新增會清空會連動影響
+        //             // other.forEach((step,sid)=>{
+        //             //     step.phase_id =  this.stepitem.phase_id;
+        //             //     step.seq_id = '';
+        //             //     step.msg = step.msg;
+        //             //     step.step_name_ch = '其他';
+        //             //     step.step_name_en = 'others';
+        //             //     step.verify_time='';
+        //             //     step.executor = '';
+        //             //     step.verifier = '';
+        //             //     step.created_user = this.$auth.$state.user.email;
+        //             // })
+        //             // let addidx = this.getId();
+        //             // console.log('now',addidx)
+        //             // datas.forEach((data,did)=>{
+        //             //     if(data.phase_id == this.stepitem.phase_id) {
+        //             //         if(addidx==-1) {
+        //             //             other.forEach((o,oid)=>{
+        //             //                 // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
+        //             //                 if(datas[did].stepList[0].execute_time&&datas[did].stepList[0].execute_time!=='' || this.passObj.nowEnd) {
+        //             //                     o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //             //                     o.executor = updUser; 
+        //             //                 }
+        //             //                 if(datas[did]&&datas[did].stepList[0].verify_time&&datas[did].stepList[0].verify_time!=='' || this.passObj.nowEnd) {
+        //             //                     o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //             //                     o.verifier = updUser; 
+        //             //                 }
+        //             //                 console.log('now addidx=-1');
                                     
-                                })
-                                data.stepList = other.concat(data.stepList);
+        //             //             })
+        //             //             data.stepList = other.concat(data.stepList);
                                 
-                            }else {
-                                data.stepList.forEach((step,sid)=>{
+        //             //         }else {
+        //             //             data.stepList.forEach((step,sid)=>{
                                 
-                                    if(sid==addidx) {
-                                        if(sid==data.stepList.length-1) {
-                                            other.forEach((o,oid)=>{
-                                                // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
-                                                if(datas[did+1]&&datas[did+1].stepList[0].execute_time&&datas[did+1].stepList[0].execute_time!=='' || this.passObj.nowEnd) {
-                                                    o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                    o.executor = updUser; 
-                                                }
-                                                if(datas[did+1]&&datas[did+1].stepList[0].verify_time&&datas[did+1].stepList[0].verify_time!=='' || this.passObj.nowEnd) {
-                                                    o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                    o.verifier = updUser; 
-                                                }
-                                                console.log('sid==length');
-                                                data.stepList.splice((addidx+1+oid),0,o);
-                                                // data.stepList.splice((this.stepitem.addidx+1+oid),0,o);
-                                            })
-                                        }else {
-                                            // for(let i=addidx+1;i<data.stepList.length;i++) {
-                                                    other.forEach((o,oid)=>{
-                                                            if(data.stepList[addidx+1]&&data.stepList[addidx+1].execute_time&&data.stepList[addidx+1].execute_time!=='' || this.passObj.nowEnd) {
-                                                                o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                                o.executor = updUser; 
-                                                            }
-                                                            if(data.stepList[addidx+1]&&data.stepList[addidx+1].verify_time&&data.stepList[addidx+1].verify_time!=='' || this.passObj.nowEnd) {
-                                                                o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                                o.verifier = updUser; 
-                                                            }
-                                                            data.stepList.splice((addidx+1+oid),0,o);
-                                                        // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
-                                                        // data.stepList.splice((this.stepitem.addidx+1+oid),0,o);
-                                                    })
+        //             //                 if(sid==addidx) {
+        //             //                     if(sid==data.stepList.length-1) {
+        //             //                         other.forEach((o,oid)=>{
+        //             //                             // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
+        //             //                             if(datas[did+1]&&datas[did+1].stepList[0].execute_time&&datas[did+1].stepList[0].execute_time!=='' || this.passObj.nowEnd) {
+        //             //                                 o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //             //                                 o.executor = updUser; 
+        //             //                             }
+        //             //                             if(datas[did+1]&&datas[did+1].stepList[0].verify_time&&datas[did+1].stepList[0].verify_time!=='' || this.passObj.nowEnd) {
+        //             //                                 o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //             //                                 o.verifier = updUser; 
+        //             //                             }
+        //             //                             console.log('sid==length');
+        //             //                             data.stepList.splice((addidx+1+oid),0,o);
+        //             //                             // data.stepList.splice((this.stepitem.addidx+1+oid),0,o);
+        //             //                         })
+        //             //                     }else {
+        //             //                         // for(let i=addidx+1;i<data.stepList.length;i++) {
+        //             //                                 other.forEach((o,oid)=>{
+        //             //                                         if(data.stepList[addidx+1]&&data.stepList[addidx+1].execute_time&&data.stepList[addidx+1].execute_time!=='' || this.passObj.nowEnd) {
+        //             //                                             o.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //             //                                             o.executor = updUser; 
+        //             //                                         }
+        //             //                                         if(data.stepList[addidx+1]&&data.stepList[addidx+1].verify_time&&data.stepList[addidx+1].verify_time!=='' || this.passObj.nowEnd) {
+        //             //                                             o.verify_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //             //                                             o.verifier = updUser; 
+        //             //                                         }
+        //             //                                         data.stepList.splice((addidx+1+oid),0,o);
+        //             //                                     // o.seq_id = 'step_'+(this.stepitem.addidx+1+oid);
+        //             //                                     // data.stepList.splice((this.stepitem.addidx+1+oid),0,o);
+        //             //                                 })
 
-                                            // }
-                                            console.log('sid!==length');
-                                        } 
-                                    }
+        //             //                         // }
+        //             //                         console.log('sid!==length');
+        //             //                     } 
+        //             //                 }
                                 
-                                })
-                            }
+        //             //             })
+        //             //         }
                             
 
-                            // 給排序id因為新增會要輸入
-                            data.stepList.forEach((step,sid)=>{
-                                if(step.seq_id=='' || step.seq_id.split('_')[1] !== sid.toString()) {
-                                    step.seq_id = 'step_'+sid;
-                                }
-                            })
-                            // console.log('other',data);
-                            this.addSubmitApi(other,data.stepList,this.stepitem.phase_id);
-                        }
+        //             //         // 給排序id因為新增會要輸入
+        //             //         data.stepList.forEach((step,sid)=>{
+        //             //             if(step.seq_id=='' || step.seq_id.split('_')[1] !== sid.toString()) {
+        //             //                 step.seq_id = 'step_'+sid;
+        //             //             }
+        //             //         })
+        //             //         // console.log('other',data);
+        //             //         this.addSubmitApi(other,data.stepList,this.stepitem.phase_id);
+        //             //     }
                         
                         
                         
-                    })
+        //             // })
                     
                     
                     
                     
-                    // 串api成功 
-                    // if(true) {
-                    //     // 要重新給dateData，因為新加入的其他項目時間有更新
-                    //     this.mainItems = datas;
-                    //     this.dateData();
-                    //     this.dialog.additem = false;
-                    // }
-                }else {
-                    this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
-                    this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
-                    console.log('step',this.stepformedit,this.stepmode);
-                    switch (this.stepmode) {
-                        case 'add':
-                            console.log('step add',this.stepitem);
-                            var res = false;
-                            res = this.postBreedingStepList(this.stepformedit);
-                            setTimeout(()=>{
-                                if(res) {
-                                    this.dialog.additem = false;
-                                    this.dialog.phaseform = false;
-                                    this.getstepdata(true);
-                                }
-                            },50)
-                            // await this.$axios
-                            //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
-                            //     .then(res => {
-                            //         if(res.data=='新增成功'){
-                            //             this.dialog.additem = false;
-                            //             this.dialog.phaseform = false;
-                            //             this.getstepdata(true);
+        //             // // 串api成功 
+        //             // // if(true) {
+        //             // //     // 要重新給dateData，因為新加入的其他項目時間有更新
+        //             // //     this.mainItems = datas;
+        //             // //     this.dateData();
+        //             // //     this.dialog.additem = false;
+        //             // // }
+        //         }else {
+        //             this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+        //             this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+        //             console.log('step',this.stepformedit,this.stepmode);
+        //             switch (this.stepmode) {
+        //                 case 'add':
+        //                     console.log('step add',this.stepitem);
+        //                     var res = false;
+        //                     res = this.postBreedingStepList(this.stepformedit);
+        //                     setTimeout(()=>{
+        //                         if(res) {
+        //                             this.dialog.additem = false;
+        //                             this.dialog.phaseform = false;
+        //                             this.getstepdata(true);
+        //                         }
+        //                     },50)
+        //                     // await this.$axios
+        //                     //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
+        //                     //     .then(res => {
+        //                     //         if(res.data=='新增成功'){
+        //                     //             this.dialog.additem = false;
+        //                     //             this.dialog.phaseform = false;
+        //                     //             this.getstepdata(true);
                                         
-                            //             this.$toast.success("新增成功", { duration: 2000 });
-                            //         }else{
-                            //             this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
-                            //         }
+        //                     //             this.$toast.success("新增成功", { duration: 2000 });
+        //                     //         }else{
+        //                     //             this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
+        //                     //         }
 
-                            //         console.log("新增步驟API:" + res.request.responseURL);
-                            //     })
-                            //     .catch(error => {
-                            //         this.$toast.error("error:" + error, { duration: 2000 });
-                            //     })
-                            //     .finally(() => {
-                            //     });
-                            break;
-                        case 'edit':
-                            var id = this.stepitem.id;
-                            var res = false;
-                            res = this.patchBreedingStepList(this.stepformedit,id);
-                            setTimeout(()=>{
-                                if(res) {
-                                    this.dialog.phaseform = false;
-                                    var stepformedit = this.stepformedit;
-                                    //同步把畫面上的資料修改成一致
-                                    this.mainItems.forEach(element => {
-                                        var step = element.stepList;
-                                        step.filter(x=>x.step_id==id).forEach(stepele => {
-                                            stepele.step_name_ch = stepformedit.name_ch;
-                                        });
-                                    });
-                                    //this.stepformedit 要把同id所有名稱
-                                    this.stepitem.id = undefined;
-                                    this.getstepdata(true);
-                                }
-                            },50)
-                            // await this.$axios
-                            // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
-                            //     .then(res => {
-                            //         if(res.data=='修改成功'){
-                            //             this.dialog.phaseform = false;
-                            //             var stepformedit = this.stepformedit;
-                            //             //同步把畫面上的資料修改成一致
-                            //             this.mainItems.forEach(element => {
-                            //                 var step = element.stepList;
-                            //                 step.filter(x=>x.step_id==id).forEach(stepele => {
-                            //                     stepele.step_name_ch = stepformedit.name_ch;
-                            //                 });
-                            //             });
-                            //             //this.stepformedit 要把同id所有名稱
-                            //             this.stepitem.id = undefined;
-                            //             this.getstepdata(true);
-                            //             // this.$toast.success("修改成功", { duration: 2000 });
-                            //         }else{
-                            //             this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
-                            //         }
+        //                     //         console.log("新增步驟API:" + res.request.responseURL);
+        //                     //     })
+        //                     //     .catch(error => {
+        //                     //         this.$toast.error("error:" + error, { duration: 2000 });
+        //                     //     })
+        //                     //     .finally(() => {
+        //                     //     });
+        //                     break;
+        //                 case 'edit':
+        //                     var id = this.stepitem.id;
+        //                     var res = false;
+        //                     res = this.patchBreedingStepList(this.stepformedit,id);
+        //                     setTimeout(()=>{
+        //                         if(res) {
+        //                             this.dialog.phaseform = false;
+        //                             var stepformedit = this.stepformedit;
+        //                             //同步把畫面上的資料修改成一致
+        //                             this.mainItems.forEach(element => {
+        //                                 var step = element.stepList;
+        //                                 step.filter(x=>x.step_id==id).forEach(stepele => {
+        //                                     stepele.step_name_ch = stepformedit.name_ch;
+        //                                 });
+        //                             });
+        //                             //this.stepformedit 要把同id所有名稱
+        //                             this.stepitem.id = undefined;
+        //                             this.getstepdata(true);
+        //                         }
+        //                     },50)
+        //                     // await this.$axios
+        //                     // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
+        //                     //     .then(res => {
+        //                     //         if(res.data=='修改成功'){
+        //                     //             this.dialog.phaseform = false;
+        //                     //             var stepformedit = this.stepformedit;
+        //                     //             //同步把畫面上的資料修改成一致
+        //                     //             this.mainItems.forEach(element => {
+        //                     //                 var step = element.stepList;
+        //                     //                 step.filter(x=>x.step_id==id).forEach(stepele => {
+        //                     //                     stepele.step_name_ch = stepformedit.name_ch;
+        //                     //                 });
+        //                     //             });
+        //                     //             //this.stepformedit 要把同id所有名稱
+        //                     //             this.stepitem.id = undefined;
+        //                     //             this.getstepdata(true);
+        //                     //             // this.$toast.success("修改成功", { duration: 2000 });
+        //                     //         }else{
+        //                     //             this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+        //                     //         }
 
-                            //         console.log("修改步驟API:" + res.request.responseURL);
-                            //     })
-                            //     .catch(error => {
-                            //         this.$toast.error("error:" + error, { duration: 2000 });
-                            //     })
-                            //     .finally(() => {
-                            //     });
-                            break;
-                    }
-                }
+        //                     //         console.log("修改步驟API:" + res.request.responseURL);
+        //                     //     })
+        //                     //     .catch(error => {
+        //                     //         this.$toast.error("error:" + error, { duration: 2000 });
+        //                     //     })
+        //                     //     .finally(() => {
+        //                     //     });
+        //                     break;
+        //             }
+        //         }
                 
                 
-            }
-            // this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
-            // this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
-            // console.log(this.stepformedit);
-            // switch (this.stepmode) {
-            //     case 'add':
-            //         await this.$axios
-            //             .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
-            //             .then(res => {
-            //                 if(res.data=='新增成功'){
-            //                     this.dialog.phaseform = false;
-            //                     this.getstepdata();
-            //                     this.$toast.success("新增成功", { duration: 2000 });
-            //                 }else{
-            //                     this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
-            //                 }
+        //     }
+        //     // this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+        //     // this.stepformedit.updated_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+        //     // console.log(this.stepformedit);
+        //     // switch (this.stepmode) {
+        //     //     case 'add':
+        //     //         await this.$axios
+        //     //             .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`, this.stepformedit)
+        //     //             .then(res => {
+        //     //                 if(res.data=='新增成功'){
+        //     //                     this.dialog.phaseform = false;
+        //     //                     this.getstepdata();
+        //     //                     this.$toast.success("新增成功", { duration: 2000 });
+        //     //                 }else{
+        //     //                     this.$toast.error("新增步驟失敗:" + res.data, { duration: 2000 });
+        //     //                 }
 
-            //                 console.log("新增步驟API:" + res.request.responseURL);
-            //             })
-            //             .catch(error => {
-            //                 this.$toast.error("error:" + error, { duration: 2000 });
-            //             })
-            //             .finally(() => {
-            //             });
-            //         break;
-            //     case 'edit':
-            //         var id = this.stepitem.id;
-            //         await this.$axios
-            //         .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
-            //             .then(res => {
-            //                 if(res.data=='修改成功'){
-            //                     this.dialog.phaseform = false;
-            //                     var stepformedit = this.stepformedit;
-            //                     //同步把畫面上的資料修改成一致
-            //                     this.mainItems.forEach(element => {
-            //                         var step = element.stepList;
-            //                         step.filter(x=>x.step_id==id).forEach(stepele => {
-            //                             stepele.step_name_ch = stepformedit.name_ch;
-            //                         });
-            //                     });
-            //                     //this.stepformedit 要把同id所有名稱
-            //                     this.stepitem.id = undefined;
-            //                     this.getstepdata();
-            //                     this.$toast.success("修改成功", { duration: 2000 });
-            //                 }else{
-            //                     this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
-            //                 }
+        //     //                 console.log("新增步驟API:" + res.request.responseURL);
+        //     //             })
+        //     //             .catch(error => {
+        //     //                 this.$toast.error("error:" + error, { duration: 2000 });
+        //     //             })
+        //     //             .finally(() => {
+        //     //             });
+        //     //         break;
+        //     //     case 'edit':
+        //     //         var id = this.stepitem.id;
+        //     //         await this.$axios
+        //     //         .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
+        //     //             .then(res => {
+        //     //                 if(res.data=='修改成功'){
+        //     //                     this.dialog.phaseform = false;
+        //     //                     var stepformedit = this.stepformedit;
+        //     //                     //同步把畫面上的資料修改成一致
+        //     //                     this.mainItems.forEach(element => {
+        //     //                         var step = element.stepList;
+        //     //                         step.filter(x=>x.step_id==id).forEach(stepele => {
+        //     //                             stepele.step_name_ch = stepformedit.name_ch;
+        //     //                         });
+        //     //                     });
+        //     //                     //this.stepformedit 要把同id所有名稱
+        //     //                     this.stepitem.id = undefined;
+        //     //                     this.getstepdata();
+        //     //                     this.$toast.success("修改成功", { duration: 2000 });
+        //     //                 }else{
+        //     //                     this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
+        //     //                 }
 
-            //                 console.log("修改步驟API:" + res.request.responseURL);
-            //             })
-            //             .catch(error => {
-            //                 this.$toast.error("error:" + error, { duration: 2000 });
-            //             })
-            //             .finally(() => {
-            //             });
-            //         break;
-            // }
-        },
-        getId() {
-            let stepid=null;
-            let data = [];
-            let nowid = 0;
-            this.mainItems.forEach(m=>{
-                if(m.phase_id==this.stepitem.phase_id) {
-                    data = _.cloneDeep(m.stepList);
-                    m.stepList.forEach((step,sid)=>{
-                        if(sid==this.stepitem.addidx) {
-                            if(step.step_id) {
-                                stepid=step.step_id;
-                            }
-                        }
-                    })
-                }
-            })
+        //     //                 console.log("修改步驟API:" + res.request.responseURL);
+        //     //             })
+        //     //             .catch(error => {
+        //     //                 this.$toast.error("error:" + error, { duration: 2000 });
+        //     //             })
+        //     //             .finally(() => {
+        //     //             });
+        //     //         break;
+        //     // }
+        // },
+        // getId() {
+        //     let stepid=null;
+        //     let data = [];
+        //     let nowid = 0;
+        //     this.mainItems.forEach(m=>{
+        //         if(m.phase_id==this.stepitem.phase_id) {
+        //             data = _.cloneDeep(m.stepList);
+        //             m.stepList.forEach((step,sid)=>{
+        //                 if(sid==this.stepitem.addidx) {
+        //                     if(step.step_id) {
+        //                         stepid=step.step_id;
+        //                     }
+        //                 }
+        //             })
+        //         }
+        //     })
             
-            if(stepid==null) {
-                for(let i=this.stepitem.addidx;i>0;i--) {
-                    if(data[i].step_id) {
-                        stepid = data[i].step_id;
-                        break;
-                    }
-                }
-            }
+        //     if(stepid==null) {
+        //         for(let i=this.stepitem.addidx;i>0;i--) {
+        //             if(data[i].step_id) {
+        //                 stepid = data[i].step_id;
+        //                 break;
+        //             }
+        //         }
+        //     }
             
-            this.justStep.forEach(j=>{
-                if(j.phase_id==this.stepitem.phase_id) {
-                    j.stepList.forEach((step,sid)=>{
-                        if(step.step_id == stepid) {
-                            nowid = sid;
-                        }
-                    })
-                }
-            })
-            if(stepid==null&&nowid==0) {
-                nowid=-1;
-            }
-            return nowid
-        },
+        //     this.justStep.forEach(j=>{
+        //         if(j.phase_id==this.stepitem.phase_id) {
+        //             j.stepList.forEach((step,sid)=>{
+        //                 if(step.step_id == stepid) {
+        //                     nowid = sid;
+        //                 }
+        //             })
+        //         }
+        //     })
+        //     if(stepid==null&&nowid==0) {
+        //         nowid=-1;
+        //     }
+        //     return nowid
+        // },
         // 送出新增的項目
-        addSubmitApi(other,datas,id) {
-            this.otherApi = 0;
-            let api = [];
-            let fail = [];
-            other.forEach(async o=>{
-                var res = false;
-                res = this.postRecordStepList(o);
-                setTimeout(()=>{
-                    if(res) {
-                        this.otherApi++;
-                        api.push(o);
-                        if(this.otherApi == other.length) {
-                            if(api.length == other.length) {
-                                // 新增成功後，因其他項目的seq_id更改，需串api修改
-                                this.reviseData(datas,id);
-                                this.dialog.additem = false;
-                                this.$toast.success("新增成功", { duration: 2000 });
-                            }else {
-                                this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
-                            }
-                        }
-                    }else{
-                            this.otherApi++;
-                            fail.push(o);
-                            if(this.otherApi==other.length) {
-                                if(fail.length==other.length) {
-                                    this.$toast.error("新增步驟失敗", { duration: 2000 });
-                                }else {
-                                    this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
-                                }
-                            }
-                        }
-                },50)
-                // await this.$axios
-                //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/`, o)
-                //     .then(res => {
-                //         console.log(res);
-                //         if(res.data=='新增成功'){
-                //             this.otherApi++;
-                //             api.push(o);
-                //             if(this.otherApi == other.length) {
-                //                 if(api.length == other.length) {
-                //                     // 新增成功後，因其他項目的seq_id更改，需串api修改
-                //                     this.reviseData(datas,id);
-                //                     this.dialog.additem = false;
-                //                     this.$toast.success("新增成功", { duration: 2000 });
-                //                 }else {
-                //                     this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
-                //                 }
-                //             }
+        // addSubmitApi(other,datas,id) {
+        //     this.otherApi = 0;
+        //     let api = [];
+        //     let fail = [];
+        //     other.forEach(async o=>{
+        //         var res = false;
+        //         res = this.postRecordStepList(o);
+        //         setTimeout(()=>{
+        //             if(res) {
+        //                 this.otherApi++;
+        //                 api.push(o);
+        //                 if(this.otherApi == other.length) {
+        //                     if(api.length == other.length) {
+        //                         // 新增成功後，因其他項目的seq_id更改，需串api修改
+        //                         this.reviseData(datas,id);
+        //                         this.dialog.additem = false;
+        //                         this.$toast.success("新增成功", { duration: 2000 });
+        //                     }else {
+        //                         this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
+        //                     }
+        //                 }
+        //             }else{
+        //                     this.otherApi++;
+        //                     fail.push(o);
+        //                     if(this.otherApi==other.length) {
+        //                         if(fail.length==other.length) {
+        //                             this.$toast.error("新增步驟失敗", { duration: 2000 });
+        //                         }else {
+        //                             this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
+        //                         }
+        //                     }
+        //                 }
+        //         },50)
+        //         // await this.$axios
+        //         //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/`, o)
+        //         //     .then(res => {
+        //         //         console.log(res);
+        //         //         if(res.data=='新增成功'){
+        //         //             this.otherApi++;
+        //         //             api.push(o);
+        //         //             if(this.otherApi == other.length) {
+        //         //                 if(api.length == other.length) {
+        //         //                     // 新增成功後，因其他項目的seq_id更改，需串api修改
+        //         //                     this.reviseData(datas,id);
+        //         //                     this.dialog.additem = false;
+        //         //                     this.$toast.success("新增成功", { duration: 2000 });
+        //         //                 }else {
+        //         //                     this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
+        //         //                 }
+        //         //             }
                             
-                //         }else{
-                //             this.otherApi++;
-                //             fail.push(o);
-                //             if(this.otherApi==other.length) {
-                //                 if(fail.length==other.length) {
-                //                     this.$toast.error("新增步驟失敗", { duration: 2000 });
-                //                 }else {
-                //                     this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
-                //                 }
-                //             }
-                //         }
+        //         //         }else{
+        //         //             this.otherApi++;
+        //         //             fail.push(o);
+        //         //             if(this.otherApi==other.length) {
+        //         //                 if(fail.length==other.length) {
+        //         //                     this.$toast.error("新增步驟失敗", { duration: 2000 });
+        //         //                 }else {
+        //         //                     this.$toast.error("部分新增失敗，請重新新增", { duration: 2000 });
+        //         //                 }
+        //         //             }
+        //         //         }
 
-                //         console.log("新增步驟API:" + res.request.responseURL);
-                //     })
-                //     .catch(error => {
-                //         this.$toast.error("error:" + error, { duration: 2000 });
-                //     })
-                //     .finally(() => {
-                //     });
+        //         //         console.log("新增步驟API:" + res.request.responseURL);
+        //         //     })
+        //         //     .catch(error => {
+        //         //         this.$toast.error("error:" + error, { duration: 2000 });
+        //         //     })
+        //         //     .finally(() => {
+        //         //     });
                 
-            })
-        },
+        //     })
+        // },
         // 新增/刪除多個修改
-        reviseCycleData(datas,id,title) {
-            let item = 0;
-            datas.forEach(async d=>{
-                // if(d.phase_id==id) {
-                    // d.stepList.forEach(async (step,sid)=>{
-                        if(d.step_id) {
-                            d.updated_user = this.$auth.$state.user.email;
-                            console.log('step',d);
-                            // d.seq_id = 'step_'+sid;
-                            delete d.deft_executor;
-                            delete d.deft_verifier;
-                            delete d.execute_disabled;
-                            var res = false;
-                            res = this.patchRecordStepList(d,d.step_id);
-                            setTimeout(()=>{
-                                if(res) {
-                                    item++;
-                                    console.log(datas.length,item);
-                                    if(item == datas.length) {
-                                        // if(title=='add') {
-                                            // 需重新取得歷程，因為新增的項目需取得step_id
-                                            this.$emit('getTemp');
-                                        // }
+        // reviseCycleData(datas,id,title) {
+        //     let item = 0;
+        //     datas.forEach(async d=>{
+        //         // if(d.phase_id==id) {
+        //             // d.stepList.forEach(async (step,sid)=>{
+        //                 if(d.step_id) {
+        //                     d.updated_user = this.$auth.$state.user.email;
+        //                     console.log('step',d);
+        //                     // d.seq_id = 'step_'+sid;
+        //                     delete d.deft_executor;
+        //                     delete d.deft_verifier;
+        //                     delete d.execute_disabled;
+        //                     var res = false;
+        //                     res = this.patchRecordStepList(d,d.step_id);
+        //                     setTimeout(()=>{
+        //                         if(res) {
+        //                             item++;
+        //                             console.log(datas.length,item);
+        //                             if(item == datas.length) {
+        //                                 // if(title=='add') {
+        //                                     // 需重新取得歷程，因為新增的項目需取得step_id
+        //                                     this.$emit('getTemp');
+        //                                 // }
                                         
-                                    }
-                                }
-                            },50)
-                            // await this.$axios
-                            //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${d.step_id}/`, d)
-                            //         .then(res => {
-                            //             if(res.data=='修改成功'){
-                            //                 item++;
-                            //                 console.log(datas.length,item);
-                            //                 if(item == datas.length) {
-                            //                     // if(title=='add') {
-                            //                         // 需重新取得歷程，因為新增的項目需取得step_id
-                            //                         this.$emit('getTemp');
-                            //                     // }
+        //                             }
+        //                         }
+        //                     },50)
+        //                     // await this.$axios
+        //                     //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${d.step_id}/`, d)
+        //                     //         .then(res => {
+        //                     //             if(res.data=='修改成功'){
+        //                     //                 item++;
+        //                     //                 console.log(datas.length,item);
+        //                     //                 if(item == datas.length) {
+        //                     //                     // if(title=='add') {
+        //                     //                         // 需重新取得歷程，因為新增的項目需取得step_id
+        //                     //                         this.$emit('getTemp');
+        //                     //                     // }
                                                 
-                            //                 }
+        //                     //                 }
                                             
-                            //             }
+        //                     //             }
                                         
-                            //         })
-                            //         .catch(error => {
-                            //             this.$toast.error("error:" + error, { duration: 2000 });
-                            //         })
-                            //         .finally(() => {
-                            //         });
-                        }else {
-                            item++;
-                            if(item == datas.length) {
-                                this.$emit('getTemp');
-                            }
-                        }
+        //                     //         })
+        //                     //         .catch(error => {
+        //                     //             this.$toast.error("error:" + error, { duration: 2000 });
+        //                     //         })
+        //                     //         .finally(() => {
+        //                     //         });
+        //                 }else {
+        //                     item++;
+        //                     if(item == datas.length) {
+        //                         this.$emit('getTemp');
+        //                     }
+        //                 }
                             
-                    // })
-                // }
-            })
-        },
+        //             // })
+        //         // }
+        //     })
+        // },
         // 新增/取消 資料比對，有差異的再進行reviseCycleData
-        reviseData(datas,id) {
-            let apiData=[];
-            let ids = [];
-            console.log('revised',datas);
-            this.justStep.forEach(item=>{
-                if(item.phase_id==id) {
-                    item.stepList.forEach(step=>{
-                        ids.push(step.step_id);
-                    })
-                }
-            }) 
-            // 比對修改的資料排序id是否有更改
-            datas.forEach((data,did)=>{
-                data.seq_id='step_'+did;
-                this.justStep.forEach(item=>{
-                    if(item.phase_id==id) {
-                        // console.log(id,item.stepList);
-                        item.stepList.forEach(step=>{
-                            if(!ids.includes(data.step_id)) {
-                                ids.push(data.step_id);
-                                apiData.push(data);
-                            }else {
-                                if(step.step_id==data.step_id) {
-                                    if(step === data) {
+        // reviseData(datas,id) {
+        //     let apiData=[];
+        //     let ids = [];
+        //     console.log('revised',datas);
+        //     this.justStep.forEach(item=>{
+        //         if(item.phase_id==id) {
+        //             item.stepList.forEach(step=>{
+        //                 ids.push(step.step_id);
+        //             })
+        //         }
+        //     }) 
+        //     // 比對修改的資料排序id是否有更改
+        //     datas.forEach((data,did)=>{
+        //         data.seq_id='step_'+did;
+        //         this.justStep.forEach(item=>{
+        //             if(item.phase_id==id) {
+        //                 // console.log(id,item.stepList);
+        //                 item.stepList.forEach(step=>{
+        //                     if(!ids.includes(data.step_id)) {
+        //                         ids.push(data.step_id);
+        //                         apiData.push(data);
+        //                     }else {
+        //                         if(step.step_id==data.step_id) {
+        //                             if(step === data) {
                                         
-                                    }else {
-                                        console.log(step.seq_id,data.seq_id)
-                                        apiData.push(data);
-                                    }
-                                }
-                            }
-                        })
-                    }
-                })
+        //                             }else {
+        //                                 console.log(step.seq_id,data.seq_id)
+        //                                 apiData.push(data);
+        //                             }
+        //                         }
+        //                     }
+        //                 })
+        //             }
+        //         })
                 
-            })
-            console.log('apiData',apiData,datas);
-            this.reviseCycleData(apiData,id);
-        },
+        //     })
+        //     console.log('apiData',apiData,datas);
+        //     this.reviseCycleData(apiData,id);
+        // },
         // 刪除其他項目
         delsubitem: async function (phase_id,wid, index) {
             console.log('delete',phase_id, index);
@@ -1895,23 +2023,11 @@ export default {
                             res = this.deleteRecordStepList(sub_item.step_id);
                             setTimeout(()=>{
                                 if(res) {
-                                    let stepId=[]; // 刪除其他項目id要重新給定，所以要額外存取
-                                    // let datas = _.cloneDeep(this.mainItems);
-                                    let datas = _.cloneDeep(this.justStep);
-                                    datas.forEach((item,id)=>{
-                                        if(item.phase_id == phase_id) {
-                                            let sindex = 0;
-                                            item.stepList.forEach((step,sid)=>{
-                                                if(sub_item.step_id!==step.step_id) {
-                                                    stepId.push(step);
-                                                }
-                                            })
-                                            this.reviseData(stepId,phase_id);
+                                    this.mainItems.forEach(mitem=>{
+                                        if(mitem.phase_id==phase_id) {
+                                            mitem.stepList[wid].actions.splice(index,1);
                                         }
-                                        
-
                                     })
-                                    console.log('delete',stepId);
                                 }
                             },50)
                             // await this.$axios
@@ -2039,272 +2155,272 @@ export default {
                 this.$emit('reportEditOpen',item);
             }
         },
-        async submitedit() {
-            let parm = _.cloneDeep(this.addStep[0]);
-            var valid = this.$refs.editform.validate();
-            if(valid) {
-                delete parm.execute_disabled;
-                delete parm.type;
-                delete parm.deft_executor;
-                delete parm.deft_verifier;
-                delete parm.step_id;
-                parm.updated_user = this.$auth.$state.user.email;
-                var res = false;
-                res = this.patchRecordStepList(parm,this.addStep[0].step_id,true);
-                setTimeout(()=>{
-                    if(res) {
-                        this.$emit('getTemp');
-                        this.editem = false;
-                    }
-                },50)
-                // await this.$axios
-                //     .patch(
-                //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${this.addStep[0].step_id}/`,
-                //         parm
-                //     )
-                //     .then(res => {
-                //     // console.log("警示修改API:" + res.request.responseURL);
-                //     if (res.data == "修改成功") {
-                //         this.$emit('getTemp');
-                //         this.editem = false;
-                //         this.$toast.success("修改成功", { duration: 2000 });
-                //     } else {
-                //         this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-                //     }
-                //     })
-                //     .catch(error => {
-                //     this.$toast.error("error:" + error, { duration: 2000 });
-                //     });
-            }
-        },
+        // async submitedit() {
+        //     let parm = _.cloneDeep(this.addStep[0]);
+        //     var valid = this.$refs.editform.validate();
+        //     if(valid) {
+        //         delete parm.execute_disabled;
+        //         delete parm.type;
+        //         delete parm.deft_executor;
+        //         delete parm.deft_verifier;
+        //         delete parm.step_id;
+        //         parm.updated_user = this.$auth.$state.user.email;
+        //         var res = false;
+        //         res = this.patchRecordStepList(parm,this.addStep[0].step_id,true);
+        //         setTimeout(()=>{
+        //             if(res) {
+        //                 this.$emit('getTemp');
+        //                 this.editem = false;
+        //             }
+        //         },50)
+        //         // await this.$axios
+        //         //     .patch(
+        //         //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${this.addStep[0].step_id}/`,
+        //         //         parm
+        //         //     )
+        //         //     .then(res => {
+        //         //     // console.log("警示修改API:" + res.request.responseURL);
+        //         //     if (res.data == "修改成功") {
+        //         //         this.$emit('getTemp');
+        //         //         this.editem = false;
+        //         //         this.$toast.success("修改成功", { duration: 2000 });
+        //         //     } else {
+        //         //         this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+        //         //     }
+        //         //     })
+        //         //     .catch(error => {
+        //         //     this.$toast.error("error:" + error, { duration: 2000 });
+        //         //     });
+        //     }
+        // },
 
         /* 執行/確認 */
         // 執行鈕
-        async execute(id,index) {
-            // 需判斷目前是甚麼狀態下：
-            // 已執行(isConfirm)->不可作動
-            // 取消(execute_time && execute_time!=='')-> 退回執行(刪除execute_time)
-            // 執行 => 串api後撈取execute_time
-            const updUser = this.$auth.$state.user.email;
-            if(!this.mainItems[id].stepList[index].verify_time!=='') {
-                if(this.mainItems[id].stepList[index].execute_time && this.mainItems[id].stepList[index].execute_time!=='') {
-                    if (confirm(`取消執行 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} ？`)) {
-                        let items = _.cloneDeep(this.mainItems);
-                        this.mainItems = []
-                        items[id].stepList[index].execute_time = '';
-                        items[id].stepList[index].executor = '';
-                        items[id].stepList[index].updated_user = this.$auth.$state.user.email;
-                        this.justStep.forEach(s=>{
-                            if(s.phase_id==items[id].phase_id) {
-                                s.stepList.forEach(async (step,sid)=>{
-                                    if(step.step_id==items[id].stepList[index].step_id) {
-                                        step.execute_time = items[id].stepList[index].execute_time;
-                                        step.executor =  items[id].stepList[index].executor;
-                                        step.updated_user = items[id].stepList[index].updated_user;
-                                        if(sid==0) {
-                                            if(id-1>=0) {
-                                                let statusid = this.status.filter(x=>x.name == this.justStep[id-1].phase_name_ch)[0].name;
-                                                const parm = {
-                                                    id: new Array(),
-                                                    status: statusid
-                                                };
-                                                parm.id.push(this.passObj.nowId);
-                                                this.$emit("compareStatus",parm);
-                                            }
-                                        }
-                                    }
-                                })
-                            }
-                        })
-                        // // 取消後面的步驟已執行的均取消
-                        // for(let i=id;i<items.length;i++) {
-                        //     if(i==id) {
-                        //         if(index!==items[i].stepList.length-1) {
-                        //             for(let x=index;x<items[i].stepList.length;x++) {
-                        //                 items[i].stepList[x].execute_time = '';
-                        //                 items[i].stepList[x].verify_time='';
-                        //             }
+        // async execute(id,index) {
+        //     // 需判斷目前是甚麼狀態下：
+        //     // 已執行(isConfirm)->不可作動
+        //     // 取消(execute_time && execute_time!=='')-> 退回執行(刪除execute_time)
+        //     // 執行 => 串api後撈取execute_time
+        //     const updUser = this.$auth.$state.user.email;
+        //     if(!this.mainItems[id].stepList[index].verify_time!=='') {
+        //         if(this.mainItems[id].stepList[index].execute_time && this.mainItems[id].stepList[index].execute_time!=='') {
+        //             if (confirm(`取消執行 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} ？`)) {
+        //                 let items = _.cloneDeep(this.mainItems);
+        //                 this.mainItems = []
+        //                 items[id].stepList[index].execute_time = '';
+        //                 items[id].stepList[index].executor = '';
+        //                 items[id].stepList[index].updated_user = this.$auth.$state.user.email;
+        //                 this.justStep.forEach(s=>{
+        //                     if(s.phase_id==items[id].phase_id) {
+        //                         s.stepList.forEach(async (step,sid)=>{
+        //                             if(step.step_id==items[id].stepList[index].step_id) {
+        //                                 step.execute_time = items[id].stepList[index].execute_time;
+        //                                 step.executor =  items[id].stepList[index].executor;
+        //                                 step.updated_user = items[id].stepList[index].updated_user;
+        //                                 if(sid==0) {
+        //                                     if(id-1>=0) {
+        //                                         let statusid = this.status.filter(x=>x.name == this.justStep[id-1].phase_name_ch)[0].name;
+        //                                         const parm = {
+        //                                             id: new Array(),
+        //                                             status: statusid
+        //                                         };
+        //                                         parm.id.push(this.passObj.nowId);
+        //                                         this.$emit("compareStatus",parm);
+        //                                     }
+        //                                 }
+        //                             }
+        //                         })
+        //                     }
+        //                 })
+        //                 // // 取消後面的步驟已執行的均取消
+        //                 // for(let i=id;i<items.length;i++) {
+        //                 //     if(i==id) {
+        //                 //         if(index!==items[i].stepList.length-1) {
+        //                 //             for(let x=index;x<items[i].stepList.length;x++) {
+        //                 //                 items[i].stepList[x].execute_time = '';
+        //                 //                 items[i].stepList[x].verify_time='';
+        //                 //             }
                                     
-                        //         }
+        //                 //         }
                                 
-                        //     }else {
-                        //         items[i].stepList.forEach(x=>{
-                        //             x.execute_time = '';
-                        //             x.verify_time='';
-                        //         })
-                        //     }
-                        //     this.reviseCycleData(items,items[i].phase_id,'cancel');
-                        // }
+        //                 //     }else {
+        //                 //         items[i].stepList.forEach(x=>{
+        //                 //             x.execute_time = '';
+        //                 //             x.verify_time='';
+        //                 //         })
+        //                 //     }
+        //                 //     this.reviseCycleData(items,items[i].phase_id,'cancel');
+        //                 // }
 
-                        // this.mainItems = items;
+        //                 // this.mainItems = items;
                         
-                        // if(index == 0) {
-                        //     this.mainItems[id].newest = '';
-                        // }
-                        await this.updateStatus(items[id].stepList[index],'cancel');
-                        // this.dateData();
-                    }
-                }else {
-                    if (confirm(`確認已執行 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} ？`)) {
+        //                 // if(index == 0) {
+        //                 //     this.mainItems[id].newest = '';
+        //                 // }
+        //                 await this.updateStatus(items[id].stepList[index],'cancel');
+        //                 // this.dateData();
+        //             }
+        //         }else {
+        //             if (confirm(`確認已執行 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} ？`)) {
                         
-                        this.mainItems[id].stepList[index].execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                        this.mainItems[id].stepList[index].executor = updUser;
-                        this.mainItems[id].stepList[index].deft_executor = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
-                        this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.email;
-                        this.justStep.forEach(s=>{
-                            if(s.phase_id==this.mainItems[id].phase_id) {
-                                s.stepList.forEach(async (step,sid)=>{
-                                    if(step.step_id==this.mainItems[id].stepList[index].step_id) {
-                                        step.execute_time = this.mainItems[id].stepList[index].execute_time;
-                                        step.executor = updUser;
-                                        step.deft_executor = this.mainItems[id].stepList[index].deft_executor;
-                                        step.updated_user = this.$auth.$state.user.emil;
+        //                 this.mainItems[id].stepList[index].execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //                 this.mainItems[id].stepList[index].executor = updUser;
+        //                 this.mainItems[id].stepList[index].deft_executor = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+        //                 this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.email;
+        //                 this.justStep.forEach(s=>{
+        //                     if(s.phase_id==this.mainItems[id].phase_id) {
+        //                         s.stepList.forEach(async (step,sid)=>{
+        //                             if(step.step_id==this.mainItems[id].stepList[index].step_id) {
+        //                                 step.execute_time = this.mainItems[id].stepList[index].execute_time;
+        //                                 step.executor = updUser;
+        //                                 step.deft_executor = this.mainItems[id].stepList[index].deft_executor;
+        //                                 step.updated_user = this.$auth.$state.user.emil;
 
-                                        if(sid==0) {
-                                            if(sid==0 && id!==0) {
-                                                let statusid = this.status.filter(x=>x.name == this.justStep[id].phase_name_ch)[0].name;
-                                                const parm = {
-                                                    id: new Array(),
-                                                    status: statusid,
-                                                };
-                                                parm.id.push(this.passObj.nowId);
-                                                this.$emit("compareStatus",parm);
+        //                                 if(sid==0) {
+        //                                     if(sid==0 && id!==0) {
+        //                                         let statusid = this.status.filter(x=>x.name == this.justStep[id].phase_name_ch)[0].name;
+        //                                         const parm = {
+        //                                             id: new Array(),
+        //                                             status: statusid,
+        //                                         };
+        //                                         parm.id.push(this.passObj.nowId);
+        //                                         this.$emit("compareStatus",parm);
                                                 
-                                            }
-                                        }
-                                    }
-                                })
-                            }
-                        })
-                        await this.updateStatus(this.mainItems[id].stepList[index],'execute');
-                        // this.dateData();
-                    }
-                }
-            }
-        },
+        //                                     }
+        //                                 }
+        //                             }
+        //                         })
+        //                     }
+        //                 })
+        //                 await this.updateStatus(this.mainItems[id].stepList[index],'execute');
+        //                 // this.dateData();
+        //             }
+        //         }
+        //     }
+        // },
         dateFormat(time) {
             // console.log('time',dayjs( new Date(time)).format("MM-DD HH:mm"));
             return dayjs( new Date(time)).format("MM-DD HH:mm");
         },
         // 確認鈕
-        executeConfirm(id,index) {
-            const updUser = this.$auth.$state.user.email;
-            // console.log('Confirm',this.$auth.$state.user);
-            // 確認
-            if (confirm(`已確認 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} 之前的項目已執行 ？`)) {
-                this.mainItems[id].stepList[index].verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                this.mainItems[id].stepList[index].verifier = updUser;
-                this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.name;
-                this.mainItems[id].stepList[index].deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
-                let submitData = [];
-                this.justStep[id].stepList.forEach(async (x,xid)=>{
-                    if(this.mainItems[id].stepList[index].step_id==x.step_id) {
-                        if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
-                            x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                            x.verifier = updUser;
-                            x.updated_user = this.$auth.$state.user.email;
-                            x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
-                            submitData.push(x);
-                            // this.updateStatus(this.mainItems[i].stepList[x]);
-                        }
+        // executeConfirm(id,index) {
+        //     const updUser = this.$auth.$state.user.email;
+        //     // console.log('Confirm',this.$auth.$state.user);
+        //     // 確認
+        //     if (confirm(`已確認 ${this.mainItems[id].stepList[index].step_name_ch=='其他'?this.mainItems[id].stepList[index].step_name_ch+'：'+this.mainItems[id].stepList[index].msg:this.mainItems[id].stepList[index].step_name_ch} 之前的項目已執行 ？`)) {
+        //         this.mainItems[id].stepList[index].verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //         this.mainItems[id].stepList[index].verifier = updUser;
+        //         this.mainItems[id].stepList[index].updated_user = this.$auth.$state.user.name;
+        //         this.mainItems[id].stepList[index].deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+        //         let submitData = [];
+        //         this.justStep[id].stepList.forEach(async (x,xid)=>{
+        //             if(this.mainItems[id].stepList[index].step_id==x.step_id) {
+        //                 if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
+        //                     x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //                     x.verifier = updUser;
+        //                     x.updated_user = this.$auth.$state.user.email;
+        //                     x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+        //                     submitData.push(x);
+        //                     // this.updateStatus(this.mainItems[i].stepList[x]);
+        //                 }
                         
-                    }
+        //             }
                     
-                })
+        //         })
                 
-                // submitData.push(this.mainItems[id].stepList[index]);
-                // this.updateStatus(this.mainItems[id].stepList[index]);
-                // 確認前面的均一起確認
-                for(let i=0;i<=id;i++) {
-                    if(i!==id) {
-                        this.justStep[i].stepList.forEach(x=>{
-                            if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
-                                x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                x.verifier = updUser;
-                                x.updated_user = this.$auth.$state.user.email;
-                                x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
-                                submitData.push(x);
-                                // this.updateStatus(this.mainItems[i].stepList[x]);
-                            }
-                        })
-                    }else {
-                        if(index !== 0) {
-                            let nowsid = 0;
-                            this.justStep[i].stepList.forEach((step,sid)=>{
-                                if(this.mainItems[id].stepList[index].step_id==step.step_id) {
-                                    nowsid = sid;
-                                }                                
-                            })
-                            for(let x=0;x<nowsid;x++) {
-                                    this.justStep[i].stepList.forEach(step=>{
-                                        if(this.justStep[i].stepList[x].execute_time&&this.justStep[i].stepList[x].execute_time!=='' && this.justStep[i].stepList[x].verify_time=='') {
-                                            if(step.step_id == this.justStep[i].stepList[x].step_id) {
-                                                step.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                                                step.verifier = updUser;
-                                                step.updated_user = this.$auth.$state.user.email;
-                                                step.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
-                                                submitData.push(this.justStep[i].stepList[x]);
-                                            }
-                                        }
+        //         // submitData.push(this.mainItems[id].stepList[index]);
+        //         // this.updateStatus(this.mainItems[id].stepList[index]);
+        //         // 確認前面的均一起確認
+        //         for(let i=0;i<=id;i++) {
+        //             if(i!==id) {
+        //                 this.justStep[i].stepList.forEach(x=>{
+        //                     if(x.execute_time&&x.execute_time!=='' && x.verify_time=='') {
+        //                         x.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //                         x.verifier = updUser;
+        //                         x.updated_user = this.$auth.$state.user.email;
+        //                         x.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+        //                         submitData.push(x);
+        //                         // this.updateStatus(this.mainItems[i].stepList[x]);
+        //                     }
+        //                 })
+        //             }else {
+        //                 if(index !== 0) {
+        //                     let nowsid = 0;
+        //                     this.justStep[i].stepList.forEach((step,sid)=>{
+        //                         if(this.mainItems[id].stepList[index].step_id==step.step_id) {
+        //                             nowsid = sid;
+        //                         }                                
+        //                     })
+        //                     for(let x=0;x<nowsid;x++) {
+        //                             this.justStep[i].stepList.forEach(step=>{
+        //                                 if(this.justStep[i].stepList[x].execute_time&&this.justStep[i].stepList[x].execute_time!=='' && this.justStep[i].stepList[x].verify_time=='') {
+        //                                     if(step.step_id == this.justStep[i].stepList[x].step_id) {
+        //                                         step.verify_time=dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+        //                                         step.verifier = updUser;
+        //                                         step.updated_user = this.$auth.$state.user.email;
+        //                                         step.deft_verifier = this.accdata.filter(x=>x.username==updUser)[0].position+'-'+this.accdata.filter(x=>x.username==updUser)[0].account_name;
+        //                                         submitData.push(this.justStep[i].stepList[x]);
+        //                                     }
+        //                                 }
                                         
-                                    })
+        //                             })
                                     
-                                //    this.updateStatus(this.mainItems[id].stepList[index]);
+        //                         //    this.updateStatus(this.mainItems[id].stepList[index]);
                                     
                                 
-                            }
-                        }
-                    }
-                }
-                console.log('verify',submitData);
-                submitData.forEach(async s=>{
-                    await this.updateStatus(s,'verify');
-                })
-                // this.colorData();
-            }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         console.log('verify',submitData);
+        //         submitData.forEach(async s=>{
+        //             await this.updateStatus(s,'verify');
+        //         })
+        //         // this.colorData();
+        //     }
             
-        },
+        // },
         // 確認/執行/取消 單個修改
-        async updateStatus(item,title) {
-            console.log(item);
-            delete item.deft_executor;
-            delete item.deft_verifier; 
-            delete item.execute_disabled;
-            delete item.type;
-            // delete item.step_id;
-            var res = false;
-            res = this.patchRecordStepList(item,item.step_id);
-            setTimeout(()=>{
-                if(res) {
-                    if(title=='cancel') {
-                        this.$emit('getTemp');
-                    }else {
-                        this.disabledData();
-                    }
-                }
-            },50)
-            // await this.$axios
-            //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${item.step_id}/`, item)
-            //         .then(res => {
-            //             if(res.data=='修改成功'){
-            //                 // this.$emit('getTemp');
-            //                 // this.$toast.success("更新成功!",{ duration: 2000 });
+        // async updateStatus(item,title) {
+        //     console.log(item);
+        //     delete item.deft_executor;
+        //     delete item.deft_verifier; 
+        //     delete item.execute_disabled;
+        //     delete item.type;
+        //     // delete item.step_id;
+        //     var res = false;
+        //     res = this.patchRecordStepList(item,item.step_id);
+        //     setTimeout(()=>{
+        //         if(res) {
+        //             if(title=='cancel') {
+        //                 this.$emit('getTemp');
+        //             }else {
+        //                 this.disabledData();
+        //             }
+        //         }
+        //     },50)
+        //     // await this.$axios
+        //     //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${item.step_id}/`, item)
+        //     //         .then(res => {
+        //     //             if(res.data=='修改成功'){
+        //     //                 // this.$emit('getTemp');
+        //     //                 // this.$toast.success("更新成功!",{ duration: 2000 });
                             
-            //                 if(title=='cancel') {
-            //                     this.$emit('getTemp');
-            //                 }else {
-            //                     this.disabledData();
-            //                 }
+        //     //                 if(title=='cancel') {
+        //     //                     this.$emit('getTemp');
+        //     //                 }else {
+        //     //                     this.disabledData();
+        //     //                 }
                             
-            //             }
+        //     //             }
                         
-            //         })
-            //         .catch(error => {
-            //             this.$toast.error("error:" + error, { duration: 2000 });
-            //         })
-            //         .finally(() => {
-            //         });
-        },
+        //     //         })
+        //     //         .catch(error => {
+        //     //             this.$toast.error("error:" + error, { duration: 2000 });
+        //     //         })
+        //     //         .finally(() => {
+        //     //         });
+        // },
         // 結束養殖循環
         endCycle() {
             this.$emit('end');
@@ -2436,24 +2552,32 @@ export default {
                     
                 });
                 console.log('Save Edit',para);
-                await this.$axios
-                    .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
-                    .then(res => {
-                        console.log(res);
-                        if(res.data=='修改成功'){
-                            this.$toast.success("修改成功", { duration: 2000 });
-                            this.updateouterAction('done');
-                        }else{
-                            this.$toast.error("修改樣板失敗:" + res.data, { duration: 2000 });
-                        }
+                var res = false;
+                res = this.patchTemplateList(para,id);
+                setTimeout(()=>{
+                    if(res) {
+                        this.updateouterAction('done');
+                    }
+                },50)
 
-                        console.log("修改樣板API:" + res.request.responseURL);
-                    })
-                    .catch(error => {
-                        this.$toast.error("error:" + error, { duration: 2000 });
-                    })
-                    .finally(() => {
-                    });
+                // await this.$axios
+                //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
+                //     .then(res => {
+                //         console.log(res);
+                //         if(res.data=='修改成功'){
+                //             this.$toast.success("修改成功", { duration: 2000 });
+                //             this.updateouterAction('done');
+                //         }else{
+                //             this.$toast.error("修改樣板失敗:" + res.data, { duration: 2000 });
+                //         }
+
+                //         console.log("修改樣板API:" + res.request.responseURL);
+                //     })
+                //     .catch(error => {
+                //         this.$toast.error("error:" + error, { duration: 2000 });
+                //     })
+                //     .finally(() => {
+                //     });
 
             }
         },
@@ -2462,8 +2586,8 @@ export default {
             if(this.$refs.mainform.validate()){
                 this.tempMain.created_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
                 var para ={
-                   tempMain :  this.tempMain,
-                   tempContent: new Array()
+                    tempMain :  this.tempMain,
+                    tempContent: new Array()
                 }
                 para.tempMain.is_enable = true;
                 this.mainItems.forEach(m=>{
@@ -2706,7 +2830,6 @@ export default {
         },
         actionChange() {
             this.stepformedit = this.stepdataAll.filter(x=>x.id == this.stepitem.id)[0];
-
         },
         // 確認加入動作
         editActionItemSubmit() {
@@ -2784,7 +2907,9 @@ export default {
                                         "step_name": item.name_ch,
                                         "remark":item.remark,
                                         "start":null,
-                                        "end":null
+                                        "end":null,
+                                        "member": 0,
+                                        "spend":0
                                     });
                                     this.editItem.actions.sort((a,b)=>{
                                         return a.start-b.start
@@ -2796,7 +2921,9 @@ export default {
                                         "step_name": item.name_ch,
                                         "remark":item.remark,
                                         "start":null,
-                                        "end":null
+                                        "end":null,
+                                        "member": 0,
+                                        "spend":0
                                     });
                                 }
                             }else {
@@ -2806,7 +2933,9 @@ export default {
                                         "step_name": item.name_ch,
                                         "remark":item.remark,
                                         "start":null,
-                                        "end":null
+                                        "end":null,
+                                        "member": 0,
+                                        "spend":0
                                     });
                                     this.addItem.actions.sort((a,b)=>{
                                         return a.start-b.start
@@ -2818,7 +2947,9 @@ export default {
                                         "step_name": item.name_ch,
                                         "remark":item.remark,
                                         "start":null,
-                                        "end":null
+                                        "end":null,
+                                        "member": 0,
+                                        "spend":0
                                     });
                                 }
                             }
@@ -2880,6 +3011,16 @@ export default {
             if(valid) {
                 this.sortDay();
                 let items = _.cloneDeep(this.mainItems);
+                this.editItem.actions.forEach(action=>{
+                    if(action.member>0) {
+
+                    }else{
+                        action.member=0;
+                    }
+                    if(action.spend>0) {
+                        action.spend=0;
+                    }
+                })
                 items.forEach((mitem,mid)=>{
                     if(this.addWorkIndex.phase_id==mitem.phase_id) {
                         mitem.day=0;
@@ -3009,6 +3150,16 @@ export default {
             var valid = this.$refs.addWorkActionform.validate();
             if(valid) {
                 this.addItem.step_id = Math.floor(Math.random()*999)+100;
+                this.addItem.actions.forEach(action=>{
+                    if(action.member>0) {
+
+                    }else{
+                        action.member=0;
+                    }
+                    if(action.spend>0) {
+                        action.spend=0;
+                    }
+                })
                 this.addWorkList.push(this.addItem);
                 this.sortDay();
                 this.editItem = _.cloneDeep(this.addItem);
@@ -3018,21 +3169,45 @@ export default {
         },
         // 確認新增工作
         addWorkSubmit() {
-            let items = _.cloneDeep(this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0]);
-            if(items.stepList&&items.stepList.length>0) {
-                this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.splice(this.addWorkIndex.id+1,0,this.editItem);
-            }else {
-                // 階段下無工作時的新增
-                this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.push(this.editItem);
+            var valid = this.$refs.addWorkform.validate();
+            if(valid) {
+                let items = _.cloneDeep(this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0]);
+                if(items.stepList&&items.stepList.length>0) {
+                    this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.splice(this.addWorkIndex.id+1,0,this.editItem);
+                }else {
+                    // 階段下無工作時的新增
+                    this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.push(this.editItem);
+                }
+                let item = this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0];
+                item.day = 0;
+                item.stepList.forEach(step=>{
+                    item.day+=parseInt(step.actions[step.actions.length-1].end);
+                })
+                this.addWorkDialog = false;
             }
-            let item = this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0];
-            item.day = 0;
-            item.stepList.forEach(step=>{
-                item.day+=parseInt(step.actions[step.actions.length-1].end);
-            })
-            this.addWorkDialog = false;
+            
         },
-        
+        // 刪除已存在之工作
+        deleteWorkItem() {
+            let index = this.addWorkList.map(e => e.step_id).indexOf(this.editItem.step_id);
+            if (confirm(`是否刪除工作-${this.addWorkList[index].step_name}？`)) {
+                this.addWorkList.splice(index,1);
+                this.editItem = {
+                    "step_id": null,
+                    "step_name": "",
+                    "remark":"",
+                    "day":null,
+                    "open":true,
+                    "actions":[]
+                }
+                this.$toast.success('刪除成功', { duration: 2000 });
+            }
+            
+            
+        },
+        numberChange(evt) {
+            console.log('Change Number',evt)
+        }
     },
     computed: {
     
@@ -3075,22 +3250,23 @@ export default {
         },
         diseaseReport() {
             if(this.templatemode=='cycleedit') {
-                this.sortTime();
+                this.sortData();
             }
             
         },
         waterReport() {
             if(this.templatemode=='cycleedit') {
-                this.sortTime();
+                this.sortData();
             }
             
         },
         eventReport() {
             if(this.templatemode=='cycleedit') {
-                this.sortTime();
+                this.sortData();
             }
             
         },
+        
     },
 }
 </script>
@@ -3206,6 +3382,11 @@ export default {
     //     }      
     } 
 }
+// .work-item {
+//     border-bottom: 1px solid rgba(0,0,0,0.1);
+//     border-radius: 4px;
+//     margin-bottom: 4px;
+// }
 .add-step {
     text-align: center;
     margin-top: -24px;
