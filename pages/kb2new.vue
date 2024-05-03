@@ -35,8 +35,8 @@
                             </v-autocomplete>
                         </v-col>
                         <!-- 選擇參數 -->
-                        <v-col cols="12" md="3" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
-                            <v-autocomplete :label="(this.$auth.$state.user == null) ? '帶入歷史紀錄(登入後使用)' : '帶入歷史紀錄'"
+                        <v-col cols="12" md="2" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
+                            <v-autocomplete :label="(this.$auth.$state.user == null) ? '歷史紀錄(需登入)' : '歷史紀錄'"
                                 v-model="querrySelected" :items="nowSelectDataLst" item-value="created_time" dense
                                 filled hide-details clearable solo class="mt-1"
                                 :disabled="this.$auth.$state.user == null || nowSelectPool==''"
@@ -67,10 +67,10 @@
                                         <button
                                             class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
                                             @click="importBasicData();" v-bind="attrs" v-on="on">
-                                            基本資料
+                                            帶入資料
                                         </button>
                                     </template>
-                                    <span>帶入基本資料</span>
+                                    <span>帶入養殖池的基本資料</span>
                                 </v-tooltip>
                                 <v-btn tile class="btn-secondary reset" @click="resetParm();getSelectData(null)">
                                     清空
@@ -304,11 +304,11 @@
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button v-if="!settingOpen" class="only-icon"
                                                     @click="settingOpen=!settingOpen" v-bind="attrs" v-on="on">
-                                                    <v-icon>mdi-star-outline</v-icon>
+                                                    <v-icon>mdi-bookmark-outline</v-icon>
                                                 </button>
                                                 <button v-else class="only-icon" @click="settingOpen=!settingOpen"
                                                     v-bind="attrs" v-on="on">
-                                                    <v-icon>mdi-star</v-icon>
+                                                    <v-icon>mdi-bookmark</v-icon>
                                                 </button>
                                             </template>
                                             <span>錨點列表</span>
@@ -337,10 +337,60 @@
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#breed')"> 養殖參數 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#waterperiod')">
                                             做水期參數 |</a>
-
                                     </v-row>
+                                    
                                     <div class="table-content" :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
                                                 'height':`${windowWidth>959.58?'49vh':'100%'}`}">
+                                        <div>
+                                            <v-row>
+                                        <v-col cols=12 md="6" sm="6">
+                                            <v-row class="item-row item">
+                                                <v-col cols="12" md="4" sm="4">
+                                                    <span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
+                                                </v-col>
+                                                <v-col cols="12" md="8" sm="8" class="pb-0">
+                                                    <v-menu v-model="menu_inspecteddate"
+                                                        :close-on-content-click="false"
+                                                        :nudge-right="40"
+                                                        transition="scale-transition"
+                                                        offset-y min-width="auto">
+                                                        <template
+                                                            v-slot:activator="{ on, attrs }">
+                                                            <v-text-field
+                                                                v-model="BaseParm['InspectedDate']"
+                                                                class="mt-0" clearable
+                                                                readonly dense hide-details
+                                                                v-bind="attrs"
+                                                                v-on="on"></v-text-field>
+                                                        </template>
+                                                        <v-date-picker
+                                                            v-model="BaseParm['InspectedDate']"
+                                                            :max="getNowDate()"
+                                                            locale="zh-tw" no-title @input="
+                                                        menu_inspecteddate = false;
+                                                        "></v-date-picker>
+                                                    </v-menu>
+                                                </v-col>
+                                            </v-row>
+                                        </v-col>
+                                        <v-col cols=12 md="6" sm="6">
+                                            <v-row class="item-row item">
+                                                <v-col cols="12" md="4" sm="4">
+                                                    <span class="pa-0 ma-0"
+                                                        slot="prepend"><v-icon
+                                                            @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
+                                                </v-col>
+                                                <v-col cols="12" md="8" sm="8">
+                                                    <v-text-field
+                                                        v-model="BaseParm['InspectedTime']"
+                                                        value="" dense type="time"
+                                                        hide-details></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                        </v-col>
+                                    </v-row>
+                                </div>
+
                                         <!-- 飼料參數 -->
                                         <v-expansion-panels id="feed" accordion multiple v-model="panel.panel_row13">
                                             <v-expansion-panel class="my-1">
@@ -2078,11 +2128,11 @@
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button v-if="!aiOpen" class="only-icon" @click="aiOpen=!aiOpen"
                                                     v-bind="attrs" v-on="on">
-                                                    <v-icon>mdi-star-outline</v-icon>
+                                                    <v-icon>mdi-bookmark-outline</v-icon>
                                                 </button>
                                                 <button v-else class="only-icon" @click="aiOpen=!aiOpen" v-bind="attrs"
                                                     v-on="on">
-                                                    <v-icon>mdi-star</v-icon>
+                                                    <v-icon>mdi-bookmark</v-icon>
                                                 </button>
                                             </template>
                                             <span>錨點列表</span>
