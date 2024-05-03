@@ -2491,12 +2491,12 @@
                                                                     <!-- <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降靛菌)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
                                                                 </v-col>
 
-                                                                <!-- 當日總砂糖量 -->
+                                                                <!-- 單餐砂糖量 -->
                                                                 <v-col cols=12>
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0"
-                                                                                slot="prepend">當日總砂糖量<v-btn class="ma-0"
+                                                                                slot="prepend">單餐砂糖量<v-btn class="ma-0"
                                                                                     text icon color="red lighten-2"
                                                                                     @click="sugerdlg = !sugerdlg">
                                                                                     <v-icon>mdi-message-text</v-icon>
@@ -2561,7 +2561,7 @@
                                                                                                 </v-row>
                                                                                             </v-col>
                                                                                             <v-col cols=12 md="12">
-                                                                                                <span>當日總砂糖量</span><span class="ml-5">{{suggData.Material['SugarTotal']}} = </span>
+                                                                                                <span>單餐砂糖量</span><span class="ml-5">{{suggData.Material['SugarTotal']}} = </span>
                                                                                             </v-col>
                                                                                             <v-col class="ml-1" cols=12 md="12">
                                                                                                 <v-row
@@ -2602,8 +2602,7 @@
                                                                                                         <span
                                                                                                             class="pa-0 ma-0"
                                                                                                             slot="prepend"
-                                                                                                            title="氨氮、目標CN比、水體體積、砂糖純度、砂糖含碳量">砂糖量
-                                                                                                            (降氨氮)</span>
+                                                                                                            title="氨氮、目標CN比、水體體積、砂糖純度、砂糖含碳量，系統自動除4餐">砂糖量(降氨氮)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
                                                                                                         md="3"
@@ -2632,8 +2631,7 @@
                                                                                                         <span
                                                                                                             class="pa-0 ma-0"
                                                                                                             slot="prepend"
-                                                                                                            title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量">砂糖量
-                                                                                                            (降亞硝酸)</span>
+                                                                                                            title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量，系統自動除4餐">砂糖量(降亞硝酸)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
                                                                                                         md="3"
@@ -2662,8 +2660,7 @@
                                                                                                         <span
                                                                                                             class="pa-0 ma-0"
                                                                                                             slot="prepend"
-                                                                                                            title="枯草桿菌、水體體積">砂糖量
-                                                                                                            (提高枯草桿菌)</span>
+                                                                                                            title="枯草桿菌、水體體積，系統自動除4餐">砂糖量(提高枯草桿菌)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
                                                                                                         md="3"
@@ -2692,8 +2689,7 @@
                                                                                                         <span
                                                                                                             class="pa-0 ma-0"
                                                                                                             slot="prepend"
-                                                                                                            title="腸炎弧菌、水體體積">砂糖量
-                                                                                                            (降紫菌)</span>
+                                                                                                            title="腸炎弧菌、水體體積，系統自動除4餐">砂糖量(降紫菌)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
                                                                                                         md="3"
@@ -2722,8 +2718,7 @@
                                                                                                         <span
                                                                                                             class="pa-0 ma-0"
                                                                                                             slot="prepend"
-                                                                                                            title="創傷弧菌、水體體積">砂糖量
-                                                                                                            (降靛菌)</span>
+                                                                                                            title="創傷弧菌、水體體積，系統自動除4餐">砂糖量(降靛菌)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
                                                                                                         md="3"
