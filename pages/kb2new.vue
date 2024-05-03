@@ -59,7 +59,7 @@
                         <!-- 查詢/清空/控制項 - result版面收合 -->
                         <v-col
                             v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0"
-                            cols="12" md="5" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
+                            cols="12" md="6" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
                             style="display: flex;justify-content: space-between;align-items: center;">
                             <div class="btn-groups">
                                 <v-tooltip bottom>
@@ -341,55 +341,53 @@
                                     
                                     <div class="table-content" :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
                                                 'height':`${windowWidth>959.58?'49vh':'100%'}`}">
-                                        <div>
-                                            <v-row>
-                                        <v-col cols=12 md="6" sm="6">
-                                            <v-row class="item-row item">
-                                                <v-col cols="12" md="4" sm="4">
-                                                    <span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
-                                                </v-col>
-                                                <v-col cols="12" md="8" sm="8" class="pb-0">
-                                                    <v-menu v-model="menu_inspecteddate"
-                                                        :close-on-content-click="false"
-                                                        :nudge-right="40"
-                                                        transition="scale-transition"
-                                                        offset-y min-width="auto">
-                                                        <template
-                                                            v-slot:activator="{ on, attrs }">
-                                                            <v-text-field
+                                        <v-row style="margin-bottom: 0;">
+                                            <v-col cols=12 md="6" sm="6">
+                                                <v-row class="item-row item">
+                                                    <v-col cols="12" md="4" sm="4">
+                                                        <span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
+                                                    </v-col>
+                                                    <v-col cols="12" md="8" sm="8" class="pb-0">
+                                                        <v-menu v-model="menu_inspecteddate"
+                                                            :close-on-content-click="false"
+                                                            :nudge-right="40"
+                                                            transition="scale-transition"
+                                                            offset-y min-width="auto">
+                                                            <template
+                                                                v-slot:activator="{ on, attrs }">
+                                                                <v-text-field
+                                                                    v-model="BaseParm['InspectedDate']"
+                                                                    class="mt-0" clearable
+                                                                    readonly dense hide-details
+                                                                    v-bind="attrs"
+                                                                    v-on="on"></v-text-field>
+                                                            </template>
+                                                            <v-date-picker
                                                                 v-model="BaseParm['InspectedDate']"
-                                                                class="mt-0" clearable
-                                                                readonly dense hide-details
-                                                                v-bind="attrs"
-                                                                v-on="on"></v-text-field>
-                                                        </template>
-                                                        <v-date-picker
-                                                            v-model="BaseParm['InspectedDate']"
-                                                            :max="getNowDate()"
-                                                            locale="zh-tw" no-title @input="
-                                                        menu_inspecteddate = false;
-                                                        "></v-date-picker>
-                                                    </v-menu>
-                                                </v-col>
-                                            </v-row>
-                                        </v-col>
-                                        <v-col cols=12 md="6" sm="6">
-                                            <v-row class="item-row item">
-                                                <v-col cols="12" md="4" sm="4">
-                                                    <span class="pa-0 ma-0"
-                                                        slot="prepend"><v-icon
-                                                            @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
-                                                </v-col>
-                                                <v-col cols="12" md="8" sm="8">
-                                                    <v-text-field
-                                                        v-model="BaseParm['InspectedTime']"
-                                                        value="" dense type="time"
-                                                        hide-details></v-text-field>
-                                                </v-col>
-                                            </v-row>
-                                        </v-col>
-                                    </v-row>
-                                </div>
+                                                                :max="getNowDate()"
+                                                                locale="zh-tw" no-title @input="
+                                                            menu_inspecteddate = false;
+                                                            "></v-date-picker>
+                                                        </v-menu>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-col>
+                                            <v-col cols=12 md="6" sm="6">
+                                                <v-row class="item-row item">
+                                                    <v-col cols="12" md="4" sm="4">
+                                                        <span class="pa-0 ma-0"
+                                                            slot="prepend"><v-icon
+                                                                @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
+                                                    </v-col>
+                                                    <v-col cols="12" md="8" sm="8">
+                                                        <v-text-field
+                                                            v-model="BaseParm['InspectedTime']"
+                                                            value="" dense type="time"
+                                                            hide-details></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-col>
+                                        </v-row>
 
                                         <!-- 飼料參數 -->
                                         <v-expansion-panels id="feed" accordion multiple v-model="panel.panel_row13">
@@ -1666,11 +1664,14 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
-                                                                                    slot="prepend"><v-icon
-                                                                                        @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
+                                                                                    slot="prepend">資料日期</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <v-menu v-model="menu_inspecteddate"
+                                                                                <v-text-field
+                                                                                            v-model="BaseParm['InspectedDate']"
+                                                                                            class="mt-0" clearable
+                                                                                            readonly dense hide-details disabled></v-text-field>
+                                                                                <!-- <v-menu v-model="menu_inspecteddate"
                                                                                     :close-on-content-click="false"
                                                                                     :nudge-right="40"
                                                                                     transition="scale-transition"
@@ -1690,7 +1691,7 @@
                                                                                         locale="zh-tw" no-title @input="
                                                                                     menu_inspecteddate = false;
                                                                                     "></v-date-picker>
-                                                                                </v-menu>
+                                                                                </v-menu> -->
                                                                             </v-col>
                                                                         </v-row>
                                                                         <!-- <v-menu v-model="menu_inspecteddate" :close-on-content-click="false" :nudge-right="40"
@@ -1708,13 +1709,12 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
-                                                                                    slot="prepend"><v-icon
-                                                                                        @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
+                                                                                    slot="prepend">資料時間</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
                                                                                     v-model="BaseParm['InspectedTime']"
-                                                                                    value="" dense type="time"
+                                                                                    value="" dense type="time" disabled
                                                                                     hide-details></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
