@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="kb" :style="{'minHeight':`${windowHeight>880?'90vh':'87vh'}`}">
+        <v-card class="kb bg-card" :style="{'minHeight':`${windowHeight>880?'90vh':'87vh'}`}">
             <div class="card-title">
                 <v-row style="margin-bottom: 0;">
                     <!-- <div class="title">
@@ -72,16 +72,15 @@
                                     </template>
                                     <span>帶入養殖池的基本資料</span>
                                 </v-tooltip>
-                                <v-btn tile class="btn-secondary reset" @click="resetParm();getSelectData(null)">
+                                <v-btn tile class="btn-secondary delete" @click="resetParm();getSelectData(null)">
                                     清空
                                 </v-btn>
                             </div>
                             <!-- 控制項 - result版面收合 -->
                             <div class="control">
-                                <v-icon @click="dialog.pdf=true" title="公式">mdi-square-root-box</v-icon>
-                                <v-icon v-if="!nowExpand" @click="expandPanel(true)"
-                                    title="展開">mdi-view-dashboard</v-icon>
-                                <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
+                                <v-btn class="btn-icon"><v-icon @click="dialog.pdf=true" title="公式">mdi-square-root</v-icon></v-btn>
+                                <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="expandPanel(true)"><v-icon>mdi-view-dashboard</v-icon></v-btn>
+                                <v-btn class="btn-icon just-icon" v-if="nowExpand" @click="expandPanel(false)" title="收縮"><v-icon>mdi-view-stream</v-icon></v-btn>
                             </div>
                             <v-dialog v-model="dialog.pdf" scrollable max-width="75%">
                                 <v-card>
@@ -130,7 +129,7 @@
                                     </template>
                                     <span>帶入基本資料</span>
                                 </v-tooltip>
-                                <v-btn tile class="btn-secondary reset" @click="resetParm();getSelectData(null)">
+                                <v-btn tile class="btn-secondary delete" @click="resetParm();getSelectData(null)">
                                     清空
                                 </v-btn>
                             </div>
@@ -263,7 +262,7 @@
                                     <div class="btn-groups">
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add search" @click="postParm(false)" v-bind="attrs"
+                                                <button class="btn-icon-secondary" @click="postParm(false)" v-bind="attrs"
                                                     v-on="on">
                                                     <v-icon>mdi-magnify</v-icon>
                                                 </button>
@@ -273,7 +272,7 @@
                                         <v-tooltip bottom
                                             v-if="nowSelectPool!==''&&nowSelectPool!==null&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add" @click="postParm(true)" v-bind="attrs"
+                                                <button class="btn-icon green" @click="postParm(true)" v-bind="attrs"
                                                     v-on="on">
                                                     <v-icon>mdi-plus</v-icon>
                                                 </button>
@@ -283,7 +282,7 @@
                                         <v-tooltip bottom
                                             v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add save" @click="patchQuerry(nowSelectPool)"
+                                                <button class="btn-icon" @click="patchQuerry(nowSelectPool)"
                                                     v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-check</v-icon>
                                                 </button>
@@ -293,7 +292,7 @@
                                         <v-tooltip bottom
                                             v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add delete" @click="delQuerry(nowSelectPool)"
+                                                <button class="btn-icon delete" @click="delQuerry(nowSelectPool)"
                                                     v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-trash-can</v-icon>
                                                 </button>
@@ -302,11 +301,11 @@
                                         </v-tooltip>
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button v-if="!settingOpen" class="only-icon"
+                                                <button v-if="!settingOpen" class="btn-icon just-icon"
                                                     @click="settingOpen=!settingOpen" v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-bookmark-outline</v-icon>
                                                 </button>
-                                                <button v-else class="only-icon" @click="settingOpen=!settingOpen"
+                                                <button v-else class="btn-icon just-icon" @click="settingOpen=!settingOpen"
                                                     v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-bookmark</v-icon>
                                                 </button>
@@ -2097,8 +2096,8 @@
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button @click="openRemark" v-bind="attrs" v-on="on"
-                                                    :class="{'btn-secondary':inputRemark.DynamicData==''&&inputRemark.WaterQuality==''&&inputRemark.Material==''&&inputRemark.MakeWater==''&&inputRemark.Feed=='',
-                                                    'btn-primary':inputRemark.DynamicData!==''||inputRemark.WaterQuality!==''||inputRemark.Material!==''||inputRemark.MakeWater!==''||inputRemark.Feed!==''}">
+                                                    :class="{'btn-icon-secondary':inputRemark.DynamicData==''&&inputRemark.WaterQuality==''&&inputRemark.Material==''&&inputRemark.MakeWater==''&&inputRemark.Feed=='',
+                                                    'btn-icon':inputRemark.DynamicData!==''||inputRemark.WaterQuality!==''||inputRemark.Material!==''||inputRemark.MakeWater!==''||inputRemark.Feed!==''}">
                                                     <v-icon>mdi-clipboard-edit-outline</v-icon>
                                                 </button>
                                             </template>
@@ -2107,7 +2106,7 @@
                                         <v-tooltip bottom
                                             v-if="nowSelectPool!==''&&nowSelectPool!==null&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add" @click="postParm(true)" v-bind="attrs"
+                                                <button class="btn-icon green" @click="postParm(true)" v-bind="attrs"
                                                     v-on="on">
                                                     <v-icon>mdi-plus</v-icon>
                                                 </button>
@@ -2117,7 +2116,7 @@
                                         <v-tooltip bottom
                                             v-if="nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null&&isSearch&&nowUser==$auth.$state.user.email">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button class="btn-add save" @click="patchQuerry(nowSelectPool)"
+                                                <button class="btn-icon" @click="patchQuerry(nowSelectPool)"
                                                     v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-check</v-icon>
                                                 </button>
@@ -2126,11 +2125,11 @@
                                         </v-tooltip>
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
-                                                <button v-if="!aiOpen" class="only-icon" @click="aiOpen=!aiOpen"
+                                                <button v-if="!aiOpen" class="btn-icon just-icon" @click="aiOpen=!aiOpen"
                                                     v-bind="attrs" v-on="on">
                                                     <v-icon>mdi-bookmark-outline</v-icon>
                                                 </button>
-                                                <button v-else class="only-icon" @click="aiOpen=!aiOpen" v-bind="attrs"
+                                                <button v-else class="btn-icon just-icon" @click="aiOpen=!aiOpen" v-bind="attrs"
                                                     v-on="on">
                                                     <v-icon>mdi-bookmark</v-icon>
                                                 </button>
@@ -4531,65 +4530,12 @@ export default {
 <style lang="scss" scoped>
 .v-application.v-application--is-ltr {
     .v-card.kb {
-        // min-height: 84vh;
-        min-height: 87vh;
-        overflow: hidden;
-        // margin-bottom: 24px;
-        margin-bottom: 8px;
         * {
             color: #00273E;
         }
         button.v-icon, button.v-btn--icon .v-icon {
             color: #006AA6;
         }
-        .red--text {
-            color: #A60017 !important;
-        }
-        .btn-primary {
-            border-radius: 4px;
-            box-shadow: none;
-            background-color: #006AA6;
-            color: #fff;
-            transition: all 0.3s;
-            
-            &:hover {
-                background-color: lighten($color: #006AA6, $amount: 2);
-            }
-        }
-        .reset {
-            background-color: transparent;
-            color: #A60017 !important;
-            border: 1px solid #A60017;
-            transition: all 0.3s;
-            &:hover {
-                background-color: rgba($color: #A60017, $alpha: 0.2);
-            }
-        }
-        .card-title,.content {
-            padding: 12px;
-            .row {
-                margin-left: 0;
-                margin-top: 0;
-                margin-bottom: 12px;
-            }
-            .title {
-                display: flex;
-                align-items: center;
-                width: 100%;
-                .theme--light.v-icon {
-                    color: #6c9bcd;
-                }
-            }
-        }
-        .card-title {
-            padding-bottom: 0;
-            .v-card__title {
-                color: #00273E;
-                font-weight: bold;
-                
-            }
-        }
-        
         .content {
             padding-top: 0;
             padding-bottom: 2px;
@@ -4597,20 +4543,6 @@ export default {
                 margin-top: -4px;
             }
             .row {
-                align-items: center;
-                .v-input {
-                    margin-top: 0;
-                    padding-top: 0;
-                &.primary {
-                    background-color: transparent !important;;
-                }
-                }
-                .theme--light.v-btn.v-btn--disabled .v-icon {
-                    color: #BFCBD2 !important;
-                }
-                .theme--light.v-btn.v-btn--disabled .v-btn__loading,.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
-                    background-color: #BFCBD2 !important;
-                }
                 .tag {
                     font-size: 0.85rem;
                     margin-right: 8px;
@@ -4630,8 +4562,6 @@ export default {
                 background-color: #E6F5FA;
             }
             .card-title {
-                display: flex;
-                align-items: center;
                 padding: 4px 16px;
                 &.next-line {
                     flex-direction: column;
@@ -4642,7 +4572,6 @@ export default {
                         justify-content: flex-start;
                     }
                 }
-                
                 .title {
                     //border-bottom: 1px solid rgba(0,0,0,0.1);
                     .v-icon.v-icon {
@@ -4665,60 +4594,9 @@ export default {
                     // border-bottom: 1px solid rgba(0,0,0,0.1);
                     padding: 8px;
                     button {
-                        width: 24px;
-                        height: 24px;
-                        background-color: #006AA6;
-                        border-radius: 4px;
-                        position: relative;
-                        margin: 4px;
-                        transition: all 0.3s;
-                        &:hover {
-                            background-color: lighten($color: #006AA6, $amount: 3);
-                        }
-                        .theme--light.v-icon {
-                            font-size: 1rem;
-                            color: #fff;
-                            position: absolute;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%,-50%);
-                        }
-                        
-                        &.btn-add {
-                            background-color: #00A660;
-                            &:hover {
-                                background-color: lighten($color: #00A660, $amount: 3);
-                            }
-                            &.search {
-                                background-color: transparent;
-                                border: 1px solid $color-primary;
-                                .theme--light.v-icon {
-                                    color: $color-primary !important;
-                                }
-                                &:hover {
-                                    background-color: rgba($color-primary,0.1);
-                                }
-                            }
-                        }
-                        &.save {
-                            background-color: #006AA6;
-                            &:hover {
-                                background-color: lighten($color: #006AA6, $amount: 3);
-                            }
-                        }
-                        &.delete {
-                            background-color: #A60017;
-                            &:hover {
-                                background-color: lighten($color: rgba(#A60017,0.9), $amount: 3);
-                            }
-                        }
-                        &.only-icon {
-                            background-color: transparent;
-                            border: none;
+                        &.btn-icon.just-icon {
                             .theme--light.v-icon {
-                                color: $color-primary;
                                 font-size: 1.2rem;
-                                font-weight: bold;
                             }
                         }
                     }
@@ -4733,44 +4611,20 @@ export default {
                 }
                 .row.item-row {
                     margin-bottom: 8px;
-                    
-                    & > .col-12 {
-                        // padding: 0 8px;
+                    & > .col-12,& > .col-6,& > .col-md-7,& > .col-md-5 {
                         padding: 0;
+                    }
+                    & > .col-12 {
                         & > span {
                             display: flex;
                             align-items: center;
                         }
-                        .v-input {
-                            // margin: 0 8px;
-                        }
-                        
-                    }
-                    & > .col-6 {
-                        padding: 0;
-                    }
-                    & > .col-md-7 {
-                        padding: 0;
-                    }
-                    & > .col-md-5 {
-                        padding: 0 16px;
                     }
                     &.item {
-                        // display: flex;
-                        // flex-direction: column;
                         & >.col-12 {
                             padding: 0;
                         }
-                        & > .col-md-6 {
-                            padding: 0 4px;
-                            padding-right: 16px;
-                        }
-                        
-                        & > .col-md-8 {
-                            padding: 0 4px;
-                            padding-right: 16px;
-                        }
-                        & > .col-sm-8 {
+                        & > .col-md-6,& > .col-md-8,& > .col-sm-8 {
                             padding: 0 4px;
                             padding-right: 16px;
                         }
@@ -4783,20 +4637,13 @@ export default {
                             
                         }
                     }
-                    
-                }
-
-                .btn-icon {
-                    border-radius: 50%;
-                    & .v-icon {
-                        color: #fff !important;
-                    }
                 }
                 .alertOpen {
                     .v-icon.v-icon {
                         color: $color-primary;
                     }
                 } 
+                // panels
                 .theme--light.v-expansion-panels .v-expansion-panel {
                     background-color: transparent;
                 }
@@ -4843,9 +4690,6 @@ export default {
                 .theme--light.v-expansion-panels .v-expansion-panel:not(:first-child)::after {
                     border: none;
                 }
-                .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
-                    font-size: 16px;
-                }
                 .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
                     background: transparent;
                 }
@@ -4856,99 +4700,22 @@ export default {
                 
             }
         }
-        .fixed-btn {
-            position: fixed;
-            bottom: 40px;
-            right: 16px;
-            z-index: 1000;
-            .btn-primary {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
-                margin: 0;
-                .v-icon.v-icon {
-                    color: #fff !important;
-                    font-size: 1.5rem;
-                }
-            }
-            .to-self {
-                display: flex;
-                flex-direction: column;
-                width: 120px;
-                align-items: flex-end;
-                .btn-primary.btn-to {
-                    border-radius: 4px 4px 0 0 !important;
-                    // background-color: #BFD9E8;
-                    &.to-ai {
-                        border-radius: 0 0 4px 4px !important;
-                        background-color: #2fba95 !important;
-                    }
-                }
-            }
-        }
         
     }
     
 }
 ::v-deep {
-    .search {
-        // param select
-        .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
-            box-shadow: none;
-            border: 1px solid #6c9bcd;
-        }
-        .theme--light.v-icon {
-            color: #6c9bcd;
-        }
-        .theme--light.v-label {
-            color: #00273E;
-        }
-        .v-autocomplete.v-select.v-input--is-focused input {
-            min-width: 0;
-        }
-        .v-input--is-disabled {
-            
-            .theme--light.v-label {
-                color: $color-dark-50;
-            }
-            &.v-text-field--solo:not(.v-text-field--solo-flat) > .v-input__control > .v-input__slot {
-                border-color: $color-dark-50;
-            }
-        }
-    }
     .result {
         .v-card.result-card {
             .content {
                 .v-expansion-panel-content__wrap {
                     padding: 0 0 16px;
                 }
-                .v-input__prepend-outer {
-                    width: 100% !important;
-                    span {
-                        display: flex;
-                        align-items: center;
-                        button.v-icon {
-                            margin-right: 4px;
-                        }
-                    }
-                }
-                .v-text-field--filled.v-input--dense.v-text-field--single-line > .v-input__control > .v-input__slot {
-                    min-height: 0;
-                }
                 .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
                     background-color: transparent;
                 }
                 .v-text-field.v-input--dense:not(.v-text-field--outlined) input {
                     padding: 0px 4px 2px;
-                }
-                .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--single-line .v-input__prepend-outer,
-                .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--single-line .v-input__append-inner {
-                    margin-top: 4px;
-                }
-                .v-text-field {
-                    display: flex;
-                    align-items: center;
                 }
                 .v-text-field .v-input__append-inner {
                     font-size: 14px;
@@ -4974,32 +4741,11 @@ export default {
                     color: #fff;
                     margin-top: 2px;
                 }
-                // .v-input__prepend-outer span button.v-icon.mdi-plus {
-                //     width: 24px;
-                //     height: 24px;
-                //     background-color: #006AA6;
-                //     color: #fff;
-                //     border-radius: 50%;
-                //     font-size: 1rem;
-                // }
-                // .v-btn--fab.v-size--x-small {
-                //     width: 24px;
-                //     height: 24px;
-                // }
-                // .v-btn--is-elevated.v-btn--fab {
-                //     box-shadow: none;
-                // }
                 .v-badge__badge {
                     height: 14px;
                     min-width: 14px;
                 }
 
-                // .theme--light.v-data-table {
-                //     background-color: transparent;
-                //     &.v-data-table--fixed-header thead th {
-                //         background-color: transparent;
-                //     }
-                // }
                 .v-data-table--fixed-header > .v-data-table__wrapper {
                     border-radius: 4px;
                     overflow-x: hidden;
@@ -5028,21 +4774,6 @@ export default {
         }
         .v-card.result-card.ai-suggestion {
             .content {
-                .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
-                    font-size: 16px;
-                }
-                .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > td:not(.v-data-table__mobile-row), .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:not(:last-child) > th:not(.v-data-table__mobile-row) {
-                    border: none;
-                }
-                .v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
-                    padding: 0;
-                }
-                // #aiwater,#ainet {
-                //     .v-data-table > .v-data-table__wrapper > table > tbody > tr {
-                //         // border-bottom: 1px solid rgba(0,0,0,0.1);
-                //         box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
-                //     }
-                // }
                 // disable
                 .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
                     border-image: none;
@@ -5068,48 +4799,11 @@ export default {
             border-radius: 4px;
             padding: 0 8px;
         }
-        .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
-        .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
-        .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-            border-color: transparent;
-        }
-        .v-sheet.v-card {
-        border-radius: 4px 0 0 4px;
-        }
         .v-card__title.add-title {
-        color: $color-dark;
-        font-weight: bold;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        font-size: 1.1rem;
-        }
-        .card-title {
-        display: flex;
-        align-items: center;
-        padding: 0;
-        margin: 12px 16px;
-        .title {
-            width: 100%;
-            .v-card__title {
-            font-size: 1rem;
-            padding: 0;
+            color: $color-dark;
             font-weight: bold;
-            color: $color-dark;
-            }
-        }
-        .chevron {
-            .v-icon {
-            color: $color-dark;
-            }
-        }
-        }
-        
-        .v-card__title + .v-card__text {
-        padding-bottom: 0;
-        padding-top: 0;
-        }
-        .v-card__text {
-        padding-top: 0;
-        padding-bottom: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            font-size: 1.1rem;
         }
         .dialog-text {
             display: flex;
@@ -5135,24 +4829,8 @@ export default {
             }
         }
         .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-        padding: 0;
-        }
-        .btn-groups {
-            display: flex;
-            align-items: center;
-            padding-bottom: 4px;
-            margin-left: 8px;
-            .v-icon.v-icon {
-                font-size: 1.25rem;
-            }
-            .theme--light.v-icon {
-                color: #006AA6;
-            }
-            .theme--light.v-icon.mdi-format-color-text {
-                padding-top: 6px;
-                font-size: 1.35rem;
-            }
-            
+            padding: 0;
+            padding: 0;
         }
     }
 }
@@ -5193,17 +4871,6 @@ export default {
     padding-left: 4px;
     margin-right: 4px;
 }
-// scrollbar
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-::-webkit-scrollbar-track {
-    background: none; 
-}
-::-webkit-scrollbar-thumb {
-    background-color: $color-dark-50;
-}
 @media (max-width:960px) {
     .v-application.v-application--is-ltr {
         .v-card.kb {
@@ -5219,21 +4886,8 @@ export default {
                     padding-bottom: 0px !important;
                 }
             }
-            
-            // .v-card.result-card {
-            //     .content {
-            //         .table-content {
-            //             height: inherit !important;
-            //             overflow-y: inherit !important;
-            //         }
-            //     }
-            // }
         }
     }
-    // #params,#ai {
-    //     padding-top: 4px;
-    //     padding-right: 0;
-    // }
 }
 @media (max-width:425px) {
     .v-application.v-application--is-ltr {
