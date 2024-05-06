@@ -298,7 +298,7 @@ export default {
     layout: "emptynologin2",
     head(){
         return {
-            title:"每日任務",
+            title:"DailyCheck",
             }
     },
     data() {
