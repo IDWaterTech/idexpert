@@ -2323,7 +2323,7 @@
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
                                                     expand-icon="mdi-chevron-down">投餌方案
-                                                    <div style="margin-left: 4px;" title="計算方式" v-if="false">
+                                                    <div style="margin-left: 4px;" title="計算方式">
                                                         <v-btn class="btn-icon" style="border-radius: 4px;"
                                                             @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
                                                     </div>
@@ -3389,7 +3389,7 @@
                 </v-card-title>
                 <v-card-text style="height: 600px;">
                     <v-responsive>
-                        <iframe :src="formulaUrl" style="overflow:hidden;height:600px;width:100%;"></iframe>
+                        <iframe :src="url.feed.xls" style="overflow:hidden;height:600px;width:100%;"></iframe>
                     </v-responsive>
                 </v-card-text>
             </v-card>
@@ -3488,8 +3488,14 @@ export default {
             },
             // formulaUrl:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
             url:{
-                pdf:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
-                xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLS_4p8BhJ1yNhmqv4_pVEt7CUCDueo6r51pyT7fcaNIVdGWYA2b6oCTBQSoH-rrBrEMdQ05QVGebk/pubhtml?widget=true&amp;headers=false'
+                all: {
+                    pdf:'https://drive.google.com/file/d/1bX5klfM74SNV06tM55A5YGTXRO0sER-9/preview',
+                    xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLS_4p8BhJ1yNhmqv4_pVEt7CUCDueo6r51pyT7fcaNIVdGWYA2b6oCTBQSoH-rrBrEMdQ05QVGebk/pubhtml?widget=true&amp;headers=false'
+                },
+                feed: {
+                    xls:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzEivBAKUhwQ4bL1h8TjIUz9p7sVBEtjSHtJejMUpH2cCPl_M2rtW3CxtM36o87qLpbwa4lEc-_dIR/pubhtml?widget=true&amp;headers=false'
+                }
+                
             },
             observationKey:{},
             remarkDialog: false,
@@ -4497,7 +4503,7 @@ export default {
     },
     computed: {
         formulaUrl(){
-            return this.formulaData?this.url.pdf:this.url.xls;
+            return this.formulaData?this.url.all.pdf:this.url.all.xls;
         },
         ShowPoolName(){
             var Factory = (this.BaseParm["Factory"]==undefined)?'':this.BaseParm["Factory"];
