@@ -719,7 +719,7 @@ export default {
         is_executed: true
       };
       var res = false;
-        res = this.postFeedCheckUpdateList(parm);
+        res = await this.postFeedCheckUpdateList(parm);
         setTimeout(()=>{
           if(res) {
             // 原本是清空資料，怪怪der，因此更改為重新撈取資料(因為要執行者和是否執行的資訊)

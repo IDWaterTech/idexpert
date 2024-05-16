@@ -820,7 +820,7 @@ export default {
       // 有資料再進行新增
       if(data.length>0) {
         var res = false;
-        res = this.postFeedRecordList(parm);
+        res = await this.postFeedRecordList(parm);
         setTimeout(()=>{
           if(res) {
             this.dataclear(); //清除資料
@@ -1183,7 +1183,7 @@ export default {
       ) {
         console.log(parm);
         var res = false;
-        res = this.deleteFeedRecordList(parm);
+        res = await this.deleteFeedRecordList(parm);
         setTimeout(()=>{
             if(res) {
               this.dataclear(); //清除資料

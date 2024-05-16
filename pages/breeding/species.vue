@@ -383,13 +383,13 @@ export default {
                 if(confirm(`確定刪除 ${title} ?`)){
                     if(this.nowCata=='品種') {
                         // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${item.id}/`
-                        res = this.deleteSpeciesList(item.id);
+                        res = await this.deleteSpeciesList(item.id);
                     }else if(this.nowCata=='疾病') {
                         // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${item.id}/`
-                        res = this.deleteDiseaseList(item.id);
+                        res = await this.deleteDiseaseList(item.id);
                     }else {
                         // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${item.id}/`
-                        res = this.deleteMethodList(item.id);
+                        res = await this.deleteMethodList(item.id);
                     }
                     setTimeout(()=>{
                         if(res) {
@@ -428,13 +428,13 @@ export default {
             console.log(parm)
             if(this.nowCata=='品種') {
                 // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${this.edititem.id}/`
-                res = this.patchSpeciesList(parm,this.edititem.id);
+                res = await this.patchSpeciesList(parm,this.edititem.id);
             }else if(this.nowCata=='疾病') {
                 // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${this.edititem.id}/`
-                res = this.patchDiseaseList(parm,this.edititem.id);
+                res = await this.patchDiseaseList(parm,this.edititem.id);
             }else {
                 // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${this.edititem.id}/`
-                res = this.patchMethodList(parm,this.edititem.id);
+                res = await this.patchMethodList(parm,this.edititem.id);
             }
             setTimeout(()=>{
                 if(res) {
@@ -473,13 +473,13 @@ export default {
             let url = '';
             if(this.nowCata=='品種') {
                 // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/`
-                res = this.postSpeciesList(parm);
+                res = await this.postSpeciesList(parm);
             }else if(this.nowCata=='疾病') {
                 // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/`
-                res = this.postDiseaseList(parm);
+                res = await this.postDiseaseList(parm);
             }else {
                 // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/`
-                res = this.postMethodList(parm);
+                res = await this.postMethodList(parm);
             }
             setTimeout(()=>{
                 if(res) {

@@ -1935,7 +1935,7 @@ export default {
       console.log("DEL data:", deldata);
       console.log("DEL:" + url);
       var res = false;
-      res = this.deleteColDataList(this.editedItem.id,deldata);
+      res = await this.deleteColDataList(this.editedItem.id,deldata);
       setTimeout(()=>{
         if(res) {
           this.delDialog = false; //close dialog
@@ -1974,7 +1974,7 @@ export default {
           // console.log("DEL data:", deldata);
           // console.log("DEL:" + url);
           var res = false;
-          res = this.deleteColDataList(editedItem.id, deldata);
+          res = await this.deleteColDataList(editedItem.id, deldata);
           setTimeout(()=>{
             if(res) {
               record+=1;
@@ -2075,7 +2075,7 @@ export default {
           data_group: this.editedItem.class
         };
         var res = false;
-        res = this.patchColDataList(data,this.editedItem.id);
+        res = await this.patchColDataList(data,this.editedItem.id);
         setTimeout(()=>{
             if(res) {
               this.getdata();
@@ -2197,7 +2197,7 @@ export default {
         parms.data = submitData;
         console.log("adddata aparms", parms);
         var res = false;
-          res = this.postColDataList(parms);
+          res = await this.postColDataList(parms);
           setTimeout(()=>{
               if(res) {
                 if(this.sdate&&this.edate&&this.sel_main&&this.sel_area&&this.sel_pool&&this.defitem) {
@@ -2933,7 +2933,7 @@ export default {
       let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'
                     :this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+this.observeEdit.leftover_id+'/'}`;
       var res = false;
-      res = this.nowObserve=='add'?this.postLeftoverRecordList(parm):this.patchLeftoverRecordList(parm,this.observeEdit.leftover_id);
+      res = this.nowObserve=='add'?await this.postLeftoverRecordList(parm):await this.patchLeftoverRecordList(parm,this.observeEdit.leftover_id);
       setTimeout(()=>{
         this.observeDialog = false;
         this.getObservationData();
@@ -2988,7 +2988,7 @@ export default {
       if (confirm(`確認刪除此觀察網紀錄?`)) {
         var res = false;
         let index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
-        res = this.deleteObservationRecordList(this.observableData[index].shrimp_id);
+        res = await this.deleteObservationRecordList(this.observableData[index].shrimp_id);
         setTimeout(()=>{
             if(res) {
               if(this.observableData[index].leftover_id==null) {
@@ -3025,7 +3025,7 @@ export default {
     // 殘餌量刪除
     async deleteObservable(id) {
       var res = false;
-      res = this.deleteLeftoverRecordList(id);
+      res = await this.deleteLeftoverRecordList(id);
       setTimeout(()=>{
           if(res) {
             this.observeDialog = false;

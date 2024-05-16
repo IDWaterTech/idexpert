@@ -236,7 +236,7 @@
                         species_id: this.seedFormData.species_id
                     };
                     var res = false;
-                    res = this.postSeedlingList(parm);
+                    res = await this.postSeedlingList(parm);
                     setTimeout(()=>{
                         if(res) {
                             this.dialog.seedForm = false;
@@ -271,7 +271,7 @@
                 if(confirm(`確定刪除? [${title}]`)){
                     var id = this.SeedlingModel;
                     var res = false;
-                    res = this.deleteSeedlingList(id);
+                    res = await this.deleteSeedlingList(id);
                     setTimeout(()=>{
                         if(res) {
                             this.getSeedlingData();//取得苗清單
@@ -314,7 +314,7 @@
                     };
                     var id = this.seedFormData.id;
                     var res = false;
-                    res = this.patchSeedlingList(parm,id);
+                    res = await this.patchSeedlingList(parm,id);
                     setTimeout(()=>{
                         if(res) {
                             this.dialog.seedForm = false;
