@@ -679,7 +679,7 @@
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn slot="append-outer" :class="{'disabled':(editItem.step_id==undefined)}" class="btn-icon delete" @click="deleteWorkItem" v-bind="attrs" v-on="on"><v-icon>mdi-trash-can</v-icon></v-btn>
                                     </template>
-                                    <span>刪除</span>
+                                    <span>永久刪除</span>
                                 </v-tooltip>
                             </div>
                         </div>
