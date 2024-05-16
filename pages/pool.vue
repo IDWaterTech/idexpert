@@ -3593,6 +3593,9 @@ export default {
         this.addReport = [];
         this.addReport.push(item);
         this.addReport[0].filename = decodeURI(this.addReport[0].file.split('.pdf')[0].split(item.type==2?'water_quality_testing_record/':'disease_testing_record/')[1].split('_')[0])+'.pdf';
+        if(this.addReport[0].pond_ids) {
+          this.addReport[0].pond_id =this.addReport[0].pond_ids;
+        }
         if(item.type == 1) {
           this.addReport[0].disease_id = [];
           this.addReport[0].disease.forEach(x=>this.addReport[0].disease_id.push(x.id))

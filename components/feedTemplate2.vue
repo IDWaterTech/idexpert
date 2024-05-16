@@ -22,6 +22,10 @@
                                 style="padding: 0 8px;">
                                 <v-icon style="font-size: 1.5rem;">mdi-content-save</v-icon>儲存
                             </v-btn>
+                            <v-btn class="btn-secondary delete" title="清空樣板"
+                                @click="clearTemp"
+                                style="padding: 0 8px;">清空樣板
+                            </v-btn>
                         </v-col>
                         <v-col cols="2" v-if="templatemode=='edit'" style="display: flex;align-items: center;justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存編輯"
@@ -36,7 +40,8 @@
             </v-col>
             <!-- 主要樣版內容 -->
             <v-col cols="12">
-                <div v-for="(mitem,id) in mainItems" :key="'status_'+mitem.phase_id" class="timeline">
+                <div v-if="passObj.nowEnd" class="error-text" style="padding: 12px;"><b>此循環已結束({{ passObj.ended_date }})</b></div>
+                <div v-for="(mitem,id) in mainItems" :key="'status_'+mitem.phase_id+'_'+Math.floor(Math.random() * 1000)" class="timeline">
                     <v-row class="template-outer" 
                         style="align-items: flex-start;margin-bottom: 0;"
                         :style="{'flexDirection':`${windowWidth<834?'column':'row'}`}">
@@ -77,7 +82,7 @@
                                         :style="{'backgroundColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"
                                         @click="open(mitem,id)" >
                                         <div class="title">
-                                            <v-btn v-if="mitem.stepList==undefined||mitem.stepList.length==0" class="btn-icon green" @click="open(mitem,id);addWorkDialogOpen(mitem.phase_id,0)"><v-icon>mdi-plus</v-icon></v-btn>
+                                            <v-btn v-if="(mitem.stepList==undefined||mitem.stepList.length==0)&&templatemode!=='cycleedit'" class="btn-icon green" @click="open(mitem,id);addWorkDialogOpen(mitem.phase_id,0)"><v-icon>mdi-plus</v-icon></v-btn>
                                             <v-card-title>
                                                 {{ templatemode=='cycleedit'?mitem.phase_name_ch:mitem.phase_name }}
                                                 <span> ． {{ mitem.day }} 天</span>
@@ -98,15 +103,17 @@
                                                     <v-tooltip v-if="work.remark&&work.remark!==''" bottom>
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-card-title style="font-size: 0.9rem;" v-bind="attrs" v-on="on">{{work.step_name }}
-                                                                <span v-if="work.actions&&work.actions.length>0">． {{work.actions[work.actions.length-1].end}} 天</span> 
-                                                                <span v-else>． 0 天</span>
+                                                                <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{(work.actionList[work.actionList.length-1].end_on_which_day-work.actionList[0].start_on_which_day)+1}} 天</span> 
+                                                                <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{ passObj.tempContent[id].stepList[wid].actionList[passObj.tempContent[id].stepList[wid].actionList.length-1].end_on_which_day-passObj.tempContent[id].stepList[wid].actionList[0].start_on_which_day+1 }} 天</span>
+                                                                <span v-else>． 0 天 </span>
                                                             </v-card-title>
                                                         </template>
                                                         <span>{{ work.remark }}</span>
                                                     </v-tooltip>
                                                     
                                                     <v-card-title v-else style="font-size: 0.9rem;">{{work.step_name }}
-                                                        <span v-if="work.actions&&work.actions.length>0">． {{work.actions[work.actions.length-1].end}} 天</span>
+                                                        <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{(work.actionList[work.actionList.length-1].end_on_which_day-work.actionList[0].start_on_which_day)+1}} 天</span>
+                                                        <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{ passObj.tempContent[id].stepList[wid].actionList[passObj.tempContent[id].stepList[wid].actionList.length-1].end_on_which_day-passObj.tempContent[id].stepList[wid].actionList[0].start_on_which_day+1}} 天</span>
                                                         <span v-else>． 0 天</span>
                                                     </v-card-title>
                                                 </div>
@@ -131,7 +138,7 @@
                                             </div>
                                             <v-data-table v-if="work.open" light 
                                                 :headers="headers.filter(x => x.showmode.includes(templatemode))"
-                                                :items="work.actions"
+                                                :items="work.actionList?work.actionList:[]"
                                                 :no-data-text="templatemode=='cycleedit'?'無':'暫無動作，請點選編輯按鈕編輯動作'"
                                                 hide-default-footer
                                                 disable-pagination
@@ -179,12 +186,12 @@
                                                     <span v-else>{{ item.step_name }}</span>
                                                 </template>
                                                 <!-- 第幾天開始執行 -->
-                                                <template v-slot:[`item.start`]="{ item }">
-                                                    Day {{item.start}}
+                                                <template v-slot:[`item.start_on_which_day`]="{ item }">
+                                                    <span v-if="(templatemode=='cycleedit'&&item.type==0)||templatemode!=='cycleedit'">Day {{item.start_on_which_day}}</span>
                                                 </template>
                                                 <!-- 持續執行至第幾天 -->
-                                                <template v-slot:[`item.end`]="{ item }">
-                                                    Day {{item.end}}
+                                                <template v-slot:[`item.end_on_which_day`]="{ item }">
+                                                    <span v-if="(templatemode=='cycleedit'&&item.type==0)||templatemode!=='cycleedit'">Day {{item.end_on_which_day}}</span>
                                                 </template>
                                                 <!-- 訊息 -->
                                                 <template v-slot:[`item.msg`]="{ item }">
@@ -202,11 +209,15 @@
                                                     
                                                 </template>
                                                 <!-- 執行/不執行說明 -->
-                                                <template v-slot:[`item.executed_actions`]="{ item }">
-                                                    <div v-if="item.execute&&item.execute!==0">
-                                                        <span :style="{'color':`${item.execute==2?'red':'initial'}`}">{{ item.execute==1?'已執行':'不執行' }}</span>
-                                                        <span v-if="item.msg&&item.msg!==''"><br>{{ item.msg }}</span>
+                                                <template v-slot:[`item.executed_actions`]="{ item,index }">
+                                                    <div v-if="item.execute"  @click="executeDailogOpen(id,wid,index)">
+                                                        <v-btn class="btn-secondary btn-small" :class="{'delete':item.execute==2}">{{ item.execute==3?'尚未完成執行':item.execute==1?'已執行':'異常' }}</v-btn>
                                                     </div>
+                                                    <!-- <div v-if="item.dailyCheckList&&item.dailyCheckList.length>0" style="cursor: pointer;" @click="executeDailogOpen(id,wid,index)">
+                                                        <div v-for="(exe,eid) in item.dailyCheckList" :key="'executed_'+id+'_'+'_'+wid+'_'+eid" style="display: inline-block;">
+                                                            <span :style="{'color':`${exe.execute_status==2?'red':'initial'}`}" style="display: inline-block;border-bottom:1px solid #006AA6">{{ exe.execute_status==1?'已執行':'不執行' }}/</span>
+                                                        </div>
+                                                    </div> -->
                                                     <div class="btn-groups" v-if="item.type && item.type !== 0 && item.type !== null">
                                                         <v-btn  class="btn-secondary btn-small green"
                                                             @click="if(item.file || item.type == 3){viewOpen=true;viewDetail=item}" 
@@ -221,7 +232,8 @@
                                                 <template v-slot:[`item.deft_executor`]="{ item }">
                                                     
                                                     <span v-if="item.execute_time&&item.execute_time!==''" v-text="dateFormat(item.execute_time)"></span>
-                                                    <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span>
+                                                    <!-- <span v-if="item.type==0&&templatemode=='cycleedit'&&item.dailyCheckList&&item.dailyCheckList.length>0" v-text="dateFormat(item.dailyCheckList[0].execute_time)"></span> -->
+                                                    <!-- <span v-if="item.type!==3&&item.type!==1&&item.type!==2">{{ item.deft_executor }} </span> -->
                                                     <!-- {{ dateFormat(item.execute_time) }} -->
                                                 </template>
                                                 <!-- 編輯/刪除 -->
@@ -231,7 +243,7 @@
                                                             <v-btn  class="btn-icon"
                                                                 title="編輯" 
                                                                 @click="editsubitem(mitem.phase_id,wid, index)"
-                                                                :class="{'disabled':work.actions[index].type==0||work.actions[index].type==3}" 
+                                                                :class="{'disabled':(work.actionList[index].type==0||work.actionList[index].type==3)}" 
                                                                 v-bind="attrs" v-on="on">
                                                                 <v-icon>mdi-pencil</v-icon>
                                                             </v-btn>
@@ -245,7 +257,7 @@
                                                                 title="刪除" 
                                                                 @click="delsubitem(mitem.phase_id,wid, index)" 
                                                                 v-bind="attrs" v-on="on"
-                                                                :class="{'disabled':work.actions[index].type==0||work.actions[index].type==3}">
+                                                                :class="{'disabled':(work.actionList[index].type==0||work.actionList[index].type==3)}">
                                                                 <v-icon>mdi-trash-can</v-icon>
                                                             </v-btn>
                                                         </template>
@@ -257,7 +269,8 @@
                                             
                                         </div>
                                         <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
-                                            <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
+                                            <v-btn class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
+                                            <!-- <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
                                             <v-tooltip v-else bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn class="btn-primary btn-small disabled"
@@ -268,7 +281,7 @@
                                                     </v-btn>
                                                 </template>
                                                 <span>未授權</span>
-                                            </v-tooltip>
+                                            </v-tooltip> -->
                                         </div>
                                         
                                     </div>
@@ -280,7 +293,7 @@
                 </div>
             </v-col>
         </v-row>
-        <!-- 新增其他項目的dialog -->
+        <!-- 新增其他項目的dialog(舊) -->
         <!-- <v-dialog v-model="dialog.additem" max-width="500px">
             <v-form v-model="addvalid" ref="addform">
                 <v-card class="custom-dialog">
@@ -371,7 +384,7 @@
                 </v-card>
             </v-form>
         </v-dialog> -->
-        <!-- 編輯其他項目的dialog -->
+        <!-- 編輯其他項目的dialog(舊) -->
         <!-- <v-dialog v-model="editem" max-width="500px">
             <v-form v-model="editvalid" ref="editform">
                 <v-card class="custom-dialog">
@@ -521,22 +534,22 @@
                                 </v-tooltip> -->
                             </div>
                         </div>
-                        <div class="content">
-                            <v-card-text v-if="editItem.actions&&editItem.actions.length>0">
-                                <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actions[0].start}}」天開始執行動作({{editItem.actions[0].step_name}})，持續執行到第「{{editItem.actions[0].end}}」天</span>
+                        <div class="content" style="height: 30vh;overflow-y: scroll;">
+                            <v-card-text v-if="editItem.actionList&&editItem.actionList.length>0">
+                                <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actionList[0].start_on_which_day}}」天開始執行動作({{editItem.actionList[0].action_name}})，持續執行到第「{{editItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
-                            <v-card-text v-for="(item,id) in editItem.actions" :key="'editAction_'+item.step_id" class="work-item" style="padding-top: 0;" >
+                            <v-card-text v-for="(item,id) in editItem.actionList" :key="'editAction_'+item.action_id+'_'+id" class="work-item" style="padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
-                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
+                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
+                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
                                 <!-- 財務 -->
                                 <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;">
@@ -552,10 +565,10 @@
                                         </v-text-field>
                                     </div>
                                     <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field type="number" v-model.number="item.member" min="0" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
+                                        <v-text-field type="number" v-model.number="item.estimated_member" min="0" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
                                     </div>
                                     <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field type="number" v-model.number="item.spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
+                                        <v-text-field type="number" v-model.number="item.estimated_spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
                                     </div>
                                     <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
                                 </v-row> -->
@@ -653,8 +666,8 @@
                     </v-card-title>
                     <div class="basic">
                         <div class="card-title" style="margin-bottom: 0;">
-                            <v-autocomplete v-model="editItem.step_id" dense filled :rules="rules.require" :items="addWorkList" item-text="step_name"
-                                    item-value="step_id" @change="addWorkItemChange"></v-autocomplete>
+                            <v-autocomplete v-model="editItem.step_id" dense filled :rules="rules.require" :items="addWorkList" item-text="name_ch"
+                                    item-value="id" @change="addWorkItemChange"></v-autocomplete>
                             <div class="chevron">
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
@@ -677,7 +690,7 @@
                             </div>
                         </div>
                         <v-card-text style="display: flex;align-items: center;padding-top: 0;">
-                            <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
+                            <v-text-field v-model="editItem.remark" disabled autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
                             </v-text-field>
                         </v-card-text>
                         <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
@@ -685,13 +698,14 @@
                                 <v-card-title>預設動作</v-card-title>
                             </div>
                         </div>
-                        <div class="content" v-if="editItem.actions&&editItem.actions.length>0">
-                            <v-card-text v-for="item in editItem.actions" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                        <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="height: 30vh;overflow-y: scroll;">
+                            <v-card-text v-for="item in editItem.actionList" :key="'addAction_'+item.action_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
-                                    <v-col cols="3">{{ item.step_name }}</v-col>
-                                    <v-col cols="3">Day {{ item.start }} ~ Day {{ item.end }}</v-col>
-                                    <v-col cols="3">預估花費 {{item.member}} 人</v-col>
-                                    <v-col cols="3">預估花費 $ {{item.member}} </v-col>
+                                    <v-col cols="6">{{ item.action_name }}</v-col>
+                                    <v-col cols="6">Day {{ item.start_on_which_day }} ~ Day {{ item.end_on_which_day }}</v-col>
+                                    <!-- 財務 -->
+                                    <!-- <v-col cols="3">預估花費 {{item.estimated_member}} 人</v-col>
+                                    <v-col cols="3">預估花費 $ {{item.estimated_member}} </v-col> -->
                                 </v-row>
                             </v-card-text>
                         </div>
@@ -729,7 +743,7 @@
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="margin-bottom: 0;">
+                        <!-- <div class="card-title" style="margin-bottom: 0;">
                             <div class="title">
                                 <v-card-title>工作名稱</v-card-title>
                             </div>
@@ -737,6 +751,13 @@
                         <v-card-text style="display: flex;align-items: center;padding-top: 0;">
                             <v-text-field v-model="addItem.step_name" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
                             </v-text-field>
+                        </v-card-text> -->
+                        <v-card-text>
+                            <v-text-field v-model="addItem.name_ch" filled dense :rules="rules.require" label="工作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="addItem.name_en" filled dense :rules="rules.require" label="工作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
+                        </v-card-text>
+                        <v-card-text style="padding-top: 0;">
+                            <v-text-field v-model="addItem.remark" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
                         </v-card-text>
                         <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
                             <div class="title">
@@ -754,22 +775,22 @@
                                 </v-tooltip> -->
                             </div>
                         </div>
-                        <div class="content">
-                            <v-card-text v-if="addItem.actions&&addItem.actions.length>0">
-                                <span class="error-text">*說明：工作({{addItem.step_name}})開始後第「{{addItem.actions[0].start}}」天開始執行動作({{addItem.actions[0].step_name}})，持續執行到第「{{addItem.actions[0].end}}」天</span>
+                        <div class="content" style="height: 30vh;overflow-y: scroll;">
+                            <v-card-text v-if="addItem.actionList&&addItem.actionList.length>0">
+                                <span class="error-text">*說明：工作({{addItem.name_ch}})開始後第「{{addItem.actionList[0].start_on_which_day}}」天開始執行動作({{addItem.actionList[0].action_name}})，持續執行到第「{{addItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
-                            <v-card-text v-for="(item,id) in addItem.actions"  class="work-item" :key="'editAction_'+item.step_id" style="display: flex;align-items: center;padding-top: 0;" >
+                            <v-card-text v-for="(item,id) in addItem.actionList"  class="work-item" :key="'addWorkAction_'+item.action_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
-                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.step_name }}</v-col>
+                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
+                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
                                 <!-- 財務 -->
                                 <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;">
@@ -785,10 +806,10 @@
                                         </v-text-field>
                                     </div>
                                     <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field type="number" v-model.number="item.member" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
+                                        <v-text-field type="number" v-model.number="item.estimated_member" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
                                     </div>
                                     <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field type="number" v-model.number="item.spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
+                                        <v-text-field type="number" v-model.number="item.estimated_spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
                                     </div>
                                     <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
                                 </v-row> -->
@@ -803,7 +824,47 @@
                     </v-card-actions>
                 </v-card>
             </v-form>
-        </v-dialog>       
+        </v-dialog>
+        <!-- 執行狀態 -->
+        <v-dialog v-model="executeDialog" max-width="500px">
+            <v-card class="custom-dialog">
+                <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <div style="display: inline-block;">
+                        <span>{{executeList.action_name}}</span>
+                    </div>
+                    <div class="add" style="float: right;display: inline-block;">
+                        <v-btn  class="btn-secondary close"
+                                title="取消" 
+                                @click="executeDialog = false" 
+                                style="border: none;min-width: 0;padding: 0 4px;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card-title>
+                <div class="basic" style="padding-bottom: 48px;">
+                    <!-- <div class="card-title" style="margin-bottom: 0;">
+                        <div class="title">
+                            <v-card-title>執行狀態</v-card-title>
+                        </div>
+                    </div> -->
+                    <v-card-text>
+                        <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                            <v-col cols="3"><span style="font-weight:bold">時間</span></v-col>
+                            <v-col cols="2"><span style="font-weight:bold">狀態</span></v-col>
+                            <v-col cols="3"><span style="font-weight:bold">說明</span></v-col>
+                            <v-col cols="4"><span style="font-weight:bold">人員</span></v-col>
+                        </v-row>
+                        <v-row class="content" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                            <v-col cols="3"><span>{{daily.execute_time}}</span></v-col>
+                            <v-col cols="2"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span></v-col>
+                            <v-col cols="3"><span>{{daily.msg}}</span></v-col>
+                            <v-col cols="4"><span>{{daily.executor}}</span></v-col>
+                        </v-row>
+                        
+                    </v-card-text>
+                </div>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -873,43 +934,43 @@ export default {
                 //     text: '空池'
                 // },
                 {
-                    id: 2,
-                    order: 2,
+                    id: 1,
+                    order: 1,
                     color: 'purple darken-1',
                     icon: 'mdi-book-variant',
                     text: '養殖審核'
                 },
                 {
-                    id: 3,
-                    order: 3,
+                    id: 2,
+                    order: 2,
                     color: 'green lighten-1',
                     icon: 'mdi-airballoon',
                     text: '備池'
                 },
                 {
-                    id: 4,
-                    order: 4,
+                    id: 3,
+                    order: 3,
                     color: 'indigo',
                     icon: 'mdi-gate-buffer',
                     text: '蓄水'
                 },
                 {
-                    id: 5,
-                    order: 5,
+                    id: 4,
+                    order: 4,
                     color: 'indigo',
                     icon: 'mdi-buffer',
                     text: '做水'
                 },
                 {
-                    id: 7,
-                    order: 7,
+                    id: 5,
+                    order: 5,
                     color: 'red lighten-2',
                     icon: 'mdi-buffer',
                     text: '放養中'
                 },
                 {
-                    id: 8,
-                    order: 8,
+                    id: 6,
+                    order: 6,
                     color: 'indigo',
                     icon: 'mdi-buffer',
                     text: '清池'
@@ -926,21 +987,22 @@ export default {
                 // { text: '新增', value: 'actions', sortable: false,width:"5%",showmode: ['cycleedit']},
                 // { text: "step_id", value: "step_id", groupable: false, showmode: ['add', 'edit'] },
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
-                { text: "動作", value: "step_name_ch", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
-                { text: "動作", value: "step_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
-                { text: "第幾天開始執行", value: "start", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
-                { text: "持續執行至第幾天", value: "end", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit','add', 'edit']},
+                { text: "持續執行至第幾天", value: "end_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit','add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
-                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 // { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 { text: "執行狀態", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
-                { text: '執行時間/人員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: '執行時間', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
+                // { text: '執行時間/人員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // 財務
-                // { text: "預估花費人力", value: "estimate_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
-                // { text: "預估花費金額", value: "estimate_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
-                // { text: "實際花費人力", value: "actual_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
-                // { text: "實際花費金額", value: "actual_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "預估花費人力", value: "estimated_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "預估花費金額", value: "estimated_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "實際花費人力", value: "actual_member", groupable: false, sortable: false,width:"5%",showmode: ['cycleedit']},
+                // { text: "實際花費金額", value: "actual_spend", groupable: false, sortable: false,width:"5%",showmode: ['cycleedit']},
                 // { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: '編輯', value: 'reactions', sortable: false,width:"7%",showmode: ['cycleedit']},
                 { text: '備註', value: 'remark', sortable: false,width:"20%",showmode: ['add', 'edit']},
@@ -1012,6 +1074,8 @@ export default {
             actionInputShow: false, // 編輯/新增動作 顯示欄位
             workOpenStatus:[], // 養殖循環工作收合紀錄
             dateList:[], // 額外儲存所有水質/疾病/事件順序資料，避免filter更動時階段時間跟著變動
+            executeDialog: false, // 養殖循環執行狀態
+            executeList:[],
         }
     },
     created(){
@@ -1028,9 +1092,15 @@ export default {
                     phase_id:mitem.phase_id,
                     open: new Array()
                 })
-                mitem.stepList.forEach(step=>{
-                    this.workOpenStatus[mid].open.push(step.open);
-                })
+                if(mitem.stepList&&mitem.stepList.length>0) {
+                    mitem.stepList.forEach(step=>{
+                        this.workOpenStatus[mid].open.push(step.open);
+                    })
+                }else {
+                    mitem.stepList=new Array();
+                    mitem.stepList.push({actionList:new Array()});
+                }
+                
                 
             })
 
@@ -1060,8 +1130,9 @@ export default {
                         if(data.phase_id == m.phase_id) {
                             data.stepList = m.stepList;
                             data.stepList.forEach(step=>{
-                                if(step.actions) {
-                                    data.day+=step.actions[step.actions.length-1].end;
+                                if(step.actionList&&step.actionList.length>0) {
+                                    // data.day+=step.actionList[step.actionList.length-1].end_on_which_day;
+                                    data.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
                                 }
                                 
                             })
@@ -1079,8 +1150,8 @@ export default {
                         if(data.phase_id == m.phase_id) {
                             data.stepList = m.stepList;
                             data.stepList.forEach(step=>{
-                                if(step.actions) {
-                                    data.day+=step.actions[step.actions.length-1].end;
+                                if(step.actionList&&step.actionList.length>0) {
+                                    data.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
                                 }
                                 
                             })
@@ -1097,7 +1168,7 @@ export default {
         /* 資料整理 */
         // 排序執行時間
         sortData() {
-            let stepId = [];
+            // let stepId = [];
             let data = _.cloneDeep(this.passObj.tempContent);
             this.mainItems = [];
             // data.forEach(d=>{
@@ -1108,28 +1179,32 @@ export default {
             // })
             data.forEach((d,id)=>{
                 d.stepList.forEach((step,sid)=>{
+                    console.log(this.workOpenStatus[id].open[sid])
                     step.open = this.workOpenStatus[id].open[sid];
-                    step.actions.sort((a,b)=>{
-                        return new Date(a.execute_time) - new Date(b.execute_time);
-                    })
+                    if(step.actionList&&step.actionList.length>0) {
+                        step.actionList.sort((a,b)=>{
+                            return new Date(a.execute_time) - new Date(b.execute_time);
+                        })
+                    }
+                    
                 })
             })
-            data.forEach((m,mid)=>{
-                stepId.push({
-                    "phase_id": m.phase_id,
-                    "phase_name_ch": m.phase_name_ch,
-                    "open": m.open,
-                    "color": m.color,
-                    "newest": m.newest,
-                    "stepList": m.stepList,
-                })
+            // data.forEach((m,mid)=>{
+            //     stepId.push({
+            //         "phase_id": m.phase_id,
+            //         "phase_name_ch": m.phase_name_ch,
+            //         "open": m.open,
+            //         "color": m.color,
+            //         "newest": m.newest,
+            //         "stepList": m.stepList,
+            //     })
                 
-                // // 項目排序
-                // stepId[mid].stepList.sort((a,b)=>{
-                //     return parseInt(a.seq_id.split('_')[1]) - parseInt(b.seq_id.split('_')[1]);
-                // })
+            //     // // 項目排序
+            //     // stepId[mid].stepList.sort((a,b)=>{
+            //     //     return parseInt(a.seq_id.split('_')[1]) - parseInt(b.seq_id.split('_')[1]);
+            //     // })
                 
-            })
+            // })
             // this.mainItems = stepId;
             this.justStep = data;
             // this.disabledData();
@@ -1138,8 +1213,9 @@ export default {
         },
         // 排序與篩選顯示疾病/水質/事件
         sortTime(filter=false) {
-            let data = _.cloneDeep(this.justStep);
-            this.dateList = _.cloneDeep(this.justStep);
+            let data = _.cloneDeep(this.justStep); // 顯示篩選後的資料
+            this.dateList = _.cloneDeep(this.justStep); // 額外儲存所有的，因為時間軸的最新時間要依據所有資料去篩
+            // 疾病
             if(this.passObj.filter==null || [1,11,12,13].some(x => this.passObj.filter.includes(x))) {
                 this.diseaseReport.forEach(dis=>{
                     let xid=0;
@@ -1147,31 +1223,51 @@ export default {
                     let yid=0;
                     for(let i=0;i<data.length;i++) {
                         for(let x=0;x<data[i].stepList.length;x++) {
-                            for(let y=0;y<data[i].stepList[x].actions.length;y++){
-                                if(data[i].stepList[x].actions[y].type==0 && data[i].stepList[x].actions[y].execute_time && data[i].stepList[x].actions[y].execute_time!=='') {
-                                // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                    if(new Date(data[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                        iid = i;
-                                        xid = x;
-                                        yid=y+1;
-                                        // break;
+                            if(data[i].stepList[x].actionList&&data[i].stepList[x].actionList.length>0) {
+                                for(let y=0;y<data[i].stepList[x].actionList.length;y++){
+                                    if(data[i].stepList[x].actionList[y].type==0 && data[i].stepList[x].actionList[y].execute_time&&data[i].stepList[x].actionList[y].execute_time!=='') {
+                                    // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                        if(new Date(data[i].stepList[x].actionList[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                            iid = i;
+                                            xid = x;
+                                            yid=y+1;
+                                            // break;
+                                        }
                                     }
                                 }
                             }
                             
+                            
                         }
                     }
-                    if(this.passObj.filter==null || (this.passObj.filter.includes(11) && dis.status=='異常')) {
-                        data[iid].stepList[xid].actions.splice(yid,0,dis);
-                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(12) && dis.status=='警告')) {
-                        data[iid].stepList[xid].actions.splice(yid,0,dis);
-                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(13) && dis.status=='正常')) {
-                        data[iid].stepList[xid].actions.splice(yid,0,dis);
-                    }else if(this.passObj.filter==null || (!this.passObj.filter.includes(11)&&!this.passObj.filter.includes(12)&&!this.passObj.filter.includes(13))){
-                        data[iid].stepList[xid].actions.splice(yid,0,dis);
+                    if(this.passObj.filter==null || (this.passObj.filter.includes(11) && dis.status=='異常')||(this.passObj.filter.includes(12) && dis.status=='警告')||(this.passObj.filter.includes(13) && dis.status=='正常')||(!this.passObj.filter.includes(11)&&!this.passObj.filter.includes(12)&&!this.passObj.filter.includes(13))) {
+                        if(data[iid].stepList&&data[iid].stepList.length>0) {
+                            if(data[iid].stepList[xid].actionList&&data[iid].stepList[xid].actionList.length>0) {
+                                data[iid].stepList[xid].actionList.splice(yid,0,dis);
+                            }else {
+                                data[iid].stepList[xid].actionList=[];
+                                data[iid].stepList[xid].actionList.push(dis);
+                            }
+                        }else {
+                            data[iid].stepList = new Array();
+                            data[iid].stepList.push({actionList:new Array()})
+                            data[iid].stepList[xid].actionList.push(dis);
+                        }
+                        
+                        
                     }
+                    // if(this.passObj.filter==null || (this.passObj.filter.includes(11) && dis.status=='異常')) {
+                    //     data[iid].stepList[xid].actionList.splice(yid,0,dis);
+                    // }else if(this.passObj.filter==null ||(this.passObj.filter.includes(12) && dis.status=='警告')) {
+                    //     data[iid].stepList[xid].actionList.splice(yid,0,dis);
+                    // }else if(this.passObj.filter==null ||(this.passObj.filter.includes(13) && dis.status=='正常')) {
+                    //     data[iid].stepList[xid].actionList.splice(yid,0,dis);
+                    // }else if(this.passObj.filter==null || (!this.passObj.filter.includes(11)&&!this.passObj.filter.includes(12)&&!this.passObj.filter.includes(13))){
+                    //     data[iid].stepList[xid].actionList.splice(yid,0,dis);
+                    // }
                 })
             }
+            // 水質
             if(this.passObj.filter==null || [2,21,12,23].some(x => this.passObj.filter.includes(x))) {
                 this.waterReport.forEach(dis=>{
                     let yid=0;
@@ -1179,32 +1275,58 @@ export default {
                     let wxid=0;
                     for(let i=0;i<data.length;i++) {
                         for(let x=0;x<data[i].stepList.length;x++) {
-                            for(let y=0;y<data[i].stepList[x].actions.length;y++) {
-                                if(data[i].stepList[x].actions[y].type!==null && data[i].stepList[x].actions[y].execute_time && data[i].stepList[x].actions[y].execute_time!=='') {
-                                    // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                    if(new Date(data[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                        wid = i;
-                                        yid = x;
-                                        wxid=y+1;
-                                        // break;
+                            if(data[i].stepList[x].actionList&&data[i].stepList[x].actionList.length>0) {
+                                for(let y=0;y<data[i].stepList[x].actionList.length;y++) {
+                                    if(data[i].stepList[x].actionList[y].type!==null && data[i].stepList[x].actionList[y].execute_time&&data[i].stepList[x].actionList[y].execute_time!=='') {
+                                        // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                        if(new Date(data[i].stepList[x].actionList[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                            wid = i;
+                                            yid = x;
+                                            wxid=y+1;
+                                            // break;
+                                        }
                                     }
                                 }
                             }
                             
+                            
                         }
                     }
-                    if(this.passObj.filter==null ||(this.passObj.filter.includes(21) && dis.status=='異常')) {
-                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
-                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(22) && dis.status=='警告')) {
-                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
-                    }else if(this.passObj.filter==null ||(this.passObj.filter.includes(23) && dis.status=='正常')) {
-                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
-                    }else if(this.passObj.filter==null || (!this.passObj.filter.includes(21)&&!this.passObj.filter.includes(22)&&!this.passObj.filter.includes(23))){
-                        data[wid].stepList[yid].actions.splice(wxid,0,dis);
+                    if(this.passObj.filter==null ||(this.passObj.filter.includes(21) && dis.status=='異常')||(this.passObj.filter.includes(22) && dis.status=='警告')||(this.passObj.filter.includes(23) && dis.status=='正常')||(!this.passObj.filter.includes(21)&&!this.passObj.filter.includes(22)&&!this.passObj.filter.includes(23))) {
+                        if(data[wid].stepList&&data[wid].stepList.length>0) {
+                            if(data[wid].stepList[yid].actionList&&data[wid].stepList[yid].actionList.length>0) {
+                                data[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                            }else {
+                                data[wid].stepList[yid].actionList = [];
+                                data[wid].stepList[yid].actionList.push(dis);
+                            }
+                        }else {
+                            data[wid].stepList = new Array();
+                            data[wid].stepList.push({actionList:new Array()});
+                            data[wid].stepList[yid].actionList.push(dis);
+                        }
+                        
+                        
                     }
+                    // if(this.passObj.filter==null ||(this.passObj.filter.includes(21) && dis.status=='異常')) {
+                    //     if(data[wid].stepList[yid].actionList&&data[wid].stepList[yid].actionList.length>0) {
+                    //         data[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                    //     }else {
+                    //         data[wid].stepList[yid].actionList = [];
+                    //         data[wid].stepList[yid].actionList.push(dis)
+                    //     }
+                        
+                    // }else if(this.passObj.filter==null ||(this.passObj.filter.includes(22) && dis.status=='警告')) {
+                    //     data[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                    // }else if(this.passObj.filter==null ||(this.passObj.filter.includes(23) && dis.status=='正常')) {
+                    //     data[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                    // }else if(this.passObj.filter==null || (!this.passObj.filter.includes(21)&&!this.passObj.filter.includes(22)&&!this.passObj.filter.includes(23))){
+                    //     data[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                    // }
                     
                 })
             }
+            // 事件
             if(this.passObj.filter==null || this.passObj.filter.includes(3)) { 
                 this.eventReport.forEach(dis=>{
                     let etid=0;
@@ -1212,21 +1334,37 @@ export default {
                     let eyid=0;
                     for(let i=0;i<data.length;i++) {
                         for(let x=0;x<data[i].stepList.length;x++) {
-                            for(let y=0;y<data[i].stepList[x].actions.length;y++) {
-                                if(data[i].stepList[x].actions[y].type!==null && data[i].stepList[x].actions[y].execute_time && data[i].stepList[x].actions[y].execute_time!=='') {
-                                    // console.log(new Date(data[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                    if(new Date(data[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                        eid = i;
-                                        etid = x;
-                                        eyid = y+1;
-                                        // break;
+                            if(data[i].stepList[x].actionList&&data[i].stepList[x].actionList.length>0) {
+                                for(let y=0;y<data[i].stepList[x].actionList.length;y++) {
+                                    if(data[i].stepList[x].actionList[y].type!==null && data[i].stepList[x].actionList[y].execute_time&&data[i].stepList[x].actionList[y].execute_time!=='') {
+                                        // console.log(new Date(data[i].stepList[x].actionList[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                        if(new Date(data[i].stepList[x].actionList[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                            eid = i;
+                                            etid = x;
+                                            eyid = y+1;
+                                            // break;
+                                        }
                                     }
                                 }
                             }
                             
+                            
                         }
                     }
-                    data[eid].stepList[etid].actions.splice(eyid,0,dis);
+                    // data[eid].stepList[etid].actionList.splice(eyid,0,dis);
+                    if(data[eid].stepList&&data[eid].stepList.length>0) {
+                        if(data[eid].stepList[etid].actionList&&data[eid].stepList[etid].actionList.length>0) {
+                            data[eid].stepList[etid].actionList.splice(eyid,0,dis);
+                        }else {
+                            data[eid].stepList[etid].actionList=[];
+                            data[eid].stepList[etid].actionList.push(dis);
+                        }
+                    }else {
+                        ata[eid].stepList=new Array();
+                        data[eid].stepList.push({actionList:new Array()});
+                        data[eid].stepList[etid].actionList.push(dis);
+                    }
+                    
                 })
             }
 
@@ -1237,21 +1375,37 @@ export default {
                 let yid=0;
                 for(let i=0;i<this.dateList.length;i++) {
                     for(let x=0;x<this.dateList[i].stepList.length;x++) {
-                        for(let y=0;y<this.dateList[i].stepList[x].actions.length;y++){
-                            if(this.dateList[i].stepList[x].actions[y].type==0 && this.dateList[i].stepList[x].actions[y].execute_time && this.dateList[i].stepList[x].actions[y].execute_time!=='') {
-                            // console.log(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                if(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                    iid = i;
-                                    xid = x;
-                                    yid=y+1;
-                                    // break;
+                        if(this.dateList[i].stepList[x].actionList&&this.dateList[i].stepList[x].actionList.length>0) {
+                            for(let y=0;y<this.dateList[i].stepList[x].actionList.length;y++){
+                                if(this.dateList[i].stepList[x].actionList[y].type==0 && this.dateList[i].stepList[x].actionList[y].execute_time&&this.dateList[i].stepList[x].actionList[y].execute_time!=='') {
+                                // console.log(new Date(this.dateList[i].stepList[x].actionList[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                    if(new Date(this.dateList[i].stepList[x].actionList[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                        iid = i;
+                                        xid = x;
+                                        yid=y+1;
+                                        // break;
+                                    }
                                 }
                             }
                         }
                         
+                        
                     }
                 }
-                this.dateList[iid].stepList[xid].actions.splice(yid,0,dis);
+                // this.dateList[iid].stepList[xid].actionList.splice(yid,0,dis);
+                if(this.dateList[iid].stepList&&this.dateList[iid].stepList.length>0) {
+                    if(this.dateList[iid].stepList[xid].actionList&&this.dateList[iid].stepList[xid].actionList.length>0) {
+                        this.dateList[iid].stepList[xid].actionList.splice(yid,0,dis);
+                    }else {
+                        this.dateList[iid].stepList[xid].actionList=[];
+                        this.dateList[iid].stepList[xid].actionList.push(dis);
+                    }
+                }else {
+                    this.dateList[iid].stepList=new Array();
+                    this.dateList[iid].stepList.push({actionList: new Array()});
+                    this.dateList[iid].stepList[xid].actionList.push(dis);
+                }
+                
             })
             this.waterReport.forEach(dis=>{
                 let yid=0;
@@ -1259,21 +1413,37 @@ export default {
                 let wxid=0;
                 for(let i=0;i<this.dateList.length;i++) {
                     for(let x=0;x<this.dateList[i].stepList.length;x++) {
-                        for(let y=0;y<this.dateList[i].stepList[x].actions.length;y++) {
-                            if(this.dateList[i].stepList[x].actions[y].type!==null && this.dateList[i].stepList[x].actions[y].execute_time && this.dateList[i].stepList[x].actions[y].execute_time!=='') {
-                                // console.log(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                if(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                    wid = i;
-                                    yid = x;
-                                    wxid=y+1;
-                                    // break;
+                        if(this.dateList[i].stepList[x].actionList&&this.dateList[i].stepList[x].actionList.length>0) {
+                            for(let y=0;y<this.dateList[i].stepList[x].actionList.length;y++) {
+                                if(this.dateList[i].stepList[x].actionList[y].type!==null && this.dateList[i].stepList[x].actionList[y].execute_time&&this.dateList[i].stepList[x].actionList[y].execute_time!=='') {
+                                    // console.log(new Date(this.dateList[i].stepList[x].actionList[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                    if(new Date(this.dateList[i].stepList[x].actionList[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                        wid = i;
+                                        yid = x;
+                                        wxid=y+1;
+                                        // break;
+                                    }
                                 }
                             }
                         }
                         
+                        
                     }
                 }
-                this.dateList[wid].stepList[yid].actions.splice(wxid,0,dis);
+                // this.dateList[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                if(this.dateList[wid].stepList&&this.dateList[wid].stepList.length>0) {
+                    if(this.dateList[wid].stepList[yid].actionList&&this.dateList[wid].stepList[yid].actionList.length>0) {
+                        this.dateList[wid].stepList[yid].actionList.splice(wxid,0,dis);
+                    }else {
+                        this.dateList[wid].stepList[yid].actionList=[];
+                        this.dateList[wid].stepList[yid].actionList.push(dis);
+                    }
+                }else {
+                    this.dateList[wid].stepList=new Array();
+                    this.dateList[wid].stepList.push({actionList:new Array()});
+                    this.dateList[wid].stepList[yid].actionList.push(dis)
+                }
+                
             })
             this.eventReport.forEach(dis=>{
                 let etid=0;
@@ -1281,21 +1451,37 @@ export default {
                 let eyid=0;
                 for(let i=0;i<this.dateList.length;i++) {
                     for(let x=0;x<this.dateList[i].stepList.length;x++) {
-                        for(let y=0;y<this.dateList[i].stepList[x].actions.length;y++) {
-                            if(this.dateList[i].stepList[x].actions[y].type!==null && this.dateList[i].stepList[x].actions[y].execute_time && this.dateList[i].stepList[x].actions[y].execute_time!=='') {
-                                // console.log(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
-                                if(new Date(this.dateList[i].stepList[x].actions[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
-                                    eid = i;
-                                    etid = x;
-                                    eyid = y+1;
-                                    // break;
+                        if(this.dateList[i].stepList[x].actionList&&this.dateList[i].stepList[x].actionList.length>0) {
+                            for(let y=0;y<this.dateList[i].stepList[x].actionList.length;y++) {
+                                if(this.dateList[i].stepList[x].actionList[y].type!==null && this.dateList[i].stepList[x].actionList[y].execute_time&&this.dateList[i].stepList[x].actionList[y].execute_time!=='') {
+                                    // console.log(new Date(this.dateList[i].stepList[x].actionList[y].execute_time).getTime(),new Date(dis.execute_time).getTime())
+                                    if(new Date(this.dateList[i].stepList[x].actionList[y].execute_time).getTime()<new Date(dis.execute_time).getTime()) {
+                                        eid = i;
+                                        etid = x;
+                                        eyid = y+1;
+                                        // break;
+                                    }
                                 }
                             }
                         }
                         
+                        
                     }
                 }
-                this.dateList[eid].stepList[etid].actions.splice(eyid,0,dis);
+                // this.dateList[eid].stepList[etid].actionList.splice(eyid,0,dis);
+                if(this.dateList[eid].stepList&&this.dateList[eid].stepList.length>0) {
+                    if(this.dateList[eid].stepList[etid].actionList&&this.dateList[eid].stepList[etid].actionList.length>0) {
+                        this.dateList[eid].stepList[etid].actionList.splice(eyid,0,dis);
+                    }else {
+                        this.dateList[eid].stepList[etid].actionList=[];
+                        this.dateList[eid].stepList[etid].actionList.push(dis);
+                    }
+                }else {
+                    this.dateList[eid].stepList=new Array();
+                    this.dateList[eid].stepList.push({actionList:new Array()});
+                    this.dateList[eid].stepList[etid].actionList.push(dis);
+                }
+                
             })
             this.mainItems = data;
             // console.log('sort',this.mainItems,this.dateList);
@@ -1306,19 +1492,22 @@ export default {
             this.dateList.forEach(s=>{
                 s.newest = ''; // 因為更新後只有時間變動太小，需先清空再給，才會更新html
                 s.stepList.forEach(p=>{
-                    p.actions.forEach(action=>{
-                        if(action.execute_time&&action.execute_time!=='') {
-                            if(s.newest&&s.newest!=='') {
-                                let current = new Date(action.execute_time);
-                                let now = new Date(s.newest);
-                                if(current>now) {
+                    if(p.actionList&&p.actionList.length>0) {
+                        p.actionList.forEach(action=>{
+                            if(action.execute_time&&action.execute_time!=='') {
+                                if(s.newest&&s.newest!=='') {
+                                    let current = new Date(action.execute_time);
+                                    let now = new Date(s.newest);
+                                    if(current>now) {
+                                        s.newest = action.execute_time;
+                                    }
+                                }else {
                                     s.newest = action.execute_time;
                                 }
-                            }else {
-                                s.newest = action.execute_time;
                             }
-                        }
-                    })
+                        })
+                    }
+                    
                     
                 })
             });
@@ -1363,7 +1552,7 @@ export default {
                     })
                 }
             })
-            this.executorData();
+            // this.executorData();
         },
         // 階段收合
         open(data,id) {
@@ -1388,6 +1577,9 @@ export default {
         // 工作收合
         openWork(mid,wid) {
             this.mainItems[mid].stepList[wid].open = !this.mainItems[mid].stepList[wid].open;
+            let items = _.cloneDeep(this.mainItems);
+            this.mainItems = [];
+            this.mainItems = items;
             if(this.templatemode=='cycleedit') {
                 this.workOpenStatus[mid].open[wid] = !this.workOpenStatus[mid].open[wid];
             }
@@ -1470,18 +1662,39 @@ export default {
         // },
         // 執行人員email轉換成部門+帳號名稱
         executorData() {
-            this.mainItems.forEach(m=>{
-                m.stepList.forEach(s=>{
-                    s.actions.forEach(action=>{
-                        if(action.executor&&action.executor!=='') {
-                            // console.log(this.accdata,s.executor);
-                            action.deft_executor = this.accdata.filter(x=>x.username==action.executor)[0].position+'-'+this.accdata.filter(x=>x.username==action.executor)[0].account_name;
-                        }else {
-                            action.deft_executor = '';
-                        }
+            if(this.templatemode=='cycleedit') {
+                this.mainItems.forEach(m=>{
+                    m.stepList.forEach(s=>{
+                        s.actionList.forEach(action=>{
+                            if(action.dailyCheckList&&action.dailyCheckList.length>0) {
+                                action.dailyCheckList.forEach(daily=>{
+                                    if(daily.executor&&daily.executor!=='') {
+                                        // console.log(this.accdata,s.executor);
+                                        daily.deft_executor = this.accdata.filter(x=>x.username==daily.executor)[0].position+'-'+this.accdata.filter(x=>x.username==daily.executor)[0].account_name;
+                                    }else {
+                                        daily.deft_executor = '';
+                                    }
+                                })
+                                
+                            }
+                            
+                        })
                     })
                 })
-            })
+            }else {
+                this.mainItems.forEach(m=>{
+                    m.stepList.forEach(s=>{
+                        s.actionList.forEach(action=>{
+                            if(action.executor&&action.executor!=='') {
+                                // console.log(this.accdata,s.executor);
+                                action.deft_executor = this.accdata.filter(x=>x.username==action.executor)[0].position+'-'+this.accdata.filter(x=>x.username==action.executor)[0].account_name;
+                            }else {
+                                action.deft_executor = '';
+                            }
+                        })
+                    })
+                })
+            }
             // console.log('mainItems',this.mainItems);
         },
         // 疾病/水質表格顏色判斷
@@ -2013,19 +2226,19 @@ export default {
         // 刪除其他項目
         delsubitem: async function (phase_id,wid, index) {
             console.log('delete',phase_id, index);
-            var sub_item = this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList[wid].actions[index];
+            var sub_item = this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList[wid].actionList[index];
             if(this.templatemode == 'cycleedit') {
-                    if (confirm(`是否刪除 ${sub_item.step_name_ch}：${sub_item.msg} ？`)) {
+                    if (confirm(`是否刪除 ${sub_item.action_name}：${sub_item.msg} ？`)) {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
                         // step_id
                         if(sub_item.type==null) {
                             var res = false;
-                            res = this.deleteRecordStepList(sub_item.step_id);
+                            res = await this.deleteRecordStepList(sub_item.action_id);
                             setTimeout(()=>{
                                 if(res) {
                                     this.mainItems.forEach(mitem=>{
                                         if(mitem.phase_id==phase_id) {
-                                            mitem.stepList[wid].actions.splice(index,1);
+                                            mitem.stepList[wid].actionList.splice(index,1);
                                         }
                                     })
                                 }
@@ -2082,7 +2295,7 @@ export default {
                             // });
                         }else if(sub_item.type==1) {
                             var res = false;
-                            res = this.deleteDiseaseTestingRecordList(sub_item.id);
+                            res = await this.deleteDiseaseTestingRecordList(sub_item.id);
                             setTimeout(()=>{
                                 if(res) {
                                     this.$emit('getDisease')
@@ -2109,7 +2322,7 @@ export default {
                             // });
                         }else if(sub_item.type==2) {
                             var res = false;
-                            res = this.deleteWaterTestingRecordList(sub_item.id);
+                            res = await this.deleteWaterTestingRecordList(sub_item.id);
                             setTimeout(()=>{
                                 if(res) {
                                     this.$emit('getWater')
@@ -2146,7 +2359,7 @@ export default {
             // console.log("phase:", phase_id, "addidx:",addidx);
             // this.stepitem.phase_id = phase_id;
             // this.stepitem.addidx = addidx;
-            let item = _.cloneDeep(this.mainItems.filter(m=>m.phase_id==phase_id)[0].stepList[wid].actions[index]);
+            let item = _.cloneDeep(this.mainItems.filter(m=>m.phase_id==phase_id)[0].stepList[wid].actionList[index]);
             if(item.type==null) {
                 this.editem = true;//show dialog
                 this.addStep = [];
@@ -2434,7 +2647,7 @@ export default {
             }
             var id = this.stepitem.id;
             var res = false;
-            res = this.deleteBreedingStepList(id);
+            res = await this.deleteBreedingStepList2(id);
             setTimeout(()=>{
                 if(res) {
                     this.getstepdata();
@@ -2532,33 +2745,21 @@ export default {
                 }
                 this.mainItems.forEach(m=>{
                     if(m.phase_name!=='空池') {
-                        if(m.stepList.length>0){
-                        //     var pushitem = {
-                        //         step_id : 0,//項目原始id
-                        //         seq_id : '',
-                        //         // sort:undefined,
-                        //         step_name : m.phase_name,
-                        //         step_name_ch : m.phase_name,
-                        //         step_exec:undefined,//執行/確認人員
-                        //         checktime:undefined,//確認時間
-                        //         result:undefined,//結果
-                        //         msg: '',//msg
-                        //     };
-                        //     m.stepList.push(pushitem);
-                            para.tempContent.push(m)
-                        }
-                        
+                        // if(m.stepList.length>0){
+                        //     para.tempContent.push(m)
+                        // }
+                        para.tempContent.push(m)
                     }
                     
                 });
                 console.log('Save Edit',para);
                 var res = false;
-                res = this.patchTemplateList(para,id);
+                res = await this.patchTemplateList2(para,id);
                 setTimeout(()=>{
                     if(res) {
                         this.updateouterAction('done');
                     }
-                },50)
+                },100)
 
                 // await this.$axios
                 //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`, para)
@@ -2592,32 +2793,20 @@ export default {
                 para.tempMain.is_enable = true;
                 this.mainItems.forEach(m=>{
                     if(m.phase_name!=='空池') {
-                        if(m.stepList.length>0){
-                        //     var pushitem = {
-                        //         step_id : 0,//項目原始id
-                        //         seq_id : '',
-                        //         // sort:undefined,
-                        //         step_name : m.phase_name,
-                        //         step_name_ch : m.phase_name,
-                        //         step_exec:undefined,//執行/確認人員
-                        //         checktime:undefined,//確認時間
-                        //         result:undefined,//結果
-                        //         msg: '',//msg
-                        //     };
-                        //     m.stepList.push(pushitem);
-                            para.tempContent.push(m)
-                        }
-                        
+                        // if(m.stepList.length>0){
+                        //     para.tempContent.push(m)
+                        // }
+                        para.tempContent.push(m)
                     }
                 });
-                // console.log(para);
+                console.log(para);
                 var res = false;
-                res = this.postTemplateList(para);
+                res = await this.postTemplateList2(para);
                 setTimeout(()=>{
                     if(res) {
                         this.updateouterAction('done');
                     }
-                },50)
+                },100)
                 // await this.$axios
                 //         .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`, para)
                 //         .then(res => {
@@ -2644,7 +2833,7 @@ export default {
         },
         // 取得步驟清單
         getstepdata: async function (bool=false) {
-            let getBreedingStepList = await this.getBreedingStepList();
+            let getBreedingStepList = await this.getBreedingStepList2();
             let stepData = typeof (getBreedingStepList)=='string'?[]:getBreedingStepList;
             this.stepdataAll = stepData;
             let data = _.cloneDeep(this.mainItems);
@@ -2661,6 +2850,10 @@ export default {
                 })
             })
             this.mainItems = _.cloneDeep(data);
+            this.stepdata = [];
+            this.stepdataAll.forEach(s=>{
+                this.stepdata.push(s);
+            })
             console.log('getStep',this.mainItems)
             if(bool) {
                 console.log('get Step',this.stepitem,this.stepformedit,this.stepdataAll);
@@ -2672,52 +2865,52 @@ export default {
                 // this.insertStep();
                 let item = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0];
                 if(this.workType=='edit') {
-                    if(this.editItem.actions) {
-                        this.editItem.actions.push({
-                            "step_id": item.id,
-                            "step_name": item.name_ch,
+                    if(this.editItem.actionList) {
+                        this.editItem.actionList.push({
+                            "action_id": item.id,
+                            "action_name": item.name_ch,
                             "remark":item.remark,
-                            "start":null,
-                            "end":null
+                            "start_on_which_day":null,
+                            "end_on_which_day":null
                         });
-                        this.editItem.actions.sort((a,b)=>{
-                            return a.start-b.start
+                        this.editItem.actionList.sort((a,b)=>{
+                            return a.start_on_which_day-b.start_on_which_day
                         })
                     }else {
-                        this.editItem.actions = [];
-                        this.editItem.actions.push({
-                            "step_id": item.id,
-                            "step_name": item.name_ch,
+                        this.editItem.actionList = [];
+                        this.editItem.actionList.push({
+                            "action_id": item.id,
+                            "action_name": item.name_ch,
                             "remark":item.remark,
-                            "start":null,
-                            "end":null
+                            "start_on_which_day":null,
+                            "end_on_which_day":null
                         });
                     }
                 }else {
-                    if(this.addItem.actions) {
-                        this.addItem.actions.push({
-                            "step_id": item.id,
-                            "step_name": item.name_ch,
+                    if(this.addItem.actionList) {
+                        this.addItem.actionList.push({
+                            "action_id": item.id,
+                            "action_name": item.name_ch,
                             "remark":item.remark,
-                            "start":null,
-                            "end":null
+                            "start_on_which_day":null,
+                            "end_on_which_day":null
                         });
-                        this.addItem.actions.sort((a,b)=>{
-                            return a.start-b.start
+                        this.addItem.actionList.sort((a,b)=>{
+                            return a.start_on_which_day-b.start_on_which_day
                         })
                     }else {
-                        this.addItem.actions = [];
-                        this.addItem.actions.push({
-                            "step_id": item.id,
-                            "step_name": item.name_ch,
+                        this.addItem.actionList = [];
+                        this.addItem.actionList.push({
+                            "action_id": item.id,
+                            "action_name": item.name_ch,
                             "remark":item.remark,
-                            "start":null,
-                            "end":null
+                            "start_on_which_day":null,
+                            "end_on_which_day":null
                         });
                     }
                 }
                 
-                console.log(item);
+                console.log('add',item);
             }
             // await this.$axios
             //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
@@ -2825,6 +3018,8 @@ export default {
                 this.stepdata.push(s);
             })
             this.stepmode = '';
+            this.stepformedit = {};
+            this.stepitem.id = null;
             this.actionInputShow = false;
             this.editActionItemDialog = true;
         },
@@ -2832,7 +3027,7 @@ export default {
             this.stepformedit = this.stepdataAll.filter(x=>x.id == this.stepitem.id)[0];
         },
         // 確認加入動作
-        editActionItemSubmit() {
+        async editActionItemSubmit() {
             var valid = this.$refs.editActionItemform.validate();
             if(valid) {
                 this.stepformedit.created_user =  (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
@@ -2842,7 +3037,7 @@ export default {
                         case 'add':
                             console.log('step add',this.stepitem);
                             var res = false;
-                            res = this.postBreedingStepList(this.stepformedit);
+                            res = await this.postBreedingStepList2(this.stepformedit);
                             setTimeout(()=>{
                                 if(res) {
                                     this.getstepdata(true);
@@ -2852,7 +3047,7 @@ export default {
                         case 'edit':
                             var id = this.stepitem.id;
                             var res = false;
-                            res = this.patchBreedingStepList(this.stepformedit,id);
+                            res = await this.patchBreedingStepList2(this.stepformedit,id);
                             setTimeout(()=>{
                                 if(res) {
                                     this.dialog.phaseform = false;
@@ -2900,107 +3095,62 @@ export default {
                             break;
                         case '':
                             let item = this.stepdataAll.filter(x=>x.id == this.stepitem.id)[0];
+                            console.log('addddd',item);
                             if(this.workType=='edit') {
-                                if(this.editItem.actions) {
-                                    this.editItem.actions.push({
-                                        "step_id": item.id,
-                                        "step_name": item.name_ch,
+                                if(this.editItem.actionList) {
+                                    this.editItem.actionList.push({
+                                        "action_id": item.id,
+                                        "action_name": item.name_ch,
                                         "remark":item.remark,
-                                        "start":null,
-                                        "end":null,
-                                        "member": 0,
-                                        "spend":0
+                                        "start_on_which_day":null,
+                                        "end_on_which_day":null,
+                                        "estimated_member": 0,
+                                        "estimated_spend":0
                                     });
-                                    this.editItem.actions.sort((a,b)=>{
-                                        return a.start-b.start
+                                    this.editItem.actionList.sort((a,b)=>{
+                                        return a.start_on_which_day-b.start_on_which_day
                                     })
                                 }else {
-                                    this.editItem.actions = [];
-                                    this.editItem.actions.push({
-                                        "step_id": item.id,
-                                        "step_name": item.name_ch,
+                                    this.editItem.actionList = [];
+                                    this.editItem.actionList.push({
+                                        "action_id": item.id,
+                                        "action_name": item.name_ch,
                                         "remark":item.remark,
-                                        "start":null,
-                                        "end":null,
-                                        "member": 0,
-                                        "spend":0
+                                        "start_on_which_day":null,
+                                        "end_on_which_day":null,
+                                        "estimated_member": 0,
+                                        "estimated_spend":0
                                     });
                                 }
                             }else {
-                                if(this.addItem.actions) {
-                                    this.addItem.actions.push({
-                                        "step_id": item.id,
-                                        "step_name": item.name_ch,
+                                if(this.addItem.actionList) {
+                                    this.addItem.actionList.push({
+                                        "action_id": item.id,
+                                        "action_name": item.name_ch,
                                         "remark":item.remark,
-                                        "start":null,
-                                        "end":null,
-                                        "member": 0,
-                                        "spend":0
+                                        "start_on_which_day":null,
+                                        "end_on_which_day":null,
+                                        "estimated_member": 0,
+                                        "estimated_spend":0
                                     });
-                                    this.addItem.actions.sort((a,b)=>{
-                                        return a.start-b.start
+                                    this.addItem.actionList.sort((a,b)=>{
+                                        return a.start_on_which_day-b.start_on_which_day
                                     })
                                 }else {
-                                    this.addItem.actions = [];
-                                    this.addItem.actions.push({
-                                        "step_id": item.id,
-                                        "step_name": item.name_ch,
+                                    this.addItem.actionList = [];
+                                    this.addItem.actionList.push({
+                                        "action_id": item.id,
+                                        "action_name": item.name_ch,
                                         "remark":item.remark,
-                                        "start":null,
-                                        "end":null,
-                                        "member": 0,
-                                        "spend":0
+                                        "start_on_which_day":null,
+                                        "end_on_which_day":null,
+                                        "estimated_member": 0,
+                                        "estimated_spend":0
                                     });
                                 }
                             }
                     }
-                // if(this.workType=='edit') {
-                //     if(this.editItem.actions) {
-                //         this.editItem.actions.push({
-                //             "step_id": action.id,
-                //             "step_name": action.name_ch,
-                //             "remark":action.remark,
-                //             "start":null,
-                //             "end":null
-                //         });
-                //         this.editItem.actions.sort((a,b)=>{
-                //             return a.start-b.start
-                //         })
-                //     }else {
-                //         this.editItem.actions = [];
-                //         this.editItem.actions.push({
-                //             "step_id": action.id,
-                //             "step_name": action.name_ch,
-                //             "remark":action.remark,
-                //             "start":null,
-                //             "end":null
-                //         });
-                //     }
-                // }else {
-                //     if(this.addItem.actions) {
-                //         this.addItem.actions.push({
-                //             "step_id": action.id,
-                //             "step_name": action.name_ch,
-                //             "remark":action.remark,
-                //             "start":null,
-                //             "end":null
-                //         });
-                //         this.addItem.actions.sort((a,b)=>{
-                //             return a.start-b.start
-                //         })
-                //     }else {
-                //         this.addItem.actions = [];
-                //         this.addItem.actions.push({
-                //             "step_id": action.id,
-                //             "step_name": action.name_ch,
-                //             "remark":action.remark,
-                //             "start":null,
-                //             "end":null
-                //         });
-                //     }
-                // }
-                
-                
+                console.log(this.addItem);
                 this.editActionItemDialog = false;
             }
             
@@ -3011,14 +3161,14 @@ export default {
             if(valid) {
                 this.sortDay();
                 let items = _.cloneDeep(this.mainItems);
-                this.editItem.actions.forEach(action=>{
-                    if(action.member>0) {
+                this.editItem.actionList.forEach(action=>{
+                    if(action.estimated_member>0) {
 
                     }else{
-                        action.member=0;
+                        action.estimated_member=0;
                     }
-                    if(action.spend>0) {
-                        action.spend=0;
+                    if(action.estimated_spend>0) {
+                        action.estimated_spend=0;
                     }
                 })
                 items.forEach((mitem,mid)=>{
@@ -3028,9 +3178,14 @@ export default {
                             if(sid == this.addWorkIndex.id) {
                                 this.editItem.open = true;
                                 items[mid].stepList[sid] = _.cloneDeep(this.editItem);
-                                mitem.day+=parseInt(this.editItem.actions[this.editItem.actions.length-1].end);
+                                if(this.editItem.actionList&&this.editItem.actionList.length>0) {
+                                    mitem.day+=parseInt(this.editItem.actionList[this.editItem.actionList.length-1].end_on_which_day)-parseInt(this.editItem.actionList[0].start_on_which_day)+1;
+                                }
                             }else {
-                                mitem.day+=parseInt(step.actions[step.actions.length-1].end);
+                                if(step.actionList&&step.actionList.length>0) {
+                                    mitem.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
+                                }
+                                
                             }
                             
                             
@@ -3047,12 +3202,12 @@ export default {
         // 預設動作依據開始日排序
         sortDay() {
             if(this.workType=='edit') {
-                this.editItem.actions.sort((a,b)=>{
-                    return a.start-b.start || a.end-b.end
+                this.editItem.actionList.sort((a,b)=>{
+                    return a.start_on_which_day-b.start_on_which_day || a.end_on_which_day-b.end_on_which_day
                 })
             }else {
-                this.addItem.actions.sort((a,b)=>{
-                    return a.start-b.start || a.end-b.end
+                this.addItem.actionList.sort((a,b)=>{
+                    return a.start_on_which_day-b.start_on_which_day || a.end_on_which_day-b.end_on_which_day
                 })
             }
             
@@ -3060,28 +3215,28 @@ export default {
         // 起始日>完成日，自動將完成日更改為起始日
         detectEndDay(index) {
             if(this.workType=='edit') {
-                if(this.editItem.actions[index].start>this.editItem.actions[index].end) {
-                    this.editItem.actions[index].end = this.editItem.actions[index].start;
+                if(this.editItem.actionList[index].start_on_which_day>this.editItem.actionList[index].end_on_which_day) {
+                    this.editItem.actionList[index].end_on_which_day = this.editItem.actionList[index].start_on_which_day;
                 }
             }else {
-                if(this.addItem.actions[index].start>this.addItem.actions[index].end) {
-                    this.addItem.actions[index].end = this.addItem.actions[index].start;
+                if(this.addItem.actionList[index].start_on_which_day>this.addItem.actionList[index].end_on_which_day) {
+                    this.addItem.actionList[index].end_on_which_day = this.addItem.actionList[index].start_on_which_day;
                 }
             }
         },
         // 移除預設動作
-        removeAction(id) {
-            let index;
+        removeAction(id,index) {
+            // let index;
             if(this.workType=='edit') {
-                index = this.editItem.actions.map(e => e.step_id).indexOf(id);
+                // index = this.editItem.actionList.map(e => e.action_id).indexOf(id);
                 let items = _.cloneDeep(this.editItem);
-                items.actions.splice(index,1);
+                items.actionList.splice(index,1);
                 this.editItem = {};
                 this.editItem = _.cloneDeep(items);
             }else {
-                index = this.addItem.actions.map(e => e.step_id).indexOf(id);
+                // index = this.addItem.actionList.map(e => e.action_id).indexOf(id);
                 let items = _.cloneDeep(this.addItem);
-                items.actions.splice(index,1);
+                items.actionList.splice(index,1);
                 this.addItem = {};
                 this.addItem = _.cloneDeep(items);
             }
@@ -3105,8 +3260,8 @@ export default {
                 items.forEach((mitem)=>{
                     mitem.day=0;
                     mitem.stepList.forEach((step)=>{
-                        if(step.actions&&step.actions.length>0) {
-                            mitem.day+=parseInt(step.actions[step.actions.length-1].end);
+                        if(step.actionList&&step.actionList.length>0) {
+                            mitem.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                         }
                         
                     })
@@ -3128,13 +3283,16 @@ export default {
                 "remark":"",
                 "day":null,
                 "open":true,
-                "actions":[]
+                "actionList":[]
             }
             this.workType='add';
             this.addWorkDialog = true;
         },
-        addWorkItemChange() {
-            this.editItem = _.cloneDeep(this.addWorkList.filter(x=>x.step_id==this.editItem.step_id)[0]);
+        addWorkItemChange(evt) {
+            // console.log('change',evt,this.editItem);
+            this.editItem = _.cloneDeep(this.addWorkList.filter(x=>x.id==evt)[0]);
+            this.editItem.step_name = this.editItem.name_ch;
+            this.editItem.step_id = evt;
         },
         // 新增尚未有的工作
         addWorkActionDialogOpen() {
@@ -3144,36 +3302,65 @@ export default {
                 "remark":"",
                 "day":null,
                 "open":true,
-                "actions":[]
+                "actionList":[]
             }
             this.addWorkActionDialog = true;
         },
-        // 確認尚未有的工作
-        addWorkActionSubmit() {
-            var valid = this.$refs.addWorkActionform.validate();
-            if(valid) {
-                this.addItem.step_id = Math.floor(Math.random()*999)+100;
-                this.addItem.actions.forEach(action=>{
-                    if(action.member>0) {
-
-                    }else{
-                        action.member=0;
-                    }
-                    if(action.spend>0) {
-                        action.spend=0;
-                    }
-                })
-                this.addWorkList.push(this.addItem);
-                this.sortDay();
-                this.editItem = _.cloneDeep(this.addItem);
+        // 取得工作清單(bool=true 新增工作後重新撈取,bool=false一般撈取)
+        async getWorkData(bool=false) {
+            let getBreedingWorkList = await this.getBreedingWorkList();
+            this.addWorkList = [];
+            this.addWorkList = typeof (getBreedingWorkList)=='string'?[]:getBreedingWorkList;
+            let item = this.addWorkList.filter(x=>x.name_ch == this.addItem.name_ch)[0];
+            if(bool) {
+                // this.addItem.step_name=this.addItem.name_ch;
+                // this.addItem.step_id = item.id;
+                this.editItem = _.cloneDeep(item);
+                this.editItem.step_name = item.name_ch;
+                this.editItem.step_id = item.id;
                 console.log('editItem',this.editItem);
                 this.addWorkActionDialog = false;
+            }
+        },
+        // 確認尚未有的工作
+        async addWorkActionSubmit() {
+            var valid = this.$refs.addWorkActionform.validate();
+            if(valid) {
+                // this.addItem.step_id = Math.floor(Math.random()*999)+100;
+                this.addItem.actionList.forEach(action=>{
+                    if(action.estimated_member>0) {
+
+                    }else{
+                        action.estimated_member=0;
+                    }
+                    if(action.estimated_spend>0) {
+                        action.estimated_spend=0;
+                    }
+                })
+                this.sortDay();
+                let parm = _.cloneDeep(this.addItem);
+                delete parm.open;
+                delete parm.day;
+                delete parm.step_id;
+                delete parm.step_name;
+                parm.created_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                console.log('parm',parm);
+                var res = false;
+                res = await this.postBreedingWorkList(parm);
+                
+                setTimeout(()=>{
+                    if(res) {
+                        this.getWorkData(true);
+                    }
+                },500)
+                
             }
         },
         // 確認新增工作
         addWorkSubmit() {
             var valid = this.$refs.addWorkform.validate();
             if(valid) {
+                this.editItem.open = true;
                 let items = _.cloneDeep(this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0]);
                 if(items.stepList&&items.stepList.length>0) {
                     this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0].stepList.splice(this.addWorkIndex.id+1,0,this.editItem);
@@ -3184,32 +3371,53 @@ export default {
                 let item = this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0];
                 item.day = 0;
                 item.stepList.forEach(step=>{
-                    item.day+=parseInt(step.actions[step.actions.length-1].end);
+                    item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                 })
                 this.addWorkDialog = false;
             }
             
         },
         // 刪除已存在之工作
-        deleteWorkItem() {
-            let index = this.addWorkList.map(e => e.step_id).indexOf(this.editItem.step_id);
-            if (confirm(`是否刪除工作-${this.addWorkList[index].step_name}？`)) {
-                this.addWorkList.splice(index,1);
-                this.editItem = {
-                    "step_id": null,
-                    "step_name": "",
-                    "remark":"",
-                    "day":null,
-                    "open":true,
-                    "actions":[]
-                }
-                this.$toast.success('刪除成功', { duration: 2000 });
+        async deleteWorkItem() {
+            let index = this.addWorkList.map(e => e.id).indexOf(this.editItem.step_id);
+            if (confirm(`是否刪除工作-${this.addWorkList[index].name_ch}？`)) {
+                // this.addWorkList.splice(index,1);
+                // this.editItem = {
+                //     "step_id": null,
+                //     "step_name": "",
+                //     "remark":"",
+                //     "day":null,
+                //     "open":true,
+                //     "actionList":[]
+                // }
+                // this.$toast.success('刪除成功', { duration: 2000 });
+                var id = this.editItem.step_id;
+                var res = false;
+                res = await this.deleteBreedingWorkList(id);
+                setTimeout(()=>{
+                    if(res) {
+                        this.getWorkData();
+                        this.editItem = {};
+                    }
+                },50)
             }
             
             
         },
         numberChange(evt) {
             console.log('Change Number',evt)
+        },
+        // 執行狀態細項
+        executeDailogOpen(id,wid,index) {
+            this.executeList = _.cloneDeep(this.mainItems[id].stepList[wid].actionList[index]);
+            this.executeDialog = true;
+        },
+        // 清空樣板
+        clearTemp() {
+            this.mainItems.forEach(mitem=>{
+                mitem.day = 0;
+                mitem.stepList = new Array();
+            })
         }
     },
     computed: {
@@ -3217,6 +3425,7 @@ export default {
     },
     async mounted() {
         await this.getstepdata();//取得步驟清單
+        await this.getWorkData();
         window.addEventListener('resize', () => {
             this.windowWidth = window.innerWidth;
         });
