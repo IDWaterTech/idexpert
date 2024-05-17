@@ -3370,6 +3370,8 @@ export default {
                 }
                 let item = this.mainItems.filter(x=>x.phase_id == this.addWorkIndex.phase_id)[0];
                 item.day = 0;
+                let index = this.mainItems.map(e => e.phase_id).indexOf(this.addWorkIndex.phase_id);
+                this.status[index].open = true;
                 item.stepList.forEach(step=>{
                     item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                 })
