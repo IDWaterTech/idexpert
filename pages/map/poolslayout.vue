@@ -827,9 +827,12 @@ export default {
           if(this.nowAreaId.range['warning']) {
             var keysdata = Object.keys(this.nowAreaId.range['warning']);
             for(let i=0;i<keysdata.length;i++) {
-              this.nowAreaId.range['warning'][keysdata[i]].forEach(x=>{
+              this.nowAreaId.range['warning'][keysdata[i]].forEach((x,xid)=>{
                 if(x!=='') {
-                  warning += x+',';
+                  warning += x;
+                }
+                if(xid!==this.nowAreaId.range['warning'][keysdata[i]].length-1) {
+                  warning += ',';
                 }
               })
             }
@@ -841,11 +844,18 @@ export default {
         if(this.nowAreaId.range['critical']) {
           var keysdata = Object.keys(this.nowAreaId.range['critical']);
           for(let i=0;i<keysdata.length;i++) {
-            this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
-              if(x!=='') {
-                danger += x+',';
-              }
-            })
+            if(this.nowAreaId.range['critical'][keysdata[i]]&&this.nowAreaId.range['critical'][keysdata[i]].length>0) {
+              console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
+              this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
+                if(x!=='') {
+                  danger += x;
+                }
+                if(i!==keysdata.length-1&&this.nowAreaId.range['critical'][keysdata[i+1]]&&this.nowAreaId.range['critical'][keysdata[i+1]].length>0) {
+                  danger += ',';
+                }
+              })
+            }
+            
           }
           // console.log('critical',item.check['critical'])
         }
