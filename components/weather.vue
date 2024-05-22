@@ -1,15 +1,15 @@
 <template>
-  <el-popover placement="top-start" width="300" popper-class="popoverColor">
-    
+  <el-popover placement="top-start" width="300">
         <v-row style="color:#FFF;" justify="center" align="center" dense >
-            <v-col cols="12">
-                <h3 style="color:white;">氣象資訊</h3>
+            <v-col cols="12" style="border-bottom: 1px solid rgba(0,0,0,0.1);padding-bottom: 8px;">
+                <h3>氣象資訊</h3>
             </v-col>
             <v-col cols="12" justify="center">
               <!-- {{ toggle_weather }}_{{ toggle_weather2 }}<br/> -->
               <v-btn-toggle
-                  v-model="toggle_weather" color="primary" @change="changeloc(toggle_weather)"
+                  v-model="toggle_weather" @change="changeloc(toggle_weather)"
                   class="field-toggle"
+                  style="margin-top: 8px;"
                 >
                 <v-btn :value="1" :class="{'v-btn--active':toggle_weather==1}">研發<br/>一場</v-btn>
                 <v-btn :value="2" :class="{'v-btn--active':toggle_weather==2}">彰化<br/>芳苑</v-btn>
@@ -17,44 +17,45 @@
                 <v-btn :value="4" :class="{'v-btn--active':toggle_weather==4}">高雄<br/>湖內</v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="12">
-                地區:<span>{{location.map(x=>x.name).join()}}</span><br/>  <!--  _({{ loc.longitude }}/{{ loc.latitude }}) -->
-                天氣概況：{{weatherdata.weather[0].main}}<br/>
-                說明：{{weatherdata.weather[0].description}}
+            <v-col cols="12" style="line-height: 24px;border-bottom: 1px solid rgba(0,0,0,0.1);">
+              <span style="font-weight: 400;">地區：</span><span>{{location.map(x=>x.name).join()}}</span><br/>  <!--  _({{ loc.longitude }}/{{ loc.latitude }}) -->
+              <span style="font-weight: 400;">天氣概況：</span>{{weatherdata.weather[0].main}}<br/>
+              <span style="font-weight: 400;">說明：</span>{{weatherdata.weather[0].description}}<br/>
+              <span style="font-weight: 400;">資料來源：</span><a target="_blank" style="color:#40C4FF;text-decoration: underline;" href="http://openweathermap.org/">Open Weather Map </a>(ver 2.5)
             </v-col>
             <v-col cols="12" sm="4">
-              溫度<br/>{{`${weatherdata.main.temp} °C`}}
+              <span style="font-weight: 600;">溫度</span><br/>{{`${weatherdata.main.temp} °C`}}
             </v-col>
             <v-col cols="12" sm="4">
-              氣壓<br/>{{`${weatherdata.main.pressure} hPa`}}
+              <span style="font-weight: 600;">氣壓</span><br/>{{`${weatherdata.main.pressure} hPa`}}
             </v-col>
             <v-col cols="12" sm="4">
-              體感溫度<br/>{{`${weatherdata.main.feels_like} °C`}}
+              <span style="font-weight: 600;">體感溫度</span><br/>{{`${weatherdata.main.feels_like} °C`}}
             </v-col>
             <v-col cols="12" sm="4">
-              濕度<br/>{{`${weatherdata.main.humidity} %`}}
+              <span style="font-weight: 600;">濕度</span><br/>{{`${weatherdata.main.humidity} %`}}
             </v-col>
             <v-col cols="12" sm="4">
-              最低溫度<br/>{{`${weatherdata.main.temp_min} °C`}}
+              <span style="font-weight: bold;">最低溫度</span><br/>{{`${weatherdata.main.temp_min} °C`}}
             </v-col>
             <v-col cols="12" sm="4">
-              最高溫度<br/>{{`${weatherdata.main.temp_max} °C`}}
+              <span style="font-weight: bold;">最高溫度</span><br/>{{`${weatherdata.main.temp_max} °C`}}
+            </v-col>
+            <!-- <v-col cols="12" sm="4">
+              <span style="font-weight: bold;">海平面氣壓</span><br/>{{`${weatherdata.main.sea_level} hPa`}}
+            </v-col> -->
+            <!-- <v-col cols="12" sm="4">
+              <span style="font-weight: bold;">地面大氣壓</span><br/>{{`${weatherdata.main.grnd_level} hPa`}}
+            </v-col> -->
+            <v-col cols="12" sm="4">
+              <span style="font-weight: bold;">風速</span><br/>{{`${weatherdata.wind.speed}`}}<br/>miles/hour
             </v-col>
             <v-col cols="12" sm="4">
-              海平面氣壓<br/>{{`${weatherdata.main.sea_level} hPa`}}
+              <span style="font-weight: bold;">風向</span><br/>{{`${weatherdata.wind.deg}`}}
             </v-col>
-            <v-col cols="12" sm="4">
-              地面大氣壓<br/>{{`${weatherdata.main.grnd_level} hPa`}}
-            </v-col>
-            <v-col cols="12" sm="4">
-              風速<br/>{{`${weatherdata.wind.speed}`}}<br/>miles/hour
-            </v-col>
-            <v-col cols="12" sm="4">
-              風向<br/>{{`${weatherdata.wind.deg}`}}
-            </v-col>
-            <v-col cols="12" sm="4">
-              {{`陣風: ${weatherdata.wind.gust} meter/sec`}},localStorage:{{ localData }}
-            </v-col>
+            <!-- <v-col cols="12" sm="4">
+              <span style="font-weight: bold;">陣風</span>{{`: ${weatherdata.wind.gust} meter/sec`}},localStorage:{{ localData }}
+            </v-col> -->
             <!-- <v-col cols="12" sm="4">
               {{`雲量: ${weatherdata.clouds.all} %`}}
             </v-col> -->
@@ -184,12 +185,14 @@ methods: {
          longitude: this.loc.longitude,
          latitude: this.loc.latitude,
     };
+    console.log('parm',parm);
     await this.$axios
       .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm,{
           httpsAgent: agent
         })
       .then(res => {
         let weadata = JSON.parse(res.data.d);
+        console.log('weadata',weadata);
         this.weatherdata.main = weadata.main;
         this.weatherdata.wind = weadata.wind;
         this.weatherdata.weather = weadata.weather;
@@ -224,7 +227,7 @@ created() {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .popoverColor{
   background-color: #3F6D9E !important;
 }
@@ -234,16 +237,30 @@ created() {
 .theme--dark.field-toggle.v-btn-toggle:not(.v-btn-toggle--group) {
   border-radius: 4px;
   overflow: hidden;
-  background: $color-dark;
+  background: $color-lighten;
+  border: 1px solid $color-dark;
 }
 .theme--dark.v-btn.v-btn--has-bg {
-  background-color: $color-dark;
+  background-color: $color-lighten;
+  border-right: 1px solid $color-primary;
   // color: $color-dark;
 }
 .theme--dark.v-btn--active::before {
   opacity: 0.4;
-  background-color: $color-primary-25;
+  background-color: $color-primary;
   // border-radius: 2px 0 0 2px;
+  span {
+    color: #fff;
+  }
+}
+.el-popover.el-popper {
+  background-color: #fff;
+  * {
+    color: $color-dark;
+  }
+  h3 {
+    font-weight: bold;
+  }
 }
 ::v-deep {
   

@@ -2,18 +2,18 @@
     <el-popover
       placement="top-start"
       width="400"
-      
-      popper-class="popoverColor"
+      class="popover-bg"
     >
       <v-row style="color:#FFF;" justify="center" align="center">
-        <v-col cols="12">
+        <v-col cols="12" style="border-bottom: 1px solid rgba(0,0,0,0.1);padding-bottom: 8px;">
           <h3>市場資訊</h3>
         </v-col>
-        <v-col>
-          魚貨名稱:白蝦<br />
-          全台灣平均價：{{ average }}元/公斤<br />
-          單位：公斤<br/>
-          資料來源：漁產品交易行情(<a target="_blank" style="color:#40C4FF;" href="https://data.coa.gov.tw/open_detail.aspx?id=039">行政院農業委員會資料開放平台</a>)
+        <v-col style="line-height: 24px;">
+          <span style="font-weight: 400;">魚貨名稱：</span>白蝦<br />
+          <span style="font-weight: 400;">全台灣平均價：</span>{{ average }}元/公斤<br />
+          <span style="font-weight: 400;">單位：</span>公斤<br/>
+          <!-- 資料來源：漁產品交易行情(<a target="_blank" style="color:#40C4FF;" href="https://data.coa.gov.tw/open_detail.aspx?id=039">行政院農業委員會資料開放平台</a>) -->
+          <span style="font-weight: 400;">資料來源：</span>漁產品交易行情(<a target="_blank" style="color:#40C4FF;text-decoration: underline;" href="https://data.moa.gov.tw/open_detail.aspx?id=039">行政院農業委員會資料開放平台</a>)
           <el-table
             :data="priceData"
             style="width: 100%"
@@ -100,11 +100,20 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .popoverColor {
   background-color: #3f6d9e !important;
 }
 .popoverColor .popper_arrow::after {
   border-bottom-color: #3f6d9e !important;
+}
+.el-popover.el-popper {
+  background-color: #fff;
+  * {
+    color: $color-dark;
+  }
+  h3 {
+    font-weight: bold;
+  }
 }
 </style>
