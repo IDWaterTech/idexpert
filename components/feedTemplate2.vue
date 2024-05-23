@@ -1360,7 +1360,7 @@ export default {
                             data[eid].stepList[etid].actionList.push(dis);
                         }
                     }else {
-                        ata[eid].stepList=new Array();
+                        data[eid].stepList=new Array();
                         data[eid].stepList.push({actionList:new Array()});
                         data[eid].stepList[etid].actionList.push(dis);
                     }
