@@ -535,7 +535,7 @@
                                 </v-tooltip> -->
                             </div>
                         </div>
-                        <div class="content" style="overflow-y: scroll;" :style="{'height':`${editItem.actionList&&editItem.actionList.length>0?'30vh':'initial'}`}">
+                        <div class="content" style="max-height:30vh; overflow-y: scroll;">
                             <v-card-text v-if="editItem.actionList&&editItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actionList[0].start_on_which_day}}」天開始執行動作({{editItem.actionList[0].action_name}})，持續執行到第「{{editItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
@@ -699,7 +699,7 @@
                                 <v-card-title>預設動作</v-card-title>
                             </div>
                         </div>
-                        <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="height: 30vh;overflow-y: scroll;">
+                        <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="max-height: 30vh;overflow-y: scroll;">
                             <v-card-text v-for="item in editItem.actionList" :key="'addAction_'+item.action_id" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
                                     <v-col cols="6">{{ item.action_name }}</v-col>
@@ -776,7 +776,7 @@
                                 </v-tooltip> -->
                             </div>
                         </div>
-                        <div class="content" style="overflow-y: scroll;" :style="{'height':`${addItem.actionList&&addItem.actionList.length>0?'30vh':'initial'}`}">
+                        <div class="content"  style="max-height:30vh; overflow-y: scroll;">
                             <v-card-text v-if="addItem.actionList&&addItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{addItem.name_ch}})開始後第「{{addItem.actionList[0].start_on_which_day}}」天開始執行動作({{addItem.actionList[0].action_name}})，持續執行到第「{{addItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
