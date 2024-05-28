@@ -85,7 +85,8 @@
                                             <v-btn v-if="(mitem.stepList==undefined||mitem.stepList.length==0)&&templatemode!=='cycleedit'" class="btn-icon green" @click="open(mitem,id);addWorkDialogOpen(mitem.phase_id,0)"><v-icon>mdi-plus</v-icon></v-btn>
                                             <v-card-title>
                                                 {{ templatemode=='cycleedit'?mitem.phase_name_ch:mitem.phase_name }}
-                                                <span> ． {{ mitem.day }} 天</span>
+                                                <span v-if="templatemode!=='cycleedit'"> ． {{ mitem.day }} 天</span>
+                                                <span v-else> ． {{computedTotalDay(mitem)}} 天</span>
                                             </v-card-title>
                                         </div>
                                         <div class="chevron">
@@ -104,7 +105,7 @@
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-card-title style="font-size: 0.9rem;" v-bind="attrs" v-on="on">{{work.step_name }}
                                                                 <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{(work.actionList[work.actionList.length-1].end_on_which_day-work.actionList[0].start_on_which_day)+1}} 天</span> 
-                                                                <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{ passObj.tempContent[id].stepList[wid].actionList[passObj.tempContent[id].stepList[wid].actionList.length-1].end_on_which_day-passObj.tempContent[id].stepList[wid].actionList[0].start_on_which_day+1 }} 天</span>
+                                                                <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{computedDay(passObj.tempContent[id].stepList[wid])}} 天</span>
                                                                 <span v-else>． 0 天 </span>
                                                             </v-card-title>
                                                         </template>
@@ -113,7 +114,7 @@
                                                     
                                                     <v-card-title v-else style="font-size: 0.9rem;">{{work.step_name }}
                                                         <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{(work.actionList[work.actionList.length-1].end_on_which_day-work.actionList[0].start_on_which_day)+1}} 天</span>
-                                                        <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{ passObj.tempContent[id].stepList[wid].actionList[passObj.tempContent[id].stepList[wid].actionList.length-1].end_on_which_day-passObj.tempContent[id].stepList[wid].actionList[0].start_on_which_day+1}} 天</span>
+                                                        <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{ computedDay(passObj.tempContent[id].stepList[wid])}} 天</span>
                                                         <span v-else>． 0 天</span>
                                                     </v-card-title>
                                                 </div>
@@ -579,8 +580,8 @@
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
-                        <v-btn class="btn-primary" @click="editWorkSubmit">編輯</v-btn>
-                        <v-btn class="btn-primary delete" @click="deleteWork">刪除</v-btn>
+                        <v-btn class="btn-primary" @click="editWorkSubmit">確認</v-btn>
+                        <v-btn class="btn-primary delete" @click="deleteWork">移除項目</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -653,7 +654,7 @@
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
                         <div style="display: inline-block;">
-                            <span>新增工作</span> 
+                            <span>加入工作</span> 
                         </div>
                         <div class="add" style="float: right;display: inline-block;">
                             <v-btn class="btn-secondary close"
@@ -686,7 +687,7 @@
                         
                         <div class="card-title" style="margin-bottom: 0;">
                             <div class="title">
-                                <v-card-title>備註說明</v-card-title>
+                                <v-card-title>工作說明</v-card-title>
                             </div>
                         </div>
                         <v-card-text style="display: flex;align-items: center;padding-top: 0;">
@@ -720,7 +721,7 @@
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
                         <v-btn class="btn-secondary" @click="addWorkDialog=false">取消</v-btn>
-                        <v-btn class="btn-primary" @click="addWorkSubmit">新增</v-btn>
+                        <v-btn class="btn-primary" @click="addWorkSubmit">加入</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -989,8 +990,9 @@ export default {
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
                 { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
-                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit','add', 'edit']},
-                { text: "持續執行至第幾天", value: "end_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit','add', 'edit']},
+                { text: "總執行天數", value: "total_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
+                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
+                { text: "持續執行至第幾天", value: "end_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
@@ -1100,8 +1102,6 @@ export default {
                     mitem.stepList=new Array();
                     mitem.stepList.push({actionList:new Array()});
                 }
-                
-                
             })
 
             this.authorization = _.cloneDeep(this.passObj.authorization);
@@ -1165,6 +1165,31 @@ export default {
         }
     },
     methods: {
+        /* 計算天數 */
+        // 養殖循環計算天數
+        computedDay(item) {
+            let num=0;
+            item.actionList.forEach(action=>{
+                if(action.dailyCheckList.length>0) {
+                    if(action.total_day) {
+                        num+=action.total_day;
+                    }
+                }else {
+                    num = item.actionList[item.actionList.length - 1].end_on_which_day - item.actionList[0].start_on_which_day + 1;
+                }
+                
+                
+            })
+            return num;
+        },
+        // 養殖循環計算階段天數
+        computedTotalDay(mitem) {
+            let num=0;
+            mitem.stepList.forEach(step=>{
+                num+=this.computedDay(step);
+            })
+            return num;
+        },
         /* 資料整理 */
         // 排序執行時間
         sortData() {
@@ -1179,12 +1204,23 @@ export default {
             // })
             data.forEach((d,id)=>{
                 d.stepList.forEach((step,sid)=>{
-                    console.log(this.workOpenStatus[id].open[sid])
+                    // console.log(this.workOpenStatus[id].open[sid])
                     step.open = this.workOpenStatus[id].open[sid];
                     if(step.actionList&&step.actionList.length>0) {
-                        step.actionList.sort((a,b)=>{
-                            return new Date(a.execute_time) - new Date(b.execute_time);
+                        let dateData=[];
+                        let nodate=[];
+                        step.actionList.forEach(action=>{
+                            if(action.execute_time&&action.execute_time!=='') {
+                                dateData.push(action);
+                            }else {
+                                nodate.push(action);
+                            }
                         })
+                        dateData.sort((a,b)=>{
+                            return new Date(a.execute_time).getTime() - new Date(b.execute_time).getTime();
+                        })
+                        step.actionList=[];
+                        step.actionList = [...dateData,...nodate];
                     }
                     
                 })
@@ -3244,7 +3280,7 @@ export default {
         },
         // 刪除整個工作
         deleteWork() {
-            if (confirm(`確認刪除${this.editItem.step_name} ？`)) {
+            if (confirm(`確認移除項目：${this.editItem.step_name} ？`)) {
                 let items = _.cloneDeep(this.mainItems);
                 items.forEach((mitem,mid)=>{
                     if(mitem.phase_id==this.addWorkIndex.phase_id) {
@@ -3420,7 +3456,8 @@ export default {
                 mitem.day = 0;
                 mitem.stepList = new Array();
             })
-        }
+        },
+        
     },
     computed: {
     

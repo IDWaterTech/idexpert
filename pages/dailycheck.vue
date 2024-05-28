@@ -3,7 +3,7 @@
         <v-card class="bg-card" style="margin-bottom: 16px;padding-top: 8px;">
             <div class="content">
                 <!-- 搜尋列 -->
-                <div class="search" style="margin-bottom: 8px;">
+                <div class="search">
                     <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
                         <!-- 搜尋 -->
                         <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
@@ -17,20 +17,23 @@
                                     @scopeSel_data="get_scopeData($event);"></locate-select>
                             </div>
                         </v-col>
+                        <!-- <v-col v-if="poolData.daily&&poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status!=='0'" cols="12" md="3">
+                            <v-btn class="btn-primary" :class="{'disabled':!poolData.daily||poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status=='0'}" @click="submitNextStep">開啟新工作</v-btn>
+                        </v-col> -->
                     </v-row>
                 </div>
                 <div class="result" v-if="poolData.daily&&poolData.daily.length>0">
-                    <span style="margin-left: 8px;">執行階段： {{ poolData.status }}</span>
+                    <span style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}}</span>
                     <div class="result-content">
                         <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id">
                             <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
                                 <div class="title">
-                                    <v-card-title>{{ item.date.slice(5) }}</v-card-title>
+                                    <v-card-title>{{ item.scheduling_date.slice(5) }}</v-card-title>
                                 </div>
                                 <div class="chevron">
                                     <v-tooltip bottom >
                                         <template v-slot:activator="{ on, attrs }">
-                                            <v-btn class="btn-icon green" v-bind="attrs" v-on="on" @click="addEventOpen(item.date)"><v-icon>mdi-plus</v-icon></v-btn>
+                                            <v-btn class="btn-icon green" v-bind="attrs" v-on="on" @click="addEventOpen(item.scheduling_date)"><v-icon>mdi-plus</v-icon></v-btn>
                                         </template>
                                         <span>新增動作</span>
                                     </v-tooltip>
@@ -41,16 +44,16 @@
                                 <div class="daily-check" v-for="(daily,did) in item.todo" :key="'daily_'+daily.id+'_'+did">
                                     <div class="check-title">
                                         <div class="title">
-                                            <v-card-title>{{ daily.item }}</v-card-title>
+                                            <v-card-title>{{ daily.action_name }}</v-card-title>
                                         </div>
                                         <div class="chrevon">
-                                            <span v-if="daily.execute==0" class="delay" @click="openDelay(daily,item.date,did,true)">延遲</span>
-                                            <span v-if="daily.execute==0" class="delay copy" @click="openDelay(daily,item.date,did,false)">複製</span>
-                                            <span v-else-if="daily.execute==1">已執行</span>
+                                            <span v-if="daily.execute_status=='0'" class="delay" @click="openDelay(daily,item.scheduling_date,did,true)">延遲</span>
+                                            <span v-if="daily.execute_status=='0'" class="delay copy" @click="openDelay(daily,item.scheduling_date,did,false)">複製</span>
+                                            <span v-else-if="daily.execute_status=='1'">已執行</span>
                                             <span v-else class="error-text">不執行</span>
-                                            <v-tooltip bottom v-if="daily.execute!==0">
+                                            <v-tooltip bottom v-if="daily.execute_status=='1'||daily.execute_status=='2'">
                                                 <template v-slot:activator="{ on, attrs }">
-                                                    <button class="btn-icon" @click="openEdit(daily,item.date)" v-bind="attrs" v-on="on">
+                                                    <button class="btn-icon" @click="openEdit(daily,item.scheduling_date)" v-bind="attrs" v-on="on">
                                                         <v-icon>mdi-pencil</v-icon>
                                                     </button>
                                                 </template>
@@ -59,13 +62,13 @@
                                         </div>
                                     </div>
                                     <div class="description">
-                                        {{daily.remark}}
+                                        {{daily.action_remark}}
                                     </div>
                                     <div class="content">
                                         <div class="remark">
                                             {{ daily.msg }}
                                         </div>
-                                        <div class="excute" v-if="daily.execute!==0">
+                                        <div class="excute" v-if="daily.execute_status!=='0'">
                                             <div class="date">
                                                 {{ daily.execute_time.slice(0,16) }}
                                             </div>
@@ -73,9 +76,9 @@
                                                 {{ daily.executor_name }}
                                             </div>
                                         </div>
-                                        <div v-if="daily.execute==0" class="action">
-                                            <v-btn class="btn-primary btn-small" :class="{'disabled':id!==0}" @click="openEdit(daily,item.date,1)">執行</v-btn>
-                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':id!==0}" @click="openEdit(daily,item.date,2)">不執行</v-btn>
+                                        <div v-if="daily.execute_status=='0'" class="action">
+                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
+                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
                                         </div>
                                     </div>
                                 </div>
@@ -85,9 +88,12 @@
                     
                 </div>
                 <div class="result" v-else style="overflow-x: hidden;">
-                    <v-card class="result-card" style="width: 100%;height: 72vh;display: flex;align-items: center;justify-content: center;">
-                        無資料
-                    </v-card>
+                    <div class="result-content">
+                        <v-card class="result-card" style="width: 100%;height: 72vh;display: flex;align-items: center;justify-content: center;">
+                            無資料
+                        </v-card>
+                    </div>
+                    
                 </div>
             </div>
         </v-card>
@@ -111,13 +117,13 @@
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;">
                             <div class="title"><v-card-title>執行狀態</v-card-title></div>
-                            <div class="title" v-if="editItem.execute!==0" style="display: flex;align-items: center;">
-                                <span style="font-size: 14px;margin-right: 8px;">{{ editItem.execute==1?'已執行':'不執行' }}</span>
-                                <v-btn class="btn-secondary btn-small delete" @click="editItem.execute = 0;editItem.msg=''">取消</v-btn>
+                            <div class="title" v-if="editItem.execute_status!=='0'" style="display: flex;align-items: center;">
+                                <span style="font-size: 14px;margin-right: 8px;">{{ editItem.execute_status=='1'?'已執行':'不執行' }}</span>
+                                <v-btn class="btn-secondary btn-small delete" @click="editItem.execute_status = '0';editItem.msg=''">取消</v-btn>
                             </div>
                             <div class="title" v-else>
-                                <v-btn class="btn-primary btn-small" @click="editItem.execute=1">執行</v-btn>
-                                <v-btn class="btn-secondary btn-small" @click="editItem.execute=2">不執行</v-btn>
+                                <v-btn class="btn-primary btn-small" @click="editItem.execute_status='1'">執行</v-btn>
+                                <v-btn class="btn-secondary btn-small" @click="editItem.execute_status='2'">不執行</v-btn>
                             </div>
                         </div>
                         <!-- 財務 -->
@@ -139,8 +145,8 @@
                         </v-card-text> -->
                         
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>說明 <span v-if="editItem.execute==2" class="error-text" style="margin-left: 4px;">*不執行請填入原因</span></v-card-title></div>
-                            <!-- <v-text-field v-model="editItem.remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <div class="title"><v-card-title>說明 <span v-if="editItem.execute_status=='2'" class="error-text" style="margin-left: 4px;">*不執行請填入原因</span></v-card-title></div>
+                            <!-- <v-text-field v-model="editItem.action_remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field> -->
                             <v-textarea v-model="editItem.msg" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>
                         </div>
@@ -148,7 +154,7 @@
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="editDialog=false">取消</v-btn>
-                        <v-btn class="btn-primary" :class="{'disabled':(editItem.execute==2&&editItem.msg=='')}" @click="submitEdit">確認</v-btn>
+                        <v-btn class="btn-primary" :class="{'disabled':(editItem.execute_status=='2'&&editItem.msg=='')}" @click="submitEdit">確認</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -159,7 +165,7 @@
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
                         <div style="display: inline-block;">
-                            <span>{{ isDelay?'延遲:':'複製:' }} {{ delayItem.item }}</span> 
+                            <span>{{ isDelay?'延遲:':'複製:' }} {{ delayItem.ation_name }}</span> 
                         </div>
                         <div class="add" style="float: right;display: inline-block;">
                             <v-btn class="btn-secondary close"
@@ -181,7 +187,7 @@
                                         <v-text-field v-model="delayDate" class="mt-0" clearable readonly dense :rules="rules.require"
                                             v-bind="attrs" v-on="on"></v-text-field>
                                     </template>
-                                    <v-date-picker v-model="delayDate" :min="getNowDate()" locale="zh-tw" no-title @input="
+                                    <v-date-picker v-model="delayDate" :min="delayItem.original_date" locale="zh-tw" no-title @input="
                                     menu_inspecteddate = false;
                                     "></v-date-picker>
                                 </v-menu>
@@ -214,10 +220,28 @@
                             </v-btn>
                         </div>
                     </v-card-title>
+                    <!-- <div class="basic" style="display: flex;align-items: center;">
+                        <v-card-text style="display: flex;align-items: center;padding: 8px 16px;">
+                            <v-autocomplete v-model="addItem.action_id" dense filled :items="stepdata" item-text="name_ch"
+                                    item-value="id" @change="actionInputShow = false"></v-autocomplete>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn slot="append-outer" class="btn-icon green" @click="showstep()" v-bind="attrs" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
+                                </template>
+                                <span>新增動作</span>
+                            </v-tooltip>
+                        </v-card-text>
+                        
+                    </div> -->
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>動作名稱 </v-card-title></div>
-                            <v-text-field v-model="addItem.name" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <div class="title"><v-card-title>動作名稱(中文) </v-card-title></div>
+                            <v-text-field v-model="addItem.name_ch" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            </v-text-field>
+                        </div>
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>動作名稱(英文) </v-card-title></div>
+                            <v-text-field v-model="addItem.name_en" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
                         <v-card-text style="display: flex;align-items: center;padding: 0;">
@@ -276,9 +300,9 @@
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                             <div class="title"><v-card-title>備註 </v-card-title></div>
                             <v-text-field v-model="addItem.remark" filled dense  label="備註" clearable style="padding-top: 0;width: 100%;"></v-text-field>
-                            <!-- <v-text-field v-model="editItem.remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <!-- <v-text-field v-model="editItem.action_remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field> -->
-                            <!-- <v-textarea v-model="addItem.remark" hide-details filled clearable placeholder="備註..." style="width: 100%;"></v-textarea> -->
+                            <!-- <v-textarea v-model="addItem.action_remark" hide-details filled clearable placeholder="備註..." style="width: 100%;"></v-textarea> -->
                         </div>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
@@ -288,6 +312,33 @@
                     </v-card-actions>
                 </v-card>
             </v-form>
+        </v-dialog>
+        <!-- 開啟下一階段 -->
+        <v-dialog v-model="nextStepDialog" max-width="500px">
+            <v-card class="custom-dialog">
+                <v-card-title class="add-title" style="display: block;width: 100%;border-bottom: none;">
+                    <div style="display: inline-block;">
+                        <span></span> 
+                    </div>
+                    <!-- <div class="add" style="float: right;display: inline-block;">
+                        <v-btn class="btn-secondary close"
+                                title="取消" 
+                                @click="delayDialog = false;" 
+                                style="border: none;min-width: 0;padding: 0 4px;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div> -->
+                </v-card-title>
+                <div class="basic">
+                    <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="title"><v-card-title>已完成目前工作項，按下確認開啟隔天新的工作項</v-card-title></div>
+                    </div>
+                </div>
+                <v-card-actions style="padding: 24px 12px;">
+                    <v-spacer></v-spacer>
+                    <v-btn class="btn-primary" @click="submitNextStep()">確認</v-btn>
+                </v-card-actions>
+            </v-card>
         </v-dialog>
     </div>
 </template>
@@ -321,10 +372,15 @@ export default {
             rules: {
                 require: [v => !!v || "*必要項目"],
             },
+            nextStepDialog: false, // 開啟下一階段
+            stepdata:[],
+            actionInputShow:false
         }
     },
-    created() {
-        this.getaccList();//取得所有帳號，比對執行者用
+    async created() {
+        await this._pageCheck(); //驗證頁面是否可檢視
+        // this.getaccList();//取得所有帳號，比對執行者用
+        this.getstepdata();
     },
     methods: {
         // 取得所有帳號
@@ -340,225 +396,228 @@ export default {
             this.searchPool();
         },
         // 取得池dailycheck
-        searchPool() {
-            this.poolData = {
-                status: '養殖審核',
-                daily:[{
-                        date: dayjs( new Date()).format("YYYY-MM-DD"),
-                        todo:[{
-                            id: 1111,
-                            item: '訂苗',
-                            execute: 1,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss"),
-                            remark: '聯絡廠商確定送苗時間',
-                            executor: 'shihya.hsu@idwater.com.tw',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 2222,
-                            item: '訂飼料',
-                            execute: 2,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss"),
-                            remark: '聯絡廠商下單',
-                            executor: 'shihya.hsu@idwater.com.tw',
-                            executor_name: '',
-                            msg:'飼料還有剩',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 3333,
-                            item: '訂砂糖',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 4444,
-                            item: '訂海波',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 5555,
-                            item: '訂尿素',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 6666,
-                            item: '訂次氯酸鈣',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        }]
-                    },{
-                        date: dayjs(new Date().getTime()+1000*60*60*24).format("YYYY-MM-DD"),
-                        todo:[{
-                            id: 7777,
-                            item: '訂葵四',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 8888,
-                            item: '訂弧立滅',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },]
-                    },{
-                        date: dayjs(new Date().getTime()+1000*60*60*24*2).format("YYYY-MM-DD"),
-                        todo:[{
-                            id: 9999,
-                            item: '訂粉料',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 11111,
-                            item: '訂0號料',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 22222,
-                            item: '訂1號料',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },]
-                    },{
-                        date: dayjs(new Date().getTime()+1000*60*60*24*3).format("YYYY-MM-DD"),
-                        todo:[{
-                            id: 33333,
-                            item: '訂紅料',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 44444,
-                            item: '訂砂糖',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },]
-                    },{
-                        date: dayjs(new Date().getTime()+1000*60*60*24*4).format("YYYY-MM-DD"),
-                        todo:[{
-                            id: 55555,
-                            item: '訂xxx',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 66666,
-                            item: '訂yyy',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },]
-                    },{
-                        date: dayjs(new Date().getTime()+1000*60*60*24*5).format("YYYY-MM-DD"),
-                        todo:[{
-                            id: 1234,
-                            item: '訂aaa',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },{
-                            id: 5678,
-                            item: '訂bbb',
-                            execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                            execute_time: '',
-                            remark: '聯絡廠商下單',
-                            executor: '',
-                            executor_name: '',
-                            msg:'',
-                            actual_member: 0,
-                            actual_spend:0
-                        },]
-                    }]
-            }
-
+        async searchPool() {
+            // this.poolData = {
+            //     status: '養殖審核',
+            //     daily:[{
+            //             date: dayjs( new Date()).format("YYYY-MM-DD"),
+            //             todo:[{
+            //                 id: 1111,
+            //                 item: '訂苗',
+            //                 execute: 1,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            //                 remark: '聯絡廠商確定送苗時間',
+            //                 executor: 'shihya.hsu@idwater.com.tw',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 2222,
+            //                 item: '訂飼料',
+            //                 execute: 2,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            //                 remark: '聯絡廠商下單',
+            //                 executor: 'shihya.hsu@idwater.com.tw',
+            //                 executor_name: '',
+            //                 msg:'飼料還有剩',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 3333,
+            //                 item: '訂砂糖',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 4444,
+            //                 item: '訂海波',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 5555,
+            //                 item: '訂尿素',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 6666,
+            //                 item: '訂次氯酸鈣',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             }]
+            //         },{
+            //             date: dayjs(new Date().getTime()+1000*60*60*24).format("YYYY-MM-DD"),
+            //             todo:[{
+            //                 id: 7777,
+            //                 item: '訂葵四',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 8888,
+            //                 item: '訂弧立滅',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },]
+            //         },{
+            //             date: dayjs(new Date().getTime()+1000*60*60*24*2).format("YYYY-MM-DD"),
+            //             todo:[{
+            //                 id: 9999,
+            //                 item: '訂粉料',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 11111,
+            //                 item: '訂0號料',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 22222,
+            //                 item: '訂1號料',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },]
+            //         },{
+            //             date: dayjs(new Date().getTime()+1000*60*60*24*3).format("YYYY-MM-DD"),
+            //             todo:[{
+            //                 id: 33333,
+            //                 item: '訂紅料',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 44444,
+            //                 item: '訂砂糖',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },]
+            //         },{
+            //             date: dayjs(new Date().getTime()+1000*60*60*24*4).format("YYYY-MM-DD"),
+            //             todo:[{
+            //                 id: 55555,
+            //                 item: '訂xxx',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 66666,
+            //                 item: '訂yyy',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },]
+            //         },{
+            //             date: dayjs(new Date().getTime()+1000*60*60*24*5).format("YYYY-MM-DD"),
+            //             todo:[{
+            //                 id: 1234,
+            //                 item: '訂aaa',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },{
+            //                 id: 5678,
+            //                 item: '訂bbb',
+            //                 execute: 0,// 0 尚未選擇,1 執行,2 不執行,
+            //                 execute_time: '',
+            //                 remark: '聯絡廠商下單',
+            //                 executor: '',
+            //                 executor_name: '',
+            //                 msg:'',
+            //                 actual_member: 0,
+            //                 actual_spend:0
+            //             },]
+            //         }]
+            // }
+            let param={pond_id:this.nowPoolid}
+            let getDailyCheckList = await this.getDailyCheckList(param);
+            let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
+            this.poolData = _.cloneDeep(data);
             this.poolData.daily.forEach(d=>{
-                d.todo.forEach(t=>{
-                    if(t.executor!=='') {
-                        t.executor_name = this.accdata.filter(x=>x.username==t.executor)[0].position+'-'+this.accdata.filter(x=>x.username==t.executor)[0].account_name;
-                    }
+                // d.todo.forEach(t=>{
+                //     if(t.executor!=='' &&t.executor!==null) {
+                //         t.executor_name = this.accdata.filter(x=>x.username==t.executor)[0].position+'-'+this.accdata.filter(x=>x.username==t.executor)[0].account_name;
+                //     }
                     
-                })
-                if(dayjs(new Date(d.date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
+                // })
+                if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
                     // 排序
                     let array1=[];
                     let array2=[];
@@ -575,6 +634,9 @@ export default {
                     d.todo = [...array1,...array2];
                 }
             })
+            // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!=='0') {
+            //     this.nextStepDialog = true;
+            // }
 
         },
         openEdit(item,date,num=0) {
@@ -589,10 +651,10 @@ export default {
                 this.editItem.actual_spend=0;
             }
             if(num==1||num==2) {
-                this.editItem.execute = num;
+                this.editItem.execute_status = num;
             }
-            
-            if(this.editItem.executor=='') {
+            this.editItem.execute_status = this.editItem.execute_status.toString();
+            if(this.editItem.executor==''||this.editItem.executor==null) {
                 if(num==2) {
                     this.editDialog = true;
                 }else {
@@ -606,62 +668,77 @@ export default {
             
             
         },
-        submitEdit() {
+        async submitEdit() {
             console.log('submit edit',this.editItem);
             var valid = this.$refs.editform?.validate();
-            if(valid||this.editItem.execute==1) {
-                this.editItem.execute_time = this.editItem.execute==0?null:dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                this.editItem.executor = this.editItem.execute==0?'':this.$auth.$state.user.email;
-                this.editItem.msg = this.editItem.execute==0?'':this.editItem.msg;
-                this.editDialog = false;
-                let data = _.cloneDeep(this.poolData.daily);
-                this.poolData.daily = [];
-                data.forEach(d=>{
-                    if(d.date==this.nowDaily) {
-                        d.todo.forEach(x=>{
-                            if(x.id==this.editItem.id) {
-                                x.execute = this.editItem.execute;
-                                x.execute_time = this.editItem.execute_time;
-                                x.msg = this.editItem.msg;
-                                x.executor = this.editItem.executor;
-                                if(x.executor!=='') {
-                                    x.executor_name = this.accdata.filter(x=>x.username==this.editItem.executor)[0].position+'-'+this.accdata.filter(x=>x.username==this.editItem.executor)[0].account_name
-                                }else {
-                                    x.executor_name = '';
-                                }
-                                if(this.editItem.actual_member>0) {
-                                    x.actual_member = this.editItem.actual_member;
-                                }else {
-                                    x.actual_member = 0;
-                                }
-                                if(this.editItem.actual_spend>0) {
-                                    x.actual_spend = this.editItem.actual_spend;
-                                }else {
-                                    x.actual_spend = 0;
-                                }
-                                
-                            }
-                        })
-                        // 排序
-                        let array1=[];
-                        let array2=[];
-                        d.todo.forEach(x=>{
-                            if(x.execute_time&&x.execute_time!=='') {
-                                array1.push(x);
-                            }else {
-                                array2.push(x);
-                            }
-                        })
-                        array1.sort((a,b)=>{
-                            return new Date(a.execute_time) - new Date(b.execute_time)
-                        });
-                        d.todo = [...array1,...array2];
+            if(valid||this.editItem.execute_status=='1') {
+                this.editItem.execute_time = this.editItem.execute_status=='0'?null:dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
+                this.editItem.executor = this.editItem.execute_status=='0'?'':this.$auth.$state.user.email;
+                this.editItem.msg = this.editItem.execute_status=='0'?'':this.editItem.msg;
+                let parm = _.cloneDeep(this.editItem);
+                parm.scheduling_date = this.nowDaily;
+                parm.updated_user = this.$auth.$state.user.email;
+                delete parm.id;
+                console.log('parm',parm);
+                var res = false;
+                res = await this.patchDailyCheckList(parm,this.editItem.id);
+                setTimeout(()=>{
+                    if(res) {
+                        this.editDialog = false;
+                        this.searchPool();
                     }
-                })
+                },50)
+                // this.editDialog = false;
+                // let data = _.cloneDeep(this.poolData.daily);
+                // this.poolData.daily = [];
+                // data.forEach(d=>{
+                //     if(d.scheduling_date==this.nowDaily) {
+                //         d.todo.forEach(x=>{
+                //             if(x.id==this.editItem.id) {
+                //                 x.execute_status = this.editItem.execute_status;
+                //                 x.execute_time = this.editItem.execute_time;
+                //                 x.msg = this.editItem.msg;
+                //                 x.executor = this.editItem.executor;
+                //                 if(x.executor!=='') {
+                //                     x.executor_name = this.accdata.filter(x=>x.username==this.editItem.executor)[0].position+'-'+this.accdata.filter(x=>x.username==this.editItem.executor)[0].account_name
+                //                 }else {
+                //                     x.executor_name = '';
+                //                 }
+                //                 if(this.editItem.actual_member>0) {
+                //                     x.actual_member = this.editItem.actual_member;
+                //                 }else {
+                //                     x.actual_member = 0;
+                //                 }
+                //                 if(this.editItem.actual_spend>0) {
+                //                     x.actual_spend = this.editItem.actual_spend;
+                //                 }else {
+                //                     x.actual_spend = 0;
+                //                 }
+                                
+                //             }
+                //         })
+                //         // 排序
+                //         let array1=[];
+                //         let array2=[];
+                //         d.todo.forEach(x=>{
+                //             if(x.execute_time&&x.execute_time!=='') {
+                //                 array1.push(x);
+                //             }else {
+                //                 array2.push(x);
+                //             }
+                //         })
+                //         array1.sort((a,b)=>{
+                //             return new Date(a.execute_time) - new Date(b.execute_time)
+                //         });
+                //         d.todo = [...array1,...array2];
+                //     }
+                // })
 
-                this.poolData.daily = data;
-
-                console.log('poolData',data);
+                // this.poolData.daily = data;
+                // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!==0) {
+                //     this.nextStepDialog = true;
+                // }
+                // console.log('poolData',data);
             }
             
         },
@@ -681,20 +758,20 @@ export default {
         getMaxDate() {
             let date;
             if(this.poolData.daily) {
-                date = this.poolData.daily[this.poolData.daily.length-1].date;
+                date = this.poolData.daily[this.poolData.daily.length-1].scheduling_date;
             }
             return date;
         },
-        submitDelay() {
+        async submitDelay() {
             var valid = this.$refs.delayform.validate();
             var isItem = false;
             // 判斷該天是否有重複的動作
             this.poolData.daily.forEach(d=>{
-                if(new Date(d.date).getTime()==new Date(this.delayDate).getTime()) {
+                if(new Date(d.scheduling_date).getTime()==new Date(this.delayDate).getTime()) {
                     d.todo.forEach(t=>{
-                        if(t.id==this.delayItem.id) {
+                        if(t.action_id==this.delayItem.action_id) {
                             isItem=true;
-                            alert(d.date+'已有此動作!請選擇其他天')
+                            alert(d.scheduling_date+'已有此動作!請選擇其他天')
                         }
                     })
                     
@@ -703,62 +780,155 @@ export default {
             
             if(valid&&!isItem) {
                 if(this.isDelay) {
-                    this.poolData.daily.forEach(d=>{
-                        if(new Date(d.date).getTime()==new Date(this.delayItem.original_date).getTime()) {
-                            d.todo.splice(this.delayItem.index,1);
+                    let parm = _.cloneDeep(this.delayItem);
+                    parm.scheduling_date = this.delayDate;
+                    parm.updated_user = this.$auth.$state.user.email;
+                    parm.execute_time = null;
+                    parm.executor = '';
+                    delete parm.original_date;
+                    delete parm.id;
+                    delete parm.index;
+                    console.log('parm',parm);
+                    var res = false;
+                    res = await this.patchDailyCheckList(parm,this.delayItem.id);
+                    setTimeout(()=>{
+                        if(res) {
+                            this.delayDialog = false;
+                            this.searchPool();
                         }
-                        if(new Date(d.date).getTime()==new Date(this.delayDate).getTime()) {
-                            d.todo.push(this.delayItem);
-                        }
-                    })
+                    },50)
+                    // this.poolData.daily.forEach(d=>{
+                    //     if(new Date(d.scheduling_date).getTime()==new Date(this.delayItem.original_date).getTime()) {
+                    //         d.todo.splice(this.delayItem.index,1);
+                    //     }
+                    //     if(new Date(d.scheduling_date).getTime()==new Date(this.delayDate).getTime()) {
+                    //         d.todo.push(this.delayItem);
+                    //     }
+                    // })
 
                 }else {
-                    this.poolData.daily.forEach(d=>{
-                        if(new Date(d.date).getTime()==new Date(this.delayDate).getTime()) {
-                            d.todo.push(this.delayItem);
+                    let parm = _.cloneDeep(this.delayItem);
+                    parm.scheduling_date = this.delayDate;
+                    parm.created_user = this.$auth.$state.user.email;
+                    parm.execute_time = null;
+                    delete parm.original_date;
+                    delete parm.id;
+                    delete parm.action_name;
+                    delete parm.action_remark;
+                    delete parm.updated_user;
+                    delete parm.index;
+                    console.log('parm',parm);
+                    var res = false;
+                    res = await this.postDailyCheckList(parm);
+                    setTimeout(()=>{
+                        if(res) {
+                            this.delayDialog = false;
+                            this.searchPool();
                         }
-                    })
+                    },50)
+                    // this.poolData.daily.forEach(d=>{
+                    //     if(new Date(d.scheduling_date).getTime()==new Date(this.delayDate).getTime()) {
+                    //         d.todo.push(this.delayItem);
+                    //     }
+                    // })
                 }
-                this.delayDialog = false;
+                
             }
             
         },
         addEventOpen(date) {
             this.addItem = {
-                name:'',
+                name_ch:'',
+                name_en:'',
                 start_date: dayjs(new Date(date)).format("YYYY-MM-DD"),
-                end_date: null,
+                end_date: dayjs(new Date(date)).format("YYYY-MM-DD"),
                 remark:'',
                 estimate_member:0,
-                estimate_spend:0
+                estimate_spend:0,
+                step_id:this.poolData.step_id
             };
             this.addDialog = true;
         },
-        submitAdd() {
+        async submitAdd() {
             var valid = this.$refs.addform.validate();
             if(valid) {
                 let item = {
-                    id: Math.floor(Math.random()*999)+100,
-                    item: this.addItem.name,
-                    execute: 0,// 0 尚未選擇,1 執行,2 不執行,
-                    execute_time: '',
-                    remark: this.addItem.remark,
-                    executor: '',
-                    executor_name: '',
-                    msg: '',
-                    estimate_member:this.addItem.estimate_member,
-                    estimate_spend:this.addItem.estimate_spend
+                    "step_id": this.poolData.step_id,
+                    "name_ch": this.addItem.name_ch,
+                    "name_en": this.addItem.name_en,
+                    "remark": this.addItem.remark,
+                    "started_date": this.addItem.start_date,
+                    "ended_date": this.addItem.end_date,
+                    "estimated_member": 0,
+                    "estimated_spend": 0,
+                    "created_user": this.$auth.$state.user.email
                 }
-                this.poolData.daily.forEach(x=>{
-                    if(new Date(x.date).getTime()>= new Date(this.addItem.start_date).getTime()&&
-                        new Date(this.addItem.end_date).getTime()>=new Date(x.date).getTime()) {
-                        x.todo.push(item);
+                var res = false;
+                res = await this.postDailyCheckActionList(item);
+                setTimeout(()=>{
+                    if(res) {
+                        this.addDialog=false;
+                        this.searchPool();
                     }
-                })
-                this.addDialog=false;
+                },50)
+                // if(!this.actionInputShow) {
+                    // let item = {
+                    //     action_id: this.addItem.action_id,
+                    //     scheduling_date: this.addItem.start_date,
+                    //     execute_status: '0',// 0 尚未選擇,1 執行,2 不執行,
+                    //     execute_time: null,
+                    //     executor: '',
+                    //     msg: '',
+                    //     actual_member:0,
+                    //     actual_spend:0,
+                    //     created_user: this.$auth.$state.user.email
+                    // }
+                    // console.log('parm',item);
+                    // var res = false;
+                    // res = await this.postDailyCheckList(item);
+                    // setTimeout(()=>{
+                    //     if(res) {
+                    //         this.addDialog=false;
+                    //         this.getstepdata();
+                    //     }
+                    // },50)
+                // }
+                
+                
+                
+                // this.poolData.daily.forEach(x=>{
+                //     if(new Date(x.scheduling_date).getTime()>= new Date(this.addItem.start_date).getTime()&&
+                //         new Date(this.addItem.end_date).getTime()>=new Date(x.scheduling_date).getTime()) {
+                //         x.todo.push(item);
+                //     }
+                // })
+                // this.addDialog=false;
             }
             
         },
+        submitNextStep() {
+            // 提示開啟隔天新工作的視窗
+            this.nextStepDialog = false;
+        },
+        // 取得步驟清單
+        getstepdata: async function () {
+            let getBreedingStepList = await this.getBreedingStepList2();
+            let stepData = typeof (getBreedingStepList)=='string'?[]:getBreedingStepList;
+            this.stepdata = [];
+            stepData.forEach(s=>{
+                this.stepdata.push(s);
+            })
+            console.log('getStep',this.stepdata)
+        },
+        showstep() {
+            if(!this.actionInputShow) {
+                this.actionInputShow = true;
+                this.addItem.action_id = null;
+            }else {
+                this.actionInputShow = false;
+            }
+            
+        }
     },
     watch: {
     }

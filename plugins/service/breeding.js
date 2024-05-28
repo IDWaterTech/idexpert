@@ -1059,5 +1059,84 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        /* dailycheck */
+        // 取得每日清單
+        getDailyCheckList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2/`,{ params: parm })
+                console.log("每日清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增每日清單
+        postDailyCheckList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2/`,addform,)
+                console.log("新增每日:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改每日清單(執行/不執行)
+        patchDailyCheckList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2/${id}/`,parm,)
+                console.log("修改每日清單:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增動作清單
+        postDailyCheckActionList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-action2/`,addform,)
+                console.log("新增動作:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
     }
 })

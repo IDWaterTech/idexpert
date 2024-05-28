@@ -122,7 +122,7 @@
                   <v-progress-circular indeterminate size="64"></v-progress-circular>
                 </v-overlay>
                 <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
-                   height="62vh"
+                  height="62vh"
                   @cell-click="clickRow"
                   @select="handleSelectionChange" :header-cell-name="cellClass">
                   <!-- 名稱/批號 -->
@@ -964,7 +964,6 @@
                                 <!-- <span style="font-size: 12px;line-height: 12px;">檢驗時間</span>
                                 <a-date-picker v-model="add.execute_date" :defaultValue="add.execute_date" label="檢驗時間" value="null" format="yyyy-MM-DD" show-time placeholder="檢驗時間" @change="onChange" @ok="onOk" style="min-width: none;margin-left: 4px;margin-right: 16px;width: 100%;" /> -->
                             </div>  
-                         
                             <!-- {{ bacteriaAll.filter(x=>x.id==add.species)[0].test }} -->
                         </div>
                         <div v-if="add.type==1" class="select-bacteria" style="display: flex;align-items: flex-end;margin-bottom: 12px;width: 100%;">
@@ -1619,7 +1618,7 @@ export default {
                   status:'空池'
                 }
                 status.id.push(this.poolid);
-                this.compareStatus(status);
+                // this.compareStatus(status);
               }
               
               this.getCircleData();
@@ -2294,7 +2293,7 @@ export default {
                 id: this.statusId,
                 status: '養殖審核'
               }
-              this.compareStatus(status);
+              // this.compareStatus(status);
               this.getCircleData();
               
             }
@@ -3880,44 +3879,55 @@ export default {
         
           let items = _.cloneDeep(this.passObj.tempContent);
           items.forEach(mitem=>{
-          mitem.day=0;
-          mitem.stepList.forEach(step=>{
-            step.open=false;
-            if(step.actionList&&step.actionList.length>0) {
-              mitem.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
-              step.actionList.forEach(action=>{
-                action.type=0;
-                if(action.dailyCheckList&&action.dailyCheckList.length>0) {
-                  action.execute_time = action.dailyCheckList[0].execute_time;
-                  action.execute=3;
-                  let execute = 0;
-                  let nonexecute = 0;
-                  action.dailyCheckList.forEach(daily=>{
-                    if(daily.execute_status == 1) {
-                      execute+=1;
-                    }else if(daily.execute_status == 2) {
-                      nonexecute+=1;
+            mitem.day=0;
+            mitem.stepList.forEach(step=>{
+              step.open=false;
+              if(step.actionList&&step.actionList.length>0) {
+                mitem.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
+                step.actionList.forEach(action=>{
+                  action.type=0;// 0 一般動作 1 疾病 2 水質 3 事件
+                  let dailycheck = [];
+                  if(action.dailyCheckList&&action.dailyCheckList.length>0) {
+                    action.dailyCheckList.sort((a,b)=>new Date(a.scheduling_date).getTime()-new Date(b.scheduling_date).getTime())
+                    action.execute_time = action.dailyCheckList[0].execute_time;
+                    action.execute=3;
+                    action.total_day = action.dailyCheckList.length;
+                    let execute = 0; // 0未開始 1已執行 2異常 3尚有未執行
+                    let nonexecute = 0;
+                    action.dailyCheckList.forEach(daily=>{
+                      if(daily.execute_status == 1) {
+                        execute+=1;
+                        dailycheck.push(daily);
+                      }else if(daily.execute_status == 2) {
+                        nonexecute+=1;
+                        dailycheck.push(daily);
+                      }
+                    })
+                    // console.log(execute,nonexecute,action.end_on_which_day-action.start_on_which_day+1)
+                    if(execute == (action.dailyCheckList.length)) {
+                      action.execute = 1;
+                    }else if((execute+nonexecute)==(action.dailyCheckList.length)) {
+                      action.execute = 2;
+                    }else if((execute+nonexecute)==0) {
+                      action.execute = 0;
                     }
-                  })
-                  console.log(execute,nonexecute,action.end_on_which_day-action.start_on_which_day+1)
-                  if(execute == (action.end_on_which_day-action.start_on_which_day+1)) {
-                    action.execute = 1;
-                  }else if((execute+nonexecute)==(action.end_on_which_day-action.start_on_which_day+1)) {
-                    action.execute = 2;
+                    action.dailyCheckList = dailycheck;
+                    // console.log('action',action);
+                  }else {
+                    
                   }
-                }
-              })
-            }else {
-              step.actionList = new Array();
-            }
-              
-          })
-          this.passObj.tempContent = [];
-          this.passObj.tempContent = _.cloneDeep(items);
+                })
+              }else {
+                step.actionList = new Array();
+              } 
+            })
+            this.passObj.tempContent = [];
+            this.passObj.tempContent = _.cloneDeep(items);
         })
         this.resultListOpen = false;
         this.resultCycleOpen = true;
         this.currentDataId = id;
+        console.log('get temp',this.passObj.tempContent)
       }else {
         this.$toast.error("此循環無樣板", { duration: 2000 });
       }
@@ -4596,7 +4606,7 @@ export default {
                   status: '空池'
                 }
                 status.id.push(this.poolid);
-                this.compareStatus(status);
+                // this.compareStatus(status);
               }
               this.editDialog = false;
               this.getCircleData();
