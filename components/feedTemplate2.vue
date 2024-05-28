@@ -1169,17 +1169,20 @@ export default {
         // 養殖循環計算天數
         computedDay(item) {
             let num=0;
-            item.actionList.forEach(action=>{
-                if(action.dailyCheckList.length>0) {
-                    if(action.total_day) {
-                        num+=action.total_day;
+            if(item.actionList) {
+                item.actionList.forEach(action=>{
+                    if(action.dailyCheckList) {
+                        if(action.dailyCheckList.length>0) {
+                            if(action.total_day) {
+                                num+=action.total_day;
+                            }
+                        }else {
+                            num = item.actionList[item.actionList.length - 1].end_on_which_day - item.actionList[0].start_on_which_day + 1;
+                        }
                     }
-                }else {
-                    num = item.actionList[item.actionList.length - 1].end_on_which_day - item.actionList[0].start_on_which_day + 1;
-                }
-                
-                
-            })
+                })
+            }
+            
             return num;
         },
         // 養殖循環計算階段天數
