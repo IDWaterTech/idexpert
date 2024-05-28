@@ -535,7 +535,7 @@
                                 </v-tooltip> -->
                             </div>
                         </div>
-                        <div class="content" style="height: 30vh;overflow-y: scroll;">
+                        <div class="content" style="overflow-y: scroll;" :style="{'height':`${editItem.actionList&&editItem.actionList.length>0?'30vh':'initial'}`}">
                             <v-card-text v-if="editItem.actionList&&editItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actionList[0].start_on_which_day}}」天開始執行動作({{editItem.actionList[0].action_name}})，持續執行到第「{{editItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
@@ -776,7 +776,7 @@
                                 </v-tooltip> -->
                             </div>
                         </div>
-                        <div class="content" style="height: 30vh;overflow-y: scroll;">
+                        <div class="content" style="overflow-y: scroll;" :style="{'height':`${addItem.actionList&&addItem.actionList.length>0?'30vh':'initial'}`}">
                             <v-card-text v-if="addItem.actionList&&addItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{addItem.name_ch}})開始後第「{{addItem.actionList[0].start_on_which_day}}」天開始執行動作({{addItem.actionList[0].action_name}})，持續執行到第「{{addItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
@@ -821,7 +821,7 @@
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
                         <v-btn class="btn-secondary" @click="addWorkActionDialog=false">取消</v-btn>
-                        <v-btn class="btn-primary" @click="addWorkActionSubmit">加入</v-btn>
+                        <v-btn class="btn-primary" @click="addWorkActionSubmit">新增</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
