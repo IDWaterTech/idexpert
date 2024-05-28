@@ -4317,7 +4317,7 @@ export default {
       this.addparm.temp_id = undefined;
       let getTemplateList = await this.getTemplateList2();
       let data = typeof (getTemplateList)=='string'?[]:getTemplateList;
-      this.template_items = data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain);
+      this.template_items = data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain).filter(x=>x.id!==1);
       this.template_all = data;
       // var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
       // await this.$axios

@@ -5,15 +5,15 @@
                 <v-form ref="mainform">
                     <v-row dense class="text-center">
                         <v-col cols="12" md="2" sm="3">
-                            <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"
+                            <v-text-field v-model="tempMain.name_ch" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable||tempMain.id==1" 
                                 label="樣板名稱(中)" clearable></v-text-field>
                         </v-col>
                         <v-col cols="12" md="2" sm="3">
-                            <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"
+                            <v-text-field v-model="tempMain.name_en" filled dense hide-details :rules="rules.require" :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable||tempMain.id==1"
                                 label="樣板名稱(英)" clearable></v-text-field>
                         </v-col>
                         <v-col cols="12" md="2" sm="3">
-                            <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable"></v-text-field>
+                            <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable||tempMain.id==1"></v-text-field>
                         </v-col>
                         <v-col cols="2" v-if="templatemode=='add'" style="display: flex;align-items: center;justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存樣板"
@@ -3412,7 +3412,10 @@ export default {
                 let index = this.mainItems.map(e => e.phase_id).indexOf(this.addWorkIndex.phase_id);
                 this.status[index].open = true;
                 item.stepList.forEach(step=>{
-                    item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
+                    console.log('action',step.actionList);
+                    if(step.actionList&&step.actionList.length>0) {
+                        item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
+                    }
                 })
                 this.addWorkDialog = false;
             }
@@ -3490,7 +3493,8 @@ export default {
         },
         passObj: {
             handler(val){
-                console.log(val)
+                console.log(val);
+                this.tempMain = _.cloneDeep(this.passObj.tempMain);
                 this.mainItems = _.cloneDeep(this.passObj.tempContent);
                 this.mainItems.forEach(m=>m.open=this.nowExpand);
                 if(this.templatemode=='cycleedit') {

@@ -3,7 +3,7 @@
         <v-row  v-if="filterTemplate.length>0">
             <v-col cols="12" md="4" sm="6" style="padding: 0;">
                 <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
-                    <v-autocomplete :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="filterTemplate" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
+                    <v-autocomplete :disabled="editmode!=='edit'||isEditDefault" v-model="tempSelect" hide-details dense filled :items="filterTemplate" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
                     
                     </v-autocomplete>
                     
@@ -15,7 +15,7 @@
                     <div class="chevron" style="display: flex;align-items: center;">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
-                                <button :class="{'disabled':editmode=='edit'}" class="btn-icon" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;" v-bind="attrs" v-on="on">
+                                <button :class="{'disabled':editmode=='edit'&&!isEditDefault}" class="btn-icon" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;isEditDefault=false;" v-bind="attrs" v-on="on">
                                     <v-icon>mdi-pencil</v-icon>
                                 </button>
                             </template>
@@ -23,7 +23,7 @@
                         </v-tooltip>
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
-                                <button :class="{'disabled':editmode=='add'}" class="btn-icon green" @click="clickAdd()" v-bind="attrs" v-on="on">
+                                <button :class="{'disabled':editmode=='add'}" class="btn-icon green" @click="clickAdd();isEditDefault=false;" v-bind="attrs" v-on="on">
                                     <v-icon>mdi-plus</v-icon>
                                 </button>
                             </template>
@@ -32,7 +32,7 @@
                         
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
-                                <button :class="{'disabled':editmode!=='edit'}" class="btn-icon  delete" @click="delTemp" v-bind="attrs" v-on="on">
+                                <button :class="{'disabled':editmode!=='edit'||isEditDefault}" class="btn-icon  delete" @click="delTemp" v-bind="attrs" v-on="on">
                                     <v-icon>mdi-trash-can</v-icon>
                                 </button>
                             </template>
@@ -61,7 +61,6 @@
                 </div>
             </v-col>
         </v-row>
-        
         <div class="content" style="padding: 0;margin-top: 24px;margin-right: 16px;margin-left: 16px;">
             <div class="result">
                 <v-card class="result-card">
@@ -71,12 +70,16 @@
                             <v-row style="align-items: center;margin-bottom: 0;justify-content: space-between;">
                                 <!-- <v-col cols="4" md="4" sm="4" style="padding: 0;"> -->
                                     <!-- <v-card-title>養殖歷程</v-card-title> -->
-                                    <v-card-title v-if="editmode=='edit'">樣板編輯 <span v-if="tempSelect&&!filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable" class="error-text"> - 此樣板已停用</span></v-card-title>
-                                    <v-card-title v-if="editmode=='add'">樣板新增</v-card-title>
+                                    <v-card-title v-if="isEditDefault">預設樣板編輯</v-card-title>
+                                    <v-card-title v-else-if="editmode=='edit' && !isEditDefault">樣板編輯 <span v-if="tempSelect&&!filterTemplate.filter(x=>x.id==tempSelect)[0].is_enable" class="error-text"> - 此樣板已停用</span></v-card-title>
+                                    <v-card-title v-else-if="editmode=='add' && !isEditDefault">樣板新增</v-card-title>
+                                    
                                 <!-- </v-col> -->
                                 <!-- <v-col cols="8" md="8" sm="8" style="padding: 0 8px;"> -->
                                     <div class="btn-groups" style="margin-right: 8px;">
                                         <div class="open">
+                                            <v-btn v-if="!isEditDefault" class="btn-secondary" @click="clickTemp(1)">編輯預設樣板</v-btn>
+                                            <v-btn v-if="isEditDefault" class="btn-secondary delete" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;isEditDefault=false;">取消編輯預設樣板</v-btn>
                                             <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
                                                 <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
                                             </v-btn>
@@ -129,14 +132,15 @@ export default {
             passObj:{},
             nowExpand: true,
             isEnable: false,
-            filterTemplate:[]
+            filterTemplate:[],
+            isEditDefault: false
         }
     },
     methods: {
         actionResult:async function(val){
             if(val=='done'){
                 this.editmode = undefined;
-                
+                this.isEditDefault = false;
                 await this.getTemplateData();//樣版清單
             }
         },
@@ -172,6 +176,7 @@ export default {
                     this.getTemplateData();
                 }
             },50)
+            this.isEditDefault=false;
             
             // var url=`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`;
             // await this.$axios
@@ -210,7 +215,7 @@ export default {
             let getTemplateList = await this.getTemplateList2();
             let data = typeof (getTemplateList)=='string'?[]:getTemplateList;
             console.log('getTemplate',data);
-            this.template_items = data.map(x=>x.tempMain);
+            this.template_items = data.map(x=>x.tempMain).filter(y=>y.id!==1);
             this.template_all = data;
             this.checkTemp();
             // var url=`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
@@ -1044,6 +1049,25 @@ export default {
                 })
             })
 
+        },
+        clickTemp(id) {
+            this.passObj = {};
+            var tempid = this.template_all.map(x=>x.tempMain).filter(y=>y.id==1)[0];
+            var temp = this.template_all.filter(x=>x.tempMain==tempid)[0];
+            this.passObj= _.cloneDeep(temp);
+            this.passObj.tempContent.forEach(mitem=>{
+                // 計算各階段的天數
+                mitem.day=0;
+                mitem.stepList.forEach(step=>{
+                    step.open = false;
+                    if(step.actionList&&step.actionList.length>0) {
+                        // mitem.day+=step.actionList[step.actionList.length-1].end_on_which_day;
+                        mitem.day+=((step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day)+1);
+                    }
+                })
+            })
+            this.editmode='edit';
+            this.isEditDefault = true;
         }
     },
     async mounted() {
