@@ -632,7 +632,7 @@ export default {
                         array1.sort((a,b)=>{
                             return new Date(a.execute_time) - new Date(b.execute_time)
                         });
-                        d.todo = [...array1,...array2];
+                        d.todo = [...array2,...array1];
                     }
                 })
                 // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!=='0') {
