@@ -28,7 +28,7 @@
                 >
                   <template v-slot:default="{ active }">
                     <v-list-item-content>
-                      <v-list-item-title v-text="item.name"></v-list-item-title>
+                      <v-list-item-title v-text="item.name_ch"></v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>
                       <v-list-item-action-text
@@ -87,7 +87,7 @@
                 <!-- {{(selectedItem!=undefined && selectedItem  > -1)}}-{{selectedItem}} -->
                 {{
                   selectedItem != undefined && selectedItem > -1
-                    ? `${statLst[selectedItem].name}_${color}`
+                    ? `${statLst[selectedItem].name_ch}_${color}`
                     : "請先選擇左側狀態"
                 }}
               </td>
@@ -151,10 +151,10 @@ export default {
       }
     },
     colorsubmit: async function() {
-      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name)) {
+      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name_ch)) {
         this.$toast.error(
           `修改失敗-[ ${
-            this.statLst[this.selectedItem].name
+            this.statLst[this.selectedItem].name_ch
           } ]該項目系統禁止修改`,
           { duration: 2000 }
         );
@@ -165,7 +165,7 @@ export default {
       });
       const updUser = this.$auth.$state.user.email;
       let parm = {
-        name: this.statLst[this.selectedItem].name,
+        name: this.statLst[this.selectedItem].name_ch,
         color: this.color,
         updated_user: updUser
       };
@@ -189,10 +189,10 @@ export default {
         });
     },
     colordelete: async function() {
-      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name)) {
+      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name_ch)) {
         this.$toast.error(
           `刪除失敗-[ ${
-            this.statLst[this.selectedItem].name
+            this.statLst[this.selectedItem].name_ch
           } ]該項目系統禁止刪除`,
           { duration: 2000 }
         );
@@ -203,7 +203,7 @@ export default {
       });
       const updUser = this.$auth.$state.user.email;
       let parm = {
-        name: this.statLst[this.selectedItem].name,
+        name: this.statLst[this.selectedItem].name_ch,
         color: this.color,
         updated_user: updUser
       };
@@ -271,7 +271,7 @@ export default {
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
         .then(res => {
-          this.statLst = res.data.filter(x => x.name != ""); //不提供保留項;
+          this.statLst = res.data.filter(x => x.name_ch != ""); //不提供保留項;
         })
         .catch(error => {
           alert("error:" + error.message);

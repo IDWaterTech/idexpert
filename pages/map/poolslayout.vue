@@ -22,7 +22,7 @@
             <map-pool-element
               v-if="b.rows.length==0 && b.name!=='road' && b.isSetting"
               :item="b"
-              :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
+              :selitem="statcolor.filter(x => !['default', ''].includes(x.name_ch))
                 "
               :showSelect="showedit"
               :myuser="$auth.$state.user
@@ -45,7 +45,7 @@
                       @click="goIndicator(row)">
                       <map-pool-element
                           :item="row"
-                          :selitem="statcolor.filter(x => !['default', ''].includes(x.name))
+                          :selitem="statcolor.filter(x => !['default', ''].includes(x.name_ch))
                           "
                           :showSelect="showedit"
                           :myuser="$auth.$state.user
@@ -495,11 +495,11 @@ export default {
       if (data == "") {
         return "white";
       }
-      let data2 = this.statcolor.filter(x => x.name == data);
+      let data2 = this.statcolor.filter(x => x.name_ch == data);
       if (data2.length == 1) {
         return data2[0].color;
       } else {
-        return this.statcolor.filter(x => x.name == "default")[0].color;
+        return this.statcolor.filter(x => x.name_ch == "default")[0].color;
       }
     },
     getPondData: async function() {

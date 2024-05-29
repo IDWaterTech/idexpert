@@ -104,7 +104,7 @@
                                                     <v-tooltip v-if="work.remark&&work.remark!==''" bottom>
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-card-title style="font-size: 0.9rem;" v-bind="attrs" v-on="on">{{work.step_name }}
-                                                                <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{(work.actionList[work.actionList.length-1].end_on_which_day-work.actionList[0].start_on_which_day)+1}} 天</span> 
+                                                                <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{computedDay(work)}} 天</span> 
                                                                 <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{computedDay(passObj.tempContent[id].stepList[wid])}} 天</span>
                                                                 <span v-else>． 0 天 </span>
                                                             </v-card-title>
@@ -113,7 +113,7 @@
                                                     </v-tooltip>
                                                     
                                                     <v-card-title v-else style="font-size: 0.9rem;">{{work.step_name }}
-                                                        <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{(work.actionList[work.actionList.length-1].end_on_which_day-work.actionList[0].start_on_which_day)+1}} 天</span>
+                                                        <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{computedDay(work)}} 天</span>
                                                         <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{ computedDay(passObj.tempContent[id].stepList[wid])}} 天</span>
                                                         <span v-else>． 0 天</span>
                                                     </v-card-title>
@@ -1131,8 +1131,14 @@ export default {
                             data.stepList = m.stepList;
                             data.stepList.forEach(step=>{
                                 if(step.actionList&&step.actionList.length>0) {
-                                    // data.day+=step.actionList[step.actionList.length-1].end_on_which_day;
-                                    data.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
+                                    let max = 1;
+                                    step.actionList.forEach(action=>{
+                                        if(action.end_on_which_day>max) {
+                                            max=action.end_on_which_day;
+                                        }
+                                    })
+                                    data.day+=max-step.actionList[0].start_on_which_day+1;
+                                    // data.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
                                 }
                                 
                             })
@@ -1151,7 +1157,14 @@ export default {
                             data.stepList = m.stepList;
                             data.stepList.forEach(step=>{
                                 if(step.actionList&&step.actionList.length>0) {
-                                    data.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
+                                    let max = 1;
+                                    step.actionList.forEach(action=>{
+                                        if(action.end_on_which_day>max) {
+                                            max=action.end_on_which_day;
+                                        }
+                                    })
+                                    data.day+=max-step.actionList[0].start_on_which_day+1;
+                                    // data.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
                                 }
                                 
                             })
@@ -1168,11 +1181,11 @@ export default {
         /* 計算天數 */
         // 養殖循環計算天數
         computedDay(item) {
-            let min = item.actionList[0].start_on_which_day;
+            let min = 1;
             let max = 1;
             if(item.actionList) {
                 item.actionList.forEach(action=>{
-                    if(action.dailyCheckList) {
+                    // if(action.dailyCheckList) {
                         if(action.end_on_which_day>max) {
                             max = action.end_on_which_day;
                         }
@@ -1184,7 +1197,7 @@ export default {
                         // }else {
                         // num = item.actionList[item.actionList.length - 1].end_on_which_day - item.actionList[0].start_on_which_day + 1;
                         // }
-                    }
+                    // }
                 })
             }
             
@@ -3222,12 +3235,26 @@ export default {
                             if(sid == this.addWorkIndex.id) {
                                 this.editItem.open = true;
                                 items[mid].stepList[sid] = _.cloneDeep(this.editItem);
+                                let max = 1;
                                 if(this.editItem.actionList&&this.editItem.actionList.length>0) {
-                                    mitem.day+=parseInt(this.editItem.actionList[this.editItem.actionList.length-1].end_on_which_day)-parseInt(this.editItem.actionList[0].start_on_which_day)+1;
+                                    this.editItem.actionList.forEach(action=>{
+                                        if(action.end_on_which_day>max) {
+                                            max=action.end_on_which_day;
+                                        }
+                                    })
+                                    mitem.day+=max-1+1;
+                                    // mitem.day+=parseInt(this.editItem.actionList[this.editItem.actionList.length-1].end_on_which_day)-parseInt(this.editItem.actionList[0].start_on_which_day)+1;
                                 }
                             }else {
                                 if(step.actionList&&step.actionList.length>0) {
-                                    mitem.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
+                                    let max = 1;
+                                    step.actionList.forEach(action=>{
+                                        if(action.end_on_which_day>max) {
+                                            max=action.end_on_which_day;
+                                        }
+                                    })
+                                    mitem.day+=max-1+1;
+                                    // mitem.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                                 }
                                 
                             }
@@ -3305,7 +3332,14 @@ export default {
                     mitem.day=0;
                     mitem.stepList.forEach((step)=>{
                         if(step.actionList&&step.actionList.length>0) {
-                            mitem.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
+                            let max = 1;
+                            step.actionList.forEach(action=>{
+                                if(action.end_on_which_day>max) {
+                                    max=action.end_on_which_day;
+                                }
+                            })
+                            mitem.day+=max-1+1;
+                            // mitem.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                         }
                         
                     })
@@ -3419,7 +3453,14 @@ export default {
                 item.stepList.forEach(step=>{
                     console.log('action',step.actionList);
                     if(step.actionList&&step.actionList.length>0) {
-                        item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
+                        let max = 1;
+                        step.actionList.forEach(action=>{
+                            if(action.end_on_which_day>max) {
+                                max=action.end_on_which_day;
+                            }
+                        })
+                        mitem.day+=max-1+1;
+                        // item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                     }
                 })
                 this.addWorkDialog = false;

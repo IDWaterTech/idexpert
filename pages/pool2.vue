@@ -1279,20 +1279,20 @@ export default {
                     main: "Clouds"
           }],
           statcolor: [
-                { name: "無", color: "#D3DCE1",id: 1 },
-                { name: "default", color: "#00273E" },
-                { name: "放養中", color: "#F1E78D",id: 4 },
-                { name: "放養中(鎖排汙)", color: "#CBAAE5",id: 32 },
-                { name: " 集中暫養", color: "#8DA0E5",id: 31},
-                { name: "尚未洗池", color: "#E8DDBF",id: 6 },
-                { name: "已清洗", color: "#A8E6DB",id: 7 },
-                { name: "蓄水中", color: "#D3B280",id: 8 },
-                { name: "蓄水完畢", color: "#A5D380",id: 9 },
-                { name: "消毒中", color: "#80D3AB",id: 10 },
-                { name: "做水中", color: "#C5E8E6",id: 11 },
-                { name: "預備放苗", color: "#83C9F0",id: 12 },
-                { name: "空池", color: "#BFDAE8",id: 3 },
-                { name: "養殖審核", color: "#D3808F",id: 33 }
+                { name_ch: "無", color: "#D3DCE1",id: 1 },
+                { name_ch: "default", color: "#00273E" },
+                { name_ch: "放養中", color: "#F1E78D",id: 4 },
+                { name_ch: "放養中(鎖排汙)", color: "#CBAAE5",id: 32 },
+                { name_ch: " 集中暫養", color: "#8DA0E5",id: 31},
+                { name_ch: "尚未洗池", color: "#E8DDBF",id: 6 },
+                { name_ch: "已清洗", color: "#A8E6DB",id: 7 },
+                { name_ch: "蓄水中", color: "#D3B280",id: 8 },
+                { name_ch: "蓄水完畢", color: "#A5D380",id: 9 },
+                { name_ch: "消毒中", color: "#80D3AB",id: 10 },
+                { name_ch: "做水中", color: "#C5E8E6",id: 11 },
+                { name_ch: "預備放苗", color: "#83C9F0",id: 12 },
+                { name_ch: "空池", color: "#BFDAE8",id: 3 },
+                { name_ch: "養殖審核", color: "#D3808F",id: 33 }
             ],
        
       },
@@ -4975,7 +4975,7 @@ export default {
     compareStatus(status) {
       let num = 0;
       status.id.forEach(async x=>{
-        let statusid = this.statcolor.filter(x => x.name == status.status)[0].id;
+        let statusid = this.statcolor.filter(x => x.name_ch == status.status)[0].id;
         const parm = {
           id: statusid,
           updated_user: this.$auth.$state.user.email

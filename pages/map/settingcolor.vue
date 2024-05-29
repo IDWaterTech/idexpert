@@ -11,7 +11,7 @@
                 @click="
                   () => {
                     adddialog = true;
-                    addItem = '';
+                    addItem = {};
                   }
                 "
                 >mdi-plus</v-icon
@@ -61,7 +61,7 @@
                 >
                   <template v-slot:default="{ active }">
                     <v-list-item-content>
-                      <v-list-item-title v-text="item.name"></v-list-item-title>
+                      <v-list-item-title v-text="item.name_ch"></v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>
                       <v-list-item-action-text
@@ -76,16 +76,23 @@
           </v-list>
         </v-card>
         
-        <v-dialog v-model="adddialog">
-          <v-card style="max-height: inherit;">
+        <v-dialog v-model="adddialog" max-width="500px">
+          <v-card class="custom-dialog" style="max-height: inherit;">
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-card-title>新增狀態項目</v-card-title>
               <v-card-text
                 ><v-text-field
-                  v-model="addItem"
-                  placeholder="新增項目" filled dense
+                  v-model="addItem.name_ch"
+                  label="新增項目(中文)" filled dense
                   :rules="rules.require"
-                ><span style="width:100px;" slot="prepend">新增項目</span></v-text-field
+                ></v-text-field
+              ></v-card-text>
+              <v-card-text
+                ><v-text-field
+                  v-model="addItem.name_en"
+                  label="新增項目(英文)" filled dense
+                  :rules="rules.require"
+                ></v-text-field
               ></v-card-text>
               <v-card-actions
                 ><v-spacer></v-spacer
@@ -118,7 +125,7 @@
                 <!-- {{(selectedItem!=undefined && selectedItem  > -1)}}-{{selectedItem}} -->
                 {{
                   selectedItem != undefined && selectedItem > -1
-                    ? `${statLst[selectedItem].name}_${color}`
+                    ? `${statLst[selectedItem].name_ch}_${color}`
                     : "請先選擇左側狀態"
                 }}
               </div>
@@ -162,7 +169,7 @@ export default {
       color: "",
       nochangecolor: ["無", "default"],
       adddialog: false,
-      addItem: "",
+      addItem: {},
       valid: true,
       rules: { require: [v => !!v || "*必要項目"] }
     };
@@ -180,10 +187,10 @@ export default {
       }
     },
     colorsubmit: async function() {
-      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name)) {
+      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name_ch)) {
         this.$toast.error(
           `修改失敗-[ ${
-            this.statLst[this.selectedItem].name
+            this.statLst[this.selectedItem].name_ch
           } ]該項目系統禁止修改`,
           { duration: 2000 }
         );
@@ -194,7 +201,8 @@ export default {
       });
       const updUser = this.$auth.$state.user.email;
       let parm = {
-        name: this.statLst[this.selectedItem].name,
+        name_ch: this.statLst[this.selectedItem].name_ch,
+        name_en:this.statLst[this.selectedItem].name_en,
         color: this.color,
         updated_user: updUser
       };
@@ -218,10 +226,10 @@ export default {
         });
     },
     colordelete: async function() {
-      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name)) {
+      if (this.nochangecolor.includes(this.statLst[this.selectedItem].name_ch)) {
         this.$toast.error(
           `刪除失敗-[ ${
-            this.statLst[this.selectedItem].name
+            this.statLst[this.selectedItem].name_ch
           } ]該項目系統禁止刪除`,
           { duration: 2000 }
         );
@@ -232,7 +240,8 @@ export default {
       });
       const updUser = this.$auth.$state.user.email;
       let parm = {
-        name: this.statLst[this.selectedItem].name,
+        name_ch: this.statLst[this.selectedItem].name_ch,
+        name_en: this.statLst[this.selectedItem].name_en,
         color: this.color,
         updated_user: updUser
       };
@@ -255,8 +264,8 @@ export default {
         });
     },
     coloradd: async function() {
-      if (this.nochangecolor.includes(this.addItem)) {
-        this.$toast.error(`新增失敗-[ ${this.addItem} ]該項目系統禁止新增`, {
+      if (this.nochangecolor.includes(this.addItem.name_ch)) {
+        this.$toast.error(`新增失敗-[ ${this.addItem.name_ch} ]該項目系統禁止新增`, {
           duration: 2000
         });
         return;
@@ -268,7 +277,8 @@ export default {
         });
         const updUser = this.$auth.$state.user.email;
         let parm = {
-          name: this.addItem,
+          name_ch: this.addItem.name_ch,
+          name_en:this.addItem.name_en,
           color: "#FFFFFF",
           created_user: updUser
         };
@@ -300,7 +310,7 @@ export default {
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
         .then(res => {
-          this.statLst = res.data.filter(x => x.name != ""); //不提供保留項;
+          this.statLst = res.data.filter(x => x.name_ch != ""); //不提供保留項;
         })
         .catch(error => {
           alert("error:" + error.message);

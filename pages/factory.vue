@@ -788,7 +788,7 @@ export default {
       await this.$axios
         .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
         .then(res => {
-          this.poolstat = res.data.filter(x => x.name != ""); //不提供保留項;
+          this.poolstat = res.data.filter(x => x.name_ch != ""); //不提供保留項;
         })
         .catch(error => {
           alert("error:" + error.message);
@@ -1078,7 +1078,7 @@ export default {
         var pool = this.pooldata.filter(x => x.id == item.id)[0];
         this.edititem_pool.parm = _.cloneDeep(pool);
         var mystatename = this.edititem_pool.parm.state;
-        this.edititem_pool.parm.pond_state_id = (mystatename=="")?3:this.poolstat.filter(x=>x.name==mystatename)[0].id;
+        this.edititem_pool.parm.pond_state_id = (mystatename=="")?3:this.poolstat.filter(x=>x.name_ch==mystatename)[0].id;
         // this.edititem_pool.parm.pond_state_id = 3;
         //不需要的項目state狀態、estimated_num初始投放隻數、num_per_unit放養密度
         delete this.edititem_pool.parm.state;
