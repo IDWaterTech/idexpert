@@ -1,124 +1,167 @@
 <template>
   <div>
-    <v-row>
-      <v-col cols="12">
-        <v-btn tile color="primary" @click="showdevdialog()">新增</v-btn>
-      </v-col>
-      <v-col cols="12">
+    <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
+      <!-- 表頭 -->
+      <div class="card-title" style="cursor: pointer;margin: 0 8px;padding: 12px;">
+        <div class="title">
+              <v-card-title style="padding: 0;font-size: 1.1rem;">設備清單</v-card-title>
+          </div>
+          <div class="chevron">
+            <v-btn class="btn-secondary green" @click="showdevdialog()" style="padding: 0 8px;"><v-icon>mdi-plus</v-icon> 新增設備</v-btn>
+          </div>
+      </div>
+      <!-- 清單 -->
+      <div class="content" style="width: 100%;">
         <el-table
           :data="devicedata"
           style="width: 100%"
           max-height="300"
-          :header-cell-style="tableHeaderStyle"
         >
           <!-- <el-table-column prop="id" label="ID" align="center">
           </el-table-column> -->
-          <el-table-column prop="device_no" label="機台編號" align="center">
+          <el-table-column prop="device_no" label="機台編號" >
           </el-table-column>
-          <el-table-column prop="channel" label="通道" align="center">
+          <el-table-column prop="channel" label="通道">
           </el-table-column>
-          <el-table-column prop="name" label="匿名" align="center">
+          <el-table-column prop="name" label="匿名" >
           </el-table-column>
           <!-- <el-table-column prop="pond_id" label="pond_id" align="center">
           </el-table-column> -->
-          <el-table-column prop="pond_name" label="池名" align="center">
+          <el-table-column prop="pond_name" label="池名">
           </el-table-column>
           <el-table-column fixed="right" label="操作" align="center" width="200px">
             <template slot-scope="scope">
-              <v-btn tile color="primary" @click="showdevdialog(false,scope.row)">編輯</v-btn>
-              <v-btn tile color="error" @click="deldev(scope.row)">刪除</v-btn>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn  class="btn-icon"
+                          @click="showdevdialog(false,scope.row)"
+                          v-bind="attrs" v-on="on"
+                          style="pointer-events: inherit;">
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                </template>
+                <span>編輯</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                      <v-btn  class="btn-icon delete"
+                        @click="deldev(scope.row)"
+                        v-bind="attrs" v-on="on"
+                        :class="{'disabled':scope.row.id == 1}"
+                        style="pointer-events: inherit;">
+                          <v-icon>mdi-trash-can</v-icon>
+                      </v-btn>
+                  </template>
+                  <span>刪除</span>
+              </v-tooltip>
             </template>
           </el-table-column>
         </el-table>
-      </v-col>
-      <v-dialog v-model="dialog.dev" width="500px">
-        <v-form ref="devform" v-model="dialog.valid" lazy-validation>
-          <v-card>
-            <v-card-title
-              >設備-{{ dialog.addmode ? "新增" : "編輯" }}</v-card-title
-            >
-            <v-divider></v-divider>
-            <v-card-text>
-              <!-- 機台編號 -->
-              <v-text-field
-                autocomplete="off"
-                v-model="dialog.parm.device_no"
-                clearable
-                filled
-                :rules="rules.require"
-                dense
-                :disabled="!dialog.addmode"
-                placeholder="fe12::5c2:331ea:asdfe:3d5"
-              >
-                <template slot="prepend"
-                  ><span style="width:80px;">機台編號</span></template
+      </div>
+    </v-card>
+    <v-dialog v-model="dialog.dev" width="500px">
+      <v-form ref="devform" v-model="dialog.valid" lazy-validation>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              設備-{{ dialog.addmode ? "新增" : "編輯" }}
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="dialog.dev = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <div class="basic" style="padding-left: 8px;">
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
+                <!-- 機台編號 -->
+                <v-text-field
+                  autocomplete="off"
+                  v-model="dialog.parm.device_no"
+                  clearable
+                  filled
+                  :rules="rules.require"
+                  dense
+                  :disabled="!dialog.addmode"
+                  placeholder="fe12::5c2:331ea:asdfe:3d5"
                 >
-              </v-text-field>
-              <!-- 通道 -->
-              <v-text-field
-                autocomplete="off"
-                v-model="dialog.parm.channel"
-                clearable
-                filled
-                :rules="rules.require"
-                dense
-                :disabled="!dialog.addmode"
-                placeholder="001"
-              >
-                <template slot="prepend"
-                  ><span style="width:80px;">通道</span></template
+                  <template slot="prepend"
+                    ><span style="width:80px;">機台編號</span></template
+                  >
+                </v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <!-- 通道 -->
+                <v-text-field
+                  autocomplete="off"
+                  v-model="dialog.parm.channel"
+                  clearable
+                  filled
+                  :rules="rules.require"
+                  dense
+                  :disabled="!dialog.addmode"
+                  placeholder="001"
                 >
-              </v-text-field>
-              <!-- 暱名 -->
-              <v-text-field
-                autocomplete="off"
-                v-model="dialog.parm.name"
-                clearable
-                filled
-                :rules="rules.require"
-                dense
-                placeholder="DEV001"
-              >
-                <template slot="prepend"
-                  ><span style="width:80px;">匿名</span></template
+                  <template slot="prepend"
+                    ><span style="width:80px;">通道</span></template
+                  >
+                </v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <!-- 暱名 -->
+                <v-text-field
+                  autocomplete="off"
+                  v-model="dialog.parm.name"
+                  clearable
+                  filled
+                  :rules="rules.require"
+                  dense
+                  placeholder="DEV001"
                 >
-              </v-text-field>
-              <treeselect
-                v-model="dialog.parm.pond_id"
-                :options="maindata"
-                :default-expand-level="1"
-                placeholder="養殖池"
-                :disable-branch-nodes="true"
-                children="node"
-                :normalizer="
-                  node => {
-                    return { children: node.node };
-                  }
-                "
-                style="font-size:1.2em;"
-              >
-                <div slot="value-label" slot-scope="{ node }">
-                  {{ `${node.raw.parent}_${node.raw.name}` }}
-                </div>
-                <div slot="option-label" slot-scope="{ node }">
-                  {{ `${node.raw.name}` }}
-                </div>
-              </treeselect>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                tile
-                @click="submitdevdialog(dialog.addmode)"
-                >確定</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-form>
-      </v-dialog>
-    </v-row>
+                  <template slot="prepend"
+                    ><span style="width:80px;">匿名</span></template
+                  >
+                </v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <treeselect
+                  v-model="dialog.parm.pond_id"
+                  :options="maindata"
+                  :default-expand-level="1"
+                  placeholder="養殖池"
+                  :disable-branch-nodes="true"
+                  children="node"
+                  :normalizer="
+                    node => {
+                      return { children: node.node };
+                    }
+                  "
+                  style="font-size:1.2em;"
+                  class="select-template"
+                >
+                  <div slot="value-label" slot-scope="{ node }">
+                    {{ `${node.raw.parent}_${node.raw.name}` }}
+                  </div>
+                  <div slot="option-label" slot-scope="{ node }">
+                    {{ `${node.raw.name}` }}
+                  </div>
+                </treeselect>
+              </v-card-text>
+            </div>
+          </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="dialog.dev = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="submitdevdialog(dialog.addmode)">確定</v-btn>
+          </v-card-actions>
+          
+        </v-card>
+      </v-form>
+    </v-dialog>
   </div>
 </template>
 
@@ -289,6 +332,24 @@ export default {
     getmain: async function() {
       let reqid = "";
       let getedItem = {};
+      let architectureData = await this.getArchitecture();
+      var data = this.setNestedDisabled(_.cloneDeep(typeof (architectureData)=='string'?[]:architectureData), "");
+      this.maindata = data;
+      //用id抓到name
+      this.maindata.forEach(x => {
+        x.node.forEach(y => {
+          var item = y.node.filter(z => z.id == reqid);
+          if (item.length == 1) {
+            getedItem = item[0];
+            return;
+          }
+        });
+      });
+      //把區域名稱加進去
+      if (getedItem.hasOwnProperty("name")) {
+        this.poolName = getedItem.name;
+        console.log(getedItem);
+      }
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
       //   .then(res => {
@@ -315,24 +376,6 @@ export default {
       //   .catch(error => {
       //     this.$toast.error("error:" + error, { duration: 2000 });
       //   });
-      let architectureData = await this.getArchitecture();
-      var data = this.setNestedDisabled(_.cloneDeep(typeof (architectureData)=='string'?[]:architectureData), "");
-      this.maindata = data;
-      //用id抓到name
-      this.maindata.forEach(x => {
-        x.node.forEach(y => {
-          var item = y.node.filter(z => z.id == reqid);
-          if (item.length == 1) {
-            getedItem = item[0];
-            return;
-          }
-        });
-      });
-      //把區域名稱加進去
-      if (getedItem.hasOwnProperty("name")) {
-        this.poolName = getedItem.name;
-        console.log(getedItem);
-      }
     }
   },
   async mounted() {
@@ -342,4 +385,21 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.v-card.result-card {
+  &.bg-card {
+    background-color: #fff;
+  }
+  .card-title {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    .title {
+      width: 100%;
+      font-size: 1rem;
+    }
+    .chevron {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+</style>
