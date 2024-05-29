@@ -1,549 +1,580 @@
 <template>
   <div>
-    <v-row class="fill-height">
-      <!-- <v-col cols="12" class="white--text"><h2>重要紀事</h2></v-col> -->
-      <v-col cols="12">
-        <v-row align-content="center">
-          <v-col cols="12" sm="3">
-            <v-autocomplete
-              auto-select-first
-              dark
-              dense
-              outlined hide-details
-              :items="datarange"
-              item-text="name"
-              item-value="level"
-              v-model="level"
-              @change="rangechange"
-            >
-              <template slot="prepend"
-                ><span style="width:70px;">資料範圍</span></template
+    <v-card 
+      class="bg-card" 
+      style="margin-bottom: 12px;">
+      <div class="content" style="padding-top:12px">
+        <!-- 搜尋欄 -->
+        <div class="search" style="margin-bottom: -12px;">
+          <v-row style="margin-bottom: 0;">
+            <!-- 場/區/池 -->
+            <v-col cols="12" md="2" sm="3">
+              <v-autocomplete
+                auto-select-first
+                hide-details
+                :items="datarange"
+                item-text="name"
+                item-value="level"
+                v-model="level"
+                label="資料範圍"
+                @change="rangechange"
               >
-            </v-autocomplete>
-          </v-col>
-          <v-col cols="12" sm="3">
-            <treeselect
-              v-model="poolid"
-              :options="maindatacpd"
-              :default-expand-level="1"
-              :disable-branch-nodes="true"
-              children="node"
-              placeholder="請選擇資料範圍"
-              :multiple="true"
-              :normalizer="
-                node => {
-                  return { children: node.node };
-                }
-              "
-              style="font-size:1.3em;"
-            >
-              <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
-              </div>
-              <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}
-              </div>
-            </treeselect>
-          </v-col>
-          <!-- 起日 -->
-          <v-col cols="12" sm="2" v-show="false">
-            <v-menu
-              v-model="menu_startdate"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
+              </v-autocomplete>
+            </v-col>
+            <!-- 場/區/池 二階-->
+            <v-col cols="12" md="4" sm="5">
+              <treeselect
+                class="select-template"
+                v-model="poolid"
+                :options="maindatacpd"
+                :default-expand-level="1"
+                :disable-branch-nodes="true"
+                children="node"
+                placeholder="請選擇資料範圍"
+                :multiple="true"
+                :normalizer="
+                  node => {
+                    return { children: node.node };
+                  }
+                "
+                :limit="1"
+                :limitText="() => `+${poolid.length - 1}`"
+                style="font-size:1.3em;"
+              >
+                <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
+                </div>
+                <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}
+                </div>
+              </treeselect>
+            </v-col>
+            <!-- 起(暫無用) -->
+            <v-col cols="12" md="3" v-show="false">
+              <v-menu
+                v-model="menu_startdate"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="sdate"
+                    label="選擇起日"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs" :disabled="true"
+                    v-on="on"
+                    @click:prepend="
+                      () => {
+                        sdate = getNowDate();
+                      }
+                    "
+                  ></v-text-field>
+                </template>
+                <v-date-picker
                   v-model="sdate"
-                  label="選擇起日"
-                  prepend-icon="mdi-calendar"
-                  readonly
-                  dense
-                  dark
-                  v-bind="attrs" :disabled="true"
-                  v-on="on"
-                  @click:prepend="
-                    () => {
-                      sdate = getNowDate();
-                    }
-                  "
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="sdate"
-                @input="menu_startdate = false"
-              ></v-date-picker>
-            </v-menu>
-          </v-col>
-          <!-- 訖日 -->
-          <v-col cols="12" sm="2" v-show="false">
-            <v-menu
-              v-model="menu_enddate"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
+                  @input="menu_startdate = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- 訖(暫無用) -->
+            <v-col cols="12" md="3" v-show="false">
+              <v-menu
+                v-model="menu_enddate"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="edate"
+                    label="選擇訖日"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    :disabled="true"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click:prepend="
+                      () => {
+                        edate = getNowDate();
+                      }
+                    "
+                  ></v-text-field>
+                </template>
+                <v-date-picker
                   v-model="edate"
-                  label="選擇訖日"
-                  prepend-icon="mdi-calendar"
-                  readonly
-                  dense dark :disabled="true"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click:prepend="
-                    () => {
-                      edate = getNowDate();
+                  @input="menu_enddate = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>  
+            <v-col cols="12" md="3" sm="4">
+              <v-btn
+                tile
+                class="btn-primary"
+                :class="{'disabled':!poolidcpd || poolidcpd.length == 0}"
+                @click="getEventData"
+                >確認</v-btn
+              >
+              <v-btn tile class="btn-secondary" @click="()=>{dialog.eventSet=true;this.eventSetGet();}">飼料表事件設定</v-btn>
+            </v-col>
+          </v-row>
+        </div>
+        <!-- 搜尋結果 -->
+        <div class="result">
+          <v-row class="fill-height" style="margin-bottom: 0;">
+            <v-col style="border-radius: 4px;background-color: white;padding-top: 0;">
+              <v-sheet height="64" class="pa-1">
+                <v-toolbar flat>
+                  <!-- 新增紀事 -->
+                  <v-btn class="btn-secondary green mr-4" @click="openedit('add')"><v-icon>mdi-calendar-plus</v-icon>新增</v-btn>
+                  <!-- 今天 -->
+                  <v-btn
+                    outlined
+                    class="mr-4"
+                    color="grey darken-2"
+                    @click="setToday"
+                  >
+                    今天
+                  </v-btn>
+                  <!-- 前/後月 -->
+                  <v-btn fab text small color="grey darken-2" @click="prev">
+                    <v-icon small>
+                      mdi-chevron-left
+                    </v-icon>
+                  </v-btn>
+                  <v-toolbar-title v-if="$refs.calendar">
+                    {{ $refs.calendar.title }}
+                  </v-toolbar-title>
+                  <v-btn fab text small color="grey darken-2" @click="next">
+                    <v-icon small>
+                      mdi-chevron-right
+                    </v-icon>
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn-toggle v-model="type" group color="mainbg">
+                    <v-btn value="day" style="border-radius: 4px;">日</v-btn>
+                    <v-btn value="week" style="border-radius: 4px;">週</v-btn>
+                    <v-btn value="month" style="border-radius: 4px;">月</v-btn>
+                  </v-btn-toggle>
+                  <v-menu bottom right v-if="false">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn outlined color="grey darken-2" v-bind="attrs" v-on="on">
+                        <span>{{ typeToLabel[type] }}</span>
+                        <v-icon right>
+                          mdi-menu-down
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item @click="type = 'day'">
+                        <v-list-item-title>Day</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="type = 'week'">
+                        <v-list-item-title>Week</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="type = 'month'">
+                        <v-list-item-title>Month</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="type = '4day'">
+                        <v-list-item-title>4 days</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-toolbar>
+              </v-sheet>
+              <v-sheet height="500" class="pa-1" >
+                <v-calendar
+                  ref="calendar"
+                  v-model="focus"
+                  color="primary"
+                  :events="events"
+                  :event-color="getEventColor"
+                  :type="type"
+                  style="border-radius: 4px;"
+                  @click:event="showEvent"
+                  @click:more="viewDay"
+                  @click:date="viewDay"
+                  @change="updateRange"
+                  locale="zh-tw"
+                ></v-calendar>
+                <v-menu
+                  v-model="selectedOpen"
+                  :close-on-content-click="false"
+                  :activator="selectedElement"
+                  offset-x
+                  max-width="400px"
+                >
+                <!-- 紀事內容 -->
+                  <v-card color="grey lighten-4" min-width="350px" flat>
+                    <v-toolbar :color="selectedEvent.color" dark  style="box-shadow: none;">
+                      
+                      <v-toolbar-title class="pl-2 ml-2"><span v-html="`【${selectedEvent.event_level_name}】${selectedEvent.name}`"></span></v-toolbar-title>
+                      <!-- <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title> -->
+                      <v-spacer></v-spacer>
+                      <v-btn class="mr-2" style="border: none;min-width: 0;padding: 0 4px;background-color: transparent;box-shadow:none"  @click="selectedOpen = false" >
+                        <v-icon style="color: #fff">mdi-close</v-icon>
+                      </v-btn>
+                      
+                      <!-- <v-btn icon>
+                        <v-icon>mdi-dots-vertical</v-icon>
+                      </v-btn> -->
+                    </v-toolbar>
+                    <v-card-subtitle v-if="selectedEvent.start">
+                      <span v-html="`起：${selectedEvent.start}<br/>訖：${selectedEvent.end}<br/>建立者：${selectedEvent.created_user}<br/>全日：${selectedEvent.timed}`"></span>
+                    </v-card-subtitle>
+                    <v-card-text v-if="selectedEvent.event_category_id">
+                      <span v-html="`事件等級：${selectedEvent.event_level_name}<br/>事件類別：${selectedEvent.event_category_name}<br/>事件範圍：${this.selectedEvent.items.map(x=>x.name).join()}`"></span>
+                      <div style="white-space: pre-wrap;" v-html="`事件內容：${selectedEvent.content}`"></div>
+                    </v-card-text>
+                    <v-card-actions class="ml-2 pb-2">
+                      <v-btn @click="openedit('edit')" class="btn-secondary">
+                        <v-icon>mdi-pencil</v-icon>編輯
+                      </v-btn>
+                      <v-btn @click="deleteEvent(selectedEvent.id)" class=" btn-secondary delete">
+                        <v-icon>mdi-trash-can</v-icon>刪除
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-menu>
+              </v-sheet>
+            </v-col>
+            <v-col cols="12" style="padding-top: 0;padding-bottom: 0;">
+              <span>
+                資料範圍：「場→可顯示場、區、池事件」、「區→可顯示區、池事件」、「池→可顯示池事件」
+              </span>
+            </v-col>
+          </v-row>
+          <v-card width="100%" min-height="600px" v-if="false">
+            <iframe
+              src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=Asia%2FTaipei&amp;src=Y19xNmpmMHNlYW1ncjk5bnF0bnRrOTQ4czM0a0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;color=%239E69AF&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=1&amp;showCalendars=0&amp;showTz=1"
+              style="border:solid 1px #777;"
+              width="100%"
+              height="600"
+              frameborder="0"
+              scrolling="no"
+            ></iframe>
+          </v-card>
+        </div>
+      </div>
+    </v-card>
+    <!-- 飼料表事件 -->
+    <v-dialog v-model="dialog.eventSet" width="500px">
+      <v-form ref="eventSetform" v-model="eventSetvalid" lazy-validation>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              飼料表事件設定
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="dialog.eventSet = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <div class="basic" style="padding-left: 8px;padding-top: 8px;">
+              <!-- 選擇事件 -->
+              <v-card-text style="display: flex;align-items: center;margin-bottom: 14px;">
+                <v-autocomplete class="reload" v-model="eventSetList" label="選擇事件進行編輯" filled dense :items="eventSetData" item-text="title" item-value="id" clearable @change="eventSetChange">
+                  <v-btn slot="append" class="btn-icon just-icon" @click="eventSetGet"><v-icon style="font-size: 1.3rem;">mdi-reload</v-icon></v-btn>
+                  <!-- <v-tooltip bottom slot="append">
+                    <template v-slot:activator="{ on, attrs }">
+                        <button class="btn-icon just-icon" @click="eventSetGet" v-bind="attrs" v-on="on">
+                          <v-icon style="font-size: 24px;">mdi-reload</v-icon>
+                        </button>
+                    </template>
+                    <span>重新整理</span>
+                  </v-tooltip> -->
+                </v-autocomplete>
+                
+                <!-- <v-btn v-if="eventSet.mode=='add'" tile class="btn-secondary green" @click="eventSet_isEdit = !eventSet_isEdit">新增</v-btn>
+                <v-btn v-else tile class="btn-secondary" @click="eventSet_isEdit = !eventSet_isEdit">編輯</v-btn> -->
+              </v-card-text>
+              <!-- 事件等級/類型 -->
+              <v-card-text style="display: flex;align-items: center;">
+                <v-autocomplete
+                  dense
+                  :items="eventLevelData"
+                  item-text="name_ch"
+                  item-value="id"
+                  v-model="eventSet.event_level_id"
+                  label="事件等級"
+                >
+                  <!-- <template slot="prepend"
+                    ><span style="width:70px;">事件等級</span></template
+                  > -->
+                </v-autocomplete>
+                <v-autocomplete
+                  dense
+                  :rules="rules.require"
+                  :items="eventCategoryData"
+                  item-text="name_ch"
+                  item-value="id"
+                  v-model="eventSet.event_category_id"
+                  label="事件類型"
+                >
+                  <!-- <template slot="prepend"
+                    ><span style="width:70px;">事件類型</span></template
+                  > -->
+                </v-autocomplete>
+              </v-card-text>
+              <!-- 標題 -->
+              <v-card-text style="display: flex;align-items: center;">
+                <v-text-field v-model="eventSet.title" dense filled clearable :rules="rules.require" label="標題">
+                  <!-- <span slot="prepend" style="width:70px;">標題</span> -->
+                </v-text-field>
+              </v-card-text>
+              <!-- 內容 -->
+              <v-card-text style="display: flex;align-items: center;">
+                <v-textarea v-model="eventSet.content" placeholder="內容" class="text-area" outlined :rules="rules.require">
+                  <!-- <span slot="prepend" style="width:70px;">內容</span> -->
+                </v-textarea>
+              </v-card-text>
+            </div>
+          </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn v-if="eventSet.mode=='add'" tile class="btn-secondary" @click="dialog.eventSet = false">取消</v-btn>
+            <v-btn v-if="eventSet.mode=='add'" tile class="btn-primary" @click="eventSetAdd">新增</v-btn>
+            
+            <span v-else>
+              <v-btn tile  class="btn-primary" @click="eventSetEdit">確認修改</v-btn>
+              <v-btn tile  class="btn-secondary delete" @click="eventSetDel">刪除</v-btn>
+            </span>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 日曆事件 -->
+    <v-dialog v-model="dialog.add" width="500px">
+      <v-form ref="editform" v-model="addvalid" lazy-validation>
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title" style="display: block;width: 100%;">
+            <div style="display: inline-block;">
+              {{(edited.mode=="add")?"新增":"編輯"}}紀事
+            </div>
+            <div class="add" style="float: right;display: inline-block;">
+              <v-btn  class="btn-secondary close"
+                      title="取消" 
+                      @click="dialog.add = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <div class="basic" style="padding-left: 8px;padding-top: 8px;">
+              <v-card-text style="display: flex;align-items: center;">
+                <v-switch
+                  v-model="edited.is_all_day"
+                  :label="`全日事件: ${edited.is_all_day}`"
+                ></v-switch>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                <v-menu
+                  v-model="menu_edit_sdate"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="edited.started_date"
+                      label="選擇起日"
+                      prepend-icon="mdi-calendar"
+                      dense filled
+                      v-bind="attrs" 
+                      v-on="on"
+                      :rules="rules.require"
+                      @click:prepend="
+                        () => {
+                          edited.started_date = getNowDate();
+                        }
+                      "
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="edited.started_date"
+                    @input="menu_edit_sdate = false"
+                  ></v-date-picker>
+                </v-menu>
+                <v-text-field
+                  label="時間"
+                  v-model="edited.stime"
+                  dense filled
+                  type="time"
+                  :disabled="edited.is_all_day"
+                  prepend-icon="mdi-timeline-clock-outline"
+                  :rules="rules.require"
+                  @click:prepend="() => (edited.stime = getNowTime())"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                <v-menu 
+                  v-model="menu_edit_edate"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="edited.ended_date"
+                      label="選擇訖日"
+                      prepend-icon="mdi-calendar"
+                      dense filled
+                      v-bind="attrs" 
+                      v-on="on"
+                      :rules="rules.require"
+                      @click:prepend="
+                        () => {
+                          edited.ended_date = getNowDate();
+                        }
+                      "
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="edited.ended_date"
+                    @input="menu_edit_edate = false"
+                  ></v-date-picker>
+                </v-menu>
+                <v-text-field
+                  label="時間"
+                  v-model="edited.etime"
+                  dense filled
+                  type="time"
+                  :disabled="edited.is_all_day"
+                  :rules="rules.require"
+                  prepend-icon="mdi-timeline-clock-outline"
+                  @click:prepend="() => (edited.etime = getNowTime())"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                <v-autocomplete
+                  auto-select-first
+                  :items="datarange"
+                  item-text="name"
+                  item-value="level"
+                  v-model="edited.level"
+                  @change="rangechange"
+                  label="資料範圍"
+                  hide-details
+                  style="flex:1"
+                >
+                  <!-- <template slot="prepend"
+                    ><span style="width:70px;">資料範圍</span></template
+                  > -->
+                </v-autocomplete>
+                <treeselect
+                  class="select-template"
+                  v-model="edited.poolid"
+                  :options="maindatacpd_edited"
+                  :default-expand-level="1"
+                  :disable-branch-nodes="true"
+                  children="node"
+                  placeholder="請選擇資料範圍"
+                  :multiple="true"
+                  :normalizer="
+                    node => {
+                      return {children: node.node };
                     }
                   "
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="edate"
-                @input="menu_enddate = false"
-              ></v-date-picker>
-            </v-menu>
-          </v-col>
-          <v-col cols="12" sm="2">
-            <v-btn
-              tile
-              dark
-              color="primary"
-              :disabled="!poolidcpd || poolidcpd.length == 0"
-              @click="getEventData"
-              >確認</v-btn
-            >
-          </v-col>
-          <v-col cols="12" sm="2">
-            <v-btn tile dark color="primary" @click="()=>{dialog.eventSet=true;this.eventSetGet();}">飼料表事件設定</v-btn>
-              <v-dialog v-model="dialog.eventSet" width="500px">
-              <v-form ref="eventSetform" v-model="eventSetvalid" lazy-validation>
-                <v-card>
-                  <v-card-title>飼料表事件設定</v-card-title>
-                  <v-card-text>
-                    <v-autocomplete v-model="eventSetList" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable @change="eventSetChange">
-                      <v-btn slot="prepend" icon @click="eventSetGet"><v-icon>mdi-reload</v-icon></v-btn>
-                    </v-autocomplete>
-                  </v-card-text>
-                  <v-card-text>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-btn v-if="eventSet.mode=='add'" tile color="primary" @click="eventSet_isEdit = !eventSet_isEdit">新增</v-btn>
-                        <v-btn v-else tile color="primary" @click="eventSet_isEdit = !eventSet_isEdit">編輯</v-btn>
-                      </v-col>
-                      <!-- 事件等級 -->
-                      <v-col cols="12" sm="6">
-                        <v-autocomplete
-                          dense
-                          outlined
-                          :items="eventLevelData"
-                          item-text="name_ch"
-                          item-value="id"
-                          v-model="eventSet.event_level_id"
-                          :disabled="!eventSet_isEdit"
-                        >
-                          <template slot="prepend"
-                            ><span style="width:70px;">事件等級</span></template
-                          >
-                        </v-autocomplete>
-                      </v-col>
-                      <!-- 事件類型 -->
-                      <v-col cols="12" sm="6">
-                        <v-autocomplete
-                          dense
-                          outlined
-                          :rules="rules.require"
-                          :items="eventCategoryData"
-                          item-text="name_ch"
-                          item-value="id"
-                          v-model="eventSet.event_category_id"
-                          :disabled="!eventSet_isEdit"
-                        >
-                          <template slot="prepend"
-                            ><span style="width:70px;">事件類型</span></template
-                          >
-                        </v-autocomplete>
-                      </v-col>
-                      <!-- 標題 -->
-                      <v-col cols="12">
-                        <v-text-field v-model="eventSet.title" dense filled clearable :rules="rules.require" :disabled="!eventSet_isEdit">
-                          <span slot="prepend" style="width:70px;">標題</span>
-                        </v-text-field>
-                      </v-col>
-                      <!-- 內容 -->
-                      <v-col cols="12">
-                        <v-textarea v-model="eventSet.content" dense filled clearable :rules="rules.require" :disabled="!eventSet_isEdit">
-                          <span slot="prepend" style="width:70px;">內容</span>
-                        </v-textarea>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn v-if="eventSet.mode=='add'" tile  color="primary" @click="eventSetAdd" :disabled="!eventSet_isEdit">新增</v-btn>
-                    <span v-else>
-                      <v-btn tile  color="primary" :disabled="!eventSet_isEdit" @click="eventSetEdit">確認修改</v-btn>
-                      <v-btn tile  color="error" :disabled="!eventSet_isEdit" @click="eventSetDel">刪除</v-btn>
-                    </span>
-                  </v-card-actions>
-                </v-card>
-                </v-form>
-              </v-dialog>
-          </v-col>
-        </v-row>
-      </v-col>
-      <!-- 日曆 -->
-      <v-col style="border-radius: 4px;background-color: white;">
-        <v-sheet height="64" class="pa-1">
-          <v-toolbar flat>
-            <v-btn
-              outlined
-              class="mr-4"
-              color="grey darken-2"
-              @click="setToday"
-            >
-              今天
-            </v-btn>
-            <!-- 新增紀事 -->
-            <v-btn icon large @click="openedit('add')"><v-icon>mdi-calendar-plus</v-icon>新增</v-btn>
-            <v-dialog v-model="dialog.add" width="800px">
-              <v-form ref="editform" v-model="addvalid" lazy-validation>
-                <v-card tile>
-                  <v-card-title class="cardtitle" style="color:white;">{{(edited.mode=="add")?"新增":"編輯"}}紀事</v-card-title>
-                  <v-divider></v-divider>
-                  <v-card-text>
-                    <v-row>
-                      <!-- 全日 -->
-                      <v-col cols="12">
-                        <v-switch
-                          v-model="edited.is_all_day"
-                          :label="`全日事件: ${edited.is_all_day}`"
-                        ></v-switch>
-                      </v-col>
-                      <!-- 起日 -->
-                      <v-col cols="12" sm="9">
-                        <v-menu
-                          v-model="menu_edit_sdate"
-                          :close-on-content-click="false"
-                          :nudge-right="40"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="edited.started_date"
-                              label="選擇起日"
-                              prepend-icon="mdi-calendar"
-                              dense filled
-                              v-bind="attrs" 
-                              v-on="on"
-                              :rules="rules.require"
-                              @click:prepend="
-                                () => {
-                                  edited.started_date = getNowDate();
-                                }
-                              "
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="edited.started_date"
-                            @input="menu_edit_sdate = false"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col cols="12" sm="3">
-                        <v-text-field
-                          label="時間"
-                          v-model="edited.stime"
-                          dense filled
-                          type="time"
-                          :disabled="edited.is_all_day"
-                          prepend-icon="mdi-timeline-clock-outline"
-                          :rules="rules.require"
-                          @click:prepend="() => (edited.stime = getNowTime())"
-                        ></v-text-field>
-                      </v-col>
-                      <!-- 訖日 -->
-                      <v-col cols="12" sm="9">
-                        <v-menu 
-                          v-model="menu_edit_edate"
-                          :close-on-content-click="false"
-                          :nudge-right="40"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="edited.ended_date"
-                              label="選擇訖日"
-                              prepend-icon="mdi-calendar"
-                              dense filled
-                              v-bind="attrs" 
-                              v-on="on"
-                              :rules="rules.require"
-                              @click:prepend="
-                                () => {
-                                  edited.ended_date = getNowDate();
-                                }
-                              "
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="edited.ended_date"
-                            @input="menu_edit_edate = false"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col cols="12" sm="3">
-                        <v-text-field
-                          label="時間"
-                          v-model="edited.etime"
-                          dense filled
-                          type="time"
-                          :disabled="edited.is_all_day"
-                          :rules="rules.require"
-                          prepend-icon="mdi-timeline-clock-outline"
-                          @click:prepend="() => (edited.etime = getNowTime())"
-                        ></v-text-field>
-                      </v-col>
-                      <!-- 資料範圍 -->
-                      <v-col cols="12" sm="4">
-                        <v-autocomplete
-                          auto-select-first
-                          dense
-                          outlined
-                          :items="datarange"
-                          item-text="name"
-                          item-value="level"
-                          v-model="edited.level"
-                          @change="rangechange"
-                        >
-                          <template slot="prepend"
-                            ><span style="width:70px;">資料範圍</span></template
-                          >
-                        </v-autocomplete>
-                      </v-col>
-                      <v-col cols="12" sm="5">
-                          <treeselect
-                            v-model="edited.poolid"
-                            :options="maindatacpd_edited"
-                            :default-expand-level="1"
-                            :disable-branch-nodes="true"
-                            children="node"
-                            placeholder="請選擇資料範圍"
-                            :multiple="true"
-                            :normalizer="
-                              node => {
-                                return { children: node.node };
-                              }
-                            "
-                            style="font-size:1.3em;"
-                          >
-                            <!-- <div slot="value-label" slot-scope="{ node }">
-                              {{
-                                `${
-                                  node.raw.parent != undefined && node.raw.parent.length > 0
-                                    ? node.raw.parent + "_"
-                                    : ""
-                                }${node.raw.name}`
-                              }}
-                            </div> -->
-                            <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
-                            </div>
-                            <div slot="option-label" slot-scope="{ node }">
-                              {{ `${node.raw.name}` }}
-                            </div>
-                          </treeselect>
-                      </v-col>
-                      <v-col cols="auto" sm="3"></v-col>
-                      <!-- 事件等級 -->
-                      <v-col cols="12" sm="4">
-                        <v-autocomplete
-                          dense
-                          outlined
-                          :items="eventLevelData"
-                          item-text="name_ch"
-                          item-value="id"
-                          v-model="edited.event_level_id"
-                        >
-                          <template slot="prepend"
-                            ><span style="width:70px;">事件等級</span></template
-                          >
-                        </v-autocomplete>
-                      </v-col>
-                      <!-- 事件類型 -->
-                      <v-col cols="12" sm="4">
-                        <v-autocomplete
-                          dense
-                          outlined
-                          :rules="rules.require"
-                          :items="eventCategoryData"
-                          item-text="name_ch"
-                          item-value="id"
-                          v-model="edited.event_category_id"
-                        >
-                          <template slot="prepend"
-                            ><span style="width:70px;">事件類型</span></template
-                          >
-                        </v-autocomplete>
-                      </v-col>
-                      <v-col cols="12" class="pt-0">
-                        <span>
-                          <h3>【事件等級(定義說明)】</h3>
-                          <v-alert color="#E539" dense>
-                            ●重要→會直接影響到"經濟損失"的，一般來說就是跟蝦子有關，如溶氧過低，會造成蝦子死亡，此類列為重要
-                          </v-alert>
-                          <v-alert color="#00AC" dense style="color:white">
-                            ●一般→會影響到部分項目，但不影響"經濟損失"。如把機台拿回來維護，這段時間不會有數據上傳但不影響蝦子
-                          </v-alert>
-                          <v-alert color="#7575" dense>
-                            ●不重要→如機台定期添加試劑、純水等，完全不影響資料上傳或是蝦子，列為此類
-                          </v-alert>
-                          <!-- <font style="background-color:#E539;color:white;"></font><br/>
-                          <font style="background-color:#00AC;color:white;"></font><br/>
-                          <font style="background-color:#7575;color:white;"></font><br/> -->
-                        </span>
-                      </v-col>
-                      <!-- 標題 -->
-                      <v-col cols="12">
-                        <v-text-field v-model="edited.title" dense filled clearable :rules="rules.require">
-                          <span slot="prepend" style="width:70px;">標題</span>
-                        </v-text-field>
-                      </v-col>
-                      <!-- 內容 -->
-                      <v-col cols="12">
-                        <v-textarea v-model="edited.content" dense filled clearable :rules="rules.require">
-                          <span slot="prepend" style="width:70px;">內容</span>
-                        </v-textarea>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn class="primary" dark tile @click="editsubmit(edited.mode)">確認</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-form>
-            </v-dialog>
-            <v-btn fab text small color="grey darken-2" @click="prev">
-              <v-icon small>
-                mdi-chevron-left
-              </v-icon>
-            </v-btn>
-            <v-btn fab text small color="grey darken-2" @click="next">
-              <v-icon small>
-                mdi-chevron-right
-              </v-icon>
-            </v-btn>
-            <v-toolbar-title v-if="$refs.calendar">
-              {{ $refs.calendar.title }}
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn-toggle v-model="type" group color="mainbg">
-              <v-btn value="day">日</v-btn>
-              <v-btn value="week">週</v-btn>
-              <v-btn value="month">月</v-btn>
-            </v-btn-toggle>
-            <v-menu bottom right v-if="false">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn outlined color="grey darken-2" v-bind="attrs" v-on="on">
-                  <span>{{ typeToLabel[type] }}</span>
-                  <v-icon right>
-                    mdi-menu-down
-                  </v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item @click="type = 'day'">
-                  <v-list-item-title>Day</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="type = 'week'">
-                  <v-list-item-title>Week</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="type = 'month'">
-                  <v-list-item-title>Month</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="type = '4day'">
-                  <v-list-item-title>4 days</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-toolbar>
-        </v-sheet>
-        <v-sheet height="500" class="pa-1">
-          <v-calendar
-            ref="calendar"
-            v-model="focus"
-            color="primary"
-            :events="events"
-            :event-color="getEventColor"
-            :type="type"
-            @click:event="showEvent"
-            @click:more="viewDay"
-            @click:date="viewDay"
-            @change="updateRange"
-            locale="zh-tw"
-          ></v-calendar>
-          <v-menu
-            v-model="selectedOpen"
-            :close-on-content-click="false"
-            :activator="selectedElement"
-            offset-x
-          >
-          <!-- 紀事內容 -->
-            <v-card color="grey lighten-4" min-width="350px" flat>
-              <v-toolbar :color="selectedEvent.color" dark>
-                <v-btn icon @click="openedit('edit')">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <v-toolbar-title class="pl-0"><span v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></span></v-toolbar-title>
-                <!-- <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title> -->
-                <v-spacer></v-spacer>
-                <v-btn icon @click="deleteEvent(selectedEvent.id)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-                <!-- <v-btn icon>
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn> -->
-              </v-toolbar>
-              <v-card-subtitle v-if="selectedEvent.start">
-                <span v-html="`起：${selectedEvent.start}<br/>訖：${selectedEvent.end}<br/>建立者：${selectedEvent.created_user}<br/>全日：${selectedEvent.timed}`"></span>
-              </v-card-subtitle>
-              <v-card-text v-if="selectedEvent.event_category_id">
-                <span v-html="`事件等級：${selectedEvent.event_level_name}<br/>事件類別：${selectedEvent.event_category_name}<br/>事件範圍：${this.selectedEvent.items.map(x=>x.name).join()}`"></span>
-                <div style="white-space: pre-wrap;" v-html="`事件內容：${selectedEvent.content}`"></div>
+                  :limit="1"
+                  :limitText="() => `+${edited.poolid.length - 1}`"
+                  style="font-size:1.3em;margin-top: 8px;"
+                  >
+                    <!-- <div slot="value-label" slot-scope="{ node }">
+                      {{
+                        `${
+                          node.raw.parent != undefined && node.raw.parent.length > 0
+                            ? node.raw.parent + "_"
+                            : ""
+                        }${node.raw.name}`
+                      }}
+                    </div> -->
+                    <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
+                    </div>
+                    <div slot="option-label" slot-scope="{ node }">
+                      {{ `${node.raw.name}` }}
+                    </div>
+                  </treeselect>
               </v-card-text>
-              <v-card-actions>
-                <v-btn :color="selectedEvent.color" dark tile @click="selectedOpen = false">
-                  關閉
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-menu>
-        </v-sheet>
-      </v-col>
-      <v-col cols="12" style="height: 32px;">
-        <span class="white--text">
-          資料範圍：「場→可顯示場、區、池事件」、「區→可顯示區、池事件」、「池→可顯示池事件」
-        </span>
-      </v-col>
-    </v-row>
-    <v-card width="100%" min-height="600px" v-if="false">
-      <iframe
-        src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=Asia%2FTaipei&amp;src=Y19xNmpmMHNlYW1ncjk5bnF0bnRrOTQ4czM0a0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;color=%239E69AF&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=1&amp;showCalendars=0&amp;showTz=1"
-        style="border:solid 1px #777"
-        width="100%"
-        height="600"
-        frameborder="0"
-        scrolling="no"
-      ></iframe>
-    </v-card>
+              <v-card-text style="display: flex;align-items: center;">
+                <v-autocomplete
+                  :rules="rules.require"
+                  :items="eventCategoryData"
+                  item-text="name_ch"
+                  item-value="id"
+                  v-model="edited.event_category_id"
+                  label="事件類型"
+                >
+                  <!-- <template slot="prepend"
+                    ><span style="width:70px;">事件類型</span></template
+                  > -->
+                </v-autocomplete>
+                <v-autocomplete
+                  :items="eventLevelData"
+                  item-text="name_ch"
+                  item-value="id"
+                  v-model="edited.event_level_id"
+                  label="事件等級"
+                >
+                  <!-- <template slot="prepend"
+                    ><span style="width:70px;">事件等級</span></template
+                  > -->
+                </v-autocomplete>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                <span>
+                  <h3>【事件等級(定義說明)】</h3>
+                  <v-alert color="#E539" dense>
+                    ● 重要→會直接影響到"經濟損失"的，一般來說就是跟蝦子有關，如溶氧過低，會造成蝦子死亡，此類列為重要
+                  </v-alert>
+                  <v-alert color="#00AC" dense style="color:white">
+                    ● 一般→會影響到部分項目，但不影響"經濟損失"。如把機台拿回來維護，這段時間不會有數據上傳但不影響蝦子
+                  </v-alert>
+                  <v-alert color="#7575" dense>
+                    ● 不重要→如機台定期添加試劑、純水等，完全不影響資料上傳或是蝦子，列為此類
+                  </v-alert>
+                  <!-- <font style="background-color:#E539;color:white;"></font><br/>
+                  <font style="background-color:#00AC;color:white;"></font><br/>
+                  <font style="background-color:#7575;color:white;"></font><br/> -->
+                </span>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                <v-text-field v-model="edited.title" dense filled clearable :rules="rules.require" label="標題">
+                  <!-- <span slot="prepend" style="width:70px;">標題</span> -->
+                </v-text-field>
+              </v-card-text>
+              <v-card-text style="display: flex;align-items: center;">
+                <v-textarea class="text-area" placeholder="內容" v-model="edited.content" outlined :rules="rules.require">
+                  <!-- <span slot="prepend" style="width:70px;">內容</span> -->
+                </v-textarea>
+              </v-card-text>
+            </div>
+          </v-card-text>
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-secondary" @click="dialog.add = false">取消</v-btn>
+            <v-btn class="btn-primary" @click="editsubmit(edited.mode)">確認</v-btn>
+          </v-card-actions>
+          
+        </v-card>
+      </v-form>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -552,7 +583,7 @@ import _ from "lodash";
 import dayjs from "dayjs";
 // import axios from '~/plugins/axios';
 export default {
-  layout: "emptynologin",
+  layout: "emptynologin2",
   middleware: "auth",
   head(){
     return{
@@ -908,6 +939,14 @@ export default {
       let getedItem = {};
       //取得整場架構資料
       //visible寫死名稱含^=false，寫死池的狀態=無=false
+      let architectureData = await this.getArchitecture();
+      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      var data = this.setNestedDisabled(
+        _.cloneDeep(this.maindata),
+        "",
+        this.level
+      );
+      this.maindata = data;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
       //   .then(res => {
@@ -922,14 +961,6 @@ export default {
       //   .catch(error=>{
       //     this.$toast.error(`資料取得失敗:${error.message}`, { duration: 2000 });
       //   });
-      let architectureData = await this.getArchitecture();
-      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
-      var data = this.setNestedDisabled(
-        _.cloneDeep(this.maindata),
-        "",
-        this.level
-      );
-      this.maindata = data;
       //用id抓到name
       this.maindata.forEach(x => {
         x.node.forEach(y => {
@@ -1057,7 +1088,7 @@ export default {
         mode:mode,//add,edit
         id:this.selectedEvent.id,//edit的話就有id
         level:this.selectedEvent.level,//選中的範圍
-        poolid:this.selectedEvent.items.map(x=>x.name + '_' + x.id),//範圍id
+        poolid:this.selectedEvent.items.map(x=>(this.selectedEvent.level==1)?x.name + '_' + x.id:this.selectedEvent.level==2?x.name.split(' ')[x.name.split(' ').length-1]+'_'+x.id:x.id),//範圍id
         started_date:this.selectedEvent.start.substr(0,10),
         ended_date:this.selectedEvent.end.substr(0,10),
         stime:(this.selectedEvent.timed)?'00:00':this.selectedEvent.start.substr(-8,5),
@@ -1121,9 +1152,9 @@ export default {
           var parm = {
             started_date: `${this.edited.started_date} ${(this.edited.is_all_day)?'00:00':this.edited.stime}:00`,
             ended_date: `${this.edited.ended_date} ${(this.edited.is_all_day)?'00:00':this.edited.etime}:00`,
-            factory_id: (this.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一場_1]
-            pond_area_id: (this.level==2)?this.poolidcpd_edited:null,//this.edited.poolid
-            pond_id: (this.level==3)?this.poolidcpd_edited:null,//this.edited.poolid
+            factory_id: (this.edited.level==1)?this.poolidcpd_edited:null,//去除_前面的例：[研發一場_1]
+            pond_area_id: (this.edited.level==2)?this.poolidcpd_edited:null,//this.edited.poolid
+            pond_id: (this.edited.level==3)?this.edited.poolid:null,//this.edited.poolid
             event_level_id: this.edited.event_level_id,
             event_category_id: this.edited.event_category_id,
             title: this.edited.title,
@@ -1232,6 +1263,20 @@ export default {
     },
     maindatacpd: function() {
       var data = _.cloneDeep(this.maindata);
+      if(this.level==3) {
+        this.maindata.forEach(main=>{
+          main.node.forEach(child=>{
+            let children = [];
+            child.node.forEach(c=>{
+              if(c.visible) {
+                children.push(c);
+              }
+            })
+            child.node = children;
+          })
+        })
+        data = _.cloneDeep(this.maindata);
+      }
       return this.nestedMain(data, this.level);
     },
     maindatacpd_edited: function() {
@@ -1287,4 +1332,42 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+::v-deep {
+  .select-template.vue-treeselect .vue-treeselect__multi-value-label,
+  .select-template.vue-treeselect .vue-treeselect__multi-value-label div {
+    line-height: 0;
+  }
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder::before,
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder::after {
+    content: '';
+  }
+  .select-template.vue-treeselect .vue-treeselect__multi-value-label {
+    font-size: 0.65rem;
+  }
+  .select-template .vue-treeselect__control .vue-treeselect__placeholder {
+    font-size: 1rem;
+  }
+  .v-toolbar__content {
+    padding: 0;
+  }
+  .v-textarea.v-text-field--enclosed.text-area .v-text-field__slot textarea,
+  .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo).v-text-field--outlined.text-area .v-input__prepend-inner {
+    margin-left: 8px;
+  }
+  .v-dialog .v-sheet.v-card.custom-dialog .v-text-field--enclosed.v-input--dense:not(.v-text-field--solo) .v-input__append-inner,
+  .v-dialog .v-sheet.v-card.custom-dialog .v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .v-text-field.v-input--is-focused .v-input__icon--clear {
+    padding-top: 8px;
+  }
+  .v-dialog .v-sheet.v-card.custom-dialog .v-input {
+    margin-top: 0;
+  }
+  // .v-dialog .v-sheet.v-card.custom-dialog .v-text-field.reload .theme--light.v-icon {
+  //   margin-top: 8px;
+  // }
+}
+</style>
