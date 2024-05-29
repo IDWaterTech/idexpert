@@ -610,33 +610,36 @@ export default {
             let getDailyCheckList = await this.getDailyCheckList(param);
             let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
             this.poolData = _.cloneDeep(data);
-            this.poolData.daily.forEach(d=>{
-                // d.todo.forEach(t=>{
-                //     if(t.executor!=='' &&t.executor!==null) {
-                //         t.executor_name = this.accdata.filter(x=>x.username==t.executor)[0].position+'-'+this.accdata.filter(x=>x.username==t.executor)[0].account_name;
-                //     }
-                    
-                // })
-                if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
-                    // 排序
-                    let array1=[];
-                    let array2=[];
-                    d.todo.forEach(x=>{
-                        if(x.execute_time&&x.execute_time!=='') {
-                            array1.push(x);
-                        }else {
-                            array2.push(x);
-                        }
-                    })
-                    array1.sort((a,b)=>{
-                        return new Date(a.execute_time) - new Date(b.execute_time)
-                    });
-                    d.todo = [...array1,...array2];
-                }
-            })
-            // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!=='0') {
-            //     this.nextStepDialog = true;
-            // }
+            if(this.poolData.daily) {
+                this.poolData.daily.forEach(d=>{
+                    // d.todo.forEach(t=>{
+                    //     if(t.executor!=='' &&t.executor!==null) {
+                    //         t.executor_name = this.accdata.filter(x=>x.username==t.executor)[0].position+'-'+this.accdata.filter(x=>x.username==t.executor)[0].account_name;
+                    //     }
+                        
+                    // })
+                    if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
+                        // 排序
+                        let array1=[];
+                        let array2=[];
+                        d.todo.forEach(x=>{
+                            if(x.execute_time&&x.execute_time!=='') {
+                                array1.push(x);
+                            }else {
+                                array2.push(x);
+                            }
+                        })
+                        array1.sort((a,b)=>{
+                            return new Date(a.execute_time) - new Date(b.execute_time)
+                        });
+                        d.todo = [...array1,...array2];
+                    }
+                })
+                // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!=='0') {
+                //     this.nextStepDialog = true;
+                // }
+            }
+            
 
         },
         openEdit(item,date,num=0) {
