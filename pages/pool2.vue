@@ -3891,7 +3891,7 @@ export default {
                     action.dailyCheckList.sort((a,b)=>new Date(a.scheduling_date).getTime()-new Date(b.scheduling_date).getTime())
                     action.execute_time = action.dailyCheckList[0].execute_time;
                     action.execute=3;
-                    action.total_day = action.dailyCheckList.length;
+                    //action.total_day = action.dailyCheckList.length;
                     let execute = 0; // 0未開始 1已執行 2異常 3尚有未執行
                     let nonexecute = 0;
                     action.dailyCheckList.forEach(daily=>{
