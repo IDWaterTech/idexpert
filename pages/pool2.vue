@@ -230,6 +230,14 @@
                   </v-col>
                   <v-col v-show="nowTab=='循環紀錄'" cols="12" md="4" sm="6" style="padding: 4px 0;">
                     <div class="btn-groups">
+                      <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-icon just-icon" @click="getTemp(tempid)" v-bind="attrs" v-on="on">
+                              <v-icon style="font-size: 24px;">mdi-reload</v-icon>
+                            </button>
+                          </template>
+                          <span>重新整理</span>
+                        </v-tooltip>
                       <div class="filter" style="max-width: 200px;">
                         <!-- <v-select
                           v-model="passObj.filter"
@@ -241,6 +249,7 @@
                           @change="filterChange"
                           hide-details
                         ></v-select> -->
+                        
                         <span style="font-size:12px;color:#6c9bcd">項目過濾</span>
                         <treeselect
                           v-model="passObj.filter"
@@ -1442,6 +1451,7 @@ export default {
       tabs:['循環紀錄','財務報表'],
       nowTab:'循環紀錄',
       isUpdate:false,
+      tempid:null
     };
   },
   methods: {
@@ -2497,6 +2507,7 @@ export default {
           this.circleData = [];
           this.circleData = data;
           this.currentDataId = null;
+          this.tempid = null;
         }else {
           //清除
           this.$refs.circletable.clearSelection();
@@ -2819,6 +2830,7 @@ export default {
               this.passObj["tempMain"] = tempMain;
               // this.passObj["tempContent"] = await this.getTemp(val.id);
               this.getTemp(val.id);
+              this.tempid = val.id;
               
             }
           }

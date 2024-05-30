@@ -17,6 +17,10 @@
                                     @scopeSel_data="get_scopeData($event);"></locate-select>
                             </div>
                         </v-col>
+                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3">
+                            <v-btn v-if="isDisable" class="btn-primary"  @click="isDisable=!isDisable">測試模式</v-btn>
+                            <v-btn v-else class="btn-primary"  @click="isDisable=!isDisable">一般模式</v-btn>
+                        </v-col>
                         <!-- <v-col v-if="poolData.daily&&poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status!=='0'" cols="12" md="3">
                             <v-btn class="btn-primary" :class="{'disabled':!poolData.daily||poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status=='0'}" @click="submitNextStep">開啟新工作</v-btn>
                         </v-col> -->
@@ -77,8 +81,8 @@
                                             </div>
                                         </div>
                                         <div v-if="daily.execute_status=='0'" class="action">
-                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
-                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
+                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
+                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
                                         </div>
                                     </div>
                                 </div>
@@ -374,11 +378,14 @@ export default {
             },
             nextStepDialog: false, // 開啟下一階段
             stepdata:[],
-            actionInputShow:false
+            actionInputShow:false,
+            userData:[],
+            isDisable:true,
         }
     },
     async created() {
         await this._pageCheck(); //驗證頁面是否可檢視
+        await this.getAllUser();
         // this.getaccList();//取得所有帳號，比對執行者用
         this.getstepdata();
     },
@@ -931,7 +938,13 @@ export default {
                 this.actionInputShow = false;
             }
             
-        }
+        },
+        async getAllUser() {
+            let getuserData = await this.getUserList();
+            this.userData = typeof (getuserData)=='string'?[]:getuserData;
+            this.userData = this.userData.filter(x=>x.is_active==true);
+            console.log('User',this.userData);
+        },
     },
     watch: {
     }
