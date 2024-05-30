@@ -78,8 +78,13 @@
                                 <!-- <v-col cols="8" md="8" sm="8" style="padding: 0 8px;"> -->
                                     <div class="btn-groups" style="margin-right: 8px;">
                                         <div class="open">
-                                            <v-btn v-if="!isEditDefault" class="btn-secondary" @click="clickTemp(1)">編輯預設樣板</v-btn>
-                                            <v-btn v-if="isEditDefault" class="btn-secondary delete" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;isEditDefault=false;">取消編輯預設樣板</v-btn>
+                                            <v-tooltip v-if="!isEditDefault" bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn class="btn-secondary" v-bind="attrs" v-on="on"  @click="clickTemp(1)">編輯預設樣板</v-btn>
+                                                </template>
+                                                <span>編輯新增樣板時的預設樣板</span>
+                                            </v-tooltip>
+                                            <v-btn v-else class="btn-secondary delete" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;isEditDefault=false;">取消編輯預設樣板</v-btn>
                                             <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
                                                 <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
                                             </v-btn>

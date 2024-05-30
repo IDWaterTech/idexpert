@@ -3459,7 +3459,7 @@ export default {
                                 max=action.end_on_which_day;
                             }
                         })
-                        mitem.day+=max-1+1;
+                        item.day+=max-1+1;
                         // item.day+=parseInt(step.actionList[step.actionList.length-1].end_on_which_day)-parseInt(step.actionList[0].start_on_which_day)+1;
                     }
                 })
