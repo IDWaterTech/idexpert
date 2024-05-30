@@ -700,7 +700,7 @@
                             </div>
                         </div>
                         <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="max-height: 30vh;overflow-y: scroll;">
-                            <v-card-text v-for="item in editItem.actionList" :key="'addAction_'+item.action_id" style="display: flex;align-items: center;padding-top: 0;" >
+                            <v-card-text v-for="item in editItem.actionList" :key="'addAction_'+item.action_id+'_'+Math.floor(Math.random()*999)+100" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
                                     <v-col cols="6">{{ item.action_name }}</v-col>
                                     <v-col cols="6">Day {{ item.start_on_which_day }} ~ Day {{ item.end_on_which_day }}</v-col>
