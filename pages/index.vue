@@ -211,14 +211,14 @@ export default {
             }
           })
           this.menuList = data;
-          this.menuList.push({
-            disabled: false,
-            icon: "mdi-database-edit-outline",
-            id: 99999,
-            is_drop_down: false,
-            name: "知識庫鷹眼",
-            url: "/kb2"
-          },
+          // this.menuList.push({
+          //   disabled: false,
+          //   icon: "mdi-database-edit-outline",
+          //   id: 99999,
+          //   is_drop_down: false,
+          //   name: "知識庫鷹眼",
+          //   url: "/kb2"
+          // },
           // {
           //   disabled: false,
           //   icon: "mdi-briefcase-eye-outline",
@@ -227,7 +227,7 @@ export default {
           //   name: "模型預測",
           //   url: "/pondpredict"
           // },
-          )
+          // )
         }
         console.log('menuList',this.menuList)
       }
