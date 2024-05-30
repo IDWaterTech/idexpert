@@ -81,8 +81,8 @@
                                             </div>
                                         </div>
                                         <div v-if="daily.execute_status=='0'" class="action">
-                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
-                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
+                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
+                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
                                         </div>
                                     </div>
                                 </div>
@@ -381,6 +381,7 @@ export default {
             actionInputShow:false,
             userData:[],
             isDisable:true,
+            isLoading: false,
         }
     },
     async created() {
@@ -646,6 +647,7 @@ export default {
                 //     this.nextStepDialog = true;
                 // }
             }
+            this.isLoading = true;
             
 
         },
@@ -690,6 +692,7 @@ export default {
                 parm.updated_user = this.$auth.$state.user.email;
                 delete parm.id;
                 console.log('parm',parm);
+                this.isLoading = false;
                 var res = false;
                 res = await this.patchDailyCheckList(parm,this.editItem.id);
                 setTimeout(()=>{
@@ -799,6 +802,7 @@ export default {
                     delete parm.id;
                     delete parm.index;
                     console.log('parm',parm);
+                    this.isLoading=false;
                     var res = false;
                     res = await this.patchDailyCheckList(parm,this.delayItem.id);
                     setTimeout(()=>{
@@ -828,6 +832,7 @@ export default {
                     delete parm.updated_user;
                     delete parm.index;
                     console.log('parm',parm);
+                    this.isLoading=false;
                     var res = false;
                     res = await this.postDailyCheckList(parm);
                     setTimeout(()=>{
@@ -873,6 +878,7 @@ export default {
                     "estimated_spend": 0,
                     "created_user": this.$auth.$state.user.email
                 }
+                this.isLoading=false;
                 var res = false;
                 res = await this.postDailyCheckActionList(item);
                 setTimeout(()=>{
