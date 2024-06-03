@@ -333,7 +333,7 @@
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#net')"> 觀察網資訊 |</a>
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#basic')"> 養殖基本數據
                                             |</a>
-                                        <a href="javascript:void(0)" class="tag" @click="goAnchor('#breed')"> 養殖參數 |</a>
+                                        <!-- <a href="javascript:void(0)" class="tag" @click="goAnchor('#breed')"> 養殖參數 |</a> -->
                                         <a href="javascript:void(0)" class="tag" @click="goAnchor('#waterperiod')">
                                             做水期參數 |</a>
                                     </v-row>
@@ -344,7 +344,7 @@
                                             <v-col cols=12 md="5" sm="5">
                                                 <v-row class="item-row item">
                                                     <v-col cols="12" md="4" sm="4">
-                                                        <span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
+                                                        <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${BaseParm['InspectedDate']&&BaseParm['InspectedDate']!==''&&BaseParm['InspectedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
                                                     </v-col>
                                                     <v-col cols="12" md="8" sm="8" class="pb-0">
                                                         <v-menu v-model="menu_inspecteddate"
@@ -359,7 +359,8 @@
                                                                     class="mt-0" clearable
                                                                     readonly dense hide-details
                                                                     v-bind="attrs"
-                                                                    v-on="on"></v-text-field>
+                                                                    v-on="on"
+                                                                    ></v-text-field>
                                                             </template>
                                                             <v-date-picker
                                                                 v-model="BaseParm['InspectedDate']"
@@ -375,7 +376,7 @@
                                                 <v-row class="item-row item">
                                                     <v-col cols="12" md="4" sm="4">
                                                         <span class="pa-0 ma-0"
-                                                            slot="prepend"><v-icon
+                                                            slot="prepend" :style="{'color':`${BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==''&&BaseParm['InspectedTime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon
                                                                 @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
                                                     </v-col>
                                                     <v-col cols="12" md="8" sm="8">
@@ -413,7 +414,7 @@
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0" slot="prepend"
+                                                                                <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${FeedParm['CrudeProteinPct']&&FeedParm['CrudeProteinPct']!==''&&FeedParm['CrudeProteinPct']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的飼料紀錄中所使用的飼料粗蛋白參數->砂糖量(做水)、尿素、前餐砂糖量、下餐砂糖量">粗蛋白含量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -433,6 +434,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0 text-center"
                                                                                     slot="prepend"
+                                                                                    :style="{'color':`${FeedParm['Nitrogen']&&FeedParm['Nitrogen']!==''&&FeedParm['Nitrogen']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的飼料紀錄中所使用的飼料含氮量參數">含氮量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -450,6 +452,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${FeedParm['SugarSourcePurity']&&FeedParm['SugarSourcePurity']!==''&&FeedParm['SugarSourcePurity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的飼料紀錄中所使用的砂糖純度參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">純度(砂糖-碳源)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -477,6 +480,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
                                                                                     title="過去一天最後一筆的飼料紀錄中所使用的飼料CN比參數"><a
+                                                                                        :style="{'color':`${FeedParm['FeedCN']&&FeedParm['FeedCN']!==''&&FeedParm['FeedCN']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                         href="https://www.tfrin.gov.tw/News_Content.aspx?n=310&s=236373"
                                                                                         target="_blank">飼料CN比</a></span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">飼料CN比(依照飼料)</span> -->
@@ -495,6 +499,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${FeedParm['LastFeedInput']&&FeedParm['LastFeedInput']!==''&&FeedParm['LastFeedInput']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的飼料紀錄中飼料的投餵量->0號料、1號料、2號料、上一餐飼料量">上一餐飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -536,6 +541,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${FeedParm['LastFeedOfDay']&&FeedParm['LastFeedOfDay']!==''&&FeedParm['LastFeedOfDay']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天所有飼料紀錄中飼料量的總和">當日總飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -555,6 +561,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${FeedParm['CumulativeFeedAmountInput']&&FeedParm['CumulativeFeedAmountInput']!==''&&FeedParm['CumulativeFeedAmountInput']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="養殖起始日~資料日期時間內所有飼料量的總和->FCR(換肉率)">累計飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -599,6 +606,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                    :style="{'color':`${FeedParm['FeedingPlan']&&FeedParm['FeedingPlan'].length!==0&&FeedParm['FeedingPlan']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">投餌方案</span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
@@ -617,6 +625,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                    :style="{'color':`${FeedParm['LastFeedDatetime']&&FeedParm['LastFeedDatetime']!==''&&FeedParm['LastFeedDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">過去四天單餐投餌量：</span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
@@ -635,6 +644,7 @@
                                                                                     <v-icon
                                                                                         @click="showDate=false;FeedParm['LastFeedDatetime'] = getNowDateTime();showDate=true">mdi-calendar</v-icon>
                                                                                     <span
+                                                                                    :style="{'color':`${FeedParm['LastFeedDatetime']&&FeedParm['LastFeedDatetime']!==''&&FeedParm['LastFeedDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                         style="font-size: 14px;margin-right: 9px;padding-left: 4px;"
                                                                                         title="過去一天最後一筆的飼料投餵時間->內存量(體重投餌率)、存活率、預計間補日期、0號料">上一餐時間</span>
                                                                                 </div>
@@ -696,11 +706,13 @@
                                                                                 style="display: flex;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
-                                                                                    title="過去一天最後一筆的溶氧資料"><v-badge
+                                                                                    title="過去一天最後一筆的溶氧資料"
+                                                                                    :style="{'color':`${WaterQualityData['Do']&&WaterQualityData['Do']!==''&&WaterQualityData['Do']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Do')"></v-badge>溶氧</span><span
                                                                                     style="font-size: 12px;"
-                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">Do</span>
+                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`,
+                                                                                            'color':`${WaterQualityData['Do']&&WaterQualityData['Do']!==''&&WaterQualityData['Do']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">Do</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -718,11 +730,13 @@
                                                                                 style="display: flex;align-items: center;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${WaterQualityData['pH']&&WaterQualityData['pH']!==''&&WaterQualityData['pH']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的酸鹼值資料->熟石灰量"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('pH')"></v-badge>酸鹼值</span><span
                                                                                     style="font-size: 12px;"
-                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">(pH)</span>
+                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`,
+                                                                                            'color':`${WaterQualityData['pH']&&WaterQualityData['pH']!==''&&WaterQualityData['pH']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">(pH)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -737,6 +751,7 @@
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0" slot="prepend"
+                                                                                    :style="{'color':`${WaterQualityData['Temp']&&WaterQualityData['Temp']!==''&&WaterQualityData['Temp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的水溫資料->粉料、砂糖量(做水)、尿素"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Temp')"></v-badge>水溫</span>
@@ -747,7 +762,7 @@
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"
                                                                                     @blur="valueCheck('Temp',WaterQualityData['Temp'])"><span
-                                                                                        slot="append">°C</span></v-text-field>
+                                                                                        slot="append" :style="{'color':`${WaterQualityData['Temp']&&WaterQualityData['Temp']!==''&&WaterQualityData['Temp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">°C</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
@@ -755,6 +770,7 @@
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0" slot="prepend"
+                                                                                :style="{'color':`${WaterQualityData['LastTemp']&&WaterQualityData['LastTemp']!==''&&WaterQualityData['LastTemp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="以上一餐時間為基準，過去一天最後一筆的水溫資料->內存量(體重投餌率)、存活率"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('LastTemp')"></v-badge>上一餐水溫</span>
@@ -765,14 +781,14 @@
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"
                                                                                     @blur="valueCheck('LastTemp',WaterQualityData['LastTemp'])"><span
-                                                                                        slot="append">°C</span></v-text-field>
+                                                                                        slot="append" :style="{'color':`${WaterQualityData['LastTemp']&&WaterQualityData['LastTemp']!==''&&WaterQualityData['LastTemp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">°C</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
-                                                                                <span class="pa-0 ma-0"
+                                                                                <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Salinity']&&WaterQualityData['Salinity']!==''&&WaterQualityData['Salinity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Salinity')"></v-badge>鹽度</span>
@@ -783,7 +799,7 @@
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"
                                                                                     @blur="valueCheck('Salinity',WaterQualityData['Salinity'])"><span
-                                                                                        slot="append">ppt</span></v-text-field>
+                                                                                        slot="append" :style="{'color':`${WaterQualityData['Salinity']&&WaterQualityData['Salinity']!==''&&WaterQualityData['Salinity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">ppt</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
@@ -812,12 +828,13 @@
                                                                             <v-col cols="12" md="4" sm="4"
                                                                                 style="display: flex;align-items: center;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0"
+                                                                                <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Mg']&&WaterQualityData['Mg']!==''&&WaterQualityData['Mg']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Mg')"></v-badge>鎂離子</span><span
                                                                                     style="font-size: 12px;"
-                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">Mg<sub>2</sub>+</span>
+                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`,
+                                                                                            'color':`${WaterQualityData['Mg']&&WaterQualityData['Mg']!==''&&WaterQualityData['Mg']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">Mg<sub>2</sub>+</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -834,12 +851,13 @@
                                                                             <v-col cols="12" md="4" sm="4"
                                                                                 style="display: flex;align-items: center;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0"
+                                                                                <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Ca']&&WaterQualityData['Ca']!==''&&WaterQualityData['Ca']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Ca')"></v-badge>鈣離子</span><span
                                                                                     style="font-size: 12px;"
-                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">Ca<sub>2</sub>+</span>
+                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`,
+                                                                                            'color':`${WaterQualityData['Ca']&&WaterQualityData['Ca']!==''&&WaterQualityData['Ca']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">Ca<sub>2</sub>+</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -856,12 +874,13 @@
                                                                             <v-col cols="12" md="4" sm="4"
                                                                                 style="display: flex;align-items: center;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0"
+                                                                                <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Alk']&&WaterQualityData['Alk']!==''&&WaterQualityData['Alk']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Alk')"></v-badge>鹼度</span><span
                                                                                     style="font-size: 12px;"
-                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`}">Alk</span>
+                                                                                    :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`,
+                                                                                            'color':`${WaterQualityData['Alk']&&WaterQualityData['Alk']!==''&&WaterQualityData['Alk']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">Alk</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -878,9 +897,9 @@
                                                                             <v-col cols="12" md="4" sm="4"
                                                                                 style="display: flex;align-items: center;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0" slot="prepend"
+                                                                                <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${WaterQualityData['AmmoniaN']&&WaterQualityData['AmmoniaN']!==''&&WaterQualityData['AmmoniaN']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的氨氮資料->砂糖量(降氨氮)">氨氮</span><span
-                                                                                    style="font-size: 12px;">NH<sub>3</sub>/NH<sub>4</sub>+</span>
+                                                                                    style="font-size: 12px;" :style="{'color':`${WaterQualityData['AmmoniaN']&&WaterQualityData['AmmoniaN']!==''&&WaterQualityData['AmmoniaN']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">NH<sub>3</sub>/NH<sub>4</sub>+</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -897,9 +916,9 @@
                                                                             <v-col cols="12" md="4" sm="4"
                                                                                 style="display: flex;align-items: center;"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
-                                                                                <span class="pa-0 ma-0" slot="prepend"
+                                                                                <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${WaterQualityData['NO2']&&WaterQualityData['NO2']!==''&&WaterQualityData['NO2']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的亞硝酸鹽資料">亞硝酸鹽</span><span
-                                                                                    style="font-size: 12px;">NO<sub>2</sub>-</span>
+                                                                                    style="font-size: 12px;" :style="{'color':`${WaterQualityData['NO2']&&WaterQualityData['NO2']!==''&&WaterQualityData['NO2']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">NO<sub>2</sub>-</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -915,7 +934,8 @@
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
-                                                                                    slot="prepend">水的顏色</span>
+                                                                                    slot="prepend"
+                                                                                    :style="{'color':`${WaterQualityData['WaterColor']&&WaterQualityData['WaterColor'].length!==0&&WaterQualityData['WaterColor']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">水的顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-select
@@ -963,7 +983,8 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
-                                                                                    slot="prepend">生物絮團</span>
+                                                                                    slot="prepend"
+                                                                                    :style="{'color':`${BacteriaData['Biofloc']&&BacteriaData['Biofloc']!==''&&BacteriaData['Biofloc']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">生物絮團</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -979,7 +1000,8 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
-                                                                                    title="過去一天最後一筆的總菌數(total_plate_count)">總菌</span>
+                                                                                    title="過去一天最後一筆的總菌數(total_plate_count)"
+                                                                                    :style="{'color':`${BacteriaData['TotalPlateCount']&&BacteriaData['TotalPlateCount']!==''&&BacteriaData['TotalPlateCount']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">總菌</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -995,6 +1017,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BacteriaData['BacillusSubtilis']&&BacteriaData['BacillusSubtilis']!==''&&BacteriaData['BacillusSubtilis']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的枯草桿菌(bacillus_subtilis)->砂糖量(提高枯草桿菌)">枯草桿菌</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1011,6 +1034,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BacteriaData['VibrioAlginolyticus']&&BacteriaData['VibrioAlginolyticus']!==''&&BacteriaData['VibrioAlginolyticus']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的溶藻弧菌(白菌)(vibrio_alginolyticus)">溶藻弧菌(白)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1027,6 +1051,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BacteriaData['VibrioVulnificus']&&BacteriaData['VibrioVulnificus']!==''&&BacteriaData['VibrioVulnificus']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的創傷弧菌(藍菌)(vibrio_vulnificus)->砂糖量(降靛菌)">創傷弧菌(藍)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1043,6 +1068,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BacteriaData['VibrioEnteritidis']&&BacteriaData['VibrioEnteritidis']!==''&&BacteriaData['VibrioEnteritidis']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的腸炎弧菌(紫菌)(vibrio_enteritidis)->砂糖量(降紫菌)">腸炎弧菌(紫)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1059,6 +1085,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BacteriaData['VibrioCholerae']&&BacteriaData['VibrioCholerae']!==''&&BacteriaData['VibrioCholerae']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的霍亂弧菌(靛)(vibrio_cholerae)">霍亂弧菌(靛)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1216,7 +1243,8 @@
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="2" sm="2">
                                                                             <span class="pa-0 ma-0" slot="prepend"
-                                                                                style="padding-left: 4px !important;">疾病感染</span>
+                                                                                style="padding-left: 4px !important;"
+                                                                                :style="{'color':`${bacteriaSelect&&bacteriaSelect.length!==0&&bacteriaSelect!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">疾病感染</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="10" sm="10">
                                                                             <v-select v-model="bacteriaSelect"
@@ -1328,6 +1356,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${ObservationData['ObservationNum']&&ObservationData['ObservationNum']!==''&&ObservationData['ObservationNum']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">觀察網隻數</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1344,6 +1373,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">是否脫殼</span> -->
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${ObservationData['ShellQty']&&ObservationData['ShellQty']!==''&&ObservationData['ShellQty']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">脫殼數量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1361,6 +1391,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${judgeColor('IntestinalColor')?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">腸線顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1384,6 +1415,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${judgeColor('HepatopancreasColor')?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">肝胰臟顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1407,6 +1439,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${judgeColor('MuscleColor')?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">肌肉顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1430,6 +1463,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${judgeColor('BodyColor')?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">蝦體顏色</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1452,6 +1486,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${judgeColor('BodyShape')?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">蝦體形狀</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1474,6 +1509,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${ObservationData['Leftover']&&ObservationData['Leftover']!==''&&ObservationData['Leftover']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去24小時內最後一筆的飼料殘餘量(feed_surplus)->0號料、1號料、2號料">觀察網殘餌量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -1493,6 +1529,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${ObservationData['DeadShrimpQty']&&ObservationData['DeadShrimpQty']!==''&&ObservationData['DeadShrimpQty']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">死蝦數量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1508,6 +1545,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${ObservationData['ShrimpLength']&&ObservationData['ShrimpLength']!==''&&ObservationData['ShrimpLength']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去30天最後一筆資料">蝦子長度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1524,6 +1562,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                    :style="{'color':`${ObservationData['ShrimpWeight']&&ObservationData['ShrimpWeight']!==''&&ObservationData['ShrimpWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去90天最後一筆打樣到的蝦子重量(avg_weight)->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、觀察網網上料量、每日體重投餌率、蝦子重量、粉料、0號料、1號料、2號料">蝦子重量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -1544,6 +1583,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${ObservationData['LastShrimpWeight']&&ObservationData['LastShrimpWeight']!==''&&ObservationData['LastShrimpWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去90天倒數第二筆打樣到的蝦子重量(avg_weight)->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次蝦子重量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -1570,6 +1610,7 @@
                                                                                         @click="showDate=false;ObservationData['SamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                                                                                     <span
                                                                                         style="font-size: 14px;margin-right: 9px;padding-left: 4px;"
+                                                                                        :style="{'color':`${ObservationData['SamplingDatetime']&&ObservationData['SamplingDatetime']!==''&&ObservationData['SamplingDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                         title="過去90天最後一筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">打樣時間</span>
                                                                                 </div>
 
@@ -1603,6 +1644,7 @@
                                                                                         @click="showDate=false;ObservationData['LastSamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                                                                                     <span
                                                                                         style="font-size: 14px;margin-right: 9px;padding-left: 4px;"
+                                                                                        :style="{'color':`${ObservationData['LastSamplingDatetime']&&ObservationData['LastSamplingDatetime']!==''&&ObservationData['LastSamplingDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                         title="過去90天倒數第二筆打樣到的蝦子重量的時間->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次打樣時間</span>
                                                                                 </div>
                                                                             </v-col>
@@ -1675,6 +1717,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BaseParm['InspectedDate']&&BaseParm['InspectedDate']!==''&&BaseParm['InspectedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">資料日期</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1720,6 +1763,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==''&&BaseParm['InspectedTime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">資料時間</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1743,6 +1787,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BaseParm['PondBottomArea']&&BaseParm['PondBottomArea']!==''&&BaseParm['PondBottomArea']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="->觀察網網上料量、0號料、1號料、2號料">養殖池底面積</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1760,6 +1805,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BaseParm['StartedDate']&&BaseParm['StartedDate']!==''&&BaseParm['StartedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">養殖起始日</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1800,6 +1846,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BaseParm['WaterSource']&&BaseParm['WaterSource'].length>0&&BaseParm['WaterSource']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">水源</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1818,6 +1865,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BaseParm['WaterSourceSalinity']&&BaseParm['WaterSourceSalinity']!==''&&BaseParm['WaterSourceSalinity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">鹽度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1834,6 +1882,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BaseParm['WaterBody']&&BaseParm['WaterBody']!==''&&BaseParm['WaterBody']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="->存活率、粉料、0號料、砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(提高枯草桿菌)、砂糖量(降紫菌)、砂糖量(降靛菌)、熟石灰量、砂糖量(做水)、漂白粉(30ppm濃度)、海波、尿素">水體體積</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1850,6 +1899,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BaseParm['Density']&&BaseParm['Density']!==''&&BaseParm['Density']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="->存活率、粉料、0號料、砂糖量(做水)、尿素">放養密度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1867,6 +1917,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BaseParm['Days']&&BaseParm['Days']!==''&&BaseParm['Days']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="養殖循環開始日期~資料日期時間->粉料">養殖天數</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1878,67 +1929,11 @@
                                                                         </v-row>
                                                                         <!-- <v-text-field v-model.number="BaseParm['Days']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">養殖天數</span></v-text-field> -->
                                                                     </v-col>
-                                                                </v-row>
-
-                                                                <!-- <v-menu v-model="menu_inspecteddate" :close-on-content-click="false" :nudge-right="40"
-                                                                    transition="scale-transition" offset-y min-width="auto">
-                                                                    <template v-slot:activator="{ on, attrs }">
-                                                                        <v-text-field v-model="BaseParm['InspectedDate']" class="mt-0" clearable readonly dense hide-details 
-                                                                            v-bind="attrs" v-on="on"><span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span></v-text-field>
-                                                                    </template>
-                                                                    <v-date-picker v-model="BaseParm['InspectedDate']" locale="zh-tw" no-title @input="
-                                                                    menu_inspecteddate = false;
-                                                                    "></v-date-picker>
-                                                                </v-menu>
-                                                                <v-text-field
-                                                                    v-model="BaseParm['InspectedTime']"
-                                                                    value="" dense
-                                                                    type="time"
-                                                                    prepend-icon="mdi-timeline-clock-outline"
-                                                                    hide-details
-                                                                    @click:prepend="() => (BaseParm['InspectedTime'] = getNowTime())"
-                                                                    ><span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span></v-text-field>
-                                                                    <v-text-field v-model.number="BaseParm['PondBottomArea']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">養殖池底面積(m2)</span></v-text-field> -->
-                                                                <!-- <v-select v-model="BaseParm['Shape']" clearable :items="optData.Shape" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">養殖池形狀</span></v-select> -->
-
-                                                                <!-- <v-text-field v-if="false" v-model="BaseParm['StartedDate']" dense hide-details class="mt-0 blue lighten-1" dark><span class="pa-0 ma-0" slot="prepend">養殖起始日</span></v-text-field>
-                                                                <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
-                                                                    transition="scale-transition" offset-y min-width="auto">
-                                                                    <template v-slot:activator="{ on, attrs }">
-                                                                    <v-text-field v-model="BaseParm['StartedDate']" class="mt-0" clearable readonly dense hide-details
-                                                                        v-bind="attrs" v-on="on"><span class="pa-0 ma-0" slot="prepend">養殖起始日</span></v-text-field>
-                                                                    </template>
-                                                                    <v-date-picker v-model="BaseParm['StartedDate']" locale="zh-tw" no-title @input="
-                                                                    menu_startdate = false;
-                                                                    "></v-date-picker>
-                                                                </v-menu>
-                                                                <v-text-field v-if="false" v-model="BaseParm['WaterSource']" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">水源</span></v-text-field>
-                                                                <v-select v-model="BaseParm['WaterSource']" clearable :items="optData.WaterSource" filled dense hide-details class="mt-0" item-value="name_en" item-text="name_ch"><span class="pa-0 ma-0" slot="prepend">水源</span></v-select>
-
-                                                                <v-text-field v-model.number="BaseParm['WaterSourceSalinity']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">鹽度(ppt)</span></v-text-field>
-                                                                <v-text-field v-model.number="BaseParm['WaterBody']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">水體體積(m3)</span></v-text-field>
-                                                                <v-text-field v-model.number="BaseParm['Density']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養密度(隻/噸水)</span></v-text-field>
-                                                                <v-text-field v-model.number="BaseParm['Days']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">養殖天數</span></v-text-field> -->
-                                                            </v-form>
-                                                        </v-card-text>
-                                                    </v-card>
-                                                </v-expansion-panel-content>
-                                            </v-expansion-panel>
-                                        </v-expansion-panels>
-                                        <!-- 養殖參數 -->
-                                        <v-expansion-panels id="breed" accordion multiple v-model="panel.panel_row12">
-                                            <v-expansion-panel class="my-1">
-                                                <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
-                                                    expand-icon="mdi-chevron-down">養殖參數</v-expansion-panel-header>
-                                                <v-expansion-panel-content>
-                                                    <v-card tile>
-                                                        <v-card-text class="pa-3 mx-0">
-                                                            <v-form ref="BreedingParm">
-                                                                <v-row class="item-row" dense>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BreedingParm['CN']&&BreedingParm['CN']!==''&&BreedingParm['CN']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="->前餐砂糖量(配合飼料CN比)、下餐砂糖量(配合飼料CN比)、砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)">目標CN比</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -1954,6 +1949,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${BreedingParm['InitialWeight']&&BreedingParm['InitialWeight']!==''&&BreedingParm['InitialWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="->砂糖量(做水)、尿素">放養初始重量(單隻)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -1973,6 +1969,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BreedingParm['EstimatedHarvestWeight']&&BreedingParm['EstimatedHarvestWeight']!==''&&BreedingParm['EstimatedHarvestWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">預估收成個體重</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
@@ -1989,14 +1986,6 @@
                                                                         <!-- <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估間補個體重</span><span class="pa-0 ma-0" slot="append">g</span></v-text-field> -->
                                                                     </v-col>
                                                                 </v-row>
-
-                                                                <!-- <v-text-field v-model.number="BreedingParm['CN']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">目標CN比</span></v-text-field> -->
-                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedFCR']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預測FCR</span></v-text-field> -->
-                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedADG']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預測ADG</span></v-text-field> -->
-                                                                <!-- <v-text-field v-model.number="BreedingParm['InitialLength']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養初始長度(cm)</span></v-text-field> -->
-                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedSurvivalRate']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估存活率(%)</span></v-text-field> -->
-                                                                <!-- <v-text-field v-model.number="BreedingParm['InitialWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">放養初始重量(g)</span></v-text-field> -->
-                                                                <!-- <v-text-field v-model.number="BreedingParm['EstimatedHarvestWeight']" type="number" dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">預估間補個體重(g)</span></v-text-field> -->
                                                             </v-form>
                                                         </v-card-text>
                                                     </v-card>
@@ -2018,6 +2007,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${MakeWaterParm['UreaEffectiveConcentration']&&MakeWaterParm['UreaEffectiveConcentration']!==''&&MakeWaterParm['UreaEffectiveConcentration']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="成分產編 = '尿素' & 參數英文名稱 = 'effective concentration'->砂糖量(做水)、尿素">尿素有效濃度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -2034,6 +2024,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${MakeWaterParm['BleachingPowderEffectiveConcentration']&&MakeWaterParm['BleachingPowderEffectiveConcentration']!==''&&MakeWaterParm['BleachingPowderEffectiveConcentration']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="成分產編 = '漂白粉' & 參數英文名稱 = 'effective concentration'->漂白粉(30ppm濃度)">漂白粉有效濃度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -2050,6 +2041,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${MakeWaterParm['Chlorine']&&MakeWaterParm['Chlorine']!==''&&MakeWaterParm['Chlorine']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的餘氯資料->海波">水體餘氯</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -2066,6 +2058,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
+                                                                                :style="{'color':`${MakeWaterParm['HypoEffectiveConcentration']&&MakeWaterParm['HypoEffectiveConcentration']!==''&&MakeWaterParm['HypoEffectiveConcentration']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="成分產編 = '硫代硫酸鈉' & 參數英文名稱 = 'effective concentration'->海波">海波有效濃度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -4491,6 +4484,18 @@ export default {
             this.inputRemark = _.cloneDeep(this.remark);
             this.remarkDialog = false;
         },
+        judgeColor(type) {
+            let isColor = false;
+            if(this.ObservationData[type]&&this.ObservationData[type].length>0) {
+                this.ObservationData[type].forEach(x=>{
+                    if(x.value>0) {
+                        isColor = true;
+                    }
+                })
+            }
+            
+            return isColor;
+        }
     },
     async created() {
         for(let i=0;i<this.bacteriaAll.length;i++) {
@@ -4870,6 +4875,9 @@ export default {
         transform: translate(-50%,-50%);
         font-size: 12px;
     }
+}
+.nonItem {
+    background-color: rgba($color-dark-25,0.5);
 }
 #params,#ai {
     padding-top: 4px;
