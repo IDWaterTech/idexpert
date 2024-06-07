@@ -1159,12 +1159,37 @@ export default {
                         if(this.mainItems[id+1]&&this.mainItems[id+1].newest!=='') {
                             return false;
                         }else {
-                            return true;
+                            let index = 0;
+                            this.mainItems.forEach((mitem,mid)=>{
+                                if(this.nowStepId!==null) {
+                                    mitem.stepList.forEach((step,sid)=>{
+                                        if(step.id==this.nowStepId) {
+                                            index = mid;
+                                            
+                                        }
+                                    })
+                                }else {
+                                    if(mitem.newest!=='') {
+                                        index = mid;
+                                    }
+                                } 
+                                
+                            })
+                            if(id<index) {
+                                return false;
+                            }else {
+                                return true;
+                            }
                         }
                     }
                     
                 }
             }else{
+                // if(id==this.mainItems.length-1&&this.nowStepId==null) {
+                //     return true;
+                // }else {
+                //     return false;
+                // }
                 return false;
             }
             
@@ -1604,13 +1629,21 @@ export default {
         },
         // 各階段顏色存取(表頭顏色、時間軸顏色)
         colorData() {
+            let index=0;
+            this.mainItems.forEach((mitem,mid)=>{
+                mitem.stepList.forEach(step=>{
+                    if(step.id==this.nowStepId) {
+                        index=mid;
+                    }
+                })
+            })
             this.mainItems.forEach((i,id)=>{
                 if(this.templatemode=='cycleedit') {
                     this.status.forEach((st,sid)=>{
                         if(st.name==i.phase_name_ch) {
                             i.open = st.open;
                             // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
-                            if(i.newest&& i.newest!=='') {
+                            if((i.newest&& i.newest!=='')||id==index) {
                                 i.color = st.color;
                             }else {
                                 i.color = '#BFCBD2'
@@ -2733,6 +2766,10 @@ export default {
                                 (this.mainItems.filter(x=>x.phase_original_id==this.addWorkIndex.phase_id)[0].stepList[this.addWorkIndex.id+1]?
                                 parseFloat(this.mainItems.filter(x=>x.phase_original_id==this.addWorkIndex.phase_id)[0].stepList[this.addWorkIndex.id+1].seq_id):parseFloat(seqid0)+1):1;
                     // console.log(seqid0,seqid1);
+                    // if(this.mainItems[this.mainItems.length-1].newest!==''&&this.nowStepId==null) {
+                    //     seqid0 = parseFloat(this.mainItems.filter(x=>x.phase_original_id==this.addWorkIndex.phase_id)[0].stepList[this.mainItems.filter(x=>x.phase_original_id==this.addWorkIndex.phase_id)[0].stepList.length-1].seq_id);
+                    //     seqid1 = seqid0+2;
+                    // }
                     parm.phase_id = this.mainItems.filter(x=>x.phase_original_id==this.addWorkIndex.phase_id)[0].phase_id;
                     parm.seq_id = parseFloat((seqid0+seqid1)/2).toString();
                     parm.step_original_id = this.editItem.step_id;

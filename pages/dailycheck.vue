@@ -264,15 +264,15 @@
                     </div> -->
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>動作名稱(中文) </v-card-title></div>
+                            <div class="title"><v-card-title>動作名稱 </v-card-title></div>
                             <v-text-field v-model="addItem.name_ch" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <!-- <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                             <div class="title"><v-card-title>動作名稱(英文) </v-card-title></div>
                             <v-text-field v-model="addItem.name_en" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
-                        </div>
+                        </div> -->
                         <v-card-text style="display: flex;align-items: center;padding: 0;">
                             <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                                 <div class="title"><v-card-title>起始日</v-card-title></div>
@@ -933,7 +933,7 @@ export default {
                 let item = {
                     "step_id": this.poolData.step_id,
                     "name_ch": this.addItem.name_ch,
-                    "name_en": this.addItem.name_en,
+                    "name_en": this.addItem.name_ch,
                     "remark": this.addItem.remark,
                     "started_date": this.addItem.start_date,
                     "ended_date": this.addItem.end_date,
