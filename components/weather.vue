@@ -122,44 +122,39 @@ methods: {
                   longitude: "121.82030882702146",
                   latitude: "24.83616577553079"
                 };
-              // console.log("研發一場");
         break;
       case 2://彰化芳苑
         lonlat = {
             longitude:'120.4107148',
             latitude:'23.9968415'
           };
-        // console.log("彰化芳苑");
         break;
       case 3://台南北門
         lonlat = {
             longitude:'120.1141738',
             latitude:'23.2772886'
           };
-        // console.log("台南北門");
         break;
       case 4://高雄湖內
           lonlat = {
               longitude:'120.2328442',
               latitude:'22.8913011'
             };
-            // console.log("高雄湖內");
         break;
       default:
         break;
     }
     this.loc = lonlat;
     localStorage.setItem('locationWeather', this.toggle_weather);
-    console.log('toggle_weather:',this.toggle_weather);
     this.getWeather(true);
   },
   getWeather: async function(isChangeloc = false) {
-    console.log("★★★localStorage in:",localStorage.getItem('locationWeather'));
+    // console.log("★★★localStorage in:",localStorage.getItem('locationWeather'));
     if(localStorage.getItem('locationWeather')==null){
       localStorage.setItem('locationWeather', '');
       console.log("★★★localStorage is NULL");
     }else if(isChangeloc == false){
-      console.log("★★★localStorage:",localStorage.getItem('locationWeather'));
+      // console.log("★★★localStorage:",localStorage.getItem('locationWeather'));
       this.toggle_weather = parseInt(localStorage.getItem('locationWeather'));//先設定值，取出來是文字要先轉換成數值區域才會改變
       this.changeloc(this.toggle_weather);//跳去抓經緯度資料，再從那邊導回來時不走此處，避免無限遞回
       return;
@@ -185,21 +180,17 @@ methods: {
          longitude: this.loc.longitude,
          latitude: this.loc.latitude,
     };
-    console.log('parm',parm);
     await this.$axios
       .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm,{
           httpsAgent: agent
         })
       .then(res => {
         let weadata = JSON.parse(res.data.d);
-        console.log('weadata',weadata);
         this.weatherdata.main = weadata.main;
         this.weatherdata.wind = weadata.wind;
         this.weatherdata.weather = weadata.weather;
       //   this.weatherdata.rain.h_1 = weadata.rain.1h;
-        // console.log("weather api：" + res.request.responseURL);
       });
-    // console.log("this.loc:",this.loc);
     await this.getLocation();
   },
   getLocation:async function(){
@@ -217,7 +208,7 @@ methods: {
         this.location = loc.sort((a,b) => (a.cnt > b.cnt) ? 1 : ((b.cnt > a.cnt) ? -1 : 0));
         // var xx = loc.map(function(o) { return o.cnt; });
       //   this.weatherdata.rain.h_1 = weadata.rain.1h;
-        console.log("location api：" + res.request.responseURL);
+        // console.log("location api：" + res.request.responseURL);
       });
   }
 },

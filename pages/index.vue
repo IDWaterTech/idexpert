@@ -147,7 +147,7 @@ export default {
             })
             await this.getOwnMenu();
         }
-        console.log("api：" + datalst.request.responseURL);
+        // console.log("api：" + datalst.request.responseURL);
       }
       // let accheader = { account: this.$auth.$state.user.email };
       // const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
