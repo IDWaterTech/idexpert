@@ -365,7 +365,7 @@
                 </div>
                 <v-card-actions style="padding: 24px 12px;">
                     <v-spacer></v-spacer>
-                    <v-btn class="btn-primary" @click="submitNextStep()">確認</v-btn>
+                    <v-btn class="btn-primary" @click="nextStepDialog=false;searchPool();">確認</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -807,8 +807,24 @@ export default {
                 res = await this.patchDailyCheckList(parm,this.editItem.id);
                 setTimeout(()=>{
                     if(res) {
-                        this.editDialog = false;
-                        this.searchPool();
+                        let isAllCheck=true;
+                        this.poolData.daily.forEach(d=>{
+                            d.todo.forEach(t=>{
+                                if(t.execute_status=='0'&&t.id!==this.editItem.id) {
+                                    isAllCheck = false;
+                                }
+                            })
+                        })
+                        if(isAllCheck) {
+                            this.editDialog = false;
+                            // this.nextStepDialog = true;
+                            this.$toast.success("此工作項已完成，已開啟隔天新的工作項", { duration: 5000 });
+                            this.searchPool();
+                        }else {
+                            this.editDialog = false;
+                            this.searchPool();
+                        }
+                        
                     }
                 },50)
             }
@@ -937,10 +953,10 @@ export default {
             }
             
         },
-        submitNextStep() {
-            // 提示開啟隔天新工作的視窗
-            this.nextStepDialog = false;
-        },
+        // submitNextStep() {
+        //     // 提示開啟隔天新工作的視窗
+        //     this.nextStepDialog = false;
+        // },
         // 取得步驟清單
         getstepdata: async function () {
             let getBreedingStepList = await this.getBreedingStepList2();
