@@ -1,13 +1,13 @@
 <template>
     <div>
         <v-card class="bg-card" style="margin-bottom: 16px;padding-top: 8px;">
-            <div class="content">
+            <div class="content" style="padding-bottom: 4px;">
                 <!-- 搜尋列 -->
                 <div class="search">
                     <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
                         <!-- 搜尋 -->
                         <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
-                            <div class="search-container">
+                            <!-- <div class="search-container">
                                 <locate-select 
                                     id="search"
                                     class="select-template"
@@ -15,7 +15,26 @@
                                     defaultSelect="" 
                                     :isMulti="false"
                                     @scopeSel_data="get_scopeData($event);"></locate-select>
-                            </div>
+                            </div> -->
+                            <treeselect
+                                @input="changeEvent"
+                                id="addpool"
+                                v-model="nowPoolid"
+                                :options="maindataScope"
+                                :default-expand-level="1"
+                                :disable-branch-nodes="true"
+                                children="node"
+                                placeholder="請選擇養殖池"
+                                :normalizer="
+                                node => {
+                                    return { children: node.node };
+                                }
+                                "
+                                class="select-template font-size-large"
+                                >
+                                <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
+                                <div slot="option-label" slot-scope="{ node }" v-text="getText(node)"></div>
+                            </treeselect>
                         </v-col>
                         <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3">
                             <v-btn v-if="isDisable" class="btn-primary"  @click="isDisable=!isDisable">測試模式</v-btn>
@@ -26,15 +45,15 @@
                         </v-col> -->
                     </v-row>
                 </div>
-                <div class="result" v-if="poolData.daily&&poolData.daily.length>0">
+                <div class="result" v-if="poolData.daily&&poolData.daily.length>0" style="padding-bottom: 0;">
                     <span style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}}</span>
                     <div class="result-content">
                         <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id">
                             <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
                                 <div class="title">
-                                    <v-card-title>{{ item.scheduling_date.slice(5) }}</v-card-title>
+                                    <v-card-title>{{ item.scheduling_date.slice(5).replace('-','/') }}</v-card-title>
                                 </div>
-                                <div class="chevron">
+                                <div class="chevron" style="display: flex;align-items: center;">
                                     <v-tooltip bottom >
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn class="btn-icon green" v-bind="attrs" v-on="on" @click="addEventOpen(item.scheduling_date)"><v-icon>mdi-plus</v-icon></v-btn>
@@ -42,6 +61,12 @@
                                         <span>新增動作</span>
                                     </v-tooltip>
                                     
+                                    <v-tooltip bottom >
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn class="btn-icon" v-bind="attrs" v-on="on" @click="delayAllOpen(item)"><v-icon>mdi-timeline-clock-outline</v-icon></v-btn>
+                                        </template>
+                                        <span v-if="item.scheduling_date">延期{{item.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span>
+                                    </v-tooltip>
                                 </div>
                             </div>
                             <div class="daily-content">
@@ -51,7 +76,7 @@
                                             <v-card-title>{{ daily.action_name }}</v-card-title>
                                         </div>
                                         <div class="chrevon">
-                                            <span v-if="daily.execute_status=='0'" class="delay" @click="openDelay(daily,item.scheduling_date,did,true)">延遲</span>
+                                            <span v-if="daily.execute_status=='0'" class="delay" @click="openDelay(daily,item.scheduling_date,did,true)">延期</span>
                                             <span v-if="daily.execute_status=='0'" class="delay copy" @click="openDelay(daily,item.scheduling_date,did,false)">複製</span>
                                             <span v-else-if="daily.execute_status=='1'">已執行</span>
                                             <span v-else class="error-text">不執行</span>
@@ -163,13 +188,13 @@
                 </v-card>
             </v-form>
         </v-dialog>
-        <!-- 延遲執行 -->
+        <!-- 延期執行 -->
         <v-dialog v-model="delayDialog" max-width="500px">
             <v-form ref="delayform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
                         <div style="display: inline-block;">
-                            <span>{{ isDelay?'延遲:':'複製:' }} {{ delayItem.ation_name }}</span> 
+                            <span>{{ isDelay?'延期:':'複製:' }} {{ delayItem.action_name }}</span> 
                         </div>
                         <div class="add" style="float: right;display: inline-block;">
                             <v-btn class="btn-secondary close"
@@ -182,7 +207,7 @@
                     </v-card-title>
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>{{ isDelay?'延遲':'複製' }}至哪天執行?</v-card-title></div>
+                            <div class="title"><v-card-title>{{ isDelay?'延期':'複製' }}至哪天執行?</v-card-title></div>
                             <div class="calendar">
                                 <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (delayDate = getNowDate())">mdi-calendar</v-icon></v-btn></span>
                                 <v-menu v-model="menu_inspecteddate" :close-on-content-click="false" :nudge-right="40" 
@@ -344,6 +369,45 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!-- 延期全部 -->
+        <v-dialog v-model="delayAllDialog" max-width="500px">
+            <v-form ref="delayAllform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span v-if="delayAll.scheduling_date">延期{{delayAll.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="delayAllDialog = false;" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>延期天數</v-card-title></div>
+                            <div class="calendar">
+                                <v-text-field
+                                    v-model.number="delayAll.delay_day"
+                                    type="number" dense hide-details
+                                    class="mt-0"
+                                    min="0"><span class="pa-0 ma-0"
+                                    slot="append">天</span></v-text-field>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-secondary" @click="delayAllDialog=false">取消</v-btn>
+                        <v-btn class="btn-primary" :class="{'disabled':(delayAll.delay_day==0)}" @click="submitDelayAll">確認</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
     </div>
 </template>
 
@@ -382,6 +446,9 @@ export default {
             userData:[],
             isDisable:true,
             isLoading: false,
+            delayAll:{daily_check_ids:[],delay_day:0},
+            delayAllDialog: false,
+            addPoolData:[]
         }
     },
     async created() {
@@ -389,6 +456,9 @@ export default {
         await this.getAllUser();
         // this.getaccList();//取得所有帳號，比對執行者用
         this.getstepdata();
+        await this.getSelectPoolData(); //取得非空池的池
+        
+        
     },
     methods: {
         // 取得所有帳號
@@ -397,6 +467,57 @@ export default {
             var data = Array.isArray(getuserData)?getuserData:[];
             var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
             this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
+        },
+        // 取得非空池的池
+        async getSelectPoolData() {
+            let getArchitecture = await this.getArchitecture(null,true);
+            let getArchitectureAll = await this.getArchitecture(null);
+            let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
+            let dataAll = typeof (getArchitectureAll)=='string'?[]:getArchitectureAll;
+            let mainData = [];
+            let nullDataid = [];
+            if(localStorage.getItem('factory_id')) {
+                // console.log('locoal',localStorage.getItem('factory_id'))
+                let factory_id = JSON.parse(localStorage.getItem('factory_id'));
+                data.forEach(factory=>{
+                    factory_id.forEach(f=>{
+                        if(factory.id==f) {
+                            // mainData.push(factory);
+                            factory.node.forEach(n=>{
+                                n.node.forEach(n2=>{
+                                    if(!nullDataid.includes(n2.id)) {
+                                        nullDataid.push(n2.id);
+                                    }
+                                    
+                                })
+                            })
+                        }
+                    })
+                })
+                // console.log('null',nullDataid);
+                dataAll.forEach((f,fid)=>{
+                    let factoryData = _.cloneDeep(f);
+                    f.node.forEach((n,nid)=>{
+                        factoryData.node[nid].node = new Array();
+                        let nodeData=[];
+                        n.node.forEach(n2=>{
+                            if(!nullDataid.includes(n2.id)) {
+                                nodeData.push(n2);
+                            }
+                        })
+                        factoryData.node[nid].node = _.cloneDeep(nodeData);
+                    })
+                    mainData.push(factoryData);
+                })
+                
+            }
+            console.log('mainData',mainData);
+            this.addPoolData = this.setNestedDisabled(_.cloneDeep(mainData), "");
+        },
+        getText(node) {
+            // console.log('node',node);
+            return node.raw.name;
+            // return node.raw.parent != undefined && node.raw.parent.length > 0 ?node.level==2?node.raw.name+'_'+node.raw.id:node.raw.name:node.raw.name;
         },
         get_scopeData:function(evt){
             console.log(evt);
@@ -620,12 +741,6 @@ export default {
             this.poolData = _.cloneDeep(data);
             if(this.poolData.daily) {
                 this.poolData.daily.forEach(d=>{
-                    // d.todo.forEach(t=>{
-                    //     if(t.executor!=='' &&t.executor!==null) {
-                    //         t.executor_name = this.accdata.filter(x=>x.username==t.executor)[0].position+'-'+this.accdata.filter(x=>x.username==t.executor)[0].account_name;
-                    //     }
-                        
-                    // })
                     if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
                         // 排序
                         let array1=[];
@@ -643,9 +758,6 @@ export default {
                         d.todo = [...array2,...array1];
                     }
                 })
-                // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!=='0') {
-                //     this.nextStepDialog = true;
-                // }
             }
             this.isLoading = true;
             
@@ -677,8 +789,6 @@ export default {
             }
             // 財務
             // this.editDialog = true;
-            
-            
         },
         async submitEdit() {
             console.log('submit edit',this.editItem);
@@ -701,57 +811,6 @@ export default {
                         this.searchPool();
                     }
                 },50)
-                // this.editDialog = false;
-                // let data = _.cloneDeep(this.poolData.daily);
-                // this.poolData.daily = [];
-                // data.forEach(d=>{
-                //     if(d.scheduling_date==this.nowDaily) {
-                //         d.todo.forEach(x=>{
-                //             if(x.id==this.editItem.id) {
-                //                 x.execute_status = this.editItem.execute_status;
-                //                 x.execute_time = this.editItem.execute_time;
-                //                 x.msg = this.editItem.msg;
-                //                 x.executor = this.editItem.executor;
-                //                 if(x.executor!=='') {
-                //                     x.executor_name = this.accdata.filter(x=>x.username==this.editItem.executor)[0].position+'-'+this.accdata.filter(x=>x.username==this.editItem.executor)[0].account_name
-                //                 }else {
-                //                     x.executor_name = '';
-                //                 }
-                //                 if(this.editItem.actual_member>0) {
-                //                     x.actual_member = this.editItem.actual_member;
-                //                 }else {
-                //                     x.actual_member = 0;
-                //                 }
-                //                 if(this.editItem.actual_spend>0) {
-                //                     x.actual_spend = this.editItem.actual_spend;
-                //                 }else {
-                //                     x.actual_spend = 0;
-                //                 }
-                                
-                //             }
-                //         })
-                //         // 排序
-                //         let array1=[];
-                //         let array2=[];
-                //         d.todo.forEach(x=>{
-                //             if(x.execute_time&&x.execute_time!=='') {
-                //                 array1.push(x);
-                //             }else {
-                //                 array2.push(x);
-                //             }
-                //         })
-                //         array1.sort((a,b)=>{
-                //             return new Date(a.execute_time) - new Date(b.execute_time)
-                //         });
-                //         d.todo = [...array1,...array2];
-                //     }
-                // })
-
-                // this.poolData.daily = data;
-                // if(this.poolData.daily[this.poolData.daily.length-1].todo[this.poolData.daily[this.poolData.daily.length-1].todo.length-1].execute_status!==0) {
-                //     this.nextStepDialog = true;
-                // }
-                // console.log('poolData',data);
             }
             
         },
@@ -775,6 +834,7 @@ export default {
             }
             return date;
         },
+        // 延遲/複製 isDelay=true 延遲 / isDelay=false 複製
         async submitDelay() {
             var valid = this.$refs.delayform.validate();
             var isItem = false;
@@ -811,14 +871,6 @@ export default {
                             this.searchPool();
                         }
                     },50)
-                    // this.poolData.daily.forEach(d=>{
-                    //     if(new Date(d.scheduling_date).getTime()==new Date(this.delayItem.original_date).getTime()) {
-                    //         d.todo.splice(this.delayItem.index,1);
-                    //     }
-                    //     if(new Date(d.scheduling_date).getTime()==new Date(this.delayDate).getTime()) {
-                    //         d.todo.push(this.delayItem);
-                    //     }
-                    // })
 
                 }else {
                     let parm = _.cloneDeep(this.delayItem);
@@ -841,11 +893,6 @@ export default {
                             this.searchPool();
                         }
                     },50)
-                    // this.poolData.daily.forEach(d=>{
-                    //     if(new Date(d.scheduling_date).getTime()==new Date(this.delayDate).getTime()) {
-                    //         d.todo.push(this.delayItem);
-                    //     }
-                    // })
                 }
                 
             }
@@ -887,38 +934,6 @@ export default {
                         this.searchPool();
                     }
                 },50)
-                // if(!this.actionInputShow) {
-                    // let item = {
-                    //     action_id: this.addItem.action_id,
-                    //     scheduling_date: this.addItem.start_date,
-                    //     execute_status: '0',// 0 尚未選擇,1 執行,2 不執行,
-                    //     execute_time: null,
-                    //     executor: '',
-                    //     msg: '',
-                    //     actual_member:0,
-                    //     actual_spend:0,
-                    //     created_user: this.$auth.$state.user.email
-                    // }
-                    // console.log('parm',item);
-                    // var res = false;
-                    // res = await this.postDailyCheckList(item);
-                    // setTimeout(()=>{
-                    //     if(res) {
-                    //         this.addDialog=false;
-                    //         this.getstepdata();
-                    //     }
-                    // },50)
-                // }
-                
-                
-                
-                // this.poolData.daily.forEach(x=>{
-                //     if(new Date(x.scheduling_date).getTime()>= new Date(this.addItem.start_date).getTime()&&
-                //         new Date(this.addItem.end_date).getTime()>=new Date(x.scheduling_date).getTime()) {
-                //         x.todo.push(item);
-                //     }
-                // })
-                // this.addDialog=false;
             }
             
         },
@@ -951,8 +966,106 @@ export default {
             this.userData = this.userData.filter(x=>x.is_active==true);
             console.log('User',this.userData);
         },
+        // 全部延期
+        delayAllOpen(item) {
+            this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date}
+            let index = this.poolData.daily.map(x=>x.scheduling_date).indexOf(item.scheduling_date);
+            // console.log(this.poolData.daily.map(x=>x.scheduling_date),item['scheduling_date']);
+            this.poolData.daily.forEach((d,did)=>{
+                if(did>=index) {
+                    d.todo.forEach(t=>{
+                        if(t.execute_status=='0') {
+                            this.delayAll.daily_check_ids.push(t.id);
+                        }
+                    })
+                    
+                }
+            })
+            this.delayAllDialog=true;
+        },
+        async submitDelayAll() {
+            let parm = _.cloneDeep(this.delayAll);
+            parm.updated_user=(this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+            delete parm.scheduling_date;
+            console.log('一次延期',parm);
+            var res = false;
+            res = await this.postDelayStepList(parm);
+            setTimeout(()=>{
+                if(res) {
+                    this.delayAllDialog=false;
+                    this.searchPool();
+                }
+            },50)
+            
+        },
+        // 池選擇
+        setNestedDisabled: function (obj, name) {
+            //全部都設成disabled
+            var deleteindex = [];
+            var objj = obj;
+            objj.forEach((itm, index) => {
+                // console.log(itm.parent);//所有node(含leaf)的名稱
+                itm.parent = itm.hasOwnProperty("parent")
+                        ? itm.parent
+                        : name;
+                const nodelst = ["1", "2"]; //第1、2層
+                if (nodelst.filter(x => x == itm.level) > 0) {
+                    itm.id = itm.name + "_" + itm.id;
+                }
+                if (itm.visible == false) {
+                    //visible的不顯示
+                    deleteindex.push(index);
+                    
+                }
+                if (itm.hasOwnProperty("node")) {
+                    this.setNestedDisabled(itm.node, itm.name);
+                }
+            });
+            // for (let i = 0; i < deleteindex.length; i++) {
+            //   const element = deleteindex[i];
+            //   obj.splice(element, 1);
+            // }
+            //刪除 走道
+            for (var i = deleteindex.length - 1; i >= 0; i--) {
+                objj.splice(deleteindex[i], 1);
+            }
+            // console.log(objj);
+            return objj;
+        },
+        //池選擇，計算資料範圍
+        nestedMain: function (obj, level) {
+            // console.log('obj',obj);
+            if(obj) {
+                obj.forEach(itm => {
+                    if (itm.level == level) {
+                        if (itm.hasOwnProperty("node")) {
+                            delete itm.node;
+                        }
+                    }
+                    if (itm.hasOwnProperty("node")) {
+                        this.nestedMain(itm.node, level);
+                    }
+                    
+                });
+            }
+            
+            return obj;
+        },
+        // 新增循環的池選擇，資料改變時，傳出數值
+        changeEvent:function(){
+            // this.$emit('scopeSel_data',nowPoolid);
+            this.get_scopeData(this.nowPoolid);
+        },
     },
     watch: {
+    },
+    computed: {
+        // 新增循環的池選擇
+        maindataScope:function(){
+            var data = _.cloneDeep(this.addPoolData);
+            var level = 3;
+            return this.nestedMain(data,level);
+        }
     }
 }
 </script>

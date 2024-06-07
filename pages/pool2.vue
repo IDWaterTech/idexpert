@@ -523,9 +523,10 @@
                       :step="1"
                       :min="0"
                       prop="number"
+                      @keyup.enter.native="calcutorPerUnit(true)"
                     ></el-input-number>
                     <div class="btn-groups" style="margin-left: 8px;">
-                      <v-btn class="btn-secondary" :class="{'disabled':all_num_per_unit==undefined}" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
+                      <v-btn class="btn-secondary" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
                       <v-btn class="btn-secondary delete" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
                     </div>
                   </div>
@@ -1309,7 +1310,7 @@ export default {
       template_items: [],//樣版清單
       template_all:[],
       tempSelect: undefined,//已選到的樣版
-      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],authorization:{execute:false,verify:false}},
+      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],poolid:null,authorization:{execute:false,verify:false}},
       feededitmode:'cycleedit',
       editKey:0,
       optData:{WaterSource:[{ "name_en": "Groundwater", "name_ch": "地下水" }, { "name_en": "Seawater", "name_ch": "海水" }]},//選項
@@ -1451,7 +1452,8 @@ export default {
       tabs:['循環紀錄','財務報表'],
       nowTab:'循環紀錄',
       isUpdate:false,
-      tempid:null
+      tempid:null,
+      isChangeAllNum: false,
     };
   },
   methods: {
@@ -1513,6 +1515,7 @@ export default {
     async get_scopeData(evt) {
       console.log('change pool',evt)
       this.poolid = evt;
+      this.passObj.poolid = this.poolid;
       // this.getDisease();
       // this.getWater();
       // await this.getEvent();
@@ -1961,8 +1964,21 @@ export default {
       let getArchitecture = await this.getArchitecture(null,true);
       let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
       console.log('可新增循環的池',data);
+      let mainData = [];
+      if(localStorage.getItem('factory_id')) {
+          // console.log('locoal',localStorage.getItem('factory_id'))
+          let factory_id = JSON.parse(localStorage.getItem('factory_id'));
+          data.forEach(factory=>{
+              factory_id.forEach(f=>{
+                  if(factory.id==f) {
+                      mainData.push(factory);
+                  }
+              })
+          })
+      }
       // 新增循環的池選擇
-      this.addPoolData = this.setNestedDisabled(_.cloneDeep(data), "");
+      this.addPoolData = this.setNestedDisabled(_.cloneDeep(mainData), "");
+      
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
       //   .then(res=>{
@@ -4660,10 +4676,19 @@ export default {
     calcutorPerUnit(bool) {
       if(this.dataVolumn.length>0) {
         if(bool) {
-          this.dataVolumn.forEach(x=>{
-            x.num_per_unit = this.all_num_per_unit;
-            x.estimated_num =  x.volume*this.all_num_per_unit;
-          })
+          if(this.changeAllNum(this.all_num_per_unit)) {
+            this.dataVolumn.forEach(x=>{
+              x.num_per_unit = this.all_num_per_unit;
+              x.estimated_num =  x.volume*this.all_num_per_unit;
+            })
+          }else {
+            this.dataVolumn.forEach(x=>{
+              x.num_per_unit = undefined;
+              x.estimated_num =  undefined;
+            })
+            this.all_num_per_unit = undefined;
+            }
+          
         }else {
           this.dataVolumn.forEach(x=>{
             x.num_per_unit = undefined;
@@ -5109,6 +5134,18 @@ export default {
       pass.filter = evt;
       this.passObj = _.cloneDeep(pass);
       console.log('filter',evt,this.passObj.filter);
+    },
+    // 統一密度更改
+    changeAllNum(evt) {
+      console.log('changeAllNum',evt);
+      // this.calcutorPerUnit(true);
+      if(evt!==undefined&&evt!==''&&evt!==null) {
+        this.isChangeAllNum = true;
+        
+      }else {
+        this.isChangeAllNum = false;
+      }
+      return this.isChangeAllNum;
     },
 
   },

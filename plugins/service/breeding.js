@@ -998,6 +998,45 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        // 新增工作
+        postWorkList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step2/`,addform,)
+                console.log("新增工作:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除工作
+        deleteWorkList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step2/${id}/`)
+                console.log("刪除工作:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
         //===== 循環的其他 =====//
         // 新增樣板項目
         postRecordStepList:async function(addform) {
@@ -1012,6 +1051,28 @@ Vue.mixin({
                     return true;
                 }else {
                     this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 批次延遲
+        postDelayStepList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2-set-delay/`,addform,)
+                console.log("批次延遲:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("延期成功", {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("延期失敗：" + data.data, {
                         duration: 2000
                     });
                 }
