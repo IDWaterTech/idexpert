@@ -415,7 +415,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${FeedParm['CrudeProteinPct']&&FeedParm['CrudeProteinPct']!==''&&FeedParm['CrudeProteinPct']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    title="過去一天最後一筆的飼料紀錄中所使用的飼料粗蛋白參數->砂糖量(做水)、尿素、前餐砂糖量、下餐砂糖量">粗蛋白含量</span>
+                                                                                    title="過去24小時最後一筆的飼料紀錄中所使用的飼料粗蛋白參數->砂糖量(做水)、尿素、前餐砂糖量、下餐砂糖量">粗蛋白含量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -453,7 +453,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
                                                                                     :style="{'color':`${FeedParm['SugarSourcePurity']&&FeedParm['SugarSourcePurity']!==''&&FeedParm['SugarSourcePurity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    title="過去一天最後一筆的飼料紀錄中所使用的砂糖純度參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">純度(砂糖-碳源)</span>
+                                                                                    title="過去24小時最後一筆的飼料紀錄中所使用的砂糖純度參數->砂糖量(降氨氮)、砂糖量(降亞硝酸)、砂糖量(做水)、前餐砂糖量、下餐砂糖量">純度(砂糖-碳源)</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
@@ -479,7 +479,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
-                                                                                    title="過去一天最後一筆的飼料紀錄中所使用的飼料CN比參數"><a
+                                                                                    title="根據粗蛋白含量自動計算cn比，過去一天最後一筆的飼料紀錄中所使用的飼料CN比參數"><a
                                                                                         :style="{'color':`${FeedParm['FeedCN']&&FeedParm['FeedCN']!==''&&FeedParm['FeedCN']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                         href="https://www.tfrin.gov.tw/News_Content.aspx?n=310&s=236373"
                                                                                         target="_blank">飼料CN比</a></span>
@@ -500,7 +500,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
                                                                                     :style="{'color':`${FeedParm['LastFeedInput']&&FeedParm['LastFeedInput']!==''&&FeedParm['LastFeedInput']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    title="過去一天最後一筆的飼料紀錄中飼料的投餵量->0號料、1號料、2號料、上一餐飼料量">上一餐飼料量</span>
+                                                                                    title="過去24小時最後一筆的飼料紀錄中飼料的投餵量->0號料、1號料、2號料、上一餐飼料量">上一餐飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
                                                                                 style="display: flex;align-items: center;">
@@ -542,7 +542,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
                                                                                 :style="{'color':`${FeedParm['LastFeedOfDay']&&FeedParm['LastFeedOfDay']!==''&&FeedParm['LastFeedOfDay']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    title="過去一天所有飼料紀錄中飼料量的總和">當日總飼料量</span>
+                                                                                    title="過去24小時所有飼料紀錄中飼料量的總和">24時內總飼料量</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8"
                                                                                 style="display: flex;align-items: center;">
@@ -4407,7 +4407,7 @@ export default {
             if(this.WaterQualityData[item]) {
                 this.valueCheck(item,this.WaterQualityData[item]);
             }else {
-                this.lightColor[item] = 'teal';
+                this.lightColor[item] = 'grey';
             }
             return this.lightColor[item];
         },
