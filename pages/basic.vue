@@ -37,7 +37,8 @@
             <v-col cols="12" md="2" sm="2" style="position: relative;">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                  <button class="btn-icon just-icon" @click="getWaterData()" v-bind="attrs" v-on="on">
+                  <button class="btn-icon just-icon" @click="areachange()/*改 視為整頁資料重整 */" v-bind="attrs" v-on="on">
+                    <!-- <button class="btn-icon just-icon" @click="getWaterData()" v-bind="attrs" v-on="on"></button> -->
                     <v-icon style="font-size: 24px;">mdi-reload</v-icon>
                   </button>
                 </template>
@@ -669,11 +670,11 @@ export default {
       // instance.update(that.endVal);
     },
     get_scopeData:function(evt){
-      console.log(evt);
-      console.log('main',this.maindata);
+      console.log('get_scopeData-evt:',evt);//紫微_10026
+      console.log('get_scopeData-maindata:',this.maindata);
       if(evt) {
         let areaName='';
-        this.sel_area = evt.split('_')[evt.split('_').length-1];
+        this.sel_area = evt.split('_')[evt.split('_').length-1];//10026
         if(evt.split('_').length>2) {
           for(let i=0;i<evt.split('_').length-1;i++) {
             areaName += evt.split('_')[i];
@@ -698,90 +699,13 @@ export default {
         this.areachange();
       }
     },
-    // closepanel: async function () {
-    //   this.mypanel = [];
-    //   //觸發取得水質資料
-    //   //this.waterdata=[];
-    //   if (this.sel_main && this.sel_area) {
-    //     switch (this.currenttab) {
-    //       case "水質監測":
-    //         this.waterdata = [];
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "water"
-    //         );
-    //         break;
-    //       case "投餵飼料":
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "feed"
-    //         );
-    //         break;
-    //       case "環境監測":
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "env"
-    //         );
-    //         break;
-    //       case "飼料觀察網":
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "obs"
-    //         );
-    //       case "進階值":
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "adv"
-    //         );
-    //         break;
-    //       case "投餵益生菌":
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "pbio"
-    //         );
-    //         break;
-    //       case "養殖用料":
-    //         await this.getAll(
-    //           this.sdate,
-    //           this.edate,
-    //           this.sel_main,
-    //           this.sel_area,
-    //           "material"
-    //         );
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   }
-    // },
     areachange: async function () {
       var para = {
         id: this.sel_area
       };
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       if (this.sel_area) {
         this.tableloading = true;
-        let getPondDataList = await this.getPondDataList(para);
+        let getPondDataList = await this.getPondDataList(para);// plugins\service\basic.js
         let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
         this.mainpool.items = _.cloneDeep(data);
         console.log(this.mainpool.items);
