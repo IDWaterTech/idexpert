@@ -64,7 +64,7 @@
 
 <script>
 import seedlings from "@/pages/breeding/seedlings.vue";//種苗
-import feedTemp from "@/pages/breeding/feedTempSetting.vue";//樣板設定
+import feedTemp from "@/pages/breeding/feedTempSetting2.vue";//樣板設定
 import species from "@/pages/breeding/species.vue";//品種設定
 export default {
     layout: "emptynologin2",
@@ -92,7 +92,7 @@ export default {
         
     },
     async created() {
-        await this._pageCheck(); //驗證頁面是否可檢視
+        //await this._pageCheck(); //驗證頁面是否可檢視
   }
    
 };

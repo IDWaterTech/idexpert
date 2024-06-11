@@ -67,11 +67,11 @@
               <v-row style="margin-bottom: 0;align-items: center;">
                 <v-col cols="12" style="padding: 0;padding-right: 8px;">
                   <div class="btn-groups">
-                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
+                    <!-- <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading||(passObj.authorization&&!passObj.authorization.verify)}">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
-                    </v-btn>
-                    <!-- <v-btn v-if="(passObj.authorization&&passObj.authorization.verify)" tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
+                    </v-btn> -->
+                    <v-btn v-if="(passObj.authorization&&passObj.authorization.verify)" tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
                     </v-btn>
@@ -84,7 +84,7 @@
                             </v-btn>
                         </template>
                         <span>未授權</span>
-                    </v-tooltip> -->
+                    </v-tooltip>
                     <v-btn tile class="btn-secondary green" @click="reportOpen" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
                       <v-icon style="font-size: 1rem;">mdi-file-multiple-outline</v-icon>
                       新增檢驗
@@ -122,7 +122,7 @@
                   <v-progress-circular indeterminate size="64"></v-progress-circular>
                 </v-overlay>
                 <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
-                  height="62vh"
+                   height="62vh"
                   @cell-click="clickRow"
                   @select="handleSelectionChange" :header-cell-name="cellClass">
                   <!-- 名稱/批號 -->
@@ -214,30 +214,10 @@
                     <div class="title">
                       <v-card-title>循環紀錄</v-card-title>
                       <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
-                    </div>
-                    <!-- 財務 -->
-                    <!-- <div class="header-bar" style="padding: 0;border-bottom: none">
-                      <v-tabs v-model="nowTab" show-arrows>
-                        <v-tab
-                            v-for="(tab,tid) in tabs"
-                            :key="'tabs-'+tid"
-                            :href="`#` + tab">
-                            {{ tab }}
-                        </v-tab>
-                      </v-tabs>
-                    </div> -->
-                    
+                  </div>
                   </v-col>
-                  <v-col v-show="nowTab=='循環紀錄'" cols="12" md="4" sm="6" style="padding: 4px 0;">
+                  <v-col cols="12" md="4" sm="6" style="padding: 4px 0;">
                     <div class="btn-groups">
-                      <v-tooltip bottom>
-                          <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-icon just-icon" @click="getTemp(tempid)" v-bind="attrs" v-on="on">
-                              <v-icon style="font-size: 24px;">mdi-reload</v-icon>
-                            </button>
-                          </template>
-                          <span>重新整理</span>
-                        </v-tooltip>
                       <div class="filter" style="max-width: 200px;">
                         <!-- <v-select
                           v-model="passObj.filter"
@@ -249,7 +229,6 @@
                           @change="filterChange"
                           hide-details
                         ></v-select> -->
-                        
                         <span style="font-size:12px;color:#6c9bcd">項目過濾</span>
                         <treeselect
                           v-model="passObj.filter"
@@ -283,8 +262,8 @@
                   </v-col>
                 </v-row>
               </div> 
-              <div v-show="resultCycleOpen && nowTab=='循環紀錄'" style="padding-bottom: 12px;">
-                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen"></FeedTemplate2>
+              <div v-show="resultCycleOpen" style="padding-bottom: 12px;">
+                <FeedTemplate :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen"></FeedTemplate>
               </div>
             </v-card>
           </div>
@@ -384,7 +363,7 @@
                                                   () => (addparm.started_date = getNowDate())
                                                 " style="padding-top: 0;"></v-text-field>
                     </template>
-                    <v-date-picker v-model="addparm.started_date" :min="getNowDate()" no-title locale="zh-tw" @input="menu_adddate = false">
+                    <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
@@ -433,7 +412,7 @@
                                                   () => (addparm.stocked_date = getNowDate())
                                                 "></v-text-field>
                     </template>
-                    <v-date-picker v-model="addparm.stocked_date" :min="getNowDate()" no-title locale="zh-tw" @input="menu_stockeddate = false">
+                    <v-date-picker v-model="addparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
@@ -523,10 +502,9 @@
                       :step="1"
                       :min="0"
                       prop="number"
-                      @keyup.enter.native="calcutorPerUnit(true)"
                     ></el-input-number>
                     <div class="btn-groups" style="margin-left: 8px;">
-                      <v-btn class="btn-secondary" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
+                      <v-btn class="btn-secondary" :class="{'disabled':all_num_per_unit==undefined}" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
                       <v-btn class="btn-secondary delete" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
                     </div>
                   </div>
@@ -746,8 +724,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <!-- 編輯循環清單的dialog -->
-    <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
+     <!-- 編輯循環清單的dialog -->
+     <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
       <v-form v-model="editvalid" ref="editform">
         <v-card style="min-height:80vh" class="custom-dialog">
           <v-card-title class="add-title" style="display: block;width: 100%;">
@@ -781,11 +759,7 @@
                   </v-text-field>
                 </v-col>
                 <v-col cols="6" style="padding: 0;padding-right: 8px;">
-                  <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
-                        prepend-icon="mdi-calendar" readonly disabled @click:prepend="
-                                                  () => (editparm.started_date = getNowDate())
-                                                " style="padding-top: 0;"></v-text-field>
-                  <!-- <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
+                  <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
@@ -795,7 +769,7 @@
                     </template>
                     <v-date-picker v-model="editparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
                     </v-date-picker>
-                  </v-menu> -->
+                  </v-menu>
                 </v-col>
               </v-row>
               
@@ -974,6 +948,7 @@
                                 <!-- <span style="font-size: 12px;line-height: 12px;">檢驗時間</span>
                                 <a-date-picker v-model="add.execute_date" :defaultValue="add.execute_date" label="檢驗時間" value="null" format="yyyy-MM-DD" show-time placeholder="檢驗時間" @change="onChange" @ok="onOk" style="min-width: none;margin-left: 4px;margin-right: 16px;width: 100%;" /> -->
                             </div>  
+                         
                             <!-- {{ bacteriaAll.filter(x=>x.id==add.species)[0].test }} -->
                         </div>
                         <div v-if="add.type==1" class="select-bacteria" style="display: flex;align-items: flex-end;margin-bottom: 12px;width: 100%;">
@@ -1310,7 +1285,7 @@ export default {
       template_items: [],//樣版清單
       template_all:[],
       tempSelect: undefined,//已選到的樣版
-      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],poolid:null,authorization:{execute:false,verify:false}},
+      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],authorization:{execute:false,verify:false}},
       feededitmode:'cycleedit',
       editKey:0,
       optData:{WaterSource:[{ "name_en": "Groundwater", "name_ch": "地下水" }, { "name_en": "Seawater", "name_ch": "海水" }]},//選項
@@ -1448,12 +1423,7 @@ export default {
       },
       isLoading: false,
       selectPond:[],
-      keepNodeName:'',
-      tabs:['循環紀錄','財務報表'],
-      nowTab:'循環紀錄',
-      isUpdate:false,
-      tempid:null,
-      isChangeAllNum: false,
+      keepNodeName:''
     };
   },
   methods: {
@@ -1465,7 +1435,7 @@ export default {
           execute: false,
           verify: false
       }
-      try{datalst = await this.getMenuAuthorization(false);console.log(datalst);}catch{console.log(error)}
+      try{datalst = await this.getMenuAuthorization(false)}catch{console.log(error)}
       if(datalst) {
           auth = datalst.data;
       }
@@ -1515,7 +1485,6 @@ export default {
     async get_scopeData(evt) {
       console.log('change pool',evt)
       this.poolid = evt;
-      this.passObj.poolid = this.poolid;
       // this.getDisease();
       // this.getWater();
       // await this.getEvent();
@@ -1619,10 +1588,10 @@ export default {
           type: "warning"
         }
       )
-        .then(async () => {
+        .then(() => {
           let id = data.id;
           var res = false;
-          res = await this.deleteBreedingRecordList2(id);
+          res = this.deleteBreedingRecordList(id);
           setTimeout(()=>{
             if(res) {
               if(data.ended_date==null || data.ended_date=='') {
@@ -1631,7 +1600,7 @@ export default {
                   status:'空池'
                 }
                 status.id.push(this.poolid);
-                // this.compareStatus(status);
+                this.compareStatus(status);
               }
               
               this.getCircleData();
@@ -1780,10 +1749,10 @@ export default {
       var parm_url = Object.keys(parm)
         .map(key => key + "=" + parm[key])
         .join("&");
-      let getBreedingRecordList = await this.getBreedingRecordList2(parm_url);
+      let getBreedingRecordList = await this.getBreedingRecordList(parm_url);
       let data = typeof (getBreedingRecordList)=='string'?[]:getBreedingRecordList;
       this.circleData = data;
-      // console.log(data);
+      console.log(data);
       if (this.circleData.length > 0) {
         // this.getwarnData();
         // this.getDetectData();
@@ -1964,21 +1933,8 @@ export default {
       let getArchitecture = await this.getArchitecture(null,true);
       let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
       console.log('可新增循環的池',data);
-      let mainData = [];
-      if(localStorage.getItem('factory_id')) {
-          // console.log('locoal',localStorage.getItem('factory_id'))
-          let factory_id = JSON.parse(localStorage.getItem('factory_id'));
-          data.forEach(factory=>{
-              factory_id.forEach(f=>{
-                  if(factory.id==f) {
-                      mainData.push(factory);
-                  }
-              })
-          })
-      }
       // 新增循環的池選擇
-      this.addPoolData = this.setNestedDisabled(_.cloneDeep(mainData), "");
-      
+      this.addPoolData = this.setNestedDisabled(_.cloneDeep(data), "");
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
       //   .then(res=>{
@@ -2305,10 +2261,13 @@ export default {
       console.log('valid',valid,this.isDataidError,this.volumeError);
       if(valid && !this.isDataidError && !this.volumeError) {
         // alert('submit data：'+ JSON.stringify(param));
-        var res = false;
-        res = await this.postBreedingRecordList2(param);
-        setTimeout(()=>{
-            if(res) {
+        await this.$axios
+          .post(
+            `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
+            param
+          )
+          .then(res=>{
+            if (res.data == "新增成功") {
               this.addDialog = false;
               this.$refs.cycleform.reset();
               this.statusId = [];
@@ -2319,40 +2278,18 @@ export default {
                 id: this.statusId,
                 status: '養殖審核'
               }
-              // this.compareStatus(status);
+              this.compareStatus(status);
               this.getCircleData();
-              
+              this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
+            }else{
+              this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+              console.log(res.data);
             }
-        },50)
-        // await this.$axios
-        //   .post(
-        //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
-        //     param
-        //   )
-        //   .then(res=>{
-        //     if (res.data == "新增成功") {
-        //       this.addDialog = false;
-        //       this.$refs.cycleform.reset();
-        //       this.statusId = [];
-        //       param.multi_data.forEach(x=>{
-        //         this.statusId.push(x.pond_id);
-        //       })
-        //       let status = {
-        //         id: this.statusId,
-        //         status: '養殖審核'
-        //       }
-        //       this.compareStatus(status);
-        //       this.getCircleData();
-        //       this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
-        //     }else{
-        //       this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-        //       console.log(res.data);
-        //     }
-        //   })
-        //   .catch(error=>{
-        //     this.$toast.error("新增失敗:" +error, { duration: 2000 });
-        //     console.log(error);
-        //   })
+          })
+          .catch(error=>{
+            this.$toast.error("新增失敗:" +error, { duration: 2000 });
+            console.log(error);
+          })
       }else {
         if(!this.addbasicDataOpen) {
           this.addbasicDataOpen = true;
@@ -2515,7 +2452,6 @@ export default {
       this.submit = 0;
       console.log('click',val, column, event);
       this.passObj.filter=[1,2,3];
-      console.log('circleData',this.circleData)
       if(column.label !== '操作') {
         if(val.id==this.currentDataId) {
           // 與原本點選的相同，取消點選
@@ -2523,7 +2459,6 @@ export default {
           this.circleData = [];
           this.circleData = data;
           this.currentDataId = null;
-          this.tempid = null;
         }else {
           //清除
           this.$refs.circletable.clearSelection();
@@ -2532,7 +2467,7 @@ export default {
           // this.$refs.circletable.setCurrentRow(val);
           if(this.circleData.length>0) {
             if(this.circleData.filter(x=>x.id==val.id).length==1) {
-              var tempMain = this.circleData.filter(x=>x.id==val.id)[0];
+              var tempMain = this.circleData.filter(x=>x.id==val.id)[0].tempMain;
               // var tempContent = this.circleData.filter(x=>x.id==val.id)[0].tempContent;
               // var tempContent = await this.getTemp(val.id);
 
@@ -2841,12 +2776,11 @@ export default {
                 this.passObj.nowEnd = false;
               }
               
-              this.nowTab = '循環紀錄';
+              
               // console.log(tempMain);
-              this.passObj["tempMain"] = tempMain;
+              // this.passObj["tempMain"] = tempMain;
               // this.passObj["tempContent"] = await this.getTemp(val.id);
               this.getTemp(val.id);
-              this.tempid = val.id;
               
             }
           }
@@ -2869,1097 +2803,38 @@ export default {
     },
     async getTemp(id) {
       let para={breeding_record_id:id}
-      let getBreedingRecordTemplateList = await this.getBreedingRecordTemplateList2(para);
+      let getBreedingRecordTemplateList = await this.getBreedingRecordTemplateList(para);
       let data = typeof (getBreedingRecordTemplateList)=='string'?[]:getBreedingRecordTemplateList;
-      this.passObj["tempContent"] = [];
       data.forEach(data=>{
         if(data.phase_name_ch!=='空池') {
           data.stepList.forEach(async (step,sid)=>{
             // 排序id原為項目隸屬id更改('step_id'+'_'+'數字'->step_+'在階段中的index')
             // 因檢疫時間須按照時間進行排列，因此更改排序的方式
-            // if(step.step_name_ch !== '其他') {
-            //   step.type = 0;
-            // }else {
-            //   step.type = null;
-            // }
-            
-            // if(!step.seq_id.includes('step_')) {
-            //   step.seq_id = 'step_'+sid;
-            //   await this.reviseSeqid(step);
-            // }
-            if(step.actionList) {
-              step.actionList.forEach(action=>{
-                if(action.step_name_ch !== '其他') {
-                  action.type = 0;
-                }else {
-                  action.type = null;
-                }
-              })
+            if(step.step_name_ch !== '其他') {
+              step.type = 0;
+            }else {
+              step.type = null;
             }
             
-            step.open = false;
+            if(!step.seq_id.includes('step_')) {
+              step.seq_id = 'step_'+sid;
+              await this.reviseSeqid(step);
+            }
           })
         }
         
       })
-      // this.passObj["tempContent"] = [];
+      this.passObj["tempContent"] = [];
       // this.passObj["tempContent"] = res.data;
-      data.forEach(d=>{
-        d.stepList.forEach(step=>{
-          if(!step.step_name) {
-            step.step_name = step.step_name_ch;
-          }
-          if(!step.actionList){
-            step.actionList=new Array();
-          }else {
-            step.actionList.forEach(action=>{
-              action.action_name=action.action_name_ch;
-            })
-          }
-        })
-      })
       data.forEach(d=>{
         if(d.phase_name_ch!=='空池') {
           this.passObj["tempContent"].push(d);
         }
       })
-      
-      // this.passObj.tempContent = [
-      //   {
-      //       "phase_id": 1,
-      //       "phase_name_ch": "養殖審核",
-      //       "stepList": [
-      //           {
-      //               "step_id": 1,
-      //               "step_name": "提交養殖計畫書",
-      //               "remark":"建立循環後系統給出",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 1,
-      //                   "action_name": "預計購買苗量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[{
-      //                     "execute_status":1,
-      //                     "execute_time": '2024-04-20 15:00:00',
-      //                     "executor":'shihya.hsu@idwater.com.tw',
-      //                     "msg":'',
-      //                     "actual_member":0,
-      //                     "actual_spend":0,
-      //                   },
-      //                   // {
-      //                   //   "execute_status":2,
-      //                   //   "execute_time": '2024-04-21 15:00:00',
-      //                   //   "executor":'shihya.hsu@idwater.com.tw',
-      //                   //   "msg":'已購買',
-      //                   //   "actual_member":0,
-      //                   //   "actual_spend":0,
-      //                   // }
-      //                 ]
-      //               },{
-      //                   "action_id": 2,
-      //                   "action_name": "預計購買次氯酸鈣量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 3,
-      //                   "action_name": "預計購買海波量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 4,
-      //                   "action_name": "預計購買尿素量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 5,
-      //                   "action_name": "預計購買葵四量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 6,
-      //                   "action_name": "預計購買弧立滅量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 7,
-      //                   "action_name": "預計購買粉料量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 8,
-      //                   "action_name": "預計購買0號料量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 9,
-      //                   "action_name": "預計購買1號料量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 10,
-      //                   "action_name": "預計購買紅料量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 11,
-      //                   "action_name": "預計購買砂糖量",
-      //                   "remark":"建立循環後系統給出",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 2,
-      //               "step_name": "採購",
-      //               "remark":"",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 12,
-      //                   "action_name": "訂苗",
-      //                   "remark":"聯絡廠商確定送苗時間",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 13,
-      //                   "action_name": "購買次氯酸鈣",
-      //                   "remark":"聯絡廠商下單",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 14,
-      //                   "action_name": "購買海波",
-      //                   "remark":"聯絡廠商下單",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 15,
-      //                   "action_name": "購買葵四",
-      //                   "remark":"聯絡廠商下單",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 16,
-      //                   "action_name": "購買弧立滅",
-      //                   "remark":"聯絡廠商下單",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 17,
-      //                   "action_name": "購買粉料",
-      //                   "remark":"聯絡廠商下單",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 18,
-      //                   "action_name": "購買砂糖",
-      //                   "remark":"聯絡廠商下單",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               }]
-      //           },
-                
-      //       ]
-      //   },
-      //   {
-      //       "phase_id": 2,
-      //       "phase_name_ch": "備池",
-      //       "stepList": [
-      //           {
-      //               "step_id": 3,
-      //               "step_name": "檢查系統",
-      //               "remark":"建立循環後系統給出",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 19,
-      //                   "action_name": "檢查進水系統",
-      //                   "remark":"測試進水系統是否正常運作，管路、設備是否老舊失修",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 20,
-      //                   "action_name": "檢查曝氣系統",
-      //                   "remark":"測試曝氣系統是否正常運作，管路、設備是否老舊失修",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 21,
-      //                   "action_name": "檢查排污系統",
-      //                   "remark":"測試排污系統是否正常運作，管路、設備是否老舊失修",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 4,
-      //               "step_name": "使用農用噴霧器進行氯消毒",
-      //               "remark":"建立循環後系統給出",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 22,
-      //                   "action_name": "池體",
-      //                   "remark":"製備 30 ppm 次氯酸鈣水溶液噴灑於表面",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 23,
-      //                   "action_name": "走道",
-      //                   "remark":"製備 30 ppm 次氯酸鈣水溶液噴灑於表面",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 5,
-      //               "step_name": "使用農用噴霧器進行鹼消毒",
-      //               "remark":"建立循環後系統給出",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 24,
-      //                   "action_name": "池體",
-      //                   "remark":"製備飽和石灰水（pH14）溶液噴灑於表面",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 25,
-      //                   "action_name": "走道",
-      //                   "remark":"製備飽和石灰水（pH14）溶液噴灑於表面",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },
-                
-      //       ]
-      //   },
-      //   {
-      //       "phase_id": 3,
-      //       "phase_name_ch": "蓄水",
-      //       "stepList": [
-      //           {
-      //               "step_id": 6,
-      //               "step_name": "蓄水",
-      //               "remark":"",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 26,
-      //                   "action_name": "池體注滿水",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 27,
-      //                   "action_name": "於池體內潑灑次氯酸鈣",
-      //                   "remark":"系統給出次氯酸鈣用量，使水體滿足 30 ppm 次氯酸鈣水溶液",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 28,
-      //                   "action_name": "開啟池子曝氣",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },
-                
-      //       ]
-      //   },
-      //   {
-      //       "phase_id": 4,
-      //       "phase_name_ch": "做水",
-      //       "stepList": [
-      //           {
-      //               "step_id": 7,
-      //               "step_name": "做水",
-      //               "remark":"",
-      //               "day":7,
-      //               "actionList":[{
-      //                   "action_id": 29,
-      //                   "action_name": "測定池水餘氯濃度",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 30,
-      //                   "action_name": "於池體內潑灑海波",
-      //                   "remark":"系統根據水體餘氯濃度給出海波用量。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 31,
-      //                   "action_name": "醒菌",
-      //                   "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":7,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 32,
-      //                   "action_name": "潑灑尿素、砂糖",
-      //                   "remark":"待海波潑灑1小時後，根據系統給出的尿素、砂糖進行潑灑",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":7,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 33,
-      //                   "action_name": "潑灑益生菌",
-      //                   "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":7,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },
-      //       ]
-      //   },
-      //   {
-      //       "phase_id": 5,
-      //       "phase_name_ch": "放養中",
-      //       "stepList": [
-      //           {
-      //               "step_id": 8,
-      //               "step_name": "預備放養",
-      //               "remark":"",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 52,
-      //                   "action_name": "準備氨氮水質機台",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 53,
-      //                   "action_name": "準備亞硝酸水質機台",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 54,
-      //                   "action_name": "準備鹽度計",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 55,
-      //                   "action_name": "準備手持式溶氧筆",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 56,
-      //                   "action_name": "準備體長體重測量工具",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 57,
-      //                   "action_name": "準備瑞基海洋疾病檢測套組",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 58,
-      //                   "action_name": "準備氧氣瓶",
-      //                   "remark":"",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 59,
-      //                   "action_name": "準備對水用具",
-      //                   "remark":"每個池子適宜的對水工具不同，請廠長負責",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 60,
-      //                   "action_name": "檢測苗袋內水體氨氮",
-      //                   "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 61,
-      //                   "action_name": "檢測苗袋內水體亞硝酸",
-      //                   "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 62,
-      //                   "action_name": "檢測苗袋內水體鹽度",
-      //                   "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 63,
-      //                   "action_name": "檢測苗袋內水體溶氧及溫度",
-      //                   "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 64,
-      //                   "action_name": "量長秤重",
-      //                   "remark":"紀錄苗袋資訊，以利後續跟苗商溝通",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 65,
-      //                   "action_name": "檢測蝦苗疾病",
-      //                   "remark":"紀錄蝦苗檢測結果（WSSV、EMS toxic、EMS plasmid、EHP、INNV、IMNV、TSV、YHV），以利後續跟苗商溝通",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 66,
-      //                   "action_name": "對水",
-      //                   "remark":"待苗袋內的水體與池水水溫相同即可",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 67,
-      //                   "action_name": "拆袋倒苗",
-      //                   "remark":"待苗袋內的水體與池水水溫相同即可",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 68,
-      //                   "action_name": "整理收拾",
-      //                   "remark":"待苗袋內的水體與池水水溫相同即可",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 9,
-      //               "step_name": "粉料期",
-      //               "remark":"",
-      //               "day":14,
-      //               "actionList":[{
-      //                   "action_id": 69,
-      //                   "action_name": "粉料期第一餐",
-      //                   "remark":"系統給出該餐料量",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 70,
-      //                   "action_name": "粉料期測水質",
-      //                   "remark":"使用機台檢測池水氨氮、亞硝酸、pH值、塗盤、點菌等參數",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 71,
-      //                   "action_name": "粉料期拌料",
-      //                   "remark":"根據系統提供之商品、數量、方法進行拌料。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 72,
-      //                   "action_name": "粉料期醒菌",
-      //                   "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 73,
-      //                   "action_name": "粉料期第二餐",
-      //                   "remark":"系統給出該餐料量",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 74,
-      //                   "action_name": "粉料期潑灑益生菌",
-      //                   "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 75,
-      //                   "action_name": "粉料期第三餐",
-      //                   "remark":"系統給出該餐料量。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 76,
-      //                   "action_name": "粉料期第四餐",
-      //                   "remark":"系統給出該餐料量。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 10,
-      //               "step_name": "第一次打樣",
-      //               "remark":"",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 77,
-      //                   "action_name": "第一次打樣",
-      //                   "remark":"放養第12~16天，進行蝦隻長度測量及群秤",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 11,
-      //               "step_name": "粉料期",
-      //               "remark":"",
-      //               "day":14,
-      //               "actionList":[{
-      //                   "action_id": 78,
-      //                   "action_name": "粉料期第一餐",
-      //                   "remark":"系統給出該餐料量",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 79,
-      //                   "action_name": "粉料期測水質",
-      //                   "remark":"使用機台檢測池水氨氮、亞硝酸、pH值、塗盤、點菌等參數",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 80,
-      //                   "action_name": "粉料期排污",
-      //                   "remark":"根據系統提供之排污時數進行排污。",
-      //                   "star_on_which_dayt":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 81,
-      //                   "action_name": "粉料期拌料",
-      //                   "remark":"根據系統提供之商品、數量、方法進行拌料。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 82,
-      //                   "action_name": "粉料期醒菌",
-      //                   "remark":"系統根據水體給出用量，並加入 9 倍重量鹽度與池水相同且消毒過的水進行醒菌。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 83,
-      //                   "action_name": "粉料期第二餐",
-      //                   "remark":"系統給出該餐料量",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 84,
-      //                   "action_name": "粉料期蝦隻觀察",
-      //                   "remark":"對觀察網上的蝦隻進行觀察，並將蝦況提供給系統",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 85,
-      //                   "action_name": "粉料期潑灑益生菌",
-      //                   "remark":"根據系統用量，以10倍重量之菌液進行潑灑。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 86,
-      //                   "action_name": "粉料期第三餐",
-      //                   "remark":"系統給出該餐料量",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 87,
-      //                   "action_name": "粉料期排污",
-      //                   "remark":"根據系統提供之排污時數進行排污。",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 88,
-      //                   "action_name": "粉料期第四餐",
-      //                   "remark":"系統給出該餐料量",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":14,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },{
-      //               "step_id": 12,
-      //               "step_name": "第二次打樣",
-      //               "remark":"",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 89,
-      //                   "action_name": "第二次打樣",
-      //                   "remark":"距第一次打樣後 1 週，進行蝦隻長度測量及群秤",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           },
-                
-            
-      //       ]
-      //   },
-      //   {
-      //       "phase_id": 6,
-      //       "phase_name_ch": "清池",
-      //       "stepList": [
-      //           {
-      //               "step_id": 13,
-      //               "step_name": "清池",
-      //               "remark":"",
-      //               "day":1,
-      //               "actionList":[{
-      //                   "action_id": 90,
-      //                   "action_name": "高壓水槍沖洗池壁",
-      //                   "remark":"將養殖期間的附著物清除",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 91,
-      //                   "action_name": "高壓水槍沖洗曝氣盤",
-      //                   "remark":"將養殖期間的附著物清除",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 92,
-      //                   "action_name": "高壓水槍沖洗管線",
-      //                   "remark":"將養殖期間的附著物清除",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 93,
-      //                   "action_name": "高壓水槍沖觀察網",
-      //                   "remark":"將養殖期間的附著物清除",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },{
-      //                   "action_id": 94,
-      //                   "action_name": "大管水沖洗池底",
-      //                   "remark":"將高壓水槍沖洗下的附著物沖進排污管道",
-      //                   "start_on_which_day":1,
-      //                   "end_on_which_day":1,
-      //                   "estimate_member":0,
-      //                   "estimate_spend":0,
-      //                   "actual_member":0,
-      //                   "actual_spend":0,
-      //                   "dailyCheckList":[]
-      //               },]
-      //           }
-                
-      //       ]
-      //   }]
-      if(this.passObj['tempContent']&&this.passObj['tempContent'].length>0) {
-        
-          let items = _.cloneDeep(this.passObj.tempContent);
-          items.forEach(mitem=>{
-            mitem.day=0;
-            mitem.stepList.forEach(step=>{
-              step.open=false;
-              if(step.actionList&&step.actionList.length>0) {
-                mitem.day+=step.actionList[step.actionList.length-1].end_on_which_day-step.actionList[0].start_on_which_day+1;
-                step.actionList.forEach(action=>{
-                  action.type=0;// 0 一般動作 1 疾病 2 水質 3 事件
-                  let dailycheck = [];
-                  if(action.dailyCheckList&&action.dailyCheckList.length>0) {
-                    action.dailyCheckList.sort((a,b)=>new Date(a.scheduling_date).getTime()-new Date(b.scheduling_date).getTime())
-                    action.execute_time = action.dailyCheckList[0].execute_time;
-                    action.execute=3;
-                    //action.total_day = action.dailyCheckList.length;
-                    let execute = 0; // 0未開始 1已執行 2異常 3尚有未執行
-                    let nonexecute = 0;
-                    action.dailyCheckList.forEach(daily=>{
-                      if(daily.execute_status == 1) {
-                        execute+=1;
-                        dailycheck.push(daily);
-                      }else if(daily.execute_status == 2) {
-                        nonexecute+=1;
-                        dailycheck.push(daily);
-                      }
-                    })
-                    // console.log(execute,nonexecute,action.end_on_which_day-action.start_on_which_day+1)
-                    if(execute == (action.dailyCheckList.length)) {
-                      action.execute = 1;
-                    }else if((execute+nonexecute)==(action.dailyCheckList.length)) {
-                      action.execute = 2;
-                    }else if((execute+nonexecute)==0) {
-                      action.execute = 0;
-                    }
-                    action.dailyCheckList = dailycheck;
-                    // console.log('action',action);
-                  }else {
-                    
-                  }
-                })
-              }else {
-                step.actionList = new Array();
-              } 
-            })
-            this.passObj.tempContent = [];
-            this.passObj.tempContent = _.cloneDeep(items);
-        })
-        this.resultListOpen = false;
-        this.resultCycleOpen = true;
-        this.currentDataId = id;
-        console.log('get temp',this.passObj.tempContent)
-      }else {
-        this.$toast.error("此循環無樣板", { duration: 2000 });
-      }
-      
+
+      this.resultListOpen = false;
+      this.resultCycleOpen = true;
+      this.currentDataId = id;
 
       // this.$axios
       // .get(
@@ -4028,7 +2903,6 @@ export default {
       this.diseaseReport = _.cloneDeep(data);
       this.diseaseReport.forEach(d=>{
         d.execute_time = d.execute_date+' 00:00:00';
-        d.action_name = '疾病檢驗';
         d.step_name_ch = '疾病檢驗';
         d.step_name_en = 'disease';
         d.type = 1;
@@ -4092,7 +2966,6 @@ export default {
       this.waterReport = _.cloneDeep(data);
       this.waterReport.forEach(d=>{
         d.execute_time = d.execute_date+' 00:00:00';
-        d.action_name = '水質檢驗';
         d.step_name_ch = '水質檢驗';
         d.step_name_en = 'water';
         d.type = 2;
@@ -4146,7 +3019,6 @@ export default {
       this.eventReport = _.cloneDeep(data);
       this.eventReport.forEach(d=>{
         d.execute_time = d.started_date;
-        d.action_name = '事件';
         d.step_name_ch = '事件';
         d.step_name_en = 'event';
         d.type = 3;
@@ -4175,7 +3047,7 @@ export default {
     async reviseSeqid(step) {
       step.updated_user = this.$auth.$state.user.email;
       var res = false;
-      res = await this.patchRecordStepList(step,step.step_id);
+      res = this.patchRecordStepList(step,step.step_id);
 
       // await this.$axios
       //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/${step.step_id}/`, step)
@@ -4343,9 +3215,9 @@ export default {
     getTemplateData: async function () {
       this.tempSelect = undefined;
       this.addparm.temp_id = undefined;
-      let getTemplateList = await this.getTemplateList2();
+      let getTemplateList = await this.getTemplateList();
       let data = typeof (getTemplateList)=='string'?[]:getTemplateList;
-      this.template_items = data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain).filter(x=>x.id!==1);
+      this.template_items = data.filter(x=>x.tempMain.is_enable==true).map(x => x.tempMain);
       this.template_all = data;
       // var url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`;
       // await this.$axios
@@ -4624,7 +3496,7 @@ export default {
       console.log('>>>edit',parm);
       if(bool || this.$refs.editform.validate()){
         var res = false;
-        res = await this.patchBreedingRecordList2(parm,this.editparm.id);
+        res = this.patchBreedingRecordList(parm,this.editparm.id);
         setTimeout(()=>{
             if(res) {
               // 結束循環要將池更改為空池
@@ -4634,7 +3506,7 @@ export default {
                   status: '空池'
                 }
                 status.id.push(this.poolid);
-                // this.compareStatus(status);
+                this.compareStatus(status);
               }
               this.editDialog = false;
               this.getCircleData();
@@ -4676,19 +3548,10 @@ export default {
     calcutorPerUnit(bool) {
       if(this.dataVolumn.length>0) {
         if(bool) {
-          if(this.changeAllNum(this.all_num_per_unit)) {
-            this.dataVolumn.forEach(x=>{
-              x.num_per_unit = this.all_num_per_unit;
-              x.estimated_num =  x.volume*this.all_num_per_unit;
-            })
-          }else {
-            this.dataVolumn.forEach(x=>{
-              x.num_per_unit = undefined;
-              x.estimated_num =  undefined;
-            })
-            this.all_num_per_unit = undefined;
-            }
-          
+          this.dataVolumn.forEach(x=>{
+            x.num_per_unit = this.all_num_per_unit;
+            x.estimated_num =  x.volume*this.all_num_per_unit;
+          })
         }else {
           this.dataVolumn.forEach(x=>{
             x.num_per_unit = undefined;
@@ -4853,14 +3716,9 @@ export default {
       let formData = new FormData();
       let parm = _.cloneDeep(this.addReport[0]);
       this.isSelectPool = true;
-      if(parm.pond_ids) {
-
-      }else {
-        if(parm.pond_id==null || parm.pond_id.length==0) {
-          this.isSelectPool = false;
-        }
+      if(parm.pond_id==null || parm.pond_id.length==0) {
+        this.isSelectPool = false;
       }
-      
       var valid = this.$refs.addform.validate();
       
       if(valid && this.isSelectPool) {
@@ -4890,7 +3748,7 @@ export default {
           let url=this.addReport[0].type==1?`/breeding/disease-testing-record/${this.addReport[0].id}/`:`/breeding/water-quality-testing-record/${this.addReport[0].id}/`;
           console.log('parm',parm);
           var res = false;
-          res = this.addReport[0].type==1?await this.patchDiseaseTestingRecordList(formData,this.addReport[0].id):await this.patchWaterTestingRecordList(formData,this.addReport[0].id);
+          res = this.addReport[0].type==1?this.patchDiseaseTestingRecordList(formData,this.addReport[0].id):this.patchWaterTestingRecordList(formData,this.addReport[0].id);
           setTimeout(async ()=>{
               if(res) {
                 this.reportDialog = false;
@@ -4948,7 +3806,7 @@ export default {
         let url=this.addReport[0].type==1?'/breeding/disease-testing-record/':'/breeding/water-quality-testing-record/';
         console.log('report',formData,parm);
         var res = false;
-        res = this.addReport[0].type==1?await this.postDiseaseTestingRecordList(formData):await this.postWaterTestingRecordList(formData);
+        res = this.addReport[0].type==1?this.postDiseaseTestingRecordList(formData):this.postWaterTestingRecordList(formData);
         setTimeout(async ()=>{
             if(res) {
               this.reportDialog = false;
@@ -5018,7 +3876,7 @@ export default {
           updated_user: this.$auth.$state.user.email
         }
         var res = false;
-        res = await this.patchPondStateList(x,parm);
+        res = this.patchPondStateList(x,parm);
 
         // await this.$axios
         //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${x}/`, parm)
@@ -5135,18 +3993,6 @@ export default {
       this.passObj = _.cloneDeep(pass);
       console.log('filter',evt,this.passObj.filter);
     },
-    // 統一密度更改
-    changeAllNum(evt) {
-      console.log('changeAllNum',evt);
-      // this.calcutorPerUnit(true);
-      if(evt!==undefined&&evt!==''&&evt!==null) {
-        this.isChangeAllNum = true;
-        
-      }else {
-        this.isChangeAllNum = false;
-      }
-      return this.isChangeAllNum;
-    },
 
   },
   async mounted() {
@@ -5164,7 +4010,7 @@ export default {
     await this.getTemplateData();//樣版清單
   },
   async created() {
-    // await this._pageCheck(); //驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     await this.getAuth();
     // await this.getWeather(); //氣象
     await this.getOptData(); //選項
@@ -5374,7 +4220,7 @@ export default {
     }
 }
 
-@media (max-width:960px) {
+@media(max-width:960) {
   .v-card.bg-card {
     .btn-groups {
       justify-content: flex-start;
@@ -5382,12 +4228,4 @@ export default {
   } 
 
 }
-// 財務
-// @media (max-width:599.98px) {
-//   .v-card.bg-card {
-//     .btn-groups {
-//       justify-content: flex-start;
-//     }
-//   } 
-// }
 </style>
