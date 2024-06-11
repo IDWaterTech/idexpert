@@ -733,16 +733,18 @@
                     </div> -->
                     <v-card-text>
                         <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
-                            <v-col cols="3"><span style="font-weight:bold">時間</span></v-col>
-                            <v-col cols="2"><span style="font-weight:bold">狀態</span></v-col>
-                            <v-col cols="3"><span style="font-weight:bold">說明</span></v-col>
-                            <v-col cols="4"><span style="font-weight:bold">人員</span></v-col>
+                            <v-col cols="1">#</v-col>
+                            <v-col cols="3"><span style="font-weight:bold">排程日期</span></v-col>
+                            <v-col cols="3"><span style="font-weight:bold">狀態/說明</span></v-col>
+                            <v-col cols="4"><span style="font-weight:bold">執行時間/執行人員</span></v-col>
                         </v-row>
                         <v-row class="content" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
-                            <v-col cols="3"><span>{{daily.execute_time}}</span></v-col>
-                            <v-col cols="2"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span></v-col>
-                            <v-col cols="3"><span>{{daily.msg}}</span></v-col>
-                            <v-col cols="4"><span>{{daily.executor}}</span></v-col>
+                            <v-col cols="1">{{ did+1 }}</v-col>
+                            <v-col cols="3"><span>{{daily.scheduling_date}}<br/></span></v-col>
+                            <v-col cols="3"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span>
+                                <br/>
+                                <span>{{daily.msg}}</span></v-col>
+                            <v-col cols="4"><span>{{daily.execute_time.split(' ')[0].split('-').slice(1,3).join('/') +" "+ daily.execute_time.split(' ')[1].split(':').slice(0,2).join(':')}}<br/>{{daily.executor}}</span></v-col>
                         </v-row>
                         
                     </v-card-text>
@@ -2835,6 +2837,7 @@ export default {
         // 執行狀態細項
         executeDailogOpen(id,wid,index) {
             this.executeList = _.cloneDeep(this.mainItems[id].stepList[wid].actionList[index]);
+            console.log("executeList:",this.executeList);
             this.executeDialog = true;
         },
         // 清空樣板
