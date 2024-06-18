@@ -367,29 +367,44 @@
                                   <img v-img="{ group: item.id }" v-for="(img,i) in item.img" :key="i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
                               </template>
                               <template v-slot:[`item.intestinal_color`]="{ item }">
-                                <v-chip v-for="(shape,id) in item.IntestinalColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                <div v-if="item.numOfColor.IntestinalColor.length>0">
+                                  <v-chip v-for="(shape,id) in item.numOfColor.IntestinalColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">    
                                     {{ shape.name_ch}}:{{ shape.value }}
-                                </v-chip>
+                                  </v-chip>
+                                </div>
+                                <div v-else><v-chip>無</v-chip></div>
                               </template>
                               <template v-slot:[`item.hepatopancreas_color`]="{ item }">
-                                <v-chip v-for="(shape,id) in item.HepatopancreasColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
-                                    {{ shape.name_ch}}:{{ shape.value }}
-                                </v-chip>
+                                <div v-if="item.numOfColor.HepatopancreasColor.length>0">
+                                  <v-chip v-for="(shape,id) in item.numOfColor.HepatopancreasColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                      {{ shape.name_ch}}:{{ shape.value }}
+                                  </v-chip>
+                                </div>
+                                <div v-else><v-chip>無</v-chip></div>
                               </template>
                               <template v-slot:[`item.muscle_color`]="{ item }">
-                                <v-chip v-for="(shape,id) in item.MuscleColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                <div v-if="item.numOfColor.MuscleColor.length>0">
+                                  <v-chip v-for="(shape,id) in item.numOfColor.MuscleColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
                                     {{ shape.name_ch}}:{{ shape.value }}
-                                </v-chip>
+                                  </v-chip>
+                                </div>
+                                <div v-else><v-chip>無</v-chip></div>
                               </template>
                               <template v-slot:[`item.body_color`]="{ item }">
-                                <v-chip v-for="(shape,id) in item.BodyColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                <div v-if="item.numOfColor.BodyColor.length>0">
+                                  <v-chip v-for="(shape,id) in item.numOfColor.BodyColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
                                     {{ shape.name_ch}}:{{ shape.value }}
-                                </v-chip>
+                                  </v-chip> 
+                                </div>
+                                <div v-else><v-chip>無</v-chip></div>
                               </template>
                               <template v-slot:[`item.body_shape`]="{ item }">
-                                <v-chip v-for="(shape,id) in item.BodyShape" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                <div v-if="item.numOfColor.BodyShape.length>0">
+                                  <v-chip v-for="(shape,id) in item.numOfColor.BodyShape" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
                                     {{ shape.name_ch}}:{{ shape.value }}
-                                </v-chip>
+                                  </v-chip>
+                                </div>
+                                <div v-else><v-chip>無</v-chip></div>
                               </template>
                               <!-- 編輯/刪除 -->
                               <template v-slot:[`item.action`]="{ item }">
@@ -1056,7 +1071,7 @@ export default {
   },
   head(){
     return{
-      title:'指標資料修改'
+      title:'指標資料'
     }
   },
   data() {
@@ -2238,63 +2253,79 @@ export default {
     // 觀察網
     // 取得顏色的項目
     getOptData:async function(){
-        if(this.optData.length==0) {
-          let getFieldOtptionList = await this.getFieldOtptionList();
-          let data = typeof (getFieldOtptionList)=='string'?[]:getFieldOtptionList;
-          this.optData = data;
-          // console.log(this.optData);
+      if(this.optData.length==0) {
+        let getFieldOtptionList = await this.getFieldOtptionList();
+        let data = typeof (getFieldOtptionList)=='string'?[]:getFieldOtptionList;
+        this.optData = data;
+        // console.log(this.optData);
 
-          let datas = _.cloneDeep(this.observableData);
-          this.observableData = [];
-          datas.forEach(odata=>{
-            this.getFilter(odata);
-          })
+        let datas = _.cloneDeep(this.observableData);
+        this.observableData = [];
+        datas.forEach(odata=>{
+          this.getFilter(odata);
+        })
 
-          this.observableData = _.cloneDeep(datas);
-          if(this.observableData.length>0) {
-            this.getChartData();
-          }
-          this.isSearch = true;
-          // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
-          // await this.$axios.get(url).then(res => {
-          //     if(res.status==200){
-          //         this.optData = res.data;
-          //         // console.log(this.optData);
-
-          //         let datas = _.cloneDeep(this.observableData);
-          //         this.observableData = [];
-          //         datas.forEach(odata=>{
-          //           this.getFilter(odata);
-          //         })
-
-          //         this.observableData = _.cloneDeep(datas);
-          //         if(this.observableData.length>0) {
-          //           this.getChartData();
-          //         }
-          //         this.isSearch = true;
-                  
-          //       }else{
-          //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-          //       }
-          //     })
-          //     .catch(error=>{
-          //         this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-          //     })
-          //     .finally(() => {
-          //         });
-        }else {
-          let datas = _.cloneDeep(this.observableData);
-          this.observableData = [];
-          datas.forEach(odata=>{
-            this.getFilter(odata);
-          })
-          this.observableData = _.cloneDeep(datas);
-          if(this.observableData.length>0) {
-            this.getChartData();
-          }
-          this.isSearch = true;
+        this.observableData = _.cloneDeep(datas);
+        if(this.observableData.length>0) {
+          this.getChartData();
         }
-        
+        this.isSearch = true;
+        // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
+        // await this.$axios.get(url).then(res => {
+        //     if(res.status==200){
+        //         this.optData = res.data;
+        //         // console.log(this.optData);
+
+        //         let datas = _.cloneDeep(this.observableData);
+        //         this.observableData = [];
+        //         datas.forEach(odata=>{
+        //           this.getFilter(odata);
+        //         })
+
+        //         this.observableData = _.cloneDeep(datas);
+        //         if(this.observableData.length>0) {
+        //           this.getChartData();
+        //         }
+        //         this.isSearch = true;
+                
+        //       }else{
+        //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+        //       }
+        //     })
+        //     .catch(error=>{
+        //         this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+        //     })
+        //     .finally(() => {
+        //         });
+      }else {
+        let datas = _.cloneDeep(this.observableData);
+        this.observableData = [];
+        datas.forEach(odata=>{
+          this.getFilter(odata);
+        })
+        this.observableData = _.cloneDeep(datas);
+        if(this.observableData.length>0) {
+          this.getChartData();
+        }
+        this.isSearch = true;
+      }
+      
+      var keyLst = Object.keys(this.optData);
+      this.observableData.forEach(observe=>{
+        observe.numOfColor = {};
+        keyLst.forEach(k=>{
+          if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+            observe.numOfColor[k] = new Array();
+            observe[k].forEach(color=>{
+              if(color.value>0) {
+                observe.numOfColor[k].push(color);
+              }
+            })
+          }
+        })
+      })
+      
+        console.log('observableData',this.observableData);
     },
     async getObservationData() {
       this.chartShow = false;
@@ -2796,6 +2827,7 @@ export default {
         // 回傳資料整合
         delete parm.img;
         delete parm.feed_amount;
+        delete parm.numOfColor;
         if(this.nowObserve=='edit') {
           delete parm.shrimp_id;
           delete parm.leftover_id;
@@ -3183,7 +3215,7 @@ export default {
   }
   .edit-table {
     & table {
-     min-height: 27vh; 
+      min-height: 27vh; 
     }
     &.revise table {
       min-height: 21vh;
