@@ -3411,7 +3411,7 @@ export default {
     layout: "emptynologin2",
     head() {
         return {
-            title: '知識庫-鷹眼 v2.0'
+            title: '知識庫'
         }
     },
     data() {
