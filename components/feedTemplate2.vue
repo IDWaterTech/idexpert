@@ -430,7 +430,7 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
@@ -671,7 +671,7 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
@@ -876,7 +876,7 @@ export default {
                 { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
                 { text: "總執行天數", value: "total_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
-                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
+                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
                 { text: "持續執行至第幾天", value: "end_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
@@ -2590,6 +2590,27 @@ export default {
                 }
             }
         },
+        // 確認結束day是否小於起始
+        detectOverEndDay(index) {
+            let isOver = false;
+            if(this.workType=='edit') {
+                if(this.editItem.actionList[index].start_on_which_day>this.editItem.actionList[index].end_on_which_day) {
+                    isOver = true;
+                    this.editItem.actionList[index].end_on_which_day = null;
+                }
+            }else {
+                if(this.addItem.actionList[index].start_on_which_day>this.addItem.actionList[index].end_on_which_day) {
+                    isOver = true;
+                    this.addItem.actionList[index].end_on_which_day = null;
+                }
+            }
+            if(isOver) {
+                alert('不可小於起始日!');
+            }else {
+                this.sortDay();
+            }
+            
+        },
         // 移除預設動作
         removeAction(id,index) {
             // let index;
@@ -2876,12 +2897,19 @@ export default {
             console.log('mainItems',this.status,data,this.mainItems);
         },
         passObj: {
-            handler(val){
+            async handler(val){
                 console.log(val);
                 this.tempMain = _.cloneDeep(this.passObj.tempMain);
                 this.mainItems = _.cloneDeep(this.passObj.tempContent);
                 this.mainItems.forEach(m=>m.open=this.nowExpand);
                 if(this.templatemode=='cycleedit') {
+                    let param={pond_id:this.passObj.poolid}
+                    let getDailyCheckList = await this.getDailyCheckList(param);
+                    let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
+                    if(data.step_id) {
+                        this.nowStepId = data.step_id;
+                        this.dailyList = data;
+                    }
                     this.sortData();
                 }
                 

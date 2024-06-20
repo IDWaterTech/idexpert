@@ -1199,5 +1199,21 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        // 取得下一工作清單
+        getNextWorkList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-action2/`,{ params: parm })
+                console.log("每日清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
     }
 })

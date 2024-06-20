@@ -46,7 +46,7 @@
                     </v-row>
                 </div>
                 <div class="result" v-if="poolData.daily&&poolData.daily.length>0" style="padding-bottom: 0;">
-                    <span style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}}</span>
+                    <span style="margin-left: 8px;display: flex;align-items: center;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
                     <div class="result-content">
                         <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id">
                             <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
@@ -284,7 +284,7 @@
                                             <v-text-field v-model="addItem.start_date" class="mt-0" clearable readonly dense :rules="rules.require"
                                                 v-bind="attrs" v-on="on"></v-text-field>
                                         </template>
-                                        <v-date-picker v-model="addItem.start_date" :min="getNowDate()" :max="getMaxDate()" locale="zh-tw" no-title @input="
+                                        <v-date-picker v-model="addItem.start_date" :min="poolData.daily?poolData.daily[0].scheduling_date:getNowDate()" :max="getMaxDate()" locale="zh-tw" no-title @input="
                                         startdate = false;
                                         "></v-date-picker>
                                     </v-menu>
@@ -301,7 +301,7 @@
                                             <v-text-field v-model="addItem.end_date" class="mt-0" clearable readonly dense :rules="rules.require"
                                                 v-bind="attrs" v-on="on"></v-text-field>
                                         </template>
-                                        <v-date-picker v-model="addItem.end_date" :min="addItem.start_date||getNowDate()" :max="getMaxDate()" locale="zh-tw" no-title @input="
+                                        <v-date-picker v-model="addItem.end_date" :min="addItem.start_date||getNowDate()"  locale="zh-tw" no-title @input="
                                         enddate = false;
                                         "></v-date-picker>
                                     </v-menu>
@@ -408,6 +408,50 @@
                 </v-card>
             </v-form>
         </v-dialog>
+        <!-- 檢視下一工作 -->
+        <v-dialog v-model="nextWorkDialog" max-width="500px">
+            <v-form ref="delayAllform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span>下一工作</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="nextWorkDialog = false;" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div v-if="nextWork.length>0" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
+                                {{ action }}
+                            </div> -->
+                            <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                                <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
+                                <v-col cols="3"><span style="font-weight:bold">第幾天開始執行</span></v-col>
+                                <v-col cols="3"><span style="font-weight:bold">持續執行至第幾天</span></v-col>
+                                <v-col cols="3"><span style="font-weight:bold">說明</span></v-col>
+                            </v-row>
+                            <v-row class="content" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                                <v-col cols="3"><span>{{ action.name_ch }}</span></v-col>
+                                <v-col cols="3"><span>Day {{action.start_on_which_day}}<br/></span></v-col>
+                                <v-col cols="3"><span>Day {{action.end_on_which_day}}<br/></span></v-col>
+                                <v-col cols="3"><span>{{action.remark}}<br/></span></v-col>
+                            </v-row>
+                        </div>
+                        <div v-else class="card-title" style="width:200px;display: flex;flex-direction: column;align-items: flex-start;padding-top: 8px;">無資料</div>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-primary" @click="nextWorkDialog=false">確認</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
     </div>
 </template>
 
@@ -448,7 +492,9 @@ export default {
             isLoading: false,
             delayAll:{daily_check_ids:[],delay_day:0},
             delayAllDialog: false,
-            addPoolData:[]
+            addPoolData:[],
+            nextWorkDialog: false,
+            nextWork:[],
         }
     },
     async created() {
@@ -1071,6 +1117,16 @@ export default {
         changeEvent:function(){
             // this.$emit('scopeSel_data',nowPoolid);
             this.get_scopeData(this.nowPoolid);
+        },
+        // 檢視下一個工作
+        async getNextWork() {
+            this.nextWork = [];
+            // get next work 
+            let parm = {step_id: this.poolData.step_id,displayed_next_one: true}
+            let getWork = await this.getNextWorkList(parm);
+            let data = typeof (getWork)=='string'?[]:getWork;
+            this.nextWork = _.cloneDeep(data);
+            this.nextWorkDialog = true;
         },
     },
     watch: {
