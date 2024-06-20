@@ -534,7 +534,8 @@ export default {
       }
       // this.isLoad = false;
       if(this.nowAreaId.factory_id!==null) {
-        if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
+        // if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
+          this.allData = [];
           await this.$axios
             .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
             .then(res => {
@@ -553,10 +554,10 @@ export default {
             .catch(error => {
               // alert("error:" + error.message);
             });
-        }else {
-          this.dataPrepare();
-          this.getLayoutData();
-        }
+        // }else {
+        //   this.dataPrepare();
+        //   this.getLayoutData();
+        // }
         
       }
       
@@ -997,6 +998,7 @@ export default {
       deep: true
     },
     waterloading() {
+      this.getPondData();
       this.isLoad = true;
     },
   }
