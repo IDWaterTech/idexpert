@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="kb bg-card" :style="{'minHeight':`${windowHeight>880?'90vh':'87vh'}`}">
+        <v-card class="kb bg-card" :style="{'minHeight':`${windowHeight>880?'90vh':'84vh'}`}">
             <div class="card-title">
                 <v-row style="margin-bottom: 0;">
                     <!-- <div class="title">
@@ -11,7 +11,7 @@
             </div>
             <div class="content">
                 <!-- 搜尋 -->
-                <div class="search">
+                <div class="search" id="dashboard">
                     <v-row class="my-0" :style="{'height':`${windowWidth<959.58?'260px':'initial'}`,
                             'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
                             'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
@@ -163,91 +163,103 @@
                             <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
                             <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                         </v-col> -->
-                        <!-- AI 建議 警示 windowWidth<959.58 固定在上方 -->
-                        <v-col cols="12" md="6" sm="12" id="ai" v-show="windowWidth< 959.98&&isSearch"
-                            style="padding-right: 0px;padding-left: 0;padding-bottom: 8px;">
-                            <div class="result" style="padding-right: 0px;">
-                                <v-card class="result-card ai-suggestion" style="padding-top: 8px;">
-                                    <div class="content">
-                                        <div class="table-content" style="height: 280px;overflow: hidden;">
-                                            <v-expansion-panels accordion multiple v-model="panel.panel_row30"
-                                                id="aiwatermin">
-                                                <v-expansion-panel class="my-1">
-                                                    <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
-                                                        expand-icon="mdi-chevron-down">
-                                                        <div style="display: flex;align-items: center;">
-                                                            <div class="circle"
-                                                                v-if="suggData.WaterQuality.length+suggData.Observation.length>0">
-                                                                <span>{{
-                                                                    suggData.WaterQuality.length+suggData.Observation.length
-                                                                    }}</span>
-                                                            </div>
-
-                                                            警示
-                                                        </div>
-                                                    </v-expansion-panel-header>
-                                                    <v-expansion-panel-content>
-                                                        <v-card tile>
-                                                            <v-card-text class="pa-3 mx-0"
-                                                                style="padding-right: 4px !important;">
-                                                                <v-simple-table fixed-header dense height="200px">
-                                                                    <template v-slot:default>
-                                                                        <tbody>
-                                                                            <tr v-if="suggData.WaterQuality.length>0"
-                                                                                style="background-color:#E6B8BE;font-weight: bold;">
-                                                                                <td colspan="3">水質</td>
-                                                                            </tr>
-                                                                            <tr v-for="item in suggData.WaterQuality"
-                                                                                :key="'water-'+item.id">
-                                                                                <td v-html="setBR(item.status)"></td>
-                                                                                <td>
-                                                                                    <div class="alertOpen"
-                                                                                        style="cursor: pointer;"
-                                                                                        @click="openDialog('水質',item)">
-                                                                                        <v-icon>mdi-dots-vertical-circle-outline</v-icon>
-                                                                                    </div>
-                                                                                </td>
-
-                                                                            </tr>
-                                                                            <tr v-if="suggData.Observation.length>0"
-                                                                                style="background-color:#E6B8BE;font-weight: bold;">
-                                                                                <td colspan="3">觀察網</td>
-                                                                            </tr>
-
-                                                                            <tr v-for="item in suggData.Observation"
-                                                                                :key="'Obser-'+item.id">
-                                                                                <td v-html="setBR(item.status)"></td>
-                                                                                <td>
-                                                                                    <div class="alertOpen"
-                                                                                        style="cursor: pointer;"
-                                                                                        @click="openDialog('觀察網',item)">
-                                                                                        <v-icon>mdi-dots-vertical-circle-outline</v-icon>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </template>
-                                                                </v-simple-table>
-                                                            </v-card-text>
-                                                        </v-card>
-                                                    </v-expansion-panel-content>
-                                                </v-expansion-panel>
-                                            </v-expansion-panels>
-                                        </div>
-                                    </div>
-                                </v-card>
-                            </div>
-                        </v-col>
                     </v-row>
                 </div>
-                <!-- 查詢結果 -->
-                <div class="result" style="position: relative;" :style="{'height':`${windowWidth<959.58?'62vh':'initial'}`,
-                            'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
-                            'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
-                            'marginTop':`${windowWidth<959.58&&isSearch?'8px':'4px'}`}">
+                <div class="result">
                     <v-overlay :value="!isLoading" :absolute="true">
                         <v-progress-circular indeterminate size="64"></v-progress-circular>
                     </v-overlay>
+                    <div class="result-content" style="height: 100%;">
+                        <v-card class="result-card" style="height: 100%;padding-bottom: 12px">
+                            <!-- kb:{{cardData}} -->
+                            <Kb2CardGroups :cardData="cardData"></Kb2CardGroups>
+                            <div class="timeline" style="margin: 0 12px;display: flex;align-items: center;">
+                                <span v-if="!isSearchDate" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
+                                <v-row v-else style="margin-bottom: 0;">
+                                    <v-col cols=12 md="3" sm="3">
+                                        <v-row class="item-row item">
+                                            <v-col cols="12" md="4" sm="4">
+                                                <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${BaseParm['InspectedDate']&&BaseParm['InspectedDate']!==''&&BaseParm['InspectedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
+                                            </v-col>
+                                            <v-col cols="12" md="8" sm="8" class="pb-0">
+                                                <v-menu v-model="menu_inspecteddate"
+                                                    :close-on-content-click="false"
+                                                    :nudge-right="40"
+                                                    transition="scale-transition"
+                                                    offset-y min-width="auto">
+                                                    <template
+                                                        v-slot:activator="{ on, attrs }">
+                                                        <v-text-field
+                                                            v-model="BaseParm['InspectedDate']"
+                                                            class="mt-0" clearable
+                                                            readonly dense hide-details
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                            ></v-text-field>
+                                                    </template>
+                                                    <v-date-picker
+                                                        v-model="BaseParm['InspectedDate']"
+                                                        :max="getNowDate()"
+                                                        locale="zh-tw" no-title @input="
+                                                    menu_inspecteddate = false;
+                                                    "></v-date-picker>
+                                                </v-menu>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                    <v-col cols=12 md="3" sm="3">
+                                        <v-row class="item-row item">
+                                            <v-col cols="12" md="4" sm="4">
+                                                <span class="pa-0 ma-0"
+                                                    slot="prepend" :style="{'color':`${BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==''&&BaseParm['InspectedTime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon
+                                                        @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
+                                            </v-col>
+                                            <v-col cols="12" md="8" sm="8">
+                                                <v-text-field
+                                                    v-model="BaseParm['InspectedTime']"
+                                                    value="" dense type="time"
+                                                    hide-details></v-text-field>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                    <v-col cols="12" md="3" sm="3">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <button
+                                                    class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
+                                                    @click="importBasicData();isSearchDate=false" v-bind="attrs" v-on="on">
+                                                    帶入
+                                                </button>
+                                            </template>
+                                            <span>帶入養殖池的基本資料</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <button
+                                                    class="btn-secondary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
+                                                    @click="cancelSearchDate()" v-bind="attrs" v-on="on">
+                                                    取消
+                                                </button>
+                                            </template>
+                                            <span>帶入養殖池的基本資料</span>
+                                        </v-tooltip>
+                                    </v-col>
+
+                                </v-row>
+                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=true" style="margin-left: 8px;color:#006AA6;cursor: pointer;text-decoration:underline">詳細資訊</span>
+                            </div>
+                            
+                        </v-card>
+                    </div>
+                </div>
+                <!-- 查詢結果 -->
+                <div v-if="isShowResult" class="result" style="position: relative;" :style="{'height':`${windowWidth<959.58?'62vh':'initial'}`,
+                            'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
+                            'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
+                            'marginTop':`${windowWidth<959.58&&isSearch?'8px':'4px'}`}">
+                    <!-- <v-overlay :value="!isLoading" :absolute="true">
+                        <v-progress-circular indeterminate size="64"></v-progress-circular>
+                    </v-overlay> -->
                     <v-row style="margin-bottom: 0;">
                         <!-- 參數設定 -->
                         <v-col cols="12" md="6" sm="12" id="params">
@@ -340,7 +352,7 @@
                                     
                                     <div class="table-content" :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
                                                 'height':`${windowWidth>959.58?'49vh':'100%'}`}">
-                                        <v-row style="margin-bottom: 0;">
+                                        <!-- <v-row style="margin-bottom: 0;">
                                             <v-col cols=12 md="5" sm="5">
                                                 <v-row class="item-row item">
                                                     <v-col cols="12" md="4" sm="4">
@@ -399,7 +411,7 @@
                                                     <span>帶入養殖池的基本資料</span>
                                                 </v-tooltip>
                                             </v-col>
-                                        </v-row>
+                                        </v-row> -->
 
                                         <!-- 飼料參數 -->
                                         <v-expansion-panels id="feed" accordion multiple v-model="panel.panel_row13">
@@ -2165,7 +2177,7 @@
                                     <div class="table-content" :style="{'minHeight':`${windowHeight>880?'75vh':'64vh'}`,
                                                 'height':`${windowWidth>959.58?'49vh':'100%'}`}">
                                         <!-- 警示(水質+觀察網) -->
-                                        <v-expansion-panels v-if="windowWidth>959.98" accordion multiple
+                                        <v-expansion-panels accordion multiple
                                             v-model="panel.panel_row30" id="aiwater">
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
@@ -3128,18 +3140,11 @@
             </div>
             <!-- 移至最上方 -->
             <div class="fixed-btn">
-                <div v-if="windowWidth>960" class="bact-to-top">
-                    <!-- <v-tooltip bottom>
-                        <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-primary" @click="goAnchor('top')" v-bind="attrs" v-on="on">
-                                <v-icon>mdi-chevron-double-up</v-icon>
-                            </button>
-                        </template>
-                        <span>回到上方</span>
-                    </v-tooltip> -->
+                <div class="bact-to-top">
+                    
                 </div>
-                <div v-else class="to-self">
-                    <v-tooltip left>
+                <div class="to-self">
+                    <v-tooltip v-if="windowWidth<960" left>
                         <template v-slot:activator="{ on, attrs }">
                             <button class="btn-primary btn-to" @click="goAnchor('params')" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-pencil</v-icon>
@@ -3147,10 +3152,18 @@
                         </template>
                         <span>回到參數設定</span>
                     </v-tooltip>
-                    <v-tooltip left>
+                    <v-tooltip bottom left>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-primary" :style="{'border-radius':`${windowWidth<960?'0 !important':'4px !important'}`}" style="background-color: #408fbc !important;" @click="goAnchor('top')" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-chevron-double-up</v-icon>
+                            </button>
+                        </template>
+                        <span>回到上方</span>
+                    </v-tooltip>
+                    <v-tooltip v-if="windowWidth<960" left>
                         <template v-slot:activator="{ on, attrs }">
                             <button class="btn-primary btn-to to-ai"
-                                @click="if(windowWidth>959.58){goAnchor('#ai')}else{goAnchor('#aifeed')}" v-bind="attrs"
+                                @click="goAnchor('#ai')" v-bind="attrs"
                                 v-on="on">
                                 <v-icon>mdi-crosshairs-gps</v-icon>
                             </button>
@@ -3516,7 +3529,22 @@ export default {
                 { text: '增料百分比(%)', value: 'NextFeedIncrementPct', sortable: true,},
                 { text: '建議料號', value: 'FeedSize', sortable: false,},
             ],
-            feedDialog: false
+            feedDialog: false,
+            cardData:{
+                adg: 0,
+                water: [],
+                observation: [],
+                biomass: 0,
+                lime: 0,
+                nextFeed: [],
+                observationFeed: 0,
+                sugar: 0,
+                survival: undefined,
+                weight: undefined,
+            },
+            isShowResult: false,
+            isSearchDate: false,
+            oldSearchDate:[],
         }
     },
     methods: {
@@ -3542,6 +3570,8 @@ export default {
         // locateSelect
         async get_scopeData(evt) {
             console.log('select pool',evt);
+            this.isShowResult = false;
+            this.goAnchor('top');
             // await this.getQuerry();
             if(this.nowSelectPool!==evt) {
                 this.nowSelectPool = evt;
@@ -3576,6 +3606,8 @@ export default {
         getSelectData(evt) {
             console.log('Change Select',evt);
             this.isSearch = false;
+            this.isShowResult = false;
+            this.goAnchor('top');
             if(evt==null) {
                 //如果BaseParm['InspectedDate']有資料，即保留下去查詢ai回饋
                 var tempDate = _.cloneDeep(this.BaseParm['InspectedDate']);
@@ -3600,8 +3632,10 @@ export default {
         },
         goAnchor(selector) {
             if(selector=='top') {
+                let ele = document.getElementById('waterObservation');
+                ele.scrollTop=0;
                 window.scrollTo({top: 0, behavior: 'smooth'});
-            }else if(selector=='params' || selector=='ai') {
+            }else if(selector=='params' || selector=='ai'||selector=='dashboard') {
                 let ele = document.getElementById(selector);
                 let eTop = ele.offsetTop;
                 ele.scrollIntoView({
@@ -3956,6 +3990,17 @@ export default {
                     "Material": output_data.Material,//投料判斷列表
                     "MakeWater": output_data.MakeWater//養殖前期做水添加物
                 };
+                this.cardData = {};
+                this.cardData.water = this.suggData.WaterQuality;
+                this.cardData.observation = this.suggData.Observation;
+                this.cardData.sugar = this.suggData.Material['SugarTotal']?this.suggData.Material['SugarTotal']:0;
+                this.cardData.nextFeed = this.suggData.Feed.FeedingPlan?this.suggData.Feed.FeedingPlan:[];
+                this.cardData.lime = this.suggData.Material['Lime']?this.suggData.Material['Lime']:0;
+                this.cardData.adg = this.suggData.DynamicData['ADG']?this.suggData.DynamicData['ADG']:0;
+                this.cardData.observationFeed = this.suggData.DynamicData['FeedAmountInObservation']?this.suggData.DynamicData['FeedAmountInObservation']:0;
+                this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
+                this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
+                this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
                 if(this.windowWidth<959.58 && !bool) {
                     setTimeout(()=>{
                         this.goAnchor('#aiwatermin');
@@ -4171,6 +4216,18 @@ export default {
                     this.$toast.success(`${(isSaved)?'新增':'查詢'}成功`, {
                             duration: 2000
                         });
+                    // this.cardData = {};
+                    // this.cardData.water = this.suggData.WaterQuality;
+                    // this.cardData.observation = this.suggData.Observation;
+                    // this.cardData.sugar = this.suggData.Material['SugarTotal']?this.suggData.Material['SugarTotal']:0;
+                    // this.cardData.nextFeed = this.suggData.Feed.FeedingPlan?this.suggData.Feed.FeedingPlan:[];
+                    // this.cardData.lime = this.suggData.Material['Lime']?this.suggData.Material['Lime']:0;
+                    // this.cardData.adg = this.suggData.DynamicData['ADG']?this.suggData.DynamicData['ADG']:0;
+                    // this.cardData.observationFeed = this.suggData.DynamicData['FeedAmountInObservation']?this.suggData.DynamicData['FeedAmountInObservation']:0;
+                    // this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
+                    // this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
+                    // this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
+                    console.log('cardData',this.suggData);
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
@@ -4221,6 +4278,18 @@ export default {
                 "Material": {},//投料判斷列表
                 "MakeWater": {},//養殖前期做水添加物
             };
+            this.cardData={
+                adg: 0,
+                water: [],
+                observation: [],
+                biomass: 0,
+                lime: 0,
+                nextFeed: [],
+                observationFeed: 0,
+                sugar: 0,
+                survival: undefined,
+                weight: undefined,
+            },
             this.inputRemark={ DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''}
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
@@ -4495,7 +4564,17 @@ export default {
             }
             
             return isColor;
-        }
+        },
+        searchDate() {
+            this.isSearchDate = true;
+            this.oldSearchDate[0] = this.BaseParm['InspectedDate'];
+            this.oldSearchDate[1] = this.BaseParm['InspectedTime'];
+        },
+        cancelSearchDate() {
+            this.isSearchDate = false;
+            this.BaseParm['InspectedDate'] = this.oldSearchDate[0];
+            this.BaseParm['InspectedTime'] = this.oldSearchDate[1];
+        }, 
     },
     async created() {
         for(let i=0;i<this.bacteriaAll.length;i++) {
