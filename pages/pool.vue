@@ -448,7 +448,17 @@
                   <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
-            </v-card-text>    
+            </v-card-text>
+            <v-card-text style="display: flex;align-items: center;">
+              <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
+                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
+                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+              </v-autocomplete>
+              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require"
+                @change="tempChange" label="選擇樣板">
+              </v-autocomplete>
+            </v-card-text> 
             <v-card-text style="display: flex;">
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
               </v-text-field>
@@ -471,22 +481,12 @@
               <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
-            <v-card-text>
-              <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
-                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
-                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-              </v-autocomplete>
-            </v-card-text>
+            
             <v-card-text>
               <v-text-field filled dense v-model="addparm.remark" hide-details label="備註(選)">
               </v-text-field>
             </v-card-text>
-            <v-card-text>
-              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require"
-                @change="tempChange" label="選擇樣板">
-              </v-autocomplete>
-            </v-card-text>
+            
             <!-- <v-col cols="12"> -->
               <!-- 樣板 先暫時拿掉-->
               <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details

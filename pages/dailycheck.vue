@@ -88,6 +88,14 @@
                                                 </template>
                                                 <span>修改</span>
                                             </v-tooltip>
+                                            <v-tooltip bottom v-if="daily.log.length>0">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <button class="btn-icon-secondary" @click="openLog(daily.action_name,daily.log)" v-bind="attrs" v-on="on">
+                                                        <v-icon>mdi-clipboard-search-outline</v-icon>
+                                                    </button>
+                                                </template>
+                                                <span>動作資訊</span>
+                                            </v-tooltip>
                                         </div>
                                     </div>
                                     <div class="description">
@@ -223,6 +231,11 @@
                             </div>
                             
                         </div>
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>{{ isDelay?'延期':'複製' }}原因 </v-card-title></div>
+                            <v-text-field v-model="delayItem.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            </v-text-field>
+                        </div>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
@@ -308,6 +321,7 @@
                                 </div>
                                 
                             </div>
+                            
                         </v-card-text>
                         <!-- 財務 -->
                         <!-- <v-card-text style="display: flex;align-items: center;padding: 0;">
@@ -332,6 +346,11 @@
                             <!-- <v-text-field v-model="editItem.action_remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field> -->
                             <!-- <v-textarea v-model="addItem.action_remark" hide-details filled clearable placeholder="備註..." style="width: 100%;"></v-textarea> -->
+                        </div>
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>新增原因 </v-card-title></div>
+                            <v-text-field v-model="addItem.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            </v-text-field>
                         </div>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
@@ -399,6 +418,11 @@
                             </div>
                             
                         </div>
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>延期原因 </v-card-title></div>
+                            <v-text-field v-model="delayAll.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            </v-text-field>
+                        </div>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
@@ -430,13 +454,13 @@
                             <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
                                 {{ action }}
                             </div> -->
-                            <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                            <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
                                 <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">第幾天開始執行</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">持續執行至第幾天</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">說明</span></v-col>
                             </v-row>
-                            <v-row class="content" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                            <v-row class="content" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
                                 <v-col cols="3"><span>{{ action.name_ch }}</span></v-col>
                                 <v-col cols="3"><span>Day {{action.start_on_which_day}}<br/></span></v-col>
                                 <v-col cols="3"><span>Day {{action.end_on_which_day}}<br/></span></v-col>
@@ -448,6 +472,50 @@
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
                         <v-btn class="btn-primary" @click="nextWorkDialog=false">確認</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
+        <!-- 動作資訊(log) -->
+        <v-dialog v-model="logDialog" max-width="500px">
+            <v-form ref="delayAllform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                        <div style="display: inline-block;">
+                            <span>{{logData.action_name}}資訊</span> 
+                        </div>
+                        <div class="add" style="float: right;display: inline-block;">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="logDialog = false;" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div v-if="logData.log.length>0" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
+                                {{ action }}
+                            </div> -->
+                            <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                                <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
+                                <v-col cols="3"><span style="font-weight:bold">原因</span></v-col>
+                                <v-col cols="3"><span style="font-weight:bold">時間</span></v-col>
+                                <v-col cols="3"><span style="font-weight:bold">人員</span></v-col>
+                            </v-row>
+                            <v-row class="content" v-for="(action,id) in logData.log" :key="'log_'+id" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                                <v-col cols="3"><span>{{ action.operation=='delay'?'延遲':action.operation=='copy'?'複製':'新增' }}</span></v-col>
+                                <v-col cols="3"><span>{{action.operation_reason}}<br/></span></v-col>
+                                <v-col cols="3"><span>{{action.operation_time}}<br/></span></v-col>
+                                <v-col cols="3"><span>{{action.operator}}<br/></span></v-col>
+                            </v-row>
+                        </div>
+                        <div v-else class="card-title" style="width:200px;display: flex;flex-direction: column;align-items: flex-start;padding-top: 8px;">無資料</div>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-primary" @click="logDialog = false;">確認</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -495,12 +563,14 @@ export default {
             addPoolData:[],
             nextWorkDialog: false,
             nextWork:[],
+            logData:{action_name:'',log:[]},
+            logDialog: false,
         }
     },
     async created() {
         await this._pageCheck(); //驗證頁面是否可檢視
         await this.getAllUser();
-        // this.getaccList();//取得所有帳號，比對執行者用
+        this.getaccList();//取得所有帳號，比對執行者用
         this.getstepdata();
         await this.getSelectPoolData(); //取得非空池的池
         
@@ -883,6 +953,8 @@ export default {
             this.delayItem.index = id;
             this.delayDate = dayjs(new Date(date)).format("YYYY-MM-DD");
             this.isDelay = bool;
+            this.delayItem.operation=bool?'delay':'copy';
+            this.delayItem.operation_reason = '';
             this.delayDialog = true;
         },
         getNowDate: function() {
@@ -969,7 +1041,9 @@ export default {
                 remark:'',
                 estimate_member:0,
                 estimate_spend:0,
-                step_id:this.poolData.step_id
+                step_id:this.poolData.step_id,
+                operation:'create',
+                operation_reason:''
             };
             this.addDialog = true;
         },
@@ -983,6 +1057,8 @@ export default {
                     "remark": this.addItem.remark,
                     "started_date": this.addItem.start_date,
                     "ended_date": this.addItem.end_date,
+                    'operation':'create',
+                    'operation_reason':this.addItem.operation_reason,
                     "estimated_member": 0,
                     "estimated_spend": 0,
                     "created_user": this.$auth.$state.user.email
@@ -1030,7 +1106,7 @@ export default {
         },
         // 全部延期
         delayAllOpen(item) {
-            this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date}
+            this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date,operation:'delay',operation_reason:''}
             let index = this.poolData.daily.map(x=>x.scheduling_date).indexOf(item.scheduling_date);
             // console.log(this.poolData.daily.map(x=>x.scheduling_date),item['scheduling_date']);
             this.poolData.daily.forEach((d,did)=>{
@@ -1128,6 +1204,19 @@ export default {
             this.nextWork = _.cloneDeep(data);
             this.nextWorkDialog = true;
         },
+        openLog(name,log) {
+            this.logDialog = true;
+            this.logData.action_name = name;
+            this.logData.log = _.cloneDeep(log);
+            this.logData.log.forEach(l=>{
+                l.operator = l.operator?this.filterUserData(l.operator):'';
+            })
+        },
+        filterUserData(user) {
+            let position = this.accdata.filter(x=>x.username==user)[0].position?this.accdata.filter(x=>x.username==user)[0].position:'';
+            let name = this.accdata.filter(x=>x.username==user)[0].account_name?this.accdata.filter(x=>x.username==user)[0].account_name:''
+            return position+'-'+name;
+        }
     },
     watch: {
     },
