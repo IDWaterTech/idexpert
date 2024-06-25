@@ -743,7 +743,7 @@
                             <v-col cols="3"><span>{{daily.scheduling_date}}<br/></span></v-col>
                             <v-col cols="3"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span>
                                 <br/>
-                                <span>{{daily.msg}}</span></v-col>
+                                <span style="max-height: 48px;overflow-y: scroll;display: block;">{{daily.msg}}</span></v-col>
                             <v-col cols="4"><span>{{daily.execute_time.split(' ')[0].split('-').slice(1,3).join('/') +" "+ daily.execute_time.split(' ')[1].split(':').slice(0,2).join(':')}}<br/>{{daily.executor}}</span></v-col>
                         </v-row>
                         

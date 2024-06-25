@@ -1196,6 +1196,8 @@ export default {
         },
         // 檢視下一個工作
         async getNextWork() {
+            // 重新整理資料
+            this.searchPool();
             this.nextWork = [];
             // get next work 
             let parm = {step_id: this.poolData.step_id,displayed_next_one: true}
