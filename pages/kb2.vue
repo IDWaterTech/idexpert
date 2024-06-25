@@ -172,7 +172,7 @@
                     <div class="result-content" style="height: 100%;">
                         <v-card class="result-card" style="height: 100%;padding-bottom: 12px">
                             <!-- kb:{{cardData}} -->
-                            <Kb2CardGroups :cardData="cardData"></Kb2CardGroups>
+                            <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
                             <div class="timeline" style="margin: 0 12px;display: flex;align-items: center;">
                                 <span v-if="!isSearchDate" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
                                 <v-row v-else style="margin-bottom: 0;">
@@ -246,7 +246,7 @@
                                     </v-col>
 
                                 </v-row>
-                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=true" style="margin-left: 8px;color:#006AA6;cursor: pointer;text-decoration:underline">詳細資訊</span>
+                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" style="margin-left: 8px;color:#006AA6;cursor: pointer;text-decoration:underline">詳細資訊</span>
                             </div>
                             
                         </v-card>
@@ -3530,18 +3530,18 @@ export default {
                 { text: '建議料號', value: 'FeedSize', sortable: false,},
             ],
             feedDialog: false,
-            cardData:{
-                adg: 0,
-                water: [],
-                observation: [],
-                biomass: 0,
-                lime: 0,
-                nextFeed: [],
-                observationFeed: 0,
-                sugar: 0,
-                survival: undefined,
-                weight: undefined,
-            },
+            // cardData_back:{
+            //     adg: 0,
+            //     water: [],
+            //     observation: [],
+            //     biomass: 0,
+            //     lime: 0,
+            //     nextFeed: [],
+            //     observationFeed: 0,
+            //     sugar: 0,
+            //     survival: undefined,
+            //     weight: undefined,
+            // },
             isShowResult: false,
             isSearchDate: false,
             oldSearchDate:[],
@@ -3567,9 +3567,8 @@ export default {
         onOk(value) {
             console.log(value);
         },
-        // locateSelect
+        // 下拉選擇，切換池 locateSelect
         async get_scopeData(evt) {
-            console.log('select pool',evt);
             this.isShowResult = false;
             this.goAnchor('top');
             // await this.getQuerry();
@@ -3577,9 +3576,10 @@ export default {
                 this.nowSelectPool = evt;
                 this.querrySelected = '';
                 this.isSearch = false;
-                
                 this.resetParm();
-                this.importBasicData();//帶入數據
+
+                await this.importBasicData();//帶入數據, 後端帶入養殖池的最新資料
+                await this.postParm(false);//按下查詢ai回饋
             }
             this.allData.forEach(f=>{
                 f.node.forEach(a=>{
@@ -3593,12 +3593,15 @@ export default {
                     
                 })
             })
-            
+            //現在選擇的池有的編輯紀錄
             this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
+            
             if(this.nowSelectDataLst==undefined) {
-                this.resetParm();
+                this.nowSelectDataLst = [];
+                //this.resetParm();
             }
-            console.log('nowSelectDataLst',this.nowSelectDataLst);
+            
+            // console.log('nowSelectDataLst',this.nowSelectDataLst);
             // this.importBasicData();//帶入數據
             // this.allData.forEach(d=>{d.node.forEach(s=>{s.node.forEach(p=>{if(p.id==evt)this.nowSelectPool=s.name+'_'+p.name})})});
         },
@@ -3888,7 +3891,9 @@ export default {
 
         },
         importQuerry:async function(_input_data = null,bool=false){
+            console.log("importQuerry: _input_data + bool",_input_data,bool);
             if(this.querrySelected==null && _input_data == null){
+                console.log("importQuerry resetParm!");
                 this.resetParm();
                 return;
             }else{
@@ -3900,7 +3905,7 @@ export default {
                 }else{
                     input_data = _input_data;
                 }
-                console.log('import',input_data);
+                //console.log('importQuerry input_data:',input_data);
                 this.BaseParm = input_data.BaseParm;
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = _.cloneDeep(input_data.FeedParm);
@@ -3910,7 +3915,7 @@ export default {
                 }else {
                     this.inputRemark = { DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''}
                 }
-                console.log('新增',input_data,this.inputRemark);
+                //console.log('新增',input_data,this.inputRemark);
                 //自動查表計算飼料CN比
                 this.changeCrudeProteinPct();
                 if(this.FeedParm['LastFeedDatetime']) {
@@ -3952,7 +3957,7 @@ export default {
                     }
                     
                 })
-                console.log('Input Observation',this.ObservationData);
+                //console.log('Input Observation',this.ObservationData);
                 
                 if(this.ObservationData['SamplingDatetime']) {
                     this.ObservationData['SamplingDatetime'] = this.$moment(new Date(this.ObservationData['SamplingDatetime']), 'YYYY-MM-DD HH:mm');
@@ -3990,17 +3995,17 @@ export default {
                     "Material": output_data.Material,//投料判斷列表
                     "MakeWater": output_data.MakeWater//養殖前期做水添加物
                 };
-                this.cardData = {};
-                this.cardData.water = this.suggData.WaterQuality;
-                this.cardData.observation = this.suggData.Observation;
-                this.cardData.sugar = this.suggData.Material['SugarTotal']?this.suggData.Material['SugarTotal']:0;
-                this.cardData.nextFeed = this.suggData.Feed.FeedingPlan?this.suggData.Feed.FeedingPlan:[];
-                this.cardData.lime = this.suggData.Material['Lime']?this.suggData.Material['Lime']:0;
-                this.cardData.adg = this.suggData.DynamicData['ADG']?this.suggData.DynamicData['ADG']:0;
-                this.cardData.observationFeed = this.suggData.DynamicData['FeedAmountInObservation']?this.suggData.DynamicData['FeedAmountInObservation']:0;
-                this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
-                this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
-                this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
+                // this.cardData = {};
+                // this.cardData.water = this.suggData.WaterQuality;
+                // this.cardData.observation = this.suggData.Observation;
+                // this.cardData.sugar = this.suggData.Material['SugarTotal']?this.suggData.Material['SugarTotal']:0;
+                // this.cardData.nextFeed = this.suggData.Feed.FeedingPlan?this.suggData.Feed.FeedingPlan:[];
+                // this.cardData.lime = this.suggData.Material['Lime']?this.suggData.Material['Lime']:0;
+                // this.cardData.adg = this.suggData.DynamicData['ADG']?this.suggData.DynamicData['ADG']:0;
+                // this.cardData.observationFeed = this.suggData.DynamicData['FeedAmountInObservation']?this.suggData.DynamicData['FeedAmountInObservation']:0;
+                // this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
+                // this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
+                // this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
                 if(this.windowWidth<959.58 && !bool) {
                     setTimeout(()=>{
                         this.goAnchor('#aiwatermin');
@@ -4156,6 +4161,7 @@ export default {
             // }
         },
         postParm:async function(isSaved=false){
+            //資料送回後端查詢ai回饋，issaved=true，會同時紀錄該比資料
             //isSaved是否新增
             this.UserData.IsSaved = isSaved;
             // console.log("養殖基本參數 BaseParm",this.BaseParm);
@@ -4204,7 +4210,7 @@ export default {
                     })
                 }
             })
-            console.log("all參數：",allParm);
+            //console.log("all參數：",allParm);
             await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
                 if(res.status==200){
                     this.suggData.DynamicData = res.data.DynamicData;
@@ -4213,7 +4219,7 @@ export default {
                     this.suggData.Feed = res.data.Feed;
                     this.suggData.Material = res.data.Material;
                     this.suggData.MakeWater = res.data.MakeWater;
-                    this.$toast.success(`${(isSaved)?'新增':'查詢'}成功`, {
+                    this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
                             duration: 2000
                         });
                     // this.cardData = {};
@@ -4227,11 +4233,11 @@ export default {
                     // this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
                     // this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
                     // this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
-                    console.log('cardData',this.suggData);
+                    // console.log('cardData',this.suggData);
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
-                console.log(`${(isSaved)?'新增':'查詢'} api:` + res.request.responseURL);
+                console.log(`${(isSaved)?'新增':'查詢'} 知識庫api:` + res.request.responseURL);
             }).catch(error => {
                 this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
             })
@@ -4278,18 +4284,18 @@ export default {
                 "Material": {},//投料判斷列表
                 "MakeWater": {},//養殖前期做水添加物
             };
-            this.cardData={
-                adg: 0,
-                water: [],
-                observation: [],
-                biomass: 0,
-                lime: 0,
-                nextFeed: [],
-                observationFeed: 0,
-                sugar: 0,
-                survival: undefined,
-                weight: undefined,
-            },
+            // this.cardData={
+            //     adg: 0,
+            //     water: [],
+            //     observation: [],
+            //     biomass: 0,
+            //     lime: 0,
+            //     nextFeed: [],
+            //     observationFeed: 0,
+            //     sugar: 0,
+            //     survival: undefined,
+            //     weight: undefined,
+            // },
             this.inputRemark={ DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''}
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{
@@ -4303,6 +4309,7 @@ export default {
             })
         },
         importBasicData:async function(){//帶入數據
+            console.log("importBasicData!!");
             if(this.nowSelectPool==""){
                 this.$toast.error(`請先選擇養殖池`, { duration: 2000 });
                 return;
@@ -4335,7 +4342,7 @@ export default {
                     //     }
                         
                     // })
-                    console.log('FeedParm',this.FeedParm);
+                    //console.log('FeedParm',this.FeedParm);
                     this.$toast.success(`帶入基本資料成功`, { duration: 2000 });
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
@@ -4607,6 +4614,20 @@ export default {
             var Pond = (this.BaseParm["Pond"]==undefined)?'':this.BaseParm["Pond"];
 
             return Factory + "_" + PondArea + "_" + Pond;
+        },
+        cardData2(){
+            var mycardData = {};
+            mycardData.water = (this.suggData?.WaterQuality)?this.suggData.WaterQuality:[];
+            mycardData.observation = (this.suggData?.Observation)?this.suggData.Observation:[];
+            mycardData.sugar = (this.suggData?.Material['SugarTotal'])?this.suggData.Material['SugarTotal']:0;
+            mycardData.nextFeed = (this.suggData?.Feed?.FeedingPlan)?this.suggData.Feed.FeedingPlan:[];
+            mycardData.lime = (this.suggData?.Material['Lime'])?this.suggData.Material['Lime']:0;
+            mycardData.adg = (this.suggData?.DynamicData['ADG'])?this.suggData.DynamicData['ADG']:0;
+            mycardData.observationFeed = (this.suggData?.DynamicData['FeedAmountInObservation'])?this.suggData.DynamicData['FeedAmountInObservation']:0;
+            mycardData.biomass = (this.suggData?.DynamicData['Biomass'])?this.suggData.DynamicData['Biomass']:0;
+            mycardData.weight = this.suggData?.DynamicData['WeightFeedRate'];
+            mycardData.survival = this.suggData?.DynamicData['SurvivalRate'];
+            return mycardData;
         },
     },
     mounted() {

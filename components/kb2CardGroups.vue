@@ -64,9 +64,9 @@
                             <div class="content">
                                 <div class="main-content" style="display: flex;padding-top: 16px;align-items: center;justify-content: space-between;width: 100%;">
                                     <div class="choose" style="">
-                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
+                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案:{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
                                         <span style="font-size: 0.85rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?'+':''}}
-                                            <span style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeedIncrementPct+'%':''}}</span>
+                                            <span style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeedIncrementPct:''}}</span>
                                             <span style="font-size: 0.85rem;color: #00324E;font-weight: bold;">{{cardData.nextFeed.length>0?'粉':''}}</span>
                                         </span>
                                     </div>
