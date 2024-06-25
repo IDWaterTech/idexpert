@@ -84,17 +84,18 @@
                     legend: {show: false},
                     color: this.colors
                     };
-                // myChartExtend['tooltip'] = {
-                //     trigger: 'item',
-                //     formatter: function (params) {
-                //         console.log('params.name',params.name);
-                //         console.log('this.chartData?',this.chartData);
-                //         if(params.name==this.chartData?.rows[0]?.name) {
-                //             return `${this.chartData?.rows[0].name}:${params.data.value}%`;
-                //         }
+                myChartExtend['tooltip'] = {
+                    trigger: 'item',
+                    formatter: function (params) {
+                        // console.log('params.name',params.name);
+                        // console.log('this.chartData?',this.chartData);
+                        // return `${params.value}%`
+                        if(params.name!=='') {
+                            return `${params.name}:${params.data.value}%`;
+                        }
                         
-                //     }
-                // };
+                    }
+                };
                 myChartExtend['series'] = {
                         avoidLabelOverlap: false,
                         label: {
@@ -108,7 +109,7 @@
                                 },
                                 rich: {
                                     title: {
-                                        fontSize: 20,
+                                        fontSize: 24,
                                         fontWeight: 'bold',
                                     }, 
                                 }
@@ -130,7 +131,7 @@
         },
         watch:{
             chartData() {
-                console.log('chartdata change',this.chartData);
+                // console.log('chartdata change',this.chartData);
             }
         }
     }

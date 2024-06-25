@@ -173,15 +173,15 @@
                         <v-card class="result-card" style="height: 100%;padding-bottom: 12px">
                             <!-- kb:{{cardData}} -->
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
-                            <div class="timeline" style="margin: 0 12px;display: flex;align-items: center;">
+                            <div class="timeline" style="margin: 0 16px;display: flex;align-items: center;">
                                 <span v-if="!isSearchDate" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
                                 <v-row v-else style="margin-bottom: 0;">
                                     <v-col cols=12 md="3" sm="3">
-                                        <v-row class="item-row item">
+                                        <v-row class="item-row item" style="margin-bottom: 0;">
                                             <v-col cols="12" md="4" sm="4">
                                                 <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${BaseParm['InspectedDate']&&BaseParm['InspectedDate']!==''&&BaseParm['InspectedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
                                             </v-col>
-                                            <v-col cols="12" md="8" sm="8" class="pb-0">
+                                            <v-col cols="12" md="8" sm="8">
                                                 <v-menu v-model="menu_inspecteddate"
                                                     :close-on-content-click="false"
                                                     :nudge-right="40"
@@ -208,7 +208,7 @@
                                         </v-row>
                                     </v-col>
                                     <v-col cols=12 md="3" sm="3">
-                                        <v-row class="item-row item">
+                                        <v-row class="item-row item" style="margin-bottom: 0;">
                                             <v-col cols="12" md="4" sm="4">
                                                 <span class="pa-0 ma-0"
                                                     slot="prepend" :style="{'color':`${BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==''&&BaseParm['InspectedTime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon
@@ -227,7 +227,7 @@
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button
                                                     class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
-                                                    @click="importBasicData();isSearchDate=false" v-bind="attrs" v-on="on">
+                                                    @click="importBasicData();isSearchDate=false;" v-bind="attrs" v-on="on">
                                                     帶入
                                                 </button>
                                             </template>
@@ -241,12 +241,12 @@
                                                     取消
                                                 </button>
                                             </template>
-                                            <span>帶入養殖池的基本資料</span>
+                                            <span>取消</span>
                                         </v-tooltip>
                                     </v-col>
 
                                 </v-row>
-                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" style="margin-left: 8px;color:#006AA6;cursor: pointer;text-decoration:underline">詳細資訊</span>
+                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" style="margin-left: 16px;color:#006AA6;cursor: pointer;text-decoration:underline">詳細資訊</span>
                             </div>
                             
                         </v-card>
@@ -3579,7 +3579,7 @@ export default {
                 this.resetParm();
 
                 await this.importBasicData();//帶入數據, 後端帶入養殖池的最新資料
-                await this.postParm(false);//按下查詢ai回饋
+                // await this.postParm(false);//按下查詢ai回饋
             }
             this.allData.forEach(f=>{
                 f.node.forEach(a=>{
@@ -4326,12 +4326,13 @@ export default {
             let url =`${this.$store.state.mydata.gobal_api.apiUrl}/kb/required-data/`;
             await this.$axios.get(url, {params:parm}).then(res => {
                 if (res.status == 200) {
-                    this.getSampleData();
-                    res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
-                    res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
+                    // 取得上次填入資料，現在觀察往已自動帶入，不須取得上次填入的資料
+                    // this.getSampleData();
+                    // res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
+                    // res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
                     this.importQuerry(res.data,true);//導入資料
                     // 先不幫查ai回饋資訊
-                    // this.postParm(false);//查詢ai回饋資訊
+                    this.postParm(false);//查詢ai回饋資訊
                     // var keyLst = Object.keys(this.optData);
                     // keyLst.forEach(k=>{
                     //     if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {

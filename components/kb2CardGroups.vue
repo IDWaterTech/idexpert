@@ -18,7 +18,8 @@
                             <v-btn class="btn-icon just-icon" :class="{'disabled':alert.length==0}" @click="alertChange('left')"><v-icon>mdi-menu-left</v-icon></v-btn>
                         </div>
                         <div class="main-content" v-if="alert.length>0">
-                            <v-card-text class="dialog-text">
+                            <v-card-text class="dialog-text"
+                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1)">
                                 <b>狀態作動</b>
                                 <span>
                                     {{alert[nowAlert].status }}</span>
@@ -64,7 +65,7 @@
                             <div class="content">
                                 <div class="main-content" style="display: flex;padding-top: 16px;align-items: center;justify-content: space-between;width: 100%;">
                                     <div class="choose" style="">
-                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案:{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
+                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
                                         <span style="font-size: 0.85rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?'+':''}}
                                             <span style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeedIncrementPct:''}}</span>
                                             <span style="font-size: 0.85rem;color: #00324E;font-weight: bold;">{{cardData.nextFeed.length>0?'粉':''}}</span>
@@ -347,7 +348,7 @@ export default {
         .top {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
             width: 100%;
             border-bottom: 1px solid $color-primary;
@@ -395,7 +396,7 @@ export default {
                 padding-top: 24px;
                 text-align: right;
                 display: flex;
-                justify-content: flex-end;
+                justify-content: center;
                 width: 100%;
             }
             .num-of-alert {
