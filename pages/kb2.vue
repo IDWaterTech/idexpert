@@ -171,7 +171,6 @@
                     </v-overlay>
                     <div class="result-content" style="height: 100%;">
                         <v-card class="result-card" style="height: 100%;padding-bottom: 12px">
-                            <!-- kb:{{cardData}} -->
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
                             <div class="timeline" style="margin: 0 16px;display: flex;align-items: center;">
                                 <span v-if="!isSearchDate" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
@@ -3530,18 +3529,6 @@ export default {
                 { text: '建議料號', value: 'FeedSize', sortable: false,},
             ],
             feedDialog: false,
-            // cardData_back:{
-            //     adg: 0,
-            //     water: [],
-            //     observation: [],
-            //     biomass: 0,
-            //     lime: 0,
-            //     nextFeed: [],
-            //     observationFeed: 0,
-            //     sugar: 0,
-            //     survival: undefined,
-            //     weight: undefined,
-            // },
             isShowResult: false,
             isSearchDate: false,
             oldSearchDate:[],
@@ -3995,17 +3982,6 @@ export default {
                     "Material": output_data.Material,//投料判斷列表
                     "MakeWater": output_data.MakeWater//養殖前期做水添加物
                 };
-                // this.cardData = {};
-                // this.cardData.water = this.suggData.WaterQuality;
-                // this.cardData.observation = this.suggData.Observation;
-                // this.cardData.sugar = this.suggData.Material['SugarTotal']?this.suggData.Material['SugarTotal']:0;
-                // this.cardData.nextFeed = this.suggData.Feed.FeedingPlan?this.suggData.Feed.FeedingPlan:[];
-                // this.cardData.lime = this.suggData.Material['Lime']?this.suggData.Material['Lime']:0;
-                // this.cardData.adg = this.suggData.DynamicData['ADG']?this.suggData.DynamicData['ADG']:0;
-                // this.cardData.observationFeed = this.suggData.DynamicData['FeedAmountInObservation']?this.suggData.DynamicData['FeedAmountInObservation']:0;
-                // this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
-                // this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
-                // this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
                 if(this.windowWidth<959.58 && !bool) {
                     setTimeout(()=>{
                         this.goAnchor('#aiwatermin');
@@ -4222,18 +4198,6 @@ export default {
                     this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
                             duration: 2000
                         });
-                    // this.cardData = {};
-                    // this.cardData.water = this.suggData.WaterQuality;
-                    // this.cardData.observation = this.suggData.Observation;
-                    // this.cardData.sugar = this.suggData.Material['SugarTotal']?this.suggData.Material['SugarTotal']:0;
-                    // this.cardData.nextFeed = this.suggData.Feed.FeedingPlan?this.suggData.Feed.FeedingPlan:[];
-                    // this.cardData.lime = this.suggData.Material['Lime']?this.suggData.Material['Lime']:0;
-                    // this.cardData.adg = this.suggData.DynamicData['ADG']?this.suggData.DynamicData['ADG']:0;
-                    // this.cardData.observationFeed = this.suggData.DynamicData['FeedAmountInObservation']?this.suggData.DynamicData['FeedAmountInObservation']:0;
-                    // this.cardData.biomass = this.suggData.DynamicData['Biomass']?this.suggData.DynamicData['Biomass']:0;
-                    // this.cardData.weight = this.suggData.DynamicData['WeightFeedRate'];
-                    // this.cardData.survival = this.suggData.DynamicData['SurvivalRate'];
-                    // console.log('cardData',this.suggData);
                 } else {
                     this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
@@ -4284,18 +4248,6 @@ export default {
                 "Material": {},//投料判斷列表
                 "MakeWater": {},//養殖前期做水添加物
             };
-            // this.cardData={
-            //     adg: 0,
-            //     water: [],
-            //     observation: [],
-            //     biomass: 0,
-            //     lime: 0,
-            //     nextFeed: [],
-            //     observationFeed: 0,
-            //     sugar: 0,
-            //     survival: undefined,
-            //     weight: undefined,
-            // },
             this.inputRemark={ DynamicData: '', WaterQuality: '', Feed: '', Material: '', MakeWater: '', Other:''}
             var keyLst = Object.keys(this.optData);
             keyLst.forEach(k=>{

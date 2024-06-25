@@ -38,44 +38,6 @@
                     ],
                     offsetY: 80
                 },
-                chartExtend: {
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: function (params) {
-                            console.log('params',params);
-                            console.log('chartData',this.chartData);
-                            if(params.name==this.chartData?.rows[0]?.name) {
-                                return `${this.chartData?.rows[0].name}:${params.data.value}%`;
-                            }
-                            
-                        }
-                    },
-                    series: {
-                        avoidLabelOverlap: false,
-                        label: {
-                            normal: {
-                                show: true,    //默认显示关闭,如果此处是true,则数据重叠
-                                position: 'center',    //显示的位置,center是饼环图中间显示,
-                                formatter: (params)=>{
-                                    if(params.name==this.chartData?.rows[0]?.name) {
-                                        return `{title|${params.data.value}%}`;
-                                    }
-                                },
-                                rich: {
-                                    title: {
-                                        fontSize: 20,
-                                        fontWeight: 'bold',
-                                    }, 
-                                }
-                            }
-                        }
-                    },
-                    
-                    legend: {
-                        show: false
-                    },
-                    color: this.colors
-                },
             }
         },
         computed: {
