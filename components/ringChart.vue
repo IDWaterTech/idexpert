@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ve-ring :data="chartData" :settings="chartSetting" :extend="chartExtend2" width="150px" height="150px"></ve-ring>
+        <ve-ring :data="chartData" :settings="chartSetting" :extend="chartExtend2" width="180px" height="180px"></ve-ring>
     </div>
 </template>
 
@@ -34,9 +34,9 @@
                         show: false
                     },
                     radius: [
-                        '40', '60'
+                        '50', '70'
                     ],
-                    offsetY: 80
+                    offsetY: 90
                 },
             }
         },

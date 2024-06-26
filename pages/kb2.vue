@@ -88,6 +88,13 @@
                                         <div style="display: flex;align-items: center;width: calc(100% - 40px);">
                                             <span><a :href="url.xls" target="_blank">計算公式</a></span>
                                             <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <a :href="formulaUrl" target="_blank" v-bind="attrs" v-on="on" style="margin-left: 16px;"><v-icon>mdi-link</v-icon></a>
+                                                </template>
+                                                <span>在新分頁中開啟</span>
+                                            </v-tooltip>
+                                            
                                         </div>
                                         <div class="add" style="float: right;">
                                             <v-btn class="btn-secondary close" title="取消" @click="dialog.pdf = false;"
@@ -144,6 +151,7 @@
                                 <v-card>
                                     <v-card-title>計算公式
                                         <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
+                                        
                                     </v-card-title>
                                     <v-card-text style="height: 600px;">
                                         <v-responsive>

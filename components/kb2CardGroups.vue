@@ -68,7 +68,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding-top: 16px;">
+                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding-top: 8px;">
                                 <div class="main-content" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
                                     <div class="choose">
                                         <span style="font-size: 0.85rem;color: #40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span>
@@ -440,7 +440,7 @@ export default {
                 padding-top: 16px;
                 font-size: 2rem;
                 font-weight: bold;
-
+                word-break: break-all;
             }
         }
         .cata {
