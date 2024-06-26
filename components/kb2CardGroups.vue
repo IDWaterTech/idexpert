@@ -367,7 +367,7 @@ export default {
 <style lang="scss" scoped>
     .v-card.result-card .theme--light.v-card.kb-card {
         background-color: #fff !important;
-        padding: 8px 16px;
+        padding: 16px;
         height: 100%;
         justify-content: center;
         *{
