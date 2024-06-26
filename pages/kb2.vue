@@ -782,7 +782,7 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0" slot="prepend"
                                                                                 :style="{'color':`${WaterQualityData['LastTemp']&&WaterQualityData['LastTemp']!==''&&WaterQualityData['LastTemp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    title="以上一餐時間為基準，過去一天最後一筆的水溫資料->內存量(體重投餌率)、存活率"><v-badge
+                                                                                    title="以上一餐時間為基準，往前推24小時最後一筆資料→內存量(體重投餌率)、存活率"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('LastTemp')"></v-badge>上一餐水溫</span>
                                                                             </v-col>
@@ -2918,7 +2918,7 @@
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend"
-                                                                                title="水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算內存量，因為需要每日體重投餌率">內存量(體重投餌率)</span>
+                                                                                title="當日飼料量、上一餐時間、上一餐水溫、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">內存量(體重投餌率)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6"
                                                                             style="display: flex;align-items: center;">
@@ -2937,7 +2937,7 @@
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend"
-                                                                                title="水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，才能計算存活率，因為需要內存量">存活率</span>
+                                                                                title="水體體積、放養密度、當日飼料量、上一餐時間、上一餐水溫、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">存活率</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <v-text-field
@@ -2968,7 +2968,7 @@
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend"
-                                                                                title="水體體積、放養密度、前一餐飼料量、觀察網殘餌量 # 蝦長 >= 2.5cm，小蝦不會用觀察網">建議觀察網上料量</span>
+                                                                                title="下一餐飼料量、養殖池底面積、蝦子重量、養殖天數 > 14天">建議觀察網上料量</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6"
                                                                             style="display: flex;align-items: center;">

@@ -13,27 +13,33 @@
                         </div>
                         <div class="subtitle">水質{{cardData.water.length}} / 觀察網{{cardData.observation.length}}</div>
                     </div>
+                    <div v-if="alert.length>0" class="cata">
+                        <div class="judge-cata">
+                            {{ judgeCata(alert[nowAlert]) }}
+                        </div>
+                    </div>
+                    
                     <div class="content" style="height: 100%;">
                         <div class="chrevon">
                             <v-btn class="btn-icon just-icon" :class="{'disabled':alert.length==0}" @click="alertChange('left')"><v-icon>mdi-menu-left</v-icon></v-btn>
                         </div>
-                        <div class="main-content" v-if="alert.length>0">
+                        <div class="main-content" v-if="alert.length>0" style="width: 100%;">
                             <v-card-text class="dialog-text"
-                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1)">
+                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 24px;">
                                 <b>狀態作動</b>
-                                <span>
+                                <span style="padding-top: 8px;">
                                     {{alert[nowAlert].status }}</span>
                             </v-card-text>
                             <v-card-text class="dialog-text"
-                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1)">
+                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 24px;">
                                 <b>可能影響原因</b>
-                                <span>
+                                <span style="padding-top: 8px;">
                                     {{alert[nowAlert].factor }}</span>
                             </v-card-text>
                             <v-card-text class="dialog-text"
-                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1)">
+                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 24px;">
                                 <b>會造成結果</b> 
-                                <span>
+                                <span style="padding-top: 8px;">
                                     {{alert[nowAlert].result==''?'無':alert[nowAlert].result}}</span>
                             </v-card-text>
                             <div class="num-of-alert">
@@ -62,14 +68,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content">
-                                <div class="main-content" style="display: flex;padding-top: 16px;align-items: center;justify-content: space-between;width: 100%;">
+                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding-top: 16px;">
+                                <div class="main-content" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+                                    <div class="choose">
+                                        <span style="font-size: 0.85rem;color: #40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span>
+                                    </div>
+                                    <div class="feed">
+                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="main-content" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
                                     <div class="choose" style="">
-                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
+                                        <!-- <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
+                                        <span style="font-size: 0.85rem;color: #00324E;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span> -->
                                         <span style="font-size: 0.85rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?'+':''}}
                                             <span style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeedIncrementPct:''}}</span>
-                                            <span style="font-size: 0.85rem;color: #00324E;font-weight: bold;">{{cardData.nextFeed.length>0?'粉':''}}</span>
-                                        </span>
+                                        </span><br>
                                     </div>
                                     <div class="feed">
                                         <span class="number-of-data" style="padding-top: 0;">
@@ -171,7 +186,7 @@
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
-                                        內存量(體重投餌率)
+                                        內存量
                                     </div>
                                 </div>
                             </div>
@@ -310,6 +325,20 @@ export default {
             this.chartDataSurvival = _.cloneDeep(survival);
             this.chartDataWeight = _.cloneDeep(weight);
             this.isChart = true;
+        },
+        judgeCata(data) {
+            let isWater = false;
+            this.cardData.water.forEach(w => {
+                if(w.factor===data.factor) {
+                    isWater = true;
+                }
+                
+            });
+            if(isWater) {
+                return '水質';
+            }else {
+                return '觀察網'
+            }
         }
     },
     watch: {
@@ -353,6 +382,7 @@ export default {
             width: 100%;
             border-bottom: 1px solid $color-primary;
             border-radius: 0;
+            padding-bottom: 8px;
             &.alert-line {
                 align-items: center;
                 border-bottom: 1px solid rgba(0,0,0,0.1);
@@ -408,9 +438,23 @@ export default {
             }
             .number-of-data {
                 padding-top: 16px;
-                font-size: 2.5rem;
+                font-size: 2rem;
                 font-weight: bold;
 
+            }
+        }
+        .cata {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 16px;
+            .judge-cata {
+                padding: 2px 8px;
+                background-color: $color-primary;
+                border-radius: 20px;
+                color: #fff;
+                font-size: 0.85rem;
             }
         }
     }
