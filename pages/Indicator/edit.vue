@@ -2626,7 +2626,7 @@ export default {
           "dead_shrimp_qty": 0,
           "shrimp_weight": null,
           "inspected_time": null,
-          "feed_amount": null,
+          "feed_amount": 0,
           "pond_id": '',
           "img_a": null,
           "img_b": null,
