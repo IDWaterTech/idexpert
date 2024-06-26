@@ -384,7 +384,7 @@
                                                   () => (addparm.started_date = getNowDate())
                                                 " style="padding-top: 0;"></v-text-field>
                     </template>
-                    <v-date-picker v-model="addparm.started_date" :min="getNowDate()" no-title locale="zh-tw" @input="menu_adddate = false">
+                    <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
@@ -433,7 +433,7 @@
                                                   () => (addparm.stocked_date = getNowDate())
                                                 "></v-text-field>
                     </template>
-                    <v-date-picker v-model="addparm.stocked_date" :min="getNowDate()" no-title locale="zh-tw" @input="menu_stockeddate = false">
+                    <v-date-picker v-model="addparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate = false">
                     </v-date-picker>
                   </v-menu>
                 </v-col>

@@ -41,10 +41,11 @@
     <span v-if="$route.path=='/basic' && !item.water && item.state !== ''" style="z-index: 2;display: flex;align-items: center;justify-content: center;font-size: 1.25rem;">-</span>
     
     <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''"><br>{{item.updated_time}}</span>
+    <!-- {{ selitem }} -->
     <v-select
       v-model="selectedItem"
-      :items="selitem.filter(x => x.name != 'default')"
-      item-text="name"
+      :items="selitem.filter(x => x.name_ch != 'default'||x.name_en != 'default')"
+      item-text="name_ch"
       label="池況"
       v-show="showSelect && item.state != ''"
       @change="changeEvent" dense
@@ -99,7 +100,7 @@ export default {
       console.log("oradata:", this.item);
       console.log("newdata:", this.selectedItem);
       // console.log("selitem",this.selitem);
-      let newItems = this.selitem.filter(x => x.name == this.selectedItem); //抓到修改後的狀態id
+      let newItems = this.selitem.filter(x => x.name_ch == this.selectedItem); //抓到修改後的狀態id
       if (newItems.length == 1) {
         const parm = {
           id: newItems[0].id,

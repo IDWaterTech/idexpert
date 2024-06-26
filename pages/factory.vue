@@ -547,7 +547,7 @@
                   v-model="edititem_pool.parm.pond_state_id"
                   :items="poolstat"
                   :rules="rules.require"
-                  item-text="name"
+                  item-text="name_ch"
                   item-value="id"
                   :disabled="true"
                   style="margin-right: 16px;margin-top: 0;"
