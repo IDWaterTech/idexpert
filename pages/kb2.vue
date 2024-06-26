@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="kb bg-card" :style="{'minHeight':`${windowHeight>880?'90vh':'84vh'}`}">
+        <v-card class="kb bg-card" :style="{'minHeight':`${windowHeight>880?'90vh':'86vh'}`}">
             <div class="card-title">
                 <v-row style="margin-bottom: 0;">
                     <!-- <div class="title">
@@ -177,8 +177,8 @@
                     <v-overlay :value="!isLoading" :absolute="true">
                         <v-progress-circular indeterminate size="64"></v-progress-circular>
                     </v-overlay>
-                    <div class="result-content" style="height: 100%;">
-                        <v-card class="result-card" style="height: 100%;padding-bottom: 12px">
+                    <div class="result-content" >
+                        <v-card class="result-card" style="padding-bottom: 12px">
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
                             <div class="timeline" style="margin: 0 16px;display: flex;align-items: center;">
                                 <span v-if="!isSearchDate" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>

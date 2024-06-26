@@ -1,7 +1,7 @@
 <template>
     <div style="overflow-y: scroll;" id="waterObservation">
         <!-- {{cardData}} -->
-        <v-row style="margin-bottom: 0;height: 72vh;align-items: stretch;width: 100%;">
+        <v-row style="margin-bottom: 0;height: 73vh;align-items: stretch;width: 100%;">
             <!-- 警示 -->
             <v-col cols="12" md="3" style="padding-right: 0;">
                 <v-card class="kb-card"
