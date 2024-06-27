@@ -784,7 +784,8 @@ export default {
                     authorization: {
                         execute: false,
                         verify: false
-                    }
+                    },
+                    state:'養殖審核'
                 };
             }
         },
@@ -1158,7 +1159,7 @@ export default {
                         return false;
                     }else {
                         // 後面階段已開始執行 不顯示，因會影響dailycheck的排程
-                        if(this.mainItems[id+1]&&this.mainItems[id+1].newest!=='') {
+                        if(this.mainItems[id+1]&&this.mainItems[id+1].newest!==''||this.mainItems[id+1]&&this.mainItems[id+1].color!=='#BFCBD2') {
                             return false;
                         }else {
                             let index = 0;
@@ -1630,47 +1631,61 @@ export default {
         },
         // 各階段顏色存取(表頭顏色、時間軸顏色)
         colorData() {
-            let index=0;
-            this.mainItems.forEach((mitem,mid)=>{
-                mitem.stepList.forEach(step=>{
-                    if(step.id==this.nowStepId) {
-                        index=mid;
+            // 還未結束循環的，依據實際池狀態顏色
+            if(!this.passObj.nowEnd) {
+                let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
+                console.log('Stata Index',stateIndex,this.passObj.state)
+                this.mainItems.forEach((mitm,mid)=>{
+                    if(mid<=stateIndex) {
+                        mitm.color = this.status[mid].color;
+                    }else {
+                        mitm.color = '#BFCBD2'
                     }
                 })
-            })
-            this.mainItems.forEach((i,id)=>{
-                if(this.templatemode=='cycleedit') {
-                    this.status.forEach((st,sid)=>{
-                        if(st.name==i.phase_name_ch) {
-                            i.open = st.open;
-                            // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
-                            if((i.newest&& i.newest!=='')||id==index) {
-                                i.color = st.color;
-                            }else {
-                                i.color = '#BFCBD2'
-                                // if(id!==0) {
-                                //     // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
-                                //     // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
-                                //     if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
-                                //         if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time&&
-                                //         this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time!=='') {
-                                //             i.color = st.color;
-                                //         }else {
-                                //             i.color = '#BFCBD2'
-                                //         }
-                                        
-                                //     }else {
-                                //         i.color = '#BFCBD2'
-                                //     }
-                                // }else {
-                                //     i.color = st.color;
-                                // }
-                                
-                            }
+            }else {
+                let index=0;
+                this.mainItems.forEach((mitem,mid)=>{
+                    mitem.stepList.forEach(step=>{
+                        if(step.id==this.nowStepId) {
+                            index=mid;
                         }
                     })
-                }
-            })
+                })
+                this.mainItems.forEach((i,id)=>{
+                    if(this.templatemode=='cycleedit') {
+                        this.status.forEach((st,sid)=>{
+                            if(st.name==i.phase_name_ch) {
+                                i.open = st.open;
+                                // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
+                                if((i.newest&& i.newest!=='')||id==index) {
+                                    i.color = st.color;
+                                }else {
+                                    i.color = '#BFCBD2'
+                                    // if(id!==0) {
+                                    //     // 非第一項，需判斷前一項是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
+                                    //     // 判斷前項的最後一個步驟是否已執行，有執行給顏色，沒執行給disabled顏色(#BFCBD2)
+                                    //     if(this.mainItems[(id-1)] && this.mainItems[(id-1)].newest && this.mainItems[(id-1)] && this.mainItems[(id-1)].newest!=='') {
+                                    //         if(this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time&&
+                                    //         this.mainItems[(id-1)].stepList[this.mainItems[(id-1)].stepList.length-1].verify_time!=='') {
+                                    //             i.color = st.color;
+                                    //         }else {
+                                    //             i.color = '#BFCBD2'
+                                    //         }
+                                            
+                                    //     }else {
+                                    //         i.color = '#BFCBD2'
+                                    //     }
+                                    // }else {
+                                    //     i.color = st.color;
+                                    // }
+                                    
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+            
             // this.executorData();
         },
         // 階段收合

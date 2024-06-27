@@ -450,14 +450,20 @@
               </v-row>
             </v-card-text>
             <v-card-text style="display: flex;align-items: center;">
-              <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
-                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
-                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-              </v-autocomplete>
-              <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require"
-                @change="tempChange" label="選擇樣板">
-              </v-autocomplete>
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
+                    :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
+                    <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                    <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                  </v-autocomplete>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require"
+                    @change="tempChange" label="選擇樣板">
+                  </v-autocomplete>
+                </v-col>
+              </v-row>
             </v-card-text> 
             <v-card-text style="display: flex;">
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
@@ -798,36 +804,6 @@
                   </v-menu> -->
                 </v-col>
               </v-row>
-              
-              
-            </v-card-text>
-            <!-- 水體/密度/放養數 -->
-            <v-card-text>
-              <v-row align="center">
-                <!-- 體積 -->
-                <v-col cols="3">
-                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
-                    autocomplete="off"></v-text-field>
-                </v-col>
-                <v-col cols="1" class="text-center">X</v-col>
-                <!-- 密度 -->
-                <v-col cols="3">
-                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
-                    @change="
-                              () => {
-                                editparm.estimated_num =
-                                add_volume * editparm.num_per_unit;
-                              }
-                            " autocomplete="off"></v-text-field>
-                </v-col>
-                <v-col cols="1" class="text-center">=</v-col>
-                <!-- 初始放苗量(估計) -->
-                <v-col cols="4">
-                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
-                    disabled autocomplete="off">
-                  </v-text-field>
-                </v-col>
-              </v-row>
             </v-card-text>
             <v-card-text style="display: flex;align-items: center;">
               <v-row style="align-items: center;padding-top: 16px;">
@@ -860,7 +836,22 @@
                   <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
-            </v-card-text>    
+            </v-card-text>   
+            <v-card-text style="display: flex;align-items: center;">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
+                    :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
+                    <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                    <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                  </v-autocomplete>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
+                  </v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-card-text> 
             <v-card-text style="display: flex;">
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
               </v-text-field>
@@ -881,21 +872,40 @@
               <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
-            <v-card-text>
-              <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
-                :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
-                <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-                <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
-              </v-autocomplete>
-            </v-card-text>
+            
             <v-card-text>
               <v-text-field filled dense v-model="editparm.remark" hide-details label="備註(選)">
               </v-text-field>
             </v-card-text>
-            <!-- <v-card-text>
-              <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
-              </v-autocomplete>
-            </v-card-text> -->
+            <!-- 水體/密度/放養數 -->
+            <v-card-text>
+              <v-row align="center">
+                <!-- 體積 -->
+                <v-col cols="3">
+                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
+                    autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">X</v-col>
+                <!-- 密度 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    @change="
+                              () => {
+                                editparm.estimated_num =
+                                add_volume * editparm.num_per_unit;
+                              }
+                            " autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">=</v-col>
+                <!-- 初始放苗量(估計) -->
+                <v-col cols="4">
+                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            
 
             <!-- <span style="padding-left: 8px;"><b>(!!!!最後要上要記得清除!!!!)</b></span><br>
             <span class="error-text" style="margin-left: 8px;">Note:撈不出此資料樣板資訊</span> -->
@@ -1310,7 +1320,7 @@ export default {
       template_items: [],//樣版清單
       template_all:[],
       tempSelect: undefined,//已選到的樣版
-      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],poolid:null,authorization:{execute:false,verify:false}},
+      passObj:{tempMain:{},tempContent:[],nowEnd: false,filter:[1,2,3],poolid:null,state:null,authorization:{execute:false,verify:false}},
       feededitmode:'cycleedit',
       editKey:0,
       optData:{WaterSource:[{ "name_en": "Groundwater", "name_ch": "地下水" }, { "name_en": "Seawater", "name_ch": "海水" }]},//選項
@@ -1454,6 +1464,7 @@ export default {
       isUpdate:false,
       tempid:null,
       isChangeAllNum: false,
+      nowArea:null,
     };
   },
   methods: {
@@ -1501,7 +1512,7 @@ export default {
         console.log('auth',this.passObj.authorization)
       }
       
-  },
+    },
     //取得pooid的池子名稱
     getNodeName:function(id){
       if(this.maindata.length>0 && this.poolid!=undefined){
@@ -1517,9 +1528,40 @@ export default {
       console.log('change pool',evt)
       this.poolid = evt;
       this.passObj.poolid = this.poolid;
+      this.getAreaId(evt);
       // this.getDisease();
       // this.getWater();
       // await this.getEvent();
+    },
+    //取得area id 比對現在階段用
+    getAreaId:async function(id){
+      if(this.maindata.length>0 && this.poolid!=undefined){
+        let this_id = id;
+        var area_list = this.maindata.flatMap(x=>x.node);
+        area_list.forEach(a=>{
+          a.node.forEach(n=>{
+            if(n.id==id) {
+              this_id = a.id;
+            }
+          })
+        })
+        if(this_id !== this.nowArea) {
+          await this.getState(this_id);
+          this.nowArea = this_id;
+        }
+        // console.log('>>>area_list',area_list);
+        // this.nowPool = poolParent+'_'+poolName;
+        // return `${poolParent}_${poolName}`;
+      }
+    },
+    async getState(id) {
+      var para = {
+        id: id
+      };
+      let getPondDataList = await this.getPondDataList(para);// plugins\service\basic.js
+      let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+      let state = data.filter(x=>x.id==this.poolid)[0].state;
+      this.passObj.state = state;
     },
     get_selectData(evt) {
       // console.log(evt);
@@ -1626,14 +1668,14 @@ export default {
           res = await this.deleteBreedingRecordList2(id);
           setTimeout(()=>{
             if(res) {
-              if(data.ended_date==null || data.ended_date=='') {
-                let status={
-                  id: new Array(),
-                  status:'空池'
-                }
-                status.id.push(this.poolid);
-                // this.compareStatus(status);
-              }
+              // if(data.ended_date==null || data.ended_date=='') {
+              //   let status={
+              //     id: new Array(),
+              //     status:'空池'
+              //   }
+              //   status.id.push(this.poolid);
+              //   // this.compareStatus(status);
+              // }
               
               this.getCircleData();
               this.currentDataId = null;
@@ -1712,8 +1754,8 @@ export default {
       //   });
       let architectureData = await this.getArchitecture();
       this.maindata = typeof (architectureData)=='string'?[]:architectureData;
-      var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-      this.maindata = data;
+      // var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+      // this.maindata = data;
       // let reqid = this.req.id;
       // let getedItem = {};
       // //取得整場架構資料
@@ -3956,6 +3998,7 @@ export default {
         this.resultListOpen = false;
         this.resultCycleOpen = true;
         this.currentDataId = id;
+        await this.getState(this.nowArea);
         console.log('get temp',this.passObj.tempContent)
       }else {
         this.$toast.error("此循環無樣板", { duration: 2000 });
@@ -5354,6 +5397,9 @@ export default {
                 margin-bottom: 22px !important;
             }
         }
+    }
+    .v-dialog .v-sheet.v-card.custom-dialog .v-autocomplete.v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
+      margin-top: -24px;
     }
     .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
         color: #fff;
