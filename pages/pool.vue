@@ -816,7 +816,7 @@
                     @change="
                               () => {
                                 editparm.estimated_num =
-                                  add_volume * editparm.num_per_unit;
+                                add_volume * editparm.num_per_unit;
                               }
                             " autocomplete="off"></v-text-field>
                 </v-col>
@@ -1468,38 +1468,39 @@ export default {
       try{datalst = await this.getMenuAuthorization(false);console.log(datalst);}catch{console.log(error)}
       if(datalst) {
           auth = datalst.data;
+          for(let i=0;i<auth.length;i++) {
+            if(auth[i].id==14) {
+                if(auth[i].children) {
+                    for(let x=0;x<auth[i].children.length;x++) {
+                        if(auth[i].children[x].name == '執行') {
+                            this.passObj.authorization.execute = true;
+                        }else if(auth[i].children[x].name == '確認') {
+                            this.passObj.authorization.verify = true;
+                        }
+                    }
+                }
+            }else {
+                if(auth[i].children) {
+                    for(let x=0;x<auth[i].children.length;x++) {
+                        if(auth[i].children[x].id == 14) {
+                            if(auth[i].children[x].children) {
+                                for(let y=0;y<auth[i].children[x].children.length;y++) {
+                                    if(auth[i].children[x].children[y].name == '執行') {
+                                        this.passObj.authorization.execute = true;
+                                    }else if(auth[i].children[x].children[y].name == '確認') {
+                                        this.passObj.authorization.verify = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            }
+        }
+        console.log('auth',this.passObj.authorization)
       }
-      for(let i=0;i<auth.length;i++) {
-          if(auth[i].id==14) {
-              if(auth[i].children) {
-                  for(let x=0;x<auth[i].children.length;x++) {
-                      if(auth[i].children[x].name == '執行') {
-                          this.passObj.authorization.execute = true;
-                      }else if(auth[i].children[x].name == '確認') {
-                          this.passObj.authorization.verify = true;
-                      }
-                  }
-              }
-          }else {
-              if(auth[i].children) {
-                  for(let x=0;x<auth[i].children.length;x++) {
-                      if(auth[i].children[x].id == 14) {
-                          if(auth[i].children[x].children) {
-                              for(let y=0;y<auth[i].children[x].children.length;y++) {
-                                  if(auth[i].children[x].children[y].name == '執行') {
-                                      this.passObj.authorization.execute = true;
-                                  }else if(auth[i].children[x].children[y].name == '確認') {
-                                      this.passObj.authorization.verify = true;
-                                  }
-                              }
-                          }
-                      }
-                  }
-              }
-              
-          }
-      }
-      console.log('auth',this.passObj.authorization)
+      
   },
     //取得pooid的池子名稱
     getNodeName:function(id){
@@ -4587,7 +4588,7 @@ export default {
         this.showadd(true);
         let getData = _.cloneDeep(data);
         // 預估放苗
-        getData.estimated_num = getData.total;
+        getData.estimated_num = getData.total.toFixed(2);
         // 預估存活要為數值
         getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
         this.editDialog = true;
@@ -4679,7 +4680,7 @@ export default {
           if(this.changeAllNum(this.all_num_per_unit)) {
             this.dataVolumn.forEach(x=>{
               x.num_per_unit = this.all_num_per_unit;
-              x.estimated_num =  x.volume*this.all_num_per_unit;
+              x.estimated_num =  (x.volume*this.all_num_per_unit).toFixed(2);
             })
           }else {
             this.dataVolumn.forEach(x=>{
@@ -5164,7 +5165,7 @@ export default {
     await this.getTemplateData();//樣版清單
   },
   async created() {
-    // await this._pageCheck(); //驗證頁面是否可檢視
+    await this._pageCheck(); //驗證頁面是否可檢視
     await this.getAuth();
     // await this.getWeather(); //氣象
     await this.getOptData(); //選項

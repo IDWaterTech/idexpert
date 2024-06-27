@@ -1276,7 +1276,6 @@ export default {
             //     d.stepList.forEach(step=>{
             //         step.actions = step.actions.filter(x=>x.type==0 || x.type==null);
             //     })
-                
             // })
             data.forEach((d,id)=>{
                 d.stepList.forEach((step,sid)=>{
