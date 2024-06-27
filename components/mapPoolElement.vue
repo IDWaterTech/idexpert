@@ -117,7 +117,8 @@ export default {
             if (res.data == "修改成功") {
               let evt={
                 item: this.item,
-                value: this.selectedItem
+                value: this.selectedItem,
+                isSend: true, // 判斷是否已經個別送出，有的話就需要關閉編輯畫面
               }
               this.item.state = this.selectedItem;
               this.$toast.success(`修改成功`, { duration: 2000 });

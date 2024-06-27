@@ -314,7 +314,6 @@
             
         },
         async getStateColor() {
-           
             //取得池況顏色設定
             await this.$axios
                 .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
@@ -377,7 +376,10 @@
         saveDelete(evt) {
             // 當子元件更改池，各自儲存後，需到父層變更editData資料，全部儲存時，再次丟出
             this.editData = this.editData.filter(x => x.id !== evt.item.id);
-            this.mapshowedit = false;
+            if(evt.isSend) {
+                this.mapshowedit = false;
+            }
+            
             //   console.log('save Delete Data', this.editData);
         },
         selectchecked: async function () {
@@ -421,7 +423,7 @@
                     this.$toast.error(`修改失敗，找不到狀態id`, { duration: 2000 });
                 }
             }
-            this.showedit = false;
+            this.mapshowedit = false;
 
         },
         alertNowEdit(success) {

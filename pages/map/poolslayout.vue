@@ -619,11 +619,11 @@ export default {
       if(type=='single') {
         let isInculde = false;
         if(pondData.state == evt.value) {
-          this.editData = this.editData.filter(x=>{
-            // console.log('tf',evt,x);
-            x.id!==evt.item.id
-          });
-          // this.saveDelete(evt);
+          // this.editData = this.editData.filter(x=>{
+          //   // console.log('tf',evt,x);
+          //   x.id!==evt.item.id
+          // });
+          this.saveDelete(evt);
           // this.$emit('saveSuccess',evt);
         }else {
           if(this.editData.length>0) {
@@ -668,7 +668,10 @@ export default {
         x.id!==evt.item.id
       });
       this.$emit('saveSuccess',evt);
-      this.getPondData();
+      if(evt.isSend) {
+        this.getPondData();
+      }
+      
       // console.log('wc',this.editData);
     },
     getMaxCols() {
