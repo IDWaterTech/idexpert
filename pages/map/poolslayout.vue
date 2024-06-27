@@ -619,7 +619,11 @@ export default {
       if(type=='single') {
         let isInculde = false;
         if(pondData.state == evt.value) {
-          this.saveDelete(evt);
+          this.editData = this.editData.filter(x=>{
+            // console.log('tf',evt,x);
+            x.id!==evt.item.id
+          });
+          // this.saveDelete(evt);
           // this.$emit('saveSuccess',evt);
         }else {
           if(this.editData.length>0) {
