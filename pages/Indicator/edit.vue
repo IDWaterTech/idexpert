@@ -1005,10 +1005,10 @@
               <v-card-text style="padding-top: 8px">
                 <div class="basic" style="padding-left: 8px;">
                   <span v-if="isShrimp" class="error-text" style="margin-bottom: 16px;">*長度與重量須大於0</span>
-                  <v-card-text style="display: flex;align-items: center;padding: 0;" v-for="(s,sid) in shrimp" :key="'shrimp_'+sid">
+                  <v-card-text style="display: flex;align-items: center;padding: 0;border-bottom: 1px solid rgba(0,0,0,0.1);padding-top: 16px;" v-for="(s,sid) in shrimp" :key="'shrimp_'+sid">
                     <span style="margin-top: -16px;">{{ sid+1 }}.</span>
                     <v-row style="margin-bottom: 0;">
-                      <v-col cols="6" style="padding-right: 8px;">
+                      <v-col cols="12" md="6" sm="12" style="padding-right: 8px;display: flex;align-items: center;">
                         <span class="pa-0 ma-0" style="width:60px;min-height:inherit">長度(cm)</span>
                         <el-input-number
                             class="ml-2"
@@ -1020,7 +1020,7 @@
                             :class="{'shrimp-error':isShrimp&&s['length']==0}"
                         ></el-input-number>
                       </v-col>
-                      <v-col cols="6" style="padding-right: 8px;">
+                      <v-col cols="12" md="6" sm="12" style="padding-right: 8px;display: flex;align-items: center;">
                         <span class="pa-0 ma-0" style="width:60px;min-height:inherit">重量(g)</span>
                         <el-input-number
                             class="ml-2"
