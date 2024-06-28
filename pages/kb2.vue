@@ -645,7 +645,8 @@
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0"
                                                                                     :style="{'color':`${FeedParm['LastFeedDatetime']&&FeedParm['LastFeedDatetime']!==''&&FeedParm['LastFeedDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    slot="prepend">過去四天單餐投餌量：</span>
+                                                                                    slot="prepend"
+                                                                                    title="過去四天的資料找過去每天的最後一餐投餵資料">過去四天單餐投餌量：</span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
@@ -2654,7 +2655,7 @@
                                                                                                         <span
                                                                                                             class="pa-0 ma-0"
                                                                                                             slot="prepend"
-                                                                                                            title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量，系統自動除3餐">砂糖量(降亞硝酸)</span>
+                                                                                                            title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量、鹽度，系統自動除3餐">砂糖量(降亞硝酸)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
                                                                                                         md="3"

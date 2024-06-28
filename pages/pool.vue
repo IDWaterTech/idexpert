@@ -164,14 +164,16 @@
                   <el-table-column label="預估放養隻數" prop="total" align="center"><template slot-scope="scope">{{scope.row.total.toFixed(2)}}</template></el-table-column>
                   <!-- 目標CN比 -->
                   <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
+                  <!-- 品種 -->
+                  <el-table-column label="放養品種" prop="species_name" align="center"></el-table-column>
                   <!-- 預估FCR -->
-                  <el-table-column label="預估FCR" prop="estimated_fcr" align="center"></el-table-column>
+                  <!-- <el-table-column label="預估FCR" prop="estimated_fcr" align="center"></el-table-column> -->
                   <!-- 預測ADG -->
                   <!-- <el-table-column label="預測ADG" prop="estimated_adg" align="center"></el-table-column> -->
                   <!-- 放養初始長度 -->
                   <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
                   <!-- 放養初始重量(g/單隻) -->
-                  <el-table-column label="放養初始重量(g/單隻)" prop="initial_weight" align="center"></el-table-column>
+                  <!-- <el-table-column label="放養初始重量(g/單隻)" prop="initial_weight" align="center"></el-table-column> -->
 
                   <el-table-column label="養殖負責" prop="person_in_charge" align="center">
                   </el-table-column>

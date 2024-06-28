@@ -164,6 +164,7 @@
             <div class="card-title" style="margin-bottom: 16px;">
               <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
+                  <span class="error-text">*超過範圍(最大值、最小值)(黑色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
@@ -399,6 +400,7 @@
             <div class="card-title" style="margin-bottom: 16px;">
               <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
+                  <span class="error-text">*超過範圍(最大值、最小值)(黑色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">

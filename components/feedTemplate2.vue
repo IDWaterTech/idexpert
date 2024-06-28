@@ -526,7 +526,7 @@
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="editActionItemDialog=false">取消</v-btn>
-                        <v-btn class="btn-primary" @click="editActionItemSubmit">新增</v-btn>
+                        <v-btn class="btn-primary" @click="editActionItemSubmit">{{stepmode=='edit'||stepmode=='add'?'儲存':'加入'}}</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -2230,51 +2230,55 @@ export default {
                 // this.stepitem.addidx = submit.addidx;
                 // this.insertStep();
                 let item = this.stepdataAll.filter(x=>x.name_ch == this.stepformedit.name_ch)[0];
-                if(this.workType=='edit') {
-                    if(this.editItem.actionList) {
-                        this.editItem.actionList.push({
-                            "action_id": item.id,
-                            "action_name": item.name_ch,
-                            "remark":item.remark,
-                            "start_on_which_day":null,
-                            "end_on_which_day":null
-                        });
-                        this.editItem.actionList.sort((a,b)=>{
-                            return a.start_on_which_day-b.start_on_which_day
-                        })
-                    }else {
-                        this.editItem.actionList = [];
-                        this.editItem.actionList.push({
-                            "action_id": item.id,
-                            "action_name": item.name_ch,
-                            "remark":item.remark,
-                            "start_on_which_day":null,
-                            "end_on_which_day":null
-                        });
-                    }
-                }else {
-                    if(this.addItem.actionList) {
-                        this.addItem.actionList.push({
-                            "action_id": item.id,
-                            "action_name": item.name_ch,
-                            "remark":item.remark,
-                            "start_on_which_day":null,
-                            "end_on_which_day":null
-                        });
-                        this.addItem.actionList.sort((a,b)=>{
-                            return a.start_on_which_day-b.start_on_which_day
-                        })
-                    }else {
-                        this.addItem.actionList = [];
-                        this.addItem.actionList.push({
-                            "action_id": item.id,
-                            "action_name": item.name_ch,
-                            "remark":item.remark,
-                            "start_on_which_day":null,
-                            "end_on_which_day":null
-                        });
-                    }
-                }
+                console.log('item',item);
+                this.actionInputShow = false;
+                this.stepitem.id = item.id;
+                this.stepmode = '';
+                // if(this.workType=='edit') {
+                //     if(this.editItem.actionList) {
+                //         this.editItem.actionList.push({
+                //             "action_id": item.id,
+                //             "action_name": item.name_ch,
+                //             "remark":item.remark,
+                //             "start_on_which_day":null,
+                //             "end_on_which_day":null
+                //         });
+                //         this.editItem.actionList.sort((a,b)=>{
+                //             return a.start_on_which_day-b.start_on_which_day
+                //         })
+                //     }else {
+                //         this.editItem.actionList = [];
+                //         this.editItem.actionList.push({
+                //             "action_id": item.id,
+                //             "action_name": item.name_ch,
+                //             "remark":item.remark,
+                //             "start_on_which_day":null,
+                //             "end_on_which_day":null
+                //         });
+                //     }
+                // }else {
+                //     if(this.addItem.actionList) {
+                //         this.addItem.actionList.push({
+                //             "action_id": item.id,
+                //             "action_name": item.name_ch,
+                //             "remark":item.remark,
+                //             "start_on_which_day":null,
+                //             "end_on_which_day":null
+                //         });
+                //         this.addItem.actionList.sort((a,b)=>{
+                //             return a.start_on_which_day-b.start_on_which_day
+                //         })
+                //     }else {
+                //         this.addItem.actionList = [];
+                //         this.addItem.actionList.push({
+                //             "action_id": item.id,
+                //             "action_name": item.name_ch,
+                //             "remark":item.remark,
+                //             "start_on_which_day":null,
+                //             "end_on_which_day":null
+                //         });
+                //     }
+                // }
                 
                 console.log('add',item);
             }
@@ -2404,6 +2408,7 @@ export default {
                             console.log('step add',this.stepitem);
                             var res = false;
                             res = await this.postBreedingStepList2(this.stepformedit);
+                            // this.stepmode = '';
                             setTimeout(()=>{
                                 if(res) {
                                     this.getstepdata(true);
@@ -2426,38 +2431,10 @@ export default {
                                         });
                                     });
                                     //this.stepformedit 要把同id所有名稱
-                                    this.stepitem.id = undefined;
+                                    // this.stepitem.id = undefined;
                                     this.getstepdata(true);
                                 }
                             },50)
-                            // await this.$axios
-                            // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`, this.stepformedit)
-                            //     .then(res => {
-                            //         if(res.data=='修改成功'){
-                            //             this.dialog.phaseform = false;
-                            //             var stepformedit = this.stepformedit;
-                            //             //同步把畫面上的資料修改成一致
-                            //             this.mainItems.forEach(element => {
-                            //                 var step = element.stepList;
-                            //                 step.filter(x=>x.step_id==id).forEach(stepele => {
-                            //                     stepele.step_name_ch = stepformedit.name_ch;
-                            //                 });
-                            //             });
-                            //             //this.stepformedit 要把同id所有名稱
-                            //             this.stepitem.id = undefined;
-                            //             this.getstepdata(true);
-                            //             // this.$toast.success("修改成功", { duration: 2000 });
-                            //         }else{
-                            //             this.$toast.error("修改步驟失敗:" + res.data, { duration: 2000 });
-                            //         }
-
-                            //         console.log("修改步驟API:" + res.request.responseURL);
-                            //     })
-                            //     .catch(error => {
-                            //         this.$toast.error("error:" + error, { duration: 2000 });
-                            //     })
-                            //     .finally(() => {
-                            //     });
                             break;
                         case '':
                             let item = this.stepdataAll.filter(x=>x.id == this.stepitem.id)[0];
@@ -2515,9 +2492,10 @@ export default {
                                     });
                                 }
                             }
+                            this.editActionItemDialog = false;
                     }
                 console.log(this.addItem);
-                this.editActionItemDialog = false;
+                
             }
             
         },
