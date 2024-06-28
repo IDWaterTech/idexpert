@@ -3053,7 +3053,7 @@
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0" slot="prepend"
-                                                                                title="水體體積、放養密度、水溫、放養初始重量、粗蛋白含量、尿素有效濃度、目標CN比、砂糖純度、砂糖含碳量、放養初始重量<0.1">砂糖量(做水)</span>
+                                                                                title="水體體積、放養密度、水溫、放養初始重量、粗蛋白含量、尿素有效濃度、目標CN比、砂糖純度、放苗日>資料日">砂糖量(做水)</span>
                                                                         </v-col>
                                                                         <v-col cols="12" md="6" sm="6"
                                                                             style="display: flex;align-items: center;">
