@@ -1095,49 +1095,56 @@ export default {
                             disabled = true;
                         }else {
                             mitem.stepList.forEach(async (step,sid)=>{
-                                if(wid==sid) {
-                                    // 如下一工作已開始執行，此工作不可新增/刪除
-                                    if(mitem.stepList[sid+1]&&mitem.stepList[sid+1].actionList[0].execute_time&&mitem.stepList[sid+1].actionList[0].execute_time!=='') {
-                                        disabled = true;
-                                    }else {
-                                        // 判斷是否為現在生成的dailycheck之前的工作，不可新增/刪除
-                                        if((this.templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id)==item.phase_id) {
-                                            if(sid<item.id) {
-                                                disabled=true;
-                                            }
-                                        }
-                                        // 現在生成的dailycheck階段，不可刪除，可新增
-                                        if(step.id == this.nowStepId) {
-                                            if(type=='delete') {
-                                                disabled = true;
-                                            }
+                                let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
+                                if(type=='add'&&this.nowStepId==null&&stateIndex==mid&&sid == mitem.stepList.length-1) {
+                                    disabled = false;
+                                    
+                                }else {
+                                    if(wid==sid) {
+                                        // 如下一工作已開始執行，此工作不可新增/刪除
+                                        if(mitem.stepList[sid+1]&&mitem.stepList[sid+1].actionList[0].execute_time&&mitem.stepList[sid+1].actionList[0].execute_time!=='') {
+                                            disabled = true;
                                         }else {
-                                            // 非現在生成的dailycheck階段，如果已完成執行，但後續均沒有工作了，不可刪除，不可新增
-                                            if(step.actionList&&step.actionList.length>0) {
-                                                let num1 = 0;
-                                                let num2 = 0;
-                                                let num3 = 0;
-                                                step.actionList.forEach(action=>{
-                                                    if(action.execute==1) {
-                                                        num1++;
-                                                    }else if(action.execute==2) {
-                                                        num2++;
-                                                    }else if(action.execute==3) {
-                                                        num3++;
+                                            // 判斷是否為現在生成的dailycheck之前的工作，不可新增/刪除
+                                            if((this.templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id)==item.phase_id) {
+                                                if(sid<item.id) {
+                                                    disabled=true;
+                                                }
+                                            }
+                                            // 現在生成的dailycheck階段，不可刪除，可新增
+                                            if(step.id == this.nowStepId) {
+                                                if(type=='delete') {
+                                                    disabled = true;
+                                                }
+                                            }else {
+                                                // 非現在生成的dailycheck階段，如果已完成執行，但後續均沒有工作了，不可刪除，不可新增
+                                                if(step.actionList&&step.actionList.length>0) {
+                                                    let num1 = 0;
+                                                    let num2 = 0;
+                                                    let num3 = 0;
+                                                    step.actionList.forEach(action=>{
+                                                        if(action.execute==1) {
+                                                            num1++;
+                                                        }else if(action.execute==2) {
+                                                            num2++;
+                                                        }else if(action.execute==3) {
+                                                            num3++;
+                                                        }
+                                                    })
+                                                    if(num3>0) {
+                                                        if(type=='delete') {
+                                                            disabled=true;
+                                                        }
                                                     }
-                                                })
-                                                if(num3>0) {
-                                                    if(type=='delete') {
+                                                    if((num1+num2)==step.actionList.length) {
                                                         disabled=true;
                                                     }
-                                                }
-                                                if((num1+num2)==step.actionList.length) {
-                                                    disabled=true;
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                
                             })
                         }
                     }
