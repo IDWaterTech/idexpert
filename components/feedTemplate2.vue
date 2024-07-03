@@ -1860,8 +1860,8 @@ export default {
         /* 其他項目 */
         // 刪除檢驗
         delsubitem: async function (phase_id,wid, index) {
-            console.log('delete',phase_id, index);
-            var sub_item = this.mainItems.filter(x => this.templatemode=='cycleedit'?x.phase_original_id:x.phase_id == phase_id)[0].stepList[wid].actionList[index];
+            var sub_item = this.mainItems.filter(x => this.templatemode=='cycleedit'?x.phase_original_id== phase_id:x.phase_id== phase_id)[0].stepList[wid].actionList[index];
+            console.log('delete',phase_id, index,sub_item);
             if(this.templatemode == 'cycleedit') {
                     if (confirm(`是否刪除 ${sub_item.action_name}：${sub_item.msg} ？`)) {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
@@ -1994,7 +1994,7 @@ export default {
             // console.log("phase:", phase_id, "addidx:",addidx);
             // this.stepitem.phase_id = phase_id;
             // this.stepitem.addidx = addidx;
-            let item = _.cloneDeep(this.mainItems.filter(m=>this.templatemode=='cycleedit'?m.phase_original_id:m.phase_id==phase_id)[0].stepList[wid].actionList[index]);
+            let item = _.cloneDeep(this.mainItems.filter(m=>this.templatemode=='cycleedit'?m.phase_original_id==phase_id:m.phase_id==phase_id)[0].stepList[wid].actionList[index]);
             if(item.type==null) {
                 this.editem = true;//show dialog
                 this.addStep = [];

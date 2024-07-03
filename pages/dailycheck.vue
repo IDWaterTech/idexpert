@@ -36,7 +36,7 @@
                                 <div slot="option-label" slot-scope="{ node }" v-text="getText(node)"></div>
                             </treeselect>
                         </v-col>
-                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3">
+                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3" style="padding-bottom: 0;">
                             <v-btn v-if="isDisable" class="btn-primary"  @click="isDisable=!isDisable">測試模式</v-btn>
                             <v-btn v-else class="btn-primary"  @click="isDisable=!isDisable">一般模式</v-btn>
                         </v-col>
@@ -113,9 +113,17 @@
                                                 {{ daily.executor_name }}
                                             </div>
                                         </div>
-                                        <div v-if="daily.execute_status=='0'" class="action">
+                                        <div v-if="daily.execute_status=='0'" class="action" style="display: flex;align-items: center;">
                                             <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
                                             <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <button class="btn-icon-secondary delete" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,3)" v-bind="attrs" v-on="on">
+                                                        <v-icon>mdi-timer-pause-outline</v-icon>
+                                                    </button>
+                                                </template>
+                                                <span>此動作之後均不執行</span>
+                                            </v-tooltip>
                                         </div>
                                     </div>
                                 </div>
@@ -140,7 +148,7 @@
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title" style="display: block;width: 100%;">
                         <div style="display: inline-block;">
-                            <span>執行編修</span> 
+                            <span>{{editItem.num==3?nowDaily.slice(5).replace('-','/')+'之後的「'+editItem.action_name+'」均不執行':'執行編修'}}</span> 
                         </div>
                         <div class="add" style="float: right;display: inline-block;">
                             <v-btn class="btn-secondary close"
@@ -152,11 +160,11 @@
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;">
+                        <div v-if="editItem.num!==3" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;">
                             <div class="title"><v-card-title>執行狀態</v-card-title></div>
                             <div class="title" v-if="editItem.execute_status!=='0'" style="display: flex;align-items: center;">
                                 <span style="font-size: 14px;margin-right: 8px;">{{ editItem.execute_status=='1'?'已執行':'不執行' }}</span>
-                                <v-btn class="btn-secondary btn-small delete" @click="editItem.execute_status = '0';editItem.msg=''">取消</v-btn>
+                                <v-btn  class="btn-secondary btn-small delete" @click="editItem.execute_status = '0';editItem.msg=''">取消</v-btn>
                             </div>
                             <div class="title" v-else>
                                 <v-btn class="btn-primary btn-small" @click="editItem.execute_status='1'">執行</v-btn>
@@ -182,7 +190,7 @@
                         </v-card-text> -->
                         
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>說明 <span v-if="editItem.execute_status=='2'" class="error-text" style="margin-left: 4px;">*不執行請填入原因</span></v-card-title></div>
+                            <div class="title"><v-card-title>說明 <span v-if="editItem.execute_status=='2'" class="error-text" style="margin-left: 4px;">*{{editItem.num==3?'':'不執行'}}請填入原因</span></v-card-title></div>
                             <!-- <v-text-field v-model="editItem.action_remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field> -->
                             <v-textarea v-model="editItem.msg" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>
@@ -527,6 +535,7 @@
 import dayjs from "dayjs";
 export default {
     layout: "emptynologin2",
+    middleware: "auth",
     head(){
         return {
             title:"DailyCheck",
@@ -884,6 +893,7 @@ export default {
             console.log('open',item);
             this.editItem = _.cloneDeep(item);
             this.nowDaily = date;
+            this.editItem.num = num;
             if(this.editItem.actual_member>0){}else {
                 this.editItem.actual_member=0;
             }
@@ -892,10 +902,12 @@ export default {
             }
             if(num==1||num==2) {
                 this.editItem.execute_status = num;
+            }else {
+                this.editItem.execute_status = 2;
             }
             this.editItem.execute_status = this.editItem.execute_status.toString();
             if(this.editItem.executor==''||this.editItem.executor==null) {
-                if(num==2) {
+                if(num!==1) {
                     this.editDialog = true;
                 }else {
                     this.submitEdit();
@@ -916,33 +928,63 @@ export default {
                 let parm = _.cloneDeep(this.editItem);
                 parm.scheduling_date = this.nowDaily;
                 parm.updated_user = this.$auth.$state.user.email;
+                delete parm.num;
                 delete parm.id;
                 console.log('parm',parm);
                 this.isLoading = false;
                 var res = false;
-                res = await this.patchDailyCheckList(parm,this.editItem.id);
+                if(this.editItem.num!==3) {
+                    res = await this.patchDailyCheckList(parm,this.editItem.id);
+                }else {
+                    this.poolData.daily.forEach(d=>{
+                        if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
+                            d.todo.forEach(async t=>{
+                                if(t.action_id==this.editItem.action_id&&t.execute_status==0) {
+                                    parm.scheduling_date = d.scheduling_date;
+                                    res = await this.patchDailyCheckList(parm,t.id);
+                                }
+                            })
+                        }
+                    })
+                }
+                
                 setTimeout(()=>{
                     if(res) {
                         let isAllCheck=true;
-                        this.poolData.daily.forEach(d=>{
-                            d.todo.forEach(t=>{
-                                if(t.execute_status=='0'&&t.id!==this.editItem.id) {
-                                    isAllCheck = false;
-                                }
+                        if(this.editItem.num!==3) {
+                            this.poolData.daily.forEach(d=>{
+                                d.todo.forEach(t=>{
+                                    if(t.execute_status=='0'&&t.id!==this.editItem.id) {
+                                        isAllCheck = false;
+                                    }
+                                })
                             })
-                        })
+                        }else {
+                            this.poolData.daily.forEach(d=>{
+                                if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
+                                    d.todo.forEach(t=>{
+                                        if(t.execute_status=='0'&&t.action_id!==this.editItem.action_id) {
+                                            isAllCheck = false;
+                                        }
+                                    })
+                                }
+                                
+                            })
+                        }
+                        
                         if(isAllCheck) {
                             this.editDialog = false;
                             // this.nextStepDialog = true;
-                            this.$toast.success("此工作項已完成，已開啟隔天新的工作項", { duration: 5000 });
+                            this.$toast.success("修改成功!此工作項已完成，已開啟隔天新的工作項", { duration: 5000 });
                             this.searchPool();
                         }else {
                             this.editDialog = false;
+                            this.$toast.success("修改成功", { duration: 2000 });
                             this.searchPool();
                         }
                         
                     }
-                },50)
+                },200)
             }
             
         },
@@ -1001,6 +1043,7 @@ export default {
                     res = await this.patchDailyCheckList(parm,this.delayItem.id);
                     setTimeout(()=>{
                         if(res) {
+                            this.$toast.success("修改成功", { duration: 2000 });
                             this.delayDialog = false;
                             this.searchPool();
                         }

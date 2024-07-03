@@ -1166,7 +1166,7 @@ Vue.mixin({
                 .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2/${id}/`,parm,)
                 console.log("修改每日清單:" + data.request.responseURL);
                 if(data.data == "修改成功") {
-                    this.$toast.success("修改成功", { duration: 2000 });
+                    // this.$toast.success("修改成功", { duration: 2000 });
                     return true;
                 }else {
                     this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
