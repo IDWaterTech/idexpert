@@ -336,14 +336,14 @@
                             <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;width: 100%;">
                                 <div class="title">
                                     <v-card-title>預估花費的人力 </v-card-title>
-                                    <v-text-field v-model.number="addItem.estimate_member" type="number" label="花費的人力" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                                    <v-text-field v-model.number="addItem.estimated_member" type="number" label="花費的人力" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                                     </v-text-field>
                                 </div>
                             </div>
                             <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;width: 100%;">
                                 <div class="title">
                                     <v-card-title>預估花費的金錢 </v-card-title>
-                                    <v-text-field v-model.number="addItem.estimate_spend" type="number" label="花費的金錢" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                                    <v-text-field v-model.number="addItem.estimated_spend" type="number" label="花費的金錢" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                                     </v-text-field>
                                 </div>
                             </div>
@@ -1082,8 +1082,8 @@ export default {
                 start_date: dayjs(new Date(date)).format("YYYY-MM-DD"),
                 end_date: dayjs(new Date(date)).format("YYYY-MM-DD"),
                 remark:'',
-                estimate_member:0,
-                estimate_spend:0,
+                estimated_member:0,
+                estimated_spend:0,
                 step_id:this.poolData.step_id,
                 operation:'create',
                 operation_reason:''
@@ -1102,8 +1102,8 @@ export default {
                     "ended_date": this.addItem.end_date,
                     'operation':'create',
                     'operation_reason':this.addItem.operation_reason,
-                    "estimated_member": 0,
-                    "estimated_spend": 0,
+                    "estimated_member": this.addItem.estimated_member,
+                    "estimated_spend":this.addItem.estimated_spend,
                     "created_user": this.$auth.$state.user.email
                 }
                 this.isLoading=false;

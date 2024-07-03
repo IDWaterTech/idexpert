@@ -3960,6 +3960,10 @@ export default {
                 step.actionList.forEach(action=>{
                   action.type=0;// 0 一般動作 1 疾病 2 水質 3 事件
                   let dailycheck = [];
+                  // 財務
+                  action.actual_member = 0;
+                  action.actual_spend = 0;
+                  // 判斷執行狀態
                   if(action.dailyCheckList&&action.dailyCheckList.length>0) {
                     action.dailyCheckList.sort((a,b)=>new Date(a.scheduling_date).getTime()-new Date(b.scheduling_date).getTime())
                     action.execute_time = action.dailyCheckList[0].execute_time;
@@ -3968,6 +3972,11 @@ export default {
                     let execute = 0; // 0未開始 1已執行 2異常 3尚有未執行
                     let nonexecute = 0;
                     action.dailyCheckList.forEach(daily=>{
+                      // 財務
+                      if(daily.actual_member>action.actual_member) {
+                        action.actual_member = daily.actual_member;
+                      }
+                      action.actual_spend+=daily.actual_spend;
                       if(daily.execute_status == 1) {
                         execute+=1;
                         dailycheck.push(daily);

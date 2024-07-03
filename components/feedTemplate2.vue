@@ -436,25 +436,26 @@
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
                                 <!-- 財務 -->
-                                <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;">
-                                    <v-col cols="12" style="padding: 4px 8px;">
-                                        {{ item.step_name }}
+                                <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                    <v-col cols="12" style="padding: 4px 8px;display: flex;align-items: center;justify-content: space-between;">
+                                        {{ item.action_name }}
+                                        <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
                                     </v-col>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                    
+                                    <v-col cols="6" lg="3" sm="3">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
                                         </v-text-field>
-                                    </div>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                    </v-col>
+                                    <v-col cols="6" lg="3" sm="3">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
                                         </v-text-field>
-                                    </div>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                    </v-col>
+                                    <v-col cols="6" lg="3" sm="3">
                                         <v-text-field type="number" v-model.number="item.estimated_member" min="0" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
-                                    </div>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                    </v-col>
+                                    <v-col cols="6" lg="3" sm="3">
                                         <v-text-field type="number" v-model.number="item.estimated_spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
-                                    </div>
-                                    <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
+                                    </v-col>
                                 </v-row> -->
                             </v-card-text>
                         </div>
@@ -585,8 +586,8 @@
                         <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="max-height: 30vh;overflow-y: scroll;">
                             <v-card-text v-for="item in editItem.actionList" :key="'addAction_'+templatemode=='cycleedit'?item.id:item.action_id+'_'+Math.floor(Math.random()*999)+100" style="display: flex;align-items: center;padding-top: 0;" >
                                 <v-row style="display: flex;align-items: center;padding-top: 0;">
-                                    <v-col cols="6">{{ item.action_name }}</v-col>
-                                    <v-col cols="6">Day {{ item.start_on_which_day }} ~ Day {{ item.end_on_which_day }}</v-col>
+                                    <v-col cols="3">{{ item.action_name }}</v-col>
+                                    <v-col cols="3">Day {{ item.start_on_which_day }} ~ Day {{ item.end_on_which_day }}</v-col>
                                     <!-- 財務 -->
                                     <!-- <v-col cols="3">預估花費 {{item.estimated_member}} 人</v-col>
                                     <v-col cols="3">預估花費 $ {{item.estimated_member}} </v-col> -->
@@ -677,25 +678,26 @@
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
                                 <!-- 財務 -->
-                                <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;">
-                                    <v-col cols="12" style="padding: 4px 8px;">
-                                        {{ item.step_name }}
+                                <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                    <v-col cols="12" style="padding: 4px 8px;display: flex;align-items: center;justify-content: space-between;">
+                                        {{ item.action_name }}
+                                        <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
                                     </v-col>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field v-model="item.start" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                    
+                                    <v-col cols="6" lg="3" sm="3">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
                                         </v-text-field>
-                                    </div>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
-                                        <v-text-field v-model="item.end" type="number" @change="sortDay" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
+                                    </v-col>
+                                    <v-col cols="6" lg="3" sm="3">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 0;">
                                         </v-text-field>
-                                    </div>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                    </v-col>
+                                    <v-col cols="6" lg="3" sm="3">
                                         <v-text-field type="number" v-model.number="item.estimated_member" filled dense  label="預估人力" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="append">人</span></v-text-field>
-                                    </div>
-                                    <div style="padding: 4px 8px;width: calc(30% - 32px )">
+                                    </v-col>
+                                    <v-col cols="6" lg="3" sm="3">
                                         <v-text-field type="number" v-model.number="item.estimated_spend" filled dense  label="預估金額" style="margin-right: 4px;margin-top: 0;"><span class="pa-0 ma-0" slot="prepend">$</span></v-text-field>
-                                    </div>
-                                    <div style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.step_id)"><v-icon>mdi-trash-can</v-icon></v-btn></div>
+                                    </v-col>
                                 </v-row> -->
                             </v-card-text>
                         </div>
@@ -732,16 +734,16 @@
                         </div>
                     </div> -->
                     <v-card-text>
-                        <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                        <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
                             <v-col cols="1">#</v-col>
                             <v-col cols="3"><span style="font-weight:bold">排程日期</span></v-col>
-                            <v-col cols="3"><span style="font-weight:bold">狀態/說明</span></v-col>
+                            <v-col cols="4"><span style="font-weight:bold">狀態/說明</span></v-col>
                             <v-col cols="4"><span style="font-weight:bold">執行時間/執行人員</span></v-col>
                         </v-row>
-                        <v-row class="content" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;">
+                        <v-row class="content" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
                             <v-col cols="1">{{ did+1 }}</v-col>
                             <v-col cols="3"><span>{{daily.scheduling_date}}<br/></span></v-col>
-                            <v-col cols="3"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span>
+                            <v-col cols="4"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span>
                                 <br/>
                                 <span style="max-height: 48px;overflow-y: scroll;display: block;">{{daily.msg}}</span></v-col>
                             <v-col cols="4"><span>{{daily.execute_time.split(' ')[0].split('-').slice(1,3).join('/') +" "+ daily.execute_time.split(' ')[1].split(':').slice(0,2).join(':')}}<br/>{{daily.executor}}</span></v-col>
@@ -874,23 +876,23 @@ export default {
                 // { text: '新增', value: 'actions', sortable: false,width:"5%",showmode: ['cycleedit']},
                 // { text: "step_id", value: "step_id", groupable: false, showmode: ['add', 'edit'] },
                 // { text: "sort", value: "sort", groupable: false, showmode: ['add', 'edit'] },
-                { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
-                { text: "動作", value: "action_name", groupable: false, sortable: false,width:"15%",showmode: ['add', 'edit']},
+                { text: "動作", value: "action_name", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
+                { text: "動作", value: "action_name", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 { text: "總執行天數", value: "total_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
                 { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
                 { text: "持續執行至第幾天", value: "end_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
-                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
+                { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: "執行時間", value: "execute_time", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
                 // { text: "執行", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
-                { text: "執行狀態", value: "executed_actions", groupable: false, sortable: false,width:"20%",showmode: ['cycleedit']},
-                { text: '執行時間', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: "執行狀態", value: "executed_actions", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
+                { text: '執行時間', value: 'deft_executor', sortable: false,width:"10%",showmode: ['cycleedit']},
                 // { text: '執行時間/人員', value: 'deft_executor', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // 財務
-                // { text: "預估花費人力", value: "estimated_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
-                // { text: "預估花費金額", value: "estimated_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
-                // { text: "實際花費人力", value: "actual_member", groupable: false, sortable: false,width:"5%",showmode: ['cycleedit']},
-                // { text: "實際花費金額", value: "actual_spend", groupable: false, sortable: false,width:"5%",showmode: ['cycleedit']},
+                // { text: "預估人力", value: "estimated_member", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "預估金額", value: "estimated_spend", groupable: false, sortable: false,width:"5%",showmode: ['add', 'edit','cycleedit']},
+                // { text: "實際人力", value: "actual_member", groupable: false, sortable: false,width:"5%",showmode: ['cycleedit']},
+                // { text: "實際金額", value: "actual_spend", groupable: false, sortable: false,width:"5%",showmode: ['cycleedit']},
                 // { text: '確認員', value: 'deft_verifier', sortable: false,width:"15%",showmode: ['cycleedit']},
                 // { text: '編輯', value: 'reactions', sortable: false,width:"7%",showmode: ['cycleedit']},
                 { text: '備註', value: 'remark', sortable: false,width:"20%",showmode: ['add', 'edit']},
@@ -1095,56 +1097,49 @@ export default {
                             disabled = true;
                         }else {
                             mitem.stepList.forEach(async (step,sid)=>{
-                                let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
-                                if(type=='add'&&this.nowStepId==null&&stateIndex==mid&&sid == mitem.stepList.length-1) {
-                                    disabled = false;
-                                    
-                                }else {
-                                    if(wid==sid) {
-                                        // 如下一工作已開始執行，此工作不可新增/刪除
-                                        if(mitem.stepList[sid+1]&&mitem.stepList[sid+1].actionList[0].execute_time&&mitem.stepList[sid+1].actionList[0].execute_time!=='') {
-                                            disabled = true;
-                                        }else {
-                                            // 判斷是否為現在生成的dailycheck之前的工作，不可新增/刪除
-                                            if((this.templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id)==item.phase_id) {
-                                                if(sid<item.id) {
-                                                    disabled=true;
-                                                }
+                                if(wid==sid) {
+                                    // 如下一工作已開始執行，此工作不可新增/刪除
+                                    if(mitem.stepList[sid+1]&&mitem.stepList[sid+1].actionList[0].execute_time&&mitem.stepList[sid+1].actionList[0].execute_time!=='') {
+                                        disabled = true;
+                                    }else {
+                                        // 判斷是否為現在生成的dailycheck之前的工作，不可新增/刪除
+                                        if((this.templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id)==item.phase_id) {
+                                            if(sid<item.id) {
+                                                disabled=true;
                                             }
-                                            // 現在生成的dailycheck階段，不可刪除，可新增
-                                            if(step.id == this.nowStepId) {
-                                                if(type=='delete') {
-                                                    disabled = true;
-                                                }
-                                            }else {
-                                                // 非現在生成的dailycheck階段，如果已完成執行，但後續均沒有工作了，不可刪除，不可新增
-                                                if(step.actionList&&step.actionList.length>0) {
-                                                    let num1 = 0;
-                                                    let num2 = 0;
-                                                    let num3 = 0;
-                                                    step.actionList.forEach(action=>{
-                                                        if(action.execute==1) {
-                                                            num1++;
-                                                        }else if(action.execute==2) {
-                                                            num2++;
-                                                        }else if(action.execute==3) {
-                                                            num3++;
-                                                        }
-                                                    })
-                                                    if(num3>0) {
-                                                        if(type=='delete') {
-                                                            disabled=true;
-                                                        }
+                                        }
+                                        // 現在生成的dailycheck階段，不可刪除，可新增
+                                        if(step.id == this.nowStepId) {
+                                            if(type=='delete') {
+                                                disabled = true;
+                                            }
+                                        }else {
+                                            // 非現在生成的dailycheck階段，如果已完成執行，但後續均沒有工作了，不可刪除，不可新增
+                                            if(step.actionList&&step.actionList.length>0) {
+                                                let num1 = 0;
+                                                let num2 = 0;
+                                                let num3 = 0;
+                                                step.actionList.forEach(action=>{
+                                                    if(action.execute==1) {
+                                                        num1++;
+                                                    }else if(action.execute==2) {
+                                                        num2++;
+                                                    }else if(action.execute==3) {
+                                                        num3++;
                                                     }
-                                                    if((num1+num2)==step.actionList.length) {
+                                                })
+                                                if(num3>0) {
+                                                    if(type=='delete') {
                                                         disabled=true;
                                                     }
+                                                }
+                                                if((num1+num2)==step.actionList.length) {
+                                                    disabled=true;
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                
                             })
                         }
                     }
@@ -1860,8 +1855,8 @@ export default {
         /* 其他項目 */
         // 刪除檢驗
         delsubitem: async function (phase_id,wid, index) {
-            var sub_item = this.mainItems.filter(x => this.templatemode=='cycleedit'?x.phase_original_id== phase_id:x.phase_id== phase_id)[0].stepList[wid].actionList[index];
-            console.log('delete',phase_id, index,sub_item);
+            console.log('delete',phase_id, index);
+            var sub_item = this.mainItems.filter(x => this.templatemode=='cycleedit'?x.phase_original_id == phase_id:x.phase_id == phase_id)[0].stepList[wid].actionList[index];
             if(this.templatemode == 'cycleedit') {
                     if (confirm(`是否刪除 ${sub_item.action_name}：${sub_item.msg} ？`)) {
                         // this.mainItems.filter(x => x.phase_id == phase_id)[0].stepList.splice(index, 1);
