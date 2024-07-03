@@ -181,7 +181,7 @@
                         <v-card class="result-card" style="padding-bottom: 12px">
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
                             <div class="timeline" style="margin: 0 16px;display: flex;align-items: center;">
-                                <span v-if="!isSearchDate" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
+                                <span v-if="!isSearchDate" @click="searchDate" style="cursor: pointer">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
                                 <v-row v-else style="margin-bottom: 0;">
                                     <v-col cols=12 md="3" sm="3">
                                         <v-row class="item-row item" style="margin-bottom: 0;">
@@ -1802,6 +1802,21 @@
                                                                             @click:prepend="() => (BaseParm['InspectedTime'] = getNowTime())"
                                                                             ><span class="pa-0 ma-0" slot="prepend"><v-icon @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span></v-text-field> -->
 
+                                                                    </v-col>
+                                                                    <v-col cols=12 md="6" sm="6">
+                                                                        <v-row class="item-row item">
+                                                                            <v-col cols="12" md="4" sm="4">
+                                                                                <span class="pa-0 ma-0"
+                                                                                :style="{'color':`${BaseParm['StockedDate']&&BaseParm['StockedDate']!==''&&BaseParm['StockedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
+                                                                                    slot="prepend">放苗日</span>
+                                                                            </v-col>
+                                                                            <v-col cols="12" md="8" sm="8">
+                                                                                <v-text-field
+                                                                                    v-model="BaseParm['StockedDate']"
+                                                                                    class="mt-0" clearable
+                                                                                    readonly dense hide-details disabled></v-text-field>
+                                                                            </v-col>
+                                                                        </v-row>
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row item">
