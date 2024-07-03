@@ -1814,7 +1814,7 @@
                                                                                 <v-text-field
                                                                                     v-model="BaseParm['StockedDate']"
                                                                                     class="mt-0" clearable
-                                                                                    readonly dense hide-details disabled></v-text-field>
+                                                                                    readonly dense hide-details></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
