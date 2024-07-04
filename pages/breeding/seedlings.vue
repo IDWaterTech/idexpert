@@ -11,7 +11,7 @@
                         <div class="title">
                             <v-card-title>種苗清單</v-card-title>
                         </div>
-                        <div class="chevron" style="display: flex;align-items: center;margin-left: 8px;">
+                        <div class="chevron flex-align-center" style="margin-left: 8px;">
                             <v-btn class="btn-secondary green" @click="openAdd" style="padding: 0 8px;">
                                 <v-icon>mdi-plus</v-icon>新增種苗
                             </v-btn>
@@ -73,14 +73,14 @@
                 v-model="manvalid"
                 >
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div v-if="seedFormData.mode=='add'" style="display: inline-block;">
                             新增種苗
                         </div>
                         <div v-else style="display: inline-block;">
                             修改種苗
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="dialog.seedForm = false" 

@@ -97,8 +97,8 @@
                     :class="{'block':b.rows.length==0 && (b.id!==''||b.name!=='road'),'road':b.id==''&&b.name=='road'}">
                     <div v-if="b.rows.length>0" style="width: 100%;height: 100%;" :style="{marginLeft:`${ $route.path=='/map'?'12px':'0' }`}">
                         <v-row v-for="(row,rid) in b.rows" :key="rid" style="width: 100%;margin-bottom: 0;">
-                            <div style="width: 100%;display: flex;align-items: center;border-width: 2px;margin: 4px 0;"
-                                class="road-width"
+                            <div style="width: 100%;border-width: 2px;margin: 4px 0;"
+                                class="road-width flex-align-center"
                                 :style="{
                                     borderColor:`${row.state==''&& row.name !=='road' && row.rows.length==0?'rgba(#00273E,0.5)':'#00273E'}`,
                                     borderStyle:`${row.rows.length>0||(row.id==''&&row.name=='road')?'none':row.state=='' && row.name !== 'road'?'dotted':'solid'}`,
@@ -208,7 +208,7 @@
                     <span v-if="isPondName" class="note">注意：其他池已使用此名稱，按下確認鈕後，原使用此名稱的池會變成 '空白' !</span>
                     
                     <v-card-actions>
-                        <div class="buttons" style="width:100%;display: flex;align-items: center;justify-content: flex-end;">
+                        <div class="buttons flex-align-center" style="width:100%;justify-content: flex-end;">
                             <button class="cancel" @click="cancelEditBlock()">取消</button>
                             <button class="confirm" @click="saveBlock()">確認</button>
                         </div>
@@ -1112,9 +1112,8 @@ export default {
         box-sizing: border-box;
     }
     .parent-row {
-        width: 100%;
+        @include size(100%);
         margin-bottom: 12px;
-        height: 100%;
         flex-wrap: nowrap;
     //   min-width: 1200px;
     }
@@ -1148,8 +1147,7 @@ export default {
                     
                 }
                 .col-row-plus,.col-row-minus {
-                    width: 24px;
-                    height: 24px;
+                    @include size(24px);
                     color: #A60017;
                     border: 1px solid #A60017;
                     margin: 2px;
@@ -1174,9 +1172,7 @@ export default {
     }
 
     .title-col {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        @include flexCenterBetween();
         padding: 4px;
         border: 1px solid rgba(#00273E,0.5);
         border-radius: 4px;
@@ -1193,10 +1189,8 @@ export default {
     //   width: 120px;
         & > div {
         position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
+        @include size(100%);
+        @include flexAlignCenter();
         }
         & > div.icon-group {
         width: initial;
@@ -1206,8 +1200,7 @@ export default {
         }
         .horizontal,.top,.center,.bottom,.vertical {
             padding: 0;
-            width: 100%;
-            height: 36px;
+            @include size(100%,36px);
             background-color: #e4e4e4;
             margin: 0;
             margin-right: -12px;
@@ -1224,9 +1217,7 @@ export default {
         transform: translateX(-50%);
         width: 36px;
         height: calc(100% + 32px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include flexAllCenter();
         }
         .vertical {
         border-radius: 4px;
@@ -1296,8 +1287,7 @@ export default {
             }
         }
         .select {
-            display: flex;
-            align-items: center;
+            @include flexAlignCenter();
             margin-bottom: 8px;
             .theme--light.v-label, .theme--light.v-icon, .theme--light.v-input {
                 margin-top: 0;

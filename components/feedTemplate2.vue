@@ -15,7 +15,7 @@
                         <v-col cols="12" md="2" sm="3">
                             <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable||tempMain.id==1"></v-text-field>
                         </v-col>
-                        <v-col cols="2" v-if="templatemode=='add'" style="display: flex;align-items: center;justify-content: flex-start;">
+                        <v-col cols="2" class="flex-align-center" v-if="templatemode=='add'" style="justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存樣板"
                                 :class="{'disabled':!(tempMain.name_ch && tempMain.name_en) || templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                 @click="saveTemp"
@@ -27,7 +27,7 @@
                                 style="padding: 0 8px;">清空樣板
                             </v-btn>
                         </v-col>
-                        <v-col cols="2" v-if="templatemode=='edit'" style="display: flex;align-items: center;justify-content: flex-start;">
+                        <v-col cols="2" class="flex-align-center" v-if="templatemode=='edit'" style="justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存編輯"
                                 :class="{'disabled':!(tempMain.name_ch && tempMain.name_en)|| templatemode=='edit'&&!passObj.tempMain.is_enable}"
                                 @click="saveEdit"
@@ -118,7 +118,7 @@
                                                         <span v-else>． 0 天</span>
                                                     </v-card-title>
                                                 </div>
-                                                <div v-if="templatemode!=='cycleedit'" class="chevron" style="display: flex;align-items: center;">
+                                                <div v-if="templatemode!=='cycleedit'" class="chevron flex-align-center">
                                                     <v-tooltip bottom>
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <button class="btn-icon-secondary" v-bind="attrs" v-on="on" @click="editWorkDialogOpen(work,templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id,wid)">
@@ -136,7 +136,7 @@
                                                         <span>在此之後新增工作</span>
                                                     </v-tooltip>
                                                 </div>
-                                                <div v-else class="chevron" style="display: flex;align-items: center;">
+                                                <div v-else class="chevron flex-align-center">
                                                     <v-tooltip bottom>
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <button class="btn-icon green" :class="{'disabled':judgeWork(templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id,wid,'add')}" v-bind="attrs" v-on="on" @click="addWorkDialogOpen(templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id,wid)">
@@ -164,7 +164,7 @@
                                                 :item-key="'table_'+id"
                                                 class="data-table">
                                                 <template v-for="(header,hid) in headers" v-slot:[`header.${header.value}`]>
-                                                    <div v-if="header.text=='操作' && templatemode=='cycleedit'" class="tool" :key="'header_'+hid+id" style="display: flex;align-items: center;">
+                                                    <div v-if="header.text=='操作' && templatemode=='cycleedit'" class="tool flex-align-center" :key="'header_'+hid+id">
                                                         {{ header.text }}
                                                         <v-tooltip bottom>
                                                             <template v-slot:activator="{ on }">
@@ -315,13 +315,13 @@
         <!-- 檢視pdf -->
         <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: block;width: 100%;">
+                <v-card-title class="add-title">
                     <div style="display: inline-block;"
                         :style="{'color':`${viewDetail.status&&viewDetail.status=='異常'?'#A60017':viewDetail.status&&viewDetail.status=='警告'?'#f79c2b':'#00324E'}`}">
                         <span v-text="viewDetail.type==1?'疾病報告':viewDetail.type==2?'水質報告':viewDetail.type==3?'事件':''"></span>
                         <span v-if="viewDetail.status"> - {{ viewDetail.status }}</span>
                     </div>
-                    <div class="add" style="float: right;display: inline-block;">
+                    <div class="add">
                         <!-- <v-btn  class="btn-primary"
                                 title="下載" 
                                 @click="viewOpen = false" 
@@ -379,11 +379,11 @@
         <v-dialog v-model="editWorkDialog" max-width="500px">
             <v-form v-model="editWorkvalid" ref="editWorkform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>編輯：{{ editItem.step_name }}</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="editWorkDialog = false" 
@@ -398,11 +398,11 @@
                                 <v-card-title>備註說明</v-card-title>
                             </div>
                         </div>
-                        <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                        <v-card-text class="flex-align-center" style="padding-top: 0;">
                             <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
                             </v-text-field>
                         </v-card-text>
-                        <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+                        <div class="card-title border-bottom" style="margin-bottom: 8px;">
                             <div class="title">
                                 <v-card-title>預設動作</v-card-title>
                             </div>
@@ -423,7 +423,7 @@
                                 <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actionList[0].start_on_which_day}}」天開始執行動作({{editItem.actionList[0].action_name}})，持續執行到第「{{editItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
                             <v-card-text v-for="(item,id) in editItem.actionList" :key="'editAction_'+item.action_id+'_'+id" class="work-item" style="padding-top: 0;" >
-                                <v-row style="display: flex;align-items: center;padding-top: 0;">
+                                <v-row class="flex-align-center" style="padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
                                         <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
@@ -474,11 +474,11 @@
         <v-dialog v-model="editActionItemDialog" max-width="500px">
             <v-form v-model="editActionItemvalid" ref="editActionItemform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>加入動作</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="editActionItemDialog = false" 
@@ -488,7 +488,7 @@
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <v-card-text style="display: flex;align-items: center;">
+                        <v-card-text class="flex-align-center">
                             <v-autocomplete v-model="stepitem.id" dense filled :items="stepdata" item-text="name_ch"
                                     item-value="id" @change="actionChange"></v-autocomplete>
                             <v-tooltip bottom>
@@ -536,11 +536,11 @@
         <v-dialog v-model="addWorkDialog" max-width="500px">
             <v-form v-model="addWorkvalid" ref="addWorkform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>加入工作</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="addWorkDialog = false" 
@@ -574,18 +574,18 @@
                                 <v-card-title>工作說明</v-card-title>
                             </div>
                         </div>
-                        <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                        <v-card-text class="flex-align-center" style="padding-top: 0;">
                             <v-text-field v-model="editItem.remark" disabled autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
                             </v-text-field>
                         </v-card-text>
-                        <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+                        <div class="card-title border-bottom" style="margin-bottom: 8px;">
                             <div class="title">
                                 <v-card-title>預設動作</v-card-title>
                             </div>
                         </div>
                         <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="max-height: 30vh;overflow-y: scroll;">
-                            <v-card-text v-for="item in editItem.actionList" :key="'addAction_'+templatemode=='cycleedit'?item.id:item.action_id+'_'+Math.floor(Math.random()*999)+100" style="display: flex;align-items: center;padding-top: 0;" >
-                                <v-row style="display: flex;align-items: center;padding-top: 0;">
+                            <v-card-text class="flex-align-center" v-for="item in editItem.actionList" :key="'addAction_'+templatemode=='cycleedit'?item.id:item.action_id+'_'+Math.floor(Math.random()*999)+100" style="padding-top: 0;" >
+                                <v-row class="flex-align-center" style="padding-top: 0;">
                                     <v-col cols="3">{{ item.action_name }}</v-col>
                                     <v-col cols="3">Day {{ item.start_on_which_day }} ~ Day {{ item.end_on_which_day }}</v-col>
                                     <!-- 財務 -->
@@ -614,11 +614,11 @@
         <v-dialog v-model="addWorkActionDialog" max-width="500px">
             <v-form v-model="addWorkActionvalid" ref="addWorkActionform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>新增工作</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="addWorkActionDialog = false" 
@@ -644,7 +644,7 @@
                         <v-card-text style="padding-top: 0;">
                             <v-text-field v-model="addItem.remark" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
                         </v-card-text>
-                        <div class="card-title" style="margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+                        <div class="card-title border-bottom" style="margin-bottom: 8px;">
                             <div class="title">
                                 <v-card-title>預設動作</v-card-title>
                             </div>
@@ -664,8 +664,8 @@
                             <v-card-text v-if="addItem.actionList&&addItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{addItem.name_ch}})開始後第「{{addItem.actionList[0].start_on_which_day}}」天開始執行動作({{addItem.actionList[0].action_name}})，持續執行到第「{{addItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
-                            <v-card-text v-for="(item,id) in addItem.actionList"  class="work-item" :key="'addWorkAction_'+item.action_id" style="display: flex;align-items: center;padding-top: 0;" >
-                                <v-row style="display: flex;align-items: center;padding-top: 0;">
+                            <v-card-text v-for="(item,id) in addItem.actionList"  class="work-item flex-align-center" :key="'addWorkAction_'+item.action_id" style="padding-top: 0;" >
+                                <v-row class="flex-align-center" style="padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
                                         <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
@@ -714,11 +714,11 @@
         <!-- 執行狀態 -->
         <v-dialog v-model="executeDialog" max-width="500px">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: block;width: 100%;">
+                <v-card-title class="add-title">
                     <div style="display: inline-block;">
                         <span>{{executeList.action_name}}</span>
                     </div>
-                    <div class="add" style="float: right;display: inline-block;">
+                    <div class="add">
                         <v-btn  class="btn-secondary close"
                                 title="取消" 
                                 @click="executeDialog = false" 
@@ -734,13 +734,13 @@
                         </div>
                     </div> -->
                     <v-card-text>
-                        <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                        <v-row class="border-bottom flex-align-center" style="width: 100%;">
                             <v-col cols="1">#</v-col>
                             <v-col cols="3"><span style="font-weight:bold">排程日期</span></v-col>
                             <v-col cols="4"><span style="font-weight:bold">狀態/說明</span></v-col>
                             <v-col cols="4"><span style="font-weight:bold">執行時間/執行人員</span></v-col>
                         </v-row>
-                        <v-row class="content" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                        <v-row class="content border-bottom flex-align-center" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="width: 100%;">
                             <v-col cols="1">{{ did+1 }}</v-col>
                             <v-col cols="3"><span>{{daily.scheduling_date}}<br/></span></v-col>
                             <v-col cols="4"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span>
@@ -2972,9 +2972,8 @@ export default {
     }
 }
 .status.flex-adjust,.status .newest-date.flex-adjust {
-    display: flex;
+    @include flexAlignCenter();
     flex-direction: row;
-    align-items: center;
     & > span {
         margin-left: 4px;
     }
@@ -2987,8 +2986,7 @@ export default {
         position: absolute;
         height: 100%;
         .circle {
-            width: 16px;
-            height: 16px;
+            @include size(16px);
             background-color: #fff;
             border: 5px solid $color-primary;
             border-radius: 50%;
@@ -3059,9 +3057,7 @@ export default {
 .v-application.v-application--is-ltr .v-card.bg-card .content {
     &.no-work {
         padding: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include flexAllCenter();
         color: rgba(0,0,0,0.38);
     }
 }

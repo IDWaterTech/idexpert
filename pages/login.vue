@@ -251,30 +251,20 @@ export default {
 .v-application.v-application--is-ltr {
   .tech-bg {
     // max-height: 480px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    @include positionCenter();
     width: 80%;
     margin-left: -24px;
   }
   .v-card.login {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    @include positionCenter();
     overflow: hidden;
     margin-bottom: 24px;
     padding: 40px;
-    display: flex;
+    @include flexAllCenter();
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.10), 0px 0px 10px 0px rgba(255,255,255,0.4);
     .card-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @include flexAllCenter();
       margin-bottom: 48px;
       .title {
         color: #006AA6;

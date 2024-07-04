@@ -1457,8 +1457,7 @@ export default {
 .v-application--is-ltr {
   .search {
     .search-container {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
     }
     .checkbox-feed {
       flex: 1;
@@ -1468,19 +1467,17 @@ export default {
     }
   }
   .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px $color-black-10;
   }
   .v-card.result-card {
     padding: 12px 24px;
     padding-bottom: 8px;
     background-color: #E6F5FA;
     .data-time {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
     }
     .btn-groups {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
       justify-content: flex-end;
       // width: 100%;
       max-width: 280px;
@@ -1548,8 +1545,7 @@ export default {
     }
 
     .theme--light.v-data-table > .v-data-table__wrapper > table .observe {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
     }
 
     // header
@@ -1569,8 +1565,7 @@ export default {
       
       // top
       .header-right,.header-left {
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         width: 100%;
       }
       // .header-right {

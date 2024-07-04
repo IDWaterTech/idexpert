@@ -92,12 +92,11 @@
                   class="mx-1" dense hide-details></v-text-field>
               </v-col> -->
             <!-- 查詢/小螢幕布局圖 -->
-            <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center"
-              style="display: flex;flex-direction: row;align-items: center;">
+            <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center">
               <!-- <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
                   class="mx-1" dense hide-details style="max-width: 120px;"></v-text-field> -->
-              <button icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
-                style="display: flex;align-items: center;font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;text-align: left;">
+              <button class="flex-align-center" icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
+                style="font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;text-align: left;">
                 <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
               </button>
 
@@ -109,8 +108,8 @@
           <!-- 大螢幕布局圖 -->
           <v-row v-if="sel_main&&windowWidth>959.98 " style="margin-bottom: 0;">
             <v-col cols="12" sm="12" style="padding-top: 0;">
-              <button icon @click="showmpFun" v-if="sel_main" slot="prepend"
-                style="display: flex;align-items: center;font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;">
+              <button class="flex-align-center" icon @click="showmpFun" v-if="sel_main" slot="prepend"
+                style="font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;">
                 <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
               </button>
             </v-col>
@@ -182,12 +181,11 @@
                 </v-col> -->
 
               <v-col cols="12" lg="3" sm="6" style="padding-top: 0; padding-bottom: 0;">
-                <v-card class="dashboard warning-alert"
-                  style="display: flex;flex-direction: column;align-items: flex-start;">
+                <v-card class="dashboard warning-alert">
                   <v-overlay :value="!showAlert" :absolute="true">
                     <v-progress-circular indeterminate size="64"></v-progress-circular>
                   </v-overlay>
-                  <div class="icon" style="border-radius: 50%;padding-top: 0;display: flex;">
+                  <div class="icon">
                     <v-icon>mdi-alert-outline</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
@@ -196,10 +194,8 @@
                     </div>
 
                   </div>
-                  <div class="total-text"
-                    style="display: flex;flex-direction: row;align-items: flex-start;width: 100%;">
-                    <div class="content"
-                      style="padding: 0;display: flex;align-items: flex-end;justify-content: center;width:100%;">
+                  <div class="total-text number-text">
+                    <div class="content">
                       <number-count-up v-if="showAlert" :id="'num4'" :endVal="total.warning" suffix=""
                         :myReady="onReady"></number-count-up>
                       <span style="margin-left: 8px;"> 個</span>
@@ -208,8 +204,8 @@
                 </v-card>
               </v-col>
               <v-col cols="12" lg="3" md="6" sm="6" style="padding-top: 0; padding-bottom: 0;">
-                <v-card class="dashboard" style="display: flex;flex-direction: column;align-items: flex-start;">
-                  <div class="icon" style="border-radius: 50%;padding-top: 0;display: flex;">
+                <v-card class="dashboard">
+                  <div class="icon">
                     <v-icon>mdi-focus-field</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
@@ -217,10 +213,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="total-text"
-                    style="display: flex;flex-direction: row;align-items: flex-start;width: 100%;">
-                    <div class="content"
-                      style="padding: 0;display: flex;align-items: flex-end;justify-content: center;width: 100%;">
+                  <div class="total-text number-text">
+                    <div class="content">
                       <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=""
                         :myReady="onReady"></number-count-up>
                       <span style="margin-left: 8px;"> 池</span>
@@ -229,8 +223,8 @@
                 </v-card>
               </v-col>
               <v-col cols="12" lg="3" md="6" sm="6" style="padding-top: 0; padding-bottom: 0;">
-                <v-card class="dashboard pond" style="display: flex;flex-direction: column;align-items: flex-start;">
-                  <div class="icon" style="border-radius: 50%;padding-top: 0;display: flex;">
+                <v-card class="dashboard pond">
+                  <div class="icon">
                     <v-icon>mdi-dots-grid</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
                       <div class="title" style="font-weight: bold;">
@@ -238,10 +232,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="total-text"
-                    style="display: flex;flex-direction: row;align-items: flex-start;width: 100%;">
-                    <div class="content"
-                      style="padding: 0;display: flex;align-items: flex-end;justify-content: center;width: 100%;">
+                  <div class="total-text number-text">
+                    <div class="content">
                       <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=""
                         :myReady="onReady"></number-count-up>
                       <span style="margin-left: 8px;"> 個</span>
@@ -250,8 +242,8 @@
                 </v-card>
               </v-col>
               <v-col cols="12" lg="3" md="6" sm="6" style="padding-top: 0; padding-bottom: 0;">
-                <v-card class="dashboard predict" style="display: flex;flex-direction: column;align-items: flex-start;">
-                  <div class="icon" style="border-radius: 50%;padding-top: 0;display: flex;">
+                <v-card class="dashboard predict">
+                  <div class="icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
                         d="M6.468 8.18c-.484-.547-.04-1.404.686-1.325l6.166.675c2.095.23 3.307 2.49 2.338 4.362l-.169.326c-.969 1.871-3.514 2.187-4.91.608L6.468 8.18Zm6.984-5.654a.231.231 0 0 1-.126-.042 3.796 3.796 0 0 0-5.918 3.82.197.197 0 0 1 0 .079c-.044.206-.36.263-.403.056A4.217 4.217 0 0 1 13.6 2.162c.17.122.06.37-.148.364Z"
@@ -269,10 +261,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="total-text"
-                    style="display: flex;flex-direction: row;align-items: flex-start;width: 100%;">
-                    <div class="content"
-                      style="padding: 0;display: flex;align-items: flex-end;justify-content: center;width: 100%;">
+                  <div class="total-text number-text">
+                    <div class="content">
                       <number-count-up v-if="showPredict" :id="'num3'" :endVal="total.predict" suffix=""
                         :myReady="onReady"></number-count-up>
                       <span style="margin-left: 8px;"> 隻</span>
@@ -1870,16 +1860,20 @@ export default {
   // padding: 8px 12px;
   border-bottom: 4px solid $color-primary;
   // border-left: 4px solid $color-primary;
+  @include flexAlignCenter();
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 12px;
   background-color: rgba($color-primary,0.08);
   .icon {
     //width: 40px;
     //height: 40px;
     // background-color: rgba($color-primary,0.1);
+    border-radius: 50%;
+    padding-top: 0;
+    display: flex;
     text-align: center;
-    padding-top: 8px;
     margin-right: 24px;
     .v-icon {
       color: $color-primary;
@@ -1925,13 +1919,26 @@ export default {
       padding: 0;
       font-size: 1.2rem !important;
     }
+    &.number-text {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      width: 100%;
+      .content {
+        padding: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        width:100%;
+      }
+    }
   }
 }
 
 .v-card.result-card.pool-detail {
   background-color: #fff;
   .card-title {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     background-color: rgba($color-primary,0.1);
   }
   .content .col-12 {
@@ -1988,8 +1995,7 @@ export default {
   .custom-overlay {
     position: fixed;
     .v-overlay__content {
-      width: 100%;
-      height: 100%;
+      @include size(100%);
       .v-icon.v-icon.v-icon--link {
         position: absolute;
         top: 80px;
@@ -2000,10 +2006,7 @@ export default {
         // border-radius: 4px;
       }
       img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
+        @include positionCenter();
       }
     }
   }

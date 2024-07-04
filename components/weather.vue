@@ -1,7 +1,7 @@
 <template>
   <el-popover placement="top-start" width="300">
         <v-row style="color:#FFF;" justify="center" align="center" dense >
-            <v-col cols="12" style="border-bottom: 1px solid rgba(0,0,0,0.1);padding-bottom: 8px;">
+            <v-col cols="12" class="border-bottom" style="padding-bottom: 8px;">
                 <h3>氣象資訊</h3>
             </v-col>
             <v-col cols="12" justify="center">
@@ -17,7 +17,7 @@
                 <v-btn :value="4" :class="{'v-btn--active':toggle_weather==4}">高雄<br/>湖內</v-btn>
               </v-btn-toggle>
             </v-col>
-            <v-col cols="12" style="line-height: 24px;border-bottom: 1px solid rgba(0,0,0,0.1);">
+            <v-col cols="12" class="border-bottom" style="line-height: 24px;">
               <span style="font-weight: 400;">地區：</span><span>{{location.map(x=>x.name).join()}}</span><br/>  <!--  _({{ loc.longitude }}/{{ loc.latitude }}) -->
               <span style="font-weight: 400;">天氣概況：</span>{{weatherdata.weather[0].main}}<br/>
               <span style="font-weight: 400;">說明：</span>{{weatherdata.weather[0].description}}<br/>

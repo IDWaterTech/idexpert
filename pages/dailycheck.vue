@@ -46,14 +46,14 @@
                     </v-row>
                 </div>
                 <div class="result" v-if="poolData.daily&&poolData.daily.length>0" style="padding-bottom: 0;">
-                    <span style="margin-left: 8px;display: flex;align-items: center;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
+                    <span class="flex-align-center" style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
                     <div class="result-content">
                         <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id">
                             <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
                                 <div class="title">
                                     <v-card-title>{{ item.scheduling_date.slice(5).replace('-','/') }}</v-card-title>
                                 </div>
-                                <div class="chevron" style="display: flex;align-items: center;">
+                                <div class="chevron flex-align-center">
                                     <v-tooltip bottom >
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn class="btn-icon green" v-bind="attrs" v-on="on" @click="addEventOpen(item.scheduling_date)"><v-icon>mdi-plus</v-icon></v-btn>
@@ -113,7 +113,7 @@
                                                 {{ daily.executor_name }}
                                             </div>
                                         </div>
-                                        <div v-if="daily.execute_status=='0'" class="action" style="display: flex;align-items: center;">
+                                        <div v-if="daily.execute_status=='0'" class="action flex-align-center">
                                             <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
                                             <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
                                             <v-tooltip bottom>
@@ -134,7 +134,7 @@
                 </div>
                 <div class="result" v-else style="overflow-x: hidden;">
                     <div class="result-content">
-                        <v-card class="result-card" style="width: 100%;height: 72vh;display: flex;align-items: center;justify-content: center;">
+                        <v-card class="result-card flex-all-center" style="width: 100%;height: 72vh;">
                             無資料
                         </v-card>
                     </div>
@@ -146,11 +146,11 @@
         <v-dialog v-model="editDialog" max-width="500px">
             <v-form ref="editform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>{{editItem.num==3?nowDaily.slice(5).replace('-','/')+'之後的「'+editItem.action_name+'」均不執行':'執行編修'}}</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="editDialog = false;" 
@@ -162,7 +162,7 @@
                     <div class="basic">
                         <div v-if="editItem.num!==3" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;">
                             <div class="title"><v-card-title>執行狀態</v-card-title></div>
-                            <div class="title" v-if="editItem.execute_status!=='0'" style="display: flex;align-items: center;">
+                            <div class="title flex-align-center" v-if="editItem.execute_status!=='0'">
                                 <span style="font-size: 14px;margin-right: 8px;">{{ editItem.execute_status=='1'?'已執行':'不執行' }}</span>
                                 <v-btn  class="btn-secondary btn-small delete" @click="editItem.execute_status = '0';editItem.msg=''">取消</v-btn>
                             </div>
@@ -208,11 +208,11 @@
         <v-dialog v-model="delayDialog" max-width="500px">
             <v-form ref="delayform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>{{ isDelay?'延期:':'複製:' }} {{ delayItem.action_name }}</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="delayDialog = false;" 
@@ -257,11 +257,11 @@
         <v-dialog v-model="addDialog" max-width="500px">
             <v-form ref="addform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>新增動作</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="addDialog = false;" 
@@ -372,7 +372,7 @@
         <!-- 開啟下一階段 -->
         <v-dialog v-model="nextStepDialog" max-width="500px">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: block;width: 100%;border-bottom: none;">
+                <v-card-title class="add-title" style="border-bottom: none;">
                     <div style="display: inline-block;">
                         <span></span> 
                     </div>
@@ -400,11 +400,11 @@
         <v-dialog v-model="delayAllDialog" max-width="500px">
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span v-if="delayAll.scheduling_date">延期{{delayAll.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="delayAllDialog = false;" 
@@ -444,11 +444,11 @@
         <v-dialog v-model="nextWorkDialog" max-width="500px">
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>下一工作</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="nextWorkDialog = false;" 
@@ -462,13 +462,13 @@
                             <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
                                 {{ action }}
                             </div> -->
-                            <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                            <v-row class="border-bottom" style="width: 100%;display: flex;align-items: center;">
                                 <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">第幾天開始執行</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">持續執行至第幾天</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">說明</span></v-col>
                             </v-row>
-                            <v-row class="content" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                            <v-row class="content border-bottom" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="width: 100%;display: flex;align-items: center;">
                                 <v-col cols="3"><span>{{ action.name_ch }}</span></v-col>
                                 <v-col cols="3"><span>Day {{action.start_on_which_day}}<br/></span></v-col>
                                 <v-col cols="3"><span>Day {{action.end_on_which_day}}<br/></span></v-col>
@@ -488,11 +488,11 @@
         <v-dialog v-model="logDialog" max-width="500px">
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
-                    <v-card-title class="add-title" style="display: block;width: 100%;">
+                    <v-card-title class="add-title">
                         <div style="display: inline-block;">
                             <span>{{logData.action_name}}資訊</span> 
                         </div>
-                        <div class="add" style="float: right;display: inline-block;">
+                        <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
                                     @click="logDialog = false;" 
@@ -506,13 +506,13 @@
                             <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
                                 {{ action }}
                             </div> -->
-                            <v-row style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                            <v-row class="border-bottom" style="width: 100%;display: flex;align-items: center;">
                                 <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">原因</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">時間</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">人員</span></v-col>
                             </v-row>
-                            <v-row class="content" v-for="(action,id) in logData.log" :key="'log_'+id" style="border-bottom: 1px solid rgba(0,0,0,0.1);width: 100%;display: flex;align-items: center;">
+                            <v-row class="content border-bottom" v-for="(action,id) in logData.log" :key="'log_'+id" style="width: 100%;display: flex;align-items: center;">
                                 <v-col cols="3"><span>{{ action.operation=='delay'?'延遲':action.operation=='copy'?'複製':'新增' }}</span></v-col>
                                 <v-col cols="3"><span>{{action.operation_reason}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operation_time}}<br/></span></v-col>
@@ -1282,15 +1282,13 @@ export default {
     overflow-x: scroll;
 }
 .result-content {
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
     margin-top: 16px;
 }
 .v-card.result-card {
     display: flex;
     flex-direction: column;
-    height: 70vh;
-    width: 280px;
+    @include size(280px,70vh);
     min-width: 280px;
     margin-right: 16px;
     .card-title {
@@ -1303,16 +1301,14 @@ export default {
 }
 .daily-check{
     background-color: #fff;
-    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    box-shadow: 0 0 4px $color-black-10;
     // border-left: 4px solid $color-primary;
     margin: 4px 12px;
     margin-bottom: 8px;
     border-radius: 4px;
     padding: 4px;
     .check-title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        @include flexCenterBetween();
         margin: 8px;
         padding-top: 0;
         .title {
@@ -1334,8 +1330,7 @@ export default {
                     color: $color-primary;
                 }
             }
-            display: flex;
-            align-items: center;
+            @include flexAlignCenter();
         }
     }
     .description {
@@ -1348,9 +1343,7 @@ export default {
         padding-top: 8px !important;
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         .excute {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            @include flexCenterBetween();
 
             .date,.excutor {
                 display: inline-block;
@@ -1359,12 +1352,11 @@ export default {
     }
 }
 .calendar {
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
 }
 ::v-deep {
     .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-        border: 1px solid rgba(0,0,0,0.1);
+        border: 1px solid $color-black-10;
         border-radius: 4px;
         padding: 0 8px;
     }

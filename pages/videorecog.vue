@@ -45,7 +45,7 @@
               <v-col cols="12" md="3" sm="12" align-self="center"  class="caculate">
                 <v-radio-group class="my-1" row v-model="dataClass" mandatory @change="()=>{recogData={}}" hide-details>
                   <v-radio v-for="(item, i) in dataClassList" :label="item.name" :value="item.name" :key="i">
-                    <span slot="label" style="display: flex;align-items: center;">
+                    <span slot="label" class="flex-align-center">
                       <v-icon class="mr-1">{{ item.icon }}</v-icon>{{ `${item.name}` }}
                     </span></v-radio>
                 </v-radio-group>
@@ -500,7 +500,7 @@ export default {
       }
     }
     .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px $color-black-10;
     }
     .v-card.result-card {
       padding: 24px;
@@ -511,10 +511,9 @@ export default {
       }
       .header-bar {
         width: 100%;
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         padding: 12px 24px;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
+        border-bottom: 1px solid $color-black-10;
         h5 {
           width: 100%;
         }

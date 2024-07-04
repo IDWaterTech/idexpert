@@ -2,7 +2,7 @@
   <div>
     <v-row style="margin-bottom: 0;">
         <v-col cols="12" md="4" sm="6" style="padding: 0;">
-            <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
+            <div class="search flex-align-center" style="margin-left: 16px;margin-top: 8px;">
                 <v-autocomplete v-model="nowCata" hide-details :items="cataSelect" @change="cataChange" style="min-width: 200px;">
                 
                 </v-autocomplete>
@@ -96,11 +96,11 @@
     <v-dialog v-model="editDialog" max-width="500px">
         <v-form v-model="editvalid" ref="addform">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: block;width: 100%;">
+                <v-card-title class="add-title">
                     <div style="display: inline-block;">
                         <span>{{ nowCata }}編輯</span> 
                     </div>
-                    <div class="add" style="float: right;display: inline-block;">
+                    <div class="add">
                         <v-btn class="btn-secondary close"
                                 title="取消" 
                                 @click="editDialog = false;" 
@@ -522,7 +522,7 @@ export default {
 }
 ::v-deep {
     .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-        border: 1px solid rgba(0,0,0,0.1);
+        border: 1px solid $color-black-10;
         border-radius: 4px;
         padding: 0 8px;
     }

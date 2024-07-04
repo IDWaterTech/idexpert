@@ -68,14 +68,12 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%,calc(-50% - 64px));
-  display: flex;
+  @include flexAlignCenter();
   flex-direction: column;
-  align-items: center;
 }
 .img-error {
   background-image: url('../assets/Error-bg.png');
-  height: 100%;
-  width: auto;
+  @include size(auto,100%);
   object-fit: cover;
   background-size: cover;
   background-position: 60% bottom;
@@ -83,10 +81,7 @@ export default {
 .bg404 {
   font-size: 280px;
   font-weight: bold;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
+  @include positionCenter();
   color: rgba($color-primary-25,0.2);
   z-index: -1;
 }

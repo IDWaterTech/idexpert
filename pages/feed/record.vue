@@ -199,8 +199,7 @@
                       </v-col>
                       <v-col cols="12" md="6"
                         :style="{'padding-top':`${windowWidth>960?'0':'12px'}`}">
-                        <div class="right"
-                          style="display: flex;align-items: center;"
+                        <div class="right flex-align-center"
                           :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}"
                         >
                           <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
@@ -1014,15 +1013,14 @@ export default {
 <style lang="scss" scoped>
 .v-application--is-ltr {
   .v-sheet.result-card.v-card:not(.v-sheet--outlined),.v-expansion-panel::before {
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px $color-black-10;
   }
   .v-card.result-card {
     padding: 12px;
     padding-bottom: 8px;
     background-color: #E6F5FA;
     .card-title {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
       width: 100%;
       padding: 0 !important;
       .title {
@@ -1076,7 +1074,7 @@ export default {
       padding: 12px 8px;
     }
     .theme--light.v-expansion-panels .v-expansion-panel-header {
-      border-bottom: 1px solid rgba(0,0,0,0.1);
+      border-bottom: 1px solid $color-black-10;
       margin: 0 12px;
       width: calc(100% - 24px);
     }
@@ -1127,7 +1125,7 @@ export default {
       background-color: $color-lighten;
     }
     .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf {
-      border-bottom: 1px solid rgba(0,0,0,0.1);
+      border-bottom: 1px solid $color-black-10;
     }
     .el-table .el-table__header-wrapper td.el-table__cell, .el-table th.el-table__cell.is-leaf {
       border-bottom: 1px solid transparent;
@@ -1167,8 +1165,7 @@ export default {
     .el-table__row.el-table__row--level-1 .cell {
       // font-size: 0.875rem;
       // min-height: 48px;
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
       padding: 8px;
     }
     .el-table__body tr.el-table__row.el-table__row--level-1.hover-row>td.el-table__cell {
@@ -1207,15 +1204,14 @@ export default {
     }
     .el-table__empty-block {
       width: 100%;
-      border-top: 1px solid rgba(0,0,0,0.1);
+      border-top: 1px solid $color-black-10;
     }
     .el-table__expand-icon {
       transform: rotate(0deg);
       transition: all 0.3s;
       &:active {
         // content: "";
-        width: 20px;
-        height: 20px;
+        @include size(20px);
         border-radius: 50%;
         background-color: rgba(0,0,0,0.12);
       }

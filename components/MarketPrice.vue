@@ -5,7 +5,7 @@
       class="popover-bg"
     >
       <v-row style="color:#FFF;" justify="center" align="center">
-        <v-col cols="12" style="border-bottom: 1px solid rgba(0,0,0,0.1);padding-bottom: 8px;">
+        <v-col cols="12" class="border-bottom" style="padding-bottom: 8px;">
           <h3>市場資訊</h3>
         </v-col>
         <v-col style="line-height: 24px;">

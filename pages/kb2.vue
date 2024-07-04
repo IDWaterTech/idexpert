@@ -60,7 +60,7 @@
                         <v-col
                             v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0"
                             cols="12" md="6" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
-                            style="display: flex;justify-content: space-between;align-items: center;">
+                            class="flex-center-between">
                             <div class="btn-groups">
                                 <!-- <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
@@ -85,7 +85,7 @@
                             <v-dialog v-model="dialog.pdf" scrollable max-width="75%">
                                 <v-card>
                                     <v-card-title class="add-title" style="display: flex;width: 100%;">
-                                        <div style="display: flex;align-items: center;width: calc(100% - 40px);">
+                                        <div class="flex-align-center" style="width: calc(100% - 40px);">
                                             <span><a :href="url.xls" target="_blank">計算公式</a></span>
                                             <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
                                             <v-tooltip bottom>
@@ -124,7 +124,7 @@
                         <!-- 查詢/清空/控制項 - result版面收合 -->
                         <v-col v-else cols="12" md="7" sm="12"
                             :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
-                            style="display: flex;justify-content: space-between;align-items: center;">
+                            class="flex-center-between">
                             <div class="btn-groups">
                                 <!-- <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
@@ -180,7 +180,7 @@
                     <div class="result-content" >
                         <v-card class="result-card" style="padding-bottom: 12px">
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
-                            <div class="timeline" style="margin: 0 16px;display: flex;align-items: center;">
+                            <div class="timeline flex-align-center" style="margin: 0 16px;">
                                 <span v-if="!isSearchDate" @click="searchDate" style="cursor: pointer">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
                                 <v-row v-else style="margin-bottom: 0;">
                                     <v-col cols=12 md="3" sm="3">
@@ -521,8 +521,7 @@
                                                                                     :style="{'color':`${FeedParm['LastFeedInput']&&FeedParm['LastFeedInput']!==''&&FeedParm['LastFeedInput']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去24小時最後一筆的飼料紀錄中飼料的投餵量->0號料、1號料、2號料、上一餐飼料量">上一餐飼料量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="FeedParm['LastFeedInput']"
                                                                                     type="number" dense hide-details
@@ -563,8 +562,7 @@
                                                                                 :style="{'color':`${FeedParm['LastFeedOfDay']&&FeedParm['LastFeedOfDay']!==''&&FeedParm['LastFeedOfDay']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去24小時所有飼料紀錄中飼料量的總和">24時內總飼料量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="FeedParm['LastFeedOfDay']"
                                                                                     type="number" dense hide-details
@@ -583,8 +581,7 @@
                                                                                 :style="{'color':`${FeedParm['CumulativeFeedAmountInput']&&FeedParm['CumulativeFeedAmountInput']!==''&&FeedParm['CumulativeFeedAmountInput']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="養殖起始日~資料日期時間內所有飼料量的總和->FCR(換肉率)">累計飼料量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
 
                                                                                 <v-text-field
                                                                                     v-model.number="FeedParm['CumulativeFeedAmountInput']"
@@ -702,7 +699,7 @@
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
                                                     expand-icon="mdi-chevron-down">
-                                                    <div class="item-title" style="display: flex;align-items: center;">
+                                                    <div class="item-title flex-align-center">
                                                         水質資訊
                                                         <!-- <v-tooltip bottom>
                                                             <template v-slot:activator="{ on, attrs }">
@@ -746,8 +743,7 @@
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
-                                                                            <v-col cols="12" md="4" sm="4"
-                                                                                style="display: flex;align-items: center;"
+                                                                            <v-col cols="12" md="4" sm="4" class="flex-align-center"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" slot="prepend"
                                                                                 :style="{'color':`${WaterQualityData['pH']&&WaterQualityData['pH']!==''&&WaterQualityData['pH']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
@@ -845,8 +841,7 @@
                                                                     </v-col> -->
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
-                                                                            <v-col cols="12" md="4" sm="4"
-                                                                                style="display: flex;align-items: center;"
+                                                                            <v-col cols="12" md="4" sm="4" class="flex-align-center"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Mg']&&WaterQualityData['Mg']!==''&&WaterQualityData['Mg']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
@@ -868,8 +863,7 @@
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
-                                                                            <v-col cols="12" md="4" sm="4"
-                                                                                style="display: flex;align-items: center;"
+                                                                            <v-col cols="12" md="4" sm="4" class="flex-align-center"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Ca']&&WaterQualityData['Ca']!==''&&WaterQualityData['Ca']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
@@ -891,8 +885,7 @@
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
-                                                                            <v-col cols="12" md="4" sm="4"
-                                                                                style="display: flex;align-items: center;"
+                                                                            <v-col cols="12" md="4" sm="4" class="flex-align-center"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Alk']&&WaterQualityData['Alk']!==''&&WaterQualityData['Alk']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"><v-badge
@@ -914,8 +907,7 @@
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
-                                                                            <v-col cols="12" md="4" sm="4"
-                                                                                style="display: flex;align-items: center;"
+                                                                            <v-col cols="12" md="4" sm="4" class="flex-align-center"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${WaterQualityData['AmmoniaN']&&WaterQualityData['AmmoniaN']!==''&&WaterQualityData['AmmoniaN']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的氨氮資料->砂糖量(降氨氮)">氨氮</span><span
@@ -933,8 +925,7 @@
                                                                     </v-col>
                                                                     <v-col cols=12 md="6" sm="6">
                                                                         <v-row class="item-row water">
-                                                                            <v-col cols="12" md="4" sm="4"
-                                                                                style="display: flex;align-items: center;"
+                                                                            <v-col cols="12" md="4" sm="4" class="flex-align-center"
                                                                                 :style="{'flexDirection':`${windowWidth<1263.98&&windowWidth>959.98?'column':'row'}`,'alignItems':`${windowWidth<1263.98&&windowWidth>959.98?'flex-start':'center'}`}">
                                                                                 <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${WaterQualityData['NO2']&&WaterQualityData['NO2']!==''&&WaterQualityData['NO2']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的亞硝酸鹽資料">亞硝酸鹽</span><span
@@ -1532,8 +1523,7 @@
                                                                                     :style="{'color':`${ObservationData['Leftover']&&ObservationData['Leftover']!==''&&ObservationData['Leftover']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去24小時內最後一筆的飼料殘餘量(feed_surplus)->0號料、1號料、2號料">觀察網殘餌量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="ObservationData['Leftover']"
                                                                                     type="number" dense hide-details
@@ -1585,8 +1575,7 @@
                                                                                     :style="{'color':`${ObservationData['ShrimpWeight']&&ObservationData['ShrimpWeight']!==''&&ObservationData['ShrimpWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去90天最後一筆打樣到的蝦子重量(avg_weight)->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、觀察網網上料量、每日體重投餌率、蝦子重量、粉料、0號料、1號料、2號料">蝦子重量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="ObservationData['ShrimpWeight']"
                                                                                     type="number" dense hide-details
@@ -1606,8 +1595,7 @@
                                                                                 :style="{'color':`${ObservationData['LastShrimpWeight']&&ObservationData['LastShrimpWeight']!==''&&ObservationData['LastShrimpWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去90天倒數第二筆打樣到的蝦子重量(avg_weight)->ADG(每日增重量)、內存量(體重投餌率)、存活率、預計間補日期、0號料">上次蝦子重量</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="ObservationData['LastShrimpWeight']"
                                                                                     type="number" dense hide-details
@@ -1987,8 +1975,7 @@
                                                                                 :style="{'color':`${BreedingParm['InitialWeight']&&BreedingParm['InitialWeight']!==''&&BreedingParm['InitialWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="->砂糖量(做水)、尿素">放養初始重量(單隻)</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="BreedingParm['InitialWeight']"
                                                                                     type="number" dense hide-details
@@ -2007,8 +1994,7 @@
                                                                                 :style="{'color':`${BreedingParm['EstimatedHarvestWeight']&&BreedingParm['EstimatedHarvestWeight']!==''&&BreedingParm['EstimatedHarvestWeight']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend">預估收成個體重</span>
                                                                             </v-col>
-                                                                            <v-col cols="12" md="8" sm="8"
-                                                                                style="display: flex;align-items: center;">
+                                                                            <v-col cols="12" md="8" sm="8" class="flex-align-center">
                                                                                 <v-text-field
                                                                                     v-model.number="BreedingParm['EstimatedHarvestWeight']"
                                                                                     type="number" dense hide-details
@@ -2205,7 +2191,7 @@
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
                                                     expand-icon="mdi-chevron-down">
-                                                    <div style="display: flex;align-items: center;">
+                                                    <div  class="flex-align-center">
                                                         <div class="circle"
                                                             v-if="suggData.WaterQuality.length+suggData.Observation.length>0">
                                                             <span>{{
@@ -2399,8 +2385,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="前一餐飼料量、粗蛋白含量、目標CN比、飼料CN比、砂糖純度、砂糖含碳量">前餐砂糖量(配合飼料CN比)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['LastSugarCN']"
                                                                                 disabled dense hide-details
@@ -2419,8 +2404,7 @@
                                                                                 title="下一餐飼料量、粗蛋白含量、目標CN比、飼料CN比、砂糖純度、砂糖含碳量">下餐砂糖量
                                                                                 (配合飼料CN比)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarCN']"
                                                                                 disabled dense hide-details
@@ -2439,8 +2423,7 @@
                                                                                 title="氨氮、目標CN比、水體體積、砂糖純度、砂糖含碳量">砂糖量
                                                                                 (降氨氮)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarAmmoniaN']"
                                                                                 disabled dense hide-details
@@ -2459,8 +2442,7 @@
                                                                                 title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量">砂糖量
                                                                                 (降亞硝酸)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarNO2']"
                                                                                 disabled dense hide-details
@@ -2478,8 +2460,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="枯草桿菌、水體體積">砂糖量 (提高枯草桿菌)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarBacillusSubtilis']"
                                                                                 disabled dense hide-details
@@ -2497,8 +2478,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="腸炎弧菌、水體體積">砂糖量 (降紫菌)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarVibrioEnteritidis']"
                                                                                 disabled dense hide-details
@@ -2516,8 +2496,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="創傷弧菌、水體體積">砂糖量 (降靛菌)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarVibrioCholerae']"
                                                                                 disabled dense hide-details
@@ -2557,8 +2536,7 @@
                                                                                                             slot="prepend">累計砂糖量</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="6" sm="6"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="6" sm="6" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['CumulativeSugarAmount']"
                                                                                                             disabled
@@ -2584,8 +2562,7 @@
                                                                                                             title="前一餐飼料量、粗蛋白含量、目標CN比、飼料CN比、砂糖純度、砂糖含碳量">前餐砂糖量(配合飼料CN比)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="6" sm="6"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="6" sm="6" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['LastSugarCN']"
                                                                                                             disabled
@@ -2616,8 +2593,7 @@
                                                                                                             (配合飼料CN比)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="3"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="3" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['SugarCN']"
                                                                                                             disabled
@@ -2644,8 +2620,7 @@
                                                                                                             title="氨氮、目標CN比、水體體積、砂糖純度、砂糖含碳量，系統自動除3餐">砂糖量(降氨氮)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="3"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="3" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['SugarAmmoniaN']"
                                                                                                             disabled
@@ -2673,8 +2648,7 @@
                                                                                                             title="亞硝酸、目標CN比、水體體積、砂糖純度、砂糖含碳量、鹽度，系統自動除3餐">砂糖量(降亞硝酸)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="3"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="3" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['SugarNO2']"
                                                                                                             disabled
@@ -2702,8 +2676,7 @@
                                                                                                             title="枯草桿菌、水體體積，系統自動除3餐">砂糖量(提高枯草桿菌)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="3"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="3" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['SugarBacillusSubtilis']"
                                                                                                             disabled
@@ -2731,8 +2704,7 @@
                                                                                                             title="腸炎弧菌、水體體積，系統自動除3餐">砂糖量(降紫菌)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="3"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="3" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['SugarVibrioEnteritidis']"
                                                                                                             disabled
@@ -2760,8 +2732,7 @@
                                                                                                             title="霍亂弧菌、水體體積，系統自動除3餐">砂糖量(降靛菌)</span>
                                                                                                     </v-col>
                                                                                                     <v-col cols="12"
-                                                                                                        md="3"
-                                                                                                        style="display: flex;align-items: center;">
+                                                                                                        md="3" class="flex-align-center">
                                                                                                         <v-text-field
                                                                                                             v-model="suggData.Material['SugarVibrioCholerae']"
                                                                                                             disabled
@@ -2783,8 +2754,7 @@
                                                                                 </v-card>
                                                                             </v-dialog>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6" 
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6"  class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['SugarTotal']"
                                                                                 disabled dense hide-details
@@ -2802,8 +2772,7 @@
                                                                             <span class="pa-0 ma-0"
                                                                                 slot="prepend">累計砂糖量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['CumulativeSugarAmount']"
                                                                                 disabled dense hide-details
@@ -2828,8 +2797,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="酸鹼值、水體體積">熟石灰量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['Lime']"
                                                                                 disabled dense hide-details class="mt-0"
@@ -2848,8 +2816,7 @@
                                                                             <span class="pa-0 ma-0"
                                                                                 slot="prepend">累計熟石灰量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['CumulativeLimeAmount']"
                                                                                 disabled dense hide-details
@@ -2875,8 +2842,7 @@
                                                                             <span class="pa-0 ma-0"
                                                                                 slot="prepend">累計菌量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.Material['CumulativeBacteriaAmount']"
                                                                                 disabled dense hide-details
@@ -2925,8 +2891,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">ADG(每日增重量)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.DynamicData['ADG']"
                                                                                 disabled dense hide-details
@@ -2944,8 +2909,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="當日飼料量、上一餐時間、上一餐水溫、蝦子重量、打樣時間、上次蝦子重量、上次打樣時間">內存量(體重投餌率)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.DynamicData['Biomass']"
                                                                                 disabled dense hide-details
@@ -2994,8 +2958,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="下一餐飼料量、養殖池底面積、蝦子重量、養殖天數 > 14天">建議觀察網上料量</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.DynamicData['FeedAmountInObservation']"
                                                                                 disabled dense hide-details
@@ -3070,8 +3033,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="水體體積、放養密度、水溫、放養初始重量、粗蛋白含量、尿素有效濃度、目標CN比、砂糖純度、放苗日>資料日">砂糖量(做水)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.MakeWater['SugarMakeWater']"
                                                                                 disabled dense hide-details
@@ -3089,8 +3051,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="水體體積、漂白粉有效濃度">漂白粉(30ppm濃度)</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.MakeWater['BleachingPowder']"
                                                                                 disabled dense hide-details
@@ -3108,8 +3069,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="水體體積、水體餘氯、海波有效濃度">海波</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.MakeWater['Hypo']"
                                                                                 disabled dense hide-details
@@ -3127,8 +3087,7 @@
                                                                             <span class="pa-0 ma-0" slot="prepend"
                                                                                 title="水體體積、放養密度、水溫、放養初始重量、粗蛋白含量、尿素有效濃度">尿素</span>
                                                                         </v-col>
-                                                                        <v-col cols="12" md="6" sm="6"
-                                                                            style="display: flex;align-items: center;">
+                                                                        <v-col cols="12" md="6" sm="6" class="flex-align-center">
                                                                             <v-text-field
                                                                                 v-model="suggData.MakeWater['Urea']"
                                                                                 disabled dense hide-details
@@ -3199,7 +3158,7 @@
         <!-- AI alert dialog -->
         <v-dialog id="alertDialog" v-model="alertDialog" max-width="500px" style="z-index: 9999;">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: flex;align-items: center;">
+                <v-card-title class="add-title">
                     <div class="dialog-title">
                         {{ dialogTitle }}
                     </div>
@@ -3215,13 +3174,13 @@
                         <b :style="`font-size:${cellsize+0.1}em`">狀態作動</b> <span :style="`font-size:${cellsize}em`"
                             v-html="setBR(dialogContent.status)"></span>
                     </v-card-text>
-                    <v-card-text class="dialog-text"
-                        style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="dialog-text border-bottom"
+                        style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;">
                         <b :style="`font-size:${cellsize+0.1}em`">可能影響原因</b> <span :style="`font-size:${cellsize}em`">{{
                             dialogContent.factor }}</span>
                     </v-card-text>
-                    <v-card-text class="dialog-text"
-                        style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="dialog-text border-bottom"
+                        style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;">
                         <b :style="`font-size:${cellsize+0.1}em`">會造成結果</b> <span
                             :style="`font-size:${cellsize}em`">{{dialogContent.result==''?'無':dialogContent.result
                             }}</span>
@@ -3263,11 +3222,11 @@
         <!-- 參數設定選項填入視窗 -->
         <v-dialog id="chipsDialog" v-model="chipsDialog" max-width="500px" style="z-index: 9999;">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: block;width: 100%;">
+                <v-card-title class="add-title">
                     <div style="display: inline-block;">
                         <span>{{ chipsDialogTitle.name }}</span>
                     </div>
-                    <div class="add" style="float: right;display: inline-block;">
+                    <div class="add">
                         <v-btn class="btn-secondary close" title="取消" @click="chipsDialog = false;"
                             style="border: none;min-width: 0;padding: 0 4px;">
                             <v-icon>mdi-close</v-icon>
@@ -3276,11 +3235,11 @@
                 </v-card-title>
                 <div class="basic" style="padding: 24px 12px;">
                     <v-card-text class="dialog-text" style="border-bottom: none;">
-                        <v-row style="width: 100%;align-items: center;">
+                        <v-row  class="flex-align-center" style="width: 100%;">
                             <v-col cols="6" v-for="(item,id) in chipsDialogData" :key="'dialog'+id"
                                 style="width: 100%;">
-                                <div class="chips"
-                                    style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                                <div class="chips flex-align-center"
+                                    style="margin-bottom: 8px;width: 100%;">
                                     <span class="pa-0 ma-0" slot="prepend"
                                         style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                     <el-input-number class="ml-2" v-model="item.value" size="mini" :step="1" :min="0"
@@ -3303,11 +3262,11 @@
         <!-- 備註欄 -->
         <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" style="z-index: 9999;">
             <v-card class="custom-dialog">
-                <v-card-title class="add-title" style="display: block;width: 100%;">
+                <v-card-title class="add-title">
                     <div style="display: inline-block;">
                         <span>紀錄</span>
                     </div>
-                    <div class="add" style="float: right;display: inline-block;">
+                    <div class="add">
                         <v-btn class="btn-secondary close" title="取消" @click="remarkDialog = false;"
                             style="border: none;min-width: 0;padding: 0 4px;">
                             <v-icon>mdi-close</v-icon>
@@ -4688,8 +4647,7 @@ export default {
                 }
                 .btn-groups {
                     width: 100%;
-                    display: flex;
-                    align-items: center;
+                    @include flexAlignCenter();
                     justify-content: flex-end;
                     // border-bottom: 1px solid rgba(0,0,0,0.1);
                     padding: 8px;
@@ -4716,8 +4674,7 @@ export default {
                     }
                     & > .col-12 {
                         & > span {
-                            display: flex;
-                            align-items: center;
+                            @include flexAlignCenter();
                         }
                     }
                     &.item {
@@ -4822,8 +4779,7 @@ export default {
                 }
                 // 累計+按鈕
                 .v-text-field.sum-field {
-                    display: flex;
-                    align-items: center;
+                    @include flexAlignCenter();
                 }   
                 .v-text-field.sum-field .v-input__control {
                     // margin-left: 32px;   
@@ -4833,8 +4789,7 @@ export default {
                     padding: 0 4px;
                 }
                 .v-icon.v-icon.v-icon--link.mdi-plus {
-                    width: 20px;
-                    height: 20px;
+                    @include size(20px);
                     font-size: 14px;
                     background-color: #006AA6;
                     border-radius: 50%;
@@ -4877,7 +4832,7 @@ export default {
                 // disable
                 .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
                     border-image: none;
-                    border-color: rgba(0,0,0,0.1);
+                    border-color: $color-black-10;
                 }
                 .theme--light.v-input--is-disabled input, .theme--light.v-input--is-disabled textarea {
                     color: #00273E;
@@ -4886,7 +4841,7 @@ export default {
             #aiwater,#ainet,#aiwatermin {
                 .v-data-table > .v-data-table__wrapper > table > tbody > tr {
                     // border-bottom: 1px solid rgba(0,0,0,0.1);
-                    box-shadow: 0 0.5px 0 rgba(0,0,0,0.1);
+                    box-shadow: 0 0.5px 0 $color-black-10;
                 }
             }
         }
@@ -4895,14 +4850,14 @@ export default {
   // dialog
     .v-dialog {
         .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid $color-black-10;
             border-radius: 4px;
             padding: 0 8px;
         }
         .v-card__title.add-title {
             color: $color-dark;
             font-weight: bold;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid $color-black-10;
             font-size: 1.1rem;
         }
         .dialog-text {
@@ -4910,7 +4865,7 @@ export default {
             align-items: flex-start;
             flex-direction: column;
             padding: 8px 16px;
-            border-bottom:1px solid rgba(0,0,0,0.1);
+            border-bottom:1px solid $color-black-10;
             font-size: 16px;
             span {
                 font-size: 14px;
@@ -4938,18 +4893,14 @@ export default {
     padding: 0 !important;
 }
 .circle {
-    width: 20px;
-    height: 20px;
+    @include size(20px);
     border-radius: 50%;
     background-color: $color-accent;
     position: relative;
     margin-right: 4px;
     span {
         color: #fff !important;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
+        @include positionCenter();
         font-size: 12px;
     }
 }

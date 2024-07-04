@@ -376,11 +376,11 @@
     <v-dialog v-model="annDialog" max-width="500px">
       <v-form ref="annform" v-model="annvalid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               發佈公告
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="annDialog = false" 
@@ -400,7 +400,7 @@
               </div> -->
             </div>
             <div class="basic" style="padding-left: 8px;">
-              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              <v-card-text class="flex-align-center" style="padding-top: 0;">
                 <v-alert
                   type="success"
                   dense
@@ -425,7 +425,7 @@
               </div>
             </div> -->
             <div class="basic" style="padding-left: 8px;">
-              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              <v-card-text class="flex-align-center" style="padding-top: 0;">
                 <v-textarea v-model="annmsg" filled clearable placeholder="請輸入內容..."> </v-textarea>
               </v-card-text>
             </div>
@@ -442,11 +442,11 @@
     <v-dialog v-model="addDialog" max-width="500px">
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               新增使用者帳號
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="addDialog = false" 
@@ -491,7 +491,7 @@
                   type="password"
                 ></v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              <v-card-text class="flex-align-center" style="padding-top: 0;">
                 帳號預設狀態：
                 <div class="input-group" style="margin-left: 8px;">
                   <el-tag
@@ -507,9 +507,9 @@
                 </div>
                 
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+              <v-card-text class="flex-align-center" style="padding-top: 0;">
                 允許接收通知：
-                <div class="input-group" style="display: flex;align-items: center;">
+                <div class="input-group flex-align-center">
                   <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
                   Mail<el-switch
                     v-model="addform.is_sys_enable_email"
@@ -575,11 +575,11 @@
     <!-- 修改 -->
     <v-dialog v-model="editDialog" max-width="500px">
       <v-card  class="custom-dialog">
-        <v-card-title class="add-title" style="display: block;width: 100%;">
+        <v-card-title class="add-title">
           <div style="display: inline-block;">
             修改
           </div>
-          <div class="add" style="float: right;display: inline-block;">
+          <div class="add">
             <v-btn  class="btn-secondary close"
                     title="取消" 
                     @click="editDialog = false" 
@@ -625,7 +625,7 @@
                 </div>
               </treeselect>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+            <v-card-text class="flex-align-center" style="padding-top: 0;">
               帳號狀態：
               <div class="input-group" style="margin-left: 8px;">
                 <el-tag
@@ -642,9 +642,9 @@
               </div>
               
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+            <v-card-text class="flex-align-center" style="padding-top: 0;">
                 允許接收通知：
-                <div class="input-group" style="display: flex;align-items: center;">
+                <div class="input-group flex-align-center">
                   <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
                   Mail<el-switch
                     v-model="editedData.is_sys_enable_email"
@@ -1302,20 +1302,19 @@ export default {
     background-color: #fff;
   }
   .card-title {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     .title {
       width: 100%;
     }
     .chevron {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
     }
   }
 }
 
 ::v-deep {
   .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid $color-black-10;
     border-radius: 4px;
     padding: 0 8px;
   }
@@ -1352,8 +1351,7 @@ export default {
     content:'';
   }
   .v-btn.btn-circle {
-    width: 24px;
-    height: 24px;
+    @include size(24px);
     min-width: 24px;
     background-color: transparent;
     box-shadow: none;

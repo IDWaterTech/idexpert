@@ -108,7 +108,7 @@
                 <v-tab-item value="成份設定">
                   <div class="search">
                     <v-row>
-                      <v-col cols="12" lg="3" md="3" sm="6" style="padding: 0;padding-left: 8px;display: flex;align-items: center;">
+                      <v-col cols="12" lg="3" md="3" sm="6" class="flex-align-center" style="padding: 0;padding-left: 8px;">
                         <v-chip v-if="fic_idx&&fic_idx!==null"
                             :color="`${nowtag.is_main?'#408FBC':'#BFCBD2'}`"
                             style="font-size: 12px;margin: 2px;"
@@ -242,7 +242,7 @@
                         <div class="card-title">
                           <div class="title">
                             <v-card-title style="width: 100%;">成份資訊</v-card-title>
-                            <div class="chevron" style="display: flex;align-items: center;margin-left: 8px;">
+                            <div class="chevron flex-align-center" style="margin-left: 8px;">
                               <v-btn class="btn-secondary green" @click="openAdd" style="padding: 0 8px;">
                                   <v-icon>mdi-plus</v-icon>新增成份
                               </v-btn>
@@ -324,7 +324,7 @@
                             ></v-autocomplete>
                         </v-col>
                         
-                        <v-col cols="12" md="3" sm="6" style="padding: 0;display: flex;align-items: center;">
+                        <v-col cols="12" md="3" sm="6" class="flex-align-center" style="padding: 0;">
                           <v-checkbox v-model="isEnable" label="顯示已停用套餐" @change="checkTemp" hide-details style="margin-right: 16px;"></v-checkbox>
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
@@ -585,14 +585,14 @@
     <v-dialog v-model="editForm"  max-width="500px">
       <v-form ref="manform" v-model="manvalid" >
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div v-if="mode=='edit'" class="edit" style="display: inline-block;">
               編輯{{tablindex.split('設定')[0]}}
             </div>
             <div v-else class="edit" style="display: inline-block;">
               新增{{tablindex.split('設定')[0]}}
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
                 <v-btn class="btn-secondary close"
                         title="取消" 
                         @click="editForm = false" 
@@ -888,7 +888,7 @@
               
               <v-row v-for="item in combofield.main_items" :key="item.id" class="meal-item">
                 <v-col cols="12" style="padding-bottom: 0;">
-                    <div style="display: flex;align-items: center;margin-top: 4px;">
+                    <div class="flex-align-center" style="margin-top: 4px;">
                       <span>{{
                         ficwithdetail_main.filter(x => x.id == item)[0].name
                       }}</span>
@@ -1014,9 +1014,9 @@
                   </v-text-field>
                 </div>
               </v-row> -->
-              <v-row v-for="item in combofield.sub_items" :key="item.id" style="align-items: center;margin: 0 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
+              <v-row class="border-bottom" v-for="item in combofield.sub_items" :key="item.id" style="align-items: center;margin: 0 8px;">
                 <v-col cols="12" style="padding-bottom: 0;">
-                    <div style="display: flex;align-items: center;margin-top: 4px;">
+                    <div class="flex-align-center" style="margin-top: 4px;">
                       <span>{{
                       ficwithdetail_sub.filter(x => x.id == item)[0].name
                     }}</span>
@@ -1078,7 +1078,7 @@
   <!-- 新增參數視窗 -->
   <v-dialog v-model="dialog.param" width="400px">
     <v-card class="custom-dialog">
-      <v-card-title class="add-title" style="display: block;width: 100%;">
+      <v-card-title class="add-title">
         新增參數
       </v-card-title>
       
@@ -2511,8 +2511,7 @@ export default {
 }
 
 .main-items {
-  width: 100%;
-  height: 100%;
+  @include size(100%);
   border: 1px solid $color-primary;
   border-radius: 4px;
   padding: 8px;
@@ -2524,7 +2523,7 @@ export default {
 .meal-item {
   align-items: center;
   margin: 0 8px;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid $color-black-10;
   margin-bottom: 8px;
  
 }

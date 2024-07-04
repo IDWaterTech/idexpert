@@ -209,12 +209,12 @@
                 >
                 <!-- 紀事內容 -->
                   <v-card color="grey lighten-4" min-width="350px" flat>
-                    <v-toolbar :color="selectedEvent.color" dark  style="box-shadow: none;">
+                    <v-toolbar :color="selectedEvent.color" dark  class="box-shadow-none">
                       
                       <v-toolbar-title class="pl-2 ml-2"><span v-html="`【${selectedEvent.event_level_name}】${selectedEvent.name}`"></span></v-toolbar-title>
                       <!-- <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title> -->
                       <v-spacer></v-spacer>
-                      <v-btn class="mr-2" style="border: none;min-width: 0;padding: 0 4px;background-color: transparent;box-shadow:none"  @click="selectedOpen = false" >
+                      <v-btn class="mr-2 box-shadow-none" style="border: none;min-width: 0;padding: 0 4px;background-color: transparent;"  @click="selectedOpen = false" >
                         <v-icon style="color: #fff">mdi-close</v-icon>
                       </v-btn>
                       
@@ -264,11 +264,11 @@
     <v-dialog v-model="dialog.eventSet" width="500px">
       <v-form ref="eventSetform" v-model="eventSetvalid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               飼料表事件設定
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="dialog.eventSet = false" 
@@ -280,7 +280,7 @@
           <v-card-text>
             <div class="basic" style="padding-left: 8px;padding-top: 8px;">
               <!-- 選擇事件 -->
-              <v-card-text style="display: flex;align-items: center;margin-bottom: 14px;">
+              <v-card-text class="flex-align-center" style="margin-bottom: 14px;">
                 <v-autocomplete class="reload" v-model="eventSetList" label="選擇事件進行編輯" filled dense :items="eventSetData" item-text="title" item-value="id" clearable @change="eventSetChange">
                   <v-btn slot="append" class="btn-icon just-icon" @click="eventSetGet"><v-icon style="font-size: 1.3rem;">mdi-reload</v-icon></v-btn>
                   <!-- <v-tooltip bottom slot="append">
@@ -297,7 +297,7 @@
                 <v-btn v-else tile class="btn-secondary" @click="eventSet_isEdit = !eventSet_isEdit">編輯</v-btn> -->
               </v-card-text>
               <!-- 事件等級/類型 -->
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-autocomplete
                   dense
                   :items="eventLevelData"
@@ -325,13 +325,13 @@
                 </v-autocomplete>
               </v-card-text>
               <!-- 標題 -->
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-text-field v-model="eventSet.title" dense filled clearable :rules="rules.require" label="標題">
                   <!-- <span slot="prepend" style="width:70px;">標題</span> -->
                 </v-text-field>
               </v-card-text>
               <!-- 內容 -->
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-textarea v-model="eventSet.content" placeholder="內容" class="text-area" outlined :rules="rules.require">
                   <!-- <span slot="prepend" style="width:70px;">內容</span> -->
                 </v-textarea>
@@ -355,11 +355,11 @@
     <v-dialog v-model="dialog.add" width="500px">
       <v-form ref="editform" v-model="addvalid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               {{(edited.mode=="add")?"新增":"編輯"}}紀事
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="dialog.add = false" 
@@ -370,13 +370,13 @@
           </v-card-title>
           <v-card-text>
             <div class="basic" style="padding-left: 8px;padding-top: 8px;">
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-switch
                   v-model="edited.is_all_day"
                   :label="`全日事件: ${edited.is_all_day}`"
                 ></v-switch>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-menu
                   v-model="menu_edit_sdate"
                   :close-on-content-click="false"
@@ -417,7 +417,7 @@
                   @click:prepend="() => (edited.stime = getNowTime())"
                 ></v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-menu 
                   v-model="menu_edit_edate"
                   :close-on-content-click="false"
@@ -458,7 +458,7 @@
                   @click:prepend="() => (edited.etime = getNowTime())"
                 ></v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-autocomplete
                   auto-select-first
                   :items="datarange"
@@ -508,7 +508,7 @@
                     </div>
                   </treeselect>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-autocomplete
                   :rules="rules.require"
                   :items="eventCategoryData"
@@ -533,10 +533,10 @@
                   > -->
                 </v-autocomplete>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <span>
                   <h3>【事件等級(定義說明)】</h3>
                   <v-alert color="#E539" dense>
@@ -553,12 +553,12 @@
                   <font style="background-color:#7575;color:white;"></font><br/> -->
                 </span>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-text-field v-model="edited.title" dense filled clearable :rules="rules.require" label="標題">
                   <!-- <span slot="prepend" style="width:70px;">標題</span> -->
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;align-items: center;">
+              <v-card-text class="flex-align-center">
                 <v-textarea class="text-area" placeholder="內容" v-model="edited.content" outlined :rules="rules.require">
                   <!-- <span slot="prepend" style="width:70px;">內容</span> -->
                 </v-textarea>

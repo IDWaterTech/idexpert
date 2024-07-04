@@ -221,8 +221,7 @@
   }
   .nuxt-link-active {
     padding: 8px;
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
     .v-icon {
       margin-right: 4px;
     }

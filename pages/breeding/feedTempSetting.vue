@@ -2,7 +2,7 @@
     <div>
         <v-row  v-if="filterTemplate.length>0">
             <v-col cols="12" md="4" sm="6" style="padding: 0;">
-                <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
+                <div class="search flex-align-center" style="margin-left: 16px;margin-top: 8px;">
                     <v-autocomplete :disabled="editmode!=='edit'" v-model="tempSelect" hide-details dense filled :items="filterTemplate" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
                     
                     </v-autocomplete>
@@ -10,9 +10,9 @@
                 </div>
             </v-col>
             <v-col cols="12" md="8" sm="6" style="padding: 0;">
-                <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
+                <div class="search flex-align-center" style="margin-left: 16px;margin-top: 8px;">
                     <v-checkbox v-model="isEnable" label="顯示已停用樣板" @change="checkTemp" hide-details style="margin-right: 16px;"></v-checkbox>
-                    <div class="chevron" style="display: flex;align-items: center;">
+                    <div class="chevron flex-align-center">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                                 <button :class="{'disabled':editmode=='edit'}" class="btn-icon" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;" v-bind="attrs" v-on="on">

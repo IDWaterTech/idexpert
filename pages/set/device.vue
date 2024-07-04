@@ -62,11 +62,11 @@
     <v-dialog v-model="dialog.dev" width="500px">
       <v-form ref="devform" v-model="dialog.valid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               設備-{{ dialog.addmode ? "新增" : "編輯" }}
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="dialog.dev = false" 
@@ -391,14 +391,13 @@ export default {
     background-color: #fff;
   }
   .card-title {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     .title {
       width: 100%;
       font-size: 1rem;
     }
     .chevron {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
     }
   }
 }

@@ -188,6 +188,7 @@
               <div class="align-self-center" style="padding: 12px;">
                 <v-btn
                   tile
+                  class="box-shadow-none"
                   @click="getdata"
                   :disabled="
                     sdate &&
@@ -197,7 +198,7 @@
                     sel_main &&
                     defitem != undefined &&
                     defitem.length > 0? false: true"
-                  style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;"
+                  style="border-radius: 4px;background-color: #006AA6;color: #fff;"
                   >查詢</v-btn
                 >
               </div>
@@ -336,7 +337,7 @@
                           <div v-show="nowTab=='觀察網資訊'" class="result-content">
                             <!-- 紀錄清單 -->
                             <div class="result-list">
-                              <v-card class="result-card" style="box-shadow: none;border-radius: 0;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                              <v-card class="result-card box-shadow-none border-bottom" style="border-radius: 0;">
                                 <div class="added" style="display: flex;justify-content: space-between;">
                                   <div class="card-title"  @click="listOpen = !listOpen" style="cursor: pointer;margin: 0;padding: 0;">
                                     <div class="title">
@@ -436,7 +437,7 @@
                             </v-data-table>
                             <!-- 圖表 -->
                             <div v-if="observableData.length>0&&chartShow" class="result-list">
-                              <v-card class="result-card" style="box-shadow: none;border-radius: 0;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                              <v-card class="result-card box-shadow-none border-bottom" style="border-radius: 0;">
                                 <div class="card-title" style="cursor: pointer;margin: 0;padding: 0;">
                                     <div class="title">
                                         <v-card-title style="padding: 8px;font-size: 16px;">圖表</v-card-title>
@@ -475,11 +476,11 @@
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card class="custom-dialog" v-if="addDialog"
               >
-              <v-card-title class="add-title" style="display: block;width: 100%;">
+              <v-card-title class="add-title">
                 <div style="display: inline-block;">
                   新增
                 </div>
-                <div class="add" style="float: right;display: inline-block;">
+                <div class="add">
                   <v-btn  class="btn-secondary close"
                           title="取消" 
                           @click="addDialog = false" 
@@ -490,14 +491,14 @@
               </v-card-title>
               <v-card-text style="padding-top: 24px">
                 <div class="basic" style="padding-left: 8px;">
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;font-size: 18px;">
+                  <v-card-text class="flex-align-center" style="padding-top: 0;font-size: 18px;">
                     {{maindata.filter(x=>x.id==sel_main)[0].name}}-{{maindata.filter(x=>x.id==sel_main)[0].node.filter(x=>x.id==sel_area)[0].name}}-
                     <span class="error-text font-weight-black" style="font-size: 18px;">{{defitem}}</span>
                   </v-card-text>
                 </div></v-card-text>
               <v-card-text style="padding-top: 8px">
                 <div class="basic" style="padding-left: 8px;font-size: 16px;">
-                  <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                  <v-card-text class="flex-align-center" style="padding-top: 0;">
                     <v-row>
                       <v-col cols="12" md="6">
                         <v-switch
@@ -580,7 +581,7 @@
               </v-card-text>
               <v-card-text style="padding-top: 16px">
                   <div class="basic" style="padding-left: 16px;font-size: 16px;">
-                    <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+                    <v-card-text class="flex-align-center" style="padding-top: 0;">
                       <v-row>
                         <v-col
                           cols="12"
@@ -664,11 +665,11 @@
         <!-- 刪除項目 -->  
         <v-dialog v-model="delDialog" max-width="500px" class="indicator-dialog">
           <v-card class="custom-dialog">
-            <v-card-title class="add-title" style="display: block;width: 100%;">
+            <v-card-title class="add-title">
               <div style="display: inline-block;">
                 是否刪除該項目?
               </div>
-              <div class="add" style="float: right;display: inline-block;">
+              <div class="add">
                 <v-btn  class="btn-secondary close"
                         title="取消" 
                         @click="delDialog = false" 
@@ -681,9 +682,9 @@
               <v-container>
                 <v-row>
                   <v-col cols="12" md="12">
-                    <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"> <span style="width: 50px;">id：</span>{{ editedItem.id }}</div>
-                    <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">時間：</span>{{ editedItem.inspected_date }}</div>
-                    <div style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;display: flex;align-items: center;"><span style="width: 50px;">值：</span>{{ editedItem.value }}</div>
+                    <div class="flex-align-center" style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;"> <span style="width: 50px;">id：</span>{{ editedItem.id }}</div>
+                    <div class="flex-align-center" style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;"><span style="width: 50px;">時間：</span>{{ editedItem.inspected_date }}</div>
+                    <div class="flex-align-center" style="width:100%;margin-left: 0px;line-height: 32px;font-size: 16px;"><span style="width: 50px;">值：</span>{{ editedItem.value }}</div>
                   </v-col>
                 </v-row>
               </v-container>
@@ -712,7 +713,7 @@
             <v-card-actions style="padding: 24px 12px;">
               <v-spacer></v-spacer>
               <v-btn class="btn-secondary" @click="captchaDialog = false">取消</v-btn>
-              <v-btn class="btn-primary" @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
+              <v-btn class="btn-primary box-shadow-none" @click="captchacheck" style="border-radius: 4px;background-color: #006AA6;color: #fff;">送出</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -720,11 +721,11 @@
         <!-- 編輯項目 -->
         <v-dialog v-model="editDialog" max-width="500px" class="indicator-dialog">
           <v-card class="custom-dialog">
-            <v-card-title class="add-title" style="display: block;width: 100%;">
+            <v-card-title class="add-title">
               <div style="display: inline-block;">
                 編輯項目
               </div>
-              <div class="add" style="float: right;display: inline-block;">
+              <div class="add">
                 <v-btn  class="btn-secondary close"
                         title="取消" 
                         @click="editDialog = false" 
@@ -752,7 +753,7 @@
                       autocomplate="off"
                       type="number" dense filled
                     ><span style="width:50px;" slot="prepend">值</span></v-text-field> -->
-                    <div style="display: flex;align-items: center;">
+                    <div class="flex-align-center">
                       <span style="width:50px;" slot="prepend">值</span>
                       <el-input-number
                         class="ml-2"
@@ -770,10 +771,10 @@
             </v-card-text>
             <v-card-actions style="padding: 24px 12px;">
               <v-spacer></v-spacer>
-              <v-btn tile @click="editDialog = false" style="border-radius: 4px;box-shadow: none;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
+              <v-btn class="box-shadow-none" tile @click="editDialog = false" style="border-radius: 4px;background-color: transparent;color: #006AA6;border: 1px solid #006AA6;">
                 取消
               </v-btn>
-              <v-btn tile @click="editsubmit" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">
+              <v-btn class="box-shadow-none" tile @click="editsubmit" style="border-radius: 4px;background-color: #006AA6;color: #fff;">
                 確定
               </v-btn>
             </v-card-actions>
@@ -783,11 +784,11 @@
         <v-dialog v-model="observeDialog" max-width="500px">
           <v-form ref="observeform" v-model="observevalid" lazy-validation>
             <v-card class="custom-dialog">
-              <v-card-title class="add-title" style="display: block;width: 100%;">
+              <v-card-title class="add-title">
                 <div style="display: inline-block;">
                   {{ nowObserve=='edit'?'編輯':'新增' }}
                 </div>
-                <div class="add" style="float: right;display: inline-block;">
+                <div class="add">
                   <v-btn  class="btn-secondary close"
                           title="取消" 
                           @click="observeDialog = false" 
@@ -798,19 +799,19 @@
               </v-card-title>
               <v-card-text style="padding-top: 8px">
                 <div class="basic" style="padding-left: 8px;">
-                  <v-card-text v-if="showlocate" style="display: flex;align-items: center;padding-top: 0;padding-bottom: 0;">
+                  <v-card-text class="flex-align-center" v-if="showlocate" style="padding-top: 0;padding-bottom: 0;">
                     <span class="pa-0 ma-0" slot="prepend" style="width: 92px;font-size: 16px;color: rgba(0, 0, 0, 0.87);">養殖池</span>
                     <locate-select :dataScope="'pool'" :defaultSelect="observeEdit['pond_id']&&observeEdit['pond_id']!==''?observeEdit['pond_id'].toString():''" :isMulti="false" @scopeSel_data="selectObserveData($event)" class="select-template"></locate-select>
                   </v-card-text>
                   <span v-if="isPondId" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必填項目</span>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
+                  <v-card-text class="flex-align-center" style="padding-top: 16px;">
                     <span class="pa-0 ma-0" style="width:120px;font-size: 16px;color: rgba(0, 0, 0, 0.87);"><v-icon @click="showDate=false;observeEdit['inspected_time'] = getNowDateTime();showDate=true;" slot="prepend" style="color:#006AA6">mdi-calendar</v-icon>檢測時間</span>
                     <div class="date-time-picker" style="width:100%">
                       <a-date-picker v-model="observeEdit['inspected_time']" value="null" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk"  style="min-width: none;width: 100%;" />
                     </div>                                                 
                   </v-card-text>
                   <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必填項目</span>
-                  <v-card-text style="display: flex;align-items: center;padding-top: 16px;">
+                  <v-card-text class="flex-align-center" style="padding-top: 16px;">
                     <v-row style="margin-bottom: 0;">
                       <v-col cols="12" md="6">
                         <v-text-field v-model.number="observeEdit['observation_qty']" min="0" type="number" dense class="mt-0 mr-2" hide-details @change="changeQty()"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">觀察網隻數</span></v-text-field>
@@ -820,7 +821,7 @@
                       </v-col>
                     </v-row>
                   </v-card-text>
-                  <v-card-text v-if="observeEdit['observation_qty']>0" style="display: flex;align-items: center;padding-top: 0;">
+                  <v-card-text class="flex-align-center" v-if="observeEdit['observation_qty']>0" style="padding-top: 0;">
                     <v-row style="margin-bottom: 0;">
                       <v-col cols="12" md="6">
                         <v-text-field v-model.number="observeEdit['shell_qty']" min="0" type="number" dense class="mt-0 mr-2" hide-details><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">脫殼數量</span></v-text-field>
@@ -831,7 +832,7 @@
                       </v-col>
                     </v-row>
                   </v-card-text>
-                  <v-card-text v-if="observeEdit['observation_qty']>0" style="display: flex;align-items: center;padding-top: 0;">
+                  <v-card-text class="flex-align-center" v-if="observeEdit['observation_qty']>0" style="padding-top: 0;">
                     <v-row style="margin-bottom: 0;">
                       <v-col cols="12" md="6" @click="openShrimps()">
                         <v-text-field v-model.number="observeEdit['shrimp_weight']" type="number" min="0" dense class="mt-0 mr-2" hide-details  @click="openShrimps()"><span class="pa-0 ma-0" slot="prepend" style="width: 80px;">蝦隻重量(g)</span></v-text-field>
@@ -846,15 +847,15 @@
                   </v-card-text>
                   <div v-if="observeEdit['observation_qty']>0" class="shrimp-statue">
                     <div class="card-title">
-                      <div class="title"  style="display: flex;align-items: center;">
+                      <div class="title flex-align-center">
                           <v-card-title>腸線顏色</v-card-title>
                           <span v-if="isOver.ic" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
                       </div>
                     </div>
-                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="border-bottom flex-align-center" style="padding-top: 0;">
                       <v-row style="width: 100%;align-items: center;">
                           <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.IntestinalColor" :key="'IntestinalColor_'+id" style="width: 100%;">
-                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                              <div class="chips flex-align-center" style="margin-bottom: 8px;width: 100%;">
                                 <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                   <el-input-number
                                       class="ml-2"
@@ -870,15 +871,15 @@
                       </v-row>
                     </v-card-text>
                     <div class="card-title">
-                      <div class="title"  style="display: flex;align-items: center;">
+                      <div class="title flex-align-center">
                           <v-card-title>肝胰臟顏色</v-card-title>
                           <span v-if="isOver.hc" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
                       </div>
                     </div>
-                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="border-bottom flex-align-center" style="padding-top: 0;">
                       <v-row style="width: 100%;align-items: center;">
                           <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.HepatopancreasColor" :key="'HepatopancreasColor_'+id" style="width: 100%;">
-                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                              <div class="chips flex-align-center" style="margin-bottom: 8px;width: 100%;">
                                   <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                   <el-input-number
                                       class="ml-2"
@@ -893,15 +894,15 @@
                       </v-row>
                     </v-card-text>
                     <div class="card-title">
-                      <div class="title"  style="display: flex;align-items: center;">
+                      <div class="title flex-align-center">
                           <v-card-title>肌肉顏色</v-card-title>
                           <span v-if="isOver.mc" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
                       </div>
                     </div>
-                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="border-bottom flex-align-center" style="padding-top: 0;">
                       <v-row style="width: 100%;align-items: center;">
                           <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.MuscleColor" :key="'MuscleColor_'+id" style="width: 100%;">
-                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                              <div class="chips flex-align-center" style="margin-bottom: 8px;width: 100%;">
                                   <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                   <el-input-number
                                       class="ml-2"
@@ -916,15 +917,15 @@
                       </v-row>
                     </v-card-text>
                     <div class="card-title">
-                      <div class="title"  style="display: flex;align-items: center;">
+                      <div class="title flex-align-center">
                           <v-card-title>蝦體顏色</v-card-title>
                           <span v-if="isOver.bc" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
                       </div>
                     </div>
-                    <v-card-text v-show="showBodyColor" style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="border-bottom flex-align-center" v-show="showBodyColor" style="padding-top: 0;">
                       <v-row style="width: 100%;align-items: center;">
                           <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.BodyColor" :key="'BodyColor_'+id" style="width: 100%;">
-                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                              <div class="chips flex-align-center" style="margin-bottom: 8px;width: 100%;">
                                   <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                   <el-input-number
                                       class="ml-2"
@@ -939,15 +940,15 @@
                       </v-row>
                     </v-card-text>
                     <div class="card-title">
-                      <div class="title"  style="display: flex;align-items: center;">
+                      <div class="title flex-align-center">
                           <v-card-title>蝦體形狀</v-card-title>
                           <span v-if="isOver.bs" class="error-text ml-2" style="font-size: 12px;">*不等於觀察網隻數</span>
                       </div>
                     </div>
-                    <v-card-text style="display: flex;align-items: center;padding-top: 0;border-bottom:1px solid rgba(0,0,0,0.1)">
+                    <v-card-text class="border-bottom flex-align-center" style="padding-top: 0;">
                       <v-row style="width: 100%;align-items: center;">
                           <v-col cols="12" md="6" sm="6" v-for="(item,id) in observeEdit.BodyShape" :key="'BodyShape_'+id" style="width: 100%;">
-                              <div class="chips" style="margin-bottom: 8px;display: flex;width: 100%;align-items: center;">
+                              <div class="chips flex-align-center" style="margin-bottom: 8px;width: 100%;">
                                   <span class="pa-0 ma-0" slot="prepend" style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                   <el-input-number
                                       class="ml-2"
@@ -989,11 +990,11 @@
         <v-dialog v-model="shrimpDialog" max-width="500px">
           <v-form ref="shrimpform" v-model="shrimpvalid" lazy-validation>
             <v-card class="custom-dialog" id="shrimpDialog">
-              <v-card-title class="add-title" style="display: block;width: 100%;">
+              <v-card-title class="add-title">
                 <div style="display: inline-block;">
                   {{ nowObserve=='edit'?'編輯':'新增' }} 蝦隻紀錄
                 </div>
-                <div class="add" style="float: right;">
+                <div class="add">
                   <v-btn  class="btn-secondary close"
                     title="取消" 
                     @click="shrimpDialog = false" 
@@ -1005,10 +1006,10 @@
               <v-card-text style="padding-top: 8px">
                 <div class="basic" style="padding-left: 8px;">
                   <span v-if="isShrimp" class="error-text" style="margin-bottom: 16px;">*長度與重量須大於0</span>
-                  <v-card-text style="display: flex;align-items: center;padding: 0;border-bottom: 1px solid rgba(0,0,0,0.1);padding-top: 16px;" v-for="(s,sid) in shrimp" :key="'shrimp_'+sid">
+                  <v-card-text class="border-bottom flex-align-center" style="padding: 0;padding-top: 16px;" v-for="(s,sid) in shrimp" :key="'shrimp_'+sid">
                     <span style="margin-top: -16px;">{{ sid+1 }}.</span>
                     <v-row style="margin-bottom: 0;">
-                      <v-col cols="12" md="6" sm="12" style="padding-right: 8px;display: flex;align-items: center;">
+                      <v-col cols="12" md="6" sm="12" class="flex-align-center" style="padding-right: 8px;">
                         <span class="pa-0 ma-0" style="width:60px;min-height:inherit">長度(cm)</span>
                         <el-input-number
                             class="ml-2"
@@ -1020,7 +1021,7 @@
                             :class="{'shrimp-error':isShrimp&&s['length']==0}"
                         ></el-input-number>
                       </v-col>
-                      <v-col cols="12" md="6" sm="12" style="padding-right: 8px;display: flex;align-items: center;">
+                      <v-col cols="12" md="6" sm="12" class="flex-align-center" style="padding-right: 8px;">
                         <span class="pa-0 ma-0" style="width:60px;min-height:inherit">重量(g)</span>
                         <el-input-number
                             class="ml-2"
@@ -3140,8 +3141,7 @@ export default {
         margin-bottom: 24px;
       }
       .title {
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         .theme--light.v-icon {
           color: #6c9bcd;
         }
@@ -3183,7 +3183,7 @@ export default {
       }
     }
     .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px $color-black-10;
     }
   }
 }
@@ -3289,8 +3289,7 @@ export default {
 }
 // scrollbar
 ::-webkit-scrollbar {
-  width: 6px !important;
-  height: 6px !important;
+  @include size(6px);
 }
 ::-webkit-scrollbar-track {
   background: none !important; 

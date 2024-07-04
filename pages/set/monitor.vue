@@ -3,7 +3,7 @@
     <v-card class="bg-card">
       <div class="content" style="padding-top:12px">
         <!-- 上方列 -->
-        <v-row style="display: flex;align-items: center;justify-content: space-between;margin-bottom: 16px;">
+        <v-row class="flex-center-between" style="margin-bottom: 16px;">
           <div class="tag-groups" style="margin-left: 8px;">
             <span 
               class="span"
@@ -34,7 +34,7 @@
             :id="item"
             style="width: 100%;">
             <v-card class="result-card" style="width: 100%;">
-              <div class="title" style="display: flex;align-items: center;justify-content: space-between;border-bottom: 1px solid rgba(0,0,0,0.1);">
+              <div class="title border-bottom flex-center-between">
                 <v-card-title style="font-size: 14px;">
                   {{ getgroupname(item) }}
                   </v-card-title>
@@ -115,9 +115,9 @@
     <!-- 編輯 -->
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card class="custom-dialog">
-        <v-card-title class="add-title" style="display: block;width: 100%;">
+        <v-card-title class="add-title">
             編輯項目 - {{ editedItem.group }}
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
                 <v-btn class="btn-secondary close"
                         title="取消" 
                         @click="editDialog = false" 
@@ -134,7 +134,7 @@
               </div>
             </div>
             <v-card-text style="display: flex;flex-direction:column;">
-              <div class="search" style="display: flex;align-items: center;">
+              <div class="search flex-align-center">
                 <v-text-field filled dense v-model="editedItem.name_en" disabled >
                   <span style="width:100px" slot="prepend">項目(英文)</span>
                 </v-text-field>
@@ -144,7 +144,7 @@
               </div>
             </v-card-text>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
-              <div class="search" style="display: flex;align-items: center;width: 100%;">
+              <div class="search flex-align-center" style="width: 100%;">
                 <v-text-field label="ppm、°c、g、..." filled dense v-model="editedItem.unit"  style="width: 100%;">
                   <span  slot="prepend" style="width:80px">單位</span>
                 </v-text-field>
@@ -340,9 +340,9 @@
     <v-dialog v-model="addDialog" max-width="600px">
       <v-form ref="addform" v-model="valid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             新增項目-{{ this.addItem.class }}
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
                 <v-btn class="btn-secondary close"
                         title="取消" 
                         @click="addDialog = false" 
@@ -378,7 +378,7 @@
                 </div>
               </v-card-text>
               <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
-                <div class="search" style="display: flex;align-items: center;width: 100%;">
+                <div class="search flex-align-center" style="width: 100%;">
                   <v-text-field label="ppm、°c、g、..." filled dense v-model="addItem.unit" :rules="rules.require" style="width: 100%;">
                   <span  slot="prepend" style="width:80px">單位</span>
                 </v-text-field>

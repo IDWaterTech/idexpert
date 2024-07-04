@@ -4,8 +4,7 @@
         <v-row style="margin-bottom: 0;height: 73vh;align-items: stretch;width: 100%;">
             <!-- 警示 -->
             <v-col cols="12" md="3" style="padding-right: 0;">
-                <v-card class="kb-card"
-                    style="display: flex;flex-direction: column;align-items: flex-start;">
+                <v-card class="kb-card">
                     <div class="top alert-line">
                         <div class="title">
                             <div class="number"><span>{{(cardData.water.length+cardData.observation.length)}}</span></div>
@@ -24,20 +23,17 @@
                             <v-btn class="btn-icon just-icon" :class="{'disabled':alert.length==0}" @click="alertChange('left')"><v-icon>mdi-menu-left</v-icon></v-btn>
                         </div>
                         <div class="main-content" v-if="alert.length>0" style="width: 100%;">
-                            <v-card-text class="dialog-text"
-                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 24px;">
+                            <v-card-text class="dialog-text border-bottom">
                                 <b>狀態作動</b>
                                 <span style="padding-top: 8px;">
                                     {{alert[nowAlert].status }}</span>
                             </v-card-text>
-                            <v-card-text class="dialog-text"
-                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 24px;">
+                            <v-card-text class="dialog-text border-bottom">
                                 <b>可能影響原因</b>
                                 <span style="padding-top: 8px;">
                                     {{alert[nowAlert].factor }}</span>
                             </v-card-text>
-                            <v-card-text class="dialog-text"
-                                style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;border-bottom:1px solid rgba(0,0,0,0.1);margin-bottom: 24px;">
+                            <v-card-text class="dialog-text border-bottom">
                                 <b>會造成結果</b> 
                                 <span style="padding-top: 8px;">
                                     {{alert[nowAlert].result==''?'無':alert[nowAlert].result}}</span>
@@ -59,8 +55,7 @@
             <v-col cols="12" md="2">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -98,8 +93,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" style="height: 50%;padding: 6px 0 0 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -121,8 +115,7 @@
             <v-col cols="12" md="2">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -140,8 +133,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" style="height: 50%;padding: 6px 0 0 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -163,8 +155,7 @@
             <v-col cols="12" md="2">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -182,8 +173,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" style="height: 50%;padding: 6px 0 0 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -205,8 +195,7 @@
             <v-col cols="12" md="3">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 6px 6px 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top alert-line">
                                 <div class="title">
                                     <div class="main">
@@ -224,8 +213,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" style="height: 50%;padding: 6px 6px 0 0;">
-                        <v-card class="kb-card"
-                            style="display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card class="kb-card">
                             <div class="top alert-line">
                                 <div class="title">
                                     <div class="main">
@@ -370,23 +358,24 @@ export default {
         background-color: #fff !important;
         padding: 16px;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
         justify-content: center;
         *{
             color: $color-dark;
         }
         
         .top {
-            display: flex;
+            @include flexAllCenter();
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             width: 100%;
             border-bottom: 1px solid $color-primary;
             border-radius: 0;
             padding-bottom: 8px;
             &.alert-line {
                 align-items: center;
-                border-bottom: 1px solid rgba(0,0,0,0.1);
+                border-bottom: 1px solid $color-black-10;
             }
             
             .title {
@@ -402,25 +391,19 @@ export default {
                 font-size: 0.85rem;
             }
             .number {
-                width: 24px;
-                height: 24px;
+                @include size(24px);
                 border-radius: 50%;
                 background-color: $color-accent;
                 position: relative;
                 margin-right: 4px;
                 span {
                     color: #fff;
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%,-50%);
+                    @include positionCenter();
                 }
             }
         }
         .content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            @include flexCenterBetween();
             width: 100%;
             // height: 100%;
             &.number-of-content {
@@ -432,8 +415,7 @@ export default {
             }
             .num-of-alert {
                 width: 100%;
-                display: flex;
-                align-items: center;
+                @include flexAlignCenter();
                 justify-content: flex-end;
                 color: $color-dark-75;
             }
@@ -443,11 +425,17 @@ export default {
                 font-weight: bold;
                 word-break: break-all;
             }
+            .dialog-text {
+                display: flex;
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 8px 16px;
+                margin-bottom: 24px;
+            }
         }
         .cata {
             width: 100%;
-            display: flex;
-            align-items: center;
+            @include flexAlignCenter();
             justify-content: flex-end;
             margin-top: 16px;
             .judge-cata {

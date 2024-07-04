@@ -154,11 +154,11 @@
     <v-dialog v-model="adddialog" max-width="500px">
       <v-form ref="addform" v-model="valid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               新增角色
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="adddialog = false" 
@@ -273,11 +273,11 @@
     <v-dialog v-model="editdialog" max-width="500px">
       <v-form ref="editform" v-model="editvalid" lazy-validation>
         <v-card  class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               編輯角色
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="editdialog = false" 
@@ -693,14 +693,13 @@ export default {
     background-color: #fff;
   }
   .card-title {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     .title {
       width: 100%;
       font-size: 1rem;
     }
     .chevron {
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
     }
   }
 }

@@ -24,6 +24,56 @@ $color-accent: #A60017;
 $color-form: #6c9bcd;
 // 輔助色(綠)
 $color-green: #00A660;
+// 線條
+$color-black-10: rgba(0,0,0,0.1);
+
+/* mixin */
+// size
+@mixin size($w,$h:$w) {
+  width: $w;
+  height: $h;
+}
+// flex
+@mixin flexAlignCenter {
+  display: flex;
+  align-items: center;
+}
+// flex center
+@mixin flexAllCenter {
+  @include flexAlignCenter();
+  justify-content: center;
+}
+
+// flex align center justify space-between
+@mixin flexCenterBetween {
+  @include flexAlignCenter();
+  justify-content: space-between;
+}
+
+// position center
+@mixin positionCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+/* utility */
+.box-shadow-none {
+  box-shadow: none;
+}
+.border-bottom {
+  border-bottom: 1px solid $color-black-10;
+}
+.flex-align-center {
+  @include flexAlignCenter();
+}
+.flex-all-center {
+  @include flexAllCenter();
+}
+.flex-center-between {
+  @include flexCenterBetween();
+}
 
 /* 按鈕 */
 //btn btn-primary主要底色+白文字 btn-secondary次要邊框+邊框色文字
@@ -96,9 +146,11 @@ $color-green: #00A660;
   }
 }
 // btn 只有icon無文字 .btn-icon.just-icon 只有icon無底色
-.btn-icon,.btn-icon-secondary {
-  width: 24px !important;
-  height: 24px !important;
+.v-btn:not(.v-btn--round).v-size--default {
+  
+}
+.btn-icon,.btn-icon-secondary,.btn-icon.v-btn:not(.v-btn--round).v-size--default,.btn-icon-secondary.v-btn:not(.v-btn--round).v-size--default {
+  @include size(24px);
   box-shadow: none !important;
   border-radius: 4px;
   position: relative;
@@ -110,14 +162,11 @@ $color-green: #00A660;
   padding: 0 !important;
   margin: 2px;
   .theme--light.v-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    @include positionCenter();
     font-size: 1rem;
   }
 }
-.btn-icon {
+.btn-icon,.btn-icon.v-btn:not(.v-btn--round).v-size--default {
   background-color: $color-primary !important;
   &:hover {
       background-color: lighten($color: $color-primary, $amount: 3) !important;
@@ -196,7 +245,7 @@ $color-green: #00A660;
     }
   }
 }
-.btn-icon-secondary {
+.btn-icon-secondary,.btn-icon-secondary.v-btn:not(.v-btn--round).v-size--default {
   border: 1px solid $color-primary !important;
   background-color: transparent !important;
   .theme--light.v-icon {
@@ -245,8 +294,7 @@ $color-green: #00A660;
   right: 16px;
   z-index: 1000;
   .btn-primary {
-      width: 40px;
-      height: 40px;
+      @include size(40px);
       border-radius: 50%;
       box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
       margin: 0;
@@ -311,8 +359,7 @@ $color-green: #00A660;
         color: #fff;
         border-radius: 20px;
         padding: 4px;
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         transition: all 0.3s;
         cursor: default;
         
@@ -451,12 +498,17 @@ $color-green: #00A660;
       .v-card__title.add-title {
         color: $color-dark;
         font-weight: bold;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
+        border-bottom: 1px solid $color-black-10;
         font-size: 1.1rem;
+        display: block;
+        width: 100%;
+        .add {
+          float: right;
+          display: inline-block;
+        }
       }
       .card-title {
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         padding: 0;
         margin: 12px 16px;
         .title {
@@ -568,8 +620,7 @@ $color-green: #00A660;
   }
   // ant date time picker
   .date-time-picker {
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
     // margin: 0 8px;
     & > span {
         flex: 1;
@@ -613,8 +664,7 @@ $color-green: #00A660;
         margin-bottom: 24px;
       }
       .title {
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         .theme--light.v-icon {
           color: $color-form;
         }
@@ -654,22 +704,15 @@ $color-green: #00A660;
     }
   }
   .v-card.login {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    @include positionCenter();
     overflow: hidden;
     margin-bottom: 24px;
     padding: 40px;
-    display: flex;
+    @include flexAllCenter();
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.10), 0px 0px 10px 0px rgba(255,255,255,0.4);
     .card-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @include flexAllCenter();
       margin-bottom: 48px;
       .title {
         color: $color-primary;
@@ -691,7 +734,7 @@ $color-green: #00A660;
     .block {
         color: #00273E;
         border-radius: 6px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px $color-black-10;
         transition: all 0.3s;
         // min-width: 120px;
         &.setting-block:hover {
@@ -710,13 +753,12 @@ $color-green: #00A660;
       background-color: $color-lighten;
   }
   .card-title {
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
   }
   .card-title {
     padding: 12px 16px;
     cursor: pointer;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     .title {
         width: 100%;
         .v-card__title {
@@ -734,10 +776,9 @@ $color-green: #00A660;
   // 標題是tab
   .header-bar {
     width: 100%;
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
     padding: 12px 24px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     h5 {
       width: 100%;
     }
@@ -800,8 +841,7 @@ $color-green: #00A660;
 
 // scrollbar
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    @include size(6px);
 }
 ::-webkit-scrollbar-track {
     background: none; 

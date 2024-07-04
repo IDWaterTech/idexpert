@@ -1019,9 +1019,8 @@ v-row > div{
   align-items: center;  
 }
 .parent-row {
-  width: 100%;
+  @include size(100%);
   margin-bottom: 12px;
-  height: 100%;
   flex-wrap: nowrap;
   // min-width: 1200px;
 }
@@ -1029,8 +1028,7 @@ v-row > div{
   margin-bottom: 12px;
 }
 .rows-display {
-  display: flex;
-  align-items: center;
+  @include flexAlignCenter();
   padding-top: 12px;
   padding-bottom: 12px;
 }
@@ -1049,15 +1047,12 @@ v-row > div{
   // min-width: 120px;
   & > div {
     position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include size(100%);
+    @include flexAlignCenter();
   }
   .horizontal,.top,.center,.bottom,.vertical {
       padding: 0;
-      width: 100%;
-      height: 36px;
+      @include size(100%,36px);
       background-color: #e4e4e4;
       margin: 0;
       // margin-right: -12px;
@@ -1074,9 +1069,7 @@ v-row > div{
     transform: translateX(-50%);
     width: 36px;
     height: calc(100% + 32px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flexAllCenter();
   }
   .vertical {
     border-radius: 4px;
@@ -1106,9 +1099,7 @@ v-row > div{
   width: 100%;
   .block {
     padding: 12px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flexAllCenter();
     &.edit-block {
       padding: 12px;
       min-width: 120px;
@@ -1120,8 +1111,7 @@ v-row > div{
       width: 100%;
     }
     .vertical {
-      width: 36px;
-      height: 100%;
+      @include size(36px,100%);
       padding: 12px;
     }
   }
@@ -1138,8 +1128,7 @@ v-row > div{
   position: relative;
   &::before {
     content: '';
-    width: 100%;
-    height: 100%;
+    @include size(100%);
     position: absolute;
     top: 0;
     left: 0;

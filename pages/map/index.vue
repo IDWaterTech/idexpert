@@ -68,8 +68,7 @@
             margin-top: 0;
         }
         .title {
-            display: flex;
-            align-items: center;
+            @include flexAlignCenter();
         }
     }
     .v-card__title {

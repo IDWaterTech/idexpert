@@ -52,8 +52,7 @@ form {
 }
 .img-error {
   background-image: url('../assets/Error-bg.png');
-  height: 100%;
-  width: auto;
+  @include size(auto,100%);
   object-fit: cover;
   background-size: cover;
   background-position: 60% bottom;
@@ -63,9 +62,8 @@ form {
   top: 50%;
   left: 50%;
   transform: translate(-50%,calc(-50% - 64px));
-  display: flex;
+  @include flexAlignCenter();
   flex-direction: column;
-  align-items: center;
   width: 100%;
   h1,h3 {
     color: $color-dark;

@@ -149,7 +149,7 @@
               </v-row>
             </v-col>
             <!-- 池資料/地圖配置 -->
-            <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="2" sm="2" style="display: flex;align-items: center;">
+            <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="2" sm="2" class="flex-align-center">
               <v-btn v-if="nowSetting=='map'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="nowSetting = 'pool';getPoolData()">池資料</v-btn>
               <v-btn v-if="nowSetting=='pool'" class="btn-secondary" :class="{'disabled':!sel_main||!sel_area}" @click="getMapData()">配置</v-btn>
             </v-col>
@@ -162,9 +162,9 @@
             <v-card v-if="nowSetting=='pool'" class="result-card">
               <!-- 表頭 -->
               <div class="card-title">
-                <div class="title" style="display: flex;align-items: center;">
+                <div class="title flex-align-center">
                   <v-card-title style="margin-right: 24px;">池清單</v-card-title>
-                  <div class="search" style="display: flex;align-items: center;">
+                  <div class="search flex-align-center">
                     <!-- <v-autocomplete
                       v-model="sel_pool"
                       :items="pooldata"
@@ -185,7 +185,7 @@
                   </div>
                 </div>
                 
-                <div class="chevron" style="display: flex;align-items: center;margin-left: 8px;">
+                <div class="chevron flex-align-center" style="margin-left: 8px;">
                   <v-btn class="btn-secondary green" :class="{'disabled':!sel_area}" @click="showdialog_pool('add')" style="padding: 0 8px;background-color: transparent !important;;">
                       <v-icon>mdi-plus</v-icon>新增池
                   </v-btn>
@@ -202,7 +202,7 @@
                     :key="item.id"
                   >
                     <v-card style="background-color: #fff;">
-                      <v-card-subtitle style="display: flex;align-items: center;justify-content: space-between;">
+                      <v-card-subtitle class="flex-center-between">
                         {{ item.name }}
                         <div class="btn-groups">
                           <v-btn
@@ -250,7 +250,7 @@
                     </v-card>
                   </v-col>
                 </v-row>
-                <v-row v-if="pooldata.length==0 && !tableview"><div class="content" style="height: 56vh;width: 100%;display: flex;align-items: center;justify-content: center;">無資料</div></v-row>
+                <v-row v-if="pooldata.length==0 && !tableview"><div class="content flex-all-center" style="height: 56vh;width: 100%;">無資料</div></v-row>
                 <v-data-table light
                   v-if="tableview"
                   class="flex-table data-table bg-transparent"
@@ -323,7 +323,7 @@
     <v-dialog v-model="dialog.main" width="500px">
       <v-form ref="mainform" v-model="mainvalid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               {{
               edititem.type == "add"
@@ -339,7 +339,7 @@
                 : "養殖池"
             }}
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="dialog.main = false" 
@@ -381,13 +381,13 @@
     <v-dialog v-model="dialog.pool" width="500px">
       <v-form ref="poolform" v-model="poolvalid" lazy-validation>
         <v-card v-if="sel_area && areadata" class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               {{ areadata.filter(x => x.id == sel_area)[0].name }}-養殖池-{{
                 edititem_pool.type == "add" ? "新增" : "編輯"
               }}
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="dialog.pool = false" 
@@ -586,9 +586,9 @@
     <v-dialog v-model="dialog.ip" width="500px">
       <v-form ref="ipform" v-model="ipvalid" lazy-validation>
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">ip設定</div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="dialog.ip = false" 

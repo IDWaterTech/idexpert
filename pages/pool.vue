@@ -297,12 +297,12 @@
     <v-dialog id="addDialog" v-model="addDialog" max-width="500px">
       <v-form v-model="addvalid" ref="cycleform">
         <v-card style="min-height:80vh" class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               新增-養殖循環
               <!-- <span class="error-text">Note:目前無法新增，因多池資料結構有更改</span> -->
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
                       @click="addDialog = false" 
@@ -322,7 +322,7 @@
             </div> -->
           </div>
           <div v-if="addChooseOpen" class="basic" style="padding-left: 8px;">
-            <v-card-text style="display: flex;align-items: center;padding-top: 0;">
+            <v-card-text  class="flex-align-center" style="padding-top: 0;">
               <!-- {{ addparm.pool_id }} -->
               <!-- <locate-select 
                 class="select-template"
@@ -371,7 +371,7 @@
               </div>
           </div>
           <div v-show="addbasicDataOpen" class="basic">
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col  cols="6" style="padding: 0;padding-left: 8px;">
                   <v-text-field v-model="addparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" disabled  style="margin-right: 4px;padding-top: 0;">
@@ -419,7 +419,7 @@
                 </v-col> -->
               </v-row>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
@@ -441,7 +441,7 @@
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
@@ -451,7 +451,7 @@
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
@@ -473,7 +473,7 @@
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" label="預估存活率(%)(選)">
               </v-text-field>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-text-field filled dense type="number" v-model.number="addparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" label="預估FCR(選)">
@@ -485,7 +485,7 @@
               <!-- <v-text-field filled dense type="number" v-model.number="addparm.initial_length" label="放養初始長度(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>       -->
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
@@ -514,15 +514,15 @@
             </div> -->
           </div>
           <div v-if="dataid.length>0" class="basic" style="padding-left: 8px;">
-            <v-card-text style="padding-top: 0;display: flex;align-items: center;">
-              <v-row style="margin-bottom: 12px;border-bottom: 1px solid rgba(0,0,0,0.1);align-items: center;padding: 0 8px 8px;">
+            <v-card-text class="flex-align-center" style="padding-top: 0;">
+              <v-row class="border-bottom" style="margin-bottom: 12px;align-items: center;padding: 0 8px 8px;">
                 <v-col cols="3" style="padding: 0">
                   <span style="color:#40657A;font-weight: bold;display: inline-block;">
                     統一密度：
                   </span>
                 </v-col>
                 <v-col cols="9" style="padding: 0;">
-                  <div class="volume" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+                  <div class="volume flex-center-between" style="width: 100%;">
                     <el-input-number
                       class="ml-2"
                       v-model="all_num_per_unit"
@@ -631,11 +631,11 @@
     <v-dialog v-model="mutiExecute" max-width="500px">
       <v-form v-model="executevalid" ref="executeform">
         <v-card class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
               <div style="display: inline-block;">
               批次執行
               </div>
-              <div class="add" style="float: right;display: inline-block;">
+              <div class="add">
                 <v-btn  class="btn-secondary close"
                         title="取消" 
                         @click="mutiExecute = false" 
@@ -645,7 +645,7 @@
               </div>
           </v-card-title>
           <div class="basic" style="min-height: 300px;">
-            <v-card-text  style="display: flex;align-items: center;padding: 8px 16px;">
+            <v-card-text class="flex-align-center" style="padding: 8px 16px;">
               <div class="search-container">
                 <locate-select
                   class="select-template"
@@ -657,7 +657,7 @@
                   ></locate-select>
               </div>
             </v-card-text>
-            <v-card-text v-if="nowExeArea && nowExeArea !== ''"  style="display: flex;align-items: center;padding: 8px 16px;">
+            <v-card-text v-if="nowExeArea && nowExeArea !== ''" class="flex-align-center"  style="padding: 8px 16px;">
               <div class="search-container" style="width: 100%;">
                 <v-tabs v-model="nowTab" show-arrows>
                   <!-- 上方tab -->
@@ -677,7 +677,7 @@
                       <!-- 執行 -->
                       <div v-show="nowTab=='執行'" class="result-content">
                         <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiExecuteData" :key="'execute_'+item.pond_id" class="list" style="display: flex;align-items: center;">
+                          <div v-for="item in mutiExecuteData" :key="'execute_'+item.pond_id" class="list flex-align-center">
                             <v-checkbox
                               v-model="item.checked"
                               dense hide-details
@@ -758,11 +758,11 @@
     <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
       <v-form v-model="editvalid" ref="editform">
         <v-card style="min-height:80vh" class="custom-dialog">
-          <v-card-title class="add-title" style="display: block;width: 100%;">
+          <v-card-title class="add-title">
             <div style="display: inline-block;">
               修改循環
             </div>
-            <div class="add" style="float: right;display: inline-block;">
+            <div class="add">
               <v-btn class="btn-secondary close"
                       title="取消" 
                       @click="editDialog = false" 
@@ -782,7 +782,7 @@
             </div> -->
           </div>
           <div class="basic">
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row  style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-text-field v-model="editparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="margin-right: 4px;padding-top: 0;" disabled>
@@ -807,7 +807,7 @@
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-select v-model="editparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
@@ -829,7 +829,7 @@
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
@@ -839,7 +839,7 @@
                 </v-col>
               </v-row>
             </v-card-text>   
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-row style="align-items: center;padding-top: 16px;">
                 <v-col cols="6" style="padding: 0;padding-left: 8px;">
                   <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
@@ -860,7 +860,7 @@
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)">
               </v-text-field>
             </v-card-text>
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-text-field filled dense type="number" v-model.number="editparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)">
@@ -870,7 +870,7 @@
               <v-text-field filled dense type="number" v-model.number="editparm.initial_length" label="放養初始重量(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>   -->
-            <v-card-text style="display: flex;align-items: center;">
+            <v-card-text class="flex-align-center">
               <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>
@@ -933,11 +933,11 @@
     <v-dialog v-model="reportDialog" max-width="500px">
       <v-form v-model="reportvalid" ref="addform">
           <v-card class="custom-dialog">
-              <v-card-title class="add-title" style="display: block;width: 100%;">
+              <v-card-title class="add-title">
                   <div style="display: inline-block;">
                       <span>{{addReport[0].pond_ids?'修改':'新增'}}檢驗報告</span> 
                   </div>
-                  <div class="add" style="float: right;display: inline-block;">
+                  <div class="add">
                       <v-btn class="btn-secondary close"
                               title="取消" 
                               @click="reportDialog = false; addReport=[{msg:''}]" 
@@ -5279,8 +5279,7 @@ export default {
 <style lang="scss" scoped>
 .circle {
   border: 1px solid;
-  height: 100px;
-  width: 100px;
+  @include size(100px);
   border-radius: 50%;
   position: relative;
 }
@@ -5299,8 +5298,7 @@ export default {
 }
 .v-card.bg-card {
   .btn-groups {
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
     justify-content: flex-end;
     button {
       margin-right: 8px;
@@ -5336,10 +5334,10 @@ export default {
     background-color: $color-lighten;
   }
   .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
   }
   .el-table .el-table__header-wrapper td.el-table__cell, .el-table th.el-table__cell.is-leaf {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
   }
 
   .el-table .cell {
@@ -5374,8 +5372,7 @@ export default {
   .el-table__row.el-table__row--level-1 .cell {
     // font-size: 0.875rem;
     // min-height: 48px;
-    display: flex;
-    align-items: center;
+    @include flexAlignCenter();
     padding: 8px;
   }
   .el-table__body tr.el-table__row.el-table__row--level-1.hover-row>td.el-table__cell {

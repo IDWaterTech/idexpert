@@ -355,16 +355,14 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  @include size(100%,100%);
   background: var(--linear-gradient-dark, linear-gradient(179deg, #00324E 0.78%, #40657A 197.21%));
   opacity: 0.5;
   backdrop-filter: blur(6px);
 }
 video {
   object-fit: cover;
-  width: 100vw;
-  height: 100vh;
+  @include size(100vw,100vh);
   position: fixed;
   top: 0;
   left: 0;
@@ -375,8 +373,7 @@ video {
   position: relative;
 }
 .background {
-  width: 100%;
-  height: 30vh;
+  @include size(100%,30vh);
   background-color: rgba($color-light,0.1);
   width: calc(100% + 36px);
   position: fixed;
@@ -461,12 +458,8 @@ video {
       content: '';
       background-color: rgba(0,0,0,0.3);
       color: rgba($color-light,0);
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
+      @include size(100%);
+      @include positionCenter();
       transition: all 0.3s;
     }
     &:hover {
@@ -475,7 +468,7 @@ video {
       // background-color: #EFF2F3;
       // width: 100%;
       // height: 100%;
-      background-color: rgba(0,0,0,0.1);
+      background-color: $color-black-10;
       // position: relative;
       &:not(.v-sheet--outlined) {
         box-shadow: 0 0 5px rgba(0,0,0,0.2);
@@ -492,16 +485,10 @@ video {
         content: '尚未開通此服務';
         color: $color-light;
         font-weight: bold;
-        width: 100%;
-        height: 100%;
+        @include size(100%);
         background-color: rgba(0,0,0,0.5);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include positionCenter();
+        @include flexAlignCenter();
       }
       .menu-title {
         font-size: 1.1rem;
@@ -514,8 +501,7 @@ video {
     }
     &:before {
       content:'';
-      width: 100%;
-      height: 100%;
+      @include size(100%);
       position: absolute;
       top: 0;
       left: 0;
@@ -527,14 +513,11 @@ video {
   background-color: $color-primary-25;
 }
 .menu-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flexAlignCenter();
   flex-direction: column;
   .title-icon {
     margin: 12px;
-    width: 40px;
-    height: 40px;
+    @include size(40px);
     // background-color: rgba($color-primary-25,0.5);
     background-color: rgba(255,255,255,0.4);
     border-radius: 50%;
@@ -574,8 +557,7 @@ video {
     }
     .menu-title {
       margin-top: 12px;
-      display: flex;
-      align-items: center;
+      @include flexAlignCenter();
       font-weight: bold;
     }
     .children {
@@ -588,16 +570,15 @@ video {
   }
 }
 .background-circle {
-  width: 160vw;
-    height: 160vw;
-    border-radius: 54vw;
-    background-color: rgba(244, 251, 255, 0.02);
-    transform: translateX(-50%);
-    position: fixed;
-    top: 90vh;
-    left: -30vw;
-    animation: rotate-1906d359 10s infinite linear;
-    transition: all 1s;
+  @include size(160vw);
+  border-radius: 54vw;
+  background-color: rgba(244, 251, 255, 0.02);
+  transform: translateX(-50%);
+  position: fixed;
+  top: 90vh;
+  left: -30vw;
+  animation: rotate-1906d359 10s infinite linear;
+  transition: all 1s;
 }
 @keyframes rotate {
   0%{

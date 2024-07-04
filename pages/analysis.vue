@@ -224,7 +224,7 @@
                                   </v-col>
                                   <!-- 查詢 -->
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
+                                    style="width: 100%;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -252,8 +252,8 @@
                                     ">主要觀測項目</v-btn> -->
                                   </v-col>
                                   <!-- 圖表顯示控制 -->
-                                  <v-col cols="6" md="6" sm="8" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                  <v-col cols="6" md="6" sm="8" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -345,7 +345,7 @@
                                   </v-col> -->
                                   
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;">
+                                    style="width: 100%;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
                                   
@@ -370,9 +370,9 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
                                     
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -449,7 +449,7 @@
                                   
                                   
                                   <v-col cols="12" md="1" align-self="center"  v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
+                                    style="width: 100%;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -475,8 +475,8 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -553,7 +553,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
+                                    style="width: 100%;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -578,8 +578,8 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -655,7 +655,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
+                                    style="width: 100%;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -680,8 +680,8 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -757,7 +757,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
+                                    style="width: 100%;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -782,8 +782,8 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -860,7 +860,7 @@
                                   </v-col>
                                   
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="display: flex;align-items: center;width: 100%;"
+                                    style="width: 100%;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -885,8 +885,8 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" style="display: flex;align-items: center;width: 100%;padding-top: 0;justify-content: flex-end;">
-                                    <div class="chart-toggle" style="display: flex;align-items: center;">
+                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                    <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
@@ -1752,13 +1752,11 @@ export default {
   padding: 8px 12px;
   // border-bottom: 4px solid $color-primary;
   border-left: 4px solid $color-primary;
-  display: flex;
-  align-items: center;
+  @include flexAlignCenter();
   margin-bottom: 12px;
   background-color: rgba($color-primary,0.08);
   .icon {
-    width: 40px;
-    height: 40px;
+    @include size(40px);
     // background-color: rgba($color-primary,0.1);
     text-align: center;
     padding-top: 8px;
@@ -1801,7 +1799,7 @@ export default {
 .v-card.result-card.pool-detail {
   background-color: #fff;
   .card-title {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid $color-black-10;
     background-color: rgba($color-primary,0.1);
   }
   .v-card__title {
@@ -1857,8 +1855,7 @@ export default {
   .custom-overlay {
     position: fixed;
     .v-overlay__content {
-      width: 100%;
-      height: 100%;
+      @include size(100%);
       .v-icon.v-icon.v-icon--link {
         position: absolute;
         top: 80px;
@@ -1869,10 +1866,7 @@ export default {
         // border-radius: 4px;
       }
       img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
+        @include positionCenter();
       }
     }
   }

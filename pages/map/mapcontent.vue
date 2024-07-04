@@ -584,8 +584,7 @@
     }
     
     .pool-content {
-        width: 100%;
-        height: 120px;
+        @include size(100%,120px);
         border: #002134;
         border-radius: 4px;
         color:#002134;
@@ -618,7 +617,7 @@
     .block {
         color: #00273E;
         border-radius: 6px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px $color-black-10;
         // min-width: 120px;
     }
     //   .road {
@@ -641,12 +640,10 @@
         opacity: 0.1;
     }
     .icons {
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         margin-right: 16px;
         .confirm {
-            width: 24px;
-            height: 24px;
+            @include size(24px);
             border-radius: 4px;
             background-color: #006AA6;
             float: right;
@@ -665,8 +662,7 @@
     // 設定
     .setting-item {
         font-size: 14px;
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         margin-left: 24px;
         cursor: pointer;
         transition: all 0.3s;
@@ -681,8 +677,7 @@
         }
     }
     .layout-box {
-        display: flex;
-        align-items: center;
+        @include flexAlignCenter();
         .theme--light.v-label, .theme--light.v-icon, .theme--light.v-input {
         margin-top: 0;
         max-width: 60px;
@@ -774,8 +769,7 @@
     
 // scrollbar
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    @include size(6px);
 }
 ::-webkit-scrollbar-track {
     background: none; 
