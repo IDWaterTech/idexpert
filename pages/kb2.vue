@@ -4221,6 +4221,9 @@ export default {
             this.WaterQualityData = {};
             this.ObservationData = {Leftover:0};
             this.BacteriaData={};
+            for(let i=0;i<this.bacteriaAll.length;i++) {
+                this.bacteriaDataObject[this.bacteriaAll[i]] = 0;            
+            }
             this.bacteriaSelect = [];
             this.FeedRecordData = {"FeedAmountForFourMeals": {}};
             this.suggData = {
