@@ -1234,11 +1234,14 @@ export default {
                         // 非目前dailycheck生成的工作，判斷是否已有dailyCheckList，有代表已經完成執行的工作
                         if(item.actionList[0].dailyCheckList&&item.actionList[0].dailyCheckList.length>0) {
                             item.actionList.forEach(action=>{
-                                action.dailyCheckList.forEach(d=>{
-                                    if(!dateList.includes(d.scheduling_date)) {
-                                        dateList.push(d.scheduling_date)
-                                    }
-                                })
+                                if(action.dailyCheckList) {
+                                    action.dailyCheckList.forEach(d=>{
+                                        if(!dateList.includes(d.scheduling_date)) {
+                                            dateList.push(d.scheduling_date)
+                                        }
+                                    })
+                                }
+                                
                             })
                             return dateList.length;
                         }else {
