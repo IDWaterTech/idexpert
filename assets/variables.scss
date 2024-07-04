@@ -710,7 +710,7 @@ $color-black-10: rgba(0,0,0,0.1);
     padding: 40px;
     @include flexAllCenter();
     flex-direction: column;
-    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.10), 0px 0px 10px 0px rgba(255,255,255,0.4);
+    box-shadow: 0px 0px 20px 0px $color-black-10, 0px 0px 10px 0px rgba(255,255,255,0.4);
     .card-title {
       @include flexAllCenter();
       margin-bottom: 48px;
@@ -748,7 +748,7 @@ $color-black-10: rgba(0,0,0,0.1);
 // result card 次要底板(區隔搜尋欄位增加畫面顏色層次與注意力)
 .v-card.result-card {
   background-color: $color-lighten;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
+  box-shadow: 0px 0px 10px 0px $color-black-10;
   .theme--light.v-card {
       background-color: $color-lighten;
   }

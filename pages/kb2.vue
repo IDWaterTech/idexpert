@@ -4595,9 +4595,6 @@ export default {
         * {
             color: #00273E;
         }
-        button.v-icon, button.v-btn--icon .v-icon {
-            color: #006AA6;
-        }
         .content {
             padding-top: 0;
             padding-bottom: 2px;

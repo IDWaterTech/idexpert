@@ -9,7 +9,7 @@
                 </div>
             </v-row>
         </div> -->
-        <div class="content" style="padding-left: 0;padding-top:12px;padding-bottom: 0;">
+        <div class="content" style="padding:12px 0 0 12px;">
           <!-- 搜尋 -->
           <div class="search">
             <v-row style="margin-bottom: 4px;align-items: center;">
@@ -224,7 +224,7 @@
                                   </v-col>
                                   <!-- 查詢 -->
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;"
+                                    style="width: 100%;display: flex;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -262,7 +262,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -343,13 +343,11 @@
                                       :items="envdata.map(x => x['name'])" v-if="allcols.env" no-data-text="查無資料">
                                     </v-select>
                                   </v-col> -->
-                                  
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;">
+                                    style="width: 100%;display: flex;"
+                                    :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  
-                                  
                                   <!-- <v-col cols="12" md="3">
                                     顯示：{{ colstyle + 1 }}欄式
                                     <v-btn-toggle v-model="colstyle" dense mandatory>
@@ -381,7 +379,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -449,7 +447,7 @@
                                   
                                   
                                   <v-col cols="12" md="1" align-self="center"  v-if="windowWidth>959.98"
-                                    style="width: 100%;"
+                                    style="width: 100%;display: flex;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -485,7 +483,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -553,7 +551,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;"
+                                    style="width: 100%;display: flex;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -588,7 +586,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -655,7 +653,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;"
+                                    style="width: 100%;display: flex;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -690,7 +688,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -757,7 +755,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;"
+                                    style="width: 100%;display: flex;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -792,7 +790,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -860,7 +858,7 @@
                                   </v-col>
                                   
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;"
+                                    style="width: 100%;display: flex;"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -895,7 +893,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row" style="display: flex;flex-direction: column;">
+                                    <div v-if="windowWidth>959.98" class="change-row">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -1831,7 +1829,10 @@ export default {
   color: $color-dark;
   padding-left: 4px;
 }
-
+.change-row {
+  display: flex;
+  flex-direction: column;
+}
 ::v-deep {
   .iCountUp {
     font-size: 1.2rem !important;
