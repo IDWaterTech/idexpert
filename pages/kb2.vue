@@ -4593,7 +4593,10 @@ export default {
 .v-application.v-application--is-ltr {
     .v-card.kb {
         * {
-            color: #00273E;
+            color: $color-dark;
+        }
+        button.v-icon.mdi-calendar,button.v-icon.mdi-timeline-clock-outline {
+            color: $color-primary;
         }
         .content {
             padding-top: 0;
@@ -4606,7 +4609,7 @@ export default {
                     font-size: 0.85rem;
                     margin-right: 8px;
                     text-decoration: underline;
-                    color: #006AA6;
+                    color: $color-primary;
                 }
             }
             .result > .row {
@@ -4615,7 +4618,7 @@ export default {
         }
         .v-card.result-card {
             background-color: #E6F5FA;
-            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
+            box-shadow: 0px 0px 10px 0px $color-black-10;
             margin: 0 2px;
             .theme--light.v-card {
                 background-color: #E6F5FA;
@@ -4637,10 +4640,10 @@ export default {
                         font-size: 1.1rem;
                     }
                     .theme--light.v-icon {
-                        color: #006AA6;
+                        color: $color-primary;
                     }
                     .v-card__title {
-                        color: #006AA6;
+                        color: $color-primary;
                         font-size: 1.1rem;
                         padding: 8px;
                     }
@@ -4709,7 +4712,7 @@ export default {
                     font-weight: bold;
                     padding: 12px 8px !important;
                     .v-expansion-panel-header__icon .v-icon {
-                        color: #00273E;
+                        color: $color-dark;
                     }
                 }
                 .v-expansion-panel::before,.v-sheet.v-card:not(.v-sheet--outlined) {
@@ -4751,7 +4754,7 @@ export default {
                     background: transparent;
                 }
                 .suggestion-text {
-                    color: #A60017;
+                    color: $color-accent;
                     font-weight: bold;
                 }
                 
@@ -4791,7 +4794,7 @@ export default {
                 .v-icon.v-icon.v-icon--link.mdi-plus {
                     @include size(20px);
                     font-size: 14px;
-                    background-color: #006AA6;
+                    background-color: $color-primary;
                     border-radius: 50%;
                     color: #fff;
                     margin-top: 2px;
@@ -4835,7 +4838,7 @@ export default {
                     border-color: $color-black-10;
                 }
                 .theme--light.v-input--is-disabled input, .theme--light.v-input--is-disabled textarea {
-                    color: #00273E;
+                    color: $color-dark;
                 }
             }
             #aiwater,#ainet,#aiwatermin {
