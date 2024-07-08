@@ -1278,96 +1278,139 @@ export default {
       switch (data_group) {
         case "water": //水質
           this.waterloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.waterdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.waterloading = false;
+          const getAnalyzeDataListWater = await this.getAnalyzeDataList(parm);
+          const dataWater = typeof (getAnalyzeDataListWater)=='string'?[]:getAnalyzeDataListWater;
+          this.waterdata = [];
+          this.waterdata = dataWater;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.waterdata = res.data;
+          //     // this.goAnchor('#chart');
+          //   })
+          //   .catch(err => {
+          //     alert("失敗：" + err.message);
+          //   });
+          setTimeout(()=>{
+            this.waterloading = false;
+          },500)
+          
           break;
         case "feed": //飼料
           this.feedloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.feeddata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.feedloading = false;
+          const getAnalyzeDataListFeed = await this.getAnalyzeDataList(parm);
+          const dataFeed = typeof (getAnalyzeDataListFeed)=='string'?[]:getAnalyzeDataListFeed;
+          this.feeddata = [];
+          this.feeddata = dataFeed;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.feeddata = res.data;
+          //     // this.goAnchor('#chart');
+          //   })
+          //   .catch(err => {
+          //     alert("失敗：" + err.message);
+          //   });
+          setTimeout(()=>{
+            this.feedloading = false;
+          },500)
           break;
         case "env": //環境
           this.envloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.envdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.envloading = false;
+          const getAnalyzeDataListEnv = await this.getAnalyzeDataList(parm);
+          const dataEnv = typeof (getAnalyzeDataListEnv)=='string'?[]:getAnalyzeDataListEnv;
+          this.envdata = [];
+          this.envdata = dataEnv;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.envdata = res.data;
+          //     // this.goAnchor('#chart');
+          //   })
+          //   .catch(err => {
+          //     alert("失敗：" + err.message);
+          //   });
+          setTimeout(()=>{
+            this.envloading = false;
+          },500)
           break;
         case "obs": //觀察網
           this.obsloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.obsdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.obsloading = false;
+          const getAnalyzeDataListObs = await this.getAnalyzeDataList(parm);
+          const dataObs = typeof (getAnalyzeDataListObs)=='string'?[]:getAnalyzeDataListObs;
+          this.obsdata = [];
+          this.obsdata = dataObs;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.obsdata = res.data;
+          //     // this.goAnchor('#chart');
+          //   })
+          //   .catch(err => {
+          //     alert("失敗：" + err.message);
+          //   });
+          setTimeout(()=>{
+            this.obsloading = false;
+          },500)
           break;
         case "adv": //進階值
           this.advloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.advdata = res.data;
-              // this.goAnchor('#chart');
-            })
-            .catch(err => {
-              alert("失敗：" + err.message);
-            });
-          this.advloading = false;
+          const getAnalyzeDataListAdv = await this.getAnalyzeDataList(parm);
+          const dataAdv = typeof (getAnalyzeDataListAdv)=='string'?[]:getAnalyzeDataListAdv;
+          this.advdata = [];
+          this.advdata = dataAdv;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.advdata = res.data;
+          //     // this.goAnchor('#chart');
+          //   })
+          //   .catch(err => {
+          //     alert("失敗：" + err.message);
+          //   });
+          setTimeout(()=>{
+            this.advloading = false;
+          },500)
           break;
         case "pbio": //益生菌
           this.pbioloading = true;
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.pbiodata = res.data;
-              // this.goAnchor('#chart');
-            });
-          this.pbioloading = false;
+          const getAnalyzeDataListPbio = await this.getAnalyzeDataList(parm);
+          const dataPbio = typeof (getAnalyzeDataListPbio)=='string'?[]:getAnalyzeDataListPbio;
+          this.pbiodata = [];
+          this.pbiodata = dataPbio;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.pbiodata = res.data;
+          //     // this.goAnchor('#chart');
+          //   });
+          setTimeout(()=>{
+            this.pbioloading = false;
+          },500)
           break;
         case "material"://養殖用料
           this.materialloading = true;
           parm.data_group = 'breeding_material';
-          await this.$axios
-            .get(apiURL, { params: parm }, { httpsAgent: agent })
-            .then(res => {
-              console.log("select:", res.request.responseURL);
-              this.materialdata = res.data;
-              // this.goAnchor('#chart');
-            });
-          this.materialloading = false;
+          const getAnalyzeDataListMaterial = await this.getAnalyzeDataList(parm);
+          const dataMaterial = typeof (getAnalyzeDataListMaterial)=='string'?[]:getAnalyzeDataListMaterial;
+          this.materialdata = [];
+          this.materialdata = dataMaterial;
+          // await this.$axios
+          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
+          //   .then(res => {
+          //     console.log("select:", res.request.responseURL);
+          //     this.materialdata = res.data;
+          //     // this.goAnchor('#chart');
+          //   });
+          setTimeout(()=>{
+            this.materialloading = false;
+          },500)
         default:
           break;
       }

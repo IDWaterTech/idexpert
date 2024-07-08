@@ -721,23 +721,31 @@ export default {
   methods: {
     //清單-刪除
     eventSetDel:async function(){
-      var id = this.eventSet.id; 
-      await this.$axios
-          .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`)
-          .then(res => {
-            if (res.data=="刪除成功") {
-              this.eventSet = {mode:'add'};
-              this.eventSet_isEdit = false;
-              this.$toast.success(`刪除成功`, { duration: 2000 });
-            }else{
-              this.$toast.error(`資料刪除失敗:${res.data}`, { duration: 2000 });
-            }
-            console.log("飼料表設定-刪除 api:", res.request.responseURL);
-          })
-          .catch(err => {
-            debugger;
-            this.$toast.error(`資料刪除失敗:${err.message}`, { duration: 2000 });
-          });
+      var id = this.eventSet.id;
+      var res = false;
+      res = await this.deleteFeedEventList(id);
+      setTimeout(()=>{
+          if(res) {
+            this.eventSet = {mode:'add'};
+            this.eventSet_isEdit = false;
+          }
+      },50)
+      // await this.$axios
+      //     .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`)
+      //     .then(res => {
+      //       if (res.data=="刪除成功") {
+      //         this.eventSet = {mode:'add'};
+      //         this.eventSet_isEdit = false;
+      //         this.$toast.success(`刪除成功`, { duration: 2000 });
+      //       }else{
+      //         this.$toast.error(`資料刪除失敗:${res.data}`, { duration: 2000 });
+      //       }
+      //       console.log("飼料表設定-刪除 api:", res.request.responseURL);
+      //     })
+      //     .catch(err => {
+      //       debugger;
+      //       this.$toast.error(`資料刪除失敗:${err.message}`, { duration: 2000 });
+      //     });
           this.eventSetGet();
     },
     //清單-修改
@@ -750,20 +758,28 @@ export default {
         updated_user:this.$auth.$state.user.email
       }
       var id = this.eventSet.id;
-      await this.$axios
-          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`,parm)
-          .then(res => {
-            if (res.data=="修改成功") {
-              this.$toast.success(`修改成功`, { duration: 2000 });
-            }else{
-              this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
-            }
-            console.log("飼料表設定-修改 api:", res.request.responseURL);
-          })
-          .catch(err => {
-            debugger;
-            this.$toast.error(`資料修改失敗:${err.message}`, { duration: 2000 });
-          });
+      var res = false;
+      res = await this.patchFeedEventList(parm,id);
+      setTimeout(()=>{
+          if(res) {
+              this.dialog.seedForm = false;
+              this.getSeedlingData();//取得苗清單
+          }
+      },50)
+      // await this.$axios
+      //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`,parm)
+      //     .then(res => {
+      //       if (res.data=="修改成功") {
+      //         this.$toast.success(`修改成功`, { duration: 2000 });
+      //       }else{
+      //         this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
+      //       }
+      //       console.log("飼料表設定-修改 api:", res.request.responseURL);
+      //     })
+      //     .catch(err => {
+      //       debugger;
+      //       this.$toast.error(`資料修改失敗:${err.message}`, { duration: 2000 });
+      //     });
           this.eventSet = {mode:'add'};
           this.eventSetList = null;
           this.eventSet_isEdit = false;
@@ -786,15 +802,18 @@ export default {
     },
     // 飼料表設定-清單
     eventSetGet:async function(){
-      await this.$axios
-          .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
-          .then(res => {
-            this.eventSetData = res.data;
-            console.log("飼料表設定-清單 api:", res.request.responseURL);
-          })
-          .catch(err => {
-            this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
-          });
+      let getFeedEventList = await this.getFeedEventList();
+      let data = typeof (getFeedEventList)=='string'?[]:getFeedEventList;
+      this.eventSetData = data;
+      // await this.$axios
+      //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+      //     .then(res => {
+      //       this.eventSetData = res.data;
+      //       console.log("飼料表設定-清單 api:", res.request.responseURL);
+      //     })
+      //     .catch(err => {
+      //       this.$toast.error(`飼料表設定-清單 失敗:${err.message}`, { duration: 2000 });
+      //     });
     },
     // 飼料表設定-新增
     eventSetAdd:async function(){
@@ -802,24 +821,34 @@ export default {
       const user = this.$auth.$state.user.email;
       delete parm.mode;
       parm.created_user = user;
-      await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`,parm)
-          .then(res => {
-            if (res.data=="新增成功") {
-              this.eventSet = {mode:'add'};
-              this.eventSetList = null;
-              this.eventSet_isEdit = false;
-              this.eventSetGet();
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            }else{
-              this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
-            }
-            console.log("飼料表設定-新增 api:", res.request.responseURL);
-          })
-          .catch(err => {
+      var res = false;
+      res = await this.postFeedEventList(parm);
+      setTimeout(()=>{
+          if(res) {
+            this.eventSet = {mode:'add'};
+            this.eventSetList = null;
+            this.eventSet_isEdit = false;
+            this.eventSetGet();
+          }
+      },50)
+      // await this.$axios
+      //     .post(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`,parm)
+      //     .then(res => {
+      //       if (res.data=="新增成功") {
+      //         this.eventSet = {mode:'add'};
+      //         this.eventSetList = null;
+      //         this.eventSet_isEdit = false;
+      //         this.eventSetGet();
+      //         this.$toast.success(`新增成功`, { duration: 2000 });
+      //       }else{
+      //         this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
+      //       }
+      //       console.log("飼料表設定-新增 api:", res.request.responseURL);
+      //     })
+      //     .catch(err => {
 
-            this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
-          });
+      //       this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
+      //     });
     },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
@@ -1010,49 +1039,61 @@ export default {
           parms.pond_id = this.poolidcpd.join();
           break;
       }
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`, {
-          params: parms
-        })
-        .then(res => {
-          this.eventsData = res.data;
-          if (res.data.length==0) {
-             this.$toast.success(`查無資料`, { duration: 2000 });
-          }
+      let getEventList = await this.getEventList(parms);
+      let data = typeof (getEventList)=='string'?[]:getEventList;
+      this.eventsData = data;
+      if (this.eventsData.length==0) {
+          this.$toast.success(`查無資料`, { duration: 2000 });
+      }
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`, {
+      //     params: parms
+      //   })
+      //   .then(res => {
+      //     this.eventsData = res.data;
+      //     if (res.data.length==0) {
+      //        this.$toast.success(`查無資料`, { duration: 2000 });
+      //     }
           
-          console.log("parms:",parms);
-          console.log("event api:", res.request.responseURL);
-        })
-        .catch(err => {
-          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
-        });
+      //     console.log("parms:",parms);
+      //     console.log("event api:", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //     this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+      //   });
     },
     //取得警戒等級
     getEventLevelData:async function(){
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-level/`)
-        .then(res => {
-          this.eventLevelData = res.data;
+      let getEventLevelList = await this.getEventLevelList();
+      let data = typeof (getEventLevelList)=='string'?[]:getEventLevelList;
+      this.eventLevelData = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-level/`)
+      //   .then(res => {
+      //     this.eventLevelData = res.data;
 
-          console.log("event api:", res.request.responseURL);
-        })
-        .catch(err => {
-          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
-        });
+      //     console.log("event api:", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //     this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+      //   });
     
     },
     //取得事件類型
     getEventCategoryData:async function(){
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
-        .then(res => {
-          this.eventCategoryData = res.data;
+      let getEventCatagoryList = await this.getEventCatagoryList();
+      let data = typeof (getEventCatagoryList)=='string'?[]:getEventCatagoryList;
+      this.eventCategoryData = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
+      //   .then(res => {
+      //     this.eventCategoryData = res.data;
 
-          console.log("event api:", res.request.responseURL);
-        })
-        .catch(err => {
-          this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
-        });
+      //     console.log("event api:", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //     this.$toast.error(`資料取得失敗:${err.message}`, { duration: 2000 });
+      //   });
     },
     //打開紀事(新增)
     openedit:function(mode){
@@ -1128,24 +1169,31 @@ export default {
             is_all_day: this.edited.is_all_day,
             created_user: updUser
           };
-          await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,parm)
-          .then(res => {
-            if (res.data=="新增成功") {
-              this.dialog.add = false;
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            }else{
-              console.log("parm:",parm);
-              console.log("res:",res);
+          var res = false;
+          res = await this.postEventList(parm);
+          setTimeout(()=>{
+              if(res) {
+                this.dialog.add = false;
+              }
+          },50)
+          // await this.$axios
+          // .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,parm)
+          // .then(res => {
+          //   if (res.data=="新增成功") {
+          //     this.dialog.add = false;
+          //     this.$toast.success(`新增成功`, { duration: 2000 });
+          //   }else{
+          //     console.log("parm:",parm);
+          //     console.log("res:",res);
 
-              this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
-            }
-            console.log("event api:", res.request.responseURL);
-          })
-          .catch(err => {
-            console.log("parm:",parm);
-            this.$toast.error(`資料新增錯誤:${err.message}`, { duration: 2000 });
-          });
+          //     this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
+          //   }
+          //   console.log("event api:", res.request.responseURL);
+          // })
+          // .catch(err => {
+          //   console.log("parm:",parm);
+          //   this.$toast.error(`資料新增錯誤:${err.message}`, { duration: 2000 });
+          // });
           this.getEventData();//更新畫面資料
          }
         if (mode=="edit") {
@@ -1162,10 +1210,11 @@ export default {
             is_all_day: this.edited.is_all_day,
             updated_user: updUser
           };
-          await this.$axios
-          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${this.edited.id}/`,parm)
-          .then(res => {
-            if (res.data=="修改成功") {
+          var id = this.edited.id;
+          var res = false;
+          res = await this.patchEventList(parm,id);
+          setTimeout(()=>{
+            if(res) {
               this.dialog.add = false;
               this.selectedOpen = false;
               this.selectedEvent.start = parm.started_date;
@@ -1178,15 +1227,33 @@ export default {
               this.selectedEvent.is_all_day = parm.is_all_day;
               this.selectedEvent.stime = `${(this.edited.is_all_day)?'00:00':this.edited.stime}`;
               this.selectedEvent.etime = `${(this.edited.is_all_day)?'00:00':this.edited.etime}`;
-              this.$toast.success(`修改成功`, { duration: 2000 });
-            }else{
-              this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
             }
-            console.log("event api:", res.request.responseURL);
-          })
-          .catch(err => {
-            this.$toast.error(`資料修改失敗:${err.message}`, { duration: 2000 });
-          });
+          },50)
+          // await this.$axios
+          // .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${this.edited.id}/`,parm)
+          // .then(res => {
+          //   if (res.data=="修改成功") {
+          //     this.dialog.add = false;
+          //     this.selectedOpen = false;
+          //     this.selectedEvent.start = parm.started_date;
+          //     this.selectedEvent.end = parm.ended_date;
+          //     this.selectedEvent.created_user = this.$auth.$state.user.name;
+          //     this.selectedEvent.event_level_id = parm.event_level_id;
+          //     this.selectedEvent.event_category_id= parm.event_category_id;
+          //     this.selectedEvent.title = parm.title;
+          //     this.selectedEvent.content = parm.content;
+          //     this.selectedEvent.is_all_day = parm.is_all_day;
+          //     this.selectedEvent.stime = `${(this.edited.is_all_day)?'00:00':this.edited.stime}`;
+          //     this.selectedEvent.etime = `${(this.edited.is_all_day)?'00:00':this.edited.etime}`;
+          //     this.$toast.success(`修改成功`, { duration: 2000 });
+          //   }else{
+          //     this.$toast.error(`資料修改失敗:${res.data}`, { duration: 2000 });
+          //   }
+          //   console.log("event api:", res.request.responseURL);
+          // })
+          // .catch(err => {
+          //   this.$toast.error(`資料修改失敗:${err.message}`, { duration: 2000 });
+          // });
           this.getEventData();//更新畫面資料
         }
       }
@@ -1196,38 +1263,46 @@ export default {
       if (confirm(`是否刪除?[會刪除所有事件範圍：${this.selectedEvent.items.map(x=>x.name).join()}]`)==false) {
         return;
       }
-      await this.$axios
-        .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${id}`)
-        .then(res => {
-          if (res.data=="刪除成功") {
+      var res = false;
+      res = await this.deleteEventList(id);
+      setTimeout(()=>{
+          if(res) {
             this.selectedOpen = false;
-            this.$toast.success(`刪除成功`, { duration: 2000 });
-          }else{
-            this.$toast.error(`資料刪除失敗:${res.data}`, { duration: 2000 });
           }
           this.getEventData();//更新畫面資料
-          console.log("event api:", res.request.responseURL);
-        })
-        .catch(err => {
-          this.$toast.error(`資料刪除失敗:${err.message}`, { duration: 2000 });
-        });
+      },50)
+      // await this.$axios
+      //   .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${id}`)
+      //   .then(res => {
+      //     if (res.data=="刪除成功") {
+      //       this.selectedOpen = false;
+      //       this.$toast.success(`刪除成功`, { duration: 2000 });
+      //     }else{
+      //       this.$toast.error(`資料刪除失敗:${res.data}`, { duration: 2000 });
+      //     }
+      //     this.getEventData();//更新畫面資料
+      //     console.log("event api:", res.request.responseURL);
+      //   })
+      //   .catch(err => {
+      //     this.$toast.error(`資料刪除失敗:${err.message}`, { duration: 2000 });
+      //   });
     },
 
-    addEventData:async function(){
-      await this.$axios
-              .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,parm)
-              .then(res => {
-                if (res.data=="新增成功") {
-                  this.$toast.success(`新增成功`, { duration: 2000 });
-                }else{
-                  this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
-                }
-                console.log("event api:", res.request.responseURL);
-              })
-              .catch(err => {
-                this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
-              });
-    }
+    // addEventData:async function(){
+    //   await this.$axios
+    //           .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,parm)
+    //           .then(res => {
+    //             if (res.data=="新增成功") {
+    //               this.$toast.success(`新增成功`, { duration: 2000 });
+    //             }else{
+    //               this.$toast.error(`資料新增失敗:${res.data}`, { duration: 2000 });
+    //             }
+    //             console.log("event api:", res.request.responseURL);
+    //           })
+    //           .catch(err => {
+    //             this.$toast.error(`資料新增失敗:${err.message}`, { duration: 2000 });
+    //           });
+    // }
   },
   computed: {
     events: function() {

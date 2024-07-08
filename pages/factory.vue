@@ -785,14 +785,17 @@ export default {
     },
     getpoolstat: async function() {
       //取得池狀態清單
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
-        .then(res => {
-          this.poolstat = res.data.filter(x => x.name_ch != ""); //不提供保留項;
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
+      let getPondStateList = await this.getPondStateList();
+      let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
+      this.poolstat = data.filter(x => x.name_ch != "");
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
+      //   .then(res => {
+      //     this.poolstat = res.data.filter(x => x.name_ch != ""); //不提供保留項;
+      //   })
+      //   .catch(error => {
+      //     alert("error:" + error.message);
+      //   });
     },
     getPoolData: async function() {
       if(this.nowSetting=='pool') {
@@ -806,26 +809,30 @@ export default {
         var para = {
           id: this.sel_area
         };
-
-        await this.$axios
-          .get(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
-            { params: para },
-            { httpsAgent: agent }
-          )
-          .then(res => {
-            console.log("API:" + res.request.responseURL);
-            pool = res.data;
-          })
-          .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-            pool = [];
-          })
-          .finally(() => {
-            /* 不論失敗成功皆會執行 */ 
-            this.pooldata = pool;
-            this.nowpooldata = _.cloneDeep(pool);
-          });
+        let getPondDataList = await this.getPondDataList(para);
+        let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+        pool = data;
+        this.pooldata = pool;
+        this.nowpooldata = _.cloneDeep(pool);
+        // await this.$axios
+        //   .get(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
+        //     { params: para },
+        //     { httpsAgent: agent }
+        //   )
+        //   .then(res => {
+        //     console.log("API:" + res.request.responseURL);
+        //     pool = res.data;
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error("error:" + error, { duration: 2000 });
+        //     pool = [];
+        //   })
+        //   .finally(() => {
+        //     /* 不論失敗成功皆會執行 */ 
+        //     this.pooldata = pool;
+        //     this.nowpooldata = _.cloneDeep(pool);
+        //   });
       }else {
         this.getMapData();
       }
@@ -860,18 +867,22 @@ export default {
 
       }
       if(this.nowAreaId.factory_id!==null) {
-          await this.$axios
-            .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
-            .then(res => {
-              // this.ponds = res.data;
-              console.log('getData',res.data);
-              this.allData = res.data;
-              this.getLayoutData();
-              
-            })
-            .catch(error => {
-              // alert("error:" + error.message);
-            });
+        let getDiseaseList = await this.getDiseaseList(parm);
+        let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
+        this.allData = data;
+        this.getLayoutData();
+        // await this.$axios
+        //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
+        //   .then(res => {
+        //     // this.ponds = res.data;
+        //     console.log('getData',res.data);
+        //     this.allData = res.data;
+        //     this.getLayoutData();
+            
+        //   })
+        //   .catch(error => {
+        //     // alert("error:" + error.message);
+        //   });
       }    
       console.log("areas:" + this.areas,this.nowAreaId,this.nowAreaTag);
     },
@@ -913,23 +924,31 @@ export default {
         };
         switch (this.edititem.class) {
           case "main":
-            await this.$axios
-              .post(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/`, parm, {
-                httpsAgent: agent
-              })
-              .then(res => {
-                console.log("API:" + res.request.responseURL);
-                if (res.data == "新增成功") {
+            var res = false;
+            res = await this.postFactoryList(parm);
+            setTimeout(()=>{
+                if(res) {
                   this.dialog.main = false;
                   this.getmain();
-                  this.$toast.success("新增成功", { duration: 2000 });
-                } else {
-                  this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
                 }
-              })
-              .catch(error => {
-                this.$toast.error("error:" + error, { duration: 2000 });
-              });
+            },50)
+            // await this.$axios
+            //   .post(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/`, parm, {
+            //     httpsAgent: agent
+            //   })
+            //   .then(res => {
+            //     console.log("API:" + res.request.responseURL);
+            //     if (res.data == "新增成功") {
+            //       this.dialog.main = false;
+            //       this.getmain();
+            //       this.$toast.success("新增成功", { duration: 2000 });
+            //     } else {
+            //       this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+            //     }
+            //   })
+            //   .catch(error => {
+            //     this.$toast.error("error:" + error, { duration: 2000 });
+            //   });
             break;
           case "area":
             parm = {
@@ -938,23 +957,31 @@ export default {
               factory_id: this.sel_main,
               created_user: updUser
             };
-            await this.$axios
-              .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/`, parm, {
-                httpsAgent: agent
-              })
-              .then(res => {
-                console.log("API:" + res.request.responseURL);
-                if (res.data == "新增成功") {
+            var res = false;
+            res = await this.postPondAreaList(parm);
+            setTimeout(()=>{
+                if(res) {
                   this.dialog.main = false;
                   this.getmain();
-                  this.$toast.success("新增成功", { duration: 2000 });
-                } else {
-                  this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
                 }
-              })
-              .catch(error => {
-                this.$toast.error("error:" + error, { duration: 2000 });
-              });
+            },50)
+            // await this.$axios
+            //   .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/`, parm, {
+            //     httpsAgent: agent
+            //   })
+            //   .then(res => {
+            //     console.log("API:" + res.request.responseURL);
+            //     if (res.data == "新增成功") {
+            //       this.dialog.main = false;
+            //       this.getmain();
+            //       this.$toast.success("新增成功", { duration: 2000 });
+            //     } else {
+            //       this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+            //     }
+            //   })
+            //   .catch(error => {
+            //     this.$toast.error("error:" + error, { duration: 2000 });
+            //   });
             break;
           default:
             break;
@@ -966,24 +993,33 @@ export default {
         };
         switch (this.edititem.class) {
           case "main":
-            await this.$axios
-              .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/${id}/`, parm, {
-                httpsAgent: agent
-              })
-              .then(res => {
-                console.log("API:" + res.request.responseURL);
-                if (res.data == "修改成功") {
+            var res = false;
+            res = await this.patchFactoryList(parm,id);
+            setTimeout(()=>{
+                if(res) {
                   this.dialog.main = false;
                   this.getmain();
                   this.sel_main = "";
-                  this.$toast.success("修改成功", { duration: 2000 });
-                } else {
-                  this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
                 }
-              })
-              .catch(error => {
-                this.$toast.error("error:" + error, { duration: 2000 });
-              });
+            },50)
+            // await this.$axios
+            //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/${id}/`, parm, {
+            //     httpsAgent: agent
+            //   })
+            //   .then(res => {
+            //     console.log("API:" + res.request.responseURL);
+            //     if (res.data == "修改成功") {
+            //       this.dialog.main = false;
+            //       this.getmain();
+            //       this.sel_main = "";
+            //       this.$toast.success("修改成功", { duration: 2000 });
+            //     } else {
+            //       this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+            //     }
+            //   })
+            //   .catch(error => {
+            //     this.$toast.error("error:" + error, { duration: 2000 });
+            //   });
             break;
           case "area":
             parm = {
@@ -991,25 +1027,35 @@ export default {
               name: this.edititem.value,
               updated_user: updUser
             };
-            await this.$axios
-              .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/${id}/`, parm, {
-                httpsAgent: agent
-              })
-              .then(res => {
-                console.log("API:" + res.request.responseURL);
-                if (res.data == "修改成功") {
+            var res = false;
+            res = await this.patchPondAreaList(parm,id);
+            setTimeout(()=>{
+                if(res) {
                   this.dialog.main = false;
                   this.getmain();
                   this.sel_main = "";
                   this.sel_area = "";
-                  this.$toast.success("修改成功", { duration: 2000 });
-                } else {
-                  this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
                 }
-              })
-              .catch(error => {
-                this.$toast.error("error:" + error, { duration: 2000 });
-              });
+            },50)
+            // await this.$axios
+            //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/${id}/`, parm, {
+            //     httpsAgent: agent
+            //   })
+            //   .then(res => {
+            //     console.log("API:" + res.request.responseURL);
+            //     if (res.data == "修改成功") {
+            //       this.dialog.main = false;
+            //       this.getmain();
+            //       this.sel_main = "";
+            //       this.sel_area = "";
+            //       this.$toast.success("修改成功", { duration: 2000 });
+            //     } else {
+            //       this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+            //     }
+            //   })
+            //   .catch(error => {
+            //     this.$toast.error("error:" + error, { duration: 2000 });
+            //   });
             break;
           default:
             break;
@@ -1125,43 +1171,72 @@ export default {
         switch (location) {
           case "main":
             id = this.sel_main;
-            apiUrl = "factory";
+            // apiUrl = "factory";
+            var res = false;
+            res = await this.deleteFactoryList(id);
+            setTimeout(()=>{
+                if(res) {
+                  this.getmain();
+                  this.sel_main = "";
+                  this.sel_area = "";
+                }
+            },50)
             break;
           case "area":
             id = this.sel_area;
-            apiUrl = "pond-area";
+            // apiUrl = "pond-area";
+            var res = false;
+            res = await this.deletePondAreaList(id);
+            setTimeout(()=>{
+                if(res) {
+                  this.getmain();
+                  this.sel_main = "";
+                  this.sel_area = "";
+                }
+            },50)
             break;
           case "pool":
             // id = this.sel_pool;
             id = _.cloneDeep(this.pooldata.filter(x=>x.name==value)[0].id);
-            apiUrl = "pond";
+            // apiUrl = "pond";
+            var res = false;
+            res = await this.deletePondList(id);
+            setTimeout(()=>{
+                if(res) {
+                  this.getmain();
+                  this.sel_main = "";
+                  this.sel_area = "";
+                  this.sel_pool = "";
+                  this.getPoolData(); //重取得清單
+                }
+            },50)
             break;
           default:
             break;
         }
-        await this.$axios
-          .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/${apiUrl}/${id}`, {
-            httpsAgent: agent
-          })
-          .then(res => {
-            console.log("API:" + res.request.responseURL);
-            if (res.data == "刪除成功") {
-              this.getmain();
-              this.sel_main = "";
-              this.sel_area = "";
+        // await this.$axios
+        //   .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/${apiUrl}/${id}`, {
+        //     httpsAgent: agent
+        //   })
+        //   .then(res => {
+        //     console.log("API:" + res.request.responseURL);
+        //     if (res.data == "刪除成功") {
+        //       this.getmain();
+        //       this.sel_main = "";
+        //       this.sel_area = "";
 
-              if (location == "pool") {
-                this.sel_pool = "";
-                this.getPoolData(); //重取得清單
-              }
-              this.$toast.success("刪除成功", { duration: 2000 });
-            } else {
-              this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
-            }
-          })
-          .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-          });
+        //       if (location == "pool") {
+        //         this.sel_pool = "";
+        //         this.getPoolData(); //重取得清單
+        //       }
+        //       this.$toast.success("刪除成功", { duration: 2000 });
+        //     } else {
+        //       this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error("error:" + error, { duration: 2000 });
+        //   });
       }
     },
     poolsubmit: async function(data) {
@@ -1171,22 +1246,30 @@ export default {
           //新增池
           this.edititem_pool.parm.created_user = user;
           var parm = this.edititem_pool.parm;
-          await this.$axios
-            .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`, parm)
-            .then(res => {
-              console.log("API:" + res.request.responseURL);
-              if (res.data == "新增成功") {
+          var res = false;
+          res = await this.postPondList(parm);
+          setTimeout(()=>{
+              if(res) {
                 this.getPoolData(); //重取得養殖池資料
                 this.dialog.pool = false; //close dialog
-                this.$toast.success(`新增成功`, { duration: 2000 });
-              } else {
-                 this.$toast.error(`新增失敗:${res.data}`, { duration: 3000 });
-
               }
-            })
-            .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-            });
+          },50)
+          // await this.$axios
+          //   .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`, parm)
+          //   .then(res => {
+          //     console.log("API:" + res.request.responseURL);
+          //     if (res.data == "新增成功") {
+          //       this.getPoolData(); //重取得養殖池資料
+          //       this.dialog.pool = false; //close dialog
+          //       this.$toast.success(`新增成功`, { duration: 2000 });
+          //     } else {
+          //        this.$toast.error(`新增失敗:${res.data}`, { duration: 3000 });
+
+          //     }
+          //   })
+          //   .catch(error => {
+          //     this.$toast.error("error:" + error, { duration: 2000 });
+          //   });
         } else {
           //編輯池
           this.edititem_pool.parm.updated_user = user;
@@ -1196,21 +1279,29 @@ export default {
               ? ""
               : this.edititem_pool.parm.video_url;
           var parm = this.edititem_pool.parm;
-          await this.$axios
-            .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/${id}/`, parm)
-            .then(res => {
-              console.log("API:" + res.request.responseURL);
-              if (res.data == "修改成功") {
+          var res = false;
+          res = await this.patchPondList(parm,id);
+          setTimeout(()=>{
+              if(res) {
                 this.getPoolData(); //重取得養殖池資料
                 this.dialog.pool = false; //close dialog
-                this.$toast.success(`修改成功`, { duration: 2000 });
-              } else {
-                alert("修改失敗!：" + res.data);
               }
-            })
-            .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-            });
+          },50)
+          // await this.$axios
+          //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/${id}/`, parm)
+          //   .then(res => {
+          //     console.log("API:" + res.request.responseURL);
+          //     if (res.data == "修改成功") {
+          //       this.getPoolData(); //重取得養殖池資料
+          //       this.dialog.pool = false; //close dialog
+          //       this.$toast.success(`修改成功`, { duration: 2000 });
+          //     } else {
+          //       alert("修改失敗!：" + res.data);
+          //     }
+          //   })
+          //   .catch(error => {
+          //     this.$toast.error("error:" + error, { duration: 2000 });
+          //   });
         }
       }else{
               this.$toast.error(`尚有參數未填`, { duration: 2000 });
@@ -1218,21 +1309,24 @@ export default {
       console.log(this.edititem_pool.parm);
     },
     getipdata: async function () {
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`)
-        .then(res => {
-          this.ipdata = res.data;
-          console.log("API ipdata:" + res.request.responseURL);
+      let getDeviceSettingList = await this.getDeviceSettingList();
+      let data = typeof (getDeviceSettingList)=='string'?[]:getDeviceSettingList;
+      this.ipdata = data;
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`)
+      //   .then(res => {
+      //     this.ipdata = res.data;
+      //     console.log("API ipdata:" + res.request.responseURL);
 
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-          pool = [];
-        })
-        .finally(() => {
-          /* 不論失敗成功皆會執行 */
-        });
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //     pool = [];
+      //   })
+      //   .finally(() => {
+      //     /* 不論失敗成功皆會執行 */
+      //   });
     },
     updateip: async function(){
       var input_ipadminpwd = md5(this.ipadminpwd);
@@ -1243,39 +1337,55 @@ export default {
           var parm = this.editedip_content;
           //新增 找不到之前新增的id
           if(this.selected_ip==undefined){
-            await this.$axios
-            .post(apiurl,parm)
-            .then(res => {
-              console.log("API:" + res.request.responseURL);
-              if (res.data == "新增成功") {
-                this.getipdata();//re get data
-                this.dialog.ip = false; //close dialog
-                this.$toast.success(`新增成功`, { duration: 2000 });
-              } else {
-                 this.$toast.error(`新增失敗:${res.data}`, { duration: 3000 });
-              }
-            })
-            .catch(error => {
-              this.$toast.error("error:" + error, { duration: 2000 });
-            });
+            var res = false;
+            res = await this.postDeviceSettingList(parm);
+            setTimeout(()=>{
+                if(res) {
+                  this.getipdata();//re get data
+                  this.dialog.ip = false; //close dialog
+                }
+            },50)
+            // await this.$axios
+            // .post(apiurl,parm)
+            // .then(res => {
+            //   console.log("API:" + res.request.responseURL);
+            //   if (res.data == "新增成功") {
+            //     this.getipdata();//re get data
+            //     this.dialog.ip = false; //close dialog
+            //     this.$toast.success(`新增成功`, { duration: 2000 });
+            //   } else {
+            //      this.$toast.error(`新增失敗:${res.data}`, { duration: 3000 });
+            //   }
+            // })
+            // .catch(error => {
+            //   this.$toast.error("error:" + error, { duration: 2000 });
+            // });
             return;
           }
           //修改
           var id = this.selected_ip.id;
-          await this.$axios
-          .patch(`${apiurl}${id}/`,parm)
-          .then(res => {
-            if(res.data=='修改成功'){
-              this.getipdata();//re get data
-              this.dialog.ip = false;
-              this.$toast.success('修改成功', { duration: 2000 });
-            }else{
-              this.$toast.error('修改失敗'+ res.data, { duration: 5000 });
-            }
-          })
-          .catch(error => {
-            this.$toast.error('error:'+ error.message, { duration: 2000 });
-          });
+          var res = false;
+          res = await this.patchDeviceSettingList(parm,id);
+          setTimeout(()=>{
+              if(res) {
+                this.getipdata();//re get data
+                this.dialog.ip = false;
+              }
+          },50)
+          // await this.$axios
+          // .patch(`${apiurl}${id}/`,parm)
+          // .then(res => {
+          //   if(res.data=='修改成功'){
+          //     this.getipdata();//re get data
+          //     this.dialog.ip = false;
+          //     this.$toast.success('修改成功', { duration: 2000 });
+          //   }else{
+          //     this.$toast.error('修改失敗'+ res.data, { duration: 5000 });
+          //   }
+          // })
+          // .catch(error => {
+          //   this.$toast.error('error:'+ error.message, { duration: 2000 });
+          // });
           
 
         }else{

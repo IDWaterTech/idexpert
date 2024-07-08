@@ -385,6 +385,424 @@ Vue.mixin({
                 return [];
             }
         },
-        
+        // 取得分析圖表資料
+        getAnalyzeDataList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`, { params: parm })
+                console.log("分析圖表:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得飼料事件
+        getFeedEventList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
+                console.log("事件清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增飼料事件
+        postFeedEventList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`,addform,)
+                console.log("新增事件:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改飼料事件
+        patchFeedEventList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`,parm)
+                console.log("修改事件:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除飼料事件清單
+        deleteFeedEventList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/${id}/`)
+                console.log("刪除飼料事件:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得警戒等級
+        getEventLevelList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-level/`)
+                console.log("警戒等級清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得事件類型
+        getEventCatagoryList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
+                console.log("事件類型清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增事件
+        postEventList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/event/`,addform,)
+                console.log("新增事件:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改事件
+        patchEventList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${id}/`,parm,)
+                console.log("修改事件:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除事件
+        deleteEventList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/event/${id}`)
+                console.log("刪除事件:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 地圖資料
+        getMapList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`, { params: parm })
+                console.log("地圖資料清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("事件錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增場
+        postFactoryList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/`,addform,)
+                console.log("新增場:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改場
+        patchFactoryList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/${id}/`,parm,)
+                console.log("修改場:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除場
+        deleteFactoryList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/${id}/`)
+                console.log("刪除場:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增區
+        postPondAreaList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/`,addform,)
+                console.log("新增區:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改區
+        patchPondAreaList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/${id}/`,parm,)
+                console.log("修改區:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除區
+        deletePondAreaList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-area/${id}/`)
+                console.log("刪除區:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增池
+        postPondList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`,addform,)
+                console.log("新增池:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改池
+        patchPondList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/${id}/`,parm,)
+                console.log("修改池:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除池
+        deletePondList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/${id}/`)
+                console.log("刪除池:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 取得ip清單
+        getDeviceSettingList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`)
+                console.log("ip清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增ip
+        postDeviceSettingList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`,addform,)
+                console.log("新增ip:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改ip
+        patchDeviceSettingList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/${id}/`,parm,)
+                console.log("修改ip:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
 	}
 })

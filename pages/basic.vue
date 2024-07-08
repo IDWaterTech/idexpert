@@ -665,15 +665,18 @@ export default {
         rejectUnauthorized: false
       });
       //取得池況顏色設定
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
-        .then(res => {
-          console.log('getColor',res.data);
-          this.statcolor = res.data;
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
+      let getPondStateList = await this.getPondStateList();
+      let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
+      this.statcolor = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
+      //   .then(res => {
+      //     console.log('getColor',res.data);
+      //     this.statcolor = res.data;
+      //   })
+      //   .catch(error => {
+      //     alert("error:" + error.message);
+      //   });
     },
     get_scopeData:function(evt){
       console.log('get_scopeData-evt:',evt);//紫微_10026
