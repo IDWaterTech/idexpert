@@ -267,7 +267,7 @@ export default {
       @include flexAllCenter();
       margin-bottom: 48px;
       .title {
-        color: #006AA6;
+        color: $color-primary;
         h3 {
           // margin-top: -12px;
           color: $color-primary;

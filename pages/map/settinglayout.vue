@@ -1136,32 +1136,32 @@ export default {
                 .confirm {
                     transition: all 0.3s;
                     &:hover {
-                        background-color: lighten($color: #006AA6, $amount: 2);
+                        background-color: lighten($color: $color-primary, $amount: 2);
                     }
                     &.close {
-                        background-color: #A60017;
+                        background-color: $color-accent;
                         &:hover {
-                            background-color: lighten($color: #A60017, $amount: 2);
+                            background-color: lighten($color: $color-accent, $amount: 2);
                         }
                     }
                     
                 }
                 .col-row-plus,.col-row-minus {
                     @include size(24px);
-                    color: #A60017;
-                    border: 1px solid #A60017;
+                    color: $color-accent;
+                    border: 1px solid $color-accent;
                     margin: 2px;
                     border-radius: 12px;
                     transition: all 0.3s;
                     &:hover {
-                        background-color: rgba(#A60017,0.25);
+                        background-color: rgba($color-accent,0.25);
                     }
                 }
                 .col-row-plus {
-                    color: #006AA6;
-                    border-color: #006AA6;
+                    color: $color-primary;
+                    border-color: $color-primary;
                     &:hover {
-                        background-color: rgba(#006AA6,0.25);
+                        background-color: rgba($color-primary,0.25);
                     }
                 }
                 .edit i {
@@ -1174,7 +1174,7 @@ export default {
     .title-col {
         @include flexCenterBetween();
         padding: 4px;
-        border: 1px solid rgba(#00273E,0.5);
+        border: 1px solid rgba($color-dark,0.5);
         border-radius: 4px;
         // width: 120px;
     }
@@ -1276,13 +1276,13 @@ export default {
             button {
                 padding: 8px 16px;
                 margin: 4px;
-                background-color: #006AA6;
+                background-color: $color-primary;
                 color: #fff;
                 border-radius: 4px;
                 &.cancel {
                     background-color: #fff;
-                    border: 1px solid #006AA6;
-                    color: #006AA6;
+                    border: 1px solid $color-primary;
+                    color: $color-primary;
                 }
             }
         }
@@ -1295,7 +1295,7 @@ export default {
                     margin-top: 0;
                 }
                 .v-select__selection--comma {
-                    color: #6c9bcd;
+                    color: $color-form;
                 }
                 .select-area .theme--light.v-label, .select-area .theme--light.v-icon, .select-area .theme--light.v-input {
                     margin-top: 0;
@@ -1304,7 +1304,7 @@ export default {
             }
         }
         .note {
-            color: #A60017;
+            color: $color-accent;
         }
         
     }

@@ -417,14 +417,14 @@
       color: #00273E;
       }
       .theme--light.v-label,.theme--light.v-icon,.theme--light.v-input {
-          color: #6c9bcd;
+          color: $color-form;
       }
       // .theme--light.v-input {
       //     margin-top: 0;
       // }
       .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
       
-          border-color: #6c9bcd;
+          border-color: $color-form;
       }
   }
   </style>

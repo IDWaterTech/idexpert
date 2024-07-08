@@ -337,9 +337,9 @@
                           <div v-show="nowTab=='觀察網資訊'" class="result-content">
                             <!-- 紀錄清單 -->
                             <div class="result-list">
-                              <v-card class="result-card box-shadow-none border-bottom" style="border-radius: 0;">
+                              <div class="box-shadow-none border-bottom" style="border-radius: 0;">
                                 <div class="added" style="display: flex;justify-content: space-between;">
-                                  <div class="card-title"  @click="listOpen = !listOpen" style="cursor: pointer;margin: 0;padding: 0;">
+                                  <div class="card-title"  @click="listOpen = !listOpen" style="cursor: pointer;margin: 0;padding: 0;border-bottom: none;">
                                     <div class="title">
                                         <v-card-title style="padding: 8px;font-size: 16px;">紀錄清單</v-card-title>
                                     </div>
@@ -351,7 +351,7 @@
                                   <v-btn v-if="nowTab=='觀察網資訊'" class="btn-secondary green" :class="{'disabled':optData.length==0}" style="float:right" @click="editObservable('add')"><v-icon>mdi-plus</v-icon>新增</v-btn>
                                 </div>
                                 
-                              </v-card>
+                              </div>
                             </div>
                             <v-data-table
                               v-if="listOpen"
@@ -365,7 +365,7 @@
                                   {{ item.is_shell?'是':'否' }}
                               </template> -->
                               <template v-slot:[`item.img`]="{ item }">
-                                  <img v-img="{ group: item.id }" v-for="(img,i) in item.img" :key="i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
+                                <img v-img="{ group: item.shrimp_id }" v-for="(img,i) in item.img" :key="item.shrimp_id+'_'+i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
                               </template>
                               <template v-slot:[`item.intestinal_color`]="{ item }">
                                 <div v-if="item.numOfColor.IntestinalColor.length>0">
@@ -437,13 +437,13 @@
                             </v-data-table>
                             <!-- 圖表 -->
                             <div v-if="observableData.length>0&&chartShow" class="result-list">
-                              <v-card class="result-card box-shadow-none border-bottom" style="border-radius: 0;">
-                                <div class="card-title" style="cursor: pointer;margin: 0;padding: 0;">
+                              <div class="box-shadow-none border-bottom" style="border-radius: 0;">
+                                <div class="card-title" style="cursor: pointer;margin: 0;padding: 0;border-bottom: none;">
                                     <div class="title">
                                         <v-card-title style="padding: 8px;font-size: 16px;">圖表</v-card-title>
                                     </div>
                                 </div>
-                              </v-card>
+                              </div>
                             </div>
                             <v-row v-if="observableData.length>0&&chartShow" style="width: 100%;overflow-x:scroll;">
                               <!-- <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeLineData" :key="'chart_'+item.name_en+id">
@@ -1197,9 +1197,9 @@ export default {
       // select
       nowArea:'',
       observableHeaders:[
-        {groupable: false,text: "檢測時間",value: "inspected_time",width:"10%", sortable: true},
+        {groupable: false,text: "檢測時間",value: "inspected_time",width:"15%", sortable: true},
         //{groupable: false,text: "池",value: "pond",width:"5%", sortable: false },
-        {groupable: false,text: "觀察網隻數",value: "observation_qty",width:"8%", sortable: false },
+        {groupable: false,text: "觀察網隻數",value: "observation_qty",width:"6%", sortable: false },
         {groupable: false,text: "蝦子重量(g)",value: "shrimp_weight",width:"6%", sortable: false },
         {groupable: false,text: "觀察網殘餌量(g)",value: "feed_amount",width:"7%", sortable: false },
         {groupable: false,text: "腸線顏色",value: "intestinal_color",width:"5%", sortable: false },
@@ -3125,13 +3125,13 @@ export default {
     overflow: hidden;
     margin-bottom: 24px;
     * {
-      color: #00273E;
+      color: $color-dark;
     }
     button.v-icon, button.v-btn--icon .v-icon {
-      color: #006AA6;
+      color: $color-primary;
     }
     .red--text {
-      color: #A60017 !important;
+      color: $color-accent !important;
     }
     .card-title,.content {
       padding: 12px 24px;
@@ -3143,7 +3143,7 @@ export default {
       .title {
         @include flexAlignCenter();
         .theme--light.v-icon {
-          color: #6c9bcd;
+          color: $color-form;
         }
       }
     }
@@ -3166,10 +3166,10 @@ export default {
           }
         }
         .theme--light.v-btn.v-btn--disabled .v-icon {
-          color: #BFCBD2 !important;
+          color: $color-dark-25 !important;
         }
         .theme--light.v-btn.v-btn--disabled .v-btn__loading,.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
-          background-color: #BFCBD2 !important;
+          background-color: $color-dark-25 !important;
         }
       }
     }
@@ -3195,22 +3195,22 @@ export default {
 ::v-deep {
   .select-color{
     &.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-      border-color: #6c9bcd;
+      border-color: $color-form;
     }
     & .theme--light.v-input input, &.theme--light.v-input textarea,& .theme--light.v-label {
       color: #00273E;
     }
     & .theme--light.v-label.v-label--active {
-      color: #6c9bcd;
+      color: $color-form;
     }
     & .v-icon.v-icon {
-      color: #6c9bcd;
+      color: $color-form;
     }
     & .v-select__selection--comma,.theme--light.v-select .v-select__selections {
       color: #00273E;
     }
     & .v-select__slot {
-      border-color: #6c9bcd;
+      border-color: $color-form;
     }
   }
   .edit-table {
@@ -3221,10 +3221,10 @@ export default {
       min-height: 21vh;
     }
     input[type="checkbox"] {
-      accent-color: #006AA6;
+      accent-color: $color-primary;
     }
     .v-input--selection-controls.v-input--is-disabled:not(.v-input--indeterminate) .v-icon {
-      color: #BFCBD2;
+      color: $color-dark-25;
     }
   }
   .edit-disabled {
@@ -3233,8 +3233,8 @@ export default {
       border: none;
     }
     &.theme--light.v-text-field--filled > .v-input__control > .v-input__slot,&.theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
-      background: #BFCBD2;
-      color: #7F98A6;
+      background: $color-dark-25;
+      color: $color-dark-50;
     }
     &.v-text-field .v-input__slot {
       border-radius: 4px;
@@ -3295,7 +3295,7 @@ export default {
   background: none !important; 
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #BFD9E8 !important;
+  background-color: $color-primary-25 !important;
 }     
       
 // div /deep/ .el-input__inner{

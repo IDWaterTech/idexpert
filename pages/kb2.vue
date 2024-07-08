@@ -4617,11 +4617,11 @@ export default {
             }
         }
         .v-card.result-card {
-            background-color: #E6F5FA;
+            background-color: $color-lighten;
             box-shadow: 0px 0px 10px 0px $color-black-10;
             margin: 0 2px;
             .theme--light.v-card {
-                background-color: #E6F5FA;
+                background-color: $color-lighten;
             }
             .card-title {
                 padding: 4px 16px;
@@ -4708,7 +4708,7 @@ export default {
                     background-color: transparent;
                 }
                 .theme--light.v-expansion-panels .v-expansion-panel-header {
-                    background-color: #BFD9E8;
+                    background-color: $color-primary-25;
                     font-weight: bold;
                     padding: 12px 8px !important;
                     .v-expansion-panel-header__icon .v-icon {

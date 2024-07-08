@@ -562,14 +562,14 @@
     color: #00273E;
     }
     .theme--light.v-label,.theme--light.v-icon,.theme--light.v-input {
-        color: #6c9bcd;
+        color: $color-form;
     }
     // .theme--light.v-input {
     //     margin-top: 0;
     // }
     .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
     
-        border-color: #6c9bcd;
+        border-color: $color-form;
     }
     .input-pool {
         input,.update-time,.theme--light.v-label,.theme--light.v-icon,.theme--light.v-input {
@@ -610,7 +610,7 @@
             cursor: pointer;
             color: rgba(0, 0, 0, 0.54);
             &.edit-action {
-                color:#6c9bcd;
+                color:$color-form;
             }
         }
     }
@@ -645,12 +645,12 @@
         .confirm {
             @include size(24px);
             border-radius: 4px;
-            background-color: #006AA6;
+            background-color: $color-primary;
             float: right;
             box-shadow: 0 0 5px rgba(0,0,0,0.15);
             transition: 0.3s;
             &:hover {
-                background-color: lighten($color: #006AA6, $amount: 1.5);
+                background-color: lighten($color: $color-primary, $amount: 1.5);
             }
             .theme--light.v-icon {
                 color: #fff;
@@ -685,7 +685,7 @@
             margin-top: 0;
         }
         .v-select__selection--comma {
-            color: #6c9bcd;
+            color: $color-form;
             font-size: 16px;
             margin-bottom: 4px;
         }
@@ -714,7 +714,7 @@
         padding-left: 8px;
     }
     .v-input--is-disabled .v-select__selection--comma {
-        color: #7F98A6;
+        color: $color-dark-50;
     }
     .v-select.v-input--is-disabled:not(.v-input--is-readonly):not(.v-autocomplete) {
         padding-top: 16px;
@@ -732,7 +732,7 @@
         .vue-treeselect__control {
             border: none;
             border-radius: 0;
-            border-bottom: 1px solid #6c9bcd;
+            border-bottom: 1px solid $color-form;
         .vue-treeselect__placeholder {
             color: #00273E;
             &::before {
@@ -743,14 +743,14 @@
             }
         }
         .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-            color: #6c9bcd;
+            color: $color-form;
         }
         .vue-treeselect__x-container {
             display: none;
         }
         }
         .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover {
-            border-color: #6c9bcd;
+            border-color: $color-form;
         }
         .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused {
             font-size: 14px;
@@ -758,7 +758,7 @@
         }
         .label-select {
             font-size: 10px;
-            color: #6c9bcd !important;
+            color: $color-form !important;
             position: absolute;
             left: 6px;
             top: -12px;
@@ -775,7 +775,7 @@
     background: none; 
 }
 ::-webkit-scrollbar-thumb {
-    background-color: #BFD9E8;
+    background-color: $color-primary-25;
 }
 // ::-webkit-scrollbar-button {
 //     border-radius: 4px;

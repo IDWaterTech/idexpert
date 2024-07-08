@@ -1018,7 +1018,7 @@ export default {
   .v-card.result-card {
     padding: 12px;
     padding-bottom: 8px;
-    background-color: #E6F5FA;
+    background-color: $color-lighten;
     .card-title {
       @include flexAlignCenter();
       width: 100%;
@@ -1033,10 +1033,10 @@ export default {
             font-size: 1rem;
         }
         .theme--light.v-icon {
-            color: #006AA6;
+            color: $color-primary;
         }
         .v-card__title {
-            color: #006AA6;
+            color: $color-primary;
             font-size: 1rem;
             padding: 8px;
         }

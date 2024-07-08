@@ -1472,7 +1472,7 @@ export default {
   .v-card.result-card {
     padding: 12px 24px;
     padding-bottom: 8px;
-    background-color: #E6F5FA;
+    background-color: $color-lighten;
     .data-time {
       @include flexAlignCenter();
     }

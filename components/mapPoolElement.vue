@@ -197,12 +197,12 @@ export default {
       .confirm {
         @include size(24px);
         border-radius: 4px;
-        background-color: #006AA6;
+        background-color: $color-primary;
         float: right;
         box-shadow: 0 0 5px rgba(0,0,0,0.15);
         transition: 0.3s;
         &:hover {
-          background-color: lighten($color: #006AA6, $amount: 1.5);
+          background-color: lighten($color: $color-primary, $amount: 1.5);
         }
         .theme--light.v-icon {
           color: #fff;
