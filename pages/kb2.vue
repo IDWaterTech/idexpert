@@ -2514,10 +2514,9 @@
                                                                     <v-row class="item-row item">
                                                                         <v-col cols="12" md="6" sm="6">
                                                                             <span class="pa-0 ma-0"
-                                                                                slot="prepend">單餐砂糖量<v-btn class="ma-0"
-                                                                                    text icon color="red lighten-2"
+                                                                                slot="prepend">單餐砂糖量<v-btn class="ma-0 btn-icon just-icon"
                                                                                     @click="sugerdlg = !sugerdlg">
-                                                                                    <v-icon>mdi-message-text</v-icon>
+                                                                                    <v-icon style="font-size: 1.25rem;">mdi-message-text</v-icon>
                                                                                 </v-btn>
                                                                             </span>
                                                                             <v-dialog v-model='sugerdlg' width="500">
@@ -4595,7 +4594,7 @@ export default {
         * {
             color: $color-dark;
         }
-        button.v-icon.mdi-calendar,button.v-icon.mdi-timeline-clock-outline {
+        button.v-icon {
             color: $color-primary;
         }
         .content {
