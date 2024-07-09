@@ -877,17 +877,20 @@ export default {
       //   });
     },
     getorg: async function() {
-      await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`,
-          {
-            httpsAgent: agent
-          }
-        )
-        .then(res => {
-          this.options = res.data;
-          console.log("api：" + res.request.responseURL);
-        });
+      let getOrganizationList = await this.getOrganizationList();
+      let data = typeof (getOrganizationList)=='string'?[]:getOrganizationList;
+      this.options = data;
+      // await this.$axios
+      //   .get(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`,
+      //     {
+      //       httpsAgent: agent
+      //     }
+      //   )
+      //   .then(res => {
+      //     this.options = res.data;
+      //     console.log("api：" + res.request.responseURL);
+      //   });
     },
     getmainData: async function() {
       // await this.$axios
@@ -1053,30 +1056,39 @@ export default {
         sender:updUser,
         content:pcontent
       }
-      await this.$axios
-          .post(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/line-notify/`,
-            parm
-          )
-          .then(res => {
-            this.$toast.success(`發送結果：${(res.data=='發送結束')?'成功':res.data}`, {
-                  duration: 2000
-                });
-            switch (res.data) {
-              case "發送結束":
-                this.annDialog = false;
-                break;
-              default:
-                break;
-            }
-            console.log("發送api：" + res.request.responseURL);
-          })
-          .catch(error => {
-            this.$toast.success("發送失敗：" + error, { duration: 2000 });
-          })
-          .finally(() => {
-            this.annsubmitbtn = false;
-          });
+      let postLineNotifyList = await this.postLineNotifyList();
+      switch (postLineNotifyList) {
+        case "發送結束":
+          this.annDialog = false;
+          break;
+        default:
+          break;
+      }
+      this.annsubmitbtn = false;
+      // await this.$axios
+      //     .post(
+      //       `${this.$store.state.mydata.gobal_api.apiUrl}/line-notify/`,
+      //       parm
+      //     )
+      //     .then(res => {
+      //       this.$toast.success(`發送結果：${(res.data=='發送結束')?'成功':res.data}`, {
+      //             duration: 2000
+      //           });
+      //       switch (res.data) {
+      //         case "發送結束":
+      //           this.annDialog = false;
+      //           break;
+      //         default:
+      //           break;
+      //       }
+      //       console.log("發送api：" + res.request.responseURL);
+      //     })
+      //     .catch(error => {
+      //       this.$toast.success("發送失敗：" + error, { duration: 2000 });
+      //     })
+      //     .finally(() => {
+      //       this.annsubmitbtn = false;
+      //     });
     },
     showaddDialog: function() {
       if (this.$refs.form != undefined) {
@@ -1259,27 +1271,30 @@ export default {
     },
     getUser: async function(account,id) {
       let accheader = { account: account };
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
-          headers: accheader
-        })
-        .then(res => {
-          if (res.data != "帳號資料不存在") {
-            // console.log('getUser',res.data);
-            this.accdata[id].line_notify = res.data.is_personal_enable_line
+      let getPersinalSettingList = await this.getPersinalSettingList(accheader);
+      let data = typeof (getPersinalSettingList)=='string'?false:getPersinalSettingList;
+      this.accdata[id].line_notify = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
+      //     headers: accheader
+      //   })
+      //   .then(res => {
+      //     if (res.data != "帳號資料不存在") {
+      //       // console.log('getUser',res.data);
+      //       this.accdata[id].line_notify = res.data.is_personal_enable_line
             
-            // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
-          } else {
-            return false;
-            // this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      //       // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
+      //     } else {
+      //       return false;
+      //       // this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
   },
   async created() {

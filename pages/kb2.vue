@@ -3700,24 +3700,33 @@ export default {
         },
         getlightData:async function(){
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
-            await this.$axios.get(url).then(res => {
-                if(res.status==200){
-                    this.lightData = res.data;
-                    console.log(this.lightData)
-                    this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
-                    this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
-                    this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
-                    this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
-                    //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
-                    this.lightColor = Object.keys(res.data).reduce((a, v) => ({ ...a, [v]: 'teal'}), {}); 
-                    console.log("get lightData ok");
-                }else{
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
-            })
-            .catch(error=>{
-                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            });
+            let getWarningRangeList = await this.getWarningRangeList();
+            let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
+            this.lightData = data;
+            this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
+            this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
+            this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
+            this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
+            //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
+            this.lightColor = Object.keys(data).reduce((a, v) => ({ ...a, [v]: 'teal'}), {}); 
+            // await this.$axios.get(url).then(res => {
+            //     if(res.status==200){
+            //         this.lightData = res.data;
+            //         console.log(this.lightData)
+            //         this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
+            //         this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
+            //         this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
+            //         this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
+            //         //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
+            //         this.lightColor = Object.keys(res.data).reduce((a, v) => ({ ...a, [v]: 'teal'}), {}); 
+            //         console.log("get lightData ok");
+            //     }else{
+            //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+            //     }
+            // })
+            // .catch(error=>{
+            //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            // });
         },
         getsuggData:async function(){
             this.suggData = {
@@ -3731,44 +3740,68 @@ export default {
         },
         getOptData:async function(){
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
-            await this.$axios.get(url).then(res => {
-                if(res.status==200){
-                    this.optData = res.data;
-                    var keyLst = Object.keys(this.optData);
-                    keyLst.forEach(k=>{
-                        if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
-                            this.ObservationData[k] = _.cloneDeep(this.optData[k]);
-                            this.ObservationData[k].forEach(c=>{
-                                c.value=0;
-                            })
-                        }
-                        
+            let getFieldOtptionList = await this.getFieldOtptionList();
+            let data = typeof (getFieldOtptionList)=='string'?[]:getFieldOtptionList;
+            this.optData = data;
+            var keyLst = Object.keys(this.optData);
+            keyLst.forEach(k=>{
+                if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                    this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                    this.ObservationData[k].forEach(c=>{
+                        c.value=0;
                     })
-                    console.log('getOptData',this.optData);
-                }else{
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
                 }
+                
             })
-            .catch(error=>{
-                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            })
-            .finally(() => {
-                var isYN = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    //ObservationData
-                    this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    //BacteriaData
-                    this.optData.IsWSSV = _.cloneDeep(isYN);
-                    this.optData.IsEMSPlasmid = _.cloneDeep(isYN);
-                    this.optData.IsEMSToxin = _.cloneDeep(isYN);
-                    this.optData.IsEHP = _.cloneDeep(isYN);
-                    this.optData.IsTSV = _.cloneDeep(isYN);
-                    this.optData.IsIMNV = _.cloneDeep(isYN);
-                    this.optData.IsIHHNV = _.cloneDeep(isYN);
-                    // this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    // this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-                    // this.optData.IsVirusInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
-                    // this.optData.IsBacteriumInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
-                });
+            var isYN = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+            //ObservationData
+            this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+            //BacteriaData
+            this.optData.IsWSSV = _.cloneDeep(isYN);
+            this.optData.IsEMSPlasmid = _.cloneDeep(isYN);
+            this.optData.IsEMSToxin = _.cloneDeep(isYN);
+            this.optData.IsEHP = _.cloneDeep(isYN);
+            this.optData.IsTSV = _.cloneDeep(isYN);
+            this.optData.IsIMNV = _.cloneDeep(isYN);
+            this.optData.IsIHHNV = _.cloneDeep(isYN);
+            // await this.$axios.get(url).then(res => {
+            //     if(res.status==200){
+            //         this.optData = res.data;
+            //         var keyLst = Object.keys(this.optData);
+            //         keyLst.forEach(k=>{
+            //             if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+            //                 this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+            //                 this.ObservationData[k].forEach(c=>{
+            //                     c.value=0;
+            //                 })
+            //             }
+                        
+            //         })
+            //         console.log('getOptData',this.optData);
+            //     }else{
+            //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+            //     }
+            // })
+            // .catch(error=>{
+            //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            // })
+            // .finally(() => {
+            //     var isYN = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+            //         //ObservationData
+            //         this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+            //         //BacteriaData
+            //         this.optData.IsWSSV = _.cloneDeep(isYN);
+            //         this.optData.IsEMSPlasmid = _.cloneDeep(isYN);
+            //         this.optData.IsEMSToxin = _.cloneDeep(isYN);
+            //         this.optData.IsEHP = _.cloneDeep(isYN);
+            //         this.optData.IsTSV = _.cloneDeep(isYN);
+            //         this.optData.IsIMNV = _.cloneDeep(isYN);
+            //         this.optData.IsIHHNV = _.cloneDeep(isYN);
+            //         // this.optData.IsEMSInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+            //         // this.optData.IsEHPInfected = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+            //         // this.optData.IsVirusInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
+            //         // this.optData.IsBacteriumInfected = [{ "name_en": false, "name_ch": "否" }, { "name_en": true, "name_ch": "是" }];
+            //     });
         },
         async getAllUser() {
             let getuserData = await this.getUserList();
@@ -3796,65 +3829,109 @@ export default {
                 window.location.href='/login';
                 // return;
             }else {
-                await this.$axios.get(url, {params:allParm}).then(res => {
-                    if(res.status==200){
-                        this.querryData = res.data;
-                        this.querryDataLst = {};
-                        for(let i=0;i<this.querryData.length;i++) {
-                            this.allData.forEach(f=>{
-                                if(f.name == this.querryData[i].factory_name) {
-                                    f.node.forEach(a=>{
-                                        if(a.name == this.querryData[i].pond_area_name){
-                                            a.node.forEach(p=>{
-                                                if(p.name == this.querryData[i].pond_name) {
-                                                    if(!this.querryDataLst[p.id]) {
-                                                        this.querryDataLst[p.id] = [];
-                                                    }
-                                                    this.querryDataLst[p.id].push(this.querryData[i]);
-                                                }
-                                            })
+                let getQueryLogList = await this.getQueryLogList(allParm);
+                let data = typeof (getQueryLogList)=='string'?[]:getQueryLogList;
+                this.querryData = data;
+                this.querryDataLst = {};
+                for(let i=0;i<this.querryData.length;i++) {
+                    this.allData.forEach(f=>{
+                        if(f.name == this.querryData[i].factory_name) {
+                            f.node.forEach(a=>{
+                                if(a.name == this.querryData[i].pond_area_name){
+                                    a.node.forEach(p=>{
+                                        if(p.name == this.querryData[i].pond_name) {
+                                            if(!this.querryDataLst[p.id]) {
+                                                this.querryDataLst[p.id] = [];
+                                            }
+                                            this.querryDataLst[p.id].push(this.querryData[i]);
                                         }
-                                        
                                     })
                                 }
                                 
                             })
                         }
-                        this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
-                        console.log('querryData',this.querryData);
-                        console.log('querydatalst',this.querryDataLst);
-                        console.log('nowSelectDataLst',this.nowSelectDataLst);
-                        this.get_scopeData(this.nowSelectPool);
-                        if(isAdd) {
-                            let alldate = [];
-                            this.nowSelectDataLst.forEach(p=>{
-                                alldate.push(p.created_time);
-                            })
-                            let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
-                            this.querrySelected = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
-                            this.getSelectData(this.querrySelected);
-                            this.importQuerry();
-                        }
-                        if(this.windowWidth<959.58) {
-                            setTimeout(()=>{
-                                this.goAnchor('#aiwatermin');
-                            },100)
-                        }
+                        
+                    })
+                }
+                this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
+                console.log('querryData',this.querryData);
+                console.log('querydatalst',this.querryDataLst);
+                console.log('nowSelectDataLst',this.nowSelectDataLst);
+                this.get_scopeData(this.nowSelectPool);
+                if(isAdd) {
+                    let alldate = [];
+                    this.nowSelectDataLst.forEach(p=>{
+                        alldate.push(p.created_time);
+                    })
+                    let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
+                    this.querrySelected = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                    this.getSelectData(this.querrySelected);
+                    this.importQuerry();
+                }
+                if(this.windowWidth<959.58) {
+                    setTimeout(()=>{
+                        this.goAnchor('#aiwatermin');
+                    },100)
+                }
+                // await this.$axios.get(url, {params:allParm}).then(res => {
+                //     if(res.status==200){
+                //         this.querryData = res.data;
+                //         this.querryDataLst = {};
+                //         for(let i=0;i<this.querryData.length;i++) {
+                //             this.allData.forEach(f=>{
+                //                 if(f.name == this.querryData[i].factory_name) {
+                //                     f.node.forEach(a=>{
+                //                         if(a.name == this.querryData[i].pond_area_name){
+                //                             a.node.forEach(p=>{
+                //                                 if(p.name == this.querryData[i].pond_name) {
+                //                                     if(!this.querryDataLst[p.id]) {
+                //                                         this.querryDataLst[p.id] = [];
+                //                                     }
+                //                                     this.querryDataLst[p.id].push(this.querryData[i]);
+                //                                 }
+                //                             })
+                //                         }
+                                        
+                //                     })
+                //                 }
+                                
+                //             })
+                //         }
+                //         this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
+                //         console.log('querryData',this.querryData);
+                //         console.log('querydatalst',this.querryDataLst);
+                //         console.log('nowSelectDataLst',this.nowSelectDataLst);
+                //         this.get_scopeData(this.nowSelectPool);
+                //         if(isAdd) {
+                //             let alldate = [];
+                //             this.nowSelectDataLst.forEach(p=>{
+                //                 alldate.push(p.created_time);
+                //             })
+                //             let maxDate = new Date(Math.max(...alldate.map(date => new Date(date))));
+                //             this.querrySelected = dayjs(maxDate).format("YYYY-MM-DD HH:mm:ss");
+                //             this.getSelectData(this.querrySelected);
+                //             this.importQuerry();
+                //         }
+                //         if(this.windowWidth<959.58) {
+                //             setTimeout(()=>{
+                //                 this.goAnchor('#aiwatermin');
+                //             },100)
+                //         }
                             
-                    }
-                    else if(res.status == 400){
-                        this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                    }
-                    else{
-                        this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                    }
+                //     }
+                //     else if(res.status == 400){
+                //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                //     }
+                //     else{
+                //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                //     }
 
-                }).catch(error => {
-                    this.$toast.error(`資料Fail:${error}\n${JSON.stringify(error.response.data)}`, { duration: 5000 });
-                })
-                .finally(() => {
-                        //this.getdata();
-                });
+                // }).catch(error => {
+                //     this.$toast.error(`資料Fail:${error}\n${JSON.stringify(error.response.data)}`, { duration: 5000 });
+                // })
+                // .finally(() => {
+                //         //this.getdata();
+                // });
             }
             
 
@@ -4013,29 +4090,41 @@ export default {
                 var id = this.querryDataLst[querrypool].filter(x=>x.created_time==this.querrySelected)[0].id;
                 let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/query-log/${id}/`;
                 if(confirm(`是否刪除該筆紀錄？ id = ${id}`)){
-                    await this.$axios
-                        .delete(url)
-                        .then(res => {
-                            if(res.data=='刪除成功'){
-                                this.$toast.success("刪除成功", { duration: 2000 });
-                                // this.getQuerry2(querrypool,true);//reget data
-                                this.getQuerry();
-                                // this.querrySelectedLst[querrypool] = "";
-                                this.resetParm();
-                                this.querrySelected = '';
-                                this.isSearch = false;
-                            }else{
-                                this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
-                            }
+                    var res = false;
+                    res = await this.deleteQueryLogList(id);
+                    setTimeout(()=>{
+                        if(res) {
+                            // this.getQuerry2(querrypool,true);//reget data
+                            this.getQuerry();
+                            // this.querrySelectedLst[querrypool] = "";
+                            this.resetParm();
+                            this.querrySelected = '';
+                            this.isSearch = false;
+                        }
+                    },50)
+                    // await this.$axios
+                    //     .delete(url)
+                    //     .then(res => {
+                    //         if(res.data=='刪除成功'){
+                    //             this.$toast.success("刪除成功", { duration: 2000 });
+                    //             // this.getQuerry2(querrypool,true);//reget data
+                    //             this.getQuerry();
+                    //             // this.querrySelectedLst[querrypool] = "";
+                    //             this.resetParm();
+                    //             this.querrySelected = '';
+                    //             this.isSearch = false;
+                    //         }else{
+                    //             this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
+                    //         }
 
-                            console.log("刪除步驟API:" + res.request.responseURL);
-                        })
-                        .catch(error => {
-                            this.$toast.error("error:" + error, { duration: 2000 });
-                        })
-                        .finally(() => {
-                            // this.getQuerry2(querrypool,true);
-                        });
+                    //         console.log("刪除步驟API:" + res.request.responseURL);
+                    //     })
+                    //     .catch(error => {
+                    //         this.$toast.error("error:" + error, { duration: 2000 });
+                    //     })
+                    //     .finally(() => {
+                    //         // this.getQuerry2(querrypool,true);
+                    //     });
                 }else{
                     this.$toast.error("刪除取消", { duration: 2000 });
                 }
@@ -4097,22 +4186,29 @@ export default {
                 console.log('patch',this.querryDataLst[querrypool].filter(x => x.created_time == this.querrySelected))
                 let url = `${this.$store.state.mydata.gobal_api.apiKbUrl}/query-log/${id}/`;
                 if (confirm(`是否覆蓋該筆紀錄？ id = ${id}`)) {
-                    await this.$axios
-                        .patch(url, allParm)
-                        .then(res => {
-                            if (res.data == '修改成功') {
-                                this.$toast.success("覆蓋成功!!", { duration: 2000 });
-                                this.getQuerry();
-                            } else {
-                                this.$toast.success("覆蓋失敗：" + res.data, { duration: 2000 });
-                            }
-                        })
-                        .catch(error => {
-                            this.$toast.error("覆蓋error:" + error, { duration: 2000 });
-                        })
-                        .finally(() => {
+                    var res = false;
+                    res = await this.patchQueryLogList(allParm,id);
+                    setTimeout(()=>{
+                        if(res) {
+                            this.getQuerry();
+                        }
+                    },50)
+                    // await this.$axios
+                    //     .patch(url, allParm)
+                    //     .then(res => {
+                    //         if (res.data == '修改成功') {
+                    //             this.$toast.success("覆蓋成功!!", { duration: 2000 });
+                    //             this.getQuerry();
+                    //         } else {
+                    //             this.$toast.success("覆蓋失敗：" + res.data, { duration: 2000 });
+                    //         }
+                    //     })
+                    //     .catch(error => {
+                    //         this.$toast.error("覆蓋error:" + error, { duration: 2000 });
+                    //     })
+                    //     .finally(() => {
                             
-                        });
+                    //     });
                 } else {
                     this.$toast.error("覆蓋取消", { duration: 2000 });
                 }
@@ -4169,27 +4265,38 @@ export default {
                 }
             })
             //console.log("all參數：",allParm);
-            await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
-                if(res.status==200){
-                    this.suggData.DynamicData = res.data.DynamicData;
-                    this.suggData.WaterQuality = res.data.WaterQuality;
-                    this.suggData.Observation = res.data.Observation;
-                    this.suggData.Feed = res.data.Feed;
-                    this.suggData.Material = res.data.Material;
-                    this.suggData.MakeWater = res.data.MakeWater;
-                    this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
-                            duration: 2000
-                        });
-                } else {
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
-                console.log(`${(isSaved)?'新增':'查詢'} 知識庫api:` + res.request.responseURL);
-            }).catch(error => {
-                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            })
-            .finally(() => {
-                    //this.getdata();
-            });
+            let getSuggestionList = await this.getSuggestionList(allParm);
+            let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
+            this.suggData.DynamicData = suggestionData.DynamicData;
+            this.suggData.WaterQuality = suggestionData.WaterQuality;
+            this.suggData.Observation = suggestionData.Observation;
+            this.suggData.Feed = suggestionData.Feed;
+            this.suggData.Material = suggestionData.Material;
+            this.suggData.MakeWater = suggestionData.MakeWater;
+            this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
+                    duration: 2000
+                });
+            // await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
+            //     if(res.status==200){
+            //         this.suggData.DynamicData = res.data.DynamicData;
+            //         this.suggData.WaterQuality = res.data.WaterQuality;
+            //         this.suggData.Observation = res.data.Observation;
+            //         this.suggData.Feed = res.data.Feed;
+            //         this.suggData.Material = res.data.Material;
+            //         this.suggData.MakeWater = res.data.MakeWater;
+            //         this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
+            //                 duration: 2000
+            //             });
+            //     } else {
+            //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+            //     }
+            //     console.log(`${(isSaved)?'新增':'查詢'} 知識庫api:` + res.request.responseURL);
+            // }).catch(error => {
+            //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            // })
+            // .finally(() => {
+            //         //this.getdata();
+            // });
             if(isSaved){
                 // console.log("querrypool:",querrypool);
                 if(this.nowSelectPool!=null){
@@ -4261,37 +4368,42 @@ export default {
                 pond_id : this.nowSelectPool    
             };
             let url =`${this.$store.state.mydata.gobal_api.apiUrl}/kb/required-data/`;
-            await this.$axios.get(url, {params:parm}).then(res => {
-                if (res.status == 200) {
-                    // 取得上次填入資料，現在觀察往已自動帶入，不須取得上次填入的資料
-                    // this.getSampleData();
-                    // res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
-                    // res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
-                    this.importQuerry(res.data,true);//導入資料
-                    // 先不幫查ai回饋資訊
-                    this.postParm(false);//查詢ai回饋資訊
-                    // var keyLst = Object.keys(this.optData);
-                    // keyLst.forEach(k=>{
-                    //     if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
-                    //         this.ObservationData[k] = _.cloneDeep(this.optData[k]);
-                    //         this.ObservationData[k].forEach(c=>{
-                    //             c.value=0;
-                    //         })
-                    //     }
+            let getRequiredDataList = await this.getRequiredDataList(parm);
+            let data = typeof (getRequiredDataList)=='string'?[]:getRequiredDataList;
+            this.importQuerry(data,true);//導入資料
+            // 先不幫查ai回饋資訊
+            this.postParm(false);//查詢ai回饋資訊
+            // await this.$axios.get(url, {params:parm}).then(res => {
+            //     if (res.status == 200) {
+            //         // 取得上次填入資料，現在觀察往已自動帶入，不須取得上次填入的資料
+            //         // this.getSampleData();
+            //         // res.data.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'];
+            //         // res.data.ObservationData['LastSamplingDatetime'] = this.ObservationData['LastSamplingDatetime'];
+            //         this.importQuerry(res.data,true);//導入資料
+            //         // 先不幫查ai回饋資訊
+            //         this.postParm(false);//查詢ai回饋資訊
+            //         // var keyLst = Object.keys(this.optData);
+            //         // keyLst.forEach(k=>{
+            //         //     if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+            //         //         this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+            //         //         this.ObservationData[k].forEach(c=>{
+            //         //             c.value=0;
+            //         //         })
+            //         //     }
                         
-                    // })
-                    //console.log('FeedParm',this.FeedParm);
-                    this.$toast.success(`帶入基本資料成功`, { duration: 2000 });
-                } else {
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-                }
-                console.log("取得基本資料API:" + res.request.responseURL);
-            }).catch(error => {
-                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            })
-            .finally(() => {
-                    //this.getdata();
-            });
+            //         // })
+            //         //console.log('FeedParm',this.FeedParm);
+            //         this.$toast.success(`帶入基本資料成功`, { duration: 2000 });
+            //     } else {
+            //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+            //     }
+            //     console.log("取得基本資料API:" + res.request.responseURL);
+            // }).catch(error => {
+            //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            // })
+            // .finally(() => {
+            //         //this.getdata();
+            // });
         },
         async getSampleData() {
             let factory = '';
