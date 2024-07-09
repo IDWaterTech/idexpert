@@ -867,8 +867,8 @@ export default {
 
       }
       if(this.nowAreaId.factory_id!==null) {
-        let getDiseaseList = await this.getDiseaseList(parm);
-        let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
+        let getMapList = await this.getMapList(parm);
+        let data = typeof (getMapList)=='string'?[]:getMapList;
         this.allData = data;
         this.getLayoutData();
         // await this.$axios
