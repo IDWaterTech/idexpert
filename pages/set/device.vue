@@ -235,20 +235,27 @@ export default {
       this.dialog.parm.created_user = this.$auth.$state.user.email;
       if (mode == true) {
         let parm = this.dialog.parm;
-        await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`, parm)
-          .then(res => {
-            console.log("新增 API:" + res.request.responseURL);
-            if (res.data == "新增成功") {
+        var res = false;
+        res = await this.posDeviceList(parm);
+        setTimeout(()=>{
+            if(res) {
               this.dialog.dev = false;
-              this.$toast.success("新增成功", { duration: 2000 });
-            } else {
-              this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-          });
+        },50)
+        // await this.$axios
+        //   .post(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`, parm)
+        //   .then(res => {
+        //     console.log("新增 API:" + res.request.responseURL);
+        //     if (res.data == "新增成功") {
+        //       this.dialog.dev = false;
+        //       this.$toast.success("新增成功", { duration: 2000 });
+        //     } else {
+        //       this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error("error:" + error, { duration: 2000 });
+        //   });
       } else {
         //edit mode
         let parm = _.cloneDeep(this.dialog.parm);
@@ -257,55 +264,70 @@ export default {
         delete parm.created_user;
         delete parm.id;
         delete parm.pond_name;
-        // console.log(parm);
-        await this.$axios
-          .patch(url, parm)
-          .then(res => {
-            console.log("修改 API:" + res.request.responseURL);
-            if (res.data == "修改成功") {
+        var id = this.dialog.parm.id;
+        var res = false;
+        res = await this.patchDeviceList(parm,id);
+        setTimeout(()=>{
+            if(res) {
               this.dialog.dev = false;
-              this.$toast.success("修改成功", { duration: 2000 });
-            } else {
-              this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            this.$toast.error("error:" + error, { duration: 2000 });
-          });
+        },50)
+        // console.log(parm);
+        // await this.$axios
+        //   .patch(url, parm)
+        //   .then(res => {
+        //     console.log("修改 API:" + res.request.responseURL);
+        //     if (res.data == "修改成功") {
+        //       this.dialog.dev = false;
+        //       this.$toast.success("修改成功", { duration: 2000 });
+        //     } else {
+        //       this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error("error:" + error, { duration: 2000 });
+        //   });
         
       }
       this.getDevice();
     },
     deldev:async function(data){
       if (confirm('確定刪除？')) {
-        await this.$axios
-        .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/device/${data.id}`)
-        .then(res => {
-          if (res.data=="刪除成功") {
-            this.$toast.success("刪除成功", { duration: 2000 });
-          }else{
-            this.$toast.success("刪除失敗："+res.data, { duration: 2000 });
-          }
-          console.log("刪除 API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
+        var id = data.id;
+        var res = false;
+        res = await this.deleteDeviceList(id);
+        
+        // await this.$axios
+        // .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/device/${data.id}`)
+        // .then(res => {
+        //   if (res.data=="刪除成功") {
+        //     this.$toast.success("刪除成功", { duration: 2000 });
+        //   }else{
+        //     this.$toast.success("刪除失敗："+res.data, { duration: 2000 });
+        //   }
+        //   console.log("刪除 API:" + res.request.responseURL);
+        // })
+        // .catch(error => {
+        //   this.$toast.error("error:" + error, { duration: 2000 });
+        // });
         
         await this.getDevice();
       }
 
     },
     getDevice: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`)
-        .then(res => {
-          this.devicedata = res.data;
-          console.log("device清單 API:" + res.request.responseURL);
-        })
-        .catch(error => {
-          this.$toast.error("error:" + error, { duration: 2000 });
-        });
+      let getDeviceList = await this.getDeviceList();
+      let data = typeof (getDeviceList)=='string'?[]:getDeviceList;
+      this.devicedata = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`)
+      //   .then(res => {
+      //     this.devicedata = res.data;
+      //     console.log("device清單 API:" + res.request.responseURL);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error("error:" + error, { duration: 2000 });
+      //   });
     },
     setNestedDisabled: function(obj, name) {
       //全部都設成disabled

@@ -165,5 +165,79 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        // 取得授權清單
+        getRoleList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/`)
+                console.log("授權清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增授權
+        postRoleList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/`,addform,)
+                console.log("新增授權:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改授權
+        patchRoleList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/${id}/`,parm,)
+                console.log("修改授權:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除授權
+        deleteRoleList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/${id}`)
+                console.log("刪除授權:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        
 	}
 })

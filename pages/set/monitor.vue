@@ -825,19 +825,28 @@ export default {
       console.log('expand',this.expandArray);
     },
     getListData: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`, {
-          httpsAgent: agent
-        })
-        .then(res => {
-          this.allcols = Object.assign([], res.data);
-          let col = [];
-          col = [...new Set(this.allcols.map(x=>x.group))];
-          col = col.filter(x=>x!='feed');//排除項目
-          this.expandArray = [];
-          col.forEach(x=>{this.expandArray.push(true)});
-          console.log('allcols',this.allcols,this.expandArray);
-        });
+      let getColDataList = await this.getColDataList();
+      let data = typeof (getColDataList)=='string'?[]:getColDataList;
+      this.allcols = Object.assign([], data);
+      let col = [];
+      col = [...new Set(this.allcols.map(x=>x.group))];
+      col = col.filter(x=>x!='feed');//排除項目
+      this.expandArray = [];
+      col.forEach(x=>{this.expandArray.push(true)});
+      console.log('allcols',this.allcols,this.expandArray);
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`, {
+      //     httpsAgent: agent
+      //   })
+      //   .then(res => {
+      //     this.allcols = Object.assign([], res.data);
+      //     let col = [];
+      //     col = [...new Set(this.allcols.map(x=>x.group))];
+      //     col = col.filter(x=>x!='feed');//排除項目
+      //     this.expandArray = [];
+      //     col.forEach(x=>{this.expandArray.push(true)});
+      //     console.log('allcols',this.allcols,this.expandArray);
+      //   });
     },
     editShow: function(data) {
       // data
@@ -882,25 +891,33 @@ export default {
         updated_user: updUser
       };
       console.log(parm);
-      await this.$axios
-        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${this.editedItem.id}/`, parm, {
-          httpsAgent: agent
-        })
-        .then(res => {
-          if (res.data == "修改成功") {
+      var id = this.editedItem.id;
+      var res = false;
+      res = await this. patchColDataList(parm,id);
+      setTimeout(()=>{
+          if(res) {
             this.getListData();
-            this.$toast.success(`修改成功`, { duration: 2000 });
-          } else {
-            this.$toast.error(`修改失敗` + res.data, { duration: 2000 });
           }
-          console.log("修改api:" + res.request.responseURL, res);
-        })
-        .catch(error => {
-          this.$toast.error(`修改失敗` + error.message, { duration: 2000 });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      },50)
+      // await this.$axios
+      //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${this.editedItem.id}/`, parm, {
+      //     httpsAgent: agent
+      //   })
+      //   .then(res => {
+      //     if (res.data == "修改成功") {
+      //       this.getListData();
+      //       this.$toast.success(`修改成功`, { duration: 2000 });
+      //     } else {
+      //       this.$toast.error(`修改失敗` + res.data, { duration: 2000 });
+      //     }
+      //     console.log("修改api:" + res.request.responseURL, res);
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`修改失敗` + error.message, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
 
       this.editDialog = false;
     },
@@ -921,25 +938,33 @@ export default {
           is_enable_alert:this.addItem.is_enable_alert,
           created_user: updUser
         };
-        await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`, parm, {
-            httpsAgent: agent
-          })
-          .then(res => {
-            if (res.data == "新增成功") {
+        var res = false;
+        res = await this.postColDataList(parm);
+        setTimeout(()=>{
+            if(res) {
               this.getListData();
               this.addDialog = false;
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            } else {
-              this.$toast.error(`新增失敗` + res.data, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            this.$toast.error(`新增失敗` + error.message, { duration: 2000 });
-          })
-          .finally(() => {
-            //this.getdata();
-          });
+        },50)
+        // await this.$axios
+        //   .post(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`, parm, {
+        //     httpsAgent: agent
+        //   })
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       this.getListData();
+        //       this.addDialog = false;
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //     } else {
+        //       this.$toast.error(`新增失敗` + res.data, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`新增失敗` + error.message, { duration: 2000 });
+        //   })
+        //   .finally(() => {
+        //     //this.getdata();
+        //   });
       }
     },
     addShow: function(data) {
@@ -1019,29 +1044,37 @@ export default {
         let parm = {
           data_group: data.group
         };
-        await this.$axios
-          .delete(
-            `${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${data.id}/`,
-            { data: parm },
-            {
-              httpsAgent: agent
-            }
-          )
-          .then(res => {
-            if (res.data == "刪除成功") {
+        var id = data.id;
+        var res = false;
+        res = await this.deleteColDataList(id);
+        setTimeout(()=>{
+            if(res) {
               this.getListData();
-              this.$toast.success(`刪除成功`, { duration: 2000 });
-            } else {
-              this.$toast.error(`刪除失敗` + res.data, { duration: 2000 });
             }
-            console.log("刪除api:" + res.request.responseURL, res);
-          })
-          .catch(error => {
-            this.$toast.error(`刪除失敗` + error.message, { duration: 2000 });
-          })
-          .finally(() => {
-            //this.getdata();
-          });
+        },50)
+        // await this.$axios
+        //   .delete(
+        //     `${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${data.id}/`,
+        //     { data: parm },
+        //     {
+        //       httpsAgent: agent
+        //     }
+        //   )
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.getListData();
+        //       this.$toast.success(`刪除成功`, { duration: 2000 });
+        //     } else {
+        //       this.$toast.error(`刪除失敗` + res.data, { duration: 2000 });
+        //     }
+        //     console.log("刪除api:" + res.request.responseURL, res);
+        //   })
+        //   .catch(error => {
+        //     this.$toast.error(`刪除失敗` + error.message, { duration: 2000 });
+        //   })
+        //   .finally(() => {
+        //     //this.getdata();
+        //   });
       }
     },
     getgroupname: function(val) {

@@ -804,5 +804,135 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        // 取得設備清單
+        getDeviceList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`)
+                console.log("設備清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增設備
+        posDeviceList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`,addform,)
+                console.log("新增設備:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改設備
+        patchDeviceList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/device/${id}/`,parm,)
+                console.log("修改設備:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除設備
+        deleteDeviceList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/device/${id}/`)
+                console.log("刪除設備:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 新增水質欄位
+        postColDataList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`,addform,)
+                console.log("新增水質欄位:" + data.request.responseURL);
+                if(data.data == "新增成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 修改水質欄位
+        patchColDataList:async function(parm,id) {
+            try {
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`,parm,)
+                console.log("修改水質欄位:" + data.request.responseURL);
+                if(data.data == "修改成功") {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除水質欄位
+        deleteColDataList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`)
+                console.log("刪除水質欄位:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
 	}
 })

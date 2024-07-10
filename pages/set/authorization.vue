@@ -464,13 +464,17 @@ export default {
     },
     getRoles: async function() {
       //角色的清單
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/`)
-        .then(res => {
-          this.roledata = res.data;
-          console.log("api：" + res.request.responseURL);
-          console.log(this.roledata);
-        });
+      let getRoleList = await this.getRoleList();
+      let data = typeof (getRoleList)=='string'?[]:getRoleList;
+      this.roledata = data;
+      console.log(this.roledata);
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/`)
+      //   .then(res => {
+      //     this.roledata = res.data;
+      //     console.log("api：" + res.request.responseURL);
+      //     console.log(this.roledata);
+      //   });
     },
     setNestedDisabled: function(obj) {
       //全部都設成disabled
@@ -593,28 +597,39 @@ export default {
 
       if (confirm(str)) {
         const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/${data.id}`;
-        await this.$axios
-          .delete(url)
-          .then(res => {
-            if (res.data == "刪除成功") {
+        var id = data.id;
+        var res = false;
+        res = await this.deleteRoleList(id);
+        setTimeout(()=>{
+            if(res) {
               this.getRoles(); //更新畫面
-              this.$toast.success(`刪除成功`, { duration: 2000 });
-            } else {
-              alert("刪除失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("刪除失敗!：" + error.message);
-          });
+        },50)
+        // await this.$axios
+        //   .delete(url)
+        //   .then(res => {
+        //     if (res.data == "刪除成功") {
+        //       this.getRoles(); //更新畫面
+        //       this.$toast.success(`刪除成功`, { duration: 2000 });
+        //     } else {
+        //       alert("刪除失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("刪除失敗!：" + error.message);
+        //   });
       }
     },
     getorg: async function() {
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`)
-        .then(res => {
-          this.positdata = res.data;
-          console.log("api：" + res.request.responseURL);
-        });
+      let getOrganizationList = await this.getOrganizationList();
+      let data = typeof (getOrganizationList)=='string'?[]:getOrganizationList;
+      this.positdata = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/organization/`)
+      //   .then(res => {
+      //     this.positdata = res.data;
+      //     console.log("api：" + res.request.responseURL);
+      //   });
     },
     addsubmit: async function() {
       let valid = this.$refs.addform.validate();
@@ -623,23 +638,31 @@ export default {
         debugger;
         const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/`;
         let parms = this.addform;
-        await this.$axios
-          .post(url, parms)
-          .then(res => {
-            if (res.data == "新增成功") {
+        var res = false;
+        res = await this.postRoleList(parms);
+        setTimeout(()=>{
+            if(res) {
               this.adddialog = false;
               this.getRoles(); //更新畫面
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            } else {
-              alert("新增失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("新增失敗!：" + error.message);
-          })
-          .finally(() => {
-            //this.getdata();
-          });
+        },50)
+        // await this.$axios
+        //   .post(url, parms)
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       this.adddialog = false;
+        //       this.getRoles(); //更新畫面
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //     } else {
+        //       alert("新增失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("新增失敗!：" + error.message);
+        //   })
+        //   .finally(() => {
+        //     //this.getdata();
+        //   });
       }
     },
     editsubmit: async function() {
@@ -649,23 +672,33 @@ export default {
       console.log(parms);
       if (valid) {
         const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/${this.editform.id}/`;
-        await this.$axios
-          .patch(url, parms)
-          .then(res => {
-            if (res.data == "修改成功") {
+        var id = this.editform.id;
+        var res = false;
+        res = await this.patchRoleList(parms,id);
+        setTimeout(()=>{
+            if(res) {
               this.editdialog = false;
               this.getRoles(); //更新畫面
-              this.$toast.success(`修改成功`, { duration: 2000 });
               this.expandtree = this.editform.privilege_id;
-            } else {
-              alert("修改失敗!：" + res.data);
             }
-          })
-          .catch(error => {
-            alert("修改失敗!：" + error.message);
-          })
-          .finally(() => {});
-        //  this.expands = [];//展開close
+        },50)
+        // await this.$axios
+        //   .patch(url, parms)
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       this.editdialog = false;
+        //       this.getRoles(); //更新畫面
+        //       this.$toast.success(`修改成功`, { duration: 2000 });
+        //       this.expandtree = this.editform.privilege_id;
+        //     } else {
+        //       alert("修改失敗!：" + res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("修改失敗!：" + error.message);
+        //   })
+        //   .finally(() => {});
+        // //  this.expands = [];//展開close
       }
     }
   },
