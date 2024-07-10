@@ -225,239 +225,237 @@
                           {{ tab }}
                       </v-tab>
                       <!-- tab內容 -->
-                      <v-tabs-items v-model="nowTab" touchless>
+                      <v-tabs-items v-model="nowTab" touchless style="min-height: 48vh;">
                         <v-tab-item 
                           v-for="(tab,tid) in tabs"
                           :key="'tab-'+tid"
-                          :value="tab"
-                          style="min-height: 48vh;">
-                          <!-- 圖表 -->
-                          <div v-show="nowTab=='圖表'" class="result-content">
-                            <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
-                              <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
-                              <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
-                            </v-row>
-                            <v-row style="width: 100%;">
-                              <WaterQuality_Vcharts2
-                                :rowsData="item.items"
-                                xColName="inspected_date"
-                                :defaultitem="{}"
-                                :loading="waterloading"
-                                :title="item.name"
-                                :chartmin="chartmin"
-                                :chartmax="chartmax"
-                                :markdata="markdata"
-                                :isIndicator="true"
-                                style="width: 100%;min-height: 26vh;"
-                              ></WaterQuality_Vcharts2>
-                            </v-row>
-                          </div>
-                          <!-- 編修紀錄 -->
-                          <div v-show="nowTab=='編修紀錄'" class="result-content">
-                            <v-data-table
-                              class="edit-table revise data-table bg-transparent"
-                              v-model="selected"
-                              :headers="headers"
-                              :items="item2.items" dense
-                              :footer-props="footerProps"
-                              :loading="loading"
-                              :show-select="showselect"
-                              no-data-text="查無資料">
-                              <template v-slot:[`item.actions`]="{ item }">
-                                <button class="btn-icon" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
-                                    <v-icon>mdi-pencil</v-icon>
-                                </button>
-                                
-                                <button class="btn-icon delete" :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)">
-                                    <v-icon>mdi-trash-can</v-icon>
-                                </button>
-                                
-                                <!-- <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
-                                  mdi-pencil
-                                </v-icon>
-                                <v-icon small :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)"  color="red">
-                                  mdi-delete
-                                </v-icon> -->
-                              </template>
-                              <template v-slot:top>
-                                <v-toolbar flat>
-                                  <v-spacer></v-spacer>
-                                  <v-checkbox
-                                    v-model="showselect"
-                                    label=""
-                                    color="red"
-                                    hide-details
-                                    :disabled="disabledAllDel"
-                                  >
-                                  </v-checkbox>
-                                  <v-btn class="btn-primary delete" :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
-                                </v-toolbar>
-                              </template>
-                            </v-data-table>
-                          </div>
-                          
-                          <!-- 事件紀錄 -->
-                          <div v-show="nowTab=='事件紀錄'" class="result-content event">
-                            <v-data-table
-                              v-if="nowTab == '事件紀錄'"
-                              class="edit-table data-table bg-transparent"
-                              :headers="eventHeaders"
-                              :items="eventTableData" dense
-                              :footer-props="footerProps"
-                              no-data-text="查無資料"
-                              style="min-height: 27vh;">
-                              <template v-slot:[`item.event_level_name`]="{ item }">
-                                <v-chip
-                                  :color="item.color"
-                                  style="font-size: 12px;"
-                                  :style="{color:item.color=='#00AC'?'white':'#00273E'}"
-                                  dark
-                                >
-                                  {{ item.event_level_name }}
-                                </v-chip>
-                              </template>
-                              <template v-slot:[`item.time`]="{ item }">
-                                <div style="width:100%;text-align: left;display: flex;justify-content: center;">
-                                  <span v-html="item.time" style="line-height: 24px;"></span>
-                                </div>
-                              </template>
-                              <template v-slot:[`item.content`]="{ item }">
-                                <div style="text-align: left;display: flex;justify-content: flex-start;">
-                                  <span v-html="item.content" style="line-height: 24px;"></span>
-                                </div>
-                              </template>
-                              <template v-slot:[`item.name`]="{ item }">
-                                <div style="width:100%;text-align: left;display: flex;justify-content: flex-start;">
-                                  <span v-html="item.name" style="line-height: 24px;"></span>
-                                </div>
-                              </template>
-                            </v-data-table>
-                          </div>
-                          <!-- 觀察網資訊 -->
-                          <div v-show="nowTab=='觀察網資訊'" class="result-content">
-                            <!-- 紀錄清單 -->
-                            <div class="result-list">
-                              <div class="box-shadow-none border-bottom" style="border-radius: 0;">
-                                <div class="added" style="display: flex;justify-content: space-between;">
-                                  <div class="card-title"  @click="listOpen = !listOpen" style="cursor: pointer;margin: 0;padding: 0;border-bottom: none;">
-                                    <div class="title">
-                                        <v-card-title style="padding: 8px;font-size: 16px;">紀錄清單</v-card-title>
-                                    </div>
-                                    <div class="chevron">
-                                      <v-icon v-if="listOpen">mdi-triangle-small-up</v-icon>
-                                      <v-icon v-if="!listOpen">mdi-triangle-small-down</v-icon>
-                                    </div>
-                                  </div>
-                                  <v-btn v-if="nowTab=='觀察網資訊'" class="btn-secondary green" :class="{'disabled':optData.length==0}" style="float:right" @click="editObservable('add')"><v-icon>mdi-plus</v-icon>新增</v-btn>
-                                </div>
-                                
-                              </div>
-                            </div>
-                            <v-data-table
-                              v-if="listOpen"
-                              class="edit-table data-table bg-transparent"
-                              :headers="observableHeaders"
-                              :items="observableData" dense
-                              :footer-props="footerProps"
-                              no-data-text="查無資料"
-                              fixed-header>
-                              <!-- <template v-slot:[`item.is_shell`]="{ item }">
-                                  {{ item.is_shell?'是':'否' }}
-                              </template> -->
-                              <template v-slot:[`item.img`]="{ item }">
-                                <img v-img="{ group: item.shrimp_id }" v-for="(img,i) in item.img" :key="item.shrimp_id+'_'+i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
-                              </template>
-                              <template v-slot:[`item.intestinal_color`]="{ item }">
-                                <div v-if="item.numOfColor.IntestinalColor.length>0">
-                                  <v-chip v-for="(shape,id) in item.numOfColor.IntestinalColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">    
-                                    {{ shape.name_ch}}:{{ shape.value }}
-                                  </v-chip>
-                                </div>
-                                <div v-else><v-chip>無</v-chip></div>
-                              </template>
-                              <template v-slot:[`item.hepatopancreas_color`]="{ item }">
-                                <div v-if="item.numOfColor.HepatopancreasColor.length>0">
-                                  <v-chip v-for="(shape,id) in item.numOfColor.HepatopancreasColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
-                                      {{ shape.name_ch}}:{{ shape.value }}
-                                  </v-chip>
-                                </div>
-                                <div v-else><v-chip>無</v-chip></div>
-                              </template>
-                              <template v-slot:[`item.muscle_color`]="{ item }">
-                                <div v-if="item.numOfColor.MuscleColor.length>0">
-                                  <v-chip v-for="(shape,id) in item.numOfColor.MuscleColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
-                                    {{ shape.name_ch}}:{{ shape.value }}
-                                  </v-chip>
-                                </div>
-                                <div v-else><v-chip>無</v-chip></div>
-                              </template>
-                              <template v-slot:[`item.body_color`]="{ item }">
-                                <div v-if="item.numOfColor.BodyColor.length>0">
-                                  <v-chip v-for="(shape,id) in item.numOfColor.BodyColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
-                                    {{ shape.name_ch}}:{{ shape.value }}
-                                  </v-chip> 
-                                </div>
-                                <div v-else><v-chip>無</v-chip></div>
-                              </template>
-                              <template v-slot:[`item.body_shape`]="{ item }">
-                                <div v-if="item.numOfColor.BodyShape.length>0">
-                                  <v-chip v-for="(shape,id) in item.numOfColor.BodyShape" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
-                                    {{ shape.name_ch}}:{{ shape.value }}
-                                  </v-chip>
-                                </div>
-                                <div v-else><v-chip>無</v-chip></div>
-                              </template>
-                              <!-- 編輯/刪除 -->
-                              <template v-slot:[`item.action`]="{ item }">
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn  class="btn-icon"
-                                            title="編輯"
-                                            @click="editObservable('edit',item)"
-                                            v-bind="attrs" v-on="on"
-                                            style="pointer-events: inherit;">
-                                            <v-icon>mdi-pencil</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>編輯</span>
-                                </v-tooltip>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn  class="btn-icon delete"
-                                            title="刪除"
-                                            v-bind="attrs" v-on="on"
-                                            style="pointer-events: inherit;"
-                                            @click="delObservable(item)">
-                                            <v-icon>mdi-trash-can</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>刪除</span>
-                                </v-tooltip>
-                            </template>
-                            </v-data-table>
-                            <!-- 圖表 -->
-                            <div v-if="observableData.length>0&&chartShow" class="result-list">
-                              <div class="box-shadow-none border-bottom" style="border-radius: 0;">
-                                <div class="card-title" style="cursor: pointer;margin: 0;padding: 0;border-bottom: none;">
-                                    <div class="title">
-                                        <v-card-title style="padding: 8px;font-size: 16px;">圖表</v-card-title>
-                                    </div>
-                                </div>
-                              </div>
-                            </div>
-                            <v-row v-if="observableData.length>0&&chartShow" style="width: 100%;overflow-x:scroll;">
-                              <!-- <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeLineData" :key="'chart_'+item.name_en+id">
-                                <h3 class="pool-name">{{ item.name_ch }}</h3>
-                                <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="null"></Stackbar>
-                              </v-col> -->
-                              <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeChartData" :key="'chart_'+item.name_en+id">
-                                <h3 class="pool-name">{{ item.name_ch }}{{item.name_en=='feed_amount'?'':'(%)'}}</h3>
-                                <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="item.name_en=='feed_amount'?null:100"></Stackbar>
-                                
-                              </v-col>
-                            </v-row>
-                          </div>
+                          :value="tab">
                         </v-tab-item>
+                        <!-- 圖表 -->
+                        <div v-show="nowTab=='圖表'" class="result-content">
+                          <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
+                            <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                            <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
+                          </v-row>
+                          <v-row style="width: 100%;">
+                            <WaterQuality_Vcharts2
+                              :rowsData="item.items"
+                              xColName="inspected_date"
+                              :defaultitem="{}"
+                              :loading="waterloading"
+                              :title="item.name"
+                              :chartmin="chartmin"
+                              :chartmax="chartmax"
+                              :markdata="markdata"
+                              :isIndicator="true"
+                              style="width: 100%;min-height: 26vh;"
+                            ></WaterQuality_Vcharts2>
+                          </v-row>
+                        </div>
+                        <!-- 編修紀錄 -->
+                        <div v-show="nowTab=='編修紀錄'" class="result-content">
+                          <v-data-table
+                            class="edit-table revise data-table bg-transparent"
+                            v-model="selected"
+                            :headers="headers"
+                            :items="item2.items" dense
+                            :footer-props="footerProps"
+                            :loading="loading"
+                            :show-select="showselect"
+                            no-data-text="查無資料">
+                            <template v-slot:[`item.actions`]="{ item }">
+                              <button class="btn-icon" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
+                                  <v-icon>mdi-pencil</v-icon>
+                              </button>
+                              
+                              <button class="btn-icon delete" :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)">
+                                  <v-icon>mdi-trash-can</v-icon>
+                              </button>
+                              
+                              <!-- <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
+                                mdi-pencil
+                              </v-icon>
+                              <v-icon small :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)"  color="red">
+                                mdi-delete
+                              </v-icon> -->
+                            </template>
+                            <template v-slot:top>
+                              <v-toolbar flat>
+                                <v-spacer></v-spacer>
+                                <v-checkbox
+                                  v-model="showselect"
+                                  label=""
+                                  color="red"
+                                  hide-details
+                                  :disabled="disabledAllDel"
+                                >
+                                </v-checkbox>
+                                <v-btn class="btn-primary delete" :disabled="selected.length==0 || !showselect" @click="opencapDialog">批次刪除</v-btn>
+                              </v-toolbar>
+                            </template>
+                          </v-data-table>
+                        </div>
+                        <!-- 事件紀錄 -->
+                        <div v-show="nowTab=='事件紀錄'" class="result-content event">
+                          <v-data-table
+                            v-if="nowTab == '事件紀錄'"
+                            class="edit-table data-table bg-transparent"
+                            :headers="eventHeaders"
+                            :items="eventTableData" dense
+                            :footer-props="footerProps"
+                            no-data-text="查無資料"
+                            style="min-height: 27vh;">
+                            <template v-slot:[`item.event_level_name`]="{ item }">
+                              <v-chip
+                                :color="item.color"
+                                style="font-size: 12px;"
+                                :style="{color:item.color=='#00AC'?'white':'#00273E'}"
+                                dark
+                              >
+                                {{ item.event_level_name }}
+                              </v-chip>
+                            </template>
+                            <template v-slot:[`item.time`]="{ item }">
+                              <div style="width:100%;text-align: left;display: flex;justify-content: center;">
+                                <span v-html="item.time" style="line-height: 24px;"></span>
+                              </div>
+                            </template>
+                            <template v-slot:[`item.content`]="{ item }">
+                              <div style="text-align: left;display: flex;justify-content: flex-start;">
+                                <span v-html="item.content" style="line-height: 24px;"></span>
+                              </div>
+                            </template>
+                            <template v-slot:[`item.name`]="{ item }">
+                              <div style="width:100%;text-align: left;display: flex;justify-content: flex-start;">
+                                <span v-html="item.name" style="line-height: 24px;"></span>
+                              </div>
+                            </template>
+                          </v-data-table>
+                        </div>
+                        <!-- 觀察網資訊 -->
+                        <div v-show="nowTab=='觀察網資訊'" class="result-content">
+                          <!-- 紀錄清單 -->
+                          <div class="result-list">
+                            <div class="box-shadow-none border-bottom" style="border-radius: 0;">
+                              <div class="added" style="display: flex;justify-content: space-between;">
+                                <div class="card-title"  @click="listOpen = !listOpen" style="cursor: pointer;margin: 0;padding: 0;border-bottom: none;">
+                                  <div class="title">
+                                      <v-card-title style="padding: 8px;font-size: 16px;">紀錄清單</v-card-title>
+                                  </div>
+                                  <div class="chevron">
+                                    <v-icon v-if="listOpen">mdi-triangle-small-up</v-icon>
+                                    <v-icon v-if="!listOpen">mdi-triangle-small-down</v-icon>
+                                  </div>
+                                </div>
+                                <v-btn v-if="nowTab=='觀察網資訊'" class="btn-secondary green" :class="{'disabled':optData.length==0}" style="float:right" @click="editObservable('add')"><v-icon>mdi-plus</v-icon>新增</v-btn>
+                              </div>
+                              
+                            </div>
+                          </div>
+                          <v-data-table
+                            v-if="listOpen"
+                            class="edit-table data-table bg-transparent"
+                            :headers="observableHeaders"
+                            :items="observableData" dense
+                            :footer-props="footerProps"
+                            no-data-text="查無資料"
+                            fixed-header>
+                            <!-- <template v-slot:[`item.is_shell`]="{ item }">
+                                {{ item.is_shell?'是':'否' }}
+                            </template> -->
+                            <template v-slot:[`item.img`]="{ item }">
+                              <img v-img="{ group: item.shrimp_id }" v-for="(img,i) in item.img" :key="item.shrimp_id+'_'+i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
+                            </template>
+                            <template v-slot:[`item.intestinal_color`]="{ item }">
+                              <div v-if="item.numOfColor.IntestinalColor.length>0">
+                                <v-chip v-for="(shape,id) in item.numOfColor.IntestinalColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">    
+                                  {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </div>
+                              <div v-else><v-chip>無</v-chip></div>
+                            </template>
+                            <template v-slot:[`item.hepatopancreas_color`]="{ item }">
+                              <div v-if="item.numOfColor.HepatopancreasColor.length>0">
+                                <v-chip v-for="(shape,id) in item.numOfColor.HepatopancreasColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                    {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </div>
+                              <div v-else><v-chip>無</v-chip></div>
+                            </template>
+                            <template v-slot:[`item.muscle_color`]="{ item }">
+                              <div v-if="item.numOfColor.MuscleColor.length>0">
+                                <v-chip v-for="(shape,id) in item.numOfColor.MuscleColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                  {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </div>
+                              <div v-else><v-chip>無</v-chip></div>
+                            </template>
+                            <template v-slot:[`item.body_color`]="{ item }">
+                              <div v-if="item.numOfColor.BodyColor.length>0">
+                                <v-chip v-for="(shape,id) in item.numOfColor.BodyColor" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                  {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip> 
+                              </div>
+                              <div v-else><v-chip>無</v-chip></div>
+                            </template>
+                            <template v-slot:[`item.body_shape`]="{ item }">
+                              <div v-if="item.numOfColor.BodyShape.length>0">
+                                <v-chip v-for="(shape,id) in item.numOfColor.BodyShape" :key="'BodyShape'+id" :class="{'chips-value':shape.value>0}">
+                                  {{ shape.name_ch}}:{{ shape.value }}
+                                </v-chip>
+                              </div>
+                              <div v-else><v-chip>無</v-chip></div>
+                            </template>
+                            <!-- 編輯/刪除 -->
+                            <template v-slot:[`item.action`]="{ item }">
+                              <v-tooltip bottom>
+                                  <template v-slot:activator="{ on, attrs }">
+                                      <v-btn  class="btn-icon"
+                                          title="編輯"
+                                          @click="editObservable('edit',item)"
+                                          v-bind="attrs" v-on="on"
+                                          style="pointer-events: inherit;">
+                                          <v-icon>mdi-pencil</v-icon>
+                                      </v-btn>
+                                  </template>
+                                  <span>編輯</span>
+                              </v-tooltip>
+                              <v-tooltip bottom>
+                                  <template v-slot:activator="{ on, attrs }">
+                                      <v-btn  class="btn-icon delete"
+                                          title="刪除"
+                                          v-bind="attrs" v-on="on"
+                                          style="pointer-events: inherit;"
+                                          @click="delObservable(item)">
+                                          <v-icon>mdi-trash-can</v-icon>
+                                      </v-btn>
+                                  </template>
+                                  <span>刪除</span>
+                              </v-tooltip>
+                          </template>
+                          </v-data-table>
+                          <!-- 圖表 -->
+                          <div v-if="observableData.length>0&&chartShow" class="result-list">
+                            <div class="box-shadow-none border-bottom" style="border-radius: 0;">
+                              <div class="card-title" style="cursor: pointer;margin: 0;padding: 0;border-bottom: none;">
+                                  <div class="title">
+                                      <v-card-title style="padding: 8px;font-size: 16px;">圖表</v-card-title>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          <v-row v-if="observableData.length>0&&chartShow" style="width: 100%;overflow-x:scroll;">
+                            <!-- <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeLineData" :key="'chart_'+item.name_en+id">
+                              <h3 class="pool-name">{{ item.name_ch }}</h3>
+                              <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="null"></Stackbar>
+                            </v-col> -->
+                            <v-col  v-show="observableData.length>0" cols="12" md="6" v-for="(item,id) in observeChartData" :key="'chart_'+item.name_en+id">
+                              <h3 class="pool-name">{{ item.name_ch }}{{item.name_en=='feed_amount'?'':'(%)'}}</h3>
+                              <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="item.name_en=='feed_amount'?null:100"></Stackbar>
+                              
+                            </v-col>
+                          </v-row>
+                        </div>
                       </v-tabs-items>
                     </v-tabs>
                   </div>
@@ -3185,6 +3183,9 @@ export default {
     .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
       box-shadow: 0 0 10px $color-black-10;
     }
+  }
+  .result-content {
+    width: 100%;
   }
 }
 .pool-name {
