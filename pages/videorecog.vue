@@ -303,6 +303,7 @@ export default {
               if (res.data.items.length == 0) {
                 this.$toast.success(`查無觀察網資料`, { duration: 2000 });
               }else {
+                res.data.items.sort((a,b)=>new Date(b.inspected_time).getTime()-new Date(a.inspected_time).getTime());
                 this.headers = [
                   {align: "center",groupable: false,text: "資料",value: "id",width:"10%"},
                   {align: "center",groupable: false,text: "觀察網飼料圖(已辨識)",value: "feed_img",width:"25%", sortable: false },
@@ -355,6 +356,7 @@ export default {
               if (res.data.items.length == 0) {
                 this.$toast.success(`查無菌相資料`, { duration: 2000 });
               }else {
+                res.data.items.sort((a,b)=>new Date(b.inspected_time).getTime()-new Date(a.inspected_time).getTime());
                 // this.headers = ['資料','時間','加熱','class','辨識'];
                 this.headers = [
                   {align: "center",groupable: false,text: "資料",value: "id",width:"10%"},
@@ -533,6 +535,9 @@ export default {
     }
     .v-input--selection-controls.v-input--is-disabled:not(.v-input--indeterminate) .v-icon {
       color: $color-dark-25;
+    }
+    &.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
+      background: rgba($color-primary,0.1);
     }
     table {
       height: 100%;
