@@ -246,14 +246,14 @@ export default {
     }
   }
   & .danger-water-icon.btn-icon.just-icon.v-btn {
-    & .theme--light.v-icon {
+    & .theme--light.v-icon.mdi-alert {
       // color: $color-accent !important;
       color: #fefefe !important;
       font-size: 1.2rem;
     }
   }
   & .warning-water-icon.btn-icon.just-icon.v-btn {
-    & .theme--light.v-icon {
+    & .theme--light.v-icon.mdi-alert {
       color: #f79c2b !important;
       font-size: 1.2rem;
     }
