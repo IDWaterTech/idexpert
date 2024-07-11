@@ -315,15 +315,18 @@
         },
         async getStateColor() {
             //取得池況顏色設定
-            await this.$axios
-                .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
-                .then(res => {
-                // console.log('getColor',res.data);
-                    this.statcolor = res.data;
-                })
-                .catch(error => {
-                alert("error:" + error.message);
-                });
+            let getPondStateList = await this.getPondStateList();
+            let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
+            this.statcolor = data;
+            // await this.$axios
+            //     .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
+            //     .then(res => {
+            //     // console.log('getColor',res.data);
+            //         this.statcolor = res.data;
+            //     })
+            //     .catch(error => {
+            //     alert("error:" + error.message);
+            //     });
         },
         userDialog() {
             if(this.mapshowedit) {
@@ -395,30 +398,46 @@
                         id: newItems[0].id,
                         updated_user: this.myuser
                     };
+                    var res = false;
+                    res = await this.patchPondStateList(this.editData[i].id,parm);
+                    if(res) {
+                        success.push(this.editData[i]);
+                        if (i !== this.editData.length - 1) {
+                            apiNum++;
+                        } else {
+                            this.alertNowEdit(success);
+                        }
+                    }else {
+                        if (i !== this.editData.length - 1) {
+                            apiNum++;
+                        } else {
+                            this.alertNowEdit(success);
+                        }
+                    }
                     // console.log('check',parm);
-                    await this.$axios
-                        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${this.editData[i].id}/`, parm)
-                        .then(res => {
-                            if (res.data == "修改成功") {
-                                success.push(this.editData[i]);
-                                if (i !== this.editData.length - 1) {
-                                    apiNum++;
-                                } else {
-                                    this.alertNowEdit(success);
-                                }
+                    // await this.$axios
+                    //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${this.editData[i].id}/`, parm)
+                    //     .then(res => {
+                    //         if (res.data == "修改成功") {
+                    //             success.push(this.editData[i]);
+                    //             if (i !== this.editData.length - 1) {
+                    //                 apiNum++;
+                    //             } else {
+                    //                 this.alertNowEdit(success);
+                    //             }
 
-                            } else {
-                                // alert(res.data);
-                                if (i !== this.editData.length - 1) {
-                                    apiNum++;
-                                } else {
-                                    this.alertNowEdit(success);
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            alert("error:" + error.message);
-                        });
+                    //         } else {
+                    //             // alert(res.data);
+                    //             if (i !== this.editData.length - 1) {
+                    //                 apiNum++;
+                    //             } else {
+                    //                 this.alertNowEdit(success);
+                    //             }
+                    //         }
+                    //     })
+                    //     .catch(error => {
+                    //         alert("error:" + error.message);
+                    //     });
                 } else {
                     this.$toast.error(`修改失敗，找不到狀態id`, { duration: 2000 });
                 }
@@ -429,8 +448,9 @@
         alertNowEdit(success) {
             // 全部儲存後統一彈跳視窗
             if (success.length > 0) {
-                this.successData = success;
-                // console.log('index successData',this.successData);
+                // this.successData = [];
+                this.successData = _.cloneDeep(success);
+                console.log('index successData',this.successData);
                 if (this.successData.length == this.editData.length) {
                     this.$toast.success(`修改成功`, { duration: 2000 });
                     this.editData = [];

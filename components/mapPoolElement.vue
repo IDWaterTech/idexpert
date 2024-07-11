@@ -100,6 +100,7 @@ export default {
       
       console.log("oradata:", this.item);
       console.log("newdata:", this.selectedItem);
+      console.log("selitem:", this.selitem);
       // console.log("selitem",this.selitem);
       let newItems = this.selitem.filter(x => x.name_ch == this.selectedItem); //抓到修改後的狀態id
       if (newItems.length == 1) {
@@ -110,28 +111,43 @@ export default {
         const agent = new https.Agent({
           rejectUnauthorized: false
         });
-        await this.$axios
-          .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${this.item.id}/`, parm, {
-            httpsAgent: agent
-          })
-          .then(res => {
-            if (res.data == "修改成功") {
-              let evt={
-                item: this.item,
-                value: this.selectedItem,
-                isSend: true, // 判斷是否已經個別送出，有的話就需要關閉編輯畫面
-              }
-              this.item.state = this.selectedItem;
-              this.$toast.success(`修改成功`, { duration: 2000 });
-              this.$emit('saveSuccess',evt);
-              this.selectedItem = '';
-            } else {
-              alert(res.data);
-            }
-          })
-          .catch(error => {
-            alert("error:" + error.message);
-          });
+        var res = false;
+        res = await this.patchPondStateList(this.item.id,parm);
+        if(res) {
+          let evt={
+            item: this.item,
+            value: this.selectedItem,
+            isSend: true, // 判斷是否已經個別送出，有的話就需要關閉編輯畫面
+          }
+          this.item.state = this.selectedItem;
+          this.$emit('saveSuccess',evt);
+          this.selectedItem = '';
+          this.$toast.success(`修改成功`, { duration: 2000 });
+        }else {
+          this.$toast.error(`修改失敗`, { duration: 2000 });
+        }
+        // await this.$axios
+        //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-to-state/${this.item.id}/`, parm, {
+        //     httpsAgent: agent
+        //   })
+        //   .then(res => {
+        //     if (res.data == "修改成功") {
+        //       let evt={
+        //         item: this.item,
+        //         value: this.selectedItem,
+        //         isSend: true, // 判斷是否已經個別送出，有的話就需要關閉編輯畫面
+        //       }
+        //       this.item.state = this.selectedItem;
+        //       this.$toast.success(`修改成功`, { duration: 2000 });
+        //       this.$emit('saveSuccess',evt);
+        //       this.selectedItem = '';
+        //     } else {
+        //       alert(res.data);
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("error:" + error.message);
+        //   });
       }else{
         this.$toast.error(`修改失敗，找不到狀態id`, { duration: 2000 });
       }

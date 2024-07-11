@@ -903,20 +903,22 @@ export default {
             const agent = new https.Agent({
                 rejectUnauthorized: false
             });
-            await this.$axios
-            .post(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,this.newData, { httpsAgent: agent })
-            .then(res => {
-                // console.log('save Change',res);
-                if(res.data=='新增成功') {
-                    this.$toast.success('修改成功', {
-                        duration: 2000
-                    });
-                }
-                // this.$emit('getPondData');
-            })
-            .catch(error => {
-            // alert("error:" + error.message);
-            });
+            var res = false;
+            res = await this.postMapList(this.newData);
+            // await this.$axios
+            // .post(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,this.newData, { httpsAgent: agent })
+            // .then(res => {
+            //     // console.log('save Change',res);
+            //     if(res.data=='新增成功') {
+            //         this.$toast.success('修改成功', {
+            //             duration: 2000
+            //         });
+            //     }
+            //     // this.$emit('getPondData');
+            // })
+            // .catch(error => {
+            // // alert("error:" + error.message);
+            // });
         },
         cancelEdit() {
             this.edit = false;

@@ -207,23 +207,32 @@ export default {
         updated_user: updUser
       };
       let id = this.statLst[this.selectedItem].id;
-      await this.$axios
-        .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/${id}/`, parm, {
-          httpsAgent: agent
-        })
-        .then(res => {
-          if (res.data == "修改成功") {
-            this.getStatData();
-            this.selectedItem = -1; //設定不選任何項目
-            this.$toast.success(`修改成功`, { duration: 2000 });
-            this.$emit('update', parm); 
-          } else {
-            this.$toast.success(`修改失敗：${res.data}`, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
+      var res = false;
+      res = await this.patchPondStateColorList(parm,id);
+      setTimeout(()=>{
+        if(res) {
+          this.getStatData();
+          this.selectedItem = -1; //設定不選任何項目
+          this.$emit('update', parm); 
+        }
+      },50)
+      // await this.$axios
+      //   .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/${id}/`, parm, {
+      //     httpsAgent: agent
+      //   })
+      //   .then(res => {
+      //     if (res.data == "修改成功") {
+      //       this.getStatData();
+      //       this.selectedItem = -1; //設定不選任何項目
+      //       this.$toast.success(`修改成功`, { duration: 2000 });
+      //       this.$emit('update', parm); 
+      //     } else {
+      //       this.$toast.success(`修改失敗：${res.data}`, { duration: 2000 });
+      //     }
+      //   })
+      //   .catch(error => {
+      //     alert("error:" + error.message);
+      //   });
     },
     colordelete: async function() {
       if (this.nochangecolor.includes(this.statLst[this.selectedItem].name_ch)) {
@@ -239,29 +248,37 @@ export default {
         rejectUnauthorized: false
       });
       const updUser = this.$auth.$state.user.email;
-      let parm = {
-        name_ch: this.statLst[this.selectedItem].name_ch,
-        name_en: this.statLst[this.selectedItem].name_en,
-        color: this.color,
-        updated_user: updUser
-      };
+      // let parm = {
+      //   name_ch: this.statLst[this.selectedItem].name_ch,
+      //   name_en: this.statLst[this.selectedItem].name_en,
+      //   color: this.color,
+      //   updated_user: updUser
+      // };
       let id = this.statLst[this.selectedItem].id;
-      await this.$axios
-        .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/${id}/`, parm, {
-          httpsAgent: agent
-        })
-        .then(res => {
-          if (res.data == "刪除成功") {
+      var res = false;
+      res = await this.deletePondStateColorList(id);
+      setTimeout(()=>{
+          if(res) {
             this.getStatData();
             this.selectedItem = -1; //設定不選任何項目
-            this.$toast.success("刪除成功", { duration: 2000 });
-          } else {
-            this.$toast.success(`刪除失敗：${res.data}`, { duration: 2000 });
           }
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
+      },50)
+      // await this.$axios
+      //   .delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/${id}/`, parm, {
+      //     httpsAgent: agent
+      //   })
+      //   .then(res => {
+      //     if (res.data == "刪除成功") {
+      //       this.getStatData();
+      //       this.selectedItem = -1; //設定不選任何項目
+      //       this.$toast.success("刪除成功", { duration: 2000 });
+      //     } else {
+      //       this.$toast.success(`刪除失敗：${res.data}`, { duration: 2000 });
+      //     }
+      //   })
+      //   .catch(error => {
+      //     alert("error:" + error.message);
+      //   });
     },
     coloradd: async function() {
       if (this.nochangecolor.includes(this.addItem.name_ch)) {
@@ -282,23 +299,32 @@ export default {
           color: "#FFFFFF",
           created_user: updUser
         };
-        await this.$axios
-          .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, parm, {
-            httpsAgent: agent
-          })
-          .then(res => {
-            if (res.data == "新增成功") {
+        var res = false;
+        res = await this.postPondStateColorList(parm);
+        setTimeout(()=>{
+            if(res) {
               this.getStatData();
               this.adddialog = false;
               this.selectedItem = -1; //設定不選任何項目
-              this.$toast.success(`新增成功`, { duration: 2000 });
-            } else {
-              this.$toast.success(`新增失敗：${res.data}`, { duration: 2000 });
             }
-          })
-          .catch(error => {
-            alert("error:" + error.message);
-          });
+        },50)
+        // await this.$axios
+        //   .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, parm, {
+        //     httpsAgent: agent
+        //   })
+        //   .then(res => {
+        //     if (res.data == "新增成功") {
+        //       this.getStatData();
+        //       this.adddialog = false;
+        //       this.selectedItem = -1; //設定不選任何項目
+        //       this.$toast.success(`新增成功`, { duration: 2000 });
+        //     } else {
+        //       this.$toast.success(`新增失敗：${res.data}`, { duration: 2000 });
+        //     }
+        //   })
+        //   .catch(error => {
+        //     alert("error:" + error.message);
+        //   });
       } else {
         alert(valid);
       }
@@ -307,14 +333,17 @@ export default {
       const agent = new https.Agent({
         rejectUnauthorized: false
       });
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
-        .then(res => {
-          this.statLst = res.data.filter(x => x.name_ch != ""); //不提供保留項;
-        })
-        .catch(error => {
-          alert("error:" + error.message);
-        });
+      let getPondStateList = await this.getPondStateList();
+      let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
+      this.statLst = data.filter(x => x.name_ch != ""); //不提供保留項;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
+      //   .then(res => {
+      //     this.statLst = res.data.filter(x => x.name_ch != ""); //不提供保留項;
+      //   })
+      //   .catch(error => {
+      //     alert("error:" + error.message);
+      //   });
     }
   }
 };

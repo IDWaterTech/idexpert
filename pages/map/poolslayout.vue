@@ -447,9 +447,9 @@ export default {
     },
     successData: {
       type: Array,
-      default(rawProps) {
-      return []
-    }
+      default() {
+        return []
+      }
     },
     nowAreaTag: {
       type: String,
@@ -542,24 +542,33 @@ export default {
       if(this.nowAreaId.factory_id!==null) {
         // if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
           this.allData = [];
-          await this.$axios
-            .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
-            .then(res => {
-              // this.ponds = res.data;
-              console.log('getData',res.data);
-              this.allData = res.data;
+          let getMapList = await this.getMapList(parm);
+          let data = typeof (getMapList)=='string'?[]:getMapList;
+          this.allData = data;  
+          this.dataPrepare();
+          this.getLayoutData();
+          if(this.$route.path!==('/basic')) {
+            this.isLoad = true;
+          }
+          this.oldAreaId = _.cloneDeep(this.nowAreaId);
+          // await this.$axios
+          //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
+          //   .then(res => {
+          //     // this.ponds = res.data;
+          //     console.log('getData',res.data);
+          //     this.allData = res.data;
               
-              this.dataPrepare();
-              this.getLayoutData();
-              if(this.$route.path!==('/basic')) {
-                this.isLoad = true;
-              }
-              this.oldAreaId = _.cloneDeep(this.nowAreaId);
+          //     this.dataPrepare();
+          //     this.getLayoutData();
+          //     if(this.$route.path!==('/basic')) {
+          //       this.isLoad = true;
+          //     }
+          //     this.oldAreaId = _.cloneDeep(this.nowAreaId);
               
-            })
-            .catch(error => {
-              // alert("error:" + error.message);
-            });
+          //   })
+          //   .catch(error => {
+          //     // alert("error:" + error.message);
+          //   });
         // }else {
         //   this.dataPrepare();
         //   this.getLayoutData();
@@ -922,27 +931,29 @@ export default {
   watch: {
     successData() {
       // 全部儲存後，需更改原本的資料以及池況還原
-      // console.log('success',this.successData);
-      if(this.successData.length>0) {
-        let ids = []
-        this.successData.forEach(data=>{ids.push(data.id);});
-        this.successDataID = ids;
-        // console.log('success ids',ids);
-        for(let x=0;x<this.ponds.length;x++) {
-          for(let i=0;i<this.ponds[x].pond.length;i++) {
-            if(this.ponds[x].pond[i].rows.length>0) {
-              for(let z=0;z<this.ponds[x].pond[i].rows.length;z++) {
-                this.editDataChange(this.ponds[x].pond[i].rows[z],this.successData,'muti');
-              }
-            }else {
-              this.editDataChange(this.ponds[x].pond[i],this.successData,'muti');
-            }
-          }
-        }
-        if(this.$route.path!=='/basic') {
-          this.getPondData();
-        }
-      }
+      console.log('success',this.successData);
+      console.log('edit',this.editData);
+      this.getPondData();
+      // if(this.successData.length>0) {
+      //   let ids = []
+      //   this.successData.forEach(data=>{ids.push(data.id);});
+      //   this.successDataID = ids;
+      //   // console.log('success ids',ids);
+      //   for(let x=0;x<this.ponds.length;x++) {
+      //     for(let i=0;i<this.ponds[x].pond.length;i++) {
+      //       if(this.ponds[x].pond[i].rows.length>0) {
+      //         for(let z=0;z<this.ponds[x].pond[i].rows.length;z++) {
+      //           this.editDataChange(this.ponds[x].pond[i].rows[z],this.successData,'muti');
+      //         }
+      //       }else {
+      //         this.editDataChange(this.ponds[x].pond[i],this.successData,'muti');
+      //       }
+      //     }
+      //   }
+      //   if(this.$route.path!=='/basic') {
+      //     this.getPondData();
+      //   }
+      // }
     },
     showedit() {
       // 非編輯狀態，清除原本要更改的池況狀態
