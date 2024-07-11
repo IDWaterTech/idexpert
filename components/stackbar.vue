@@ -1,8 +1,10 @@
 <template>
-  <div style="width: 100%;height: 400px;" ref="mymain"></div>
+  <div>
+    <div style="width: 100%;height: 400px;" ref="mymain"></div>
+  </div>
+  
 </template>
 <script>
-import "echarts-liquidfill";
 export default {
   data() {
     return {};
@@ -93,8 +95,19 @@ export default {
     // 基于准备好的dom，初始化echarts实例
     var myChart = this.$echarts.init(this.$refs.mymain);
     myChart.setOption(this.option);
+  },
+  watch: {
+    value: {
+      // 開合面板循環清單的刪除會跑版 
+      handler() {
+        this.$nextTick(()=>{
+          var myChart = this.$echarts.init(this.$refs.mymain);
+          myChart.setOption(this.option);
+        })
+      },
+      deep: true
+    },
   }
 };
 </script>
-<style lang="stylus" scoped></style>
-<style lang="stylus"></style>
+<style lang="scss" scoped></style>
