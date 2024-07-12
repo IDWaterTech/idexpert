@@ -997,9 +997,9 @@ Vue.mixin({
             }
         },
         // 刪除水質欄位
-        deleteColDataList:async function(id) {
+        deleteColDataList:async function(id,parm) {
             try {
-                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`)
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`,{ data: parm },)
                 console.log("刪除水質欄位:" + data.request.responseURL);
                 if(data.data == "刪除成功") {
                     this.$toast.success("刪除成功", { duration: 2000 });
