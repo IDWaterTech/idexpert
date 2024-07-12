@@ -982,7 +982,7 @@ Vue.mixin({
         patchColDataList:async function(parm,id) {
             try {
                 let data = await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`,parm,)
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`,parm,)
                 console.log("修改水質欄位:" + data.request.responseURL);
                 if(data.data == "修改成功") {
                     this.$toast.success("修改成功", { duration: 2000 });
@@ -999,7 +999,7 @@ Vue.mixin({
         // 刪除水質欄位
         deleteColDataList:async function(id) {
             try {
-                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`)
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`)
                 console.log("刪除水質欄位:" + data.request.responseURL);
                 if(data.data == "刪除成功") {
                     this.$toast.success("刪除成功", { duration: 2000 });
