@@ -960,7 +960,7 @@ Vue.mixin({
         postColDataList:async function(addform) {
             try {
                 let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`,addform,)
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`,addform,)
                 console.log("新增水質欄位:" + data.request.responseURL);
                 if(data.data == "新增成功") {
                     this.$toast.success("新增結果：" + data.data, {
