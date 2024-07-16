@@ -38,9 +38,10 @@
           
           <!-- <v-icon color="#00B900" class="mr-2"
             >mdi-alpha-l-circle-outline</v-icon> -->
-          <div class="mail line">
+          <div class="mail line flex-align-center">
             <span>Line</span>
             <el-switch
+              class="mx-2"
               v-model="profile.is_personal_enable_line"
               active-color="#006AA6"
               inactive-color="#BFCBD2"
@@ -49,7 +50,7 @@
             ></el-switch>
 
             <v-btn
-              class="btn-primary green"
+              class="btn-primary green mx-2"
               tile
               :href="interactionLink"
               :disabled="
@@ -66,7 +67,7 @@
               @click="revoke"
               :disabled="!profile.line_token"
               v-if="profile.line_token"
-              class="btn-primary delete"
+              class="btn-primary delete mx-2"
             >
               <!-- <v-icon :disabled="!profile.line_token">mdi-vector-polyline-remove</v-icon> -->
               解除綁定
