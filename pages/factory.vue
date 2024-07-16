@@ -1000,6 +1000,8 @@ export default {
                   this.dialog.main = false;
                   this.getmain();
                   this.sel_main = "";
+                  this.sel_area = "";
+                  this.pooldata = [];
                 }
             },50)
             // await this.$axios
@@ -1035,6 +1037,7 @@ export default {
                   this.getmain();
                   this.sel_main = "";
                   this.sel_area = "";
+                  this.pooldata = [];
                 }
             },50)
             // await this.$axios
