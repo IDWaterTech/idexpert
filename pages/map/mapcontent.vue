@@ -19,7 +19,7 @@
                 <v-col cols="12"
                         sm="12">
                     <div v-if="areas.length > 0" class="tabs">
-                        <v-tabs v-model="nowAreaTag" show-arrows :style="{paddingLeft: isField?'12px':'0'}">
+                        <v-tabs v-model="nowAreaTag" show-arrows :style="{paddingLeft: isField?'12px':'0'}" style="overflow-x: hidden;">
                             <div v-if="!isField" class="icons">
                                 <!-- <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon> -->
                                 <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="userDialog" class="my-3">mdi-pencil</v-icon>

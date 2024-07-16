@@ -132,7 +132,7 @@
           class="mx-0"
           :class="{'parent-row':`${nowAreaTag=='setting'&&setting=='layout'}`}">
           <settingcolor v-if="setting=='color'" class="mx-3" style="width: 100%;"></settingcolor>
-          <settinglayout v-if="setting=='layout'" class="mx-3" style="width: 100%;" :areas="areas1"></settinglayout>
+          <settinglayout v-if="setting=='layout'" style="width: calc(100% - 24px);" :areas="areas1"></settinglayout>
         </v-row>
       </div>
       <div v-else-if="ponds.length==0 && !$route.query.field || ponds.length==0 && $route.path=='/basic'" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>

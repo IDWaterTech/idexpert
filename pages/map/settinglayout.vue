@@ -1,5 +1,5 @@
 <template>
-    <div class="setting-layout">
+    <div class="setting-layout pa-3" style="margin: 0!important;width: calc(100% - 24px);">
         <!-- 欄位 -->
         <v-row v-if="areas.ponds?.length>0" style="align-items: center;margin-bottom: 12px;flex-wrap: nowrap;">
             <div class="icon-group" style="width: 60px;margin-bottom: 8px;">

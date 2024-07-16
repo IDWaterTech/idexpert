@@ -1530,6 +1530,7 @@ export default {
       console.log('change pool',evt)
       this.poolid = evt;
       this.passObj.poolid = this.poolid;
+      this.currentDataId=null;
       this.getAreaId(evt);
       // this.getDisease();
       // this.getWater();
