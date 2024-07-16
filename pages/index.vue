@@ -487,8 +487,7 @@ video {
         font-weight: bold;
         @include size(100%);
         background-color: rgba(0,0,0,0.5);
-        @include positionCenter();
-        @include flexAlignCenter();
+        @include flexAllCenter();
       }
       .menu-title {
         font-size: 1.1rem;
