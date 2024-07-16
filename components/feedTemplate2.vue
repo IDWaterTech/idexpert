@@ -1128,13 +1128,23 @@ export default {
                                                         num3++;
                                                     }
                                                 })
+                                                console.log('num',num1,num2,num3,step.actionList.length);
                                                 if(num3>0) {
                                                     if(type=='delete') {
                                                         disabled=true;
+                                                    }else {
+                                                        disabled=false;
                                                     }
                                                 }
+                                                let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
                                                 if((num1+num2)==step.actionList.length) {
-                                                    disabled=true;
+                                                    if(type=='delete') {
+                                                        disabled=true;
+                                                    }else if(sid==mitem.stepList.length&&stateIndex==mid) {
+                                                        disabled = false;
+                                                    }else {
+                                                        disabled = true;
+                                                    }
                                                 }
                                             }
                                         }
@@ -1641,7 +1651,7 @@ export default {
                 let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
                 console.log('Stata Index',stateIndex,this.passObj.state)
                 this.mainItems.forEach((mitm,mid)=>{
-                    if(mid<=stateIndex) {
+                    if(mid<=stateIndex||mitm.newest!=='') {
                         mitm.color = this.status[mid].color;
                     }else {
                         mitm.color = '#BFCBD2'
