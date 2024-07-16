@@ -9,7 +9,7 @@
                 </div>
             </v-row>
         </div> -->
-        <div class="content" style="padding:12px 0 0 12px;">
+        <div class="content" style="padding-top: 12px;">
           <!-- 搜尋 -->
           <div class="search">
             <v-row style="margin-bottom: 4px;align-items: center;">
@@ -179,7 +179,7 @@
                   <v-card class="result-card">
                     <div class="content">
                       <div class="header-bar" style="padding: 12px 0;padding-top: 4px;">
-                        <v-tabs v-model="currenttab" show-arrows>
+                        <v-tabs v-model="currenttab" show-arrows @change="closepanel()">
                           <!-- 上方tab -->
                           <v-tab v-for="(tab, idx) in tabs" :key="'tabs-'+idx" :href="`#` + tab.name">
                             {{ tab.name }}
@@ -285,7 +285,7 @@
                                     :key="item.id" v-show="
                                       defPool.水質.includes(item.name) || defPool.水質.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <!-- defitem -->
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
                                       :defaultitem="defalutItemList" :loading="waterloading" :title="item.name" :urldata="{
@@ -402,7 +402,7 @@
                                     :key="item.id" v-show="
                                       defPool.環境.includes(item.name) || defPool.環境.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
                                       :defaultitem="defalutItemList_env" :loading="envloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -506,7 +506,7 @@
                                     :key="item.id" v-show="
                                       defPool.飼料.includes(item.name) || defPool.飼料.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
                                       :defaultitem="defalutItemList_feed" :loading="feedloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -609,7 +609,7 @@
                                     :key="item.id" v-show="
                                       defPool.觀察.includes(item.name) || defPool.觀察.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
                                       :defaultitem="defalutItemList_obs" :loading="obsloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -711,7 +711,7 @@
                                     :key="item.id" v-show="
                                       defPool.進階.includes(item.name) || defPool.進階.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
                                       :defaultitem="defalutItemList_adv" :loading="advloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -814,7 +814,7 @@
                                       defPool.益生菌.includes(item.name) ||
                                       defPool.益生菌.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
                                       :defaultitem="defalutItemList_pbio" :loading="pbioloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -917,7 +917,7 @@
                                       defPool.用料.includes(item.name) ||
                                       defPool.用料.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}池</h1>
+                                    <h1 class="pool-name">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
                                       :defaultitem="defalutItemList_material" :loading="materialloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -1148,6 +1148,7 @@ export default {
           })
         })
         this.showPredict = false;
+        this.defPool= { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [],用料:[] };
         // this.areachange();
       }
     },
