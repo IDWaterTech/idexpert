@@ -225,7 +225,7 @@ Vue.mixin({
             }
         },
         // 新增水質紀錄
-        postColDataList:async function(addform) {
+        postAllDataList:async function(addform) {
             try {
                 let data = await this.$axios
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`,addform,)
@@ -247,7 +247,7 @@ Vue.mixin({
             }
         },
         // 修改水質紀錄
-        patchColDataList:async function(parm,id) {
+        patchAllDataList:async function(parm,id) {
             try {
                 let data = await this.$axios
                 .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`,parm,)
@@ -265,7 +265,7 @@ Vue.mixin({
             }
         },
         // 刪除水質紀錄清單
-        deleteColDataList:async function(id,parm) {
+        deleteAllDataList:async function(id,parm) {
             try {
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`, { data: parm })
                 console.log("刪除水質紀錄:" + data.request.responseURL);
@@ -663,8 +663,8 @@ Vue.mixin({
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/factory/`,addform,)
                 console.log("新增場:" + data.request.responseURL);
                 if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
-                        duration: 2000
+                    this.$toast.success("新增結果：" + data.data+'! 請至「帳號管理」編輯所屬場別，方可檢視/操作此場', {
+                        duration: 5000
                     });
                     return true;
                 }else {
@@ -960,7 +960,7 @@ Vue.mixin({
         postColDataList:async function(addform) {
             try {
                 let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`,addform,)
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`,addform,)
                 console.log("新增水質欄位:" + data.request.responseURL);
                 if(data.data == "新增成功") {
                     this.$toast.success("新增結果：" + data.data, {
@@ -982,7 +982,7 @@ Vue.mixin({
         patchColDataList:async function(parm,id) {
             try {
                 let data = await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`,parm,)
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`,parm,)
                 console.log("修改水質欄位:" + data.request.responseURL);
                 if(data.data == "修改成功") {
                     this.$toast.success("修改成功", { duration: 2000 });
@@ -997,9 +997,9 @@ Vue.mixin({
             }
         },
         // 刪除水質欄位
-        deleteColDataList:async function(id,parm) {
+        deleteColDataList:async function(id) {
             try {
-                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${id}/`,{ data: parm },)
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`)
                 console.log("刪除水質欄位:" + data.request.responseURL);
                 if(data.data == "刪除成功") {
                     this.$toast.success("刪除成功", { duration: 2000 });

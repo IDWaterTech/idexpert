@@ -1937,12 +1937,13 @@ export default {
       console.log("DEL data:", deldata);
       console.log("DEL:" + url);
       var res = false;
-      res = await this.deleteColDataList(this.editedItem.id,deldata);
+      res = await this.deleteAllDataList(this.editedItem.id,deldata);
       setTimeout(()=>{
         if(res) {
           this.delDialog = false; //close dialog
           this.$toast.success(`刪除成功`, { duration: 2000 });
           this.getdata();//重取得資料
+          this.showselect = false;
         }else {
           alert("刪除失敗!");
         }
@@ -1976,7 +1977,7 @@ export default {
           // console.log("DEL data:", deldata);
           // console.log("DEL:" + url);
           var res = false;
-          res = await this.deleteColDataList(editedItem.id, deldata);
+          res = await this.deleteAllDataList(editedItem.id, deldata);
           setTimeout(()=>{
             if(res) {
               record+=1;
@@ -2077,7 +2078,7 @@ export default {
           data_group: this.editedItem.class
         };
         var res = false;
-        res = await this.patchColDataList(data,this.editedItem.id);
+        res = await this.patchAllDataList(data,this.editedItem.id);
         setTimeout(()=>{
             if(res) {
               this.getdata();
@@ -2199,7 +2200,7 @@ export default {
         parms.data = submitData;
         console.log("adddata aparms", parms);
         var res = false;
-          res = await this.postColDataList(parms);
+          res = await this.postAllDataList(parms);
           setTimeout(()=>{
               if(res) {
                 if(this.sdate&&this.edate&&this.sel_main&&this.sel_area&&this.sel_pool&&this.defitem) {
