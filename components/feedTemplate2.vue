@@ -1106,48 +1106,67 @@ export default {
                                         if((this.templatemode=='cycleedit'?mitem.phase_original_id:mitem.phase_id)==item.phase_id) {
                                             if(sid<item.id) {
                                                 disabled=true;
-                                            }
-                                        }
-                                        // 現在生成的dailycheck階段，不可刪除，可新增
-                                        if(step.id == this.nowStepId) {
-                                            if(type=='delete') {
-                                                disabled = true;
+                                            }else if(sid==item.id) {
+                                                // 如為現在的工作階段不可刪除，可新增
+                                                if(type=='delete') {
+                                                    disabled = true;
+                                                }
                                             }
                                         }else {
-                                            // 非現在生成的dailycheck階段，如果已完成執行，但後續均沒有工作了，不可刪除，不可新增
-                                            if(step.actionList&&step.actionList.length>0) {
-                                                let num1 = 0;
-                                                let num2 = 0;
-                                                let num3 = 0;
-                                                step.actionList.forEach(action=>{
-                                                    if(action.execute==1) {
-                                                        num1++;
-                                                    }else if(action.execute==2) {
-                                                        num2++;
-                                                    }else if(action.execute==3) {
-                                                        num3++;
-                                                    }
-                                                })
-                                                console.log('num',num1,num2,num3,step.actionList.length);
-                                                if(num3>0) {
-                                                    if(type=='delete') {
+                                            // 現在生成的dailycheck階段，不可刪除，可新增
+                                            // if(step.id == this.nowStepId) {
+                                            //     if(type=='delete') {
+                                            //         disabled = true;
+                                            //     }
+                                            // }else {
+                                                // 非現在生成的dailycheck階段，如果已完成執行，但後續均沒有工作了，不可刪除，可新增
+                                                if(step.actionList&&step.actionList.length>0) {
+                                                    let num1 = 0;
+                                                    let num2 = 0;
+                                                    let num3 = 0;
+                                                    step.actionList.forEach(action=>{
+                                                        if(action.execute==1) {
+                                                            num1++;
+                                                        }else if(action.execute==2) {
+                                                            num2++;
+                                                        }else if(action.execute==3) {
+                                                            num3++;
+                                                        }
+                                                    })
+                                                    console.log('num',num1,num2,num3,step.actionList.length);
+                                                    let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
+                                                    if(type=='delete'&&num3>0) {
                                                         disabled=true;
                                                     }else {
-                                                        disabled=false;
+                                                        if((num1+num2)==step.actionList.length) {
+                                                            if(stateIndex!==mid) {
+                                                                disabled = true;
+                                                            }else {
+                                                                if(type=='delete') {
+                                                                    disabled = true;
+                                                                }
+                                                            }
+                                                        }
                                                     }
+                                                    // if(num3>0) {
+                                                    //     disabled=false;
+                                                    // }
+                                                    // let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
+                                                    // if((num1+num2)==step.actionList.length) {
+                                                    //     if(type=='delete') {
+                                                    //         disabled=true;
+                                                    //     }else if(sid==mitem.stepList.length&&stateIndex==mid) {
+                                                    //         disabled = false;
+                                                    //         console.log('相等')
+                                                    //     }else {
+                                                    //         disabled = true;
+                                                    //         console.log('不相等')
+                                                    //     }
+                                                    // }
                                                 }
-                                                let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
-                                                if((num1+num2)==step.actionList.length) {
-                                                    if(type=='delete') {
-                                                        disabled=true;
-                                                    }else if(sid==mitem.stepList.length&&stateIndex==mid) {
-                                                        disabled = false;
-                                                    }else {
-                                                        disabled = true;
-                                                    }
-                                                }
-                                            }
+                                            // }
                                         }
+                                        
                                     }
                                 }
                             })
