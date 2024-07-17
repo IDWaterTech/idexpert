@@ -977,35 +977,39 @@ export default {
             // this.mainItems = this.passObj.tempContent;
 
             // this.tempMain = _.cloneDeep(this.passObj.tempMain);
-            this.mainItems = _.cloneDeep(this.passObj.tempContent);
-            this.mainItems.forEach(m=>m.open=this.nowExpand);
-            this.mainItems.forEach((mitem,mid)=>{
-                this.workOpenStatus.push({
-                    phase_id:mitem.phase_original_id,
-                    open: new Array()
-                })
-                if(mitem.stepList&&mitem.stepList.length>0) {
-                    mitem.stepList.forEach(step=>{
-                        this.workOpenStatus[mid].open.push(step.open);
+            console.log('Created',this.passObj.tempContent)
+            if(this.passObj.tempContent.length>0) {
+                this.mainItems = _.cloneDeep(this.passObj.tempContent);
+                this.mainItems.forEach(m=>m.open=this.nowExpand);
+                this.mainItems.forEach((mitem,mid)=>{
+                    this.workOpenStatus.push({
+                        phase_id:mitem.phase_original_id,
+                        open: new Array()
                     })
-                }else {
-                    mitem.stepList=new Array();
-                    mitem.stepList.push({actionList:new Array()});
+                    if(mitem.stepList&&mitem.stepList.length>0) {
+                        mitem.stepList.forEach(step=>{
+                            this.workOpenStatus[mid].open.push(step.open);
+                        })
+                    }else {
+                        mitem.stepList=new Array();
+                        mitem.stepList.push({actionList:new Array()});
+                    }
+                })
+                let param={pond_id:this.passObj.poolid}
+                let getDailyCheckList = await this.getDailyCheckList(param);
+                let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
+                if(data.step_id) {
+                    this.nowStepId = data.step_id;
+                    this.dailyList = data;
                 }
-            })
-            let param={pond_id:this.passObj.poolid}
-            let getDailyCheckList = await this.getDailyCheckList(param);
-            let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
-            if(data.step_id) {
-                this.nowStepId = data.step_id;
-                this.dailyList = data;
-            }
-            this.authorization = _.cloneDeep(this.passObj.authorization);
-            // console.log('mainItems',this.mainItems);
-            // this.getAuth();
-            // if(this.templatemode == 'cycleedit') {
-            this.sortData();
+                this.authorization = _.cloneDeep(this.passObj.authorization);
+                // console.log('mainItems',this.mainItems);
+                // this.getAuth();
+                // if(this.templatemode == 'cycleedit') {
+                this.sortData();
             // };
+            }
+            
         }else {
             // 因為抓取出來的資料stepList為空的不會儲存，因此得額外比對整體流程，並塞進stepList，這樣模板上才可以新增其他流程
             this.mainItems = [];
@@ -1133,7 +1137,7 @@ export default {
                                                             num3++;
                                                         }
                                                     })
-                                                    console.log('num',num1,num2,num3,step.actionList.length);
+                                                    // console.log('num',num1,num2,num3,step.actionList.length);
                                                     let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
                                                     if(type=='delete'&&num3>0) {
                                                         disabled=true;
@@ -1253,11 +1257,13 @@ export default {
                     // 所以必須要將dailycheck目前工作撈取出來算生成天數
                     if(this.nowStepId==item.id) {
                         // 依據dailycheck展開的天數算
-                        this.dailyList.daily.forEach(x=>{
-                            if(!dateList.includes(x.scheduling_date)) {
-                                dateList.push(x.scheduling_date)
-                            }
-                        })
+                        if(this.dailyList.daily) {
+                            this.dailyList.daily.forEach(x=>{
+                                if(!dateList.includes(x.scheduling_date)) {
+                                    dateList.push(x.scheduling_date)
+                                }
+                            })
+                        }
                         return dateList.length;
                     }else {
                         // 非目前dailycheck生成的工作，判斷是否已有dailyCheckList，有代表已經完成執行的工作
@@ -2928,7 +2934,7 @@ export default {
                 this.tempMain = _.cloneDeep(this.passObj.tempMain);
                 this.mainItems = _.cloneDeep(this.passObj.tempContent);
                 this.mainItems.forEach(m=>m.open=this.nowExpand);
-                if(this.templatemode=='cycleedit') {
+                if(this.templatemode=='cycleedit'&&this.mainItems.length>0) {
                     let param={pond_id:this.passObj.poolid}
                     let getDailyCheckList = await this.getDailyCheckList(param);
                     let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
@@ -2945,19 +2951,19 @@ export default {
             deep: true
         },
         diseaseReport() {
-            if(this.templatemode=='cycleedit') {
+            if(this.templatemode=='cycleedit'&&this.mainItems.length>0) {
                 this.sortData();
             }
             
         },
         waterReport() {
-            if(this.templatemode=='cycleedit') {
+            if(this.templatemode=='cycleedit'&&this.mainItems.length>0) {
                 this.sortData();
             }
             
         },
         eventReport() {
-            if(this.templatemode=='cycleedit') {
+            if(this.templatemode=='cycleedit'&&this.mainItems.length>0) {
                 this.sortData();
             }
             
