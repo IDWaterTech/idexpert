@@ -2879,6 +2879,7 @@ export default {
               }
               
               this.getDisease();
+              this.passObj.tempContent = [];
               this.passObj.nowId = this.poolid;
               if(this.circleData.filter(x=>x.id==val.id)[0].ended_date!==null && this.circleData.filter(x=>x.id==val.id)[0].ended_date!=='' ) {
                 this.passObj.nowEnd = true;
