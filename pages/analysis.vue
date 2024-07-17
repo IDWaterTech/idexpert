@@ -252,7 +252,7 @@
                                     ">主要觀測項目</v-btn> -->
                                   </v-col>
                                   <!-- 圖表顯示控制 -->
-                                  <v-col cols="6" md="6" sm="8" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="6" sm="8" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -368,7 +368,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
@@ -473,7 +473,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -576,7 +576,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -678,7 +678,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -780,7 +780,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -883,7 +883,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-align-center" style="width: 100%;padding-top: 0;justify-content: flex-end;">
+                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch

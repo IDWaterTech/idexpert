@@ -1477,8 +1477,7 @@ export default {
       @include flexAlignCenter();
     }
     .btn-groups {
-      @include flexAlignCenter();
-      justify-content: flex-end;
+      @include flexCenterEnd();
       // width: 100%;
       max-width: 280px;
     }

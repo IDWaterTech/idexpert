@@ -954,7 +954,7 @@
                         item-value="id" label="項目類型" style="padding-top: 8px;margin-right: 16px;" @change="selectadd($event,id)"></v-select>
                     </div>
                     <div class="select-item" style="width: 100%;">
-                        <div class="select-bacteria" style="display: flex;align-items: flex-end;width: 100%;">
+                        <div class="select-bacteria flex-align-end" style="width: 100%;">
                           <v-select
                               v-model="add.status"
                               :items="addStatus"
@@ -970,7 +970,7 @@
                           </v-select>
                           <v-text-field v-model="add.position" label="檢驗單位" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;"></v-text-field>
                         </div>
-                        <div class="select-bacteria" style="display: flex;align-items: flex-end;margin-bottom: 12px;width: 100%;">
+                        <div class="select-bacteria flex-align-end" style="margin-bottom: 12px;width: 100%;">
                           <div class="date-time-picker" style="display: flex;flex-direction: column;align-items: flex-start;color: #6c9bcd;width: 100%;margin-right: 16px;">
                               <v-menu v-model="menu_reportdate" :close-on-content-click="false" :nudge-right="40"
                                 transition="scale-transition" offset-y min-width="auto">
@@ -988,7 +988,7 @@
                             </div>  
                             <!-- {{ bacteriaAll.filter(x=>x.id==add.species)[0].test }} -->
                         </div>
-                        <div v-if="add.type==1" class="select-bacteria" style="display: flex;align-items: flex-end;margin-bottom: 12px;width: 100%;">
+                        <div v-if="add.type==1" class="select-bacteria flex-align-end" style="margin-bottom: 12px;width: 100%;">
                             <v-select
                                 v-model="add.species"
                                 :items="bacteriaAll"
@@ -4315,8 +4315,7 @@ export default {
 }
 .v-card.bg-card {
   .btn-groups {
-    @include flexAlignCenter();
-    justify-content: flex-end;
+    @include flexCenterEnd();
     button {
       margin-right: 8px;
     }

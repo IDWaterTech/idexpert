@@ -3125,23 +3125,24 @@
                     
                 </div>
                 <div class="to-self">
-                    <v-tooltip v-if="windowWidth<960" left>
+                    <v-tooltip bottom left>
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-primary btn-to" @click="goAnchor('params')" v-bind="attrs" v-on="on">
+                            <button class="btn-primary" :style="{'border-radius':`${windowWidth<960&&isShowResult?'4px 4px 0 0 !important':'4px !important'}`}" @click="goAnchor('top')" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-format-vertical-align-top</v-icon>
+                            </button>
+                        </template>
+                        <span>回到上方</span>
+                    </v-tooltip>
+                    <v-tooltip v-if="windowWidth<960&&isShowResult" left>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-primary btn-to" style="background-color: #408fbc !important;" @click="goAnchor('params')" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-pencil</v-icon>
                             </button>
                         </template>
                         <span>回到參數設定</span>
                     </v-tooltip>
-                    <v-tooltip bottom left>
-                        <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-primary" :style="{'border-radius':`${windowWidth<960?'0 !important':'4px !important'}`}" style="background-color: #408fbc !important;" @click="goAnchor('top')" v-bind="attrs" v-on="on">
-                                <v-icon>mdi-chevron-double-up</v-icon>
-                            </button>
-                        </template>
-                        <span>回到上方</span>
-                    </v-tooltip>
-                    <v-tooltip v-if="windowWidth<960" left>
+                    
+                    <v-tooltip v-if="windowWidth<960&&isShowResult" left>
                         <template v-slot:activator="{ on, attrs }">
                             <button class="btn-primary btn-to to-ai"
                                 @click="goAnchor('#ai')" v-bind="attrs"
@@ -4761,8 +4762,7 @@ export default {
                 }
                 .btn-groups {
                     width: 100%;
-                    @include flexAlignCenter();
-                    justify-content: flex-end;
+                    @include flexCenterEnd();
                     // border-bottom: 1px solid rgba(0,0,0,0.1);
                     padding: 8px;
                     button {

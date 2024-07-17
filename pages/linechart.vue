@@ -39,7 +39,7 @@
                 </v-dialog>
               </div>
               <div>
-                <div v-if="item.items.rows.length>0" class="min-max flex-align-center" style="justify-content: flex-end;">
+                <div v-if="item.items.rows.length>0" class="min-max flex-center-end">
                     <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
                     <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right" :min="0" style="width:100px;height: 40px;"></el-input-number></div>
                 </div>

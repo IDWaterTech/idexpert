@@ -38,6 +38,11 @@ $color-black-10: rgba(0,0,0,0.1);
   display: flex;
   align-items: center;
 }
+// flex end
+@mixin flexAlignEnd {
+  display: flex;
+  align-items: flex-end;
+}
 // flex center
 @mixin flexAllCenter {
   @include flexAlignCenter();
@@ -48,6 +53,18 @@ $color-black-10: rgba(0,0,0,0.1);
 @mixin flexCenterBetween {
   @include flexAlignCenter();
   justify-content: space-between;
+}
+
+// flex align center justify flex-end
+@mixin flexCenterEnd {
+  @include flexAlignCenter();
+  justify-content: flex-end;
+}
+
+// flex align center justify flex-start
+@mixin flexCenterStart {
+  @include flexAlignCenter();
+  justify-content: flex-start;
 }
 
 // position center
@@ -68,11 +85,20 @@ $color-black-10: rgba(0,0,0,0.1);
 .flex-align-center {
   @include flexAlignCenter();
 }
+.flex-align-end {
+  @include flexAlignEnd();
+}
 .flex-all-center {
   @include flexAllCenter();
 }
 .flex-center-between {
   @include flexCenterBetween();
+}
+.flex-center-end {
+  @include flexCenterEnd();
+}
+.flex-center-start {
+  @include flexCenterStart();
 }
 
 /* 按鈕 */
@@ -304,19 +330,18 @@ $color-black-10: rgba(0,0,0,0.1);
       }
   }
   .to-self {
-      display: flex;
-      flex-direction: column;
-      width: 120px;
-      align-items: flex-end;
-      border-radius: 4px;
-      .btn-primary.btn-to {
-          border-radius: 4px 4px 0 0 !important;
-          // background-color: #BFD9E8;
-          &.to-ai {
-              border-radius: 0 0 4px 4px !important;
-              background-color: #2fba95 !important;
-          }
-      }
+    @include flexAlignEnd();
+    flex-direction: column;
+    width: 120px;
+    border-radius: 4px;
+    .btn-primary.btn-to {
+        border-radius: 0 !important;
+        // background-color: #BFD9E8;
+        &.to-ai {
+            border-radius: 0 0 4px 4px !important;
+            background-color: #2fba95 !important;
+        }
+    }
   }
 }
 

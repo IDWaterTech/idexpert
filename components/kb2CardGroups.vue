@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                             <div class="content" style="display: flex;flex-direction: column;align-items: center;padding-top: 8px;">
-                                <div class="main-content" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+                                <div class="main-content flex-center-between" style="width: 100%;">
                                     <div class="choose">
                                         <span style="font-size: 0.85rem;color: #40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span>
                                     </div>
@@ -73,7 +73,7 @@
                                     </div>
                                     
                                 </div>
-                                <div class="main-content" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+                                <div class="main-content flex-center-between" style="width: 100%;">
                                     <div class="choose" style="">
                                         <!-- <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
                                         <span style="font-size: 0.85rem;color: #00324E;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span> -->
@@ -203,7 +203,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content ring" style="width: 100%;display: flex;align-items: center;justify-content: center;">
+                            <div class="content ring" style="width: 100%;">
                                 <div class="ring-of-data">
                                     <!-- <ve-ring v-if="isChart" :data="chartDataSurvival" :settings="chartSetting" :extend="chartExtend" width="150px" height="150px"></ve-ring> -->
                                     <RingChart :chartData="chartDataSurvival" :colors="chartSurvivalColor"></RingChart>
@@ -221,7 +221,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content ring" style="width: 100%;display: flex;align-items: center;justify-content: center;">
+                            <div class="content ring" style="width: 100%;">
                                 <div class="ring-of-data">
                                     <!-- <ve-ring v-if="isChart" :data="chartDataSurvival" :settings="chartSetting" :extend="chartExtend" width="150px" height="150px"></ve-ring> -->
                                     <RingChart :chartData="chartDataWeight" :colors="chartWeightColor"></RingChart>
@@ -413,10 +413,12 @@ export default {
                 justify-content: center;
                 width: 100%;
             }
+            &.ring {
+                @include flexAllCenter();
+            }
             .num-of-alert {
                 width: 100%;
-                @include flexAlignCenter();
-                justify-content: flex-end;
+                @include flexCenterEnd();
                 color: $color-dark-75;
             }
             .number-of-data {
@@ -435,8 +437,7 @@ export default {
         }
         .cata {
             width: 100%;
-            @include flexAlignCenter();
-            justify-content: flex-end;
+            @include flexCenterEnd();
             margin-top: 16px;
             .judge-cata {
                 padding: 2px 8px;

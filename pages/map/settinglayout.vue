@@ -208,7 +208,7 @@
                     <span v-if="isPondName" class="note">注意：其他池已使用此名稱，按下確認鈕後，原使用此名稱的池會變成 '空白' !</span>
                     
                     <v-card-actions>
-                        <div class="buttons flex-align-center" style="width:100%;justify-content: flex-end;">
+                        <div class="buttons flex-center-end" style="width:100%;">
                             <button class="cancel" @click="cancelEditBlock()">取消</button>
                             <button class="confirm" @click="saveBlock()">確認</button>
                         </div>

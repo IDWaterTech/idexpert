@@ -2991,9 +2991,8 @@ export default {
     padding-left: 8px;
 }
 .status {
-    display: flex;
+    @include flexAlignEnd();
     flex-direction: column;
-    align-items: flex-end;
     // padding: 2px;
     padding-right: 4px;
     min-width: 72px;
