@@ -1139,7 +1139,7 @@ export default {
                                                     })
                                                     // console.log('num',num1,num2,num3,step.actionList.length);
                                                     let stateIndex = this.status.map(x=>x.name).indexOf(this.passObj.state);
-                                                    if(type=='delete'&&num3>0) {
+                                                    if(type=='delete'&&num3>0||mid<stateIndex) {
                                                         disabled=true;
                                                     }else {
                                                         if((num1+num2)==step.actionList.length) {
@@ -1167,7 +1167,7 @@ export default {
                                                     //         console.log('不相等')
                                                     //     }
                                                     // }
-                                                }
+                                                }else {}
                                             // }
                                         }
                                         

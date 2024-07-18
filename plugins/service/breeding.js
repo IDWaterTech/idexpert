@@ -729,7 +729,7 @@ Vue.mixin({
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record2/`,addform,)
                 console.log("新增循環:" + data.request.responseURL);
                 if(data.data == "新增成功") {
-                    this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
+                    this.$toast.success("新增成功，自動調整池狀態", { duration: 2000 });
                     return true;
                 }else {
                     this.$toast.error("新增失敗：" + data.data, {

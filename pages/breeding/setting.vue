@@ -71,6 +71,7 @@ export default {
     components: {
         seedlings,feedTemp,species
     },
+    middleware: "auth",
     head(){
     return{
       title:'養殖設定'

@@ -2366,9 +2366,9 @@ export default {
                 status: '養殖審核'
               }
               // this.compareStatus(status);
-              this.getCircleData();
-              
             }
+            this.addDialog = false;
+            this.getCircleData();
         },50)
         // await this.$axios
         //   .post(
