@@ -532,7 +532,7 @@ export default {
       //   .catch(error => {
       //     // alert("error:" + error.message);
       //   });
-      console.log('nowAreaId',this.nowAreaId.factory_id);
+      console.log('nowAreaId',this.nowAreaId.factory_id,this.oldAreaId.factory_id);
       let parm = {
         factory_id: this.nowAreaId.factory_id,
         pond_area_id: null
@@ -540,7 +540,7 @@ export default {
       }
       // this.isLoad = false;
       if(this.nowAreaId.factory_id!==null) {
-        // if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
+        if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
           this.allData = [];
           let getMapList = await this.getMapList(parm);
           let data = typeof (getMapList)=='string'?[]:getMapList;
@@ -572,7 +572,7 @@ export default {
         // }else {
         //   this.dataPrepare();
         //   this.getLayoutData();
-        // }
+        }
         
       }
       
@@ -854,7 +854,7 @@ export default {
           var keysdata = Object.keys(this.nowAreaId.range['critical']);
           for(let i=0;i<keysdata.length;i++) {
             if(this.nowAreaId.range['critical'][keysdata[i]]&&this.nowAreaId.range['critical'][keysdata[i]].length>0) {
-              console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
+              // console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
               this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
                 if(x!=='') {
                   danger += x;
@@ -931,9 +931,12 @@ export default {
   watch: {
     successData() {
       // 全部儲存後，需更改原本的資料以及池況還原
-      console.log('success',this.successData);
-      console.log('edit',this.editData);
-      this.getPondData();
+      if(this.$route.path!==('/basic')) {
+        console.log('success',this.successData);
+        console.log('edit',this.editData);
+        this.getPondData();
+      }
+      
       // if(this.successData.length>0) {
       //   let ids = []
       //   this.successData.forEach(data=>{ids.push(data.id);});
@@ -1007,7 +1010,7 @@ export default {
       deep: true
     },
     waterloading() {
-      this.getPondData();
+      // this.getPondData();
       this.isLoad = true;
     },
   }

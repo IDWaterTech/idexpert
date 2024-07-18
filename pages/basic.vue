@@ -1297,7 +1297,7 @@ export default {
       let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
       this.lightData = data;
       console.log(this.lightData);
-      await this.getWaterData();
+      // await this.getWaterData();
       this.waterloading = true;
       // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
       //   await this.$axios.get(url).then(async res => {
@@ -1410,14 +1410,15 @@ export default {
       };
       
       console.log("all參數：",allParm);
-      let getSuggestionList = await this.getSuggestionList(allParm);
-      let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
-      console.log('suggestion',suggestionData);
-      // console.log("suggData:",this.suggData);
-      this.alertAllData.push({
-        name: data.name,
-        suggestion: suggestionData
-      });
+      // let getSuggestionList = await this.getSuggestionList(allParm);
+      // let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
+      // console.log('suggestion',suggestionData);
+      // // console.log("suggData:",this.suggData);
+      // this.alertAllData.push({
+      //   name: data.name,
+      //   suggestion: suggestionData
+      // });
+
       // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
       // await this.$axios.post(url, allParm).then(res => {
       //     if(res.status==200){
