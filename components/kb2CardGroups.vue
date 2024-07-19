@@ -63,26 +63,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding-top: 8px;">
+                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding: 0;padding-top: 8px;">
                                 <div class="main-content flex-center-between" style="width: 100%;">
-                                    <div class="choose">
-                                        <span style="font-size: 0.85rem;color: #40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span>
-                                    </div>
                                     <div class="feed">
-                                        <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span>
+                                        <span style="font-size: 0.75rem;color:#40657A;font-weight: bold;">方案{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span>
                                     </div>
-                                    
-                                </div>
-                                <div class="main-content flex-center-between" style="width: 100%;">
+                                    <div class="choose">
+                                        <span style="font-size: 0.75rem;color: #40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span>
+                                    </div>
                                     <div class="choose" style="">
-                                        <!-- <span style="font-size: 0.85rem;color:#40657A;font-weight: bold;">方案：{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span><br>
-                                        <span style="font-size: 0.85rem;color: #00324E;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span> -->
-                                        <span style="font-size: 0.85rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''?'+':''}}
-                                            <span v-if="cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''" style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed[0].NextFeedIncrementPct}}</span>
-                                            <!-- <span v-else class="number-of-data" style="padding-top: 0;">-</span> -->
+                                        <span style="font-size: 0.75rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0&&(cardData.nextFeed[0].NextFeedIncrementPct!==''&&cardData.nextFeed[0]?.NextFeedIncrementPct.includes('-')==false)?'+':''}}
+                                            <span v-if="cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''" style="font-size: 0.75rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed[0].NextFeedIncrementPct}}</span>
                                         </span><br>
                                     </div>
-                                    <div class="feed">
+                                </div>
+                                <div class="main-content flex-center-between" style="width: 100%;">
+                                    <!-- <div class="choose" style="">
+                                        
+                                        <span style="font-size: 0.85rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''?'+':''}}
+                                            <span v-if="cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''" style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed[0].NextFeedIncrementPct}}</span>
+                                        </span><br>
+                                    </div> -->
+                                    <div class="feed" style="width: 100%;display: flex;justify-content: center;align-items: flex-end;">
                                         <span class="number-of-data" style="padding-top: 0;">
                                             {{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeed:'-'}}
                                         </span> g
