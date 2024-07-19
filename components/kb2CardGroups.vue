@@ -52,7 +52,7 @@
                     
                 </v-card>
             </v-col>
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="2" sm="4">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
                         <v-card class="kb-card">
@@ -114,7 +114,7 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="2" sm="4">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
                         <v-card class="kb-card">
@@ -154,7 +154,7 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="2" sm="4">
                 <v-row style="margin-bottom: 0;height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
                         <v-card class="kb-card">
