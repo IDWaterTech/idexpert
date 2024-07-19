@@ -63,9 +63,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding: 0;padding-top: 8px;">
+                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding: 0;padding-top: 12px;">
                                 <div class="main-content flex-center-between" style="width: 100%;">
-                                    <div class="feed">
+                                    <div class="feed" v-if="cardData.nextFeed.length>0">
                                         <span style="font-size: 0.75rem;color:#40657A;font-weight: bold;">方案{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span>
                                     </div>
                                     <div class="choose">
