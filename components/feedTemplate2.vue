@@ -1685,11 +1685,14 @@ export default {
             }else {
                 let index=0;
                 this.mainItems.forEach((mitem,mid)=>{
-                    mitem.stepList.forEach(step=>{
-                        if(step.id==this.nowStepId) {
-                            index=mid;
-                        }
-                    })
+                    if(mitem.newest&& mitem.newest!=='') {
+                        index = mid;
+                    }
+                    // mitem.stepList.forEach(step=>{
+                    //     if(step.id==this.nowStepId) {
+                    //         index=mid;
+                    //     }
+                    // })
                 })
                 this.mainItems.forEach((i,id)=>{
                     if(this.templatemode=='cycleedit') {
@@ -1697,7 +1700,7 @@ export default {
                             if(st.name==i.phase_name_ch) {
                                 i.open = st.open;
                                 // 如果有newest參數，代表此階段已有執行項目，直接給定顏色
-                                if((i.newest&& i.newest!=='')||id==index) {
+                                if((i.newest&& i.newest!=='')||id<=index) {
                                     i.color = st.color;
                                 }else {
                                     i.color = '#BFCBD2'
