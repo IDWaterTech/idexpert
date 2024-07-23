@@ -82,7 +82,7 @@
                                 <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="expandPanel(true)"><v-icon>mdi-view-dashboard</v-icon></v-btn>
                                 <v-btn class="btn-icon just-icon" v-if="nowExpand" @click="expandPanel(false)" title="收縮"><v-icon>mdi-view-stream</v-icon></v-btn>
                             </div>
-                            <v-dialog v-model="dialog.pdf" scrollable max-width="75%">
+                            <v-dialog v-model="dialog.pdf" scrollable max-width="75%" width="75%">
                                 <v-card>
                                     <v-card-title class="add-title" style="display: flex;width: 100%;">
                                         <div class="flex-align-center" style="width: calc(100% - 40px);">
@@ -122,7 +122,7 @@
                             </v-dialog>
                         </v-col>
                         <!-- 查詢/清空/控制項 - result版面收合 -->
-                        <v-col v-else cols="12" md="7" sm="12"
+                        <v-col v-else cols="12" md="8" sm="12"
                             :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
                             class="flex-center-between">
                             <div class="btn-groups">
@@ -147,12 +147,33 @@
                                     title="展開">mdi-view-dashboard</v-icon>
                                 <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                             </div>
-                            <v-dialog v-model="dialog.pdf" scrollable max-width="75%">
+                            <v-dialog v-model="dialog.pdf" scrollable max-width="75%" width="75%">
                                 <v-card>
-                                    <v-card-title>計算公式
-                                        <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
-                                        
+                                    <v-card-title class="add-title" style="display: flex;width: 100%;">
+                                        <div class="flex-align-center" style="width: calc(100% - 40px);">
+                                            <span><a :href="url.xls" target="_blank">計算公式</a></span>
+                                            <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <a :href="formulaUrl" target="_blank" v-bind="attrs" v-on="on" style="margin-left: 16px;"><v-icon>mdi-link</v-icon></a>
+                                                </template>
+                                                <span>在新分頁中開啟</span>
+                                            </v-tooltip>
+                                            
+                                        </div>
+                                        <div class="add" style="float: right;">
+                                            <v-btn class="btn-secondary close" title="取消" @click="dialog.pdf = false;"
+                                                style="border: none;min-width: 0;padding: 0 4px;">
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-btn>
+                                        </div>
                                     </v-card-title>
+                                    <!-- <v-card-title>計算公式
+                                        <v-switch
+                                            v-model="formulaData"
+                                            :label="formulaData?'pdf':'xls'"
+                                            ></v-switch>
+                                    </v-card-title> -->
                                     <v-card-text style="height: 600px;">
                                         <v-responsive>
                                             <iframe :src="formulaUrl"
@@ -805,7 +826,8 @@
                                                                         <v-row class="item-row water">
                                                                             <v-col cols="12" md="4" sm="4">
                                                                                 <span class="pa-0 ma-0" :style="{'color':`${WaterQualityData['Salinity']&&WaterQualityData['Salinity']!==''&&WaterQualityData['Salinity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
-                                                                                    slot="prepend"><v-badge
+                                                                                    slot="prepend"
+                                                                                        title="循環內最後一筆資料"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
                                                                                         :color="getColor('Salinity')"></v-badge>鹽度</span>
                                                                             </v-col>
@@ -2746,7 +2768,11 @@
                                                                                                 </v-row>
                                                                                                 <!-- <v-text-field v-model="suggData.Material['SugarVibrioCholerae']" disabled dense hide-details class="mt-0"><span class="pa-0 ma-0" slot="prepend">砂糖量 (降靛菌)</span><span class="pa-0 ma-0" slot="append">kg</span></v-text-field> -->
                                                                                             </v-col>
-                                                                                            
+                                                                                            <v-col cols="12">
+                                                                                                <span class="error-text">
+                                                                                                    水質砂糖/3餐，因砂糖限人工所以除3
+                                                                                                </span>
+                                                                                            </v-col>
                                                                                         </v-row>
                                                                                     </v-card-text>
                                                                                     <br/>
@@ -3387,6 +3413,11 @@
                         </v-btn>
                     </div>
                 </v-card-title>
+                <v-card-text>
+                    <span class="error-text">
+                        粉料/3餐，其他料/4餐，粉料只能人工所以除3
+                    </span>
+                </v-card-text>
                 <v-card-text style="height: 600px;">
                     <v-responsive>
                         <iframe :src="url.feed.xls" style="overflow:hidden;height:600px;width:100%;"></iframe>
