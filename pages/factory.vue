@@ -415,7 +415,8 @@
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.volume"
-                  :rules="rules.requireNum"
+                  :rules="rules.requireNum0"
+                  min="0"
                   type="number"
                   clearable
                   filled
@@ -436,7 +437,7 @@
                   style="margin-right: 16px;"
                 >
                   <span style="width:50px;" slot="prepend">深度</span>
-                  <span style="width:25px;" slot="append">cm</span>
+                  <span style="width:25px;" slot="append">m</span>
                 </v-text-field>
               </v-card-text>
               <v-card-text style="display: flex;padding-top: 0;">
@@ -503,7 +504,8 @@
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.bottom_area"
-                  :rules="rules.requireNum"
+                  :rules="rules.requireNum0"
+                  min="0"
                   type="number"
                   clearable
                   filled
@@ -663,6 +665,12 @@ export default {
           v => {
             if (!!v || !isNaN(parseFloat(v))) return true;
             return "必要項目";
+          }
+        ],
+        requireNum0: [
+          v => {
+            if (!!v && v > 0) return true;
+            return "必要項目須大於0";
           }
         ]
       },

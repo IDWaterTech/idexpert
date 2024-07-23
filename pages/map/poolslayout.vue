@@ -1099,6 +1099,7 @@ v-row > div{
   .top {
       border-radius: 4px 4px 0 0;
       margin-top: 24px;
+      height: calc(100% + 84px);
       // margin-top: 0;
   }
   

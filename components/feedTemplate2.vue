@@ -313,7 +313,7 @@
             </v-col>
         </v-row>
         <!-- 檢視pdf -->
-        <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`">
+        <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`" :width="`${viewDetail.type==3?'500px':'75%'}`">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
                     <div style="display: inline-block;"
@@ -533,7 +533,7 @@
             </v-form>
         </v-dialog>
         <!-- 新增工作項目 -->
-        <v-dialog v-model="addWorkDialog" max-width="500px">
+        <v-dialog v-model="addWorkDialog" max-width="500px" width="500">
             <v-form v-model="addWorkvalid" ref="addWorkform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">

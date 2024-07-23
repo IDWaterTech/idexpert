@@ -3260,7 +3260,7 @@
             </v-card>
         </v-dialog>
         <!-- 備註欄 -->
-        <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" style="z-index: 9999;">
+        <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" width="500" style="z-index: 9999;">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
                     <div style="display: inline-block;">
