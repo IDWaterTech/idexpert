@@ -2846,7 +2846,7 @@ export default {
         setTimeout(()=>{
             if(res) {
               if(this.nowObserve=='add') {
-                if(this.observeEdit.feed_amount!==null) { 
+                if(this.observeEdit.feed_amount!==null&&this.observeEdit.feed_amount!=='') { 
                   this.postObservable(this.observeEdit);
                 }else {
                   this.observeDialog = false;
@@ -2854,13 +2854,20 @@ export default {
                   this.$toast.success("成功", { duration: 2000 });
                 }
               }else{
-                let observe = this.observableData.filter(x=>x.shrimp_id==this.observeEdit.shrimp_id)[0]
+                let observe = this.observableData.filter(x=>x.shrimp_id==this.observeEdit.shrimp_id)[0];
                 if(observe.feed_amount!==this.observeEdit.feed_amount) {
-                  if(this.observeEdit.feed_amount!==null && this.observeEdit.feed_amount!== '') {
-                    this.nowObserve = 'add';
-                    this.postObservable(this.observeEdit);
+                  if(observe.feed_amount!==0&&(observe.feed_amount==null||observe.feed_amount=='')) {
+                    if((this.observeEdit.feed_amount!==null && this.observeEdit.feed_amount!== '')) {
+                      this.nowObserve = 'add';
+                      this.postObservable(this.observeEdit);
+                    }
                   }else {
-                    this.deleteObservable(this.observeEdit.leftover_id);
+                    if(this.observeEdit.feed_amount==null||this.observeEdit.feed_amount=='') {
+                      this.deleteObservable(this.observeEdit.leftover_id);
+                    }else {
+                      this.postObservable(this.observeEdit);
+                    }
+                    
                   }
                   
                 }else {
@@ -2939,6 +2946,7 @@ export default {
     },
     // 殘餌量新增/編輯
     async postObservable(observeItem) {
+      console.log('nowObserve',this.nowObserve);
       let parm = {
         feed_amount:parseFloat(observeItem.feed_amount),
         inspected_time:dayjs(observeItem.inspected_time).format("YYYY-MM-DD HH:mm:ss"),

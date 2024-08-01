@@ -414,10 +414,10 @@ Vue.mixin({
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/leftover-record/${id}/`)
                 console.log("刪除殘餌:" + data.request.responseURL);
                 if(data.data == "刪除成功") {
-                    this.$toast.success("刪除成功", { duration: 2000 });
+                    this.$toast.success("成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                    this.$toast.success("失敗：" + data.data, { duration: 2000 });
                 }
     
             }catch(error) {
