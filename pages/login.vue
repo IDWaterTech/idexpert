@@ -180,6 +180,19 @@ export default {
       //.then(() => this.$toast.success('Logged In!',{duration:3000}));
     },
     async loginGoogle() {
+            try {
+                await this.$auth.loginWith("google", {
+                    params: { prompt: "select_account" }
+                }).catch(error => console.error("ERROR:"+error));
+            } catch (err) {
+                console.log(err);
+                this.$toast.error("登入發生錯誤!:" + err, {
+                    duration: 5000
+                });
+            }
+        },
+        //舊的改授權api前的login
+    async loginGoogle2() {
       try {
         await this.$auth.loginWith("google", {
           params: { prompt: "select_account" }
@@ -242,6 +255,13 @@ export default {
           duration: 5000
         });
       }
+    }
+  },
+  mounted() {
+    if (this.$auth.loggedIn) {
+      console.log('User is logged in')
+    } else {
+      console.log('User is not logged in')
     }
   }
 };
