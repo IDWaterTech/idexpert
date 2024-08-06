@@ -38,18 +38,35 @@ export default {
     apiIIS82: "https://192.168.50.77:82",
     apiVideo8443: "https://192.168.50.77:8443",
     internal: {
+      //環境
+      apiUrl: process.env.NUXT_ENV_APIURL,
+      apiKbUrl: process.env.NUXT_ENV_KB,
+      apiIIS82: process.env.NUXT_ENV_IIS,
+      //www
+        //正式
       // apiUrl: "https://www.idwatertech.com/api", //正式站，統一不要有後斜線
       // apiKbUrl: "https://www.idwatertech.com:8811/api", //正式站，知識庫
-      apiUrl: "https://www.idwatertech.com:8011/api", //測試站
-      apiKbUrl: "https://www.idwatertech.com:8911/api", //測試站
-      apiIIS82: "https://www.idwatertech.com:82",
-      // apiVideo8443: "https://www.idwatertech.com:8443",
+      // apiIIS82: "https://www.idwatertech.com:82",
+
+        //測試
+      // apiUrl: "https://www.idwatertech.com:8011/api", //測試站
+      // apiKbUrl: "https://www.idwatertech.com:8911/api", //測試站
+      // apiIIS82: "https://www.idwatertech.com:82",
+
+      //// apiVideo8443: "https://www.idwatertech.com:8443",//沒在用
+
       //new
       // apiUrl: "https://new.idwatertech.com/api", //正式站-new
       // apiKbUrl: "https://new.idwatertech.com:8811/api", //正式站，知識庫-new
       // apiUrl: "https://new.idwatertech.com:8111/api", //測試站-new
       // apiKbUrl: "https://new.idwatertech.com:8911/api", //測試站-new
       // apiIIS82: "https://new.idwatertech.com:82",//new
+      
+      //test
+      // apiUrl: "https://new.idwatertech.com:8511/api", //test
+      // apiKbUrl: "https://new.idwatertech.com:8911/api", //test
+      // apiIIS82: "https://new.idwatertech.com:82",//test
+
     },
     external: {
       apiUrl: "https://61.56.172.10/api", //統一不要有後斜線
@@ -159,8 +176,24 @@ export default {
       },
       google: {
         endpoints: {
-          token: 'https://www.idwatertech.com:8011/api/social-login/google/',
-          userInfo: 'https://www.idwatertech.com:8011/api/auth/user/',
+          //www設定
+            //正
+            // token: 'https://www.idwatertech.com/api/social-login/google/',
+            // userInfo: 'https://www.idwatertech.com/api/auth/user/',
+            //測
+            // token: 'https://www.idwatertech.com:8011/api/social-login/google/',
+            // userInfo: 'https://www.idwatertech.com:8011/api/auth/user/',
+          //new設定
+            //正
+            // token: 'https://new.idwatertech.com/api/social-login/google/',
+            // userInfo: 'https://new.idwatertech.com/api/auth/user/',
+            //測
+            // token: 'https://new.idwatertech.com:8111/api/social-login/google/',
+            // userInfo: 'https://new.idwatertech.com:8111/api/auth/user/',
+          //test設定
+            token: 'https://new.idwatertech.com:8511/api/social-login/google/',
+            userInfo: 'https://new.idwatertech.com:8511/api/auth/user/',
+
         },
         responseType: "code",//id_token permission token
         clientId: '124586677050-g0uduqd4ci0of7n80bsu2r7uhbguv1f1.apps.googleusercontent.com',

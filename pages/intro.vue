@@ -30,7 +30,7 @@
 <script>
 export default {
   layout: "emptynologin",
-  middleware: 'auth',
+  // middleware: 'auth',
   created() {
   },
   data() {
@@ -54,6 +54,12 @@ export default {
       this.priceData = res.data;
     });
     }
+  },
+  mounted() {
+    console.log("internal",process.env.internal);
+    console.log("NODE_ENV",process.env.NODE_ENV);
+    console.log("apiUrl",process.env.apiUrl);//猜測會被複蓋
+    console.log("NUXT_ENV_API",process.env.NUXT_ENV_API);
   },
 };
 </script>
