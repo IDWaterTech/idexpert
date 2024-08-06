@@ -6,12 +6,12 @@
         <nuxt-link to="/page1">
           go page1
         </nuxt-link>
-        <ul>
+        <!-- <ul>
           <li>user---{{$auth.$state.user}}</li>
            <li>email---{{$auth.$state.user.email}}</li>
             <li>name---{{$auth.$state.user.name}}</li>
            
-        </ul>
+        </ul> -->
       </div>
     </v-col>
     <v-col>
@@ -60,6 +60,7 @@ export default {
     console.log("NODE_ENV",process.env.NODE_ENV);
     console.log("apiUrl",process.env.apiUrl);//猜測會被複蓋
     console.log("NUXT_ENV_API",process.env.NUXT_ENV_API);
+    console.log("NUXT_ENV_ME",process.env.NUXT_ENV_ME);
   },
 };
 </script>

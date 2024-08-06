@@ -6,7 +6,8 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate",
+    "generate": "cross-env NODE_ENV=production nuxt generate --dotenv .env.production",
+    "generate:test": "cross-env NODE_ENV=production nuxt generate --dotenv .env.test",
     "analyze": "nuxt build --analyze"
   },
   "dependencies": {
@@ -46,6 +47,7 @@
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.12.1",
+    "cross-env": "^7.0.3",
     "vue-particles": "^1.0.9"
   },
   "overrides": {

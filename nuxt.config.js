@@ -39,7 +39,7 @@ export default {
     apiVideo8443: "https://192.168.50.77:8443",
     internal: {
       //環境
-      apiUrl: process.env.NUXT_ENV_APIURL,
+      apiUrl: process.env.NUXT_ENV_API,
       apiKbUrl: process.env.NUXT_ENV_KB,
       apiIIS82: process.env.NUXT_ENV_IIS,
       //www
@@ -138,44 +138,10 @@ export default {
       home: "/", //登入後，會導到此路徑
     },
     strategies: {
-      localjwt: {
-        scheme: "refresh",
-        token: {
-          property: "access", //access_token
-          maxAge: 60 * 60 * 24 * 3, //60秒*60*24小時*3天 令牌的到期時間
-          // required: true,
-          type: "Bearer",
-        },
-        tokenType: "JWT",
-        refreshToken: {
-          property: "refresh", //refresh_token
-          maxAge: 60 * 60 * 24 * 30,
-          type: "Bearer",
-        },
-        user: {
-          //property: 'UserId',//依據回傳的json去取得資料，回傳的欄位寫UserId就可取得UserId裡面所有的物件 $auth.user.*
-          property: "user",
-          autoFetch: true,
-        },
-        endpoints: {
-          login: {
-            url: "https://localhost.idwatertech.com/api/token/",
-            method: "post",
-          },
-          refresh: {
-            url: "https://localhost.idwatertech.com/api/token/refresh/",
-            method: "post",
-          },
-          user: {
-            url: "https://localhost.idwatertech.com/api/user-data/",
-            method: "get",
-            headers: { Referer: "https://localhost.idwatertech.com/" },
-          },
-          logout: false,
-        },
-      },
       google: {
         endpoints: {
+          token:process.env.NUXT_ENV_TOKEN,
+          userInfo:process.env.NUXT_ENV_USERINFO,
           //www設定
             //正
             // token: 'https://www.idwatertech.com/api/social-login/google/',
@@ -191,8 +157,8 @@ export default {
             // token: 'https://new.idwatertech.com:8111/api/social-login/google/',
             // userInfo: 'https://new.idwatertech.com:8111/api/auth/user/',
           //test設定
-            token: 'https://new.idwatertech.com:8511/api/social-login/google/',
-            userInfo: 'https://new.idwatertech.com:8511/api/auth/user/',
+            // token: 'https://new.idwatertech.com:8511/api/social-login/google/',
+            // userInfo: 'https://new.idwatertech.com:8511/api/auth/user/',
 
         },
         responseType: "code",//id_token permission token
