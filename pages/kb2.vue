@@ -3734,13 +3734,17 @@ export default {
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
             let getWarningRangeList = await this.getWarningRangeList();
             let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
+            console.log('getLight',data);
             this.lightData = data;
-            this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
-            this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
-            this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
-            this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
-            //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
-            this.lightColor = Object.keys(data).reduce((a, v) => ({ ...a, [v]: 'teal'}), {}); 
+            if(this.lightData) {
+                this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
+                this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
+                this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
+                this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
+                //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'},
+                this.lightColor = Object.keys(data).reduce((a, v) => ({ ...a, [v]: 'teal'}), {}); 
+            }
+            
             // await this.$axios.get(url).then(res => {
             //     if(res.status==200){
             //         this.lightData = res.data;
@@ -3775,27 +3779,32 @@ export default {
             let getFieldOtptionList = await this.getFieldOtptionList();
             let data = typeof (getFieldOtptionList)=='string'?[]:getFieldOtptionList;
             this.optData = data;
-            var keyLst = Object.keys(this.optData);
-            keyLst.forEach(k=>{
-                if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
-                    this.ObservationData[k] = _.cloneDeep(this.optData[k]);
-                    this.ObservationData[k].forEach(c=>{
-                        c.value=0;
-                    })
-                }
-                
-            })
-            var isYN = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-            //ObservationData
-            this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
-            //BacteriaData
-            this.optData.IsWSSV = _.cloneDeep(isYN);
-            this.optData.IsEMSPlasmid = _.cloneDeep(isYN);
-            this.optData.IsEMSToxin = _.cloneDeep(isYN);
-            this.optData.IsEHP = _.cloneDeep(isYN);
-            this.optData.IsTSV = _.cloneDeep(isYN);
-            this.optData.IsIMNV = _.cloneDeep(isYN);
-            this.optData.IsIHHNV = _.cloneDeep(isYN);
+            var keyLst = [];
+            if(this.optData) {
+                keyLst = Object.keys(this.optData);
+                keyLst.forEach(k=>{
+                    if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
+                        this.ObservationData[k] = _.cloneDeep(this.optData[k]);
+                        this.ObservationData[k].forEach(c=>{
+                            c.value=0;
+                        })
+                    }
+                    
+                })
+                var isYN = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                //ObservationData
+                this.optData.IsMoultingPeriod = [{"name_en":false,"name_ch":"否"},{"name_en":true,"name_ch":"是"}];
+                //BacteriaData
+                this.optData.IsWSSV = _.cloneDeep(isYN);
+                this.optData.IsEMSPlasmid = _.cloneDeep(isYN);
+                this.optData.IsEMSToxin = _.cloneDeep(isYN);
+                this.optData.IsEHP = _.cloneDeep(isYN);
+                this.optData.IsTSV = _.cloneDeep(isYN);
+                this.optData.IsIMNV = _.cloneDeep(isYN);
+                this.optData.IsIHHNV = _.cloneDeep(isYN);
+            }
+            
+            
             // await this.$axios.get(url).then(res => {
             //     if(res.status==200){
             //         this.optData = res.data;

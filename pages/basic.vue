@@ -1,5 +1,8 @@
 <template>
   <div class="basic">
+    <v-overlay :value="!showAlert" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card" style="margin-bottom: 16px;">
       <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
@@ -182,9 +185,6 @@
 
               <v-col cols="12" lg="3" sm="6" style="padding-top: 0; padding-bottom: 0;">
                 <v-card class="dashboard warning-alert">
-                  <v-overlay :value="!showAlert" :absolute="true">
-                    <v-progress-circular indeterminate size="64"></v-progress-circular>
-                  </v-overlay>
                   <div class="icon">
                     <v-icon>mdi-alert-outline</v-icon>
                     <div class="total-text" style="margin-left: 8px;">
