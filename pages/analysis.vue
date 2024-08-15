@@ -984,7 +984,7 @@ export default {
         { name: "水質監測" },
         { name: "環境監測" },
         { name: "投餵飼料" },
-        { name: "飼料觀察網" },
+        //{ name: "飼料觀察網" },
         { name: "進階值" },
         { name: "養殖用料" }
         // { name: "投餵益生菌" }  pbio目前沒有先拿掉
