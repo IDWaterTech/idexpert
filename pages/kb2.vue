@@ -3571,6 +3571,7 @@ export default {
         // 下拉選擇，切換池 locateSelect
         async get_scopeData(evt) {
             this.isShowResult = false;
+            this.isLoading = false;
             this.goAnchor('top');
             // await this.getQuerry();
             if(this.nowSelectPool!==evt) {
@@ -3600,6 +3601,9 @@ export default {
             if(this.nowSelectDataLst==undefined) {
                 this.nowSelectDataLst = [];
                 //this.resetParm();
+            }
+            if(this.nowSelectPool==evt) {
+                this.isLoading = true;
             }
             
             // console.log('nowSelectDataLst',this.nowSelectDataLst);
@@ -4414,6 +4418,7 @@ export default {
             this.importQuerry(data,true);//導入資料
             // 先不幫查ai回饋資訊
             this.postParm(false);//查詢ai回饋資訊
+            this.isLoading = true;
             // await this.$axios.get(url, {params:parm}).then(res => {
             //     if (res.status == 200) {
             //         // 取得上次填入資料，現在觀察往已自動帶入，不須取得上次填入的資料
