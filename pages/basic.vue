@@ -2002,7 +2002,7 @@ export default {
       .v-icon.v-icon.v-icon--link {
         position: absolute;
         top: 80px;
-        // right: 0;
+        right: 0;
         // width: 24px;
         // height: 24px;
         // background-color: $color-primary;

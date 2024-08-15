@@ -39,7 +39,7 @@
                 "
                 :limit="1"
                 :limitText="() => `+${poolid.length - 1}`"
-                style="font-size:1.3em;"
+                style="font-size:1rem;"
               >
                 <div slot="value-label" slot-scope="{ node }" style="font-size:1.3em;" v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name">
                 </div>
@@ -490,7 +490,7 @@
                   "
                   :limit="1"
                   :limitText="() => `+${edited.poolid.length - 1}`"
-                  style="font-size:1.3em;margin-top: 8px;"
+                  style="font-size:1rem;margin-top: 8px;"
                   >
                     <!-- <div slot="value-label" slot-scope="{ node }">
                       {{
