@@ -15,7 +15,11 @@ Vue.mixin({
                         return [];
                     }
                 }else {
-                    let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`);
+                    var header = {
+                        'x-api-key': '16069c362a26aa860be9c11bf791a05cdebe9bbec3f504df77dd0275c82adfa3'
+                    }
+                    let data =  this.$auth.$state.loggedIn?await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`):
+                                await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`,{headers:header});
                 
                     if(data.status==200) {
                         console.log("場區池整體資料架構API:" + data.request.responseURL);
@@ -43,7 +47,6 @@ Vue.mixin({
                         return [];
                     }
                 }
-                
             }catch(err) {
                 console.log(err);
             }
@@ -69,7 +72,11 @@ Vue.mixin({
         // 取得池況狀態顏色
         getPondStateList:async function() {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
+                var header = {
+                    'x-api-key': '16069c362a26aa860be9c11bf791a05cdebe9bbec3f504df77dd0275c82adfa3'
+                }
+                let data = this.$auth.$state.loggedIn? await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`):
+                            await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`,{headers:header})
                 console.log("池況狀態顏色清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
@@ -621,7 +628,11 @@ Vue.mixin({
         // 地圖資料
         getMapList:async function(parm) {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`, { params: parm })
+                var header = {
+                    'x-api-key': '16069c362a26aa860be9c11bf791a05cdebe9bbec3f504df77dd0275c82adfa3'
+                }
+                let data =  this.$auth.$state.loggedIn?await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`, { params: parm }):
+                            await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{headers:header,params: parm})
                 console.log("地圖資料清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
