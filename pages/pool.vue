@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <!-- <div><v-btn @click="compareStatus({id:[24,23],status:'空池'})">空池</v-btn></div> -->
     <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
       <div class="content" style="padding-top:12px">
@@ -118,9 +121,6 @@
               </div>
               <!-- 清單 -->
               <div v-show="resultListOpen" class="content">
-                <v-overlay :value="!isLoading" :absolute="true">
-                  <v-progress-circular indeterminate size="64"></v-progress-circular>
-                </v-overlay>
                 <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
                   height="62vh"
                   @cell-click="clickRow"
@@ -1809,6 +1809,7 @@ export default {
     //     });
     // },
     getCircleData: async function() {
+      this.isLoading = false;
       //取得循環資料-取得檢測數據、取得蝦況
       //歸零
       this.warnData = []; //警示
@@ -1841,6 +1842,7 @@ export default {
       this.editKey = Math.floor(Math.random() * 100);//隨機key值0~100
       this.passObj.tempMain = {};
       this.passObj.tempContent = [];
+      this.isLoading = true;
       // await this.$axios
       //   .get(
       //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/?${parm_url}`
@@ -2571,6 +2573,7 @@ export default {
           this.currentDataId = null;
           this.tempid = null;
         }else {
+          this.isLoading = false;
           //清除
           this.$refs.circletable.clearSelection();
           // this.eventData = []; //清除事件紀錄清單
@@ -2894,6 +2897,7 @@ export default {
               // this.passObj["tempContent"] = await this.getTemp(val.id);
               this.getTemp(val.id);
               this.tempid = val.id;
+              this.isLoading = true;
               
             }
           }

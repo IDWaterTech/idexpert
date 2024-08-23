@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <!-- <v-card class="bg-card" style="min-height: 85vh;"> -->
     <!-- 底圖裝飾 -->
     <!-- <div class="background"></div>
@@ -81,6 +84,7 @@ export default {
       bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      isLoading: false,
     }
   },
   async created() {
@@ -94,6 +98,7 @@ export default {
   methods: {
     // 所有menu
     async getAllMenu() {
+      this.isLoading = false;
       let datalst;
       try{
         datalst = await this.getMenuAuthorization(true);
@@ -148,6 +153,7 @@ export default {
             await this.getOwnMenu();
         }
         // console.log("api：" + datalst.request.responseURL);
+        this.isLoading = true;
       }
       // let accheader = { account: this.$auth.$state.user.email };
       // const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;

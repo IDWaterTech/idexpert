@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card 
       class="bg-card" 
       style="margin-bottom: 12px;"
@@ -577,6 +580,7 @@ export default {
       feed_pct_list:[],
       windowWidth:window.innerWidth,
       windowHeight:window.innerHeight,
+      isLoading: false,
     };
   },
   computed:{
@@ -637,7 +641,7 @@ export default {
     },
     // 飼料表設定-清單
     eventSetGet:async function(){
-      let getFeedEventSettingList = await this.getFeedEventSettingList();
+      let getFeedEventSettingList = await this.getFeedEventList();
       let feedSettingData = typeof (getFeedEventSettingList)=='string'?[]:getFeedEventSettingList;
       this.eventSetData = feedSettingData;
       // await this.$axios
@@ -1166,6 +1170,7 @@ export default {
       });
       this.desserts = item;
       this.has_observe = false;
+      this.isLoading = true;
     },
     //刪除帶入的資料
     delimpsubmit: async function() {
@@ -1441,6 +1446,7 @@ export default {
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+    this.isLoading = false;
   },
   watch: {
     windowWidth() {

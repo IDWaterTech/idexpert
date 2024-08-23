@@ -1541,6 +1541,7 @@ export default {
   },
   async created() {
     // await this.getAlertData();
+    this.showAlert = false;
     this.timeSelect = this.timekb[0].id
     await this._pageCheck(); //驗證頁面是否可檢視
     const agent = new https.Agent({

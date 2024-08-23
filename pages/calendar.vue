@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card 
       class="bg-card" 
       style="margin-bottom: 12px;">
@@ -707,6 +710,7 @@ export default {
       eventSetData:[],
       eventSetList:"",
       eventSet_isEdit:false,
+      isLoading: false,
     };
   },
   async mounted() {
@@ -1020,6 +1024,7 @@ export default {
       return obj;
     },
     getEventData: async function() {
+      this.isLoading = false;
       var parms = {};
       this.eventsData.splice(0,this.eventsData.length);
       // started_date=2022-01-01&ended_date=2022-01-04
@@ -1042,6 +1047,7 @@ export default {
       let getEventList = await this.getEventList(parms);
       let data = typeof (getEventList)=='string'?[]:getEventList;
       this.eventsData = data;
+      this.isLoading = true;
       if (this.eventsData.length==0) {
           this.$toast.success(`查無資料`, { duration: 2000 });
       }
@@ -1084,6 +1090,7 @@ export default {
       let getEventCatagoryList = await this.getEventCatagoryList();
       let data = typeof (getEventCatagoryList)=='string'?[]:getEventCatagoryList;
       this.eventCategoryData = data;
+      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/event-category/`)
       //   .then(res => {
@@ -1403,6 +1410,7 @@ export default {
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
+    this.isLoading = false;
   }
 };
 </script>

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card" style="margin-bottom: 24px;">
       <!-- <div class="card-title">
         <v-row style="margin-bottom: 0;">
@@ -402,7 +405,8 @@ export default {
         { text: "餐別",value: "feed_combo_name",align: "center",width: 200,sortable: false},
         { text: "執行人員",value: "executed_user",align: "center",width: 200,sortable: false},
         { text: "",value: "is_executed",align: "center",width: 50,sortable: false}],
-      windowWidth: window.innerWidth
+      windowWidth: window.innerWidth,
+      isLoading: true,
     };
   },
   methods: {
@@ -521,6 +525,7 @@ export default {
       if(this.factoryData.length>0) {
         this.factoryid = this.factoryData[0].id;
       }
+      this.isLoading = true;
       
     },
     //取得帶入的資料
@@ -528,12 +533,16 @@ export default {
       console.log('stime',this.stime);
       this.feedData = []; //清空表格資料
       // this.stime = "";
-      this.stime_loading = true;//loading
+      this.isLoading = false;
+      // this.isLoading = true;
+      // this.stime_loading = true;//loading
       if (!this.sdate) {
         this.imptimedata = [];
+        this.isLoading = true;
         // this.totalData = {};
         return;
       }
+      
       var para = {
         feed_date: this.sdate,
         factory_id: this.factoryid,
@@ -574,7 +583,8 @@ export default {
         this.stime = ''
         this.gettotalData();
       // }
-      this.stime_loading = false;//loading
+      // this.stime_loading = false;//loading
+      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`, {
       //     params: para
@@ -627,6 +637,7 @@ export default {
     //取得料表
     getfeedData: async function(bool) {
       console.log('getFeedData',bool);
+      this.isLoading = false;
       this.combomark=[];
       // this.feedData = [
       //   {
@@ -693,6 +704,7 @@ export default {
       let getRecordTotalList = await this.getRecordTotalList(parm);
       let recordTotalData = typeof (getRecordTotalList)=='string'?[]:getRecordTotalList;
       this.totalData = recordTotalData;
+      this.isLoading = true;
       // await this.$axios
       //   .get(url, { params: parm })
       //   .then(res => {
@@ -990,6 +1002,7 @@ export default {
     });
   },
   async created() {
+    this.isLoading = false;
     await this._pageCheck(); //驗證頁面是否可檢視
   },
   watch: {

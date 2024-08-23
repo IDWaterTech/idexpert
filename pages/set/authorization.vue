@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
       <!-- 表頭 -->
       <div class="card-title" style="cursor: pointer;margin: 0 8px;padding: 12px;">
@@ -434,7 +437,8 @@ export default {
       editvalid: true,
       rules: {
         require: [v => !!v || "*必要項目"]
-      }
+      },
+      isLoading:false,
     };
   },
   head(){
@@ -463,10 +467,12 @@ export default {
       return mydate;
     },
     getRoles: async function() {
+      this.isLoading = false;
       //角色的清單
       let getRoleList = await this.getRoleList();
       let data = typeof (getRoleList)=='string'?[]:getRoleList;
       this.roledata = data;
+      this.isLoading = true;
       console.log(this.roledata);
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/role/`)

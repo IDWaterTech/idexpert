@@ -1,5 +1,8 @@
 <template>
   <div id="top">
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card">
       <div class="content" style="padding-top:12px">
         <!-- 上方列 -->
@@ -714,7 +717,8 @@ export default {
         }
       },
       nowExpand: true,
-      expandArray:[]
+      expandArray:[],
+      isLoading: false
     };
   },
   async created() {
@@ -825,6 +829,7 @@ export default {
       console.log('expand',this.expandArray);
     },
     getListData: async function() {
+      this.isLoading = false;
       let getColDataList = await this.getColDataList();
       let data = typeof (getColDataList)=='string'?[]:getColDataList;
       this.allcols = Object.assign([], data);
@@ -834,6 +839,7 @@ export default {
       this.expandArray = [];
       col.forEach(x=>{this.expandArray.push(true)});
       console.log('allcols',this.allcols,this.expandArray);
+      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/`, {
       //     httpsAgent: agent

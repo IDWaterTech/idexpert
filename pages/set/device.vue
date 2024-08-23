@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
       <!-- 表頭 -->
       <div class="card-title" style="cursor: pointer;margin: 0 8px;padding: 12px;">
@@ -201,7 +204,8 @@ export default {
           pond_id: undefined,
           created_user: undefined
         }
-      }
+      },
+      isLoading: false,
     };
   },
   methods: {
@@ -316,9 +320,11 @@ export default {
 
     },
     getDevice: async function() {
+      this.isLoading = false;
       let getDeviceList = await this.getDeviceList();
       let data = typeof (getDeviceList)=='string'?[]:getDeviceList;
       this.devicedata = data;
+      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/device/`)
       //   .then(res => {

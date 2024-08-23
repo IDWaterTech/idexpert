@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
       <!-- 表頭 -->
       <div class="card-title" style="cursor: pointer;margin: 8px;padding: 12px;">
@@ -848,11 +851,13 @@ export default {
       annDialog: false, //公告
       annsubmitbtn:false,//發送鈕loading用
       annvalid: true,
-      annmsg: ""
+      annmsg: "",
+      isLoading: false,
     };
   },
   methods: {
     getaccList: async function() {
+      this.isLoading = false;
       let getuserData = await this.getUserList();
       this.accdata = typeof (getuserData)=='string'?[]:getuserData;
       this.accdata.forEach(async (acc,cid)=>{
@@ -1274,6 +1279,7 @@ export default {
       let getPersinalSettingList = await this.getPersinalSettingList(accheader);
       let data = typeof (getPersinalSettingList)=='string'?false:getPersinalSettingList;
       this.accdata[id].line_notify = data;
+      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
       //     headers: accheader
@@ -1298,6 +1304,7 @@ export default {
     },
   },
   async created() {
+    this.isLoading = false;
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getaccList();
     await this.getorg();

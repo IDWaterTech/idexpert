@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-overlay :value="!isLoading" :absolute="true">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
       <div class="content" style="padding-left: 0;padding-top:12px;padding-bottom: 0;">
         <!-- 搜尋 -->
@@ -760,10 +763,12 @@ export default {
       tableview: false,
       // 配置
       nowTab: '地圖配置',
-      tabs: ['地圖配置','池況顏色']
+      tabs: ['地圖配置','池況顏色'],
+      isLoading: false,
     };
   },
   async created() {
+    this.isLoading = false;
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getmain();
     await this.getpoolstat(); //取得池狀態清單
@@ -796,6 +801,7 @@ export default {
       let getPondStateList = await this.getPondStateList();
       let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
       this.poolstat = data.filter(x => x.name_ch != "");
+      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`)
       //   .then(res => {
@@ -806,6 +812,7 @@ export default {
       //   });
     },
     getPoolData: async function() {
+      this.isLoading = false;
       if(this.nowSetting=='pool') {
         this.sel_pool = "";
         let pool = [];
@@ -822,6 +829,7 @@ export default {
         pool = data;
         this.pooldata = pool;
         this.nowpooldata = _.cloneDeep(pool);
+        this.isLoading = true;
         // await this.$axios
         //   .get(
         //     `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
@@ -847,6 +855,7 @@ export default {
       
     },
     async getMapData() {
+      this.isLoading = false;
       this.nowSetting = 'map';
       this.areas = []
       for (let i = 0; i < this.maindata.length; i++) {
@@ -891,7 +900,8 @@ export default {
         //   .catch(error => {
         //     // alert("error:" + error.message);
         //   });
-      }    
+      }
+      this.isLoading = true;    
       console.log("areas:" + this.areas,this.nowAreaId,this.nowAreaTag);
     },
     getLayoutData() {
