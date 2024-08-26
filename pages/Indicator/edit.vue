@@ -1418,7 +1418,7 @@ export default {
     });
 
     // //參數代入
-    if (Object.keys(this.req).length > 0 && this.defitem) {
+    if (Object.keys(this.req).length > 0 && this.defitem && this.sdate && this.edate) {
       await this.getdata();
     }
     this.getOptData();
