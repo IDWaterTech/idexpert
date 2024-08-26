@@ -639,7 +639,8 @@ export default {
       alertAllData:[],
       nowClickRow:'',
       originData:[],
-      newest:''
+      newest:'',
+      colData:[],
     };
   },
   methods: {
@@ -1503,25 +1504,50 @@ export default {
     goIndicator(item) {
       console.log('goIndicator',item);
       let defitem = '';
+      let data = {};
       switch (this.currenttab) {
           case "亞硝酸鹽濃度":
-            defitem = '亞硝酸鹽濃度';
+            data = this.colData.filter(x=>x.name_en=='NO2')[0];
+            defitem = data.name_ch;
             break;
           case "氨氮濃度":
-            defitem = '氨氮濃度';
+            data = this.colData.filter(x=>x.name_en=='NH4')[0];
+            defitem = data.name_ch;
             break;
           case "溶氧濃度":
-            defitem = '溶氧濃度';
+            data = this.colData.filter(x=>x.name_en=='DO')[0];
+            defitem = data.name_ch;
             break;
           case "酸鹼值":
-            defitem = '酸鹼值';
+            data = this.colData.filter(x=>x.name_en=='pH')[0];
+            defitem = data.name_ch;
             break;
           case "水溫":
-            defitem = '水溫';
+            data = this.colData.filter(x=>x.name_en=='Temperature')[0];
+            defitem = data.name_ch;
             break;
           default:
             break;
         }
+      // switch (this.currenttab) {
+      //     case "亞硝酸鹽濃度":
+      //       defitem = '亞硝酸鹽濃度';
+      //       break;
+      //     case "氨氮濃度":
+      //       defitem = '氨氮濃度';
+      //       break;
+      //     case "溶氧濃度":
+      //       defitem = '溶氧濃度';
+      //       break;
+      //     case "酸鹼值":
+      //       defitem = '酸鹼值';
+      //       break;
+      //     case "水溫":
+      //       defitem = '水溫';
+      //       break;
+      //     default:
+      //       break;
+      //   }
       this.urldata= {
         sdate:  dayjs().format("YYYY-MM-DD"),
         sel_area: this.sel_area,
@@ -1529,7 +1555,6 @@ export default {
         sel_pool: item.id,
         defitem: defitem
       };
-     
         let routeData = this.$router.resolve({
           path: "indicator/edit",
           query: this.urldata
@@ -1586,6 +1611,14 @@ export default {
     this.currenttab = this.tabsMap[0].name;
     // await this.getWaterData();
     await this.getWaterWarn();
+    let getAllColForSearchList = await this.getAllColForSearchList();
+    let data = typeof (getAllColForSearchList)=='string'?[]:getAllColForSearchList;
+    this.colData = [];
+    data.forEach(x=>{
+      if(x.group=='water'&& ['DO','NH4','pH','NO2','Temperature'].includes(x.name_en)) {  
+        this.colData.push(x);
+      }
+    })
   },
   computed: {
     mpurl: function () {

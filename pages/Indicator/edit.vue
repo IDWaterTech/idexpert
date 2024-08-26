@@ -1386,7 +1386,7 @@ export default {
     this.sel_pool =
       Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
 
-    this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0].name_ch : [];
+    this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0]?.name_ch : [];
     //---
     // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
     await Promise.all(promiseArray).then(([...data]) => {
@@ -1418,7 +1418,7 @@ export default {
     });
 
     // //參數代入
-    if (Object.keys(this.req).length > 0) {
+    if (Object.keys(this.req).length > 0 && this.defitem) {
       await this.getdata();
     }
     this.getOptData();
