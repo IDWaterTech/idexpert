@@ -1,10 +1,11 @@
 <template>
   <client-only>
     <v-app>
-       <!-- class="mainbg" -->
+      <!-- class="mainbg" -->
       <v-main class="bg">
         <v-navigation-drawer
-          dark :height="($nuxt.$vuetify.breakpoint.name=='xs')?'80%':'100%'"
+          dark 
+          height="100%"
           app
           class="mainnav"
           v-model="drawer"
