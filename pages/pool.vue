@@ -295,6 +295,9 @@
     </v-card>
     <!-- 新增循環的dialog -->
     <v-dialog id="addDialog" v-model="addDialog" max-width="500px">
+      <v-overlay :value="!dialogLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-form v-model="addvalid" ref="cycleform">
         <v-card style="min-height:80vh" class="custom-dialog">
           <v-card-title class="add-title">
@@ -756,6 +759,9 @@
     </v-dialog>
     <!-- 編輯循環清單的dialog -->
     <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
+      <v-overlay :value="!dialogLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-form v-model="editvalid" ref="editform">
         <v-card style="min-height:80vh" class="custom-dialog">
           <v-card-title class="add-title">
@@ -1467,6 +1473,8 @@ export default {
       tempid:null,
       isChangeAllNum: false,
       nowArea:null,
+      dialogLoading: false,
+      nowPoolData:{},// 儲存現在選擇池的資料
     };
   },
   methods: {
@@ -1563,6 +1571,7 @@ export default {
       };
       let getPondDataList = await this.getPondDataList(para);// plugins\service\basic.js
       let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+      this.nowPoolData = data.filter(x=>x.id==this.poolid)[0];
       let state = data.filter(x=>x.id==this.poolid)[0].state;
       this.passObj.state = state;
     },
@@ -1950,6 +1959,17 @@ export default {
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
       this.addparm.estimated_num = undefined;
+      if(!bool) {
+        this.addparm.name = this.addparm.name+'_{pool}'
+        this.addparm.estimated_survival_rate = 70;
+        this.tempSelect = this.template_items[0].id;
+        this.addparm.temp_id = null;
+        this.dataVolumn = [];
+        this.addDialog = true;
+      }else {
+        this.add_volume = this.nowPoolData.volume;
+      }
+      this.dialogLoading = false;
       // this.addparm.initial_weight = 0;
       this.all_num_per_unit = undefined;
       if (this.$refs.logform != undefined) {
@@ -1962,6 +1982,7 @@ export default {
         this.isDataidError = false;
         this.volumeError = false;
       }
+      
       // if (this.poolid == undefined) {
       //   this.$toast.info(`失敗：請先選擇養殖池`, {
       //     duration: 2000
@@ -1969,8 +1990,14 @@ export default {
       //   return;
       // }
       //
-      await this.getCycleData();
-      await this.getPondData(bool);
+      
+      if(!bool) {
+        await this.getCycleData();
+        await this.getPondData(bool);
+      }else {
+        this.dialogLoading = true;
+      }
+      
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
       //   .then(res => {
@@ -2013,6 +2040,7 @@ export default {
       let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
       console.log('可新增循環的池',data);
       let mainData = [];
+      let pooldata = [];
       if(localStorage.getItem('factory_id')) {
           // console.log('locoal',localStorage.getItem('factory_id'))
           let factory_id = JSON.parse(localStorage.getItem('factory_id'));
@@ -2023,9 +2051,23 @@ export default {
                   }
               })
           })
+          
+          mainData.forEach((main,mid)=>{
+              let data = _.cloneDeep(main);
+              pooldata.push(data);
+              pooldata[mid].node = [];
+              let subdata = [];
+              main.node.forEach(sub=>{
+                  if(sub.node.length>0) {
+                      subdata.push(sub);
+                  }
+              })
+              pooldata[mid].node = subdata;
+          })
       }
+      let endpool = pooldata.filter(x=>x.node.length!==0);
       // 新增循環的池選擇
-      this.addPoolData = this.setNestedDisabled(_.cloneDeep(mainData), "");
+      this.addPoolData = this.setNestedDisabled(_.cloneDeep(endpool), "");
       
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`)
@@ -2051,9 +2093,9 @@ export default {
         let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
         this.allPondsData = _.cloneDeep(data);
         var items = data.filter(x => x.id == this.poolid);
-        if(!bool) {
-          this.addDialog = true;
-        }
+        // if(!bool) {
+        //   this.addDialog = true;
+        // }
         if(this.bacteriaAll.length>0) {
           let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
           let date1 = date[0].split('-').concat(date[1].split(':'));
@@ -2061,11 +2103,7 @@ export default {
           console.log('date',date1);
           this.addparm.name = '';
           date1.forEach(x=>this.addparm.name+=x);
-          this.addparm.name = this.addparm.name+'_{pool}'
-          this.addparm.estimated_survival_rate = 70;
-          this.tempSelect = this.template_items[0].id;
-          this.addparm.temp_id = null;
-          this.dataVolumn = [];
+          
           if (items.length == 1) {
             this.add_volume = items[0].volume;
           } else {
@@ -2082,9 +2120,11 @@ export default {
               if(document.getElementsByClassName('v-dialog--active')) {
                 document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
               }
+              this.dialogLoading = true;
             },100)
           }else {
-            alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!')
+            alert('請先至 管理 > 養殖設定 > 種苗設定 中新增您的循環種苗!');
+            this.dialogLoading = true;
           }
         // await this.$axios
         //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`)
@@ -2132,7 +2172,8 @@ export default {
         //     /* 不論失敗成功皆會執行 */
         //   });    
       }else {
-        alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!')
+        alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!');
+        this.dialogLoading = true;
       }
       
     },
