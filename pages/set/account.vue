@@ -558,6 +558,8 @@
                   :disable-branch-nodes="true"
                   class="select-template"
                   style="width: 100%;"
+                  :rules="rules.length"
+                  :class="{'error':isDataidError}"
                 >
                   <div slot="value-label" slot-scope="{ node }">
                     {{ node.raw.unit }}-{{ node.raw.label }}
@@ -622,6 +624,8 @@
                 label="職位"
                 :disable-branch-nodes="true"
                 class="select-template"
+                :rules="rules.length"
+                :class="{'error':isDataidError}"
               >
                 <div slot="value-label" slot-scope="{ node }">
                   {{ node.raw.unit }}-{{ node.raw.label }}
@@ -853,6 +857,7 @@ export default {
       annvalid: true,
       annmsg: "",
       isLoading: false,
+      isDataidError: false
     };
   },
   methods: {
@@ -939,6 +944,7 @@ export default {
       this.editedData.position = row.position.map(x => {
         return x["position_id"];
       });
+      this.isDataidError = false;
       this.editDialog = true;
     },
     changeState() {
@@ -957,14 +963,19 @@ export default {
       delete parm.highest_position_id;
       delete parm.id;
       console.log(parm);
-      var res = await this.patchUserList(parm,this.editedData.id);
-      setTimeout(async ()=>{
-        if(res) {
-          console.log('accdata',this.accdata);
-          await this.getaccList();
-          this.editDialog = false;
-        }
-      },50)
+      this.isDataidError = true;
+      if(parm.position_id.length>0) {
+        this.isDataidError = false;
+        var res = await this.patchUserList(parm,this.editedData.id);
+        setTimeout(async ()=>{
+          if(res) {
+            console.log('accdata',this.accdata);
+            await this.getaccList();
+            this.editDialog = false;
+          }
+        },50)
+      }
+      
       
       // await this.$axios
       //   .patch(
@@ -1099,6 +1110,7 @@ export default {
       if (this.$refs.form != undefined) {
         this.$refs.form.reset();
         this.addform.position_id = [];
+        this.isDataidError = false;
       }
 
       const updUser = this.$auth.$state.user.email;
@@ -1117,7 +1129,11 @@ export default {
 
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
-      if (valid) {
+      this.isDataidError = true;
+      if(this.addform.position_id.length>0) {
+        this.isDataidError = false;
+      }
+      if (valid&&!this.isDataidError) {
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
         var res = await this.postUserList(this.addform);
