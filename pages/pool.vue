@@ -2224,7 +2224,7 @@ export default {
     getaccList: async function() {
       let getuserData = await this.getUserList();
       var data = typeof (getuserData)=='string'?[]:getuserData;
-      var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
+      var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0]?.department}));//只要正常啟用帳號
       this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
       // await this.$axios
       //   .get(
@@ -4234,10 +4234,10 @@ export default {
     
     await this.getMainData();//取得整場架構資料
     // await this.getItemData(); //取得指標子項目
-    
+    await this.getTemplateData();//樣版清單
     await this.getSeedlingData();//取得苗清單
     await this.getaccList();//帳號清單
-    await this.getTemplateData();//樣版清單
+    
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
