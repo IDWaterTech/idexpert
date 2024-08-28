@@ -913,6 +913,7 @@ export default {
       //   });
       let architectureData = await this.getArchitecture();
       this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      this.isLoading = true;
     },
     getUnitSet: function(item, unitname) {
       //item項目data單位名稱
@@ -1295,7 +1296,6 @@ export default {
       let getPersinalSettingList = await this.getPersinalSettingList(accheader);
       let data = typeof (getPersinalSettingList)=='string'?false:getPersinalSettingList;
       this.accdata[id].line_notify = data;
-      this.isLoading = true;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
       //     headers: accheader
