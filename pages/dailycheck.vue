@@ -1,12 +1,15 @@
 <template>
     <div>
+        <v-overlay :value="!isLoading" :absolute="true">
+            <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
         <v-card class="bg-card" style="margin-bottom: 16px;padding-top: 8px;">
             <div class="content" style="padding-bottom: 4px;">
                 <!-- 搜尋列 -->
                 <div class="search">
                     <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
                         <!-- 搜尋 -->
-                        <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
+                        <v-col cols="6" md="3" style="padding-bottom: 0;padding-top: 4px;">
                             <!-- <div class="search-container">
                                 <locate-select 
                                     id="search"
@@ -36,9 +39,11 @@
                                 <div slot="option-label" slot-scope="{ node }" v-text="getText(node)"></div>
                             </treeselect>
                         </v-col>
-                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3" style="padding-bottom: 0;">
-                            <v-btn v-if="isDisable" class="btn-primary"  @click="isDisable=!isDisable">測試模式</v-btn>
-                            <v-btn v-else class="btn-primary"  @click="isDisable=!isDisable">一般模式</v-btn>
+                        <v-btn class="btn-secondary"  @click="changePool('pre')">上一池</v-btn>
+                        <v-btn class="btn-primary"  @click="changePool('next')">下一池</v-btn>
+                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3">
+                            <v-btn v-if="isDisable" class="btn-primary green"  @click="isDisable=!isDisable">測試模式</v-btn>
+                            <v-btn v-else class="btn-secondary green"  @click="isDisable=!isDisable">一般模式</v-btn>
                         </v-col>
                         <!-- <v-col v-if="poolData.daily&&poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status!=='0'" cols="12" md="3">
                             <v-btn class="btn-primary" :class="{'disabled':!poolData.daily||poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status=='0'}" @click="submitNextStep">開啟新工作</v-btn>
@@ -65,18 +70,18 @@
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn class="btn-icon" v-bind="attrs" v-on="on" @click="delayAllOpen(item)"><v-icon>mdi-timeline-clock-outline</v-icon></v-btn>
                                         </template>
-                                        <span v-if="item.scheduling_date">延期{{item.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span>
+                                        <span v-if="item.scheduling_date">指定{{item.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作的移動天數</span>
                                     </v-tooltip>
                                 </div>
                             </div>
                             <div class="daily-content">
                                 <div class="daily-check" v-for="(daily,did) in item.todo" :key="'daily_'+daily.id+'_'+did">
                                     <div class="check-title">
-                                        <div class="title">
+                                        <div class="title" style="max-width: 50%;">
                                             <v-card-title>{{ daily.action_name }}</v-card-title>
                                         </div>
                                         <div class="chrevon">
-                                            <span v-if="daily.execute_status=='0'" class="delay" @click="openDelay(daily,item.scheduling_date,did,true)">延期</span>
+                                            <span v-if="daily.execute_status=='0'" class="delay" @click="openDelay(daily,item.scheduling_date,did,true)">指定</span>
                                             <span v-if="daily.execute_status=='0'" class="delay copy" @click="openDelay(daily,item.scheduling_date,did,false)">複製</span>
                                             <span v-else-if="daily.execute_status=='1'">已執行</span>
                                             <span v-else class="error-text">不執行</span>
@@ -138,12 +143,14 @@
                             無資料
                         </v-card>
                     </div>
-                    
                 </div>
             </div>
         </v-card>
         <!-- 編輯 -->
         <v-dialog v-model="editDialog" max-width="500px">
+            <v-overlay :value="!dialogLoading" :absolute="true">
+                <v-progress-circular indeterminate size="64"></v-progress-circular>
+            </v-overlay>
             <v-form ref="editform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
@@ -206,11 +213,14 @@
         </v-dialog>
         <!-- 延期執行 -->
         <v-dialog v-model="delayDialog" max-width="500px">
+            <v-overlay :value="!dialogLoading" :absolute="true">
+                <v-progress-circular indeterminate size="64"></v-progress-circular>
+            </v-overlay>
             <v-form ref="delayform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
                         <div style="display: inline-block;">
-                            <span>{{ isDelay?'延期:':'複製:' }} {{ delayItem.action_name }}</span> 
+                            <span>{{ isDelay?'指定:':'複製:' }} {{ delayItem.action_name }}</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
@@ -223,7 +233,7 @@
                     </v-card-title>
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>{{ isDelay?'延期':'複製' }}至哪天執行?</v-card-title></div>
+                            <div class="title"><v-card-title>{{ isDelay?'指定':'複製' }}至哪天執行?</v-card-title></div>
                             <div class="calendar">
                                 <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (delayDate = getNowDate())">mdi-calendar</v-icon></v-btn></span>
                                 <v-menu v-model="menu_inspecteddate" :close-on-content-click="false" :nudge-right="40" 
@@ -232,7 +242,7 @@
                                         <v-text-field v-model="delayDate" class="mt-0" clearable readonly dense :rules="rules.require"
                                             v-bind="attrs" v-on="on"></v-text-field>
                                     </template>
-                                    <v-date-picker v-model="delayDate" :min="delayItem.original_date" locale="zh-tw" no-title @input="
+                                    <v-date-picker v-model="delayDate" locale="zh-tw" no-title @input="
                                     menu_inspecteddate = false;
                                     "></v-date-picker>
                                 </v-menu>
@@ -240,7 +250,7 @@
                             
                         </div>
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>{{ isDelay?'延期':'複製' }}原因 </v-card-title></div>
+                            <div class="title"><v-card-title>{{ isDelay?'指定':'複製' }}原因 </v-card-title></div>
                             <v-text-field v-model="delayItem.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
@@ -255,6 +265,9 @@
         </v-dialog>
         <!-- 新增 -->
         <v-dialog v-model="addDialog" max-width="500px">
+            <v-overlay :value="!dialogLoading" :absolute="true">
+                <v-progress-circular indeterminate size="64"></v-progress-circular>
+            </v-overlay>
             <v-form ref="addform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
@@ -396,13 +409,16 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!-- 延期全部 -->
+        <!-- 指定全部 -->
         <v-dialog v-model="delayAllDialog" max-width="500px">
+            <v-overlay :value="!dialogLoading" :absolute="true">
+                <v-progress-circular indeterminate size="64"></v-progress-circular>
+            </v-overlay>
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
                         <div style="display: inline-block;">
-                            <span v-if="delayAll.scheduling_date">延期{{delayAll.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span> 
+                            <span v-if="delayAll.scheduling_date">指定{{delayAll.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
@@ -415,19 +431,20 @@
                     </v-card-title>
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>延期天數</v-card-title></div>
+                            <div class="title"><v-card-title>指定天數</v-card-title></div>
                             <div class="calendar">
                                 <v-text-field
                                     v-model.number="delayAll.delay_day"
                                     type="number" dense hide-details
                                     class="mt-0"
-                                    min="0"><span class="pa-0 ma-0"
+                                    @change="changeDelayDay"><span class="pa-0 ma-0"
                                     slot="append">天</span></v-text-field>
+                                <span style="margin-left: 8px;">(指定至{{nowChangeData}})</span>
                             </div>
                             
                         </div>
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>延期原因 </v-card-title></div>
+                            <div class="title"><v-card-title>指定原因 </v-card-title></div>
                             <v-text-field v-model="delayAll.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
@@ -513,7 +530,7 @@
                                 <v-col cols="3"><span style="font-weight:bold">人員</span></v-col>
                             </v-row>
                             <v-row class="content border-bottom" v-for="(action,id) in logData.log" :key="'log_'+id" style="width: 100%;display: flex;align-items: center;">
-                                <v-col cols="3"><span>{{ action.operation=='delay'?'延遲':action.operation=='copy'?'複製':'新增' }}</span></v-col>
+                                <v-col cols="3"><span>{{ action.operation=='delay'?'指定':action.operation=='copy'?'複製':'新增' }}</span></v-col>
                                 <v-col cols="3"><span>{{action.operation_reason}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operation_time}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operator}}<br/></span></v-col>
@@ -574,6 +591,8 @@ export default {
             nextWork:[],
             logData:{action_name:'',log:[]},
             logDialog: false,
+            nowChangeData: new Date(),
+            dialogLoading:true,
         }
     },
     async created() {
@@ -590,7 +609,7 @@ export default {
         getaccList: async function() {
             let getuserData = await this.getUserList();
             var data = Array.isArray(getuserData)?getuserData:[];
-            var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0].department}));//只要正常啟用帳號
+            var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0]?.department}));//只要正常啟用帳號
             this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
         },
         // 取得非空池的池
@@ -637,7 +656,71 @@ export default {
                 
             }
             console.log('mainData',mainData);
-            this.addPoolData = this.setNestedDisabled(_.cloneDeep(mainData), "");
+            // 將空陣列去除
+            let pooldata = [];
+            mainData.forEach((main,mid)=>{
+                let data = _.cloneDeep(main);
+                pooldata.push(data);
+                pooldata[mid].node = [];
+                let subdata = [];
+                main.node.forEach(sub=>{
+                    if(sub.node.length>0) {
+                        subdata.push(sub);
+                    }
+                })
+                pooldata[mid].node = subdata;
+            })
+            let endpool = pooldata.filter(x=>x.node.length!==0);
+            this.addPoolData = this.setNestedDisabled(_.cloneDeep(endpool), "");
+            this.isLoading = true;
+        },
+        changePool(type) {
+            let ids = [0,0,0];
+            this.maindataScope.forEach((main,mid)=>{
+                main.node.forEach((sub,sid)=>{
+                    sub.node.forEach((child,cid)=>{
+                        if(child.id==this.nowPoolid) {
+                            ids[2] = cid;
+                            ids[1] = sid;
+                            ids[0] = mid;
+                        }
+                    })
+                })
+            })
+            if(type == 'pre') {
+                if(ids[2]==0) {
+                    if(ids[1]==0) {
+                        if(ids[0]==0) {
+                            this.nowPoolid = this.maindataScope[this.maindataScope.length-1].node[this.maindataScope[this.maindataScope.length-1].node.length-1].node[this.maindataScope[this.maindataScope.length-1].node[this.maindataScope[this.maindataScope.length-1].node.length-1].node.length-1].id;
+                        }else {
+                            if((ids[1]-1)>=0) {
+                                this.nowPoolid = this.maindataScope[ids[0]].node[ids[1]-1].node[(this.maindataScope[ids[0]].node[ids[1]-1].node.length)-1].id;
+                            }else {
+                                this.nowPoolid = this.maindataScope[ids[0]-1].node[this.maindataScope[ids[0]-1].node.length-1].node[this.maindataScope[ids[0]-1].node[this.maindataScope[ids[0]-1].node.length-1].node.length-1].id;
+                            }
+                            
+                        }
+                    }else {
+                        this.nowPoolid = this.maindataScope[ids[0]].node[ids[1]-1].node[(this.maindataScope[ids[0]].node[ids[1]-1].node.length)-1].id;
+                    }
+                }else {
+                    this.nowPoolid = this.maindataScope[ids[0]].node[ids[1]].node[ids[2]-1].id;
+                }
+            }else {
+                if(ids[2]==this.maindataScope[ids[0]].node[ids[1]].node.length-1) {
+                    if(ids[1]==this.maindataScope[ids[0]].node.length-1) {
+                        if(ids[0]==this.maindataScope.length-1) {
+                            this.nowPoolid = this.maindataScope[0].node[0].node[0].id;
+                        }else {
+                            this.nowPoolid = this.maindataScope[ids[0]+1].node[0].node[0].id
+                        }
+                    }else { 
+                        this.nowPoolid = this.maindataScope[ids[0]].node[ids[1]+1].node[0].id;
+                    }
+                }else {
+                    this.nowPoolid = this.maindataScope[ids[0]].node[ids[1]].node[ids[2]+1].id;
+                }
+            }
         },
         getText(node) {
             // console.log('node',node);
@@ -645,7 +728,8 @@ export default {
             // return node.raw.parent != undefined && node.raw.parent.length > 0 ?node.level==2?node.raw.name+'_'+node.raw.id:node.raw.name:node.raw.name;
         },
         get_scopeData:function(evt){
-            console.log(evt);
+            this.isLoading = false;
+            // console.log(evt);
             this.nowPoolid = evt;
             this.searchPool();
         },
@@ -860,13 +944,14 @@ export default {
             //             },]
             //         }]
             // }
+            this.isLoading = false;
             let param={pond_id:this.nowPoolid}
             let getDailyCheckList = await this.getDailyCheckList(param);
             let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
             this.poolData = _.cloneDeep(data);
             if(this.poolData.daily) {
                 this.poolData.daily.forEach(d=>{
-                    if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
+                    // if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
                         // 排序
                         let array1=[];
                         let array2=[];
@@ -881,7 +966,7 @@ export default {
                             return new Date(a.execute_time) - new Date(b.execute_time)
                         });
                         d.todo = [...array2,...array1];
-                    }
+                    // }
                 })
             }
             this.isLoading = true;
@@ -922,6 +1007,7 @@ export default {
             console.log('submit edit',this.editItem);
             var valid = this.$refs.editform?.validate();
             if(valid||this.editItem.execute_status=='1') {
+                this.dialogLoading = false;
                 this.editItem.execute_time = this.editItem.execute_status=='0'?null:dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
                 this.editItem.executor = this.editItem.execute_status=='0'?'':this.$auth.$state.user.email;
                 this.editItem.msg = this.editItem.execute_status=='0'?'':this.editItem.msg;
@@ -933,60 +1019,118 @@ export default {
                 console.log('parm',parm);
                 this.isLoading = false;
                 var res = false;
+                let num = 0;
+                let x = 0;
                 if(this.editItem.num!==3) {
                     res = await this.patchDailyCheckList(parm,this.editItem.id);
+                    setTimeout(()=>{
+                        this.isSubmit();
+                    },50);
                 }else {
+                    this.poolData.daily.forEach(d=>{
+                        if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
+                            d.todo.forEach(async t=>{
+                                if(t.action_id==this.editItem.action_id&&t.execute_status==0) {
+                                    num++;
+                                }
+                            })
+                        }
+                    })
                     this.poolData.daily.forEach(d=>{
                         if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
                             d.todo.forEach(async t=>{
                                 if(t.action_id==this.editItem.action_id&&t.execute_status==0) {
                                     parm.scheduling_date = d.scheduling_date;
                                     res = await this.patchDailyCheckList(parm,t.id);
+                                    setTimeout(()=>{
+                                        if(res) {
+                                            x++;
+                                            if(x==num) {
+                                                this.isSubmit();
+                                            }
+                                        }
+                                    },50)
                                 }
                             })
                         }
                     })
                 }
                 
-                setTimeout(()=>{
-                    if(res) {
-                        let isAllCheck=true;
-                        if(this.editItem.num!==3) {
-                            this.poolData.daily.forEach(d=>{
-                                d.todo.forEach(t=>{
-                                    if(t.execute_status=='0'&&t.id!==this.editItem.id) {
-                                        isAllCheck = false;
-                                    }
-                                })
-                            })
-                        }else {
-                            this.poolData.daily.forEach(d=>{
-                                if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
-                                    d.todo.forEach(t=>{
-                                        if(t.execute_status=='0'&&t.action_id!==this.editItem.action_id) {
-                                            isAllCheck = false;
-                                        }
-                                    })
-                                }
+                // setTimeout(()=>{
+                //     console.log('submit',res,num,x);
+                //     if(res || num==x) {
+                //         let isAllCheck=true;
+                //         if(this.editItem.num!==3) {
+                //             this.poolData.daily.forEach(d=>{
+                //                 d.todo.forEach(t=>{
+                //                     if(t.execute_status=='0'&&t.id!==this.editItem.id) {
+                //                         isAllCheck = false;
+                //                     }
+                //                 })
+                //             })
+                //         }else {
+                //             this.poolData.daily.forEach(d=>{
+                //                 if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
+                //                     d.todo.forEach(t=>{
+                //                         if(t.execute_status=='0'&&t.action_id!==this.editItem.action_id) {
+                //                             isAllCheck = false;
+                //                         }
+                //                     })
+                //                 }
                                 
-                            })
-                        }
-                        
-                        if(isAllCheck) {
-                            this.editDialog = false;
-                            // this.nextStepDialog = true;
-                            this.$toast.success("修改成功!此工作項已完成，已開啟隔天新的工作項", { duration: 5000 });
-                            this.searchPool();
-                        }else {
-                            this.editDialog = false;
-                            this.$toast.success("修改成功", { duration: 2000 });
-                            this.searchPool();
-                        }
-                        
-                    }
-                },200)
+                //             })
+                //         }
+                //         console.log('>>>>>>',isAllCheck);
+                //         if(isAllCheck) {
+                //             this.editDialog = false;
+                //             // this.nextStepDialog = true;
+                //             this.$toast.success("修改成功!此工作項已完成，已開啟隔天新的工作項", { duration: 5000 });
+                //             this.searchPool();
+                //         }else {
+                //             this.editDialog = false;
+                //             this.$toast.success("修改成功", { duration: 2000 });
+                //             this.searchPool();
+                //         }
+                //     }
+                //     this.dialogLoading = true;
+                //     this.editDialog = false;
+                // },200)
             }
             
+        },
+        isSubmit() {
+            let isAllCheck=true;
+            this.dialogLoading = true;
+            if(this.editItem.num!==3) {
+                this.poolData.daily.forEach(d=>{
+                    d.todo.forEach(t=>{
+                        if(t.execute_status=='0'&&t.id!==this.editItem.id) {
+                            isAllCheck = false;
+                        }
+                    })
+                })
+            }else {
+                this.poolData.daily.forEach(d=>{
+                    if(new Date(d.scheduling_date).getTime()>=new Date(this.nowDaily).getTime()) {
+                        d.todo.forEach(t=>{
+                            if(t.execute_status=='0'&&t.action_id!==this.editItem.action_id) {
+                                isAllCheck = false;
+                            }
+                        })
+                    }
+                    
+                })
+            }
+            if(isAllCheck) {
+                this.editDialog = false;
+                // this.nextStepDialog = true;
+                this.$toast.success("修改成功!此工作項已完成，已開啟隔天新的工作項", { duration: 5000 });
+                this.searchPool();
+            }else {
+                this.editDialog = false;
+                this.$toast.success("修改成功", { duration: 2000 });
+                this.searchPool();
+            }
         },
         // 打開延遲/複製的視窗bool=true為延遲 bool=false為複製
         openDelay(item,date,id,bool) {
@@ -1028,6 +1172,7 @@ export default {
             })
             
             if(valid&&!isItem) {
+                this.dialogLoading = false;
                 if(this.isDelay) {
                     let parm = _.cloneDeep(this.delayItem);
                     parm.scheduling_date = this.delayDate;
@@ -1047,6 +1192,7 @@ export default {
                             this.delayDialog = false;
                             this.searchPool();
                         }
+                        this.dialogLoading = true;
                     },50)
 
                 }else {
@@ -1069,6 +1215,7 @@ export default {
                             this.delayDialog = false;
                             this.searchPool();
                         }
+                        this.dialogLoading = true;
                     },50)
                 }
                 
@@ -1093,6 +1240,7 @@ export default {
         async submitAdd() {
             var valid = this.$refs.addform.validate();
             if(valid) {
+                this.dialogLoading = false;
                 let item = {
                     "step_id": this.poolData.step_id,
                     "name_ch": this.addItem.name_ch,
@@ -1114,6 +1262,7 @@ export default {
                         this.addDialog=false;
                         this.searchPool();
                     }
+                    this.dialogLoading = true;
                 },50)
             }
             
@@ -1147,10 +1296,11 @@ export default {
             this.userData = this.userData.filter(x=>x.is_active==true);
             console.log('User',this.userData);
         },
-        // 全部延期
+        // 全部指定
         delayAllOpen(item) {
             this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date,operation:'delay',operation_reason:''}
             let index = this.poolData.daily.map(x=>x.scheduling_date).indexOf(item.scheduling_date);
+            this.nowChangeData = dayjs(new Date(item.scheduling_date)).add(this.delayAll.delay_day,'day').format("YYYY-MM-DD");
             // console.log(this.poolData.daily.map(x=>x.scheduling_date),item['scheduling_date']);
             this.poolData.daily.forEach((d,did)=>{
                 if(did>=index) {
@@ -1164,11 +1314,15 @@ export default {
             })
             this.delayAllDialog=true;
         },
+        changeDelayDay(evt) {
+            this.nowChangeData = dayjs(new Date(this.delayAll.scheduling_date)).add(evt,'day').format("YYYY-MM-DD");
+        },
         async submitDelayAll() {
+            this.dialogLoading = false;
             let parm = _.cloneDeep(this.delayAll);
             parm.updated_user=(this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
             delete parm.scheduling_date;
-            console.log('一次延期',parm);
+            console.log('一次指定',parm);
             var res = false;
             res = await this.postDelayStepList(parm);
             setTimeout(()=>{
@@ -1176,6 +1330,7 @@ export default {
                     this.delayAllDialog=false;
                     this.searchPool();
                 }
+                this.dialogLoading = true;
             },50)
             
         },
