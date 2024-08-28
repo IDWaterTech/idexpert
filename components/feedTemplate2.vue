@@ -426,11 +426,11 @@
                                 <v-row class="flex-align-center" style="padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
@@ -668,11 +668,11 @@
                                 <v-row class="flex-align-center" style="padding-top: 0;">
                                     <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @change="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end_on_which_day" type="number" @change="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
@@ -2616,11 +2616,11 @@ export default {
         // 起始日>完成日，自動將完成日更改為起始日
         detectEndDay(index) {
             if(this.workType=='edit') {
-                if(this.editItem.actionList[index].start_on_which_day>this.editItem.actionList[index].end_on_which_day) {
+                if(parseInt(this.editItem.actionList[index].start_on_which_day)>parseInt(this.editItem.actionList[index].end_on_which_day)) {
                     this.editItem.actionList[index].end_on_which_day = this.editItem.actionList[index].start_on_which_day;
                 }
             }else {
-                if(this.addItem.actionList[index].start_on_which_day>this.addItem.actionList[index].end_on_which_day) {
+                if(parseInt(this.addItem.actionList[index].start_on_which_day)>parseInt(this.addItem.actionList[index].end_on_which_day)) {
                     this.addItem.actionList[index].end_on_which_day = this.addItem.actionList[index].start_on_which_day;
                 }
             }
@@ -2628,17 +2628,19 @@ export default {
         // 確認結束day是否小於起始
         detectOverEndDay(index) {
             let isOver = false;
+            // console.log(this.editItem.actionList[index].start_on_which_day,this.editItem.actionList[index].end_on_which_day,parseInt(this.editItem.actionList[index].start_on_which_day)>parseInt(this.editItem.actionList[index].end_on_which_day))
             if(this.workType=='edit') {
-                if(this.editItem.actionList[index].start_on_which_day>this.editItem.actionList[index].end_on_which_day) {
+                if(parseInt(this.editItem.actionList[index].start_on_which_day)>parseInt(this.editItem.actionList[index].end_on_which_day)) {
                     isOver = true;
                     this.editItem.actionList[index].end_on_which_day = null;
                 }
             }else {
-                if(this.addItem.actionList[index].start_on_which_day>this.addItem.actionList[index].end_on_which_day) {
+                if(parseInt(this.addItem.actionList[index].start_on_which_day)>parseInt(this.addItem.actionList[index].end_on_which_day)) {
                     isOver = true;
                     this.addItem.actionList[index].end_on_which_day = null;
                 }
             }
+            // console.log(isOver);
             if(isOver) {
                 alert('不可小於起始日!');
             }else {
