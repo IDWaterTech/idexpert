@@ -183,9 +183,17 @@
                       <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
                       <!-- <v-btn color="primary" outlined small @click="delcircle(scope.row)" :disabled="scope.row.ended_date != null">
                         刪除</v-btn> -->
-                      <v-tooltip bottom>
+                      <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-icon" :class="{'disabled':scope.row.ended_date !== null && scope.row.ended_date !== ''}" @click="editCircle(scope.row)" v-bind="attrs" v-on="on">
+                            <button class="btn-icon green" @click="viewCircle(scope.row)" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-eye</v-icon>
+                            </button>
+                        </template>
+                      <span>檢視</span>
+                      </v-tooltip>
+                      <v-tooltip bottom v-else>
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-icon" @click="editCircle(scope.row)" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-pencil</v-icon>
                             </button>
                         </template>
@@ -630,133 +638,7 @@
         </v-card>
       </v-form>
     </v-dialog>
-    <!-- 批次執行的dialog -->
-    <v-dialog v-model="mutiExecute" max-width="500px">
-      <v-form v-model="executevalid" ref="executeform">
-        <v-card class="custom-dialog">
-          <v-card-title class="add-title">
-              <div style="display: inline-block;">
-              批次執行
-              </div>
-              <div class="add">
-                <v-btn  class="btn-secondary close"
-                        title="取消" 
-                        @click="mutiExecute = false" 
-                        style="border: none;min-width: 0;padding: 0 4px;">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </div>
-          </v-card-title>
-          <div class="basic" style="min-height: 300px;">
-            <v-card-text class="flex-align-center" style="padding: 8px 16px;">
-              <div class="search-container">
-                <locate-select
-                  class="select-template"
-                  :dataScope="'area'" 
-                  :defaultSelect="nowExeArea" 
-                  :isMulti="false" 
-                  @scopeSel_data="get_scopeExecuteData($event)" 
-                  style="margin-right: 0;"
-                  ></locate-select>
-              </div>
-            </v-card-text>
-            <v-card-text v-if="nowExeArea && nowExeArea !== ''" class="flex-align-center"  style="padding: 8px 16px;">
-              <div class="search-container" style="width: 100%;">
-                <v-tabs v-model="nowTab" show-arrows>
-                  <!-- 上方tab -->
-                  <v-tab
-                      v-for="(tab,tid) in executeTabs"
-                      :key="'tabs_'+tid"
-                      :href="`#` + tab">
-                      {{ tab }}
-                  </v-tab>
-                  <!-- tab內容 -->
-                  <v-tabs-items v-model="nowTab" touchless>
-                    <v-tab-item 
-                      v-for="(tab,tid) in executeTabs"
-                      :key="'tab_'+tid"
-                      :value="tab"
-                      style="margin-bottom: 16px;margin-top: 16px;">
-                      <!-- 執行 -->
-                      <div v-show="nowTab=='執行'" class="result-content">
-                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiExecuteData" :key="'execute_'+item.pond_id" class="list flex-align-center">
-                            <v-checkbox
-                              v-model="item.checked"
-                              dense hide-details
-                              :label="item.pond_name"
-                            ></v-checkbox>
-                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
-                            <!-- <div class="execute">
-                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
-                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
-                            </div> -->
-                          </div>
-                          <div v-if="mutiExecuteData.length==0">無資料</div>
-                      </div>
-                      
-                      <!-- 確認 -->
-                      <div v-show="nowTab=='確認'" class="result-content">
-                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiConfirmData" :key="'confirm_'+item.pond_id" class="list" style="display: flex;align-items: center;">
-                            <v-checkbox
-                              v-model="item.checked"
-                              dense hide-details
-                              :label="item.pond_name"
-                            ></v-checkbox>
-                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
-                            <!-- <div class="execute">
-                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
-                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
-                            </div> -->
-                          </div>
-                          <div v-if="mutiConfirmData.length==0">無資料</div>
-                        <!-- </v-card-text> -->
-                      </div>
-                      
-                    </v-tab-item>
-                  </v-tabs-items>
-                </v-tabs>
-              </div>
-            </v-card-text>
-            <br>
-            <v-card-text  style="padding: 8px 16px;">
-              <b>Note:資料撈取(!!!!最後要上要記得清除!!!!)</b><br>
-              <span>撈取正在循環的池，每按執行/確認後，因步驟會改變，需重新撈取資料</span><br><br>
-              <div v-if="nowTab == '執行'">
-                <span>各池 執行撈取第一個 尚未執行(execute_time = " ")的步驟</span><br><br>
-                <hr><br>
-                <span v-for="item in mutiExecuteData" :key="'exe_'+item.pond_id">{{ item }}<br></span>
-              </div>
-              <div v-else>
-                <span>各池 確認撈取第一個 已執行(execute_time != " ") 未確認(isConfirm=false)的步驟</span><br><br>
-                <hr><br>
-                <span v-for="item in mutiConfirmData" :key="'con_'+item.pond_id">{{ item }}<br></span>
-              </div>
-            </v-card-text>
-          </div>
-          <v-card-actions style="padding: 24px 12px;">
-              <v-spacer></v-spacer>
-              <!-- <v-btn  v-if="nowTab == '執行'" class="btn-secondary" @click="mutiExecuteStep(false)">上一步</v-btn> -->
-              <!-- <v-btn class="btn-secondary" @click="mutiExecute = false">取消</v-btn> -->
-              <v-btn class="btn-primary" @click="opencapDialog">{{ nowTab=='執行'?'執行':'確認' }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-form>
-    </v-dialog>
-    <!-- 批次執行的驗證碼 -->
-    <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
-      <v-card height="230">
-        <v-card-title>驗證碼</v-card-title>
-        <v-card-text>
-          <recaptcha />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn tile @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    
     <!-- 編輯循環清單的dialog -->
     <v-dialog id="editDialog" v-model="editDialog" max-width="500px">
       <v-overlay :value="!dialogLoading" :absolute="true">
@@ -855,8 +737,10 @@
                   </v-autocomplete>
                 </v-col>
                 <v-col cols="6" style="padding: 0;padding-right: 8px;">
-                  <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
-                  </v-autocomplete>
+                  <!-- <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
+                  </v-autocomplete> -->
+                  <v-text-field filled dense type="text" v-model="editparm.temp_name_ch" label="樣板選擇" hide-details style="margin-right: 4px;" disabled>
+                  </v-text-field>
                 </v-col>
               </v-row>
             </v-card-text> 
@@ -934,7 +818,147 @@
         </v-card>
       </v-form>
     </v-dialog>
-
+    <!-- 檢視循環清單 -->
+    <v-dialog id="viewDialog" v-model="viewDialog" max-width="500px">
+      <!-- <v-form v-model="viewvalid" ref="viewform"> -->
+        <v-card style="min-height:80vh" class="custom-dialog">
+          <v-card-title class="add-title">
+            <div style="display: inline-block;">
+              檢視循環
+            </div>
+            <div class="add">
+              <v-btn class="btn-secondary close"
+                      title="取消" 
+                      @click="viewDialog = false" 
+                      style="border: none;min-width: 0;padding: 0 4px;">
+                  <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <!-- 基本資料 -->
+          <div class="basic">
+            <v-card-text class="flex-align-center">
+              <v-row  style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-text-field v-model="editparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="margin-right: 4px;padding-top: 0;" disabled>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" readonly disabled @click:prepend="
+                                                  () => (editparm.started_date = getNowDate())
+                                                " style="padding-top: 0;"></v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text class="flex-align-center">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="editparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
+                    item-text="name_ch" clearable :rules="rules.require" label="選擇種苗" disabled>
+                  </v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-menu v-model="menu_stockeddate_edit" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.stocked_date" label="放苗日" :rules="rules.require"
+                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                  () => (editparm.stocked_date = getNowDate())
+                                                " disabled></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.stocked_date" no-title locale="zh-tw" @input="menu_stockeddate_edit = false">
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-text class="flex-align-center">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;" disabled></v-select>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)" disabled><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>   
+            <v-card-text class="flex-align-center">
+              <v-row style="align-items: center;padding-top: 16px;">
+                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
+                    :filter="filterincharge" clearable :rules="rules.require" label="養殖負責" disabled hide-details>
+                    <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                    <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
+                  </v-autocomplete>
+                </v-col>
+                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                  <!-- <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
+                  </v-autocomplete> -->
+                  <v-text-field filled dense type="text" v-model="editparm.temp_name_ch" label="選擇樣板" hide-details style="margin-right: 4px;" disabled>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text> 
+            <v-card-text style="display: flex;margin-top: 24px;">
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;" disabled>
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)" disabled>
+              </v-text-field>
+            </v-card-text>
+            <v-card-text class="flex-align-center">
+              <v-text-field filled dense type="number" v-model.number="editparm.cn" label="目標CN比(選)" style="margin-right: 4px;" disabled>
+              </v-text-field>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)" disabled>
+              </v-text-field>
+            </v-card-text>
+            <v-card-text class="flex-align-center">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;" disabled>
+              </v-text-field>
+            </v-card-text>
+            
+            <v-card-text>
+              <v-text-field filled dense v-model="editparm.remark" hide-details label="備註(選)" disabled>
+              </v-text-field>
+            </v-card-text>
+            <!-- 水體/密度/放養數 -->
+            <v-card-text>
+              <v-row align="center">
+                <!-- 體積 -->
+                <v-col cols="3">
+                  <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
+                    autocomplete="off"></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">X</v-col>
+                <!-- 密度 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    @change="
+                              () => {
+                                editparm.estimated_num =
+                                add_volume * editparm.num_per_unit;
+                              }
+                            " autocomplete="off" disabled></v-text-field>
+                </v-col>
+                <v-col cols="1" class="text-center">=</v-col>
+                <!-- 初始放苗量(估計) -->
+                <v-col cols="4">
+                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </div>
+          
+          
+          <v-card-actions style="padding: 24px 12px;">
+            <v-spacer></v-spacer>
+            <v-btn class="btn-primary" @click="viewDialog = false">確認</v-btn>
+          </v-card-actions>
+        </v-card>
+      <!-- </v-form> -->
+    </v-dialog>
     <!-- 新增檢驗報告 -->
     <v-dialog v-model="reportDialog" max-width="500px">
       <v-form v-model="reportvalid" ref="addform">
@@ -1096,6 +1120,133 @@
           </v-card>
       </v-form>
   </v-dialog>
+  <!-- 批次執行的dialog -->
+  <v-dialog v-model="mutiExecute" max-width="500px">
+      <v-form v-model="executevalid" ref="executeform">
+        <v-card class="custom-dialog">
+          <v-card-title class="add-title">
+              <div style="display: inline-block;">
+              批次執行
+              </div>
+              <div class="add">
+                <v-btn  class="btn-secondary close"
+                        title="取消" 
+                        @click="mutiExecute = false" 
+                        style="border: none;min-width: 0;padding: 0 4px;">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </div>
+          </v-card-title>
+          <div class="basic" style="min-height: 300px;">
+            <v-card-text class="flex-align-center" style="padding: 8px 16px;">
+              <div class="search-container">
+                <locate-select
+                  class="select-template"
+                  :dataScope="'area'" 
+                  :defaultSelect="nowExeArea" 
+                  :isMulti="false" 
+                  @scopeSel_data="get_scopeExecuteData($event)" 
+                  style="margin-right: 0;"
+                  ></locate-select>
+              </div>
+            </v-card-text>
+            <v-card-text v-if="nowExeArea && nowExeArea !== ''" class="flex-align-center"  style="padding: 8px 16px;">
+              <div class="search-container" style="width: 100%;">
+                <v-tabs v-model="nowTab" show-arrows>
+                  <!-- 上方tab -->
+                  <v-tab
+                      v-for="(tab,tid) in executeTabs"
+                      :key="'tabs_'+tid"
+                      :href="`#` + tab">
+                      {{ tab }}
+                  </v-tab>
+                  <!-- tab內容 -->
+                  <v-tabs-items v-model="nowTab" touchless>
+                    <v-tab-item 
+                      v-for="(tab,tid) in executeTabs"
+                      :key="'tab_'+tid"
+                      :value="tab"
+                      style="margin-bottom: 16px;margin-top: 16px;">
+                      <!-- 執行 -->
+                      <div v-show="nowTab=='執行'" class="result-content">
+                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
+                          <div v-for="item in mutiExecuteData" :key="'execute_'+item.pond_id" class="list flex-align-center">
+                            <v-checkbox
+                              v-model="item.checked"
+                              dense hide-details
+                              :label="item.pond_name"
+                            ></v-checkbox>
+                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
+                            <!-- <div class="execute">
+                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
+                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
+                            </div> -->
+                          </div>
+                          <div v-if="mutiExecuteData.length==0">無資料</div>
+                      </div>
+                      
+                      <!-- 確認 -->
+                      <div v-show="nowTab=='確認'" class="result-content">
+                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
+                          <div v-for="item in mutiConfirmData" :key="'confirm_'+item.pond_id" class="list" style="display: flex;align-items: center;">
+                            <v-checkbox
+                              v-model="item.checked"
+                              dense hide-details
+                              :label="item.pond_name"
+                            ></v-checkbox>
+                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
+                            <!-- <div class="execute">
+                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
+                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
+                            </div> -->
+                          </div>
+                          <div v-if="mutiConfirmData.length==0">無資料</div>
+                        <!-- </v-card-text> -->
+                      </div>
+                      
+                    </v-tab-item>
+                  </v-tabs-items>
+                </v-tabs>
+              </div>
+            </v-card-text>
+            <br>
+            <v-card-text  style="padding: 8px 16px;">
+              <b>Note:資料撈取(!!!!最後要上要記得清除!!!!)</b><br>
+              <span>撈取正在循環的池，每按執行/確認後，因步驟會改變，需重新撈取資料</span><br><br>
+              <div v-if="nowTab == '執行'">
+                <span>各池 執行撈取第一個 尚未執行(execute_time = " ")的步驟</span><br><br>
+                <hr><br>
+                <span v-for="item in mutiExecuteData" :key="'exe_'+item.pond_id">{{ item }}<br></span>
+              </div>
+              <div v-else>
+                <span>各池 確認撈取第一個 已執行(execute_time != " ") 未確認(isConfirm=false)的步驟</span><br><br>
+                <hr><br>
+                <span v-for="item in mutiConfirmData" :key="'con_'+item.pond_id">{{ item }}<br></span>
+              </div>
+            </v-card-text>
+          </div>
+          <v-card-actions style="padding: 24px 12px;">
+              <v-spacer></v-spacer>
+              <!-- <v-btn  v-if="nowTab == '執行'" class="btn-secondary" @click="mutiExecuteStep(false)">上一步</v-btn> -->
+              <!-- <v-btn class="btn-secondary" @click="mutiExecute = false">取消</v-btn> -->
+              <v-btn class="btn-primary" @click="opencapDialog">{{ nowTab=='執行'?'執行':'確認' }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
+    <!-- 批次執行的驗證碼 -->
+    <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
+      <v-card height="230">
+        <v-card-title>驗證碼</v-card-title>
+        <v-card-text>
+          <recaptcha />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn tile @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -1475,6 +1626,7 @@ export default {
       nowArea:null,
       dialogLoading: false,
       nowPoolData:{},// 儲存現在選擇池的資料
+      viewDialog: false,
     };
   },
   methods: {
@@ -2393,6 +2545,7 @@ export default {
       }
       console.log('valid',valid,this.isDataidError,this.volumeError);
       if(valid && !this.isDataidError && !this.volumeError) {
+        this.dialogLoading = false;
         // alert('submit data：'+ JSON.stringify(param));
         var res = false;
         res = await this.postBreedingRecordList2(param);
@@ -2410,6 +2563,7 @@ export default {
               }
               // this.compareStatus(status);
             }
+            this.dialogLoading = true;
             this.addDialog = false;
             this.getCircleData();
         },50)
@@ -3814,6 +3968,39 @@ export default {
           this.all_num_per_unit = undefined;
         }
       }
+    },
+    // 循環清單編輯
+    viewCircle(data) {
+      // if(this.template_items.length>0) {
+         // this.editperson_in_charge = '';
+        // 取得水體積
+        // this.showadd(true);
+        let getData = _.cloneDeep(data);
+        this.add_volume = this.nowPoolData.volume;
+        // 預估放苗
+        getData.estimated_num = getData.total.toFixed(2);
+        // 預估存活要為數值
+        getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
+        this.viewDialog = true;
+        console.log('>>>>edit',getData);
+        setTimeout(()=>{
+          this.resultListOpen = true;
+          // this.resultCycleOpen = false;
+          // this.currentDataId = null;
+          this.editparm = getData;
+          // if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
+          //   this.editparm.initial_weight = 0.1;
+          // }
+          this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+          if(document.getElementsByClassName('v-dialog--active')) {
+            document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
+          }
+        },200)
+        
+        // console.log(this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge}));
+      // }else {
+      //   alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!')
+      // }
     },
     /* 檢驗報告 */
     reportOpen() {
