@@ -2615,14 +2615,22 @@ export default {
         },
         // 起始日>完成日，自動將完成日更改為起始日
         detectEndDay(index) {
+            let isOver = false;
             if(this.workType=='edit') {
                 if(parseInt(this.editItem.actionList[index].start_on_which_day)>parseInt(this.editItem.actionList[index].end_on_which_day)) {
                     this.editItem.actionList[index].end_on_which_day = this.editItem.actionList[index].start_on_which_day;
+                    isOver=true;
                 }
             }else {
                 if(parseInt(this.addItem.actionList[index].start_on_which_day)>parseInt(this.addItem.actionList[index].end_on_which_day)) {
                     this.addItem.actionList[index].end_on_which_day = this.addItem.actionList[index].start_on_which_day;
+                    isOver=true;
                 }
+            }
+            if(isOver) {
+                alert('起始日大於迄日，將自動調整迄日天數為起始日天數!');
+            }else {
+                this.sortDay();
             }
         },
         // 確認結束day是否小於起始
