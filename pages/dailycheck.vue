@@ -530,7 +530,7 @@
                                 <v-col cols="3"><span style="font-weight:bold">人員</span></v-col>
                             </v-row>
                             <v-row class="content border-bottom" v-for="(action,id) in logData.log" :key="'log_'+id" style="width: 100%;display: flex;align-items: center;">
-                                <v-col cols="3"><span>{{ action.operation=='delay'?'指定':action.operation=='copy'?'複製':'新增' }}</span></v-col>
+                                <v-col cols="3"><span>{{ action.operation=='rescheduled'?'指定':action.operation=='copy'?'複製':'新增' }}</span></v-col>
                                 <v-col cols="3"><span>{{action.operation_reason}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operation_time}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operator}}<br/></span></v-col>
@@ -1139,7 +1139,7 @@ export default {
             this.delayItem.index = id;
             this.delayDate = dayjs(new Date(date)).format("YYYY-MM-DD");
             this.isDelay = bool;
-            this.delayItem.operation=bool?'delay':'copy';
+            this.delayItem.operation=bool?'rescheduled':'copy';
             this.delayItem.operation_reason = '';
             this.delayDialog = true;
         },
@@ -1154,7 +1154,7 @@ export default {
             }
             return date;
         },
-        // 延遲/複製 isDelay=true 延遲 / isDelay=false 複製
+        // 指定/複製 isDelay=true 指定 / isDelay=false 複製
         async submitDelay() {
             var valid = this.$refs.delayform.validate();
             var isItem = false;
@@ -1183,7 +1183,6 @@ export default {
                     delete parm.id;
                     delete parm.index;
                     console.log('parm',parm);
-                    this.isLoading=false;
                     var res = false;
                     res = await this.patchDailyCheckList(parm,this.delayItem.id);
                     setTimeout(()=>{
@@ -1207,7 +1206,6 @@ export default {
                     delete parm.updated_user;
                     delete parm.index;
                     console.log('parm',parm);
-                    this.isLoading=false;
                     var res = false;
                     res = await this.postDailyCheckList(parm);
                     setTimeout(()=>{
@@ -1254,7 +1252,6 @@ export default {
                     "estimated_spend":this.addItem.estimated_spend,
                     "created_user": this.$auth.$state.user.email
                 }
-                this.isLoading=false;
                 var res = false;
                 res = await this.postDailyCheckActionList(item);
                 setTimeout(()=>{
@@ -1298,7 +1295,7 @@ export default {
         },
         // 全部指定
         delayAllOpen(item) {
-            this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date,operation:'delay',operation_reason:''}
+            this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date,operation:'rescheduled',operation_reason:''}
             let index = this.poolData.daily.map(x=>x.scheduling_date).indexOf(item.scheduling_date);
             this.nowChangeData = dayjs(new Date(item.scheduling_date)).add(this.delayAll.delay_day,'day').format("YYYY-MM-DD");
             // console.log(this.poolData.daily.map(x=>x.scheduling_date),item['scheduling_date']);
