@@ -4260,6 +4260,7 @@ export default {
             // }
         },
         postParm:async function(isSaved=false){
+            this.isLoading = false;
             //資料送回後端查詢ai回饋，issaved=true，會同時紀錄該比資料
             //isSaved是否新增
             this.UserData.IsSaved = isSaved;
@@ -4310,17 +4311,24 @@ export default {
                 }
             })
             //console.log("all參數：",allParm);
-            let getSuggestionList = await this.getSuggestionList(allParm);
-            let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
-            this.suggData.DynamicData = suggestionData.DynamicData;
-            this.suggData.WaterQuality = suggestionData.WaterQuality;
-            this.suggData.Observation = suggestionData.Observation;
-            this.suggData.Feed = suggestionData.Feed;
-            this.suggData.Material = suggestionData.Material;
-            this.suggData.MakeWater = suggestionData.MakeWater;
-            this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
+            setTimeout(async ()=>{
+                let getSuggestionList = await this.getSuggestionList(allParm);
+                let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
+                this.suggData.DynamicData = suggestionData.DynamicData;
+                this.suggData.WaterQuality = suggestionData.WaterQuality;
+                this.suggData.Observation = suggestionData.Observation;
+                this.suggData.Feed = suggestionData.Feed;
+                this.suggData.Material = suggestionData.Material;
+                this.suggData.MakeWater = suggestionData.MakeWater;
+                this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
                     duration: 2000
                 });
+            },1)
+            
+            setTimeout(()=>{
+                this.isLoading = true;
+            },50)
+            
             // await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
             //     if(res.status==200){
             //         this.suggData.DynamicData = res.data.DynamicData;

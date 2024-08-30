@@ -1531,6 +1531,7 @@ export default {
       }
     },
     getdata: async function() {
+      this.isLoading = false;
       // 編修事件的批次修改checkbox
       this.disabledAllDel = false;
       //mark line 先歸零
@@ -1723,6 +1724,7 @@ export default {
       
       // 抓觀察網資料
       this.getObservationData();
+      this.isLoading = true;
       
     },
     //抓事件資料
@@ -2164,7 +2166,7 @@ export default {
         var defitemall = this.coldata.filter(x=>x.name_ch==this.defitem)[0];
         let colclass = defitemall.group;
         if(['feed','pbio','breeding_material'].includes(colclass)){
-           this.$toast.error(`僅供查詢，禁止新增該群資料：${colclass}`, { duration: 2000 });
+          this.$toast.error(`僅供查詢，禁止新增該群資料：${colclass}`, { duration: 2000 });
           return;
         }
         let apiurl = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
