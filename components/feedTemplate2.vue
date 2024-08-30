@@ -1128,7 +1128,11 @@ export default {
                                                     let num1 = 0;
                                                     let num2 = 0;
                                                     let num3 = 0;
+                                                    let total = 0;
                                                     step.actionList.forEach(action=>{
+                                                        if(action.type==null||action.type==0) {
+                                                            total++;
+                                                        }
                                                         if(action.execute==1) {
                                                             num1++;
                                                         }else if(action.execute==2) {
@@ -1142,7 +1146,8 @@ export default {
                                                     if(type=='delete'&&num3>0||mid<stateIndex) {
                                                         disabled=true;
                                                     }else {
-                                                        if((num1+num2)==step.actionList.length) {
+                                                        // 原本是跟step.actionList.length比較，但因actionlist中有加入事件/疾病等造成計算有誤
+                                                        if((num1+num2)==total) {
                                                             if(stateIndex!==mid) {
                                                                 disabled = true;
                                                             }else {
