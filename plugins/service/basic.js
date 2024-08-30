@@ -166,6 +166,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 指標資料 =====//
         // 取得事件清單
         getEventList:async function(parm) {
             try {
@@ -463,6 +464,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 重要紀事 =====//
         // 取得飼料事件
         getFeedEventList:async function() {
             try {
@@ -667,6 +669,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 場域設定 =====//
         // 新增場
         postFactoryList:async function(addform) {
             try {
@@ -894,6 +897,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 設備管理 =====//
         // 取得設備清單
         getDeviceList:async function() {
             try {
@@ -967,6 +971,7 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        //===== 監測管理 =====//
         // 新增水質欄位
         postColDataList:async function(addform) {
             try {
@@ -1012,6 +1017,81 @@ Vue.mixin({
             try {
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/col-data/${id}/`)
                 console.log("刪除水質欄位:" + data.request.responseURL);
+                if(data.data == "刪除成功") {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                }
+    
+            }catch(error) {
+                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        //===== 影像辨識 =====//
+        // 取得觀察網
+        getObservationImageDataList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-data/`, { params: parm })
+                console.log("觀察網清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error(`取得觀察網資料失敗:${error.message}`, { duration: 2000 });
+                console.log(error);
+                return [];
+            }
+        },
+        // 取得菌相
+        getBacteriaImageDataList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/`, { params: parm })
+                console.log("菌相清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error(`取得菌相資料失敗:${error.message}`, { duration: 2000 });
+                console.log(error);
+                return [];
+            }
+        },
+        // 新增菌相
+        postBacteriaImageDataList:async function(addform) {
+            try {
+                let config = { headers: { "Content-Type": "multipart/form-data" } };
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/`,addform,config)
+                console.log("新增菌相:" + data.request.responseURL);
+                if(data.data == "上傳成功") {
+                    this.$toast.success("新增結果：" + data.data, {
+                        duration: 2000
+                    });
+                    return true;
+                }else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+            }
+        },
+        // 刪除菌相
+        deleteBacteriaImageList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/${id}/`)
+                console.log("刪除菌相:" + data.request.responseURL);
                 if(data.data == "刪除成功") {
                     this.$toast.success("刪除成功", { duration: 2000 });
                     return true;
