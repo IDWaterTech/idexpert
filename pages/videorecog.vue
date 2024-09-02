@@ -323,7 +323,7 @@
                       <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">總菌數</span>
+                            <span style="font-size: 16px;margin-right: 9px;">{{editItem.is_heated?'枯草桿菌(加熱)的數量':'所有菌(不加熱)的數量'}}</span>
                           </div>
                           <v-text-field
                             type="number"
