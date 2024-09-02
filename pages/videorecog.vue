@@ -330,7 +330,7 @@
                             min="0"
                             v-model="editItem.class5"
                             :rules="rules.require"
-                            placeholder="總菌數"
+                            :placeholder="editItem.is_heated?'枯草桿菌數量':'所有菌數量'"
                             autocompleted="false"
                             style="margin-right: 8px;margin-top: 0;padding-top: 0;"
                           ></v-text-field>
