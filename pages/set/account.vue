@@ -868,6 +868,7 @@ export default {
       this.accdata.forEach(async (acc,cid)=>{
         await this.getUser(acc.username,cid);
       })
+      this.isLoading = true;
       console.log('acc',this.accdata);
       // await this.$axios
       //   .get(
@@ -911,6 +912,7 @@ export default {
       //     this.maindata = res.data;
       //     // this.sel_main = 1;
       //   });
+      this.isLoading = false;
       let architectureData = await this.getArchitecture();
       this.maindata = typeof (architectureData)=='string'?[]:architectureData;
       this.isLoading = true;
