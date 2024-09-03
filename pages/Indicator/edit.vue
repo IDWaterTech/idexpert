@@ -1619,6 +1619,7 @@ export default {
       });
       if (data2.items.length > 0) {
         let cols = Object.keys(data2.items[0]);
+        data2.items.sort((a,b)=>new Date(b.inspected_date)-new Date(a.inspected_date));
         for (const key in cols) {
           this.headers.push({
             text: cols[key],
@@ -1782,6 +1783,7 @@ export default {
             {align: "center", groupable: false,text: "內容",value: "content",width:"30%"},
             {align: "center",groupable: false,text: "資料範圍",value: "name",width:"20%"}]
         }
+        this.eventsData.sort((a,b)=>new Date(b.started_date) - new Date(a.started_date));
         for(let i=0;i<this.eventsData.length;i++) {
           this.eventTableData.push({
             id: this.eventsData[i].id,

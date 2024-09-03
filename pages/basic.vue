@@ -403,8 +403,8 @@
     </v-card>
     <v-overlay v-if="showmp && sel_main" :absolute="showmp" :value="showmp" style="padding: 24px;"
       class="custom-overlay">
-      <v-icon @click="showmp = false">mdi-close</v-icon>
       <img v-img :src="mpurl" width="100%" class="grey lighten-2" />
+      <v-icon @click="showmp = false" style="background-color: rgba(0,0,0,0.25);border-radius: 4px;">mdi-close</v-icon>
     </v-overlay>
   </div>
 </template>
