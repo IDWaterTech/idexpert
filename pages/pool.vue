@@ -1978,6 +1978,7 @@ export default {
       this.detectData = []; //檢測
       this.shirimpData = []; //蝦況
       if (this.poolid == undefined) {
+        this.isLoading = true;
         return;
       }
       let parm = {

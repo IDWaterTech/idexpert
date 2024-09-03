@@ -443,6 +443,9 @@
     </v-dialog>
     <!-- 新增帳號 -->
     <v-dialog v-model="addDialog" max-width="500px">
+      <v-overlay :value="!dialogLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
@@ -579,6 +582,9 @@
     </v-dialog>
     <!-- 修改 -->
     <v-dialog v-model="editDialog" max-width="500px">
+      <v-overlay :value="!dialogLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-card  class="custom-dialog">
         <v-card-title class="add-title">
           <div style="display: inline-block;">
@@ -857,7 +863,8 @@ export default {
       annvalid: true,
       annmsg: "",
       isLoading: false,
-      isDataidError: false
+      isDataidError: false,
+      dialogLoading: true,
     };
   },
   methods: {
@@ -957,6 +964,7 @@ export default {
       this.editedData = _.cloneDeep(data);
     },
     async submitEdit() {
+      this.dialogLoading = false;
       const updUser = this.$auth.$state.user.email;
       this.editedData["updated_user"] = updUser;
       let parm = _.cloneDeep(this.editedData);
@@ -976,6 +984,7 @@ export default {
             await this.getaccList();
             this.editDialog = false;
           }
+          this.dialogLoading = true;
         },50)
       }
       
@@ -1137,13 +1146,16 @@ export default {
         this.isDataidError = false;
       }
       if (valid&&!this.isDataidError) {
+        this.dialogLoading = false;
         this.addform.email = this.addform.username;
         console.log("新增參數", this.addform);
         var res = await this.postUserList(this.addform);
         if(res) {
+          
           this.addDialog = false;
           this.getaccList();
         }
+        this.dialogLoading = true;
         // await this.$axios
         //   .post(
         //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`,
