@@ -1067,12 +1067,12 @@ Vue.mixin({
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2-set-delay/`,addform,)
                 console.log("批次延遲:" + data.request.responseURL);
                 if(data.data == "修改成功") {
-                    this.$toast.success("延期成功", {
+                    this.$toast.success("指定成功", {
                         duration: 2000
                     });
                     return true;
                 }else {
-                    this.$toast.error("延期失敗：" + data.data, {
+                    this.$toast.error("指定失敗：" + data.data, {
                         duration: 2000
                     });
                 }
