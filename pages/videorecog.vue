@@ -795,10 +795,10 @@ export default {
       this.nowBacteria = type;
       this.editDialog = true;
       if(type=='add') {
-        this.editItem = {pond_id:null,is_heated:false};
         if (this.$refs.addform != undefined) {
           this.$refs.addform.reset();
         }
+        this.editItem = {pond_id:null,is_heated:false};
       }else {
         this.editItem = _.cloneDeep(item);
         this.editItem.inspected_time = this.$moment(new Date(this.editItem.inspected_time), 'YYYY-MM-DD HH:mm:ss');
