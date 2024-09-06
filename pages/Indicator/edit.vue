@@ -353,7 +353,7 @@
                               {{ item.is_shell?'是':'否' }}
                           </template> -->
                           <template v-slot:[`item.img`]="{ item }">
-                            <img v-img="{ group: item.shrimp_id }" v-for="(img,i) in item.img" :key="item.shrimp_id+'_'+i" :src="img" :style="{height:`${windowWidth>768?'80px':'60px'}`}" />
+                            <img v-img="{ group: item.shrimp_id }" v-for="(img,i) in item.img" :key="item.shrimp_id+'_'+i" :src="img" style="width: 33%;min-width: 60px" />
                           </template>
                           <template v-slot:[`item.intestinal_color`]="{ item }">
                             <div v-if="item.numOfColor.IntestinalColor.length>0">
@@ -769,6 +769,9 @@
         <!-- 觀察網 -->
         <v-dialog v-model="observeDialog" max-width="500px">
           <v-form ref="observeform" v-model="observevalid" lazy-validation>
+            <v-overlay :value="!dialogLoading" :absolute="true">
+              <v-progress-circular indeterminate size="64"></v-progress-circular>
+            </v-overlay>
             <v-card class="custom-dialog">
               <v-card-title class="add-title">
                 <div style="display: inline-block;">
@@ -1183,19 +1186,19 @@ export default {
       // select
       nowArea:'',
       observableHeaders:[
-        {groupable: false,text: "檢測時間",value: "inspected_time",width:"15%", sortable: true},
+        {groupable: false,text: "檢測時間",value: "inspected_time",width:"10%", sortable: true},
         //{groupable: false,text: "池",value: "pond",width:"5%", sortable: false },
         {groupable: false,text: "觀察網隻數",value: "observation_qty",width:"6%", sortable: false },
-        {groupable: false,text: "蝦子重量(g)",value: "shrimp_weight",width:"6%", sortable: false },
+        {groupable: false,text: "蝦重(g)",value: "shrimp_weight",width:"5%", sortable: false },
         {groupable: false,text: "觀察網殘餌量(g)",value: "feed_amount",width:"7%", sortable: false },
         {groupable: false,text: "腸線顏色",value: "intestinal_color",width:"5%", sortable: false },
-        {groupable: false,text: "肝胰臟顏色",value: "hepatopancreas_color",width:"12%", sortable: false },
+        {groupable: false,text: "肝胰臟顏色",value: "hepatopancreas_color",width:"5%", sortable: false },
         {groupable: false,text: "肌肉顏色",value: "muscle_color",width:"5%", sortable: false },
         {groupable: false,text: "蝦體顏色",value: "body_color",width:"5%", sortable: false },
         {groupable: false,text: "蝦體形狀",value: "body_shape",width:"5%", sortable: false },
         {groupable: false,text: "脫殼數量",value: "shell_qty",width:"5%", sortable: false },
         {groupable: false,text: "死蝦數量",value: "dead_shrimp_qty",width:"5%", sortable: false },
-        {groupable: false,text: "觀察網影像",value: "img",width:"10%", sortable: false },
+        {groupable: false,text: "觀察網影像",value: "img",width:"25%", sortable: false },
         {groupable: false,text: "操作",value: "action",width:"15%", sortable: false },
       ],
       observableData:[
@@ -1326,7 +1329,8 @@ export default {
       shrimpDialog: false,
       shrimp:[],
       isShrimp: false,
-      shrimpvalid:true
+      shrimpvalid:true,
+      dialogLoading: true,
     };
   },
   async created() {
@@ -2816,6 +2820,7 @@ export default {
       }
       
       if(!isError) {
+        this.dialogLoading = false;
         // 回傳資料整合
         delete parm.img;
         delete parm.feed_amount;
@@ -2880,6 +2885,7 @@ export default {
                 }
               }
             }
+            this.dialogLoading = true;
         },50)
         
         // let url =`${this.nowObserve=='add'?this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'

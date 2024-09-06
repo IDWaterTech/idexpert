@@ -304,6 +304,9 @@
     </v-card>
     <!-- 匯入資料 -->
     <v-dialog v-model="importdialog" width="400">
+      <v-overlay :value="!dialogLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-card class="card-dialog custom-dialog" min-height="350">
         <v-card-title>匯入料表</v-card-title>
         <v-divider></v-divider>
@@ -372,6 +375,9 @@
     </v-dialog>
     <!-- 操作 -->
     <v-dialog v-model="submitdig" width="450">
+      <v-overlay :value="!dialogLoading" :absolute="true">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
       <v-card min-height="250" class="card-dialog  custom-dialog">
         <v-card-title>設定</v-card-title>
         <v-divider></v-divider>
@@ -581,6 +587,7 @@ export default {
       windowWidth:window.innerWidth,
       windowHeight:window.innerHeight,
       isLoading: false,
+      dialogLoading: true,
     };
   },
   computed:{
@@ -765,6 +772,7 @@ export default {
     },
     //送出新增料表
     feedsubmit: async function() {
+      this.dialogLoading = false;
       //先確認投餵資料筆數是否已有資料
       let feedurl = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record-rows/`;
       var feedparm = {
@@ -801,10 +809,12 @@ export default {
       //   errormsg = error
       // });
       if(datecount==-1){
+        this.dialogLoading = true;
         this.$toast.error(`發生錯誤：${errormsg}`,{duration:2000});
           return
       }
       if(datecount>0 && confirm(`當日已有資料是否覆蓋資料，原資料${datecount}筆將被刪除`)==false) {
+        this.dialogLoading = true;
         return;
       }
       var data = this.desserts.filter(
@@ -830,6 +840,7 @@ export default {
             this.dataclear(); //清除資料
             this.submitdig = false;//關閉dialog
           }
+          this.dialogLoading = true;
         },50)
         
         // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
@@ -858,6 +869,7 @@ export default {
         //     //
         //   });
       }else {
+        this.dialogLoading = true;
         this.$toast.success(`新增失敗:請先設定養殖池的料量`, {
           duration: 2000
         });
@@ -1351,6 +1363,7 @@ export default {
     },
     //設定帶入資料
     settabledata: async function(item) {
+      this.dialogLoading = false;
       console.log('帶入資料',item);
       console.log('dessert',this.desserts)
       await this.dataclear(); //歸零
@@ -1413,6 +1426,7 @@ export default {
       this.$toast.success(`${tostmsg.join("<br/>")}`, { duration: 2000 });
       this.desserts = desserts;
       this.importdialog = false;
+      this.dialogLoading = true;
     },
     //顯示送出視窗
     showsubmitdig: function() {

@@ -458,7 +458,8 @@ export default {
         { name: "酸鹼值" },
         { name: "亞硝酸鹽濃度" },
         { name: "氨氮濃度" },
-        { name: "水溫" }
+        { name: "水溫" },
+        { name: "水位" }
         // { name: "投餵益生菌" }  pbio目前沒有先拿掉
       ],
       currenttab: "",
@@ -740,6 +741,9 @@ export default {
             break;
           case "水溫":
             nowTab = 'Temperature';
+            break;
+          case "水位":
+            nowTab = 'water_level_percentage';
             break;
           default:
             break;
@@ -1064,6 +1068,9 @@ export default {
           case "水溫":
             nowTab = 'Temperature';
             break;
+          case "水位":
+            nowTab = 'water_level_percentage';
+            break;
           default:
             break;
         }
@@ -1072,7 +1079,7 @@ export default {
         });
 
         let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/last-data-in-current-time-range/`;
-        let keys = ['NO2','NH4','Do','pH','Temperature'];
+        let keys = ['NO2','NH4','Do','pH','Temperature','water_level_percentage'];
         let num=0;
         keys.forEach(async k=>{
           let parm = {
@@ -1469,6 +1476,9 @@ export default {
           case "Temperature":
             col_name = 'Temp';
             break;
+          case "water_level_percentage":
+            col_name = 'water_level_percentage';
+            break;
         }
         if(this.waterParm[item[i]] && this.waterParm[item[i]].length>0) {
           this.waterParm[item[i]].forEach(water=>{
@@ -1526,6 +1536,11 @@ export default {
             data = this.colData.filter(x=>x.name_en=='Temperature')[0];
             defitem = data.name_ch;
             break;
+          case "水位":
+            console.log(this.colData);
+            data = this.colData.filter(x=>x.name_en=='water_level_percentage')[0];
+            defitem = data.name_ch;
+            break;
           default:
             break;
         }
@@ -1548,6 +1563,7 @@ export default {
       //     default:
       //       break;
       //   }
+      console.log('now',this.nowTab,data,defitem)
       this.urldata= {
         sdate:  dayjs().format("YYYY-MM-DD"),
         sel_area: this.sel_area,
@@ -1614,8 +1630,9 @@ export default {
     let getAllColForSearchList = await this.getAllColForSearchList();
     let data = typeof (getAllColForSearchList)=='string'?[]:getAllColForSearchList;
     this.colData = [];
+    console.log('all',data);
     data.forEach(x=>{
-      if(x.group=='water'&& ['DO','NH4','pH','NO2','Temperature'].includes(x.name_en)) {  
+      if((x.group=='water'&& ['DO','NH4','pH','NO2','Temperature'].includes(x.name_en))||(x.group=='env'&&x.name_en=='water_level_percentage')) {  
         this.colData.push(x);
       }
     })
@@ -1808,6 +1825,9 @@ export default {
           break;
         case "水溫":
           nowTab = 'Temperature';
+          break;
+        case "水位":
+          nowTab = 'water_level_percentage';
           break;
         default:
           break;
