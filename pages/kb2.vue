@@ -2254,7 +2254,7 @@
                                                                             :key="'water-'+item.id">
                                                                             <td v-html="setBR(item.status)"></td>
                                                                             <td>
-                                                                                <div class="alertOpen"
+                                                                                <div class="alertOpen flex-center-end"
                                                                                     style="cursor: pointer;"
                                                                                     @click="openDialog('水質',item)">
                                                                                     <v-icon>mdi-dots-vertical-circle-outline</v-icon>
@@ -2272,7 +2272,7 @@
                                                                             :key="'Obser-'+item.id">
                                                                             <td v-html="setBR(item.status)"></td>
                                                                             <td>
-                                                                                <div class="alertOpen"
+                                                                                <div class="alertOpen flex-center-end"
                                                                                     style="cursor: pointer;"
                                                                                     @click="openDialog('觀察網',item)">
                                                                                     <v-icon>mdi-dots-vertical-circle-outline</v-icon>
