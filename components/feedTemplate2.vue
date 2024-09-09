@@ -223,7 +223,6 @@
                                                             {{ chip }}
                                                         </v-chip>
                                                     </div>
-                                                    
                                                 </template>
                                                 <!-- 執行/不執行說明 -->
                                                 <template v-slot:[`item.executed_actions`]="{ item,index }">
@@ -879,7 +878,8 @@ export default {
                 { text: "動作", value: "action_name", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
                 { text: "動作", value: "action_name", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 { text: "總執行天數", value: "total_day", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
-                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit','cycleedit']},
+                { text: "預計執行日", value: "start_date", groupable: false, sortable: false,width:"10%",showmode: ['cycleedit']},
+                { text: "第幾天開始執行", value: "start_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 { text: "持續執行至第幾天", value: "end_on_which_day", groupable: false, sortable: false,width:"10%",showmode: ['add', 'edit']},
                 // { text: "執行/確認人員", value: "step_exec", groupable: false, showmode: ['edit2'] },
                 { text: "訊息", value: "msg", groupable: false, sortable: false,width:"15%",showmode: ['cycleedit']},
@@ -1336,10 +1336,14 @@ export default {
                             }else {
                                 nodate.push(action);
                             }
+                            
                         })
                         dateData.sort((a,b)=>{
                             return new Date(a.execute_time).getTime() - new Date(b.execute_time).getTime();
                         })
+                        nodate.sort((a,b)=>{
+                            return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+                        });
                         step.actionList=[];
                         step.actionList = [...dateData,...nodate];
                     }
