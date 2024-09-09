@@ -212,7 +212,7 @@
                           <div class="date-time-picker" style="width:100%">
                             <v-icon
                               @click="showDate=false;editItem.inspected_time = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
-                            <a-date-picker v-if="showDate" v-model="editItem.inspected_time" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk" />
+                            <a-date-picker v-if="showDate" v-model="editItem.inspected_time" format="yyyy-MM-DD HH:mm" :show-time="{ format: 'HH:mm' }" placeholder="" @change="onChange" @ok="onOk" />
                           </div>
                           <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必要項目</span>
                         </v-col>
