@@ -41,9 +41,14 @@
                         </v-col>
                         <v-btn class="btn-secondary"  @click="changePool('pre')">上一池</v-btn>
                         <v-btn class="btn-primary"  @click="changePool('next')">下一池</v-btn>
-                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3">
-                            <v-btn v-if="isDisable" class="btn-primary green"  @click="isDisable=!isDisable">測試模式</v-btn>
-                            <v-btn v-else class="btn-secondary green"  @click="isDisable=!isDisable">一般模式</v-btn>
+                        <v-col v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" cols="12" md="3" class="flexCenter">
+                            <!-- <v-btn v-if="!isDisable" class="btn-primary green"  @click="isDisable=!isDisable">測試模式</v-btn>
+                            <v-btn v-else class="btn-secondary green"  @click="isDisable=!isDisable">一般模式</v-btn> -->
+                            <v-switch
+                                v-model="isDisable"
+                                :label="`模式: ${isDisable?'測試':'一般'}`"
+                                hide-details
+                            ></v-switch>
                         </v-col>
                         <!-- <v-col v-if="poolData.daily&&poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status!=='0'" cols="12" md="3">
                             <v-btn class="btn-primary" :class="{'disabled':!poolData.daily||poolData.daily[poolData.daily.length-1].todo[poolData.daily[poolData.daily.length-1].todo.length-1].execute_status=='0'}" @click="submitNextStep">開啟新工作</v-btn>
@@ -119,11 +124,11 @@
                                             </div>
                                         </div>
                                         <div v-if="daily.execute_status=='0'" class="action flex-align-center">
-                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
-                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
+                                            <v-btn class="btn-primary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&!isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,1)">執行</v-btn>
+                                            <v-btn class="btn-secondary btn-small" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&!isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,2)">不執行</v-btn>
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
-                                                    <button class="btn-icon-secondary delete" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,3)" v-bind="attrs" v-on="on">
+                                                    <button class="btn-icon-secondary delete" :class="{'disabled':new Date(item.scheduling_date).getTime()>new Date().getTime()&&!isDisable||!isLoading}" @click="openEdit(daily,item.scheduling_date,3)" v-bind="attrs" v-on="on">
                                                         <v-icon>mdi-timer-pause-outline</v-icon>
                                                     </button>
                                                 </template>
@@ -582,7 +587,7 @@ export default {
             stepdata:[],
             actionInputShow:false,
             userData:[],
-            isDisable:true,
+            isDisable:false,
             isLoading: false,
             delayAll:{daily_check_ids:[],delay_day:0},
             delayAllDialog: false,

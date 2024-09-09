@@ -212,7 +212,7 @@
                           <div class="date-time-picker" style="width:100%">
                             <v-icon
                               @click="showDate=false;editItem.inspected_time = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
-                            <a-date-picker v-if="showDate" v-model="editItem.inspected_time" format="yyyy-MM-DD HH:mm:ss" show-time placeholder="" @change="onChange" @ok="onOk" />
+                            <a-date-picker v-if="showDate" v-model="editItem.inspected_time" format="yyyy-MM-DD HH:mm" show-time placeholder="" @change="onChange" @ok="onOk" />
                           </div>
                           <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必要項目</span>
                         </v-col>
@@ -801,7 +801,7 @@ export default {
         this.editItem = {pond_id:null,is_heated:false};
       }else {
         this.editItem = _.cloneDeep(item);
-        this.editItem.inspected_time = this.$moment(new Date(this.editItem.inspected_time), 'YYYY-MM-DD HH:mm:ss');
+        this.editItem.inspected_time = this.$moment(new Date(this.editItem.inspected_time), 'YYYY-MM-DD HH:mm');
         this.editItem.dilution = parseFloat(this.editItem.dilution.replace('%',''));
       }
     },
@@ -820,7 +820,7 @@ export default {
       }
       if(valid && !this.isInspectedTime && !this.isPoolError) {
         let parm = _.cloneDeep(this.editItem);
-        parm.inspected_time =dayjs(new Date(parm.inspected_time)).format("YYYY-MM-DD HH:mm:ss");
+        parm.inspected_time =dayjs(new Date(parm.inspected_time)).format("YYYY-MM-DD HH:mm")+':00';
         // parm.class1 = '溶藻弧菌(白菌): '+parm.class1;
         // parm.class2 = '霍亂弧菌(靛菌): '+parm.class2;
         // parm.class3 = '腸炎弧菌(紫菌): '+parm.class3;
@@ -865,12 +865,12 @@ export default {
       
     },
     getNowDateTime() {
-        return this.$moment(new Date(), 'YYYY-MM-DD HH:mm:ss');
+        return this.$moment(new Date(), 'YYYY-MM-DD HH:mm');
     },
     onChange(value,dateString) {
         console.log(value,dateString);
         if(value!==null) {
-          this.editItem.inspected_time = this.$moment(new Date(value), 'YYYY-MM-DD HH:mm:ss');
+          this.editItem.inspected_time = this.$moment(new Date(value), 'YYYY-MM-DD HH:mm');
           this.isInspectedTime = false;
         }else {
           this.editItem.inspected_time = '';
