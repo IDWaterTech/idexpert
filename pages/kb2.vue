@@ -34,6 +34,17 @@
                                 <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
                             </v-autocomplete>
                         </v-col>
+                        <!-- 同部門 -->
+                        <v-col v-else cols="12" md="2" sm="12">
+                            <v-autocomplete v-model="nowUser" :items="nowUserData" item-value="username" clearable dense
+                                filled hide-details solo class="mt-1" @change="getUserQueryData()"
+                                :filter="customFilter">
+                                <!-- item-text="account_name" -->
+                                <template slot="item" slot-scope="data">{{data.item.account_name}}({{
+                                    data.item.username.match(/(.*)@/)[1] }})</template>
+                                <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
+                            </v-autocomplete>
+                        </v-col>
                         <!-- 選擇參數 -->
                         <v-col cols="12" md="2" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
                             <v-autocomplete :label="(this.$auth.$state.user == null) ? '歷史紀錄(需登入)' : '歷史紀錄'"
@@ -57,8 +68,8 @@
                             </v-autocomplete>
                         </v-col>
                         <!-- 查詢/清空/控制項 - result版面收合 -->
+                        <!-- v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" -->
                         <v-col
-                            v-if="userData.length>0 && userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0"
                             cols="12" md="6" sm="12" :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
                             class="flex-center-between">
                             <div class="btn-groups">
@@ -122,25 +133,14 @@
                             </v-dialog>
                         </v-col>
                         <!-- 查詢/清空/控制項 - result版面收合 -->
-                        <v-col v-else cols="12" md="8" sm="12"
+                        <!-- <v-col v-else cols="12" md="8" sm="12"
                             :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}"
                             class="flex-center-between">
                             <div class="btn-groups">
-                                <!-- <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <button
-                                            class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
-                                            @click="importBasicData();" v-bind="attrs" v-on="on">
-                                            基本資料
-                                        </button>
-                                    </template>
-                                    <span>帶入基本資料</span>
-                                </v-tooltip> -->
                                 <v-btn tile class="btn-secondary delete" @click="resetParm();getSelectData(null)">
                                     清空
                                 </v-btn>
                             </div>
-                            <!-- 控制項 - result版面收合 -->
                             <div class="control">
                                 <v-icon @click="dialog.pdf=true" title="公式">mdi-square-root-box</v-icon>
                                 <v-icon v-if="!nowExpand" @click="expandPanel(true)"
@@ -168,29 +168,14 @@
                                             </v-btn>
                                         </div>
                                     </v-card-title>
-                                    <!-- <v-card-title>計算公式
-                                        <v-switch
-                                            v-model="formulaData"
-                                            :label="formulaData?'pdf':'xls'"
-                                            ></v-switch>
-                                    </v-card-title> -->
                                     <v-card-text style="height: 600px;">
                                         <v-responsive>
                                             <iframe :src="formulaUrl"
                                                 style="overflow:hidden;height:600px;width:100%;"></iframe>
                                         </v-responsive>
                                     </v-card-text>
-                                    <!-- <v-card-actions>
-                                        <v-btn>Close</v-btn>
-                                    </v-card-actions> -->
                                 </v-card>
                             </v-dialog>
-                        </v-col>
-                        <!-- 控制項 - result版面收合 -->
-                        <!-- <v-col v-if="windowWidth>959.58" cols="12" md="4" style="display: flex;justify-content: flex-end;"
-                        :style="{'padding':`${windowWidth>959.58?'12px':'4px 12px'}`}">
-                            <v-icon v-if="!nowExpand" @click="expandPanel(true)" title="展開">mdi-view-dashboard</v-icon>
-                            <v-icon v-if="nowExpand" @click="expandPanel(false)" title="收縮">mdi-view-stream</v-icon>
                         </v-col> -->
                     </v-row>
                 </div>
@@ -3546,6 +3531,7 @@ export default {
             isShowResult: false,
             isSearchDate: false,
             oldSearchDate:[],
+            nowUserData:[],
         }
     },
     methods: {
@@ -3853,7 +3839,20 @@ export default {
             this.userData = typeof (getuserData)=='string'?[]:getuserData;
             this.userData = this.userData.filter(x=>x.is_active==true);
             this.isLoading = true;
-            console.log('User',this.userData);
+            this.nowUserData = [];
+            let userDepartment = this.userData.filter(x=>x.username == this.$auth.$state.user.email)[0].department;
+            this.userData.forEach(user=>{
+                let isIncludes = false;
+                user.department.forEach(d=>{
+                    if(userDepartment.includes(d)) {
+                        isIncludes = true;
+                    }
+                })
+                if(isIncludes) {
+                    this.nowUserData.push(user);
+                }
+            })
+            console.log('User',this.userData,userDepartment);
         },
         async getUserQueryData() {
             await this.getQuerry();
