@@ -2340,7 +2340,7 @@ export default {
           let num = 0;
           x.shrimps.forEach(y=>num=num+y.weight);
           if(num>0) {
-            x.shrimp_weight = (((num / x.observation_qty)*100)/100).toFixed(2);
+            x.shrimp_weight = (((num / x.observation_qty)*1000)/1000).toFixed(3);
           }else {
             x.shrimp_weight = null;
           }
@@ -2724,7 +2724,7 @@ export default {
         }
         
       })
-      this.observeEdit.shrimp_weight = (((num / nowShrimp)*100)/100).toFixed(2);
+      this.observeEdit.shrimp_weight = (((num / nowShrimp)*1000)/1000).toFixed(3);
     },
     // 蝦隻重量個別輸入長度和重量
     confirmShrimps() {
@@ -2745,7 +2745,7 @@ export default {
           }
           
         })
-        this.observeEdit.shrimp_weight = (((num / nowShrimp)*100)/100).toFixed(2);
+        this.observeEdit.shrimp_weight = (((num / nowShrimp)*1000)/1000).toFixed(3);
         this.shrimpDialog = false;
       }else {
         // alert('長度與重量須大於0');

@@ -50,8 +50,10 @@
                             <v-autocomplete :label="(this.$auth.$state.user == null) ? '歷史紀錄(需登入)' : '歷史紀錄'"
                                 v-model="querrySelected" :items="nowSelectDataLst" item-value="created_time" dense
                                 filled hide-details clearable solo class="mt-1"
-                                :disabled="this.$auth.$state.user == null || nowSelectPool==''"
-                                @change="getSelectData($event)">
+                                :disabled="this.$auth.$state.user == null || nowSelectPool==''||isParaLoading"
+                                @change="getSelectData($event)"
+                                :loading="isParaLoading"
+                                :color="isParaLoading?'red':'primary'">
                                 <!-- <template slot="item" slot-scope="data">({{data.item.id}})-{{ (data.item.input_data.BaseParm.InspectedDate)?data.item.input_data.BaseParm.InspectedDate.substring(5,10).replace('-','/') :'' }}-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template>
                                 <template slot="selection" slot-scope="data">({{data.item.id}})-{{ data.item.input_data.BaseParm.InspectedTime }}-{{ data.item.input_data.BaseParm.PondArea }}-{{ data.item.input_data.BaseParm.Pond }}</template> -->
                                 <template slot="item" slot-scope="data">({{data.item.id}})-{{
@@ -212,7 +214,7 @@
                                                     </template>
                                                     <v-date-picker
                                                         v-model="BaseParm['InspectedDate']"
-                                                        :max="getNowDate()"
+                                                        :max="userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0?null:getNowDate()"
                                                         locale="zh-tw" no-title @input="
                                                     menu_inspecteddate = false;
                                                     "></v-date-picker>
@@ -1588,7 +1590,7 @@
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"></v-text-field>
                                                                                 <a-tooltip placement="topLeft"
-                                                                                    :title="ObservationData['ShrimpWeight']&&typeof(ObservationData['ShrimpWeight'])=='number'?((ObservationData['ShrimpWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span
+                                                                                    :title="ObservationData['ShrimpWeight']&&typeof(ObservationData['ShrimpWeight'])=='number'?((ObservationData['ShrimpWeight']/ 1000).toFixed(3)+'kg'):'0kg'"><span
                                                                                         class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
@@ -1608,7 +1610,7 @@
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"></v-text-field>
                                                                                 <a-tooltip placement="topLeft"
-                                                                                    :title="ObservationData['LastShrimpWeight']&&typeof(ObservationData['LastShrimpWeight'])=='number'?((ObservationData['LastShrimpWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span
+                                                                                    :title="ObservationData['LastShrimpWeight']&&typeof(ObservationData['LastShrimpWeight'])=='number'?((ObservationData['LastShrimpWeight']/ 1000).toFixed(3)+'kg'):'0kg'"><span
                                                                                         class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
@@ -1988,7 +1990,7 @@
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"></v-text-field>
                                                                                 <a-tooltip placement="topLeft"
-                                                                                    :title="BreedingParm['InitialWeight']&&typeof(BreedingParm['InitialWeight'])=='number'?((BreedingParm['InitialWeight']/ 1000).toFixed(2)+'kg'):'0kg'"><span
+                                                                                    :title="BreedingParm['InitialWeight']&&typeof(BreedingParm['InitialWeight'])=='number'?((BreedingParm['InitialWeight']/ 1000).toFixed(3)+'kg'):'0kg'"><span
                                                                                         class="pa-0 ma-0">g</span></a-tooltip>
                                                                             </v-col>
                                                                         </v-row>
@@ -3532,6 +3534,7 @@ export default {
             isSearchDate: false,
             oldSearchDate:[],
             nowUserData:[],
+            isParaLoading: false,
         }
     },
     methods: {
@@ -3855,6 +3858,7 @@ export default {
             console.log('User',this.userData,userDepartment);
         },
         async getUserQueryData() {
+            this.isParaLoading = true;
             await this.getQuerry();
             this.querrySelected='';
             // await this.importBasicData();
@@ -3871,6 +3875,7 @@ export default {
             if(this.$auth.$state.user==null){
                 this.$toast.error(`需重新登入`, { duration: 2000 });
                 window.location.href='/login';
+                this.isParaLoading = false;
                 // return;
             }else {
                 let getQueryLogList = await this.getQueryLogList(allParm);
@@ -3902,6 +3907,7 @@ export default {
                 console.log('querydatalst',this.querryDataLst);
                 console.log('nowSelectDataLst',this.nowSelectDataLst);
                 this.get_scopeData(this.nowSelectPool);
+                this.isParaLoading = false;
                 if(isAdd) {
                     let alldate = [];
                     this.nowSelectDataLst.forEach(p=>{
@@ -4405,8 +4411,10 @@ export default {
             })
         },
         importBasicData:async function(){//帶入數據
+            this.isLoading = false;
             console.log("importBasicData!!");
             if(this.nowSelectPool==""){
+                this.isLoading = true;
                 this.$toast.error(`請先選擇養殖池`, { duration: 2000 });
                 return;
             }else {
