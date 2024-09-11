@@ -1708,8 +1708,9 @@ export default {
             }
           })
         })
+        await this.getState(this_id);
         if(this_id !== this.nowArea) {
-          await this.getState(this_id);
+          
           this.nowArea = this_id;
         }
         // console.log('>>>area_list',area_list);
@@ -1724,7 +1725,9 @@ export default {
       let getPondDataList = await this.getPondDataList(para);// plugins\service\basic.js
       let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
       this.nowPoolData = data.filter(x=>x.id==this.poolid)[0];
+      this.add_volume = this.nowPoolData.volume;
       let state = data.filter(x=>x.id==this.poolid)[0].state;
+      console.log(this.nowPoolData);
       this.passObj.state = state;
     },
     get_selectData(evt) {
