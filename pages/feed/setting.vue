@@ -2432,6 +2432,8 @@ export default {
         this.combofield = {};
         this.fingparam = []; //成份參數
         this.fingparamitem = {};
+        this.sub_formula = {};
+        this.main_formula = {};
       }
       // if(this.tablindex == '廠商設定') {
       //   this.editItem = {};
