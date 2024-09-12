@@ -13,8 +13,8 @@
                     return {
                         columns:['name','value'],
                         rows:[
-                            {'name':'column1','value':78},
-                            {'name':'column2','value':22}
+                            {'name':'column1','value':78,'text':78},
+                            {'name':'column2','value':22,'text':22}
                         ]
                     }
                 }
@@ -42,6 +42,11 @@
         },
         computed: {
             chartExtend2(){
+                let oldData = _.cloneDeep(this.chartData);
+                if(this.chartData.rows[0].value>100) {
+                    this.chartData.rows[0].value = 100;
+                    this.chartData.rows[1].value = 0;
+                } 
                 let myChartExtend={
                     legend: {show: false},
                     color: this.colors
@@ -53,7 +58,7 @@
                         // console.log('this.chartData?',this.chartData);
                         // return `${params.value}%`
                         if(params.name!=='') {
-                            return `${params.name}:${params.data.value}%`;
+                            return `${params.name}:${params.data.value==100?oldData.rows[0].value:params.data.value}%`;
                         }
                         
                     }
@@ -66,7 +71,8 @@
                                 position: 'center',    //显示的位置,center是饼环图中间显示,
                                 formatter: (params)=>{
                                     if(params.name==this.chartData?.rows[0]?.name) {
-                                        return `{title|${params.data.value}%}`;
+                                        console.log('param',params.name,params)
+                                        return `{title|${params.data.value==100?oldData.rows[0].value:params.data.value}%}`;
                                     }
                                 },
                                 rich: {
@@ -76,7 +82,8 @@
                                     }, 
                                 }
                             }
-                        }
+                        },
+                        
                 };
                 return myChartExtend;
 
