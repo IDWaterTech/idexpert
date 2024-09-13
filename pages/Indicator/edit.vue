@@ -182,6 +182,9 @@
                   label="水池"
                   class="select-color"
                   hide-details
+                  :loading="isParaLoading"
+                  :disabled="isParaLoading"
+                  :color="isParaLoading?'red':'primary'"
                 ></v-autocomplete>
               </v-col>
               <!-- 查詢 -->
@@ -1331,6 +1334,7 @@ export default {
       isShrimp: false,
       shrimpvalid:true,
       dialogLoading: true,
+      isParaLoading: false,
     };
   },
   async created() {
@@ -1431,6 +1435,7 @@ export default {
   },
   methods: {
     get_scopeData:function(evt){
+      this.isParaLoading = true;
       console.log(evt);
       this.areadata(evt);
     },
@@ -1527,6 +1532,7 @@ export default {
       } else {
         this.mainpool.items = [];
       }
+      this.isParaLoading = false;
     },
     changeDefItem() {
       // 清除項目
@@ -2264,6 +2270,8 @@ export default {
         this.observableData = _.cloneDeep(datas);
         if(this.observableData.length>0) {
           this.getChartData();
+        }else {
+          this.isLoading = true;
         }
         this.isSearch = true;
         // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
@@ -2302,6 +2310,8 @@ export default {
         this.observableData = _.cloneDeep(datas);
         if(this.observableData.length>0) {
           this.getChartData();
+        }else {
+          this.isLoading = true;
         }
         this.isSearch = true;
       }
@@ -2320,8 +2330,7 @@ export default {
           }
         })
       })
-      
-        console.log('observableData',this.observableData);
+      console.log('observableData',this.observableData);
     },
     async getObservationData() {
       this.chartShow = false;
@@ -2590,7 +2599,7 @@ export default {
           }
       })
       this.chartShow = true;
-      
+      this.isLoading = true;
     },
     editObservable(type,item) {
       let index;
@@ -3105,6 +3114,7 @@ export default {
         // }else {
         //   this.listOpen = true;
         // }
+        this.isLoading = false;
         this.listOpen = true;
         
       }
