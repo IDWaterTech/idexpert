@@ -241,7 +241,7 @@
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button
-                                                    class="btn-primary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
+                                                    class="btn-primary v-btn btn-small"
                                                     @click="importBasicData();isSearchDate=false;" v-bind="attrs" v-on="on">
                                                     帶入
                                                 </button>
@@ -251,7 +251,7 @@
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button
-                                                    class="btn-secondary v-btn v-btn--is-elevated v-btn--has-bg v-btn--tile theme--light v-size--default"
+                                                    class="btn-secondary v-btn btn-small"
                                                     @click="cancelSearchDate()" v-bind="attrs" v-on="on">
                                                     取消
                                                 </button>
@@ -261,7 +261,17 @@
                                     </v-col>
 
                                 </v-row>
-                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" style="margin-left: 16px;color:#006AA6;cursor: pointer;text-decoration:underline">詳細資訊</span>
+                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" style="margin-left: 16px;color:#006AA6;cursor: pointer;text-decoration:underline;margin-right: 8px;">詳細資訊</span>
+                                <v-tooltip v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <button
+                                            class="btn-primary v-btn btn-small"
+                                            @click="importBasicData();isSearchDate=false;" v-bind="attrs" v-on="on">
+                                            帶入
+                                        </button>
+                                    </template>
+                                    <span>帶入養殖池的基本資料</span>
+                                </v-tooltip>
                             </div>
                             
                         </v-card>
@@ -4149,7 +4159,10 @@ export default {
                             // this.querrySelectedLst[querrypool] = "";
                             this.resetParm();
                             this.querrySelected = '';
+                            this.BaseParm['InspectedDate'] = this.getNowDate();//沒有日期，設定現在日期
+                            this.BaseParm['InspectedTime'] = this.getNowTime();//沒有日期，設定現在時間
                             this.isSearch = false;
+                            this.isSearchDate = false;
                         }
                     },50)
                     // await this.$axios
@@ -4332,6 +4345,23 @@ export default {
             
             setTimeout(()=>{
                 this.isLoading = true;
+                if(isSaved){
+                    // console.log("querrypool:",querrypool);
+                    if(this.nowSelectPool!=null){
+                        this.getQuerry(true);
+                        this.isSearch = true;
+                    }else{
+                        //clear all
+                        this.querryDataLst={"1":[],"2":[],"3":[],"4":[]};
+                    }
+                    //need reget dropdownlist data
+                    // var pondLst = Object.keys(this.pondNameLst);
+                    // pondLst.forEach(element => {
+                    //     console.log(pondLst[element]);
+                    //     console.log(this.pondNameLst[pondLst[element]]);
+                    // });
+
+                }
             },50)
             
             // await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
@@ -4355,23 +4385,7 @@ export default {
             // .finally(() => {
             //         //this.getdata();
             // });
-            if(isSaved){
-                // console.log("querrypool:",querrypool);
-                if(this.nowSelectPool!=null){
-                    this.getQuerry(true);
-                    this.isSearch = true;
-                }else{
-                    //clear all
-                    this.querryDataLst={"1":[],"2":[],"3":[],"4":[]};
-                }
-                //need reget dropdownlist data
-                // var pondLst = Object.keys(this.pondNameLst);
-                // pondLst.forEach(element => {
-                //     console.log(pondLst[element]);
-                //     console.log(this.pondNameLst[pondLst[element]]);
-                // });
-
-            }
+            
             // BaseParm['Factory'] + BaseParm['PondArea']+ BaseParm['Pond']) == ['1']
             // this.getQuerry2();
         },
