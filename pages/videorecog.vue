@@ -166,7 +166,6 @@
                     </template>
                   </v-data-table>
                 </v-card>
-                
               </v-col>
             </v-row>
           </div>
@@ -782,10 +781,20 @@ export default {
         console.log(getedItem);
       }
     },
-    stepLoad() {
+    async stepLoad() {
       this.isLoading = false;
       // console.log('Step Load',this.isLoading);
-      setTimeout(()=>{this.isLoading=true},1000);
+      // setTimeout(()=>{this.isLoading=true},1000);
+      var res = false;
+      res = await this.postObservationImageDownloadList();
+      setTimeout(()=>{
+        if(res) {
+          this.getRecog();
+        }
+        this.isLoading=true;
+      },50)
+      // let postObservationImageDownloadList = await this.postObservationImageDownloadList();
+      // let dataBacteria = typeof (postObservationImageDownloadList)=='string'?[]:postObservationImageDownloadList;
     },
     // 菌相資料新增/編輯Dialog open
     openBacteria(type,item=null) {
