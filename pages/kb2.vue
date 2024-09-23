@@ -4255,6 +4255,7 @@ export default {
                         if(res) {
                             this.getQuerry();
                         }
+                        this.isLoading = true;
                     },50)
                     // await this.$axios
                     //     .patch(url, allParm)
@@ -4274,6 +4275,7 @@ export default {
                     //     });
                 } else {
                     this.$toast.error("覆蓋取消", { duration: 2000 });
+                    this.isLoading = true;
                 }
             // }
         },
@@ -4328,41 +4330,37 @@ export default {
                     })
                 }
             })
-            //console.log("all參數：",allParm);
-            setTimeout(async ()=>{
-                let getSuggestionList = await this.getSuggestionList(allParm);
-                let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
-                this.suggData.DynamicData = suggestionData.DynamicData;
-                this.suggData.WaterQuality = suggestionData.WaterQuality;
-                this.suggData.Observation = suggestionData.Observation;
-                this.suggData.Feed = suggestionData.Feed;
-                this.suggData.Material = suggestionData.Material;
-                this.suggData.MakeWater = suggestionData.MakeWater;
-                this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
-                    duration: 2000
-                });
-            },1)
+            // console.log("all參數：",allParm);
+            let getSuggestionList = await this.getSuggestionList(allParm);
+            let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
+            this.suggData.DynamicData = suggestionData.DynamicData;
+            this.suggData.WaterQuality = suggestionData.WaterQuality;
+            this.suggData.Observation = suggestionData.Observation;
+            this.suggData.Feed = suggestionData.Feed;
+            this.suggData.Material = suggestionData.Material;
+            this.suggData.MakeWater = suggestionData.MakeWater;
+            this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
+                duration: 2000
+            });
             
-            setTimeout(()=>{
+            if(isSaved){ 
                 this.isLoading = true;
-                if(isSaved){
-                    // console.log("querrypool:",querrypool);
-                    if(this.nowSelectPool!=null){
-                        this.getQuerry(true);
-                        this.isSearch = true;
-                    }else{
-                        //clear all
-                        this.querryDataLst={"1":[],"2":[],"3":[],"4":[]};
-                    }
-                    //need reget dropdownlist data
-                    // var pondLst = Object.keys(this.pondNameLst);
-                    // pondLst.forEach(element => {
-                    //     console.log(pondLst[element]);
-                    //     console.log(this.pondNameLst[pondLst[element]]);
-                    // });
-
+                // console.log("querrypool:",querrypool);
+                if(this.nowSelectPool!=null){
+                    this.getQuerry(true);
+                    this.isSearch = true;
+                }else{
+                    //clear all
+                    this.querryDataLst={"1":[],"2":[],"3":[],"4":[]};
                 }
-            },50)
+                //need reget dropdownlist data
+                // var pondLst = Object.keys(this.pondNameLst);
+                // pondLst.forEach(element => {
+                //     console.log(pondLst[element]);
+                //     console.log(this.pondNameLst[pondLst[element]]);
+                // });
+
+            }
             
             // await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`, allParm).then(res => {
             //     if(res.status==200){
