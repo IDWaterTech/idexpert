@@ -1030,6 +1030,36 @@ Vue.mixin({
             }
         },
         //===== 影像辨識 =====//
+        // 同步
+        postObservationImageDownloadList:async function() {
+            try {
+                let data =  await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiUrl}/observation-image-download/`)
+                console.log("同步:" + data.request.responseURL,data);
+                if(data.status==200) {
+                    if(data.data.detail== 'Success') {
+                        this.$toast.success(data.data.messages[0], {
+                            duration: 2000
+                        });
+                    }else {
+                        this.$toast.error(data.data.messages[0], { duration: 2000 });
+                    }
+                    return true;
+                }else {
+                    this.$toast.error(data.data.messages[0], { duration: 2000 });
+                    return false;
+                }
+
+            }catch(error) {
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.error('API Error:', error);
+                }
+                return false;
+            }
+        },
         // 取得觀察網
         getObservationImageDataList:async function(parm) {
             try {
@@ -1102,6 +1132,29 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
+            }
+        },
+        // 取得水質監測的警告範圍
+        getBasicWarningRangeList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/warning-range/`, { params: parm })
+                console.log("水質監測的警告範圍清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    this.$toast.error("錯誤：" + data.data, { duration: 2000 });
+                    return [];
+                }
+
+            }catch(error) {
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return [];
             }
         },
 	}

@@ -828,9 +828,10 @@ export default {
       // this.$emit('goIndicator',item)
     },
     getTitle(item) {
-      // console.log(item,this.ponds);
+      // console.log('getTitle',item,this.ponds,this.nowAreaId);
       let warning = '';
       let danger = '';
+      let illogical = '';
       if(item.rows.length==0 && item.id!=='') {
         if(this.nowAreaId.range) {
           if(this.nowAreaId.range['warning']) {
@@ -842,47 +843,111 @@ export default {
                 }
                 if(xid!==this.nowAreaId.range['warning'][keysdata[i]].length-1) {
                   warning += ',';
+                }else {
+                  warning+=' ; '
                 }
               })
             }
             // console.log('warning',item.check['warning'])
           }
-        
-      }
-      if(this.nowAreaId.range) {
-        if(this.nowAreaId.range['critical']) {
-          var keysdata = Object.keys(this.nowAreaId.range['critical']);
-          for(let i=0;i<keysdata.length;i++) {
-            if(this.nowAreaId.range['critical'][keysdata[i]]&&this.nowAreaId.range['critical'][keysdata[i]].length>0) {
-              // console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
-              this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
-                if(x!=='') {
-                  danger += x;
-                }
-                if(i!==keysdata.length-1&&this.nowAreaId.range['critical'][keysdata[i+1]]&&this.nowAreaId.range['critical'][keysdata[i+1]].length>0) {
-                  danger += ',';
-                }
-              })
+          if(this.nowAreaId.range['critical']) {
+            var keysdata = Object.keys(this.nowAreaId.range['critical']);
+            for(let i=0;i<keysdata.length;i++) {
+              if(this.nowAreaId.range['critical'][keysdata[i]]&&this.nowAreaId.range['critical'][keysdata[i]].length>0) {
+                // console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
+                this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
+                  if(x!=='') {
+                    danger += x;
+                  }
+                  if(i!==keysdata.length-1&&this.nowAreaId.range['critical'][keysdata[i+1]]&&this.nowAreaId.range['critical'][keysdata[i+1]].length>0) {
+                    danger += ',';
+                  }else {
+                    danger+=' ; '
+                  }
+                })
+              }
+              
             }
-            
+            // console.log('critical',item.check['critical'])
           }
-          // console.log('critical',item.check['critical'])
-        }
+          if(this.nowAreaId.range['illogical']) {
+            var keysdata = Object.keys(this.nowAreaId.range['illogical']);
+            for(let i=0;i<keysdata.length;i++) {
+              if(this.nowAreaId.range['illogical'][keysdata[i]]&&this.nowAreaId.range['illogical'][keysdata[i]].length>0) {
+                // console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
+                this.nowAreaId.range['illogical'][keysdata[i]].forEach(x=>{
+                  // if(y.includes('>')) {
+                  //   y.replace('>','<');
+                  // }else if(y.includes('<')) {
+                  //   y.replace('<','>');
+                  // };
+                  if(x!=='') {
+                    if(x.includes('>')) {
+                      x = x.replace('>','<');
+                    }else if(x.includes('<')) {
+                      x = x.replace('<','>');
+                    }
+                    illogical += x;
+                  }
+                  if(i!==keysdata.length-1&&this.nowAreaId.range['illogical'][keysdata[i+1]]&&this.nowAreaId.range['illogical'][keysdata[i+1]].length>0) {
+                    illogical += ',';
+                  }else {
+                    illogical+=' ; '
+                  }
+                })
+              }
+            }
+          }
         
       }
+      // if(this.nowAreaId.range) {
+      //   if(this.nowAreaId.range['critical']) {
+      //     var keysdata = Object.keys(this.nowAreaId.range['critical']);
+      //     for(let i=0;i<keysdata.length;i++) {
+      //       if(this.nowAreaId.range['critical'][keysdata[i]]&&this.nowAreaId.range['critical'][keysdata[i]].length>0) {
+      //         // console.log('>>>>',i,this.nowAreaId.range['critical'][keysdata[i]])
+      //         this.nowAreaId.range['critical'][keysdata[i]].forEach(x=>{
+      //           if(x!=='') {
+      //             danger += x;
+      //           }
+      //           if(i!==keysdata.length-1&&this.nowAreaId.range['critical'][keysdata[i+1]]&&this.nowAreaId.range['critical'][keysdata[i+1]].length>0) {
+      //             danger += ',';
+      //           }
+      //         })
+      //       }
+            
+      //     }
+      //     // console.log('critical',item.check['critical'])
+      //   }
+        
+      // }
       } 
-      
-
-      if(warning!==''&& danger!=='') {
-        return '警告值：'+warning+'\n危險值：'+danger;
-      }else {
-        if(warning==''&& danger=='') {
-          return ''
+      if(illogical!=='') {
+        if(warning!==''&& danger!=='') {
+          return '警告值：'+warning+'\n危險值：'+danger+'\n數值合理範圍:'+illogical;
         }else {
-          if(warning!=='') {
-            return '警告值：'+warning;
+          if(warning==''&& danger=='') {
+            return ''
           }else {
-            return '危險值：'+danger;
+            if(warning!=='') {
+              return '警告值：'+warning+'\n數值合理範圍:'+illogical;
+            }else {
+              return '危險值：'+danger+'\n數值合理範圍:'+illogical;
+            }
+          }
+        }
+      }else {
+        if(warning!==''&& danger!=='') {
+          return '警告值：'+warning+'\n危險值：'+danger;
+        }else {
+          if(warning==''&& danger=='') {
+            return ''
+          }else {
+            if(warning!=='') {
+              return '警告值：'+warning;
+            }else {
+              return '危險值：'+danger;
+            }
           }
         }
       }

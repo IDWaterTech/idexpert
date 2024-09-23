@@ -734,7 +734,7 @@ export default {
             nowTab = 'NH4';
             break;
           case "溶氧濃度":
-            nowTab = 'Do';
+            nowTab = 'DO';
             break;
           case "酸鹼值":
             nowTab = 'pH';
@@ -748,13 +748,16 @@ export default {
           default:
             break;
         }
-        if(nowTab=='NH4') {
-          this.nowAreaId.range = this.lightData['AmmoniaN'];
-        }else if(nowTab=='Temperature') {
-          this.nowAreaId.range = this.lightData['Temp'];
-        }else {
-            this.nowAreaId.range = this.lightData[nowTab];
-        }
+        // if(nowTab=='NH4') {
+        //   this.nowAreaId.range = this.lightData['AmmoniaN'];
+        // }else if(nowTab=='Temperature') {
+        //   this.nowAreaId.range = this.lightData['Temp'];
+        // }else {
+        //     this.nowAreaId.range = this.lightData[nowTab];
+        // }
+        
+        this.nowAreaId.range = this.lightData[nowTab];
+        console.log('range',this.nowAreaId.range,this.lightData)
         this.getWaterData();
         // this.getAlertNum();
         setTimeout(()=>{
@@ -1060,7 +1063,7 @@ export default {
             nowTab = 'NH4';
             break;
           case "溶氧濃度":
-            nowTab = 'Do';
+            nowTab = 'DO';
             break;
           case "酸鹼值":
             nowTab = 'pH';
@@ -1079,7 +1082,7 @@ export default {
         });
 
         let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/last-data-in-current-time-range/`;
-        let keys = ['NO2','NH4','Do','pH','Temperature','water_level_percentage'];
+        let keys = ['NO2','NH4','DO','pH','Temperature','water_level_percentage'];
         let num=0;
         keys.forEach(async k=>{
           let parm = {
@@ -1088,13 +1091,15 @@ export default {
             time_range: this.timekb.filter(x=>x.id==this.timeSelect)[0].value,
             col_name: k
           };
-          if(nowTab=='NH4') {
-            this.nowAreaId.range = this.lightData['AmmoniaN'];
-          }else if(nowTab=='Temperature') {
-            this.nowAreaId.range = this.lightData['Temp'];
-          }else {
-              this.nowAreaId.range = this.lightData[nowTab];
-          }
+          // if(nowTab=='NH4') {
+          //   this.nowAreaId.range = this.lightData['AmmoniaN'];
+          // }else if(nowTab=='Temperature') {
+          //   this.nowAreaId.range = this.lightData['Temp'];
+          // }else {
+          //     this.nowAreaId.range = this.lightData[nowTab];
+          // }
+          
+          this.nowAreaId.range = this.lightData[nowTab];
           this.water = [];
           this.waterParm[parm.col_name] = [];
           this.waterloading = false;
@@ -1102,6 +1107,28 @@ export default {
           // console.log('water parm',parm);
           let getLastDataInCurrentTimeList = await this.getLastDataInCurrentTimeList(parm);
           let data = typeof (getLastDataInCurrentTimeList)=='string'?[]:getLastDataInCurrentTimeList;
+          // data = [
+          //   {
+          //       "id": 178,
+          //       "value": 5.89,
+          //       "inspected_time": "2024-09-23 08:59"
+          //   },
+          //   {
+          //       "id": 179,
+          //       "value": 6.48,
+          //       "inspected_time": "2024-09-23 08:59"
+          //   },
+          //   {
+          //       "id": 180,
+          //       "value": 0.34,
+          //       "inspected_time": "2024-09-23 08:59"
+          //   },
+          //   {
+          //       "id": 181,
+          //       "value": 6.12,
+          //       "inspected_time": "2024-09-23 08:59"
+          //   }
+          // ]
           if(Array.isArray(data)) {
             this.waterParm[parm.col_name] = _.cloneDeep(data);
             this.waterParm[parm.col_name].forEach(w=>{
@@ -1241,11 +1268,12 @@ export default {
       var checkstate = ['warning','critical'];
       var checkstate_bool = [false,false];
       // console.log('ruledata',this.lightData);
-      if(col_name == 'NH4') {
-        col_name = 'AmmoniaN';
-      }else if(col_name == 'Temperature') {
-        col_name = 'Temp';
-      }
+      // if(col_name == 'NH4') {
+      //   col_name = 'AmmoniaN';
+      // }else if(col_name == 'Temperature') {
+      //   col_name = 'Temp';
+      // }
+     
       // console.log('ruledata',col_name);
       // console.log('ruledata',this.lightData[col_name]);
       if(this.lightData[col_name]) {
@@ -1301,10 +1329,60 @@ export default {
     },
     // 取得範圍
     async getWaterWarn() {
-      let getWarningRangeList = await this.getWarningRangeList();
-      let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
-      this.lightData = data;
-      console.log(this.lightData);
+      let search = [{
+        // group: 'water',
+        name_en: 'DO',
+      },{
+        // group: 'water',
+        name_en: 'NO2',
+      },{
+        // group: 'water',
+        name_en: 'pH',
+      },{
+        // group: 'water',
+        name_en: 'NH4',
+      },{
+        // group: 'water',
+        name_en: 'Temperature',
+      },{
+        // group: 'env',
+        name_en: 'water_level_percentage',
+      }]
+      // let getWarningRangeList = await this.getWarningRangeList();
+      // let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
+      // this.lightData = data;
+      search.forEach(async s=>{
+        let getWarningRangeList = await this.getBasicWarningRangeList(s);
+        let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
+        this.lightData[s.name_en] = data[s.name_en];
+      })
+      // this.lightData['DO'] = {
+      //   // "warning": {
+      //   //     "1": [
+      //   //         "4<=Do",
+      //   //         "Do<5"
+      //   //     ]
+      //   // },
+      //   "warning": {
+      //       "1": [
+      //           "10.0 <= DO",
+      //           "DO < 15.0"
+      //       ],
+      //       "2": [
+      //           "DO <= 5.0",
+      //           "4.0 < DO"
+      //       ]
+      //   },
+      //   "critical": {
+      //       "1": [
+      //           "15.0 <= DO",
+      //       ],
+      //       "2": [
+      //           "DO <= 4.0",
+      //       ]
+      //   },
+      // }
+      console.log('lightData',this.lightData);
       // await this.getWaterData();
       this.waterloading = true;
       // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
@@ -1467,8 +1545,8 @@ export default {
           case "NH4":
             col_name = 'AmmoniaN';
             break;
-          case "Do":
-            col_name = 'Do';
+          case "DO":
+            col_name = 'DO';
             break;
           case "pH":
             col_name = 'pH';
@@ -1818,7 +1896,7 @@ export default {
           nowTab = 'NH4';
           break;
         case "溶氧濃度":
-          nowTab = 'Do';
+          nowTab = 'DO';
           break;
         case "酸鹼值":
           nowTab = 'pH';
@@ -1846,13 +1924,15 @@ export default {
       //   })
       // }
       
-      if(nowTab=='NH4') {
-        this.nowAreaId.range = this.lightData['AmmoniaN'];
-      }else if(nowTab=='Temperature') {
-        this.nowAreaId.range = this.lightData['Temp'];
-      }else {
-          this.nowAreaId.range = this.lightData[nowTab];
-      }
+      // if(nowTab=='NH4') {
+      //   this.nowAreaId.range = this.lightData['AmmoniaN'];
+      // }else if(nowTab=='Temperature') {
+      //   this.nowAreaId.range = this.lightData['Temp'];
+      // }else {
+      //     this.nowAreaId.range = this.lightData[nowTab];
+      // }
+      
+      this.nowAreaId.range = this.lightData[nowTab];
     },
     isHideEmpty() {
       console.log('isHideEmpty');
