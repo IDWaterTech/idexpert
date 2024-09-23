@@ -9,13 +9,13 @@
       style="z-index: 2;"
       :style="{
         'color':`${$route.path=='/basic'&& 
-                  item.state != '無'&& 
+                  item.state != ''&& 
                   item.water != ''&&
                   item.level=='danger'?'#fefefe':'#00324E'}`
       }">
       <!-- basic warning/danger icon -->
       <v-btn 
-        v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''&& (item.level=='warning'||item.level=='danger')" 
+        v-if="$route.path=='/basic'&& item.state != ''&& item.water != ''&& (item.level=='warning'||item.level=='danger')" 
         class="btn-icon just-icon"
         :class="{'danger-water-icon':item.level=='danger',
                  'warning-water-icon':item.level=='warning'}"
@@ -28,11 +28,11 @@
       
     </span>
     <span v-if="item.name=='tank'" style="z-index: 2;">生化槽</span>
-    <span v-if="$route.path=='/basic'&& item.state != '無'&& item.water != ''"
+    <span v-if="$route.path=='/basic'&& item.state != ''&& item.water != ''"
         class="flex-all-center"
         style="z-index: 2;"
         :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
-      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span> <span style="margin-left: 4px;">{{ item.parm_name=='Do'||item.parm_name=='NO2'||item.parm_name=='NH4'?'ppm':item.parm_name=='Temperature'?'°C':item.parm_name=='water_level_percentage'?'%':'' }}</span></span>
+      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span> <span style="margin-left: 4px;">{{ item.parm_name=='DO'||item.parm_name=='NO2'||item.parm_name=='NH4'?'ppm':item.parm_name=='Temperature'?'°C':item.parm_name=='water_level_percentage'?'%':'' }}</span></span>
       <span v-if="item.inspected_time" style="font-size: 12px;" :style="{'color':item.level=='danger'?'#fff':'#00324E'}">
         <div style="padding: 1px 4px;border: 1px solid #fff;margin-right: 4px;border-radius: 50%;display: inline-block;" :style="{'borderColor':item.level=='danger'?'#fff':'#00324E'}">{{ item.inspected_time.slice(8,10) }}</div>
         {{ item.inspected_time.slice(-5) }}</span>
