@@ -35,7 +35,8 @@
                                 "
                                 class="select-template font-size-large"
                                 >
-                                <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
+                                <!-- <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ?node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div> -->
+                                <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ?node.raw.parent[node.raw.parent.length-1]=='*'?node.raw.parent.substr(0, node.raw.parent.length-1) + '_'+node.raw.name:node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
                                 <div slot="option-label" slot-scope="{ node }" v-text="getText(node)"></div>
                             </treeselect>
                         </v-col>
@@ -58,7 +59,7 @@
                 <div class="result" v-if="poolData.daily&&poolData.daily.length>0" style="padding-bottom: 0;">
                     <span class="flex-align-center" style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
                     <div class="result-content">
-                        <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id">
+                        <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id" style="margin-right: 16px;">
                             <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
                                 <div class="title">
                                     <v-card-title>{{ item.scheduling_date.slice(5).replace('-','/') }}</v-card-title>
@@ -144,7 +145,7 @@
                 </div>
                 <div class="result" v-else style="overflow-x: hidden;">
                     <div class="result-content">
-                        <v-card class="result-card flex-all-center" style="width: 100%;height: 72vh;">
+                        <v-card class="result-card flex-all-center" style="width: 100%;height: 74vh;">
                             無資料
                         </v-card>
                     </div>
@@ -303,9 +304,19 @@
                     </div> -->
                     <div class="basic">
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>動作名稱 </v-card-title></div>
-                            <v-text-field v-model="addItem.name_ch" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
-                            </v-text-field>
+                            <div v-if="!actionInputShow" class="title"><v-card-title>動作名稱 </v-card-title></div>
+                            <div v-if="!actionInputShow" class="content flex-align-center" style="width: 100%;">
+                                <v-text-field v-model="addItem.name_ch" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;flex:1">
+                                </v-text-field>
+                                <v-btn class="btn-secondary btn-small" @click="actionInputShow=true">帶入</v-btn>
+                            </div>
+                            <div v-if="actionInputShow" class="title"><v-card-title>選擇帶入的動作 </v-card-title></div>
+                            <div v-if="actionInputShow" class="content flex-align-center" style="width: 100%;">
+                                <v-autocomplete v-model="addItem.name_ch" dense filled :items="stepdata" item-text="name_ch"
+                                    item-value="name_ch" :rules="rules.require" style="width: 100%;"></v-autocomplete>
+                                <v-btn class="btn-secondary btn-small" @click="actionInputShow=false;addItem.name_ch=''">取消</v-btn>
+                            </div>
+                            
                         </div>
                         <!-- <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                             <div class="title"><v-card-title>動作名稱(英文) </v-card-title></div>
@@ -323,7 +334,7 @@
                                             <v-text-field v-model="addItem.start_date" class="mt-0" clearable readonly dense :rules="rules.require"
                                                 v-bind="attrs" v-on="on"></v-text-field>
                                         </template>
-                                        <v-date-picker v-model="addItem.start_date" :min="poolData.daily?poolData.daily[0].scheduling_date:getNowDate()" :max="getMaxDate()" locale="zh-tw" no-title @input="
+                                        <v-date-picker v-model="addItem.start_date" :min="poolData.daily?poolData.daily[0].scheduling_date:getNowDate()" :max="addItem.end_date" locale="zh-tw" no-title @input="
                                         startdate = false;
                                         "></v-date-picker>
                                     </v-menu>
@@ -598,6 +609,7 @@ export default {
             logDialog: false,
             nowChangeData: new Date(),
             dialogLoading:true,
+            nonExecute:[]
         }
     },
     async created() {
@@ -661,6 +673,13 @@ export default {
                 
             }
             console.log('mainData',mainData);
+            // 取得當日還有未執行的池
+            this.nonExecute = [];
+            // for(let i=0;i<Math.floor(Math.random()*(10-1+1))+1;i++) {
+            //     this.nonExecute.push(Math.floor(Math.random()*(100-1+1))+1)
+            // }
+            // console.log('non-execute',this.nonExecute);
+
             // 將空陣列去除
             let pooldata = [];
             mainData.forEach((main,mid)=>{
@@ -676,8 +695,24 @@ export default {
                 pooldata[mid].node = subdata;
             })
             let endpool = pooldata.filter(x=>x.node.length!==0);
+            endpool.forEach(main=>{
+                main.node.forEach(sub=>{
+                    sub.node.forEach(x=>{
+                        if(this.nonExecute.includes(x.id)&&x.visible) {
+                            if(sub.name[sub.name.length-1]!=='*') {
+                                sub.name+='*';
+                            }
+                            if(main.name[main.name.length-1]!=='*') {
+                                main.name+='*';
+                            }
+                        }
+                    })
+                })
+            })
             this.addPoolData = this.setNestedDisabled(_.cloneDeep(endpool), "");
+            
             this.isLoading = true;
+            
         },
         changePool(type) {
             let ids = [0,0,0];
@@ -729,7 +764,11 @@ export default {
         },
         getText(node) {
             // console.log('node',node);
-            return node.raw.name;
+            let label = node.raw.name;
+            if(this.nonExecute.includes(node.raw.id)) {
+                label+='*'
+            }
+            return label;
             // return node.raw.parent != undefined && node.raw.parent.length > 0 ?node.level==2?node.raw.name+'_'+node.raw.id:node.raw.name:node.raw.name;
         },
         get_scopeData:function(evt){
@@ -1126,6 +1165,8 @@ export default {
                     
                 })
             }
+            this.isLoading = false;
+            this.getSelectPoolData();
             if(isAllCheck) {
                 this.editDialog = false;
                 // this.nextStepDialog = true;
@@ -1226,6 +1267,7 @@ export default {
             
         },
         addEventOpen(date) {
+            this.actionInputShow = false;
             this.addItem = {
                 name_ch:'',
                 name_en:'',
@@ -1447,7 +1489,7 @@ export default {
     flex-direction: column;
     @include size(280px,70vh);
     min-width: 280px;
-    margin-right: 16px;
+    // margin-right: 16px;
     .card-title {
         border: none;
     }
