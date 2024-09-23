@@ -148,7 +148,7 @@
         </div>
         <div v-if="areas.ponds?.length==0">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
         <!-- dialog -->
-        <v-dialog v-model="addDialog">
+        <v-dialog v-model="addDialog" max-width="500px">
             <v-card style="max-height: inherit;">
                 <v-card-title>編輯</v-card-title>
                 <v-card-text>
@@ -1263,7 +1263,7 @@ export default {
 
     // dialog
     .v-dialog__content {
-        width: inherit;
+        //width: inherit;
         top: 50%;
         left: 50%;
         transform: translate(-50%,-50%);
