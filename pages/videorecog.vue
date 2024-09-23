@@ -68,7 +68,7 @@
                   </v-tooltip>
                   <div class="step" v-if="innerWidth <= 768">
                     <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
-                    <v-btn class="btn-secondary" @click="stepLoad()">同步</v-btn>
+                    <v-btn v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" class="btn-secondary" @click="stepLoad()">同步</v-btn>
                     <!-- <v-tooltip v-if="dataClass == '菌相'" bottom>
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
@@ -84,7 +84,7 @@
               <v-row class="flex-center-between" style="margin-bottom: 0;">
                 <v-col cols="11" style="padding: 0 12px;width: 100%;">
                   <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
-                  <v-btn class="btn-secondary" @click="stepLoad()">同步</v-btn>
+                  <v-btn class="btn-secondary" v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" @click="stepLoad()">同步</v-btn>
                 </v-col>
                 <!-- <v-col v-if="dataClass == '菌相'" cols="1" style="padding: 0 12px;">
                   <v-tooltip bottom>
@@ -445,9 +445,15 @@ export default {
       showDate: false,
       isPoolError: false,
       dialogLoading: true,
+      userData:[],
     };
   },
   methods: {
+    async getAllUser() {
+      let getuserData = await this.getUserList();
+      this.userData = typeof (getuserData)=='string'?[]:getuserData;
+      this.userData = this.userData.filter(x=>x.is_active==true);
+    },
     delitem:async function(item,itemid){
       switch (item) {
         case 'bacteria'://菌
@@ -893,6 +899,8 @@ export default {
   async mounted() {
     //取得整場架構資料
     await this.getMainData();
+    // 取得user資料
+    await this.getAllUser();
     //監控視窗
     window.addEventListener('resize', () => {
       this.tableHeight = window.innerHeight - 64 - 80 -64;
