@@ -343,14 +343,14 @@
                 @scopeSel_data="get_selectData($event)" 
                 ></locate-select> -->
                 <treeselect
-                  id="addpool"
+                    id="addpool"
                     @input="changeEvent"
                     v-model="dataid"
                     :options="maindataScope"
                     :default-expand-level="1"
                     :disable-branch-nodes="true"
                     children="node"
-                    placeholder="請選擇養殖池"
+                    placeholder="請選擇新增養殖池"
                     multiple
                     :rules="rules.length"
                     :limit="1"
@@ -360,9 +360,9 @@
                         return { children: node.node };
                       }
                     "
-                    class="select-template font-size-large"
-                    :class="{'error':isDataidError}"
+                    :class="`select-template font-size-large ${isDataidError ? 'error' : ''}`"
                   >
+                  
                   <div slot="value-label" slot-scope="{ node }"  class="font-size-large"  v-text="node.raw.parent != undefined && node.raw.parent.length > 0 ? node.raw.parent + '_'+node.raw.name:''+node.raw.name"></div>
                   <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.name}` }}</div>
                 </treeselect>
