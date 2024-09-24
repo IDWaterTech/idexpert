@@ -183,6 +183,15 @@
                       <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
                       <!-- <v-btn color="primary" outlined small @click="delcircle(scope.row)" :disabled="scope.row.ended_date != null">
                         刪除</v-btn> -->
+                        <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
+                        <template v-slot:activator="{ on, attrs }">
+                            <button class="btn-icon green" @click="renderDoc" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-file-word</v-icon>
+                            </button>
+                        </template>
+                      <span>Word報告</span>
+                      </v-tooltip>
+
                       <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
                         <template v-slot:activator="{ on, attrs }">
                             <button class="btn-icon green" @click="viewCircle(scope.row)" v-bind="attrs" v-on="on">
@@ -1255,10 +1264,18 @@
 import dayjs from "dayjs";
 import _ from "lodash";
 import "element-ui/lib/theme-chalk/index.css";
-// import waterball from "~/components/waterball.vue";
 import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import https from "https";
 import FeedTemplate from '~/components/feedTemplate.vue';
+//加入docxtemplater
+import Docxtemplater from 'docxtemplater';
+import PizZip from 'pizzip';
+import PizZipUtils from 'pizzip/utils/index.js';
+import { saveAs } from 'file-saver';
+function loadFile(url, callback) {
+  PizZipUtils.getBinaryContent(url, callback);
+}
+
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -1630,6 +1647,67 @@ export default {
     };
   },
   methods: {
+    /* docxtemplater */
+    renderDoc() {
+      loadFile(
+        'https://docxtemplater.com/tag-example.docx',
+        function (error, content) {
+          if (error) {
+            throw error;
+          }
+          const zip = new PizZip(content);
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          doc.setData({
+            first_name: 'John',
+            last_name: 'Doe',
+            phone: '0652455478',
+            description: 'New Website',
+          });
+          try {
+            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            doc.render();
+          } catch (error) {
+            // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+            function replaceErrors(key, value) {
+              if (value instanceof Error) {
+                return Object.getOwnPropertyNames(value).reduce(function (
+                  error,
+                  key
+                ) {
+                  error[key] = value[key];
+                  return error;
+                },
+                {});
+              }
+              return value;
+            }
+            console.log(JSON.stringify({ error: error }, replaceErrors));
+
+            if (error.properties && error.properties.errors instanceof Array) {
+              const errorMessages = error.properties.errors
+                .map(function (error) {
+                  return error.properties.explanation;
+                })
+                .join('\n');
+              console.log('errorMessages', errorMessages);
+              // errorMessages is a humanly readable message looking like this :
+              // 'The tag beginning with "foobar" is unopened'
+            }
+            throw error;
+          }
+          const out = doc.getZip().generate({
+            type: 'blob',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          });
+          // Output the document using Data-URI
+          saveAs(out, 'output.docx');
+        }
+      );
+    },
     /* 取得授權 */
     async getAuth() {
       let datalst;
