@@ -3114,7 +3114,7 @@ export default {
         // }else {
         //   this.listOpen = true;
         // }
-        this.isLoading = false;
+        // this.isLoading = false;
         this.listOpen = true;
         
       }
