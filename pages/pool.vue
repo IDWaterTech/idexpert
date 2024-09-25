@@ -1650,7 +1650,7 @@ export default {
     /* docxtemplater */
     renderDoc() {
       loadFile(
-        'https://docxtemplater.com/tag-example.docx',
+        `/documents/circle_v1.docx`,
         function (error, content) {
           if (error) {
             throw error;
