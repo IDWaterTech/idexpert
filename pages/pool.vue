@@ -1270,16 +1270,15 @@ import FeedTemplate from '~/components/feedTemplate.vue';
 //加入docxtemplater
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
-import PizZipUtils from 'pizzip/utils/index.js';
+import JSZipUtils from "jszip-utils";
 import { saveAs } from 'file-saver';
 function loadFile(url, callback) {
-  PizZipUtils.getBinaryContent(url, callback);
+  JSZipUtils.getBinaryContent(url,callback);
 }
 
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
-// import axios from "~/plugins/axios";
 export default {
   
   // components: { waterball }, 沒用到先註解
