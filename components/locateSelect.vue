@@ -111,6 +111,7 @@ export default {
             this.maindata = typeof (architectureData)=='string'?[]:architectureData;
             var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
             this.maindata = data;
+            localStorage.setItem('architecture',JSON.stringify(this.maindata));
         },
         setNestedDisabled: function (obj, name, onlyshowlevel = 1) {
             //全部都設成disabled

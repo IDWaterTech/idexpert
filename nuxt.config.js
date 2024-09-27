@@ -94,6 +94,7 @@ export default {
     { src: "~/plugins/service/breeding.js", ssr: false },
     { src: "~/plugins/service/feed.js", ssr: false },
     { src: "~/plugins/service/kb.js", ssr: false },
+    { src: "~/plugins/service/reports.js", ssr: false },
     { src: "~/plugins/vcharts.js", ssr: false },
     // { src: '@/plugins/vue-video.js', ssr: false } //vue-flv-player
     // { src: "~/plugins/vue-preview", ssr: false }
