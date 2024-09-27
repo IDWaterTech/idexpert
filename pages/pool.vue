@@ -185,7 +185,7 @@
                         刪除</v-btn> -->
                         <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
                         <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-icon green" @click="renderDoc" v-bind="attrs" v-on="on">
+                            <button v-if="false" class="btn-icon green" @click="renderDoc" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-file-word</v-icon>
                             </button>
                         </template>
