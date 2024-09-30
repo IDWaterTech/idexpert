@@ -1328,8 +1328,9 @@ export default {
               this.manisEditing = false;
               this.manfield = {};
               this.editForm = false;
+              this.getmanudata(); //取得廠商資料
             }
-            this.getmanudata(); //取得廠商資料
+            
         },50)
         // await this.$axios
         //   .post(url, parms)
@@ -1401,8 +1402,9 @@ export default {
             this.manisEditing = false;
             this.editForm = false;
             this.manfield = {};
+            this.getmanudata();
           }
-          this.getmanudata();
+          
       },50)
       
       
@@ -1540,8 +1542,9 @@ export default {
               this.fic_idx = null;
               this.ficfield = {};
               this.ficmode = "add"; //回到新增模式
+              this.getficdata();
             }
-            this.getficdata();
+            
         },50)
         // await this.$axios
         //   .delete(url)
@@ -1589,8 +1592,8 @@ export default {
               this.ficisEditing = false;
               this.ficfieldOrigin = _.cloneDeep(this.ficfield);
               this.ficEditOpen = false;
+              this.getficdata();
             }
-            this.getficdata();
         },50)
         // await this.$axios
         //   .patch(url, parms)
@@ -1637,8 +1640,9 @@ export default {
               this.ficisEditing = false;
               this.ficfield = {};
               this.ficEditOpen = false;
+              this.getficdata();
             }
-            this.getficdata();
+            
         },50)
         // await this.$axios
         //   .post(url, parms)
@@ -2192,8 +2196,9 @@ export default {
             this.fingparam = []; //成份參數
             this.fingparamitem = {};
             this.editForm = false;
+            this.getfingdata(); //成份清單
           }
-          this.getfingdata(); //成份清單
+          
         },50)
         // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/  `;
         // await this.$axios
@@ -2234,8 +2239,9 @@ export default {
             if(res) {
               this.fingfield = {};
               this.fingisEditing = false;
+              this.getfingdata(); //成份清單
             }
-            this.getfingdata(); //成份清單
+            
         },50)
         // await this.$axios
         //   .delete(url)
@@ -2284,8 +2290,8 @@ export default {
               this.fingparamitem = {};
               this.fingisEditing = false;
               this.editForm = false;
+              this.getfingdata();
             }
-            this.getfingdata();
         },50)
         // await this.$axios
         //   .post(url, parms)
@@ -2370,8 +2376,9 @@ export default {
             if(res) {
               this.parmfield = {};
               this.dialog.param = false;
+              this.getparmdata();
             }
-            this.getparmdata();
+            
         },50)
         // await this.$axios
         //   .post(url, parms)
