@@ -135,7 +135,7 @@
                             <div v-if="download.length>0" class="download">
                                 <v-btn class="btn-primary download" @click="downloadReport">下載</v-btn>
                             </div>
-                            <span v-else style="margin-top: -24px;display: block;">請選擇列表中欲下載之報表</span>
+                            <span v-else style="margin-top: -24px;display: block;">請選擇左側列表中欲下載之報表</span>
                         </div>
                     </v-col>
                 </v-row>
@@ -181,6 +181,7 @@ export default {
         this.isLoading = false;
         // this.allReportList = [{name: '飼料報表',id:1,tag: ['飼料','套餐']},{name:'循環紀錄',id:2,tag:['養殖','報表']},{name:'財務報表',id:3,tag:['錢']}];
         await this.getReports();
+        await this._pageCheck(); //驗證頁面是否可檢視
         
     },
     methods: {
