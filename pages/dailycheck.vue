@@ -57,7 +57,53 @@
                     </v-row>
                 </div>
                 <div class="result" v-if="poolData.daily&&poolData.daily.length>0" style="padding-bottom: 0;">
-                    <span class="flex-align-center" style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
+                    <div class="exe flex-align-center">
+                        <span class="flex-align-center" style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
+                        <div class="execute flex-align-center">
+                            <span style="margin-right: 8px;margin-left: 8px;">隱藏執行/不執行</span>
+                            <v-select v-model="hiddenList" clearable multiple deletable-chips chips dense hide-details
+                                    placeholder="選擇要隱藏的日期" :items="dateList" style="max-width: 200px;margin-top: 0;"
+                                    :disabled="dateList.length==0" @change="dataHidden">
+                                    <template v-slot:selection="{ item, index }">
+                                        <v-chip v-if="index === 0">
+                                            <span>{{ item }}</span>
+                                        </v-chip>
+                                        <span
+                                            v-if="index === 1 && !hiddenList.includes('全部')"
+                                            class="grey--text text-caption"
+                                            >
+                                            (+{{ hiddenList.length - 1 }})
+                                        </span>
+                                    </template>
+                                </v-select>
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- 隱藏執行/不執行 -->
+                    <!-- <v-row class="hidden flex-align-center mutiselect" style="margin: 0;margin-top: 8px;">
+                        <v-col cols="12" sm="1" style="padding: 0;padding-left: 8px;">
+                            <span style="margin-right: 8px;">隱藏執行/不執行</span>
+                        </v-col>
+                        <v-col cols="12" sm="2" style="padding: 0;padding-left: 8px;">
+                            <v-select v-model="hiddenList" clearable multiple deletable-chips chips dense hide-details
+                                placeholder="選擇要隱藏的日期" :items="dateList"
+                                :disabled="dateList.length==0" @change="dataHidden">
+                                <template v-slot:selection="{ item, index }">
+                                    <v-chip v-if="index === 0">
+                                        <span>{{ item }}</span>
+                                    </v-chip>
+                                    <span
+                                        v-if="index === 1 && !hiddenList.includes('全部')"
+                                        class="grey--text text-caption"
+                                        >
+                                        (+{{ hiddenList.length - 1 }})
+                                    </span>
+                                </template>
+                            </v-select>
+                        </v-col>
+                    </v-row> -->
+                    <!-- 排程清單 -->
                     <div class="result-content">
                         <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id" style="margin-right: 16px;">
                             <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
@@ -609,7 +655,11 @@ export default {
             logDialog: false,
             nowChangeData: new Date(),
             dialogLoading:true,
-            nonExecute:[]
+            nonExecute:[],
+            hiddenList:[],
+            hiddenListOld:[],
+            dateList:[],
+            poolDataAll:{},
         }
     },
     async created() {
@@ -989,12 +1039,17 @@ export default {
             //         }]
             // }
             this.isLoading = false;
+            this.hiddenList = [];
+            this.dateList = [];
             let param={pond_id:this.nowPoolid}
             let getDailyCheckList = await this.getDailyCheckList(param);
             let data = typeof (getDailyCheckList)=='string'?[]:getDailyCheckList;
-            this.poolData = _.cloneDeep(data);
-            if(this.poolData.daily) {
-                this.poolData.daily.forEach(d=>{
+            this.poolDataAll = _.cloneDeep(data);
+            if(this.poolDataAll.daily) {
+                this.poolDataAll.daily.forEach(d=>{
+                    // if(new Date(d.scheduling_date).getTime()<=new Date().getTime()){
+                        this.dateList.push(dayjs(new Date(d.scheduling_date)).format("MM/DD"));
+                    // }
                     // if(dayjs(new Date(d.scheduling_date)).format("YYYY-MM-DD")==dayjs(new Date()).format("YYYY-MM-DD")) {
                         // 排序
                         let array1=[];
@@ -1002,6 +1057,12 @@ export default {
                         d.todo.forEach(x=>{
                             if(x.execute_time&&x.execute_time!=='') {
                                 array1.push(x);
+                                // if(new Date(d.scheduling_date).getTime()>new Date().getTime()){
+                                //     if(!this.dateList.includes(dayjs(new Date(d.scheduling_date)).format("MM/DD"))) {
+                                //         this.dateList.push(dayjs(new Date(d.scheduling_date)).format("MM/DD"));
+                                //     }
+                                // }
+                                
                             }else {
                                 array2.push(x);
                             }
@@ -1012,7 +1073,11 @@ export default {
                         d.todo = [...array2,...array1];
                     // }
                 })
+                if(this.dateList.length>0) {
+                    this.dateList.unshift('全部');
+                }
             }
+            this.poolData = _.cloneDeep(this.poolDataAll);
             this.isLoading = true;
             
 
@@ -1439,7 +1504,7 @@ export default {
         // 檢視下一個工作
         async getNextWork() {
             // 重新整理資料
-            this.searchPool();
+            // this.searchPool();
             this.nextWork = [];
             // get next work 
             let parm = {step_id: this.poolData.step_id,displayed_next_one: true}
@@ -1460,6 +1525,54 @@ export default {
             let position = this.accdata.filter(x=>x.username==user)[0].position?this.accdata.filter(x=>x.username==user)[0].position:'';
             let name = this.accdata.filter(x=>x.username==user)[0].account_name?this.accdata.filter(x=>x.username==user)[0].account_name:''
             return position+'-'+name;
+        },
+        dataHidden(evt) {
+            // console.log('evt',evt);
+            this.$nextTick(()=>{
+                if(evt.includes('全部')) {
+                    if(!this.hiddenListOld.includes('全部')) {
+                        this.hiddenList = [];
+                        this.hiddenList = _.cloneDeep(this.dateList);
+                    }else {
+                        if(this.hiddenList.length!==this.dateList.length) {
+                            let index = this.hiddenList.indexOf('全部');
+                            this.hiddenList.splice(index,1);
+                        }
+                    }
+                }else {
+                    if(this.hiddenListOld.includes('全部')) {
+                        this.hiddenList = [];
+                    }else {
+                        if(this.hiddenList.length==this.dateList.length-1) {
+                            this.hiddenList.unshift(this.dateList[0]);
+                        }
+                    }
+                }
+                if(this.hiddenList.length>0) {
+                    let data = _.cloneDeep(this.poolDataAll);
+                    data.daily.forEach(d=>{
+                        let list = [];
+                        if(this.hiddenList.includes(dayjs(new Date(d.scheduling_date)).format("MM/DD"))) {
+                            d.todo.forEach(t=>{
+                                if(t.execute_time&&t.execute_time!=='') {}else {
+                                    list.push(t);
+                                }
+                            })
+                            d.todo = _.cloneDeep(list);
+                        }
+                    })
+                    this.poolData.daily=[];
+                    data.daily.forEach(d=>{
+                        if(d.todo.length>0) {
+                            this.poolData.daily.push(d);
+                        }
+                    })
+                }else {
+                    this.poolData = _.cloneDeep(this.poolDataAll);
+                }
+                this.hiddenListOld = _.cloneDeep(this.hiddenList);
+            })
+            
         }
     },
     watch: {
@@ -1487,7 +1600,7 @@ export default {
 .v-card.result-card {
     display: flex;
     flex-direction: column;
-    @include size(280px,70vh);
+    @include size(280px,64vh);
     min-width: 280px;
     // margin-right: 16px;
     .card-title {
