@@ -670,7 +670,7 @@
             <v-autocomplete
               style="width"
               dense
-              v-model="editItem.manufacturer_id"
+              v-model="fingfield.manufacturer_id"
               :items="manu"
               item-text="name_ch"
               item-value="id"
@@ -2419,6 +2419,7 @@ export default {
       if(this.tablindex == '廠商設定') {
         this.manuedit();
       }else if(this.tablindex == '成份設定') {
+        this.editItem.manufacturer_id = this.fingfield.manufacturer_id
         this.fingedit();
       }else if(this.tablindex == '套餐設定') {
         this.comboedit();
