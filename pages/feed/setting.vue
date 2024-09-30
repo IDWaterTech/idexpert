@@ -670,7 +670,7 @@
             <v-autocomplete
               style="width"
               dense
-              v-model="fingfield.manufacturer_id"
+              v-model="editItem.manufacturer_id"
               :items="manu"
               item-text="name_ch"
               item-value="id"
