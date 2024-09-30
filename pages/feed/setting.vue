@@ -807,7 +807,8 @@
             <v-divider></v-divider>
             <div class="card-title" style="margin: 12px 0;">
               <div class="title">
-                  <v-card-title>配方</v-card-title>
+                  <v-card-title style="display: inline-block;">配方</v-card-title>
+                  <span v-if="comboNull" class="error-text">*請填寫配方</span>
               </div>
             </div>
             <!-- 主成分 -->
@@ -1229,7 +1230,8 @@ export default {
       nowtag:{is_main:true,is_feed:true},
       isEnable: false,
       combodatas:[],
-      isLoading: false
+      isLoading: false,
+      comboNull: false,
     };
   },
   async mounted() {
@@ -1748,7 +1750,12 @@ export default {
     //編輯套餐清單(飼料設定)
     comboedit: async function() {
       let val = this.$refs.manform.validate();
-      if (val) {
+      let isNull = true;
+      if((this.combofield.main_items&&this.combofield.main_items.length>0)||(this.combofield.sub_items&&this.combofield.sub_items.length>0)) {
+        isNull = false;
+      }
+      this.comboNull = isNull;
+      if (val&&!this.comboNull) {
         var id = this.combofield.id;
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
         var parms = _.cloneDeep(this.combofield);
@@ -2016,7 +2023,12 @@ export default {
     //新增套餐清單(飼料設定)
     combosubmit: async function() {
       let val = this.$refs.manform.validate();
-      if (val) {
+      let isNull = true;
+      if((this.combofield.main_items&&this.combofield.main_items.length>0)||(this.combofield.sub_items&&this.combofield.sub_items.length>0)) {
+        isNull = false;
+      }
+      this.comboNull = isNull;
+      if (val && !isNull) {
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`;
         var parms = _.cloneDeep(this.combofield);
         parms.is_enable = true;
@@ -2386,6 +2398,7 @@ export default {
     // },
     openEdit(id) {
       this.editForm = true;
+      this.comboNull = false;
       this.mode = 'edit';
       if(this.tablindex == '廠商設定') {
         this.editItem = _.cloneDeep(this.manu.filter(x=>x.id==id)[0]);
@@ -2414,6 +2427,7 @@ export default {
     },
     openAdd() {
       this.editForm = true;
+      this.comboNull = false;
       this.mode = 'add';
       if (this.$refs.manform != undefined) {
           this.$refs.manform.reset();
