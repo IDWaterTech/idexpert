@@ -1322,7 +1322,7 @@ export default {
         let parms = this.editItem;
         parms.created_user = this.$auth.$state.user.email;
         var res = false;
-        res = this.postManufacturerList(parms);
+        res = await this.postManufacturerList(parms);
         setTimeout(()=>{
             if(res) {
               this.manisEditing = false;
@@ -1396,7 +1396,7 @@ export default {
       parms["updated_user"] = this.$auth.$state.user.email;
       // console.log('edit',parms);
       var res = false;
-      res = this.patchManufacturerList(parms,id);
+      res = await this.patchManufacturerList(parms,id);
       setTimeout(()=>{
           if(res) {
             this.manisEditing = false;
@@ -1535,7 +1535,7 @@ export default {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient-category/${id}/`;
       if (confirm("是否刪除?-" + name)) {
         var res = false;
-        res = this.deleteFeedIngredientCategoryList(id);
+        res = await this.deleteFeedIngredientCategoryList(id);
         setTimeout(()=>{
             if(res) {
               this.ficisEditing = false;
@@ -1586,7 +1586,7 @@ export default {
       let val = this.$refs.ficform.validate();
       if (val) {
         var res = false;
-        res = this.patchFeedIngredientCategoryList(parms,id);
+        res = await this.patchFeedIngredientCategoryList(parms,id);
         setTimeout(()=>{
             if(res) {
               this.ficisEditing = false;
@@ -1634,7 +1634,7 @@ export default {
           parms["is_feed"] = false;
         }
         var res = false;
-        res = this.postFeedIngredientCategoryList(parms);
+        res = await this.postFeedIngredientCategoryList(parms);
         setTimeout(()=>{
             if(res) {
               this.ficisEditing = false;
@@ -1793,7 +1793,7 @@ export default {
         delete parms.id;
         delete parms.updated_time;
         var res = false;
-        res = this.patchFeedSettingList(parms,id);
+        res = await this.patchFeedSettingList(parms,id);
         setTimeout(()=>{
             if(res) {
               this.combofield = {};
@@ -1852,7 +1852,7 @@ export default {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
       if (confirm("是否刪除?-" + name)) {
         var res = false;
-        res = this.deleteFeedSettingList(id);
+        res = await this.deleteFeedSettingList(id);
         setTimeout(()=>{
             if(res) {
               this.comboisEditing = false;
@@ -1920,7 +1920,7 @@ export default {
         delete parms.id;
         delete parms.updated_time;
         var res = false;
-        res = this.patchFeedSettingList(parms,id);
+        res = await this.patchFeedSettingList(parms,id);
         setTimeout(()=>{
             if(res) {
               this.getcombodata();
@@ -2061,7 +2061,7 @@ export default {
         parms.sub_items = sub;
         parms.created_user = this.$auth.$state.user.email;
         var res = false;
-        res = this.postFeedSettingList(parms);
+        res = await this.postFeedSettingList(parms);
         setTimeout(()=>{
             if(res) {
               this.combofield = {};
@@ -2186,9 +2186,10 @@ export default {
         let id = parms["id"];
         delete parms["id"];
         var res = false;
-        res = this.patchFeedIngredientList(parms,id);
+        res = await this.patchFeedIngredientList(parms,id);
         setTimeout(()=>{
           if(res) {
+            this.isLoading = false;
             this.fingfield = {};
             this.editItem = {};
             this.fingisEditing = false;
@@ -2198,8 +2199,7 @@ export default {
             this.editForm = false;
             this.getfingdata(); //成份清單
           }
-          
-        },50)
+        },500)
         // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/  `;
         // await this.$axios
         //   .patch(url, parms)
@@ -2234,9 +2234,10 @@ export default {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/${id}/`;
       if (confirm("是否刪除?-" + name)) {
         var res = false;
-        res = this.deleteFeedIngredientList(id);
+        res = await this.deleteFeedIngredientList(id);
         setTimeout(()=>{
             if(res) {
+              this.isLoading = false;
               this.fingfield = {};
               this.fingisEditing = false;
               this.getfingdata(); //成份清單
@@ -2281,16 +2282,17 @@ export default {
         let parms = this.fingfield;
         parms.created_user = this.$auth.$state.user.email;
         var res = false;
-        res = this.postFeedIngredientList(parms);
+        res = await this.postFeedIngredientList(parms);
         setTimeout(()=>{
             if(res) {
+              this.isLoading = false;
               this.fingfield = {};
               this.fingfield.feed_ingredient_category_id = this.fic_idx;//並沒有清空類別，所以保留
               this.fingparam = []; //成份參數
               this.fingparamitem = {};
               this.fingisEditing = false;
               this.editForm = false;
-              this.getfingdata();
+              this.getfingdata(); //成份清單
             }
         },50)
         // await this.$axios
@@ -2323,6 +2325,7 @@ export default {
       this.fing = [];
       let getFeedIngredientList = await this.getFeedIngredientList();
       let data = typeof (getFeedIngredientList)=='string'?[]:getFeedIngredientList;
+      console.log('成分清單',data);
       this.fing = data;
       this.getficwithdetaildata();
       // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-ingredient/`;
@@ -2371,7 +2374,7 @@ export default {
         let parms = this.parmfield;
         parms.created_user = this.$auth.$state.user.email;
         var res = false;
-        res = this.postParameterList(parms);
+        res = await this.postParameterList(parms);
         setTimeout(()=>{
             if(res) {
               this.parmfield = {};
