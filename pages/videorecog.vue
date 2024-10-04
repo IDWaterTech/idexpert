@@ -148,7 +148,7 @@
                     <template v-slot:[`item.info`]="{item}">
                       <span>加熱：</span><span  :style="(item.is_heated)?'color:red;':''">{{ item.is_heated? '有' : '無' }}</span><br/>
                       <span>水樣稀釋倍率：{{ item.dilution }}</span><br/>
-                      <span>塗盤體積：{{ item.volume }}</span><br/>
+                      <span>塗盤體積：{{ item.volume }}(ul)</span><br/>
                       <span>檢驗時間：{{ item.inspected_time }}</span>
                     </template>
                     <template v-slot:[`item.class`]="{ item }">
@@ -192,19 +192,18 @@
                     </div>
                 </v-card-title>
                 <div class="basic">
+                  <div class="card-title" style="margin: 12px;">
+                      <div class="title">
+                          <v-card-title>1. 基本資料</v-card-title>
+                      </div>
+                    </div>
                   <v-card-text v-if="nowBacteria=='add'" style="display: flex;flex-direction: column;margin-bottom: 16px;">
                       <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="12" style="padding: 0;padding-left: 8px;">
-                          <locate-select v-if="editDialog" :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeDataAdd($event)" class="select-template"></locate-select>
-                        </v-col>
-                        <v-col v-if="isPoolError" cols="12" style="padding: 0;padding-left: 8px;">
-                          <div class="error-text">*必要項目</div>
-                        </v-col>
-                      </v-row>
-                  </v-card-text>
-                    <v-card-text style="display: flex;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                          <locate-select v-if="editDialog" :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeDataAdd($event)" class="select-template"></locate-select>
+                          <div v-if="isPoolError" class="error-text">*必要項目</div>
+                        </v-col>
+                        <v-col  cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">檢測時間</span>
                           </div>
@@ -214,6 +213,18 @@
                             <a-date-picker v-if="showDate" v-model="editItem.inspected_time" format="yyyy-MM-DD HH:mm" :show-time="{ format: 'HH:mm' }" placeholder="" @change="onChange" @ok="onOk" />
                           </div>
                           <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必要項目</span>
+                        </v-col>
+                      </v-row>
+                  </v-card-text>
+                    <v-card-text style="display: flex;flex-direction: column;margin-bottom: 16px;">
+                      <v-row style="align-items: center;padding-top: 16px;">
+                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                          <v-radio-group class="my-1" row v-model="nowAdd" label="菌盤" mandatory @change="addChange" hide-details>
+                            <v-radio v-for="(item, i) in ['chormager','nb']" :label="item" :value="item" :key="i">
+                              <span slot="label" class="flex-align-center">
+                                {{ item }}
+                              </span></v-radio>
+                          </v-radio-group>
                         </v-col>
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker"><span style="font-size: 16px;margin-right: 9px;">有無加熱</span></div>
@@ -225,7 +236,7 @@
                       <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">水樣稀釋倍率</span>
+                            <span style="font-size: 16px;margin-right: 9px;">水樣稀釋倍率(X)</span>
                           </div>
                           <v-text-field
                             type="number"
@@ -240,7 +251,7 @@
                         </v-col>
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">塗盤體積</span>
+                            <span style="font-size: 16px;margin-right: 9px;">塗盤體積(ul)</span>
                           </div>
                           <v-text-field
                             type="number"
@@ -254,7 +265,12 @@
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    <v-card-text style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
+                    <div class="card-title" style="margin: 12px;">
+                      <div class="title">
+                          <v-card-title>2. 輸入菌數(*請輸入原始菌落計數)</v-card-title>
+                      </div>
+                    </div>
+                    <v-card-text v-if="nowAdd=='chormager'" style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
                       <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
@@ -264,7 +280,6 @@
                             type="number"
                             min="0"
                             v-model="editItem.class1"
-                            :rules="rules.require"
                             placeholder="溶藻弧菌(白菌)"
                             autocompleted="false"
                             style="margin-right: 8px;margin-top: 0;padding-top: 0;"
@@ -278,7 +293,6 @@
                             type="number"
                             min="0"
                             v-model="editItem.class2"
-                            :rules="rules.require"
                             placeholder="霍亂弧菌(靛菌)"
                             autocompleted="false"
                             style="margin-right: 8px;margin-top: 0;padding-top: 0;"
@@ -286,7 +300,7 @@
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    <v-card-text style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
+                    <v-card-text v-if="nowAdd=='chormager'" style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
                       <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
@@ -296,7 +310,6 @@
                             type="number"
                             min="0"
                             v-model="editItem.class3"
-                            :rules="rules.require"
                             placeholder="腸炎弧菌(紫菌)"
                             autocompleted="false"
                             style="margin-right: 8px;margin-top: 0;padding-top: 0;"
@@ -310,7 +323,6 @@
                             type="number"
                             min="0"
                             v-model="editItem.class4"
-                            :rules="rules.require"
                             placeholder="創傷弧菌(藍菌)"
                             autocompleted="false"
                             style="margin-right: 8px;margin-top: 0;padding-top: 0;"
@@ -320,21 +332,20 @@
                     </v-card-text>
                     <v-card-text style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
                       <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col v-if="nowAdd=='nb'" cols="6" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">{{editItem.is_heated?'枯草桿菌(加熱)的數量':'所有菌(不加熱)的數量'}}</span>
+                            <span style="font-size: 16px;margin-right: 9px;">{{editItem.is_heated?'枯草桿菌(加熱)的數量':'總菌數(不加熱)'}}</span>
                           </div>
                           <v-text-field
                             type="number"
                             min="0"
                             v-model="editItem.class5"
-                            :rules="rules.require"
-                            :placeholder="editItem.is_heated?'枯草桿菌數量':'所有菌數量'"
+                            :placeholder="editItem.is_heated?'枯草桿菌數量':'總菌數'"
                             autocompleted="false"
                             style="margin-right: 8px;margin-top: 0;padding-top: 0;"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col :cols="nowAdd=='nb'?'6':'12'" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">影像</span>
                           </div>
@@ -346,7 +357,6 @@
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    
                 </div>
                 <v-card-actions style="padding: 24px 12px;">
                     <v-spacer spacer></v-spacer>
@@ -446,6 +456,7 @@ export default {
       isPoolError: false,
       dialogLoading: true,
       userData:[],
+      nowAdd:'chormager',
     };
   },
   methods: {
@@ -621,6 +632,26 @@ export default {
             name: dataBacteria.name,
             items: []
           };
+          
+          // dataBacteria = {
+          //     "id": 1,
+          //     "name": "A1",
+          //     "items": [
+          //         {
+          //             "id": 2210,
+          //             "dilution": 20.0,
+          //             "volume": 500.0,
+          //             "class1": "溶藻弧菌(白菌): 0.0",
+          //             "class2": "霍亂弧菌(靛菌): null",
+          //             "class3": "腸炎弧菌(紫菌): 0.0",
+          //             "class4": "創傷弧菌(藍菌): 2000.0",
+          //             "class5": "菌總數: 0.0",
+          //             "is_heated": false,
+          //             "inspected_date": "2021-01-01 12:00:00",
+          //             "images": ["http://localhost:8000/media/bacteria/2023-09-23_15940/2023-09-23_15940.jpg"]
+          //         }
+          //     ]
+          // }
           // dataBacteria.items[0].images.push('https://www.idwatertech.com:8011/media/observation/20230913170000_1_1/feed_result.jpg');
           // dataBacteria.items[0].images.push('https://www.idwatertech.com:8011/media/observation/20230912192249_1_2/feed_result.jpg');
           // dataBacteria.items[0].images.push('https://www.idwatertech.com:8011/media/observation/20230913202700_1_2/feed_result.jpg');
@@ -637,17 +668,17 @@ export default {
                 // {align: "center",groupable: false,text: "時間",value: "inspected_time",width:"20%" },
                 // {align: "center",groupable: false,text: "加熱",value: "is_heated",width:"10%" },
                 {align: "left",groupable: false,text: "資訊",value: "info",width:"20%" },
-                {align: "center",groupable: false,text: "class",value: "class",width:"20%", sortable: false},
+                {align: "center",groupable: false,text: "class",value: "class",width:"25%", sortable: false},
                 {align: "left",groupable: false,text: "辨識",value: "images",width:"40%", sortable: false},
                 {align: "center",groupable: false,text: "操作",value: "action",width:"10%"}];
               }
               dataBacteria.items.forEach(d=>{
                 this.recogData.items.push({
-                  class: `1. ${d.class1}<br> 
-                          2. ${d.class2}<br>
-                          3. ${d.class3}<br>
-                          4. ${d.class4}<br>
-                          5. ${d.class5}`,
+                  class: `1. ${d.class1.split(':')[0]}: ${d.class1.split(':')[1]==' null'?'無':(parseFloat(d.class1.split(':')[1]).toExponential().replace(/e\+?/,' x 10^')+'(cfu/ml)')}<br> 
+                          2. ${d.class2.split(':')[0]}: ${d.class2.split(':')[1]==' null'?'無':(parseFloat(d.class2.split(':')[1]).toExponential().replace(/e\+?/,' x 10^')+'(cfu/ml)')}<br>
+                          3. ${d.class3.split(':')[0]}: ${d.class3.split(':')[1]==' null'?'無':(parseFloat(d.class3.split(':')[1]).toExponential().replace(/e\+?/,' x 10^')+'(cfu/ml)')}<br>
+                          4. ${d.class4.split(':')[0]}: ${d.class4.split(':')[1]==' null'?'無':(parseFloat(d.class4.split(':')[1]).toExponential().replace(/e\+?/,' x 10^')+'(cfu/ml)')}<br>
+                          5. ${d.class5.split(':')[0]}: ${d.class5.split(':')[1]==' null'?'無':(parseFloat(d.class5.split(':')[1]).toExponential().replace(/e\+?/,' x 10^')+'(cfu/ml)')}`,
                   dilution:d.dilution,
                   volume:d.volume,
                   images:d.images,
@@ -813,11 +844,17 @@ export default {
         if (this.$refs.addform != undefined) {
           this.$refs.addform.reset();
         }
-        this.editItem = {pond_id:null,is_heated:false};
+        this.nowAdd = 'chormager';
+        this.editItem = {pond_id:null,is_heated:false,inspected_time:this.getNowDateTime(),class1: null,class2: null, class3: null, class4: null, class5: null};
       }else {
         this.editItem = _.cloneDeep(item);
         this.editItem.inspected_time = this.$moment(new Date(this.editItem.inspected_time), 'YYYY-MM-DD HH:mm');
         this.editItem.dilution = parseFloat(this.editItem.dilution.replace('%',''));
+        if(this.editItem.class5!==' null') {
+          this.nowAdd = 'chormager';
+        }else {
+          this.nowAdd = 'nb';
+        }
       }
     },
     get_scopeDataAdd(evt) {
@@ -836,12 +873,18 @@ export default {
       if(valid && !this.isInspectedTime && !this.isPoolError) {
         let parm = _.cloneDeep(this.editItem);
         parm.inspected_time =dayjs(new Date(parm.inspected_time)).format("YYYY-MM-DD HH:mm")+':00';
+        for(let i=0;i<5;i++) {
+          if(parm['class'+(i+1)]==null) {
+            parm['class'+(i+1)] = '';
+          }
+        }
+
         // parm.class1 = '溶藻弧菌(白菌): '+parm.class1;
         // parm.class2 = '霍亂弧菌(靛菌): '+parm.class2;
         // parm.class3 = '腸炎弧菌(紫菌): '+parm.class3;
         // parm.class4 = '創傷弧菌(藍菌): '+parm.class4;
         // parm.class5 = '總菌數: '+parm.class5;
-        parm.dilution = parseFloat(parm.dilution).toFixed(1)+'%';
+        parm.dilution = parseFloat(parm.dilution).toFixed(1);
         parm.created_user = this.$auth.$state.user.email;
         parm.name = parm.img.name;
         delete parm.img;
@@ -894,6 +937,13 @@ export default {
     },
     onOk(value) {
         console.log(value);
+    },
+    addChange() {
+      this.editItem.class1 = null;
+      this.editItem.class2 = null;
+      this.editItem.class3 = null;
+      this.editItem.class4 = null;
+      this.editItem.class5 = null;
     },
   },
   async mounted() {
