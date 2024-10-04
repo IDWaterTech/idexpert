@@ -4342,9 +4342,8 @@ export default {
             this.$toast.success(`${(isSaved)?'新增':'查詢'}知識庫成功`, {
                 duration: 2000
             });
-            
+            this.isLoading = true;
             if(isSaved){ 
-                this.isLoading = true;
                 // console.log("querrypool:",querrypool);
                 if(this.nowSelectPool!=null){
                     this.getQuerry(true);
