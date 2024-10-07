@@ -216,22 +216,6 @@
                         </v-col>
                       </v-row>
                   </v-card-text>
-                    <v-card-text style="display: flex;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                          <v-radio-group class="my-1" row v-model="nowAdd" label="菌盤" mandatory @change="addChange" hide-details>
-                            <v-radio v-for="(item, i) in ['chormager','nb']" :label="item" :value="item" :key="i">
-                              <span slot="label" class="flex-align-center">
-                                {{ item }}
-                              </span></v-radio>
-                          </v-radio-group>
-                        </v-col>
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                          <div class="date-time-picker"><span style="font-size: 16px;margin-right: 9px;">有無加熱</span></div>
-                          <v-switch v-model="editItem.is_heated" hide-details :label="editItem.is_heated?'有':'無'" style="padding-top: 0;margin-top: 0;"></v-switch>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
                     <v-card-text style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
                       <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
@@ -270,6 +254,22 @@
                           <v-card-title>2. 輸入菌數(*請輸入原始菌落計數)</v-card-title>
                       </div>
                     </div>
+                    <v-card-text style="display: flex;flex-direction: column;margin-bottom: 16px;">
+                      <v-row style="align-items: center;padding-top: 16px;">
+                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                          <v-radio-group class="my-1" row v-model="nowAdd" label="菌盤" mandatory @change="addChange" hide-details>
+                            <v-radio v-for="(item, i) in ['chormager','nb']" :label="item" :value="item" :key="i">
+                              <span slot="label" class="flex-align-center">
+                                {{ item }}
+                              </span></v-radio>
+                          </v-radio-group>
+                        </v-col>
+                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                          <div class="date-time-picker"><span style="font-size: 16px;margin-right: 9px;">有無加熱</span></div>
+                          <v-switch v-model="editItem.is_heated" hide-details :label="editItem.is_heated?'有':'無'" style="padding-top: 0;margin-top: 0;"></v-switch>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
                     <v-card-text v-if="nowAdd=='chormager'" style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
                       <v-row style="align-items: center;padding-top: 16px;">
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
