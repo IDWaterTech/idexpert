@@ -265,8 +265,9 @@
                           </v-radio-group>
                         </v-col>
                         <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                          <div class="date-time-picker"><span style="font-size: 16px;margin-right: 9px;">有無加熱</span></div>
-                          <v-switch v-model="editItem.is_heated" hide-details :label="editItem.is_heated?'有':'無'" style="padding-top: 0;margin-top: 0;"></v-switch>
+                          <div class="date-time-picker"><span style="font-size: 16px;margin-right: 9px;">有無加熱{{ nowAdd=='chormager'?'(不可選擇)':'' }}</span></div>
+                          <v-checkbox v-model="editItem.is_heated" :label="editItem.is_heated?'有':'無'" hide-details style="margin-top: 0;" :disabled="nowAdd=='chormager'"></v-checkbox>
+                          <!-- <v-switch v-model="editItem.is_heated" hide-details :label="editItem.is_heated?'有':'無'" style="margin-top: 0;" :disabled="nowAdd=='chormager'"></v-switch> -->
                         </v-col>
                       </v-row>
                     </v-card-text>
@@ -862,7 +863,6 @@ export default {
       this.isPoolError = false;
     },
     async save() {
-      this.dialogLoading = false;
       var valid = this.$refs.addform.validate();
       if(this.editItem.inspected_time==''||this.editItem.inspected_time==null) {
         this.isInspectedTime = true;
@@ -871,6 +871,7 @@ export default {
         this.isPoolError = true;
       }
       if(valid && !this.isInspectedTime && !this.isPoolError) {
+        this.dialogLoading = false;
         let parm = _.cloneDeep(this.editItem);
         parm.inspected_time =dayjs(new Date(parm.inspected_time)).format("YYYY-MM-DD HH:mm")+':00';
         for(let i=0;i<5;i++) {
@@ -944,6 +945,9 @@ export default {
       this.editItem.class3 = null;
       this.editItem.class4 = null;
       this.editItem.class5 = null;
+      if(this.nowAdd=='chormager') {
+        this.editItem.is_heated = false;
+      }
     },
   },
   async mounted() {
