@@ -251,7 +251,7 @@
                     </v-card-text>
                     <div class="card-title" style="margin: 12px;">
                       <div class="title">
-                          <v-card-title>2. 輸入菌數<span style="color: red">(*請輸入原始菌落計數)</span></v-card-title>
+                          <v-card-title>2. 輸入菌數<span style="color: red">(*請輸入盤上菌落數)</span></v-card-title>
                       </div>
                     </div>
                     <v-card-text style="display: flex;flex-direction: column;margin-bottom: 16px;">
