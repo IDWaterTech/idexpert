@@ -186,19 +186,39 @@
                   <div class="title">
                     <v-row style="margin-right: 12px;margin-left: 12px;margin-bottom: 12px;">
                       <v-col cols="12" md="6">
-                        <v-autocomplete
-                          v-model="showsub"
-                          multiple
-                          chips
-                          clearable
-                          no-data-text="無項目"
-                          :items="sub_allitems"
-                          filled
-                          hide-details
-                          label="獨立顯示子成份項目"
-                          class="items"
-                          :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"
-                        ></v-autocomplete>
+                        <v-row style="margin-bottom: 0;">
+                          <v-col cols="6" v-if="false">
+                            <v-autocomplete
+                              v-model="showmain"
+                              multiple
+                              chips
+                              clearable
+                              no-data-text="無項目"
+                              :items="main_allitems"
+                              filled
+                              hide-details
+                              label="顯示主成份項目"
+                              class="items"
+                              :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"
+                            ></v-autocomplete>
+                          </v-col>
+                          <v-col cols="6">
+                            <v-autocomplete
+                              v-model="showsub"
+                              multiple
+                              chips
+                              clearable
+                              no-data-text="無項目"
+                              :items="sub_allitems"
+                              filled
+                              hide-details
+                              label="顯示次成份項目"
+                              class="items"
+                              :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"
+                            ></v-autocomplete>
+                          </v-col>
+                        </v-row>
+                        
                       </v-col>
                       <v-col cols="12" md="6"
                         :style="{'padding-top':`${windowWidth>960?'0':'12px'}`}">
@@ -260,17 +280,41 @@
                     <!-- 總量(主+次) -->
                     <el-table-column
                       prop="feed_total"
-                      label="總量(主+次)"
+                      label="總量(扣除已選次成份)"
                       width="100"
-                    />
-                    <!-- 獨立項目 -->
-                    <el-table-column label="獨立項目" v-if="showsub.length > 0" width="200">
+                    ><template #default="scope"><span style="width: 100%;text-align: right;">{{ scope.row.feed_total }}</span><br></template></el-table-column>
+                    <!-- 主成分 -->
+                    <el-table-column label="主成分" v-if="showmain.length > 0" width="200">
+                      <template #default="scope">
+                        <div v-if="scope.row.hasOwnProperty('main_items')">
+                          <v-chip
+                            class="item-chip main"
+                            label
+                            style="font-size: 12px;margin: 2px;color: #fff;"
+                                color="#408FBC"
+                            v-for="(main, idx) in scope.row.main_items.filter(x =>
+                              showmain.includes(x.name)
+                            )"
+                            :key="idx"
+                            @click="()=>{snackbar = true;snackText = main.name}"
+                          >
+                            <span :style="`font-size:${cellsize}em`">{{ `${main.name.substr(0,1)}：${Math.round((main.feed_amount + Number.EPSILON) * 100) / 100}` }}</span>
+                          </v-chip>
+                          
+                        </div>
+                        
+                      </template>
+                    </el-table-column>
+                    
+                    <!-- 次成分 -->
+                    <el-table-column label="次成分" v-if="showsub.length > 0" width="200">
                       <template #default="scope">
                         <div v-if="scope.row.hasOwnProperty('sub_items')">
                           <v-chip
-                            class="item-chip"
+                            class="item-chip sub"
                             label
-                            
+                            style="font-size: 12px;margin: 2px;color: #00324E;"
+                            color="#BFCBD2"
                             v-for="(sub, idx) in scope.row.sub_items.filter(x =>
                               showsub.includes(x.name)
                             )"
@@ -282,20 +326,21 @@
                       </template>
                     </el-table-column>
                     <!-- 觀察網 -->
-                    <el-table-column label="是否有觀察網" width="120">
+                    <el-table-column label="是否有觀察網/觀察網(不含糖)" width="120" align="center">
                       <template #default="scope">
-                        <div v-if="!scope.row.hasOwnProperty('children')">
-                          <span>{{ `${scope.row.has_observation?'有':'無'}` }}</span>
+                        <div v-if="!scope.row.hasOwnProperty('children')" style="width: 100%;text-align: center;">
+                          <span>{{ `${scope.row.has_observation?'有':'無'}` }}</span><br>
+                          <span>{{ scope.row.observation_total }}</span>
                         </div>
                       </template>
                     </el-table-column>
 
                     <!-- 觀察網(不含糖) -->
-                    <el-table-column
+                    <!-- <el-table-column
                       prop="observation_total"
                       label="觀察網(不含糖)"
                       width="120"
-                    />
+                    /> -->
                     
                     <!-- 餐別 -->
                     <el-table-column
@@ -339,6 +384,15 @@
                       <span>查無資料</span>
                     </template>
                   </el-table>
+                  <!-- 主成分全名 -->
+                  <v-snackbar
+                    v-model="snackbar"
+                    :centered="true"
+                    timeout="2000"
+                    color="green"
+                  >
+                    {{ snackText }}
+                </v-snackbar>
                 </div>
               </v-card>
             </v-col>
@@ -379,6 +433,7 @@ export default {
       checkedkeys: false,
       //獨立顯示子成份項目
       showsub: [],
+      showmain:[],
       //餐別合計
       totalData: [],
       //table cell size
@@ -399,14 +454,17 @@ export default {
         {text: "養殖池",align: "start",value: "pond_name2",width: 100,sortable: false},
         { text: "總量(主+次)",align: "start",value: "feed_total",width: 100,sortable: false},
         { text: "獨立項目",align: "start",value: "sub_items",width: 200,sortable: false},
-        { text: "是否有觀察網",value: "has_observation",align: "center",width: 120,sortable: false},
+        // { text: "是否有觀察網",value: "has_observation",align: "center",width: 120,sortable: false},
         { text: "是否有觀察網",value: "has_observation",align: "center",width: 200,sortable: false},
-        { text: "觀察網(不含糖)",value: "observation_total",align: "center",width: 200,sortable: false},
+        // { text: "觀察網(不含糖)",value: "observation_total",align: "center",width: 200,sortable: false},
         { text: "餐別",value: "feed_combo_name",align: "center",width: 200,sortable: false},
         { text: "執行人員",value: "executed_user",align: "center",width: 200,sortable: false},
         { text: "",value: "is_executed",align: "center",width: 50,sortable: false}],
       windowWidth: window.innerWidth,
       isLoading: true,
+      mainClick: [],
+      snackbar: false,
+      snackText: ''
     };
   },
   methods: {
@@ -831,13 +889,14 @@ export default {
         
         const children = this.feedData.filter(x => x.area_name == area_name);
         var sub = this.showsub;
+        this.showmain = this.main_allitems;
+        var main = this.showmain;
         // console.log(sub);
         // console.log('feedData',this.feedData);
         // console.log('combo',this.combomark);
         //扣除獨立顯示項目的量
 
         children.forEach(element => {
-          
           //主成份total
           var main_total = (element.main_items.length==0)?0:element.main_items
             .map(x => x.feed_amount)
@@ -869,6 +928,23 @@ export default {
             //小數點0位
             element.feed_total =
               Math.round((total - value + Number.EPSILON) * 100) / 100;
+          }
+          if (element.main_items.filter(x => main.includes(x.name)).length > 0) {
+            //陣列裡每個項目(次項目)
+
+            //陣列裡面每個數字加起來(限獨立項目)
+            var value = element.main_items
+              .filter(x => main.includes(x.name))
+              .map(x => x.feed_amount)
+              .reduce((a, b) => {
+                return a + b;
+              });
+            //total扣除
+            //小數點2位
+            // Math.round((total - value + Number.EPSILON) * 100) / 100;
+            //小數點0位
+            // element.feed_total =
+            //   Math.round((total - value + Number.EPSILON) * 100) / 100;
           }
           // observation_total 小數點去掉
           element.observation_total = Math.round((element.observation_total + Number.EPSILON) * 100) / 100;
@@ -993,6 +1069,19 @@ export default {
         });
       }
       return sub2;
+    },
+    main_allitems: function() {
+      var main = this.comboTotal.map(x => Object.keys(x.main_items));
+      var main2 = [];
+      for (let i = 0; i < main.length; i++) {
+        //[['w1','w2'],[..]]
+        main[i].forEach(ele => {
+          if (main2.includes(ele) == false) {
+            main2.push(ele);
+          }
+        });
+      }
+      return main2;
     }
   },
   async mounted() {
@@ -1235,7 +1324,9 @@ export default {
     .el-table__expand-icon--expanded .el-icon-arrow-right:before {
       content: "\e6e1";
     }
-    
+    .v-snack__wrapper {
+        min-width: 0px;
+    }
   }
 }
 
