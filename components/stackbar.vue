@@ -53,7 +53,7 @@ export default {
       var optdata = [];
       optdata.push(this.value);
       let myopt = {
-        color:this.myColors,
+        // color:this.myColors,
         tooltip: {
             trigger: 'axis',
             axisPointer: {            // 坐标轴指示器，坐标轴触发有效

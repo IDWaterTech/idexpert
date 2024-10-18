@@ -1051,6 +1051,7 @@ import "element-ui/lib/theme-chalk/index.css";
 import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
 import _ from "lodash";
 import Stackbar from '~/components/stackbar.vue';
+import { color } from "echarts/lib/export";
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -2529,22 +2530,27 @@ export default {
                   name: l,
                   type: 'bar',
                   stack: 'stack',
-                  data: new Array()
+                  data: new Array(),
+                  itemStyle:{color:'#ccc'}
                 })
               })
               datas.forEach((observe,oid)=>{
                 observe[k].forEach(oitem=>{
                   series.forEach(s=>{
                     if(oitem.name_ch == s.name) {
-                      s.data[oid] = ((oitem.value/observe.observation_qty)*100).toFixed(2);
+                      if(oitem.value/observe.observation_qty) {
+                        s.data[oid] = ((oitem.value/observe.observation_qty)*100).toFixed(2);
+                      }else {
+                        s.data[oid] = 0
+                      }
                     }
                   })
                 })
               })
               this.observeChartData[num].chartData.series=_.cloneDeep(series);
+              this.observeChartData[num].chartData.colors = [];
               // 顏色
               if(k=='IntestinalColor'||k=='HepatopancreasColor'||k=='BodyColor') {
-                this.observeChartData[num].chartData.colors = [];
                 if(k=='IntestinalColor') {
                   this.observeChartData[num].data.forEach(color=>{
                     if(color.name_en.toLowerCase()=='empty') {
@@ -2594,7 +2600,13 @@ export default {
               }else {
                 this.observeChartData[num].chartData.colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']
               }
-              
+              // console.log(this.observeChartData[num].chartData.series)
+              // 因原本color給定陣列方式，不會依照顏色順序，因此改每筆資料指定顏色
+              this.observeChartData[num].chartData.series.forEach((s,sid)=>{
+                // console.log(s,sid,num,this.observeChartData[num].chartData.colors);
+                s['itemStyle']['color'] = this.observeChartData[num].chartData.colors[sid];
+              })
+              // console.log(this.observeChartData[num].chartData.series)
               num++;
           }
       })
