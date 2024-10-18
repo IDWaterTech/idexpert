@@ -268,6 +268,8 @@
                       sortable
                       :sort-by="['area_name2']"
                       fixed="left"
+                      width="150"
+                      align="center"
                     >
                       <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
                     </el-table-column>
@@ -281,7 +283,7 @@
                     <el-table-column
                       prop="feed_total"
                       label="總量(扣除已選次成份)"
-                      width="100"
+                      width="160"
                     ><template #default="scope"><span style="width: 100%;text-align: right;">{{ scope.row.feed_total }}</span><br></template></el-table-column>
                     <!-- 主成分 -->
                     <el-table-column label="主成分" v-if="showmain.length > 0" width="200">
