@@ -207,7 +207,7 @@
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
                         <div style="display: inline-block;">
-                            <span>{{editItem.num==3?nowDaily.slice(5).replace('-','/')+'之後的「'+editItem.action_name+'」均不執行':'執行編修'}}</span> 
+                            <span>{{editItem.num==3?nowDaily.slice(5).replace('-','/')+'之後的「'+editItem.action_name+'」(所有相同名稱的動作) 均不執行':'執行編修'}}</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
