@@ -1598,7 +1598,7 @@
                                                                                 <v-text-field
                                                                                     v-model.number="ObservationData['ShrimpWeight']"
                                                                                     type="number" dense hide-details
-                                                                                    class="mt-0"></v-text-field>
+                                                                                    class="mt-0" @keyup="limitCharacter('ObservationData','ShrimpWeight')"></v-text-field>
                                                                                 <a-tooltip placement="topLeft"
                                                                                     :title="ObservationData['ShrimpWeight']&&typeof(ObservationData['ShrimpWeight'])=='number'?((ObservationData['ShrimpWeight']/ 1000).toFixed(3)+'kg'):'0kg'"><span
                                                                                         class="pa-0 ma-0">g</span></a-tooltip>
@@ -1618,7 +1618,7 @@
                                                                                 <v-text-field
                                                                                     v-model.number="ObservationData['LastShrimpWeight']"
                                                                                     type="number" dense hide-details
-                                                                                    class="mt-0"></v-text-field>
+                                                                                    class="mt-0" @keyup="limitCharacter('ObservationData','LastShrimpWeight')"></v-text-field>
                                                                                 <a-tooltip placement="topLeft"
                                                                                     :title="ObservationData['LastShrimpWeight']&&typeof(ObservationData['LastShrimpWeight'])=='number'?((ObservationData['LastShrimpWeight']/ 1000).toFixed(3)+'kg'):'0kg'"><span
                                                                                         class="pa-0 ma-0">g</span></a-tooltip>
@@ -1998,7 +1998,7 @@
                                                                                 <v-text-field
                                                                                     v-model.number="BreedingParm['InitialWeight']"
                                                                                     type="number" dense hide-details
-                                                                                    class="mt-0"></v-text-field>
+                                                                                    class="mt-0" @keyup="limitCharacter('BreedingParm','InitialWeight')"></v-text-field>
                                                                                 <a-tooltip placement="topLeft"
                                                                                     :title="BreedingParm['InitialWeight']&&typeof(BreedingParm['InitialWeight'])=='number'?((BreedingParm['InitialWeight']/ 1000).toFixed(3)+'kg'):'0kg'"><span
                                                                                         class="pa-0 ma-0">g</span></a-tooltip>
@@ -4071,6 +4071,15 @@ export default {
                 if(this.ObservationData['LastSamplingDatetime']) {
                     this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(this.ObservationData['LastSamplingDatetime']), 'YYYY-MM-DD HH:mm');
                 }
+                if(this.ObservationData['ShrimpWeight']) {
+                    this.ObservationData['ShrimpWeight'] = this.ObservationData['ShrimpWeight'].toFixed(3);
+                }
+                if(this.ObservationData['LastShrimpWeight']) {
+                    this.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'].toFixed(3);
+                }
+                if(this.BreedingParm['InitialWeight']) {
+                    this.BreedingParm['InitialWeight'] = this.BreedingParm['InitialWeight'].toFixed(3);
+                }
                 this.BacteriaData = input_data.BacteriaData;
                 console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
                 
@@ -4703,7 +4712,22 @@ export default {
             this.isSearchDate = false;
             this.BaseParm['InspectedDate'] = this.oldSearchDate[0];
             this.BaseParm['InspectedTime'] = this.oldSearchDate[1];
-        }, 
+        },
+        limitCharacter(data,key) {
+            let string = (data=='ObservationData'?this.ObservationData[key]:this.BreedingParm[key]).toString();
+            if(string.includes('.')) {
+                string = string?.split('.');
+                if(string[1].length>3) {
+                string[1] = string[1].substring(0,3);
+                if(data=='ObservationData') {
+                    this.ObservationData[key] = parseFloat(string[0]+'.'+string[1])
+                }else {
+                    this.BreedingParm[key] = parseFloat(string[0]+'.'+string[1])
+                }
+                
+                }
+            }
+        },
     },
     async created() {
         for(let i=0;i<this.bacteriaAll.length;i++) {

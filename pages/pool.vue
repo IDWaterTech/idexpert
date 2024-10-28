@@ -177,20 +177,21 @@
 
                   <el-table-column label="養殖負責" prop="person_in_charge" align="center">
                   </el-table-column>
-                  <el-table-column fixed="right" label="操作" width="120" align="center">
+                  <!-- <el-table-column fixed="right" label="操作" width="120" align="center"> -->
+                  <el-table-column fixed="right" label="操作" width="160" align="left">
                     
                     <template slot-scope="scope">
                       <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button> -->
                       <!-- <v-btn color="primary" outlined small @click="delcircle(scope.row)" :disabled="scope.row.ended_date != null">
                         刪除</v-btn> -->
-                        <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
+                        <!-- <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
                         <template v-slot:activator="{ on, attrs }">
                             <button v-if="false" class="btn-icon green" @click="renderDoc" v-bind="attrs" v-on="on">
                                 <v-icon>mdi-file-word</v-icon>
                             </button>
                         </template>
                       <span>Word報告</span>
-                      </v-tooltip>
+                      </v-tooltip> -->
 
                       <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
                         <template v-slot:activator="{ on, attrs }">
@@ -199,6 +200,14 @@
                             </button>
                         </template>
                       <span>檢視</span>
+                      </v-tooltip>
+                      <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
+                          <template v-slot:activator="{ on, attrs }">
+                              <button v-if="false" class="btn-icon clear" v-bind="attrs" v-on="on" @click="getTemp(scope.row.id,true,scope.row)">
+                                  <v-icon>mdi-file-word</v-icon>
+                              </button>
+                          </template>
+                          <span>Word報告</span>
                       </v-tooltip>
                       <v-tooltip bottom v-else>
                         <template v-slot:activator="{ on, attrs }">
@@ -303,7 +312,7 @@
                 </v-row>
               </div> 
               <div v-show="resultCycleOpen && nowTab=='循環紀錄'" style="padding-bottom: 12px;">
-                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen"></FeedTemplate2>
+                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen" @wordPepare="wordPepare"></FeedTemplate2>
               </div>
             </v-card>
           </div>
@@ -506,7 +515,7 @@
               </v-text-field>
             </v-card-text>       -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight"  label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;" @keyup="limitCharacter">
               </v-text-field>
             </v-card-text>
             
@@ -770,7 +779,7 @@
               </v-text-field>
             </v-card-text>   -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;" @keyup="limitCharacter">
               </v-text-field>
             </v-card-text>
             
@@ -1643,11 +1652,24 @@ export default {
       dialogLoading: false,
       nowPoolData:{},// 儲存現在選擇池的資料
       viewDialog: false,
+      clickRowData:{},
+      downloadData: [],
+      isDownload: false,
+      isEvent: false, // 因為事件最後撈取，須等事件撈取後，feedTemplate排好順序發送順序更改，才進行download
     };
   },
   methods: {
+    wordPepare(data) {
+      // this.renderDoc(this.clickRowData,data);
+      this.downloadData = data;
+      if(this.isDownload&&this.isEvent) {
+        this.renderDoc(this.clickRowData,this.downloadData);
+      }
+    },
     /* docxtemplater */
-    renderDoc() {
+    renderDoc(item,data=null) {
+      this.isDownload = false;
+      this.isEvent = false;
       loadFile(
         `/documents/circle_v1.docx`,
         function (error, content) {
@@ -1659,11 +1681,71 @@ export default {
             paragraphLoop: true,
             linebreaks: true,
           });
+          if(data!==null) {
+            data.forEach((main,mid)=>{
+              main.index = mid+1;
+              main.stepList.forEach(step=>{
+                if(!step.step_name_ch) {step.step_name_ch=''}
+                step.actionList.forEach(action=>{
+                  if(!action.action_name_ch) {
+                    action.action_name_ch = action.action_name;
+                    if(action.type==1 || action.type==2 || action.type==3) {
+                      let msg = (action.msg!==''?action.msg:'')+(action.bacteriaSelect?'\n'+action?.bacteriaSelect.toString():'');
+                      action.dailyCheckList = [{scheduling_date:'',execute_status:msg,msg:'',execute_time:action.execute_time,executor:''}]
+                    }
+                  }
+                  if(action.dailyCheckList && (action.type==0 || action.type==null)) {
+                    action.dailyCheckList.forEach(daily=>{
+                      if(daily.execute_status==1) {
+                        daily.execute_status = "[已執行]"+(daily.msg!==''?'\n'+daily.msg:'');
+                      }else if(daily.execute_status==2) {
+                        daily.execute_status = "[不執行]"+(daily.msg!==''?'\n'+daily.msg:'');
+                      }else {
+                        daily.execute_status = '';
+                      }
+                    })
+                  }
+                  
+                })
+              })
+            })
+          }
+          console.log('download',item,data);
+          let name = item.field+'_'+(item.name?item.name.split('_{')[1].split('}')[0]:'');
           doc.setData({
-            first_name: 'John',
-            last_name: 'Doe',
-            phone: '0652455478',
-            description: 'New Website',
+            // first_name: 'John',
+            // last_name: 'Doe',
+            // phone: '0652455478',
+            // description: 'New Website',
+            word_name: name,
+            download_time: dayjs(new Date()).format("YYYY-MM-DD HH:mm"),
+            started_date: item.started_date,
+            ended_date: item.ended_date,
+            name: item.name,
+            seedling_name:item.seedling_name,
+            factory: item.factory,
+            origin: item.origin,
+            characteristic: item.characteristic,
+            species_name:item.species_name,
+            stocked_date:item.stocked_date,
+            water_source:item.water_source=='Groundwater'?'地下水':'海水',
+            num_per_unit:item.num_per_unit,
+            total:item.total,
+            estimated_survival_rate:item.estimated_survival_rate,
+            estimated_harvest_weight:item.estimated_harvest_weight,
+            estimated_fcr:item.estimated_fcr,
+            cn:item.cn,
+            person_in_charge:item.person_in_charge,
+            water_source_salinity:item.water_source_salinity,
+            initial_weight:item.initial_weight,
+            remark:item.remark==null?'':item.remark,
+            temp_name_ch:item.temp_name_ch,
+            Do:item.Do,
+            ph:item.ph,
+            No:item.No,
+            NH:item.NH,
+            Temp:item.Temp,
+            lst:data
           });
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -1703,7 +1785,7 @@ export default {
               'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           });
           // Output the document using Data-URI
-          saveAs(out, 'output.docx');
+          saveAs(out, name+'_'+dayjs(new Date()).format("YYYY-MM-DD")+'.docx');
         }
       );
     },
@@ -2907,12 +2989,24 @@ export default {
       this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
       this.submitEdit(true);//編輯執行結束的時間及更改養殖狀態
     },
-    async getTemp(id) {
+    async getTemp(id,isDownload=false,item=null) {
+      this.clickRowData = item;
       let para={breeding_record_id:id}
       let getBreedingRecordTemplateList = await this.getBreedingRecordTemplateList2(para);
       let data = typeof (getBreedingRecordTemplateList)=='string'?[]:getBreedingRecordTemplateList;
       this.passObj["tempContent"] = [];
       if(data==undefined){data=[]}
+      if(isDownload) {
+        this.searchDate.start = this.circleData.filter(x=>x.id==item.id)[0].started_date;
+        if(this.circleData.filter(x=>x.id==item.id)[0].ended_date!==null && this.circleData.filter(x=>x.id==item.id)[0].ended_date!=='') {
+          this.searchDate.end = this.circleData.filter(x=>x.id==item.id)[0].ended_date;
+        }else {
+          this.searchDate.end = dayjs(new Date()).format("YYYY-MM-DD");
+        }
+        // 整理clickRowData
+        this.getClickRowData();
+        this.getDisease();
+      }
       data.forEach(d=>{
         if(d.phase_name_ch!=='空池') {
           d.stepList.forEach(async (step,sid)=>{
@@ -3018,15 +3112,23 @@ export default {
         await this.getState(this.nowArea);
         console.log('get temp',this.passObj.tempContent)
       }else {
-        if(getBreedingRecordTemplateList!==undefined) {
+        // if(getBreedingRecordTemplateList!==undefined) {
+        //   this.$toast.error("此循環無樣板", { duration: 2000 });
+        // }
+        // this.resultListOpen = true;
+        // this.resultCycleOpen = false;
+        // this.currentDataId = null;
+        if(getBreedingRecordTemplateList!==undefined && !isDownload) {
           this.$toast.error("此循環無樣板", { duration: 2000 });
         }
         this.resultListOpen = true;
         this.resultCycleOpen = false;
         this.currentDataId = null;
+        if(isDownload) {
+          this.renderDoc(this.clickRowData);
+        }
       }
-      
-
+      this.isDownload = isDownload;
       // this.$axios
       // .get(
       //       `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`,
@@ -3079,6 +3181,76 @@ export default {
       //     .finally(() => {
       //       /* 不論失敗成功皆會執行 */ 
       //     });
+    },
+    async getClickRowData() {
+      // 取得廠商資料
+      let getManufacturerList = await this.getManufacturerList();
+        let man = typeof (getManufacturerList)=='string'?[]:getManufacturerList;
+        // 取得種苗清單
+        let getSeedlingList = await this.getSeedlingList();
+        let data = typeof (getSeedlingList)=='string'?[]:getSeedlingList;
+        this.clickRowData['origin'] = ''; // 種苗產地
+        this.clickRowData['characteristic'] = ''; //特性
+        this.clickRowData['factory'] = '';//廠商
+        this.clickRowData['field'] = '';
+        if(data.length>0) {
+          let seedling = data.filter(x=>x.id==this.clickRowData.seedling_id)[0];
+          this.clickRowData.origin = seedling.origin;
+          this.clickRowData.characteristic = seedling.characteristic;
+          this.clickRowData.factory = man.filter(x=>x.id==seedling.manufacturer_id)[0]?.name_ch;
+        }
+        // 取得場名
+        this.maindata.forEach(main=>{
+          main.node.forEach(area=>{
+            area.node.forEach(pond=>{
+              if(pond.id == this.poolid) {
+                this.clickRowData.field = main.name;
+              }
+            })
+          })
+        })
+        let water = {Do:[{month:9,data:[{date:1,value:3},{date:2,value:5},{date:3,value:2},{date:4,value:7},{date:5,value:6},{date:6,value:2},{date:7,value:2}
+        ,{date:8,value:5},{date:9,value:3},{date:10,value:4},{date:11,value:6},{date:12,value:7},{date:13,value:2},{date:14,value:5}
+        ,{date:15,value:2},{date:16,value:5},{date:17,value:4},{date:18,value:7},{date:19,value:6},{date:20,value:7},{date:21,value:7}
+        ,{date:22,value:7},{date:23,value:2},{date:24,value:7},{date:25,value:5},{date:26,value:3},{date:27,value:7},{date:28,value:2}
+        ,{date:29,value:7},{date:30,value:5}]},{month:10,data:[{date:1,value:5},{date:2,value:3},{date:3,value:3},{date:4,value:3},{date:5,value:5},{date:6,value:3},{date:7,value:2}
+        ,{date:8,value:3},{date:9,value:4},{date:10,value:7},{date:11,value:6},{date:12,value:7},{date:13,value:5},{date:14,value:5}
+        ,{date:15,value:2},{date:16,value:5},{date:17,value:4},{date:18,value:5},{date:19,value:6},{date:20,value:7},{date:21,value:7}
+        ,{date:22,value:3},{date:23,value:4},{date:24,value:4},{date:25,value:5},{date:26,value:3},{date:27,value:7},{date:28,value:2}
+        ,{date:29,value:2},{date:30,value:8}]}],ph:[],No:[],NH:[],Temp:[]}
+        this.clickRowData['Do'] = [],this.clickRowData['ph'] = [],this.clickRowData['No'] = [],this.clickRowData['NH'] = [],this.clickRowData['Temp'] = [];
+        let keys = Object.keys(water);
+        console.log('>>>>',keys);
+        keys.forEach(key=>{
+          water[key].forEach(m=>{
+            if(m.month) {
+              let week_num = 1;
+              for(let i=0;i<m.data.length;i++) {
+                if(i%7==0) {
+                  week_num++;
+                }
+              }
+              console.log(week_num);
+              let weeks = [];
+              for(let i=1;i<week_num;i++) {
+                weeks[i-1] = []
+                for(let x=1;x<8;x++) {
+                  let date = (x+(i-1)*7);
+                  if(date<m.data.length) {
+                    weeks[i-1]['day'+x] = m.data.filter(x=>x.date==date)[0]?.value
+                  }else {
+                    weeks[i-1]['day'+x] = '';
+                  }
+                }
+              }
+              this.clickRowData[key].push({
+                month:m.month,
+                data: weeks
+              })
+            }
+          })
+        })
+        console.log('>>>>>',this.clickRowData);
     },
     // 取得疾病檢驗報告
     async getDisease() {
@@ -3207,6 +3379,7 @@ export default {
         ended_date: this.searchDate.end,
         pond_id: this.poolid,
       };
+      this.eventReport = [];
       let getEventList = await this.getEventList(parm);
       let data = typeof (getEventList)=='string'?[]:getEventList;
       this.eventReport = _.cloneDeep(data);
@@ -3219,6 +3392,7 @@ export default {
         d.msg=`[ `+d.event_category_name+` ] `+d.title
       })
       console.log('event',this.eventReport);
+      this.isEvent = true;
       // await this.$axios
       //   .get(apiURL, { params: parm }, { httpsAgent: agent })
       //   .then(res => {
@@ -3761,6 +3935,21 @@ export default {
             x.estimated_num =  undefined;
           })
           this.all_num_per_unit = undefined;
+        }
+      }
+    },
+    limitCharacter(event) {
+      let string = (this.addDialog?this.addparm.initial_weight:this.editparm.initial_weight).toString();
+      if(string.includes('.')) {
+        string = string?.split('.');
+        if(string[1].length>3) {
+          string[1] = string[1].substring(0,3);
+          if(this.addDialog) {
+            this.addparm.initial_weight = parseFloat(string[0]+'.'+string[1])
+          }else {
+            this.editparm.initial_weight = parseFloat(string[0]+'.'+string[1])
+          }
+          
         }
       }
     },
