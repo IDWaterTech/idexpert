@@ -1107,13 +1107,12 @@ Vue.mixin({
                         this.$toast.success("新增結果：" + data.data.messages[0], {
                             duration: 2000
                         });
+                        return true;
                     }else {
                         this.$toast.error("新增失敗：" + data.data.messages[0], {
                             duration: 2000
                         });
                     }
-                    
-                    return true;
                 }else {
                     console.log(data);
                     this.$toast.error("新增失敗：" + data.data.messages[0], {
