@@ -124,6 +124,12 @@
                                         </template>
                                         <span v-if="item.scheduling_date">指定{{item.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作的移動天數</span>
                                     </v-tooltip>
+                                    <v-tooltip bottom >
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn class="btn-icon clear" v-bind="attrs" v-on="on" @click="copyAllOpen(item)"><v-icon>mdi-content-copy</v-icon></v-btn>
+                                        </template>
+                                        <span v-if="item.scheduling_date">一鍵複製</span>
+                                    </v-tooltip>
                                 </div>
                             </div>
                             <div class="daily-content">
@@ -206,7 +212,7 @@
             <v-form ref="editform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div style="display: inline-block;max-width: 80%;">
                             <span>{{editItem.num==3?nowDaily.slice(5).replace('-','/')+'之後的「'+editItem.action_name+'」(所有相同名稱的動作) 均不執行':'執行編修'}}</span> 
                         </div>
                         <div class="add">
@@ -303,14 +309,14 @@
                         </div>
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                             <div class="title"><v-card-title>{{ isDelay?'指定':'複製' }}原因 </v-card-title></div>
-                            <v-text-field v-model="delayItem.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="delayItem.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="delayDialog=false">取消</v-btn>
-                        <v-btn class="btn-primary" :class="{'disabled':(delayDate=='')}" @click="submitDelay">確認</v-btn>
+                        <v-btn class="btn-primary" :class="{'disabled':(delayDate==null)}" @click="submitDelay">確認</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -432,14 +438,14 @@
                         </div>
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                             <div class="title"><v-card-title>新增原因 </v-card-title></div>
-                            <v-text-field v-model="addItem.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="addItem.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
                     </div>
                     <v-card-actions style="padding: 24px 12px;">
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="addDialog=false">取消</v-btn>
-                        <v-btn class="btn-primary" @click="submitAdd">確認</v-btn>
+                        <v-btn class="btn-primary" :class="{'disabled':(addItem.name_ch==''||addItem.start_date==null||addItem.end_date==null)}" @click="submitAdd">確認</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -507,7 +513,7 @@
                         </div>
                         <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
                             <div class="title"><v-card-title>指定原因 </v-card-title></div>
-                            <v-text-field v-model="delayAll.operation_reason" label="原因" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="delayAll.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div>
                     </div>
@@ -607,6 +613,62 @@
                 </v-card>
             </v-form>
         </v-dialog>
+        <!-- 一鍵複製 -->
+        <v-dialog v-model="copyDialog" max-width="500px">
+            <v-form ref="copyAllform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title">
+                        <div style="display: inline-block;">
+                            <span>一鍵複製</span> 
+                        </div>
+                        <div class="add">
+                            <v-btn class="btn-secondary close"
+                                    title="取消" 
+                                    @click="copyDialog = false;" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic">
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>複製至哪天執行?</v-card-title></div>
+                            <div class="calendar">
+                                <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (delayDate = getNowDate())">mdi-calendar</v-icon></v-btn></span>
+                                <v-menu v-model="copy_inspecteddate" :close-on-content-click="false" :nudge-right="40" 
+                                    transition="scale-transition" offset-y min-width="auto">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field v-model="copyCheckData.date" class="mt-0" clearable readonly dense :rules="rules.require"
+                                            v-bind="attrs" v-on="on"></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="copyCheckData.date" locale="zh-tw" no-title @input="
+                                    copy_inspecteddate = false;
+                                    "></v-date-picker>
+                                </v-menu>
+                            </div>
+                            
+                        </div>
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="title"><v-card-title>原因 </v-card-title></div>
+                            <v-text-field v-model="copyCheckData.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            </v-text-field>
+                        </div>
+                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;max-height: 200px;overflow-y: scroll;">
+                            <div class="title flex-align-center"><v-card-title>選擇要複製的動作 </v-card-title> <v-checkbox v-model="checkAll" label="全選" hide-details style="margin-top: 0;margin-left: 8px;" @change="changeCopy()"></v-checkbox></div>
+                            <div class="copy_list" v-for="(copy,id) in copyList" :key="'copy_'+id" style="width: 100%;padding: 4px;border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                <v-checkbox v-model="copy.checked" :label="`${copy.action_name+(copy.action_remark!==''?'：':'')}`" hide-details style="margin-top: 0;" @change="changeCopy(copy.action_id)"></v-checkbox>
+                                <span v-if="copy.action_remark!==''" style="margin-left: 32px;" @click="changeCopy(copy.action_id)">{{ (copy.action_remark!==''?copy.action_remark:'') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-secondary" @click="copyDialog=false">取消</v-btn>
+                        <v-btn class="btn-primary" :class="{'disabled':(copyCheckData.date==null||copyCheckData.list.length==0)}" @click="submitCopy">確認</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
     </div>
 </template>
 
@@ -660,6 +722,11 @@ export default {
             hiddenListOld:[],
             dateList:[],
             poolDataAll:{},
+            copyDialog: false,
+            copyCheckData: {list:[]},
+            copyList: [],
+            checkAll: false,
+            copy_inspecteddate:false,
         }
     },
     async created() {
@@ -1317,12 +1384,19 @@ export default {
                     delete parm.updated_user;
                     delete parm.index;
                     console.log('parm',parm);
-                    var res = false;
+                    var res = {action:false,msg:''};
                     res = await this.postDailyCheckList(parm);
                     setTimeout(()=>{
-                        if(res) {
+                        if(res.action) {
+                            this.$toast.success("新增成功", {
+                                duration: 2000
+                            });
                             this.delayDialog = false;
                             this.searchPool();
+                        }else {
+                            this.$toast.error("新增失敗:"+res.msg, {
+                                duration: 2000
+                            });
                         }
                         this.dialogLoading = true;
                     },50)
@@ -1573,7 +1647,143 @@ export default {
                 this.hiddenListOld = _.cloneDeep(this.hiddenList);
             })
             
-        }
+        },
+        // 一鍵複製
+        copyAllOpen(item) {
+            this.copyDialog = true;
+            this.copyCheckData = {date: this.getNowDate(),remark:'',list:[]}
+            this.copyList = _.cloneDeep(item.todo);
+            this.copyList.forEach(c=>c.checked=false);
+            this.checkAll = false;
+        },
+        changeCopy(action=null) {
+            if(action!==null) {
+                if(this.copyCheckData.list.includes(action)) {
+                    let index = this.copyCheckData.list.indexOf(action);
+                    let copyid = this.copyList.map(x=>x.action_id).indexOf(action);
+                    this.copyCheckData.list.splice(index,1);
+                    this.copyList[copyid].checked = false;
+                    this.checkAll = false;
+                }else {
+                    this.copyCheckData.list.push(action);
+                    let copyid = this.copyList.map(x=>x.action_id).indexOf(action);
+                    this.copyList[copyid].checked = true;
+                    if(!this.checkAll&&this.copyCheckData.list.length == this.copyList.length) {
+                        this.checkAll = true;
+                    }
+                }
+            }else {
+                // this.checkAll = !this.checkAll;
+                if(this.checkAll) {
+                    this.copyCheckData.list = [];
+                    this.copyList.forEach(c=>this.copyCheckData.list.push(c.action_id));
+                    this.copyList.forEach(c=>c.checked=true);
+                }else {
+                    this.copyCheckData.list = [];
+                    this.copyList.forEach(c=>c.checked=false);
+                }
+                
+            }
+            
+            // console.log('change copy',event)
+        },
+        submitCopy() {
+            let parm = {
+                "scheduling_date": this.copyCheckData.date,
+                "execute_status": "0",
+                "execute_time": "",
+                "executor": "", 
+                "msg": "",
+                "actual_member": 0,
+                "actual_spend": 0,
+                "created_user": this.$auth.$state.user.email,
+                "operation": "copy",
+                "operation_reason": this.copyCheckData.operation_reason,
+            }
+            let num = 0;
+            let success = 0;
+            let failed = 0;
+            let dup = 0;
+            let msg = '';
+            this.copyCheckData.list.forEach(async l=>{
+                console.log(l)
+                let index = this.copyList.map(x=>x.action_id).indexOf(l);
+                let data = _.cloneDeep(parm);
+                // data['msg'] = this.copyList[index].action_remark;
+                data['action_id'] = l;
+                console.log(data);
+                let isItem = false;
+                // 判斷該天是否有重複的動作
+                this.poolData.daily.forEach(d=>{
+                    if(new Date(d.scheduling_date).getTime()==new Date(this.copyCheckData.date).getTime()) {
+                        d.todo.forEach(t=>{
+                            if(t.action_id==l) {
+                                isItem=true;
+                            }
+                        })
+                    }
+                })
+                if(isItem) {
+                    num++;
+                    dup++;
+                    if(num == this.copyCheckData.list.length) {
+                        this.copyMsg(success,failed,dup,msg);
+                    }
+                }else {
+                    var res = {action:false,msg:''};
+                    res = await this.postDailyCheckList(data);
+                    setTimeout(()=>{
+                        num++;
+                        if(res.action) {
+                            success++;
+                        }else {
+                            failed++;
+                            msg = res.msg;
+                        }
+                        if(num == this.copyCheckData.list.length) {
+                            this.copyMsg(success,failed,dup,msg);
+                        }
+                    },50)
+                }
+                
+            })
+        },
+        copyMsg(success,failed,dup,msg) {
+            if(success==this.copyCheckData.list.length) {
+                this.$toast.success("新增成功", {
+                    duration: 2000
+                });
+            }else if(failed==this.copyCheckData.list.length) {
+                this.$toast.error("新增失敗:"+msg, {
+                    duration: 2000
+                });
+            }else if(dup == this.copyCheckData.list.length) {
+                alert(this.copyCheckData.date+'已有這些動作!請選擇其他天')
+            }else {
+                if(dup>0) {
+                    if(failed>0) {
+                        this.$toast.error("部分新增失敗:"+msg, {
+                            duration: 2000
+                        });
+                    }else {
+                        this.$toast.success("新增成功，重複的動作未新增", {
+                            duration: 2000
+                        });
+                    }
+                }else {
+                    this.$toast.error("部分新增失敗:"+msg, {
+                        duration: 2000
+                    });
+                }
+                
+            }
+            if(dup !== this.copyCheckData.list.length) {
+                this.copyDialog = false;
+                this.searchPool();
+                this.dialogLoading = true;
+            }
+            
+        },
     },
     watch: {
     },

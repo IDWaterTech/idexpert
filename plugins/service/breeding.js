@@ -1144,19 +1144,21 @@ Vue.mixin({
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/daily-check2/`,addform,)
                 console.log("新增每日:" + data.request.responseURL);
                 if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
-                        duration: 2000
-                    });
-                    return true;
+                    // this.$toast.success("新增結果：" + data.data, {
+                    //     duration: 2000
+                    // });
+                    return {action:true,msg:data.data};
                 }else {
-                    this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
-                    });
+                    // this.$toast.error("新增失敗：" + data.data, {
+                    //     duration: 2000
+                    // });
+                    return {action:false,msg:data.data};
                 }
     
             }catch(error) {
                 this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
+                return {action:false,msg:error};
             }
         },
         // 修改每日清單(執行/不執行)
