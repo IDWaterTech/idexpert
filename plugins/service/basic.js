@@ -1101,20 +1101,37 @@ Vue.mixin({
                 let data = await this.$axios
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/`,addform,config)
                 console.log("新增菌相:" + data.request.responseURL);
-                if(data.data == "上傳成功") {
-                    this.$toast.success("新增結果：" + data.data, {
-                        duration: 2000
-                    });
+                if(data.status==200) {
+                    console.log(data);
+                    if(data.data.messages[0]=='新增成功') {
+                        this.$toast.success("新增結果：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                    }else {
+                        this.$toast.error("新增失敗：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                    }
+                    
                     return true;
                 }else {
-                    this.$toast.error("新增失敗：" + data.data, {
+                    console.log(data);
+                    this.$toast.error("新增失敗：" + data.data.messages[0], {
                         duration: 2000
                     });
                 }
     
             }catch(error) {
-                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                if(error.response) {
+                    console.error('API Error:', error.response);
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                }
+                else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                // this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                // console.log(error);
             }
         },
         // 刪除菌相
@@ -1122,16 +1139,22 @@ Vue.mixin({
             try {
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/bacteria-image-data/${id}/`)
                 console.log("刪除菌相:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
+                if(data.status==200) {
                     this.$toast.success("刪除成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                    this.$toast.success("刪除失敗：" + data.data.messages[0], { duration: 2000 });
                 }
     
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
+                }
+                
             }
         },
         // 取得水質監測的警告範圍
