@@ -1026,6 +1026,7 @@ export default {
     getEventData: async function() {
       this.isLoading = false;
       var parms = {};
+      
       this.eventsData.splice(0,this.eventsData.length);
       // started_date=2022-01-01&ended_date=2022-01-04
       parms.started_date = this.sdate;
@@ -1034,6 +1035,7 @@ export default {
         case 1:
           parms.factory_id = this.poolidcpd.join();
           if (parms.factory_id == "") {
+            this.isLoading = true;
             return;
           }
           break;
