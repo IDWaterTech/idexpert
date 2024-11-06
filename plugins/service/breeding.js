@@ -301,21 +301,21 @@ Vue.mixin({
         },
         //===== 樣板設定 =====//
         // 取得樣板清單
-        getTemplateList:async function() {
-            try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`)
-                console.log("樣板清單:" + data.request.responseURL);
-                if(data.status==200) {
-                    return data.data;
-                }else {
-                    return [];
-                }
+        // getTemplateList:async function() {
+        //     try {
+        //         let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`)
+        //         console.log("樣板清單:" + data.request.responseURL);
+        //         if(data.status==200) {
+        //             return data.data;
+        //         }else {
+        //             return [];
+        //         }
 
-            }catch(error) {
-                this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("錯誤：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 取得樣板清單
         getTemplateList2:async function(bool=false) {
             try {
@@ -334,27 +334,27 @@ Vue.mixin({
             }
         },
         // 新增樣板
-        postTemplateList:async function(addform) {
-            try {
-                let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`,addform,)
-                console.log("新增樣板:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
-                        duration: 2000
-                    });
-                    return true;
-                }else {
-                    this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
-                    });
-                }
+        // postTemplateList:async function(addform) {
+        //     try {
+        //         let data = await this.$axios
+        //         .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/`,addform,)
+        //         console.log("新增樣板:" + data.request.responseURL);
+        //         if(data.data == "新增成功") {
+        //             this.$toast.success("新增結果：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //             return true;
+        //         }else {
+        //             this.$toast.error("新增失敗：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 新增樣板
         postTemplateList2:async function(addform) {
             try {
@@ -378,23 +378,23 @@ Vue.mixin({
             }
         },
         // 修改樣板
-        patchTemplateList:async function(parm,id) {
-            try {
-                let data = await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`,parm,)
-                console.log("修改檢驗方法:" + data.request.responseURL);
-                if(data.data == "修改成功") {
-                    this.$toast.success("修改成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
-                }
+        // patchTemplateList:async function(parm,id) {
+        //     try {
+        //         let data = await this.$axios
+        //         .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`,parm,)
+        //         console.log("修改檢驗方法:" + data.request.responseURL);
+        //         if(data.data == "修改成功") {
+        //             this.$toast.success("修改成功", { duration: 2000 });
+        //             return true;
+        //         }else {
+        //             this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 修改樣板
         patchTemplateList2:async function(parm,id) {
             try {
@@ -414,22 +414,22 @@ Vue.mixin({
             }
         },
         // 刪除樣板
-        deleteTemplateList:async function(id) {
-            try {
-                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`)
-                console.log("刪除樣板:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
-                    this.$toast.success("刪除成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
-                }
+        // deleteTemplateList:async function(id) {
+        //     try {
+        //         let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/template/${id}/`)
+        //         console.log("刪除樣板:" + data.request.responseURL);
+        //         if(data.data == "刪除成功") {
+        //             this.$toast.success("刪除成功", { duration: 2000 });
+        //             return true;
+        //         }else {
+        //             this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 刪除樣板
         deleteTemplateList2:async function(id) {
             try {
@@ -448,21 +448,21 @@ Vue.mixin({
             }
         },
         // 取得項目
-        getBreedingStepList:async function() {
-            try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
-                console.log("項目清單:" + data.request.responseURL);
-                if(data.status==200) {
-                    return data.data;
-                }else {
-                    return [];
-                }
+        // getBreedingStepList:async function() {
+        //     try {
+        //         let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`)
+        //         console.log("項目清單:" + data.request.responseURL);
+        //         if(data.status==200) {
+        //             return data.data;
+        //         }else {
+        //             return [];
+        //         }
 
-            }catch(error) {
-                this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("錯誤：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 取得項目
         getBreedingStepList2:async function() {
             try {
@@ -480,27 +480,27 @@ Vue.mixin({
             }
         },
         // 新增項目
-        postBreedingStepList:async function(addform) {
-            try {
-                let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`,addform,)
-                console.log("新增項目:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
-                        duration: 2000
-                    });
-                    return true;
-                }else {
-                    this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
-                    });
-                }
+        // postBreedingStepList:async function(addform) {
+        //     try {
+        //         let data = await this.$axios
+        //         .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/`,addform,)
+        //         console.log("新增項目:" + data.request.responseURL);
+        //         if(data.data == "新增成功") {
+        //             this.$toast.success("新增結果：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //             return true;
+        //         }else {
+        //             this.$toast.error("新增失敗：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 新增項目
         postBreedingStepList2:async function(addform) {
             try {
@@ -524,23 +524,23 @@ Vue.mixin({
             }
         },
         // 修改項目
-        patchBreedingStepList:async function(parm,id) {
-            try {
-                let data = await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`,parm,)
-                console.log("修改項目:" + data.request.responseURL);
-                if(data.data == "修改成功") {
-                    this.$toast.success("修改成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
-                }
+        // patchBreedingStepList:async function(parm,id) {
+        //     try {
+        //         let data = await this.$axios
+        //         .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`,parm,)
+        //         console.log("修改項目:" + data.request.responseURL);
+        //         if(data.data == "修改成功") {
+        //             this.$toast.success("修改成功", { duration: 2000 });
+        //             return true;
+        //         }else {
+        //             this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 修改項目
         patchBreedingStepList2:async function(parm,id) {
             try {
@@ -560,22 +560,22 @@ Vue.mixin({
             }
         },
         // 刪除項目
-        deleteBreedingStepList:async function(id) {
-            try {
-                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`)
-                console.log("刪除項目:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
-                    this.$toast.success("刪除成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
-                }
+        // deleteBreedingStepList:async function(id) {
+        //     try {
+        //         let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/step/${id}/`)
+        //         console.log("刪除項目:" + data.request.responseURL);
+        //         if(data.data == "刪除成功") {
+        //             this.$toast.success("刪除成功", { duration: 2000 });
+        //             return true;
+        //         }else {
+        //             this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 刪除項目
         deleteBreedingStepList2:async function(id) {
             try {
@@ -669,21 +669,21 @@ Vue.mixin({
         },
         /* 養殖循環 */
         // 取得循環資料清單
-        getBreedingRecordList:async function(parm_url) {
-            try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/?${parm_url}`)
-                console.log("循環資料清單:" + data.request.responseURL);
-                if(data.status==200) {
-                    return data.data;
-                }else {
-                    return [];
-                }
+        // getBreedingRecordList:async function(parm_url) {
+        //     try {
+        //         let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/?${parm_url}`)
+        //         console.log("循環資料清單:" + data.request.responseURL);
+        //         if(data.status==200) {
+        //             return data.data;
+        //         }else {
+        //             return [];
+        //         }
 
-            }catch(error) {
-                this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("錯誤：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 取得循環資料清單
         getBreedingRecordList2:async function(parm_url) {
             try {
@@ -701,27 +701,27 @@ Vue.mixin({
             }
         },
         // 新增循環
-        postBreedingRecordList:async function(addform) {
-            try {
-                let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,addform,)
-                console.log("新增循環:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
-                        duration: 2000
-                    });
-                    return true;
-                }else {
-                    this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
-                    });
-                }
+        // postBreedingRecordList:async function(addform) {
+        //     try {
+        //         let data = await this.$axios
+        //         .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,addform,)
+        //         console.log("新增循環:" + data.request.responseURL);
+        //         if(data.data == "新增成功") {
+        //             this.$toast.success("新增結果：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //             return true;
+        //         }else {
+        //             this.$toast.error("新增失敗：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 新增循環
         postBreedingRecordList2:async function(addform) {
             try {
@@ -743,23 +743,23 @@ Vue.mixin({
             }
         },
         // 修改循環資料
-        patchBreedingRecordList:async function(parm,id) {
-            try {
-                let data = await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`,parm,)
-                console.log("修改循環資料:" + data.request.responseURL);
-                if(data.data == "修改成功") {
-                    this.$toast.success("修改成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
-                }
+        // patchBreedingRecordList:async function(parm,id) {
+        //     try {
+        //         let data = await this.$axios
+        //         .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`,parm,)
+        //         console.log("修改循環資料:" + data.request.responseURL);
+        //         if(data.data == "修改成功") {
+        //             this.$toast.success("修改成功", { duration: 2000 });
+        //             return true;
+        //         }else {
+        //             this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 修改循環資料
         patchBreedingRecordList2:async function(parm,id) {
             try {
@@ -779,22 +779,22 @@ Vue.mixin({
             }
         },
         // 刪除循環資料
-        deleteBreedingRecordList:async function(id) {
-            try {
-                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`)
-                console.log("刪除循環資料:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
-                    this.$toast.success("刪除成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
-                }
+        // deleteBreedingRecordList:async function(id) {
+        //     try {
+        //         let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${id}/`)
+        //         console.log("刪除循環資料:" + data.request.responseURL);
+        //         if(data.data == "刪除成功") {
+        //             this.$toast.success("刪除成功", { duration: 2000 });
+        //             return true;
+        //         }else {
+        //             this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 刪除循環資料
         deleteBreedingRecordList2:async function(id) {
             try {
@@ -813,23 +813,23 @@ Vue.mixin({
             }
         },
         // 取得循環樣板
-        getBreedingRecordTemplateList:async function(parm) {
-            try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`, { params: parm })
-                console.log("循環樣板:" + data.request.responseURL);
-                if(data.data=='養殖循環樣板資料不存在') {
-                    this.$toast.error("error:" + data.data, { duration: 2000 });
-                }else if(data.status==200) {
-                    return data.data;
-                }else {
-                    return [];
-                }
+        // getBreedingRecordTemplateList:async function(parm) {
+        //     try {
+        //         let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`, { params: parm })
+        //         console.log("循環樣板:" + data.request.responseURL);
+        //         if(data.data=='養殖循環樣板資料不存在') {
+        //             this.$toast.error("error:" + data.data, { duration: 2000 });
+        //         }else if(data.status==200) {
+        //             return data.data;
+        //         }else {
+        //             return [];
+        //         }
 
-            }catch(error) {
-                this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("錯誤：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 取得循環樣板
         getBreedingRecordTemplateList2:async function(parm) {
             try {
@@ -1039,27 +1039,27 @@ Vue.mixin({
         },
         //===== 循環的其他 =====//
         // 新增樣板項目
-        postRecordStepList:async function(addform) {
-            try {
-                let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/`,addform,)
-                console.log("新增樣板項目:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    // this.$toast.success("新增結果：" + data.data, {
-                    //     duration: 2000
-                    // });
-                    return true;
-                }else {
-                    this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
-                    });
-                }
+        // postRecordStepList:async function(addform) {
+        //     try {
+        //         let data = await this.$axios
+        //         .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-step/`,addform,)
+        //         console.log("新增樣板項目:" + data.request.responseURL);
+        //         if(data.data == "新增成功") {
+        //             // this.$toast.success("新增結果：" + data.data, {
+        //             //     duration: 2000
+        //             // });
+        //             return true;
+        //         }else {
+        //             this.$toast.error("新增失敗：" + data.data, {
+        //                 duration: 2000
+        //             });
+        //         }
     
-            }catch(error) {
-                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
-            }
-        },
+        //     }catch(error) {
+        //         this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+        //         console.log(error);
+        //     }
+        // },
         // 批次延遲
         postDelayStepList:async function(addform) {
             try {
@@ -1215,6 +1215,151 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+            }
+        },
+        //===== 養殖紀錄 =====//
+        // 取得間補/收成紀錄
+        getHarvestRecordList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/harvest-record2/`,{ params: parm })
+                console.log("間補/收成清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    this.$toast.error("錯誤：" + data.data, { duration: 2000 });
+                    return [];
+                }
+
+            }catch(error) {
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return [];
+            }
+        },
+        // 新增間補/收成紀錄
+        postHarvestRecordList:async function(addform) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/harvest-record2/`,addform)
+                console.log("新增間補/收成:" + data.request.responseURL);
+                if(data.status==200) {
+                    console.log(data);
+                    if(data.data.messages[0]=='新增成功') {
+                        this.$toast.success("新增結果：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                        return true;
+                    }else {
+                        this.$toast.error("新增失敗：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                    }
+                }else {
+                    console.log(data);
+                    this.$toast.error("新增失敗：" + data.data.messages[0], {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                if(error.response) {
+                    console.error('API Error:', error.response);
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                }
+                else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                // this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                // console.log(error);
+            }
+        },
+        // 刪除間補/收成紀錄
+        deleteHarvestRecordList:async function(id) {
+            try {
+                let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/harvest-record2/${id}/`)
+                console.log("刪除間補/收成紀錄:" + data.request.responseURL);
+                if(data.status==200) {
+                    console.log(data);
+                    if(data.data.messages[0]=='刪除成功') {
+                        this.$toast.success("刪除結果：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                        return true;
+                    }else {
+                        this.$toast.error("刪除失敗：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                    }
+                }else {
+                    console.log(data);
+                    this.$toast.error("刪除失敗：" + data.data.messages[0], {
+                        duration: 2000
+                    });
+                }
+    
+            }catch(error) {
+                if(error.response) {
+                    console.error('API Error:', error.response);
+                    this.$toast.error("刪除失敗ERR：" + error.response.data.messages[0], { duration: 2000 });
+                }
+                else {
+                    this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                // this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                // console.log(error);
+            }
+        },
+        // 取得水質紀錄
+        getWaterRecordList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/water-quality-record2/`,{ params: parm })
+                console.log("水質紀錄清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    this.$toast.error("錯誤：" + data.data, { duration: 2000 });
+                    return [];
+                }
+
+            }catch(error) {
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return [];
+            }
+        },
+        // 取得投餌/料紀錄
+        getFeedRecord2List:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/feed-record2/`,{ params: parm })
+                console.log("投餌/料紀錄清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    this.$toast.error("錯誤：" + data.data, { duration: 2000 });
+                    return [];
+                }
+
+            }catch(error) {
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return [];
             }
         },
     }

@@ -282,16 +282,13 @@
                                                     </v-tooltip>
                                                 </template>
                                             </v-data-table>
-                                            
                                         </div>
-                                        
-                                        
                                     </div>
-                                    
                                     <div v-if="adjustOpen(mitem,id)&&(mitem.stepList==undefined||mitem.stepList.length==0)" class="content no-work">尚未設定工作</div>
                                 </v-card>
-                                <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1) && !passObj.nowEnd" style="padding: 12px 16px;">
-                                    <v-btn class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
+                                <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1)" style="padding: 12px 16px;">
+                                    <v-btn class="btn-secondary btn-small"  @click="record()" >間補/收成紀錄</v-btn>
+                                    <v-btn v-if="!passObj.nowEnd" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
                                     <!-- <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
                                     <v-tooltip v-else bottom>
                                         <template v-slot:activator="{ on, attrs }">
@@ -752,11 +749,122 @@
                 </div>
             </v-card>
         </v-dialog>
+        <!-- 間補/收成 -->
+        <v-dialog v-model="recordDialog" max-width="500px" width="500">
+            <v-form v-model="recordvalid" ref="recordform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title">
+                        <div style="display: inline-block;">
+                            <span>間補/收成紀錄</span> 
+                        </div>
+                        <div class="add">
+                            <v-btn class="btn-secondary close"
+                                    title="關閉" 
+                                    @click="recordDialog = false" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div v-if="!passObj.nowEnd" class="basic">
+                        <div class="card-title" @click="addRecordOpen = !addRecordOpen" style="cursor: pointer;">
+                            <div class="title">
+                                <v-card-title>1. 填寫紀錄</v-card-title>
+                            </div>
+                            <div class="chevron" >
+                                <v-icon v-if="addRecordOpen">mdi-triangle-small-up</v-icon>
+                                <v-icon v-if="!addRecordOpen">mdi-triangle-small-down</v-icon>
+                            </div>
+                        </div>
+                        <div v-if="addRecordOpen" class="card-title" >
+                            <v-radio-group class="my-1" row v-model="recordNew.harvest_type" mandatory hide-details>
+                                <v-radio v-for="(item, i) in [{id:'1',name:'間補'},{id:'2',name:'收成'}]" :label="item.name" :value="item.id" :key="i">
+                                <span slot="label" class="flex-align-center">
+                                    {{ item.name }}
+                                </span></v-radio>
+                            </v-radio-group>
+                        </div>
+                        <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;padding-bottom: 0;">
+                            <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
+                                transition="scale-transition" offset-y min-width="auto">
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="recordNew.harvest_date" label="選擇日期" :rules="rules.require"
+                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                            () => (recordNew.harvest_date = getNowDate())
+                                                            " style="padding-top: 0;margin-top: 8px;"></v-text-field>
+                                </template>
+                                <v-date-picker v-model="recordNew.harvest_date" :max="getNowDate()" no-title locale="zh-tw" @input="menu_adddate = false">
+                                </v-date-picker>
+                            </v-menu>
+                            <v-text-field v-model="recordNew.harvest_yield" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}總重量`" type="number" :rules="rules.require"
+                                autocomplete="off" @keyup="limitCharacter('harvest_yield')" style="padding-top: 0;margin-left: 4px;margin-top: 8px;"><span class="pa-0 ma-0" slot="append">Kg</span>
+                            </v-text-field>
+                        </v-card-text>
+                        <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;">
+                            <v-text-field v-model="recordNew.single_weight" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}平均個體重`" type="number" :rules="rules.require"
+                                autocomplete="off" @keyup="limitCharacter('single_weight')" style="padding-top: 0;margin-left: 4px;width: 50%;margin-top: 8px;"><span class="pa-0 ma-0" slot="append">g</span>
+                            </v-text-field>
+                            <span style="width: 50%;padding-left: 12px;">約 {{ (recordNew.harvest_yield&&recordNew.single_weight)?((recordNew.harvest_yield*1000) / recordNew.single_weight).toFixed(3):0 }} 隻</span>
+                        </v-card-text>
+                        <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;">
+                            <v-textarea v-model="recordNew.remark" label="說明" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>
+                        </v-card-text>
+                        <v-card-actions v-if="addRecordOpen" style="padding: 24px 12px;">
+                            <v-spacer></v-spacer>
+                            <!-- <v-btn class="btn-secondary" @click="recordDialog=false">關閉</v-btn> -->
+                            <v-btn v-if="!passObj.nowEnd" class="btn-primary" @click="recordSubmit">加入</v-btn>
+                        </v-card-actions>
+                    </div>
+                    
+                    <div class="basic" style="padding-bottom: 24px;">
+                        <div v-if="!passObj.nowEnd" class="card-title">
+                            <div class="title">
+                                <v-card-title>2. 紀錄</v-card-title>
+                            </div>
+                        </div>
+                        <v-card-text class="flex-align-center" style="padding-top: 0;">
+                                <v-data-table light 
+                                    :headers="computedHeaders"
+                                    :items="recordList"
+                                    no-data-text="無紀錄"
+                                    hide-default-footer
+                                    disable-pagination
+                                    style="max-height: 300px;overflow-y: scroll;width: 100%;"
+                                    class="data-table">
+                                    <template v-slot:[`item.remark`]="{ item }">
+                                        <span style="width: 100%;max-height: 48px;overflow-y: scroll;display: block;">{{ item.remark }}</span>
+                                    </template>
+                                    <template v-slot:[`item.action`]="{ index }">
+                                        <v-tooltip v-if="!passObj.nowEnd" bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn  class="btn-icon delete"
+                                                    title="刪除" 
+                                                    @click="recordDelete(index)" 
+                                                    v-bind="attrs" v-on="on">
+                                                    <v-icon>mdi-trash-can</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>刪除</span>
+                                        </v-tooltip>
+                                    </template>
+                                </v-data-table>
+                        </v-card-text>
+                    </div>
+                    <!-- <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-secondary" @click="recordDialog=false">關閉</v-btn>
+                        <v-btn v-if="!passObj.nowEnd" class="btn-primary" @click="recordSubmit">加入</v-btn>
+                    </v-card-actions> -->
+                </v-card>
+            </v-form>
+        </v-dialog>
     </div>
 </template>
 
 <script>
 import dayjs from "dayjs";
+import { add } from "lodash";
+import { method } from "lodash";
 export default {
     props: {
         templatemode: {
@@ -967,7 +1075,21 @@ export default {
             executeDialog: false, // 養殖循環執行狀態
             executeList:[],
             nowStepId:null,
-            dailyList:[]
+            dailyList:[],
+            recordDialog: false,
+            recordvalid: false,
+            recordList:[],
+            recordNew:{},
+            menu_adddate: false,
+            addRecordOpen: true,
+            recordHeaders: [
+                { text: "紀錄", value: "method_name",sortable: false, width:"10%",},
+                { text: "日期", value: "harvest_date",sortable: false, width:"15%",},
+                { text: "總重", value: "harvest_yield",sortable: false, width:"10%",},
+                { text: "個重", value: "single_weight",sortable: false, width:"10%",},
+                { text: "說明", value: "remark",sortable: false, width:"15%",},
+                { text: "操作", value: "action",sortable: false, width:"5%",},
+            ]
         }
     },
     async created(){
@@ -1006,6 +1128,10 @@ export default {
                 // console.log('mainItems',this.mainItems);
                 // this.getAuth();
                 // if(this.templatemode == 'cycleedit') {
+                this.status.forEach((x,xid)=>{
+                    x.name = this.passObj.tempContent[xid].phase_name_ch;
+                    x.id = this.passObj.tempContent[xid].phase_original_id;
+                })
                 this.sortData();
             // };
             }
@@ -1675,7 +1801,7 @@ export default {
             this.mainItems.forEach((mitem,mid)=>{
                 mitem.newest = this.dateList[mid].newest;
             })
-            // console.log('data',this.mainItems);
+            this.$emit('wordPepare',this.dateList);
             this.colorData();
         },
         // 各階段顏色存取(表頭顏色、時間軸顏色)
@@ -1752,7 +1878,8 @@ export default {
         // 判斷階段是否有展開
         adjustOpen(data,id) {
             if(this.templatemode=='cycleedit') {
-                return this.status.filter(x=>x.name==data.phase_name_ch)[0].open;
+                // console.log('status',data.phase_original_id,this.status,this.status.filter(x=>x.id=='1'));
+                return this.status.filter(x=>x.id==data.phase_original_id)[0]?.open;
             }else {
                 data.open = this.status[id].open;
                 // console.log(this.status[id].open);
@@ -2054,7 +2181,10 @@ export default {
         },
         // 結束養殖循環
         endCycle() {
-            this.$emit('end');
+            if (confirm(`確認結束循環?\n\n ※ 結束循環後，不可新增和刪除間補/收成紀錄，請先確認已填寫完畢，再結束循環!!`)) {
+                this.$emit('end');
+            }
+            
         },
         /* 樣板編輯 */
         // 刪除step(表格)
@@ -2922,7 +3052,102 @@ export default {
                 mitem.stepList = new Array();
             })
         },
-        
+        // 間補/收成紀錄
+        async record() {
+            this.addRecordOpen = true;
+            // this.recordList = [{
+            //     method: 1,
+            //     date: '2024-10-16',
+            //     totalWeight: 200,
+            //     singleWeight: 5,
+            //     remark: '12345'
+            // },]
+            this.recordList = [];
+            let parm = {breeding_record_id: this.passObj.tempMain.id,}
+            let getHarvestRecordList = await this.getHarvestRecordList(parm);
+            let data = typeof (getHarvestRecordList)=='string'?[]:getHarvestRecordList;
+            this.recordList = _.cloneDeep(data)
+            // 取得recordList method 1 收成 2 間補
+            this.recordList.forEach(x=>{
+                if(x.harvest_type=='1') {
+                    x.method_name = "間補"
+                }else {
+                    x.method_name = "收成"
+                }
+            })
+            // 打開recordDialog
+            this.recordDialog = true;
+            // 重置表格recordNew
+            if (this.$refs.recordform != undefined) {
+                this.$refs.recordform.reset();
+            }
+            setTimeout(()=>{
+                this.recordNew = {harvest_type:'1',harvest_date:this.getNowDate()}
+            },10)
+            
+        },
+        getNowDate: function() {
+            let mydate = dayjs().format("YYYY-MM-DD");
+            return mydate;
+        },
+        limitCharacter(key) {
+            let string = this.recordNew[key];
+            if(string.includes('.')) {
+                string = string?.split('.');
+                if(string[1].length>3) {
+                string[1] = string[1].substring(0,3);
+                this.recordNew[key] = parseFloat(string[0]+'.'+string[1]);
+                }
+            }
+        },
+        async recordDelete(index) {
+            let date = this.recordList[index].harvest_date
+            if (confirm(`確認刪除 ${date} 的紀錄？`)) {
+                var id = this.recordList[index].id;
+                var res = false;
+                res = await this.deleteHarvestRecordList(id);
+                setTimeout(async ()=>{
+                    if(res) {
+                        await this.record();//取得苗清單
+                        this.addRecordOpen = false;
+                    }
+                },50)
+            }
+        },
+        async recordSubmit() {
+            var valid = this.$refs.recordform.validate();
+            if(valid) {
+                let parm = _.cloneDeep(this.recordNew);
+                parm.created_user = (this.$auth.$state.user)?this.$auth.$state.user.email:undefined;
+                parm.breeding_record_id = this.passObj.tempMain.id;
+                // 新增api
+                var res = false;
+                res = await this.postHarvestRecordList(parm);
+                setTimeout(async ()=>{
+                    if(res) {
+                        await this.record();
+                        this.addRecordOpen = false;
+                        // if(this.recordNew.harvest_type==1) {
+                        //     this.recordNew.method_name = "間補"
+                        // }else {
+                        //     this.recordNew.method_name = "收成"
+                        // }
+                        // let add = _.cloneDeep(this.recordNew);
+                        // this.recordList.push(add);
+                        // // 重置表格recordNew
+                        // if (this.$refs.recordform != undefined) {
+                        //     this.$refs.recordform.reset();
+                        // }
+                        // setTimeout(()=>{
+                        //     this.recordNew = {harvest_type:1,harvest_date:this.getNowDate()}
+                        // },10)
+                    }
+                },50)
+                
+                // this.recordDialog = false;
+            }
+            
+        }
     },
     computed: {
     
@@ -2964,6 +3189,12 @@ export default {
                         this.nowStepId = data.step_id;
                         this.dailyList = data;
                     }
+                    this.status.forEach((x,xid)=>{
+                        x.name = this.passObj.tempContent[xid].phase_name_ch;
+                        x.id = this.passObj.tempContent[xid].phase_original_id;
+                        x.open = true;
+                    })
+                    // console.log('created status', this.status)
                     this.sortData();
                 }
                 
@@ -2992,6 +3223,15 @@ export default {
         },
         
     },
+    computed: {
+        computedHeaders () {
+            if(this.passObj.nowEnd) {
+                return this.recordHeaders.filter(x=>x.text!=='操作')
+            }else {
+                return this.recordHeaders
+            }
+        }
+    }
 }
 </script>
 
@@ -3131,6 +3371,16 @@ export default {
     }
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.warning-bg {
         background-color: #FFFAE6;
+    }
+    .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+        border: 1px solid $color-black-10;
+        border-radius: 4px;
+        padding: 0 8px;
+    }
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before,
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field > .v-input__control > .v-input__slot:before, 
+    .v-sheet.v-card.custom-dialog .v-textarea.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+        border-color: transparent;
     }
 }
 .btn-primary.disabled.nonauth,.btn-secondary.disabled.nonauth {
