@@ -1739,11 +1739,7 @@ export default {
             initial_weight:item.initial_weight,
             remark:item.remark==null?'':item.remark,
             temp_name_ch:item.temp_name_ch,
-            Do:item.Do,
-            ph:item.ph,
-            No:item.No,
-            NH:item.NH,
-            Temp:item.Temp,
+            waterRecord: item.waterRecord,
             lst:data,
             feedlst:item.feedlst,
             isfeedlst:item.isfeedlst,
@@ -3251,11 +3247,12 @@ export default {
       if(!water) {water = []}
       let keys = Object.keys(water);
       console.log('>>>>',keys);
+      this.clickRowData['waterRecord'] = {};
       keys.forEach(key=>{
         let newKey = key
         // if(key.toUpperCase().includes('DO')){newKey='Do'}else if(key.toUpperCase().includes('NO')){newKey='No'}else if(key.toUpperCase().includes('NH')){newKey='NH'}else if(key.toUpperCase().includes('PH')){newKey='ph'}else if(key.toUpperCase().includes('TEMP')){newKey='Temp'}
         console.log(newKey);
-        this.clickRowData[newKey] = [];
+        this.clickRowData['waterRecord'][newKey] = [];
         water[key].forEach(m=>{
           if(m.month) {
             // 計算該年該月份的天數
@@ -3299,7 +3296,7 @@ export default {
                 }
               }
             }
-            this.clickRowData[newKey].push({
+            this.clickRowData['waterRecord'][newKey].push({
               year: y,
               month:m.month,
               data: weeks
