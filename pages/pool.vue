@@ -203,7 +203,7 @@
                       </v-tooltip>
                       <v-tooltip bottom v-if="scope.row.ended_date !== null && scope.row.ended_date !== ''">
                           <template v-slot:activator="{ on, attrs }">
-                              <button v-if="false" class="btn-icon clear" v-bind="attrs" v-on="on" @click="getTemp(scope.row.id,true,scope.row)">
+                              <button class="btn-icon clear" v-bind="attrs" v-on="on" @click="getTemp(scope.row.id,true,scope.row)">
                                   <v-icon>mdi-file-word</v-icon>
                               </button>
                           </template>
@@ -1281,6 +1281,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import JSZipUtils from "jszip-utils";
 import { saveAs } from 'file-saver';
+import { filter } from "lodash";
 function loadFile(url, callback) {
   JSZipUtils.getBinaryContent(url,callback);
 }
@@ -1656,15 +1657,13 @@ export default {
       downloadData: [],
       isDownload: false,
       isEvent: false, // 因為事件最後撈取，須等事件撈取後，feedTemplate排好順序發送順序更改，才進行download
+      allUser:[],// 因position整理後只剩一個，導致多個position時無法檢測人員，因此多一個變數儲存所有position去比對
     };
   },
   methods: {
     wordPepare(data) {
       // this.renderDoc(this.clickRowData,data);
       this.downloadData = data;
-      if(this.isDownload&&this.isEvent) {
-        this.renderDoc(this.clickRowData,this.downloadData);
-      }
     },
     /* docxtemplater */
     renderDoc(item,data=null) {
@@ -1711,7 +1710,7 @@ export default {
             })
           }
           console.log('download',item,data);
-          let name = item.field+'_'+(item.name?item.name.split('_{')[1].split('}')[0]:'');
+          let name = item.field;
           doc.setData({
             // first_name: 'John',
             // last_name: 'Doe',
@@ -1745,7 +1744,13 @@ export default {
             No:item.No,
             NH:item.NH,
             Temp:item.Temp,
-            lst:data
+            lst:data,
+            feedlst:item.feedlst,
+            isfeedlst:item.isfeedlst,
+            isnotfeedlst:item.isnotfeedlst,
+            recordlst:item.recordlst,
+            // recordlst1: item.recordlst1,
+            // recordlst2: item.recordlst2,
           });
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -2580,6 +2585,7 @@ export default {
     getaccList: async function() {
       let getuserData = await this.getUserList();
       var data = typeof (getuserData)=='string'?[]:getuserData;
+      this.allUser = _.cloneDeep(data);
       var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0]?.department}));//只要正常啟用帳號
       this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
       // await this.$axios
@@ -2990,6 +2996,7 @@ export default {
       this.submitEdit(true);//編輯執行結束的時間及更改養殖狀態
     },
     async getTemp(id,isDownload=false,item=null) {
+      this.isDownload = false;
       this.clickRowData = item;
       let para={breeding_record_id:id}
       let getBreedingRecordTemplateList = await this.getBreedingRecordTemplateList2(para);
@@ -3003,6 +3010,19 @@ export default {
         }else {
           this.searchDate.end = dayjs(new Date()).format("YYYY-MM-DD");
         }
+        var tempMain = this.circleData.filter(x=>x.id==id)[0];
+        this.passObj.tempContent = [];
+        this.passObj.nowId = this.poolid;
+        if(this.circleData.filter(x=>x.id==id)[0].ended_date!==null && this.circleData.filter(x=>x.id==id)[0].ended_date!=='' ) {
+          this.passObj.nowEnd = true;
+          this.passObj.ended_date = this.circleData.filter(x=>x.id==id)[0].ended_date;
+        }else {
+          this.passObj.nowEnd = false;
+        }
+        
+        this.nowTab = '循環紀錄';
+        // console.log(tempMain);
+        this.passObj["tempMain"] = tempMain;
         // 整理clickRowData
         this.getClickRowData();
         this.getDisease();
@@ -3128,7 +3148,7 @@ export default {
           this.renderDoc(this.clickRowData);
         }
       }
-      this.isDownload = isDownload;
+      // this.isDownload = isDownload;
       // this.$axios
       // .get(
       //       `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record-template/`,
@@ -3204,53 +3224,220 @@ export default {
           main.node.forEach(area=>{
             area.node.forEach(pond=>{
               if(pond.id == this.poolid) {
-                this.clickRowData.field = main.name;
+                this.clickRowData.field = main.name+'_'+area.name+'_'+pond.name;
               }
             })
           })
         })
-        let water = {Do:[{month:9,data:[{date:1,value:3},{date:2,value:5},{date:3,value:2},{date:4,value:7},{date:5,value:6},{date:6,value:2},{date:7,value:2}
-        ,{date:8,value:5},{date:9,value:3},{date:10,value:4},{date:11,value:6},{date:12,value:7},{date:13,value:2},{date:14,value:5}
-        ,{date:15,value:2},{date:16,value:5},{date:17,value:4},{date:18,value:7},{date:19,value:6},{date:20,value:7},{date:21,value:7}
-        ,{date:22,value:7},{date:23,value:2},{date:24,value:7},{date:25,value:5},{date:26,value:3},{date:27,value:7},{date:28,value:2}
-        ,{date:29,value:7},{date:30,value:5}]},{month:10,data:[{date:1,value:5},{date:2,value:3},{date:3,value:3},{date:4,value:3},{date:5,value:5},{date:6,value:3},{date:7,value:2}
-        ,{date:8,value:3},{date:9,value:4},{date:10,value:7},{date:11,value:6},{date:12,value:7},{date:13,value:5},{date:14,value:5}
-        ,{date:15,value:2},{date:16,value:5},{date:17,value:4},{date:18,value:5},{date:19,value:6},{date:20,value:7},{date:21,value:7}
-        ,{date:22,value:3},{date:23,value:4},{date:24,value:4},{date:25,value:5},{date:26,value:3},{date:27,value:7},{date:28,value:2}
-        ,{date:29,value:2},{date:30,value:8}]}],ph:[],No:[],NH:[],Temp:[]}
-        this.clickRowData['Do'] = [],this.clickRowData['ph'] = [],this.clickRowData['No'] = [],this.clickRowData['NH'] = [],this.clickRowData['Temp'] = [];
-        let keys = Object.keys(water);
-        console.log('>>>>',keys);
-        keys.forEach(key=>{
-          water[key].forEach(m=>{
-            if(m.month) {
-              let week_num = 1;
-              for(let i=0;i<m.data.length;i++) {
-                if(i%7==0) {
-                  week_num++;
-                }
+        
+        console.log('>>>>>',this.clickRowData);
+        await this.getWaterRecord();
+    },
+    async getWaterRecord() {
+      let parm = {breeding_record_id: this.clickRowData.id,}
+      let getWaterRecordList = await this.getWaterRecordList(parm);
+      let data = typeof (getWaterRecordList)=='string'?[]:getWaterRecordList;
+      // let water = {DO:[{month:2,data:[{date:'2023-02-01',val:3},{date:'2023-02-02',val:5},{date:'2023-02-03',val:2},{date:'2023-02-04',val:7},{date:'2023-02-05',val:6},{date:'2023-02-06',val:2},{date:'2023-02-07',val:2}
+      // ,{date:'2023-02-08',val:5},{date:'2023-02-09',val:3},{date:'2023-02-10',val:4},{date:'2023-02-11',val:6},{date:'2023-02-12',val:7},{date:'2023-02-13',val:2},{date:'2023-02-14',val:5}
+      // ,{date:'2023-02-15',val:2},{date:'2023-02-16',val:5},{date:'2023-02-17',val:4},{date:'2023-02-18',val:7},{date:'2023-02-19',val:6},{date:'2023-02-20',val:7},{date:'2023-02-21',val:7}
+      // ,{date:'2023-02-22',val:7},{date:'2023-02-23',val:2},{date:'2023-02-24',val:7},{date:'2023-02-25',val:5},{date:'2023-02-26',val:3},{date:'2023-02-27',val:7},{date:'2023-02-28',val:2}
+      // ,{date:'2023-02-29',val:7},{date:'2023-02-30',val:5}]},{month:10,data:[{date:'2024-10-01',val:5},{date:'2024-10-02',val:3},{date:'2024-10-03',val:3},{date:'2024-10-04',val:3},{date:'2024-10-05',val:5},{date:'2024-10-06',val:3},{date:'2024-10-07',val:2}
+      // ,{date:'2024-10-08',val:3},{date:'2024-10-09',val:4},{date:'2024-10-10',val:7},{date:'2024-10-11',val:6},{date:'2024-10-12',val:7},{date:'2024-10-13',val:5},{date:'2024-10-14',val:5}
+      // ,{date:'2024-10-15',val:2},{date:'2024-10-16',val:5},{date:'2024-10-17',val:4},{date:'2024-10-18',val:5},{date:'2024-10-19',val:6},{date:'2024-10-20',val:7},{date:'2024-10-21',val:7}
+      // ,{date:'2024-10-22',val:3},{date:'2024-10-23',val:4},{date:'2024-10-24',val:4},{date:'2024-10-25',val:5},{date:'2024-10-26',val:3},{date:'2024-10-27',val:7},{date:'2024-10-28',val:2}
+      // ,{date:'2024-10-29',val:2},{date:'2024-10-30',val:8},{date:'2024-10-31',val:2}]}],pH:[],NO2:[],NH4:[],Temperature:[]}
+      let water = _.cloneDeep(data);
+      
+      if(!water) {water = []}
+      let keys = Object.keys(water);
+      console.log('>>>>',keys);
+      keys.forEach(key=>{
+        let newKey = key
+        // if(key.toUpperCase().includes('DO')){newKey='Do'}else if(key.toUpperCase().includes('NO')){newKey='No'}else if(key.toUpperCase().includes('NH')){newKey='NH'}else if(key.toUpperCase().includes('PH')){newKey='ph'}else if(key.toUpperCase().includes('TEMP')){newKey='Temp'}
+        console.log(newKey);
+        this.clickRowData[newKey] = [];
+        water[key].forEach(m=>{
+          if(m.month) {
+            // 計算該年該月份的天數
+            let y = m.data[0].date.split('-')[0]
+            let d = new Date(parseInt(y), m.month, 0);
+            let days =  d.getDate(); 
+            let week_num = 0; // 計算有幾列(每7個為一列)
+            let newData = []; // 紀錄1個月資料，因為有些月份可能不是從1號開始有資料，或是有些天沒資料，要補上資料
+            let dateData = m.data.map(x=>parseInt(x.date.split('-')[2])); // 把日期資料2024-09-11轉換成11
+            // 計算表格列數和整月資料整合
+            for(let i=1;i<(days+1);i++) {
+              if(dateData.includes(i)) {
+                let index = dateData.indexOf(i);
+                newData.push({date:i,value:m.data[index].val})
+              }else {
+                newData.push({date:i,value:''})
               }
-              console.log(week_num);
-              let weeks = [];
-              for(let i=1;i<week_num;i++) {
-                weeks[i-1] = []
-                for(let x=1;x<8;x++) {
-                  let date = (x+(i-1)*7);
-                  if(date<m.data.length) {
-                    weeks[i-1]['day'+x] = m.data.filter(x=>x.date==date)[0]?.value
+              
+              if(i%7==1) {
+                week_num++;
+              }
+              // console.log(i,i%7,week_num)
+            }
+            // console.log('newData',newData)
+            // 資料轉換[{day1:x,day2:x...day7:x}]
+            // 每周day1~day7，這樣表格比較好套模板
+            let weeks = [];
+            for(let i=1;i<=week_num;i++) {
+              weeks[i-1] = []
+              for(let x=1;x<8;x++) {
+                let date = (x+((i-1)*7));
+                if(date<=newData.length) {
+                  let dataFilter = newData.filter(x=>x.date==date)[0];
+                  if(dataFilter) {
+                    weeks[i-1]['day'+x] = dataFilter.value
                   }else {
                     weeks[i-1]['day'+x] = '';
                   }
+                }else {
+                  weeks[i-1]['day'+x] = '';
                 }
               }
-              this.clickRowData[key].push({
-                month:m.month,
-                data: weeks
-              })
             }
-          })
+            this.clickRowData[newKey].push({
+              year: y,
+              month:m.month,
+              data: weeks
+            })
+          }
         })
-        console.log('>>>>>',this.clickRowData);
+      })
+      console.log(this.clickRowData)
+      await this.getFeed();
+    },
+    async getFeed() {
+      let parm = {
+          pond_id: this.poolid,
+          started_date: this.clickRowData.started_date,
+          ended_date: this.clickRowData.ended_date,
+      }
+      // 總表
+      let feed = await this.getFeedReportList(parm);
+      this.clickRowData.feedlst = _.cloneDeep(feed);
+      // 餌
+      let isFeedParm = {breeding_record_id: this.clickRowData.id,is_feed:true}
+      let getFeedRecord2List = await this.getFeedRecord2List(isFeedParm);
+      let data = typeof (getFeedRecord2List)=='string'?[]:getFeedRecord2List;
+      data['main_total']=[{meal:0,feed_amount:0,hasTotal:false}]
+      if(data['main']) {
+        data['hasTotal'] = true;
+        data['main'].forEach(x=>{
+          data['main_total'][0].meal+=x.meal;
+          data['main_total'][0].feed_amount+=x.feed_amount;
+        })
+        data['main_total'][0].feed_amount = data['main_total'][0].feed_amount.toFixed(3);
+        data['main_total'][0].hasTotal = true;
+      }else {
+        data['main'] = []
+        data['main_total']=[{meal:'',feed_amount:'',hasTotal:false}]
+      }
+      data['sub_total']=[{meal:0,feed_amount:0,hasTotal:false}]
+      if(data['sub']) {
+        data['sub'].forEach(x=>{
+          data['sub_total'][0].meal+=x.meal;
+          data['sub_total'][0].feed_amount+=x.feed_amount;
+        })
+        data['sub_total'][0].feed_amount = data['sub_total'][0].feed_amount.toFixed(3);
+        data['sub_total'][0].hasTotal = true;
+      }else {
+        data['sub'] = []
+        data['sub_total']=[{meal:'',feed_amount:'',hasTotal:false}]
+      }
+      
+      this.clickRowData.isfeedlst = _.cloneDeep(data);
+      // 料
+      let isFeedParm2 = {breeding_record_id: this.clickRowData.id,is_feed:false}
+      let getFeedRecord2List2 = await this.getFeedRecord2List(isFeedParm2);
+      let data2 = typeof (getFeedRecord2List2)=='string'?[]:getFeedRecord2List2;
+      data2['main_total']=[{meal:0,feed_amount:0,hasTotal:false}]
+      if(data2['main']) {
+        data2['main'].forEach(x=>{
+          data2['main_total'][0].meal+=x.meal;
+          data2['main_total'][0].feed_amount+=x.feed_amount;
+        })
+        data2['main_total'][0].feed_amount = data2['main_total'][0].feed_amount.toFixed(3);
+        data2['main_total'][0].hasTotal = true;
+      }else {
+        data2['main'] = []
+        data2['main_total']=[{meal:'',feed_amount:'',hasTotal:false}]
+      }
+      data2['sub_total']=[{meal:0,feed_amount:0,hasTotal:false}]
+      if(data2['sub']) {
+        data2['sub'].forEach(x=>{
+          data2['sub_total'][0].meal+=x.meal;
+          data2['sub_total'][0].feed_amount+=x.feed_amount;
+        })
+        data2['sub_total'][0].feed_amount = data2['sub_total'][0].feed_amount.toFixed(3);
+        data2['sub_total'][0].hasTotal = true;
+      }else {
+        data2['sub'] = []
+        data2['sub_total']=[{meal:'',feed_amount:'',hasTotal:false}]
+      }
+      
+      this.clickRowData.isnotfeedlst = _.cloneDeep(data2);
+      await this.getRecord();
+    },
+    async getRecord() {
+      let lst = []
+      let parm = {breeding_record_id: this.clickRowData.id,}
+      let getHarvestRecordList = await this.getHarvestRecordList(parm);
+      let data = typeof (getHarvestRecordList)=='string'?[]:getHarvestRecordList;
+      lst = _.cloneDeep(data);
+      this.clickRowData.recordlst = {data:[],hasRecord:false,total:[{total:0,single:0}]}
+      if(lst.length>0) {
+        lst.forEach(x=>{
+          if(x.harvest_type=='1') {
+            x.harvest_name = '間補';
+          }else {
+            x.harvest_name = '收成';
+          }
+          this.clickRowData.recordlst.data.push(x);
+          this.clickRowData.recordlst.total[0].total+=x['harvest_yield'];
+          this.clickRowData.recordlst.total[0].single+=x['single_weight'];
+        })
+        this.clickRowData.recordlst.hasRecord = true;
+        this.clickRowData.recordlst.total[0].total = this.clickRowData.recordlst.total[0].total.toFixed(3);
+        this.clickRowData.recordlst.total[0].single = this.clickRowData.recordlst.total[0].single/lst.length.toFixed(3);
+        this.clickRowData.recordlst.total[0].num = ((this.clickRowData.recordlst.total[0].total*1000)/this.clickRowData.recordlst.total[0].single).toFixed(3);
+        // this.clickRowData.recordlst1 = []; // 間補
+        // this.clickRowData.recordlst2 = []; // 收成
+        // lst.forEach(x=>{
+        //   if(x.harvest_type=='1') {
+        //     x.harvest_name = '間補';
+        //     this.clickRowData.recordlst1.push(x);
+        //   }else {
+        //     x.harvest_name = '收成';
+        //     this.clickRowData.recordlst2.push(x);
+        //   }
+        // })
+      }else {
+        this.clickRowData.recordlst.total = [{total:'',single:'',num:''}]
+      }
+      
+      this.isDownload = true;
+      // if(this.clickRowData.recordlst1.length==0) {
+      //   this.clickRowData.recordlst1.push({
+      //       method: '間補',
+      //       date: '-',
+      //       totalWeight: '-',
+      //       singleWeight: '-',
+      //       remark: '-'
+      //   })
+      // }
+      // if(this.clickRowData.recordlst2.length==0) {
+      //   this.clickRowData.recordlst2.push({
+      //       method: '間補',
+      //       date: '-',
+      //       totalWeight: '-',
+      //       singleWeight: '-',
+      //       remark: '-'
+      //   })
+      // }
     },
     // 取得疾病檢驗報告
     async getDisease() {
@@ -3840,7 +4027,24 @@ export default {
           // if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
           //   this.editparm.initial_weight = 0.1;
           // }
-          this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+
+          // 因有人變動部門，造成position找不到原本的，使得編輯時，欄位undefined，因此重新判斷人名與職位 
+          this.editperson_in_charge = '';
+          let username = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0]?.username;
+          if(username) {
+            this.editperson_in_charge = username;
+          }else {
+            let name = this.editparm.person_in_charge.split('-')[1];
+            let position = this.editparm.person_in_charge.split('-')[0];
+            let filterUser = this.allUser.filter(x=>x.account_name==name);
+            for(let i=0;i<filterUser.length;i++) {
+              if(filterUser[i].position.map(x=>x.department).includes(position)) {
+                this.editperson_in_charge = filterUser[i].username;
+                break;
+              }
+            }
+          }
+          
           if(document.getElementsByClassName('v-dialog--active')) {
             document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
           }
@@ -3953,7 +4157,7 @@ export default {
         }
       }
     },
-    // 循環清單編輯
+    // 循環清單檢視
     viewCircle(data) {
       // if(this.template_items.length>0) {
          // this.editperson_in_charge = '';
@@ -3975,7 +4179,23 @@ export default {
           // if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
           //   this.editparm.initial_weight = 0.1;
           // }
-          this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+          // this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+          // 因有人變動部門，造成position找不到原本的，使得編輯時，欄位undefined，因此重新判斷人名與職位 
+          this.editperson_in_charge = '';
+          let username = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0]?.username;
+          if(username) {
+            this.editperson_in_charge = username;
+          }else {
+            let name = this.editparm.person_in_charge.split('-')[1];
+            let position = this.editparm.person_in_charge.split('-')[0];
+            let filterUser = this.allUser.filter(x=>x.account_name==name);
+            for(let i=0;i<filterUser.length;i++) {
+              if(filterUser[i].position.map(x=>x.department).includes(position)) {
+                this.editperson_in_charge = filterUser[i].username;
+                break;
+              }
+            }
+          }
           if(document.getElementsByClassName('v-dialog--active')) {
             document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
           }
@@ -4496,7 +4716,12 @@ export default {
         })
       },
       deep: true
-    }
+    },
+    isDownload() {
+      if(this.isDownload && this.isEvent) {
+        this.renderDoc(this.clickRowData,this.downloadData);
+      }
+    },
   },
   computed: {
     // 新增循環的池選擇
