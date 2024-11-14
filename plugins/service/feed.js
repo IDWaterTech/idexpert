@@ -486,7 +486,7 @@ Vue.mixin({
                     this.$toast.success("修改成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                    this.$toast.error("修改失敗：" + data.data, { duration: 2000 });
                 }
     
             }catch(error) {

@@ -1236,10 +1236,10 @@ export default {
   },
   async mounted() {
     
-    await this.getficdata(); //取得成份類別
-    await this.getfingdata(); //取得成份清單
-    // await this.getficwithdetaildata(); //取得成份類別及細項
-    await this.getcombodata(); //取得套餐清單(飼料設定)
+    // await this.getficdata(); //取得成份類別
+    // await this.getfingdata(); //取得成份清單
+    // // await this.getficwithdetaildata(); //取得成份類別及細項
+    // await this.getcombodata(); //取得套餐清單(飼料設定)
     await this.getmanudata(); //取得廠商資料
   },
   computed: {
@@ -1296,6 +1296,7 @@ export default {
       }else {
         this.manuFilterData = _.cloneDeep(this.manu);
       }
+      this.isLoading = true;
       console.log('man Select',this.manuFilterData,this.manuidx);
       // if (this.manu.filter(x => x.id == this.manuidx).length > 0) {
       //   //edit mode
@@ -1889,36 +1890,39 @@ export default {
         var id = item.id;
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/${id}/`;
         var parms = _.cloneDeep(item);
+        console.log(item);
         parms.is_enable = bool;
-        //主成份
-        delete parms.main_items;
-        var main = [];
-        // this.combofield.main_items.forEach(element => {
-        //   main.push({id:element});
-        // });
-        for (let i = 0; i < Object.keys(this.main_formula).length; i++) {
-          const id = Object.keys(this.main_formula)[i];
-          const value = this.main_formula[id];
-          const remark = this.main_formula_remark[id];
-          main.push({ id: id, formula: value, remark: remark });
-        }
-        parms.main_items = main;
-        //次成份
-        delete parms.sub_items;
-        var sub = [];
-        for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
-          const id = Object.keys(this.sub_formula)[i];
-          const value = this.sub_formula[id];
-          const remark = this.sub_formula_remark[id];
-          sub.push({ id: id, formula: value, remark: remark });
-        }
-        parms.sub_items = sub;
+        // //主成份
+        // delete parms.main_items;
+        // var main = [];
+        // // this.combofield.main_items.forEach(element => {
+        // //   main.push({id:element});
+        // // });
+        // for (let i = 0; i < Object.keys(this.main_formula).length; i++) {
+        //   const id = Object.keys(this.main_formula)[i];
+        //   const value = this.main_formula[id];
+        //   const remark = this.main_formula_remark[id];
+        //   main.push({ id: id, formula: value, remark: remark });
+        // }
+        // parms.main_items = main;
+        // //次成份
+        // delete parms.sub_items;
+        // var sub = [];
+        // for (let i = 0; i < Object.keys(this.sub_formula).length; i++) {
+        //   const id = Object.keys(this.sub_formula)[i];
+        //   const value = this.sub_formula[id];
+        //   const remark = this.sub_formula_remark[id];
+        //   sub.push({ id: id, formula: value, remark: remark });
+        // }
+        // parms.sub_items = sub;
         parms.updated_user = this.$auth.$state.user.email;
+        
         //刪掉不要的
         delete parms.created_time;
         delete parms.created_user;
         delete parms.id;
         delete parms.updated_time;
+        console.log('parm',parms)
         var res = false;
         res = await this.patchFeedSettingList(parms,id);
         setTimeout(()=>{
@@ -1974,6 +1978,7 @@ export default {
       }else {
         this.manuFilterData = _.cloneDeep(this.combo);
       }
+      this.isLoading = true;
       // if (this.feed_ingredient_category.filter(x => x.id == this.fic_idx).length > 0) {
       //   //edit mode
       //   this.ficmode='edit';
@@ -2499,24 +2504,37 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
   },
   watch:{
-    tablindex() {
+    async tablindex() {
       if(this.tablindex == '廠商設定') {
+        this.isLoading = false;
+        await this.getmanudata(); //取得廠商資料
         this.manuidx = undefined;
         this.manuFilterData = [];
         this.manuFilterData = _.cloneDeep(this.manu);
+        
         // this.manselect();
 
       }else if(this.tablindex == '成份設定') {
+        this.isLoading = false;
+        // await this.getmanudata(); //取得廠商資料
+        await this.getficdata(); //取得成份類別
+        await this.getfingdata(); //取得成份清單
         this.fic_idx = this.feed_ingredient_category[0].id;
         this.manuFilterData = [];
-        this.ficselect();
+        // this.ficselect();
+        
         // this.manuFilterData = _.cloneDeep(this.ficwithdetail);
       }else if(this.tablindex == '套餐設定') {
+        this.isLoading = false;
         // this.comboidx = this.combo[0].id;
         this.comboidx = null;
         // this.manuFilterData = [];
         this.isEnable = false;
-        this.comboselect();
+        await this.getficdata(); //取得成份類別
+        await this.getfingdata(); //取得成份清單
+        await this.getcombodata(); //取得套餐清單(飼料設定)
+        
+        // this.comboselect();
 
       }
       console.log('tabs change',this.manuFilterData);
