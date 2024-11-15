@@ -60,8 +60,11 @@ export default function ({ $axios,$auth, redirect, app }) {
         }
     
         // 可以在这里添加其他错误处理逻辑，例如重定向
-        if (statusCode === 400) {
-          app.$toast.error('请求失败，参数无效或请求格式错误。')
+        // if (statusCode === 400) {
+        //   app.$toast.error('请求失败，参数无效或请求格式错误。')
+        //   redirect('/error') // 替换为你的错误处理路径
+        // }
+        if (statusCode === 404) {
           redirect('/error') // 替换为你的错误处理路径
         }
       })
