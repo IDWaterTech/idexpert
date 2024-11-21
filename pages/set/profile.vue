@@ -198,14 +198,16 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm,{
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/line/LineMsg`, parm,{
             httpsAgent: agent
           })
         .then(res => {
-          this.$toast.success(`成功:${res.data.d}`, { duration: 2000 });
+          console.log(res);
+          this.$toast.success(`成功:${res.data.message}`, { duration: 2000 });
         })
         .catch(error => {
-          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+          console.log('error',error)
+          this.$toast.error(`失敗:${error}`, { duration: 2000 });
         })
         .finally(() => {
           //this.getdata();
@@ -217,11 +219,12 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/revoke`, parm,{
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/line/revoke`, parm,{
             httpsAgent: agent
           })
         .then(res => {
-          let revokedata = JSON.parse(res.data.d);
+          // let revokedata = JSON.parse(res.data.d);
+          let revokedata = res.data;
           if (revokedata.message == "ok") {
             this.profile.line_token = "";
             this.statchange("nomsg");
@@ -262,11 +265,13 @@ export default {
 
       let parm = { code: this.$route.query.code,re_uri :location.href.replace(location.search, "") };
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/getToken`, parm,{
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/line/getToken`, parm,{
             httpsAgent: agent
           })
         .then(res => {
-          let linetoken = JSON.parse(res.data.d);
+          console.log('getToken',res)
+          // let linetoken = JSON.parse(res.data.d);
+          let linetoken = res.data;
           if (
             linetoken.hasOwnProperty("access_token") &&
             linetoken.access_token != null
@@ -277,11 +282,12 @@ export default {
             //   duration: 2000
             // });
           } else {
-            this.$toast.error(`錯誤:${res.data.d}`, { duration: 2000 });
+            this.$toast.error(`錯誤:${res.data.message[0]}`, { duration: 2000 });
           }
         })
         .catch(error => {
-          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+          console.log('error',error)
+          this.$toast.error(`失敗:${error}`, { duration: 2000 });
         })
         .finally(() => {
           //重導頁不要有code

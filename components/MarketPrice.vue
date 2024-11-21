@@ -67,7 +67,8 @@ export default {
     getPrice: async function() {
       await this.$axios
         .get(
-          `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/getAquaticTransData`
+          // `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/getAquaticTransData`
+          `${this.$store.state.mydata.gobal_api.apiIIS82}/GetAquaticTransData`
         )
         .then(res => {
           this.priceData = res.data.sort(function(a, b) {

@@ -39,7 +39,7 @@ export default {
       };
       //使用中介服務另外中轉
       await this.$axios
-        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/linenotify.asmx/LineMsg`, parm,{
+        .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/line/LineMsg`, parm,{
             httpsAgent: agent
           })
         .then(res => {

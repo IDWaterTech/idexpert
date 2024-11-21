@@ -181,16 +181,20 @@ methods: {
          latitude: this.loc.latitude,
     };
     await this.$axios
-      .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/weatherData`, parm,{
+      .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather`, parm,{
           httpsAgent: agent
         })
       .then(res => {
-        let weadata = JSON.parse(res.data.d);
+        // let weadata = JSON.parse(res.data.d);
+        let weadata = res.data;
         this.weatherdata.main = weadata.main;
         this.weatherdata.wind = weadata.wind;
         this.weatherdata.weather = weadata.weather;
       //   this.weatherdata.rain.h_1 = weadata.rain.1h;
-      });
+      })
+      .catch(error=>{
+        console.log(error.response);
+      }) 
     await this.getLocation();
   },
   getLocation:async function(){
@@ -199,17 +203,21 @@ methods: {
          latitude: this.loc.latitude,
     };
     await this.$axios
-      .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/weather.asmx/location`, parm ,{
+      .post(`${this.$store.state.mydata.gobal_api.apiIIS82}/location`, parm ,{
           httpsAgent: agent
         })
       .then(res => {
-        let loc = JSON.parse(res.data.d);
+        // let loc = JSON.parse(res.data.d);
+        let loc = res.data;
         // var max = Math.max.apply(Math, loc.map(function(o) { return o.cnt; }));
         this.location = loc.sort((a,b) => (a.cnt > b.cnt) ? 1 : ((b.cnt > a.cnt) ? -1 : 0));
         // var xx = loc.map(function(o) { return o.cnt; });
       //   this.weatherdata.rain.h_1 = weadata.rain.1h;
         // console.log("location api：" + res.request.responseURL);
-      });
+      })
+      .catch(error=>{
+        console.log(error.response);
+      }) ;
   }
 },
 created() {

@@ -150,7 +150,7 @@
                   <el-table-column label="水源" prop="water_source2" align="center">
                     <template slot-scope="scope">
                       <span style="margin-left: 10px">
-                        {{  (optData.WaterSource.filter(x=>x.name_en==scope.row.water_source).length==0)?scope.row.water_source:optData.WaterSource.filter(x=>x.name_en==scope.row.water_source)[0].name_ch  }}
+                        {{  (optData?.WaterSource.filter(x=>x.name_en==scope.row.water_source).length==0)?scope.row.water_source:optData.WaterSource.filter(x=>x.name_en==scope.row.water_source)[0].name_ch  }}
                       </span>
                     </template>
                   </el-table-column>
@@ -3400,7 +3400,7 @@ export default {
         this.clickRowData.recordlst.hasRecord = true;
         this.clickRowData.recordlst.total[0].total = this.clickRowData.recordlst.total[0].total.toFixed(3);
         this.clickRowData.recordlst.total[0].single = this.clickRowData.recordlst.total[0].single/lst.length.toFixed(3);
-        this.clickRowData.recordlst.total[0].num = ((this.clickRowData.recordlst.total[0].total*1000)/this.clickRowData.recordlst.total[0].single).toFixed(3);
+        this.clickRowData.recordlst.total[0].num = Math.round((this.clickRowData.recordlst.total[0].total*1000)/this.clickRowData.recordlst.total[0].single);
         // this.clickRowData.recordlst1 = []; // 間補
         // this.clickRowData.recordlst2 = []; // 收成
         // lst.forEach(x=>{
@@ -3843,7 +3843,7 @@ export default {
       var parm = {token:token};
         await this.$axios
         .get(
-          `${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm}
+          `${this.$store.state.mydata.gobal_api.apiIIS82}/recaptchacheck`,{params : parm}
         )
         .then(res => {
           var resdata = JSON.parse(res.data);

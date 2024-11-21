@@ -293,7 +293,7 @@ Vue.mixin({
         // 機器人確認
         getRecaptchacheckList:async function(parm) {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/recaptchacheck`,{params : parm})
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiIIS82}/recaptchacheck`,{params : parm})
                 console.log("機器人確認:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
@@ -645,6 +645,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("事件錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增地圖

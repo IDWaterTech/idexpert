@@ -49,7 +49,7 @@ export default {
     },
     getPrice:async function(){
       //${this.$store.state.mydata.gobal_api.apiUrl}
-      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiIIS82}/idapi.asmx/getAquaticTransData`)
+      await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiIIS82}/getAquaticTransData`)
       .then(res => {
       this.priceData = res.data;
     });

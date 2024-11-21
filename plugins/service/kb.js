@@ -15,6 +15,7 @@ Vue.mixin({
                 }
             }catch(error) {
                 this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+                return [];
             }
         },
         // 取得水質監測的警告範圍
@@ -48,6 +49,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 取得所有查詢紀錄
@@ -64,6 +66,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("事件錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 修改紀錄
@@ -115,6 +118,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("事件錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
     }
