@@ -33,8 +33,8 @@
                                 <v-row v-if="showStartDate">
                                     <v-col cols=12 md="6" v-for="(form,i) in download" :key="'form_'+i">
                                         <!-- 場/區/池 -->
-                                        <locate-select v-if="(form.name=='pool'||form.name=='area'||form.name=='field')"  :dataScope="form.name" class="select-template" defaultSelect="" :isMulti="false"
-                                        @scopeSel_data="get_scopeData($event,form.name)" :class="{'error':isPoolError}"></locate-select>
+                                        <locate-select v-if="(form.name=='pool'||form.name=='area'||form.name=='field')"  :dataScope="form.name" class="select-template" defaultSelect="" :isMulti="form.is_multi"
+                                        @scopeSel_data="get_scopeData($event,form)" :class="{'error':isPoolError}"></locate-select>
                                         <span v-if="(form.name=='pool'||form.name=='area'||form.name=='field')&&!isPoolError" style="height: 14px;display: block;"></span>
                                         <!-- 開始日期 -->
                                         <v-menu v-if="form.type=='date'&&form.remark=='start'" v-model="menu_startdate[i]" :close-on-content-click="false" :nudge-right="40"
@@ -104,10 +104,11 @@
                                             v-model="form.value"
                                             :items="form.option"
                                             item-text="name"
-                                            item-value="id"
+                                            item-value="value"
                                             :label="form.name"
                                             @change="formChange($event,i)"
                                             :rules="rules.require"
+                                            :multiple="form.is_multi"
                                             ></v-select>
                                         <!-- 文字 -->
                                         <v-text-field
@@ -175,6 +176,7 @@ export default {
             showStartDate:true,
             showEndDate:[],
             isLoading: false,
+            file:''
         }
     },
     async created() {
@@ -204,7 +206,7 @@ export default {
         // 搜尋
         searchStringList(evt) {
             let s = evt.toLowerCase();
-            console.log('>>>>>>>search',s)
+            // console.log('>>>>>>>search',s)
             this.reportList = this.allReportList.filter(item=>item.name_ch.match(evt)||item.tag.indexOf(s)!==-1);
         },
         // 點選列表
@@ -228,7 +230,7 @@ export default {
                     this.nowList = _.cloneDeep(item);
                     // if(this.nowList.id==1) {
                     //     this.nowParameter = {
-                    //         range:{type: 'select_range',name:'field'},
+                    //         range:{type: 'select_range',name:'field',is_multi:true},
                     //         startdate:{type: 'date',name:'開始日期',remark:'start'},
                     //         enddate:{type: 'date',name:'結束日期',remark:'end'},
                     //         startdate1:{type: 'date',name:'開始日期1',remark:'start'},
@@ -238,7 +240,7 @@ export default {
                     //         text:{type:'text',name:'字串'},
                     //         number:{type:'number',name:'數字'},
                     //         checkbox:{type:'boolean',name:'I \'m a checkbox'},
-                    //         select:{type:'select',name:'I \'m a selection',option:[{name:'option1',id:1},{name:'option2',id:2}]}
+                    //         select:{type:'select',name:'I \'m a selection',is_multi:false,option:[{name:'option1',id:1},{name:'option2',id:2}]}
                     //     }
                     // }else if(this.nowList.id==2) {
                     //     this.nowParameter = {
@@ -255,6 +257,7 @@ export default {
                     //         select:{type:'select',name:'選選選',option:[{name:'史瑞克',id:1},{name:'費歐娜',id:2}]}
                     //     }
                     // }
+                    // item.input_config['select'] = {type:'select',name:'I \'m a selection',option:[{name:'option1',id:1},{name:'option2',id:2}],is_multi:true}
                     this.nowParameter = _.cloneDeep(item.input_config);
                     var keyLst = Object.keys(this.nowParameter);
                     keyLst.forEach((k,i)=>{
@@ -271,6 +274,19 @@ export default {
                                 this.showEndDate[i] = true;
                             }
                             this.nowParameter[k].value = null;
+                        }else if(this.nowParameter[k].type=='select_range'){
+                            // this.nowParameter[k].name = 'pool';
+                            // this.nowParameter[k].is_multi = true;
+                            this.nowParameter[k].value = [];
+                        }else if(this.nowParameter[k].type=='select'){
+                            // this.nowParameter[k].name = 'pool';
+                            // this.nowParameter[k].is_multi = true;
+                            if(this.nowParameter[k].is_multi) {
+                                this.nowParameter[k].value = [];
+                            }else {
+                                this.nowParameter[k].value = null;
+                            }
+                            
                         }else {
                             this.nowParameter[k].value = null;
                         }
@@ -290,21 +306,63 @@ export default {
 
         },
         // 選擇範圍(場/區/池)
-        get_scopeData(evt,type) {
+        get_scopeData(evt,form) {
             if(evt!==null) {
                 this.isPoolError = false;
             }
-            if(evt!==null && type!=='') {
-                if(type=='pool') {
+            if(evt!==null && form.name!=='') {
+                if(form.name=='pool') {
                     // pool evt=>id
-                    this.download.filter(x=>x.name==type)[0].value = evt;
-                }else if(type=='area' || type=='field') {
+                    if(form.is_multi) {
+                        this.download.filter(x=>x.name==form.name)[0].value = evt;
+                    }else {
+                        this.download.filter(x=>x.name==form.name)[0].value = [];
+                        this.download.filter(x=>x.name==form.name)[0].value.push(evt);
+                    }
+                    this.file='';
+                    let area = []
+                    let maindata = JSON.parse(localStorage.getItem('architecture'));
+                    maindata.forEach(m=>{m.node.forEach(a=>a.node.forEach(p=>{
+                        if(this.download.filter(x=>x.name==form.name)[0].value.includes(p.id)){
+                            if(!area.map(x=>x.name).includes(p.name)){
+                                area.push({name:a.name,id:a.id,pool:[p.name]})
+                            }else{
+                                area.forEach(data=>{
+                                    if(data.id==a.id){
+                                        data.pool.push(p.name)
+                                    }
+                                })
+                            }
+                        }
+                    }))})
+                    area.forEach(x=>{
+                        this.file+=x.name;
+                        x.pool.forEach(p=>{
+                            this.file+=p
+                        })
+                        this.file+='_';
+                    })
+                    
+                }else if(form.name=='area' || form.name=='field') {
                     // area evt=>區名_id; field evt=>場名_id
-                    this.download.filter(x=>x.name==type)[0].value = evt.split('_')[evt.split('_').length-1]; 
+                    if(form.is_multi) {
+                        this.download.filter(x=>x.name==form.name)[0].value = [];
+                        this.download.filter(x=>x.name==form.name)[0].value = evt.map(x=>parseInt(x.split('_')[x.split('_').length-1]))
+                        this.file = '';
+                        evt.forEach(x=>{
+                            this.file+=x.split('_')[0]+'_'
+                        })
+                    }else {
+                        this.download.filter(x=>x.name==form.name)[0].value = [];
+                        this.download.filter(x=>x.name==form.name)[0].value.push(parseInt(evt.split('_')[evt.split('_').length-1]))
+                        this.file = x.split('_')[0]+'_';
+                    }
+                    
+                    // this.download.filter(x=>x.name==form.name)[0].value = evt.split('_')[evt.split('_').length-1]; 
                 }
             }
             
-            // console.log(this.download.filter(x=>x.name==type))
+            // console.log(this.download.filter(x=>x.name==form.name))
         },
         // 日期
         getNowDate: function() {
@@ -408,10 +466,10 @@ export default {
         async downloadReport() {
             let parm={};
             if(this.download.filter(x=>x.type=='select_range').length>0) {
-                if(this.download.filter(x=>x.type=='select_range')[0].value==null) {
+                if(this.download.filter(x=>x.type=='select_range')[0].value==null||this.download.filter(x=>x.type=='select_range')[0].value.length==0) {
                     this.isPoolError = true;
                 }else {
-                    this.download.filter(x=>x.type=='select_range')[0].value = parseInt(this.download.filter(x=>x.type=='select_range')[0].value);
+                    // this.download.filter(x=>x.type=='select_range')[0].value = parseInt(this.download.filter(x=>x.type=='select_range')[0].value);
                 }
             }
             if(this.download.filter(x=>x.remark=='start'&&x.type=='time').length>0) {
@@ -429,6 +487,34 @@ export default {
                 this.download.forEach(d=>{
                     if(d.type=='time'){
                         parm[d.para]=dayjs(new Date(d.value)).format('YYYY-MM-DD HH:mm:ss')
+                    }else if(d.type=='select_range'){
+                        let maindata = JSON.parse(localStorage.getItem('architecture'));
+                        maindata.forEach(m=>{m.id=parseInt(m.id.split('_')[m.id.split('_').length-1]);m.node.forEach(a=>a.id=parseInt(a.id.split('_')[a.id.split('_').length-1]))})
+                        console.log(d.value,maindata)
+                        if(d.name=='area') {
+                            let value_area = [];
+                            maindata.forEach(m=>{
+                                m.node.forEach(a=>{
+                                    if(d.value.includes(a.id)) {
+                                        value_area = [...value_area,...a.node.map(p=>p.id)]
+                                    }
+                                })
+                            })
+                            parm[d.para] = _.cloneDeep(value_area);
+                        }else if(d.name=='field'){
+                            
+                            let value_field = [];
+                            maindata.forEach(m=>{
+                                if(d.value.includes(m.id)) {
+                                    m.node.forEach(a=>{
+                                        value_field = [...value_field,...a.node.map(p=>p.id)]
+                                    })
+                                }
+                            })
+                            parm[d.para] = _.cloneDeep(value_field);
+                        }else {
+                            parm[d.para]=d.value
+                        }
                     }else{parm[d.para]=d.value}
                 });
                 console.log(parm);
@@ -445,55 +531,65 @@ export default {
                 // data.push(parm);
                 // 下載
                 let url = this.nowList.url.split('/api')[1];
-                console.log('url',url)
+                console.log('url',url, `${this.nowList.name_ch}_${this.file}${dayjs().format("YYYY-MM-DD")}.xlsx`)
                 await this.$axios
                     .get(`${this.$store.state.mydata.gobal_api.apiUrl}${url}`, { params: parm })
                     .then(async res => {
                         console.log('res',res);
-                        let archiData = JSON.parse(localStorage.getItem('architecture'));
-                        console.log(archiData);
-                        let file = '';
-                        let select = '';
-                        let para = '';
-                        var keyLst = Object.keys(this.nowParameter);
-                        keyLst.forEach((k,i)=>{
-                            if(this.nowParameter[k].type=='select_range'){
-                                select = this.nowParameter[k].name;
-                                para = k;
-                            }
-                        })
-                        console.log(select,para,this.nowParameter[para])
-                        if(select) {
-                            archiData.forEach(main=>{
-                                if(select=='field'){
-                                    if(main.id==this.nowParameter[para].value) {
-                                        file = main.name;
-                                    }
-                                }else if(select=='area') {
-                                    main.node.forEach(area=>{
-                                        if(area.id==this.nowParameter[para].value) {
-                                            file = main.name+'_'+area.name;
-                                        }
-                                    })
-                                }else {
-                                    main.node.forEach(area=>{
-                                        area.node.forEach(pool=>{
-                                            if(pool.id==this.nowParameter[para].value) {
-                                                file = main.name+'_'+area.name+'_'+pool.name;
-                                            }
-                                        })
-                                    })
-                                }
-                            })
+                        // let archiData = JSON.parse(localStorage.getItem('architecture'));
+                        // console.log(archiData);
+                        // let file = '';
+                        // let select = '';
+                        // let para = '';
+                        // var keyLst = Object.keys(this.nowParameter);
+                        // keyLst.forEach((k,i)=>{
+                        //     if(this.nowParameter[k].type=='select_range'){
+                        //         select = this.nowParameter[k].name;
+                        //         para = k;
+                        //     }
+                        // })
+                        // console.log(select,para,this.nowParameter[para])
+                        // if(select) {
+                        //     archiData.forEach(main=>{
+                        //         if(select=='field'){
+                        //             if(main.id==this.nowParameter[para].value) {
+                        //                 file = main.name;
+                        //             }
+                        //         }else if(select=='area') {
+                        //             main.node.forEach(area=>{
+                        //                 if(area.id==this.nowParameter[para].value) {
+                        //                     file = main.name+'_'+area.name;
+                        //                 }
+                        //             })
+                        //         }else {
+                        //             main.node.forEach(area=>{
+                        //                 area.node.forEach(pool=>{
+                        //                     if(pool.id==this.nowParameter[para].value) {
+                        //                         file = main.name+'_'+area.name+'_'+pool.name;
+                        //                     }
+                        //                 })
+                        //             })
+                        //         }
+                        //     })
+                        // }
+                        if(res.data.messages) {
+                            this.$toast.error("錯誤：" + res.data.messages[0], { duration: 2000 });
+                        }else {
+                            var ws = XLSX.utils.json_to_sheet(res.data);
+                            var wb = XLSX.utils.book_new();
+                            XLSX.utils.book_append_sheet(wb, ws, "");
+                            XLSX.writeFile(wb,`${this.nowList.name_ch}_${this.file}${dayjs().format("YYYY-MM-DD")}.xlsx`);
                         }
-                        
-                        var ws = XLSX.utils.json_to_sheet(res.data);
-                        var wb = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(wb, ws, "");
-                        XLSX.writeFile(wb,`${this.nowList.name_ch}_${file}_${dayjs().format("YYYY-MM-DD")}.xlsx`);
                     })
                     .catch(error => {
-                        console.log("error:" + error.message);
+                        if(error.response) {
+                            this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                            console.error('API Error:', error.response);
+                        }else {
+                            this.$toast.error("錯誤：" + error, { duration: 2000 });
+                            console.log(error);
+                        }
+                        // console.log("error:" + error.message);
                     })
                 // var ws = XLSX.utils.json_to_sheet(data);
                 // var wb = XLSX.utils.book_new();
