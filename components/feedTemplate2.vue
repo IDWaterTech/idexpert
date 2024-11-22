@@ -804,7 +804,7 @@
                             <v-text-field v-model="recordNew.single_weight" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}平均個體重`" type="number" :rules="rules.require"
                                 autocomplete="off" @keyup="limitCharacter('single_weight')" style="padding-top: 0;margin-left: 4px;width: 50%;margin-top: 8px;"><span class="pa-0 ma-0" slot="append">g</span>
                             </v-text-field>
-                            <span style="width: 50%;padding-left: 12px;">約 {{ Math.round(recordNew.harvest_yield&&recordNew.single_weight)?((recordNew.harvest_yield*1000) / recordNew.single_weight):0 }} 隻</span>
+                            <span style="width: 50%;padding-left: 12px;">約 {{ recordNew.harvest_yield&&recordNew.single_weight?Math.round(((recordNew.harvest_yield*1000) / recordNew.single_weight)):0 }} 隻</span>
                         </v-card-text>
                         <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;">
                             <v-textarea v-model="recordNew.remark" label="說明" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>

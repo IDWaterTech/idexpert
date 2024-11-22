@@ -3309,13 +3309,22 @@ export default {
     },
     async getFeed() {
       let parm = {
-          pond_id: this.poolid,
+          pond_ids: [this.poolid],
           started_date: this.clickRowData.started_date,
           ended_date: this.clickRowData.ended_date,
       }
       // 總表
       let feed = await this.getFeedReportList(parm);
       this.clickRowData.feedlst = _.cloneDeep(feed);
+      if(this.clickRowData.feedlst.length==0){
+        this.clickRowData.feedlst.push({
+          "時間":'',
+          "總量(扣除已選次成分)":'',
+          "次成分":'',
+          "主成分":'',
+          "餐別":''
+        })
+      }
       // 餌
       let isFeedParm = {breeding_record_id: this.clickRowData.id,is_feed:true}
       let getFeedRecord2List = await this.getFeedRecord2List(isFeedParm);
