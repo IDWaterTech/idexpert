@@ -40,7 +40,7 @@
                                         <v-menu v-if="form.type=='date'&&form.remark=='start'" v-model="menu_startdate[i]" :close-on-content-click="false" :nudge-right="40"
                                             transition="scale-transition" offset-y min-width="auto">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <v-text-field v-model="form.value" :label="form.name" prepend-icon="mdi-calendar" readonly dense 
+                                                <v-text-field v-model="form.value" :label="form.name" prepend-icon="mdi-calendar" readonly dense clearable
                                                 style="height: 20px;"
                                                 v-bind="attrs" v-on="on" @click:prepend="
                                                     () => {
@@ -50,14 +50,14 @@
                                                     }
                                                 " :rules="rules.require"></v-text-field>
                                             </template>
-                                            <v-date-picker v-model="form.value" locale="zh-tw" :max="computeStartDate(i)" no-title 
+                                            <v-date-picker v-model="form.value" locale="zh-tw" :min="computerStartDateMin(i)" :max="computeStartDate(i)"  no-title 
                                                 @input="closeDate('start',i)"></v-date-picker>
                                         </v-menu>
                                         <!-- 結束日期 -->
                                         <v-menu v-if="form.type=='date'&&form.remark=='end'" v-model="menu_enddate[i]"  :close-on-content-click="false" :nudge-right="40"
                                             transition="scale-transition" offset-y min-width="auto">
                                             <template v-slot:activator="{ on, attrs }">
-                                                <v-text-field v-model="form.value" :label="form.name" prepend-icon="mdi-calendar" readonly dense 
+                                                <v-text-field v-model="form.value" :label="form.name" prepend-icon="mdi-calendar" readonly dense clearable
                                                 style="height: 20px;"
                                                 v-bind="attrs" v-on="on" @click:prepend="
                                                     () => {
@@ -67,7 +67,7 @@
                                                     }
                                                 " :rules="rules.require"></v-text-field>
                                             </template>
-                                            <v-date-picker v-model="form.value" locale="zh-tw" :min="computeEndDate(i)" :max="getNowDate()" no-title @input="
+                                            <v-date-picker v-model="form.value" locale="zh-tw" :min="computeEndDate(i)" :max="computeEndDateMax(i)" no-title @input="
                                                 closeDate('end',i)"></v-date-picker>
                                         </v-menu>
                                         <!-- 開始日期+時間 -->
@@ -375,7 +375,7 @@ export default {
             if(type=='start') {
                 this.menu_startdate[i] = false;
                 this.showStartDate = true;
-                
+                let value = null;
             }else {
                 this.menu_enddate[i] = false;
                 this.showStartDate = true;
@@ -384,7 +384,7 @@ export default {
         computeStartDate(i) {
             let now=true;
             let value = null;
-            for(let x=i;x<this.download.length;x++) {
+            for(let x=0;x<this.download.length;x++) {
                 if(this.download[x].remark=='end'&&this.download[x].type=='date') {
                     if(this.download[x].value!==null&&this.download[x].value!=='') {
                         now=false;
@@ -395,6 +395,20 @@ export default {
                     
             }
             return now?this.getNowDate():value;
+        },
+        computerStartDateMin(i) {
+            let value = null;
+            for(let x=0;x<this.download.length;x++) {
+                if(this.download[x].remark=='end'&&this.download[x].type=='date') {
+                    if(this.download[x].value!==null&&this.download[x].value!=='') {
+                        value = (new Date(this.download[x].value).getTime())-(31*24*60*60*1000);
+                    }
+                    break;
+                }
+                    
+            }
+            console.log('start limit',value,dayjs(new Date(value)).format("YYYY-MM-DD"))
+            return value==null?null:dayjs(new Date(value)).format("YYYY-MM-DD");
         },
         computeEndDate(i) {
             let now=true;
@@ -409,6 +423,23 @@ export default {
                 }
             }
             return now?null:value;
+        },
+        computeEndDateMax(i) {
+            let value = null;
+            for(let x=i;x>=0;x--) {
+                if(this.download[x].remark=='start'&&this.download[x].type=='date') {
+                    if(this.download[x].value!==null&&this.download[x+1].value!=='') {
+                        if((new Date().getTime()-(new Date(this.download[x].value).getTime()))>1000*60*60*24*31) {
+                            value = new Date(this.download[x].value).getTime()+1000*60*60*24*31
+                        }else {
+                            value = this.getNowDate();
+                        }
+                        
+                    }
+                    break;
+                }
+            }
+            return value==null?this.getNowDate():dayjs(new Date(value)).format("YYYY-MM-DD");
         },
         // 日期+時間
         onChange(evt,type) {
@@ -484,6 +515,7 @@ export default {
             }
             var valid = this.$refs.downloadform.validate();
             if(valid&&!this.isPoolError&&!this.isStartTimeError&&!this.isEndTimeError) {
+                this.isLoading = false;
                 this.download.forEach(d=>{
                     if(d.type=='time'){
                         parm[d.para]=dayjs(new Date(d.value)).format('YYYY-MM-DD HH:mm:ss')
@@ -580,8 +612,10 @@ export default {
                             XLSX.utils.book_append_sheet(wb, ws, "");
                             XLSX.writeFile(wb,`${this.nowList.name_ch}_${this.file}${dayjs().format("YYYY-MM-DD")}.xlsx`);
                         }
+                        this.isLoading = true;
                     })
                     .catch(error => {
+                        this.isLoading = true;
                         if(error.response) {
                             this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
                             console.error('API Error:', error.response);
