@@ -1669,6 +1669,7 @@ export default {
     renderDoc(item,data=null) {
       this.isDownload = false;
       this.isEvent = false;
+      this.isLoading = true;
       loadFile(
         `/documents/circle_v1.docx`,
         function (error, content) {
@@ -1751,6 +1752,7 @@ export default {
           try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
             doc.render();
+            
           } catch (error) {
             // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
             function replaceErrors(key, value) {
@@ -3000,6 +3002,7 @@ export default {
       this.passObj["tempContent"] = [];
       if(data==undefined){data=[]}
       if(isDownload) {
+        this.isLoading = false;
         this.searchDate.start = this.circleData.filter(x=>x.id==item.id)[0].started_date;
         if(this.circleData.filter(x=>x.id==item.id)[0].ended_date!==null && this.circleData.filter(x=>x.id==item.id)[0].ended_date!=='') {
           this.searchDate.end = this.circleData.filter(x=>x.id==item.id)[0].ended_date;

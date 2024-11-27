@@ -9,10 +9,11 @@
             :style="{
               background: `${b.level=='danger'?'#A60017':b.level=='warning'?'#FBBC05':b.isSetting==false?'transparent':((b.id==''&& b.state==''&&b.name!=='tank')||b.rows.length>0||(b.id==''&&b.name=='road'))?'transparent':(b.id==''&&b.name=='tank')?'#C7D380':getItemColor(b.state)}`,
               minWidth: `${getWidth(b)}`,
-              minHeight: `${b.id==''&& b.state==''&& b.rows.length==0?'48px':'0'}`,
+              minHeight: `${b.id==''&& b.state==''&& b.rows.length==0&&b.isSetting?'48px':'0'}`,
               paddingTop: `${($route.path=='/basic'&& b.rows.length>0)? '0':'12px'}`,
               paddingBottom: `${($route.path=='/basic'&& b.rows.length>0) ? '0':'12px'}`,
-              cursor:`${$route.path=='/basic'&& b.rows.length==0?'pointer':'default'}`
+              cursor:`${$route.path=='/basic'&& b.rows.length==0?'pointer':'default'}`,
+              display: `${b.isSetting?'block':'none'}`
             }"
             style="flex-shrink: 0;"
             class="mx-3"
@@ -802,7 +803,7 @@ export default {
               this.isSetting = true;
             }
             if(this.water.filter(x=>x.id==b.id)[0]) {
-              b.water = this.water.filter(x=>x.id==b.id)[0].value;
+              b.water = (this.water.filter(x=>x.id==b.id)[0].value).toString();
               b.level = this.water.filter(x=>x.id==b.id)[0].level;
               b.parm_name = this.water.filter(x=>x.id==b.id)[0].parm_name;
               b.inspected_time = this.water.filter(x=>x.id==b.id)[0].inspected_time;
@@ -822,7 +823,7 @@ export default {
     },
     
     goIndicator(item) {
-      if(item.id!==''&&item.rows.length==0&&this.$route.path=='/basic') {
+      if(item.id!==''&&item.rows.length==0&&this.$route.path=='/basic'&&item.isSetting) {
         this.$emit('goIndicator',item);
       }
       // this.$emit('goIndicator',item)
