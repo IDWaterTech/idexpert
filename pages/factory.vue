@@ -819,6 +819,7 @@ export default {
         if (!this.sel_area) {
           this.pooldata = pool;
           this.nowpooldata = pool
+          this.isLoading = true;
           return;
         }
         var para = {

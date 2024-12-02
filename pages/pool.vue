@@ -92,10 +92,6 @@
                       <v-icon style="font-size: 1rem;">mdi-file-multiple-outline</v-icon>
                       新增檢驗
                     </v-btn>
-                    <v-btn v-if="false" tile class="btn-secondary clear" style="padding: 0 8px;" @click="mutiExecuteDialog" :class="{'disabled':!isLoading}">
-                      <v-icon>mdi-check</v-icon>
-                      批次執行
-                    </v-btn>
                   </div>
                 </v-col>
               </v-row>
@@ -1138,133 +1134,6 @@
           </v-card>
       </v-form>
   </v-dialog>
-  <!-- 批次執行的dialog -->
-  <v-dialog v-model="mutiExecute" max-width="500px">
-      <v-form v-model="executevalid" ref="executeform">
-        <v-card class="custom-dialog">
-          <v-card-title class="add-title">
-              <div style="display: inline-block;">
-              批次執行
-              </div>
-              <div class="add">
-                <v-btn  class="btn-secondary close"
-                        title="取消" 
-                        @click="mutiExecute = false" 
-                        style="border: none;min-width: 0;padding: 0 4px;">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </div>
-          </v-card-title>
-          <div class="basic" style="min-height: 300px;">
-            <v-card-text class="flex-align-center" style="padding: 8px 16px;">
-              <div class="search-container">
-                <locate-select
-                  class="select-template"
-                  :dataScope="'area'" 
-                  :defaultSelect="nowExeArea" 
-                  :isMulti="false" 
-                  @scopeSel_data="get_scopeExecuteData($event)" 
-                  style="margin-right: 0;"
-                  ></locate-select>
-              </div>
-            </v-card-text>
-            <v-card-text v-if="nowExeArea && nowExeArea !== ''" class="flex-align-center"  style="padding: 8px 16px;">
-              <div class="search-container" style="width: 100%;">
-                <v-tabs v-model="nowTab" show-arrows>
-                  <!-- 上方tab -->
-                  <v-tab
-                      v-for="(tab,tid) in executeTabs"
-                      :key="'tabs_'+tid"
-                      :href="`#` + tab">
-                      {{ tab }}
-                  </v-tab>
-                  <!-- tab內容 -->
-                  <v-tabs-items v-model="nowTab" touchless>
-                    <v-tab-item 
-                      v-for="(tab,tid) in executeTabs"
-                      :key="'tab_'+tid"
-                      :value="tab"
-                      style="margin-bottom: 16px;margin-top: 16px;">
-                      <!-- 執行 -->
-                      <div v-show="nowTab=='執行'" class="result-content">
-                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiExecuteData" :key="'execute_'+item.pond_id" class="list flex-align-center">
-                            <v-checkbox
-                              v-model="item.checked"
-                              dense hide-details
-                              :label="item.pond_name"
-                            ></v-checkbox>
-                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
-                            <!-- <div class="execute">
-                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
-                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
-                            </div> -->
-                          </div>
-                          <div v-if="mutiExecuteData.length==0">無資料</div>
-                      </div>
-                      
-                      <!-- 確認 -->
-                      <div v-show="nowTab=='確認'" class="result-content">
-                        <!-- <v-card-text  style="padding: 8px 16px;"> -->
-                          <div v-for="item in mutiConfirmData" :key="'confirm_'+item.pond_id" class="list" style="display: flex;align-items: center;">
-                            <v-checkbox
-                              v-model="item.checked"
-                              dense hide-details
-                              :label="item.pond_name"
-                            ></v-checkbox>
-                            <div class="status" style="margin-left: 12px;">{{ item.status }} - {{ item.item }} <span v-if="item.msg!==''"> - {{ item.msg }}</span></div>
-                            <!-- <div class="execute">
-                              <span>{{ item.execute_time&&item.execute_time!==''?'已執行':'未執行' }}</span>
-                              <span>{{ item.execute_time&&item.execute_time!==''&&item.isConfirm?'已確認':'未確認' }}</span>
-                            </div> -->
-                          </div>
-                          <div v-if="mutiConfirmData.length==0">無資料</div>
-                        <!-- </v-card-text> -->
-                      </div>
-                      
-                    </v-tab-item>
-                  </v-tabs-items>
-                </v-tabs>
-              </div>
-            </v-card-text>
-            <br>
-            <v-card-text  style="padding: 8px 16px;">
-              <b>Note:資料撈取(!!!!最後要上要記得清除!!!!)</b><br>
-              <span>撈取正在循環的池，每按執行/確認後，因步驟會改變，需重新撈取資料</span><br><br>
-              <div v-if="nowTab == '執行'">
-                <span>各池 執行撈取第一個 尚未執行(execute_time = " ")的步驟</span><br><br>
-                <hr><br>
-                <span v-for="item in mutiExecuteData" :key="'exe_'+item.pond_id">{{ item }}<br></span>
-              </div>
-              <div v-else>
-                <span>各池 確認撈取第一個 已執行(execute_time != " ") 未確認(isConfirm=false)的步驟</span><br><br>
-                <hr><br>
-                <span v-for="item in mutiConfirmData" :key="'con_'+item.pond_id">{{ item }}<br></span>
-              </div>
-            </v-card-text>
-          </div>
-          <v-card-actions style="padding: 24px 12px;">
-              <v-spacer></v-spacer>
-              <!-- <v-btn  v-if="nowTab == '執行'" class="btn-secondary" @click="mutiExecuteStep(false)">上一步</v-btn> -->
-              <!-- <v-btn class="btn-secondary" @click="mutiExecute = false">取消</v-btn> -->
-              <v-btn class="btn-primary" @click="opencapDialog">{{ nowTab=='執行'?'執行':'確認' }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-form>
-    </v-dialog>
-    <!-- 批次執行的驗證碼 -->
-    <v-dialog v-model="captchaDialog" width="350" class="indicator-dialog">
-      <v-card height="230">
-        <v-card-title>驗證碼</v-card-title>
-        <v-card-text>
-          <recaptcha />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn tile @click="captchacheck" style="border-radius: 4px;box-shadow: none;background-color: #006AA6;color: #fff;">送出</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -1273,15 +1142,12 @@
 import dayjs from "dayjs";
 import _ from "lodash";
 import "element-ui/lib/theme-chalk/index.css";
-import WaterQuality_Vcharts from "@/components/sheet/waterQuality_vcharts";
 import https from "https";
-import FeedTemplate from '~/components/feedTemplate.vue';
 //加入docxtemplater
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import JSZipUtils from "jszip-utils";
 import { saveAs } from 'file-saver';
-import { filter } from "lodash";
 function loadFile(url, callback) {
   JSZipUtils.getBinaryContent(url,callback);
 }
@@ -1294,10 +1160,6 @@ export default {
   // components: { waterball }, 沒用到先註解
   layout: "emptynologin2",
   middleware: "auth",
-  components: {
-    WaterQuality_Vcharts,
-    FeedTemplate
-  },
   head(){
     return {
       title:"養殖循環",
@@ -1516,42 +1378,6 @@ export default {
       addChooseOpen: true,
       // 紀錄當前顯示歷程的id，清除點選用
       currentDataId: null,
-      // 批次執行
-      mutiExecute: false,
-      executevalid: false,
-      executeTabs: ['執行','確認'],
-      nowTab: '執行',
-      nowExeArea: '',
-      mutiExecuteData:[{
-        pond_id: 50,
-        pond_name: 'A2',
-        status: '空池',
-        item: '新增循環',
-        item_id: 23,
-        execute_time: '',
-        confirm_time: '',
-        msg:''
-      },{
-        pond_id: 51,
-        pond_name: 'A3',
-        status: '養殖審核',
-        item: '養殖審核1',
-        item_id: 27,
-        execute_time: '',
-        confirm_time: '',
-        msg:''
-        
-      }],
-      mutiConfirmData:[{
-        pond_id: 49,
-        pond_name: 'A1',
-        status: '空池',
-        item: '設備正常',
-        item_id: 24,
-        execute_time: '2023-10-25 11:22:11',
-        confirm_time: '',
-        msg:''
-      },],
       addPoolData:[],
       // dataid: undefined,
       // 養殖歷程收合
@@ -1575,7 +1401,6 @@ export default {
         // dataid: [],// 多選
       },
       editperson_in_charge: '',
-      captchaDialog: false,//批次執行驗證
       all_num_per_unit: undefined, //統一密度
       // 疾病/水質檢驗
       reportDialog: false,
@@ -1895,11 +1720,6 @@ export default {
     get_selectData(evt) {
       // console.log(evt);
       this.addparm.pool_id = evt;
-    },
-    // 批次執行選區
-    get_scopeExecuteData(evt) {
-      console.log(evt);
-      this.nowExeArea = evt;
     },
     //負責人搜尋
     filterincharge:function(item, queryText, itemText){
@@ -3811,120 +3631,6 @@ export default {
       }
 
     },
-    // 批次執行Dialog
-    mutiExecuteDialog() {
-      this.mutiExecute = true;
-      this.nowExeArea = this.maindata[0].node[0].id;
-      this.nowTab = '執行';
-      this.mutiExecuteData=[{
-        pond_id: 50,
-        pond_name: 'A2',
-        status: '空池',
-        item: '新增循環',
-        item_id: 23,
-        execute_time: '',
-        confirm_time: '',
-        msg:''
-      },{
-        pond_id: 51,
-        pond_name: 'A3',
-        status: '養殖審核',
-        item: '養殖審核1',
-        item_id: 27,
-        execute_time: '',
-        confirm_time: '',
-        msg:''
-        
-      }];
-      this.mutiConfirmData=[{
-        pond_id: 49,
-        pond_name: 'A1',
-        status: '空池',
-        item: '設備正常',
-        item_id: 24,
-        execute_time: '2023-10-25 11:22:11',
-        confirm_time: '',
-        msg:''
-      },];
-    },
-    opencapDialog:async function(){
-      this.captchaDialog = true;
-    },
-    captchacheck:async function(){
-      const token = await this.$recaptcha.getResponse();
-      var parm = {token:token};
-        await this.$axios
-        .get(
-          `${this.$store.state.mydata.gobal_api.apiIIS82}/recaptchacheck`,{params : parm}
-        )
-        .then(res => {
-          var resdata = JSON.parse(res.data);
-          if(resdata.success){
-            this.captchaDialog=false;
-            this.mutiExecuteStep();
-          }
-        });
-      await this.$recaptcha.reset();
-    },
-    // 批次執行
-    mutiExecuteStep() {
-      let data = [];
-      if(this.nowTab == '執行') {
-        let mssssg = [];
-        this.mutiExecuteData.forEach(m=>{
-          if(m.checked) {
-            mssssg.push(m.pond_name);
-          }
-        })
-        if(mssssg.length>0) {
-          if (confirm(`確認 ${mssssg.toString()} 已執行？`)) {
-            this.mutiExecuteData.forEach(m=>{
-              if(m.checked) {
-                data.push(m);
-                // m.execute_time = dayjs( new Date()).format("YYYY-MM-DD HH:mm:ss");
-                if(m.item == '新增循環') {
-                  m.item_id = '23_01';
-                  m.item = '其他';
-                  m.msg = 'i am msg1.'
-                  m.checked = false;
-                }else if(m.item == '養殖審核1') {
-                  m.item_id = 28;
-                  m.item = '養殖審核2'
-                  m.checked = false;
-                }
-              }
-            })
-          }
-        }
-        
-      }else {
-        let mssssg = [];
-        this.mutiConfirmData.forEach(m=>{
-          if(m.checked) {
-            mssssg.push(m.pond_name);
-          }
-        })
-        if(mssssg.length>0) {
-          if (confirm(`已確認 ${mssssg.toString()} 已執行？`)) {
-            this.mutiConfirmData.forEach((m,mid)=>{
-              if(m.checked) {
-                data.push(m);
-                // if(m.item == '設備正常') {
-                //   m.item_id = 25;
-                //   m.item = '消毒養殖池';
-                //   m.msg = ''
-                //   m.checked = false;
-                // }
-                this.mutiConfirmData.splice(mid,1);
-              }
-            })
-          }
-        }
-        
-        
-        
-      }
-    },
     // 新增循環的池選擇
     setNestedDisabled: function (obj, name) {
         //全部都設成disabled
@@ -4791,7 +4497,6 @@ export default {
   height: 24px !important;
   & .v-icon {
     margin: 0;
-    // color: $color-accent !important;
   }
 }
 ::v-deep {
@@ -4836,8 +4541,6 @@ export default {
     }
   }
   .el-table__row.el-table__row--level-1 .cell {
-    // font-size: 0.875rem;
-    // min-height: 48px;
     @include flexAlignCenter();
     padding: 8px;
   }
