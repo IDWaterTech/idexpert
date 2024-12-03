@@ -167,17 +167,17 @@
             <div class="card-title" style="margin-bottom: 16px;">
               <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
-                  <span class="error-text">*超過範圍(最大值、最小值)(黑色方塊)，視為不合理，不發送訊息通知</span>
+                  <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
               <v-row style="padding: 0 12px;">
-                <v-col cols="2" style="background-color:black;color:white;">{{minmax[0]}}</v-col>
-                <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[0]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[0]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[1]}}</v-col>
-                <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[1]}}</v-col>
-                <v-col cols="2" style="background-color:black;color:white;">{{minmax[1]}}</v-col>
+                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[0]}}</v-col>
+                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
+                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
+                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
+                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
+                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
@@ -403,17 +403,17 @@
             <div class="card-title" style="margin-bottom: 16px;">
               <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
-                  <span class="error-text">*超過範圍(最大值、最小值)(黑色方塊)，視為不合理，不發送訊息通知</span>
+                  <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
               <v-row style="padding: 0 12px;">
-                <v-col cols="2" style="background-color:black;color:white;">{{minmax[0]}}</v-col>
-                <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[0]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[0]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;">{{minmax_warning[1]}}</v-col>
-                <v-col cols="2" style="background-color:red;color:white;">{{minmax_critical[1]}}</v-col>
-                <v-col cols="2" style="background-color:black;color:white;">{{minmax[1]}}</v-col>
+                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[0]}}</v-col>
+                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
+                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
+                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
+                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
+                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
