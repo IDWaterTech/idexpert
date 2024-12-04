@@ -748,8 +748,8 @@ export default {
         },
         // 取得非空池的池
         async getSelectPoolData() {
-            let getArchitecture = await this.getArchitecture(null,true);
-            let getArchitectureAll = await this.getArchitecture(null);
+            let getArchitecture = await this.getArchitecture(null,true); //空池資料
+            let getArchitectureAll = await this.getArchitecture(null); // 所有資料
             let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
             let dataAll = typeof (getArchitectureAll)=='string'?[]:getArchitectureAll;
             let mainData = [];
@@ -757,6 +757,7 @@ export default {
             if(localStorage.getItem('factory_id')) {
                 // console.log('locoal',localStorage.getItem('factory_id'))
                 let factory_id = JSON.parse(localStorage.getItem('factory_id'));
+                // 取出所有空池id
                 data.forEach(factory=>{
                     factory_id.forEach(f=>{
                         if(factory.id==f) {
@@ -773,13 +774,14 @@ export default {
                     })
                 })
                 // console.log('null',nullDataid);
+                // 比對非空池資料且池visible=true
                 dataAll.forEach((f,fid)=>{
                     let factoryData = _.cloneDeep(f);
                     f.node.forEach((n,nid)=>{
                         factoryData.node[nid].node = new Array();
                         let nodeData=[];
                         n.node.forEach(n2=>{
-                            if(!nullDataid.includes(n2.id)) {
+                            if(!nullDataid.includes(n2.id)&&n2.visible) {
                                 nodeData.push(n2);
                             }
                         })
@@ -789,7 +791,6 @@ export default {
                 })
                 
             }
-            console.log('mainData',mainData);
             // 取得當日還有未執行的池
             this.nonExecute = [];
             // for(let i=0;i<Math.floor(Math.random()*(10-1+1))+1;i++) {
@@ -811,6 +812,7 @@ export default {
                 })
                 pooldata[mid].node = subdata;
             })
+            // 當日未執行的場區池名稱+'*'
             let endpool = pooldata.filter(x=>x.node.length!==0);
             endpool.forEach(main=>{
                 main.node.forEach(sub=>{
