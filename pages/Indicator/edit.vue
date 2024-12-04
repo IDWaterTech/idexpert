@@ -1993,7 +1993,7 @@ export default {
           // console.log("DEL:" + url);
           var res = false;
           res = await this.deleteAllDataList(editedItem.id, deldata);
-          setTimeout(()=>{
+          // setTimeout(()=>{
             if(res) {
               record+=1;
               delsuccess += 1;
@@ -2007,7 +2007,7 @@ export default {
             }else {
               record+=1;
               alert(`刪除失敗!：${editedItem.id}`);
-              if(record==this.selected.length-1) {
+              if(record==this.selected.length) {
                 this.getdata();
                 this.showselect = false;
                 this.$toast.success(`刪除結果 成功筆數/總筆數：${delsuccess}/${this.selected.length}`, { duration: 2000 });
@@ -2015,7 +2015,7 @@ export default {
               }
             }
             
-          },50)
+          // },50)
           // await this.$axios
           //   .delete(url, { data: deldata }, { httpsAgent: agent })
           //   .then(res => {
@@ -2125,10 +2125,13 @@ export default {
       const token = await this.$recaptcha.getResponse();
       var parm = {token:token};
       let getRecaptchacheckList = await this.getRecaptchacheckList(parm);
-      var resdata = JSON.parse(getRecaptchacheckList);
-      if(resdata.success){
+      // console.log(getRecaptchacheckList);
+      // var resdata = JSON.parse(getRecaptchacheckList);
+      if(getRecaptchacheckList.success){
         this.captchaDialog=false;
         this.delItems();
+      }else {
+        this.$toast.error("錯誤：" + getRecaptchacheckList.error_codes[0], { duration: 2000 });
       }
         // await this.$axios
         // .get(
