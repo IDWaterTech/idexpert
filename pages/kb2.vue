@@ -30,7 +30,7 @@
                                 :filter="customFilter">
                                 <!-- item-text="account_name" -->
                                 <template slot="item" slot-scope="data">{{data.item.account_name}}({{
-                                    data.item.username.match(/(.*)@/)[1] }})</template>
+                                    data.item.username.match(/(.*)@/)[1]==null?data.item.account_name:data.item.username.match(/(.*)@/)[1] }})</template>
                                 <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
                             </v-autocomplete>
                         </v-col>
@@ -41,7 +41,7 @@
                                 :filter="customFilter">
                                 <!-- item-text="account_name" -->
                                 <template slot="item" slot-scope="data">{{data.item.account_name}}({{
-                                    data.item.username.match(/(.*)@/)[1] }})</template>
+                                    data.item.username.match(/(.*)@/)[1]==null?data.item.account_name:data.item.username.match(/(.*)@/)[1] }})</template>
                                 <template slot="selection" slot-scope="data">{{data.item.account_name}}</template>
                             </v-autocomplete>
                         </v-col>
