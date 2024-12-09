@@ -172,12 +172,12 @@
             </div>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
               <v-row style="padding: 0 12px;">
-                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[0]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
-                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
-                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
-                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[1]}}</v-col>
+                <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
+                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
+                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
+                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
+                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
+                <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
@@ -408,12 +408,12 @@
             </div>
             <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
               <v-row style="padding: 0 12px;">
-                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[0]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
-                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
-                <v-col cols="2" style="background-color:black;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
-                <v-col cols="2" style="background-color:orange;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
-                <v-col cols="2" style="background-color:red;color:white;text-align: center">{{minmax[1]}}</v-col>
+                <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
+                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
+                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
+                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
+                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
+                <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
