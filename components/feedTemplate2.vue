@@ -75,7 +75,6 @@
                             </div>
                             <!-- 表格 -->
                             <div class="content" style="width: 100%;padding: 12px 24px;">
-                                <!-- {{mitem}} -->
                                 <v-card class="result-card item-card">
                                     <!-- 表頭 -->
                                     <div class="card-title"
@@ -105,7 +104,7 @@
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-card-title style="font-size: 0.9rem;" v-bind="attrs" v-on="on">{{work.step_name }}
                                                                 <span v-if="work.actionList&&work.actionList.length>0&&templatemode!=='cycleedit'">． {{computedDay(work)}} 天</span> 
-                                                                <span v-else-if="passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0&&templatemode=='cycleedit'">． {{computedDay(work)}} 天</span>
+                                                                <span v-else-if="templatemode=='cycleedit'&&(passObj.tempContent[id].stepList&&passObj.tempContent[id].stepList.length>0&&passObj.tempContent[id].stepList[wid].actionList&&passObj.tempContent[id].stepList[wid].actionList.length>0)">． {{computedDay(work)}} 天</span>
                                                                 <span v-else>． 0 天 </span>
                                                             </v-card-title>
                                                         </template>
@@ -288,7 +287,7 @@
                                 </v-card>
                                 <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1)" style="padding: 12px 16px;">
                                     <v-btn class="btn-secondary btn-small"  @click="record()" >間補/收成紀錄</v-btn>
-                                    <v-btn v-if="!passObj.nowEnd" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
+                                    <v-btn v-if="!passObj.nowEnd" class="btn-primary btn-small"  @click="endCycleOpen()" >結束循環</v-btn>
                                     <!-- <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
                                     <v-tooltip v-else bottom>
                                         <template v-slot:activator="{ on, attrs }">
@@ -858,6 +857,46 @@
                 </v-card>
             </v-form>
         </v-dialog>
+        <!-- 結束循環 -->
+        <v-dialog v-model="endCycleDialog" max-width="500px" width="500">
+            <v-form v-model="endCyclevalid" ref="endCycleform">
+                <v-card class="custom-dialog">
+                    <v-card-title class="add-title">
+                        <div style="display: inline-block;">
+                            <span>結束循環</span> 
+                        </div>
+                        <div class="add">
+                            <v-btn class="btn-secondary close"
+                                    title="關閉" 
+                                    @click="endCycleDialog = false" 
+                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-card-title>
+                    <div class="basic" style="margin-top: 24px;">
+                        <v-menu v-model="end_date" :close-on-content-click="false" :nudge-right="40"
+                            transition="scale-transition" offset-y min-width="auto">
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-text-field v-model="endDate" label="選擇結束日期" :rules="rules.require"
+                                prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
+                                                        () => (endDate = getNowDate())
+                                                        " style="padding-top: 0;margin-top: 8px;"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="endDate" :max="getNowDate()" no-title locale="zh-tw" @input="end_date = false">
+                            </v-date-picker>
+                        </v-menu>
+                        <span class="error-text">※ 結束循環後，不可新增和刪除間補/收成紀錄，請先確認已填寫完畢，再結束循環!!</span>
+                    </div>
+                    <v-card-actions style="padding: 24px 12px;">
+                        <v-spacer></v-spacer>
+                        <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
+                        <v-btn class="btn-secondary" @click="endCycleDialog=false">取消</v-btn>
+                        <v-btn class="btn-primary" @click="endCycle">確認</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-form>
+        </v-dialog>
     </div>
 </template>
 
@@ -1089,7 +1128,11 @@ export default {
                 { text: "個重", value: "single_weight",sortable: false, width:"10%",},
                 { text: "說明", value: "remark",sortable: false, width:"15%",},
                 { text: "操作", value: "action",sortable: false, width:"5%",},
-            ]
+            ],
+            endCycleDialog:false,
+            end_date: false,
+            endDate: null,
+            endCyclevalid: false
         }
     },
     async created(){
@@ -1137,6 +1180,8 @@ export default {
             }
             
         }else {
+            await this.getstepdata();//取得步驟清單
+            await this.getWorkData();
             // 因為抓取出來的資料stepList為空的不會儲存，因此得額外比對整體流程，並塞進stepList，這樣模板上才可以新增其他流程
             this.mainItems = [];
             this.items.forEach(data=>{
@@ -1171,7 +1216,7 @@ export default {
                         }
                     })
                 })
-                // console.log(this.passObj.tempMain,this.mainItems);
+                console.log(this.passObj.tempMain,this.mainItems);
                 // tempMain :  this.tempMain,
                 //        tempContent: this.mainItems
             }else if(this.templatemode=="add"){
@@ -1229,7 +1274,7 @@ export default {
                             mitem.stepList.forEach(async (step,sid)=>{
                                 if(wid==sid) {
                                     // 如下一工作已開始執行，此工作不可新增/刪除
-                                    if(mitem.stepList[sid+1]&&mitem.stepList[sid+1].actionList[0].execute_time&&mitem.stepList[sid+1].actionList[0].execute_time!=='') {
+                                    if(mitem.stepList[sid+1]&&mitem.stepList[sid+1].actionList.length>0&&mitem.stepList[sid+1].actionList[0].execute_time&&mitem.stepList[sid+1].actionList[0].execute_time!=='') {
                                         disabled = true;
                                     }else {
                                         // 判斷是否為現在生成的dailycheck之前的工作，不可新增/刪除
@@ -2180,9 +2225,15 @@ export default {
             return dayjs( new Date(time)).format("MM-DD HH:mm");
         },
         // 結束養殖循環
+        endCycleOpen() {
+            this.endCycleDialog = true;
+            this.endDate = this.getNowDate();
+        },
         endCycle() {
-            if (confirm(`確認結束循環?\n\n ※ 結束循環後，不可新增和刪除間補/收成紀錄，請先確認已填寫完畢，再結束循環!!`)) {
-                this.$emit('end');
+            if(this.$refs.endCycleform.validate())
+            if (confirm(`確認 ${this.endDate} 已結束循環?\n\n ※ 結束循環後，不可新增和刪除間補/收成紀錄，請先確認已填寫完畢，再結束循環!!`)) {
+                this.$emit('end',this.endDate);
+                this.endCycleDialog = false;
             }
             
         },
@@ -3153,8 +3204,12 @@ export default {
     
     },
     async mounted() {
-        await this.getstepdata();//取得步驟清單
-        await this.getWorkData();
+        if(this.templatemode=='cycleedit') {
+            await this.getstepdata();//取得步驟清單
+            await this.getWorkData();
+        }
+        
+        console.log('mounted');
         window.addEventListener('resize', () => {
             this.windowWidth = window.innerWidth;
         });

@@ -308,7 +308,7 @@
                 </v-row>
               </div> 
               <div v-show="resultCycleOpen && nowTab=='循環紀錄'" style="padding-bottom: 12px;">
-                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen" @wordPepare="wordPepare"></FeedTemplate2>
+                <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end($event)" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen" @wordPepare="wordPepare"></FeedTemplate2>
               </div>
             </v-card>
           </div>
@@ -2802,13 +2802,13 @@ export default {
       }
     },
     // 結束養殖循環
-    end() {
+    end(evt) {
       let data = _.cloneDeep(this.circleData.filter(x=>x.id==this.currentDataId)[0]);
-      console.log('end',data);
+      console.log('end',data,evt);
       data.estimated_num = data.total;
       // 預估存活要為數值
       data.estimated_survival_rate = parseFloat(data.estimated_survival_rate.split('%')[0]);
-      data.ended_date = dayjs( new Date()).format("YYYY-MM-DD");
+      data.ended_date = dayjs( new Date(evt)).format("YYYY-MM-DD");
       this.editparm = _.cloneDeep(data);
       this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
       this.submitEdit(true);//編輯執行結束的時間及更改養殖狀態
