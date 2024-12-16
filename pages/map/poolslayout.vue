@@ -139,7 +139,7 @@
       <div v-else-if="ponds.length==0 && !$route.query.field || ponds.length==0 && $route.path=='/basic'" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
       <div v-else-if="$route.query.field" class="nodata">無資料!</div>
       <div v-else-if="!isSetting && !$route.query.field && $route.path!=='/basic'" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
-      <div v-else-if="!isSetting && $route.path=='/basic'" class="nodata">尚未設置地圖，請先至養殖池況頁，點選 設定 > 配置設定，選擇此區進行設定</div>
+      <div v-else-if="!isSetting && $route.path=='/basic'" class="nodata">尚未設置地圖，請先至場域設定，選擇 場區 > 點選配置，進行地圖設定(限技術人員)</div>
     </div>
   </div>
 </template>
@@ -491,7 +491,7 @@ export default {
   },
   async mounted() {
     //監控視窗
-     window.addEventListener('resize', () => {
+    window.addEventListener('resize', () => {
       this.windowWidth = 800;
     });
     // if(this.nowAreaTag!=='setting') {
