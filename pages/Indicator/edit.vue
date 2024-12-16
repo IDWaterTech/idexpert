@@ -629,7 +629,7 @@
               <v-card-actions style="padding: 24px 12px;">
                 <v-spacer></v-spacer>
                 <v-btn class="btn-secondary" @click="addDialog = false">取消</v-btn>
-                <v-btn class="btn-primary" @click="addsubmit">新增</v-btn>
+                <v-btn class="btn-primary" :disabled="isAddDisabled" @click="addsubmit">新增</v-btn>
               </v-card-actions>
               <!-- <v-card-actions>
                 <v-spacer></v-spacer>
@@ -1336,6 +1336,7 @@ export default {
       shrimpvalid:true,
       dialogLoading: true,
       isParaLoading: false,
+      isAddDisabled: false
     };
   },
   async created() {
@@ -1628,6 +1629,31 @@ export default {
         delete x.updated_user; //"刪掉updated_user欄位"
         delete x.group;//"刪掉group欄位"
       });
+      // this.item.items = [{
+      //   inspected_date: "2024-12-08 01:37:58",
+      //   device: 2.33,
+      //   member: null
+      // },{
+      //   inspected_date: "2024-12-09 11:33:00",
+      //   member: 3.98,
+      //   device: null
+      // },{
+      //   inspected_date: "2024-12-07 22:37:45",
+      //   device: 2.21,
+      //   member: null
+      // },{
+      //   inspected_date: "2024-12-07 01:37:06",
+      //   device: 0.02,
+      //   member: null
+      // },{
+      //   inspected_date: "2024-12-06 16:37:19",
+      //   device: 0.11,
+      //   member: null
+      // },{
+      //   inspected_date: "2024-12-06 10:35:00",
+      //   device: null,
+      //   member: 0
+      // },]
       if (data2.items.length > 0) {
         let cols = Object.keys(data2.items[0]);
         data2.items.sort((a,b)=>new Date(b.inspected_date)-new Date(a.inspected_date));
@@ -2178,6 +2204,7 @@ export default {
     addsubmit: async function() {
       let valid = this.$refs.form.validate();
       if (valid) {
+        this.isAddDisabled = true;
         // let colclass = this.getItemClass(this.defitem);
         var defitemall = this.coldata.filter(x=>x.name_ch==this.defitem)[0];
         let colclass = defitemall.group;
@@ -2220,6 +2247,7 @@ export default {
         var res = false;
           res = await this.postAllDataList(parms);
           setTimeout(()=>{
+              this.isAddDisabled = false;
               if(res) {
                 if(this.sdate&&this.edate&&this.sel_main&&this.sel_area&&this.sel_pool&&this.defitem) {
                   this.getdata();//新增未必有選到所有選項

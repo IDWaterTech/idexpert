@@ -914,7 +914,7 @@
                     filled
                     dense
                     clearable
-                    @keyup="limitcharacter"
+                    @keyup="limitcharacter(item)"
                     placeholder="範例：1,0.2,0.5,0.8...."
                     :rules="rules.require"
                   >
@@ -1283,8 +1283,8 @@ export default {
       this.manuFilterData = [];
     },
     //限制特殊字元
-    limitcharacter:function(e){
-       e.target.value = e.target.value.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g,"");
+    limitcharacter:function(item){
+      this.main_formula[item] =  this.main_formula[item].replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g,"");
     },
     //選擇廠商
     manselect: function() {

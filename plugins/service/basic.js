@@ -463,6 +463,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         //===== 重要紀事 =====//
