@@ -66,7 +66,7 @@
                       </template>
                       <span>新增菌相資料</span>
                   </v-tooltip>
-                  <div class="step" v-if="innerWidth <= 768">
+                  <div class="step" v-if="false&&innerWidth <= 768">
                     <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
                     <v-btn v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" class="btn-secondary" @click="stepLoad()">同步</v-btn>
                     <!-- <v-tooltip v-if="dataClass == '菌相'" bottom>
@@ -80,7 +80,7 @@
                 </div>
               </v-col>
             </v-row>
-            <div class="step" v-if="innerWidth>768">
+            <div class="step" v-if="false&&innerWidth>768">
               <v-row class="flex-center-between" style="margin-bottom: 0;">
                 <v-col cols="11" style="padding: 0 12px;width: 100%;">
                   <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
