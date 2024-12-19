@@ -6,6 +6,147 @@ Vue.mixin({
 	methods: {
         // 取得水源/蝦況選項項目
         getFieldOtptionList:async function() {
+            let para = {
+                "WaterSource": [
+                    {
+                        "name_en": "Groundwater",
+                        "name_ch": "地下水"
+                    },
+                    {
+                        "name_en": "Seawater",
+                        "name_ch": "海水"
+                    }
+                ],
+                "WaterColor": [
+                    {
+                        "name_en": "DarkGreen",
+                        "name_ch": "深綠"
+                    },
+                    {
+                        "name_en": "LightGreen",
+                        "name_ch": "淺綠"
+                    },
+                    {
+                        "name_en": "DarkBrown",
+                        "name_ch": "棕色偏深"
+                    },
+                    {
+                        "name_en": "LightBrown",
+                        "name_ch": "棕色偏淺"
+                    },
+                    {
+                        "name_en": "Clear",
+                        "name_ch": "清澈"
+                    }
+                ],
+                "IntestinalColor": [
+                    {
+                        "name_en": "Brown",
+                        "name_ch": "棕色"
+                    },
+                    {
+                        "name_en": "Black",
+                        "name_ch": "黑色"
+                    },
+                    {
+                        "name_en": "Red",
+                        "name_ch": "紅色"
+                    },
+                    {
+                        "name_en": "White",
+                        "name_ch": "白色"
+                    },
+                    {
+                        "name_en": "Empty",
+                        "name_ch": "空腸"
+                    },
+                    {
+                        "name_en": "Uncertain",
+                        "name_ch": "未定義"
+                    }
+                ],
+                "HepatopancreasColor": [
+                    {
+                        "name_en": "Black",
+                        "name_ch": "黑色"
+                    },
+                    {
+                        "name_en": "Brown",
+                        "name_ch": "棕色"
+                    },
+                    {
+                        "name_en": "Red",
+                        "name_ch": "紅色"
+                    },
+                    {
+                        "name_en": "Orange",
+                        "name_ch": "橘色"
+                    },
+                    {
+                        "name_en": "White",
+                        "name_ch": "白色"
+                    },
+                    {
+                        "name_en": "Gray",
+                        "name_ch": "灰色"
+                    },
+                    {
+                        "name_en": "Yellow",
+                        "name_ch": "黃色"
+                    },
+                    {
+                        "name_en": "Green",
+                        "name_ch": "綠色"
+                    },
+                    {
+                        "name_en": "Uncertain",
+                        "name_ch": "未定義"
+                    }
+                ],
+                "MuscleColor": [
+                    {
+                        "name_en": "Translucent",
+                        "name_ch": "透亮"
+                    },
+                    {
+                        "name_en": "Turbidity",
+                        "name_ch": "均勻白濁"
+                    },
+                    {
+                        "name_en": "TurbidityCottonLike",
+                        "name_ch": "白濁呈棉絮狀分布"
+                    },
+                    {
+                        "name_en": "Uncertain",
+                        "name_ch": "未定義"
+                    }
+                ],
+                "BodyColor": [
+                    {
+                        "name_en": "Transparent",
+                        "name_ch": "透明"
+                    },
+                    {
+                        "name_en": "Red",
+                        "name_ch": "紅色"
+                    },
+                    {
+                        "name_en": "Uncertain",
+                        "name_ch": "未定義"
+                    }
+                ],
+                "BodyShape": [
+                    {
+                        "name_en": "Normal",
+                        "name_ch": "正常"
+                    },
+                    {
+                        "name_en": "Deformity",
+                        "name_ch": "畸形"
+                    }
+                ],
+                "FeedingPlan": []
+            }
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`)
                 console.log("取得水源/蝦況選項項目清單:" + data.request.responseURL);
@@ -13,153 +154,13 @@ Vue.mixin({
                     return data.data;
                 }else {
                     this.$toast.error("錯誤：" + error, { duration: 2000 });
-                    return [];
+                    return para;
                 }
             }catch(error) {
                 this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
                 console.log(`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/ 錯誤，使用預設資料`, error);
 
-                return {
-                    "WaterSource": [
-                        {
-                            "name_en": "Groundwater",
-                            "name_ch": "地下水"
-                        },
-                        {
-                            "name_en": "Seawater",
-                            "name_ch": "海水"
-                        }
-                    ],
-                    "WaterColor": [
-                        {
-                            "name_en": "DarkGreen",
-                            "name_ch": "深綠"
-                        },
-                        {
-                            "name_en": "LightGreen",
-                            "name_ch": "淺綠"
-                        },
-                        {
-                            "name_en": "DarkBrown",
-                            "name_ch": "棕色偏深"
-                        },
-                        {
-                            "name_en": "LightBrown",
-                            "name_ch": "棕色偏淺"
-                        },
-                        {
-                            "name_en": "Clear",
-                            "name_ch": "清澈"
-                        }
-                    ],
-                    "IntestinalColor": [
-                        {
-                            "name_en": "Brown",
-                            "name_ch": "棕色"
-                        },
-                        {
-                            "name_en": "Black",
-                            "name_ch": "黑色"
-                        },
-                        {
-                            "name_en": "Red",
-                            "name_ch": "紅色"
-                        },
-                        {
-                            "name_en": "White",
-                            "name_ch": "白色"
-                        },
-                        {
-                            "name_en": "Empty",
-                            "name_ch": "空腸"
-                        },
-                        {
-                            "name_en": "Uncertain",
-                            "name_ch": "未定義"
-                        }
-                    ],
-                    "HepatopancreasColor": [
-                        {
-                            "name_en": "Black",
-                            "name_ch": "黑色"
-                        },
-                        {
-                            "name_en": "Brown",
-                            "name_ch": "棕色"
-                        },
-                        {
-                            "name_en": "Red",
-                            "name_ch": "紅色"
-                        },
-                        {
-                            "name_en": "Orange",
-                            "name_ch": "橘色"
-                        },
-                        {
-                            "name_en": "White",
-                            "name_ch": "白色"
-                        },
-                        {
-                            "name_en": "Gray",
-                            "name_ch": "灰色"
-                        },
-                        {
-                            "name_en": "Yellow",
-                            "name_ch": "黃色"
-                        },
-                        {
-                            "name_en": "Green",
-                            "name_ch": "綠色"
-                        },
-                        {
-                            "name_en": "Uncertain",
-                            "name_ch": "未定義"
-                        }
-                    ],
-                    "MuscleColor": [
-                        {
-                            "name_en": "Translucent",
-                            "name_ch": "透亮"
-                        },
-                        {
-                            "name_en": "Turbidity",
-                            "name_ch": "均勻白濁"
-                        },
-                        {
-                            "name_en": "TurbidityCottonLike",
-                            "name_ch": "白濁呈棉絮狀分布"
-                        },
-                        {
-                            "name_en": "Uncertain",
-                            "name_ch": "未定義"
-                        }
-                    ],
-                    "BodyColor": [
-                        {
-                            "name_en": "Transparent",
-                            "name_ch": "透明"
-                        },
-                        {
-                            "name_en": "Red",
-                            "name_ch": "紅色"
-                        },
-                        {
-                            "name_en": "Uncertain",
-                            "name_ch": "未定義"
-                        }
-                    ],
-                    "BodyShape": [
-                        {
-                            "name_en": "Normal",
-                            "name_ch": "正常"
-                        },
-                        {
-                            "name_en": "Deformity",
-                            "name_ch": "畸形"
-                        }
-                    ],
-                    "FeedingPlan": []
-                };
+                return para;
             }
         },
         // 取得水質監測的警告範圍
