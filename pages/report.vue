@@ -375,7 +375,7 @@ export default {
             if(type=='start') {
                 this.menu_startdate[i] = false;
                 this.showStartDate = true;
-                let value = null;
+                // let value = null;
             }else {
                 this.menu_enddate[i] = false;
                 this.showStartDate = true;
@@ -392,7 +392,6 @@ export default {
                     }
                     break;
                 }
-                    
             }
             return now?this.getNowDate():value;
         },
@@ -413,24 +412,25 @@ export default {
         computeEndDate(i) {
             let now=true;
             let value = null;
-            for(let x=i;x>=0;x--) {
+            for(let x=i;x<this.download.length;x++) {
                 if(this.download[x].remark=='start'&&this.download[x].type=='date') {
-                    if(this.download[x].value!==null&&this.download[x+1].value!=='') {
+                    if(this.download[x].value!==null&&this.download[x].value!=='') {
                         now=false;
-                        value = this.download[x].value;
+                        value = new Date(this.download[x].value).getTime()+1000*60*60*24;
                     }
                     break;
                 }
             }
-            return now?null:value;
+            console.log(value);
+            return now?null:dayjs(new Date(value)).format("YYYY-MM-DD");
         },
         computeEndDateMax(i) {
             let value = null;
-            for(let x=i;x>=0;x--) {
+            for(let x=i;x<this.download.length;x++) {
                 if(this.download[x].remark=='start'&&this.download[x].type=='date') {
-                    if(this.download[x].value!==null&&this.download[x+1].value!=='') {
+                    if(this.download[x].value!==null&&this.download[x].value!=='') {
                         if((new Date().getTime()-(new Date(this.download[x].value).getTime()))>1000*60*60*24*31) {
-                            value = new Date(this.download[x].value).getTime()+1000*60*60*24*31
+                            value = new Date(this.download[x].value).getTime()+1000*60*60*24*31;
                         }else {
                             value = this.getNowDate();
                         }
@@ -521,7 +521,8 @@ export default {
                         parm[d.para]=dayjs(new Date(d.value)).format('YYYY-MM-DD HH:mm:ss')
                     }else if(d.type=='select_range'){
                         let maindata = JSON.parse(localStorage.getItem('architecture'));
-                        maindata.forEach(m=>{m.id=parseInt(m.id.split('_')[m.id.split('_').length-1]);m.node.forEach(a=>a.id=parseInt(a.id.split('_')[a.id.split('_').length-1]))})
+                        // maindata.forEach(m=>{m.id=parseInt(m.id.split('_')[m.id.split('_').length-1]);m.node.forEach(a=>a.id=parseInt(a.id.split('_')[a.id.split('_').length-1]))})
+                        maindata.forEach(m=>{m.id=m.id;m.node.forEach(a=>a.id=a.id)})
                         console.log(d.value,maindata)
                         if(d.name=='area') {
                             let value_area = [];

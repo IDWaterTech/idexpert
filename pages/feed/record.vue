@@ -18,7 +18,7 @@
             <v-col cols="12" md="2">
               <!-- 選擇場 -->
               <div class="search-container">
-                <locate-select :dataScope="'field'" :defaultSelect="factoryData.length>0?factoryData[0].name+'_'+factoryData[0].id:''" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <locate-select :dataScope="'field'" :defaultSelect="factoryData.length>0?factoryData[0]?.name+'_'+factoryData[0]?.id:''" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
               </div>
             </v-col>
             <!-- 選擇日期sdate -->
@@ -580,8 +580,9 @@ export default {
       //   .finally(() => {
       //     //this.getdata();
       //   });
-      let architectureData = await this.getArchitecture();
-      this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
+      // let architectureData = await this.getArchitecture();
+      // this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
+      this.factoryData = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
       if(this.factoryData.length>0) {
         this.factoryid = this.factoryData[0].id;
       }

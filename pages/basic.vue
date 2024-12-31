@@ -1682,11 +1682,14 @@ export default {
         
     //     console.log(this.defaultPool);
     //   });
-    let architectureData = await this.getArchitecture();
-    this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+    // let architectureData = await this.getArchitecture();
+    // this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+    
+    this.maindata = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
     this.sel_main = undefined;
     this.defaultPool = '';
     if(this.maindata.length>0) {
+      console.log('localStorage.getItem', this.maindata)
       this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
       this.nowAreaId.factory_id = this.maindata[0].id;
       this.nowAreaId.pond_area_id = this.maindata[0].node[0].id;

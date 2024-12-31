@@ -783,7 +783,7 @@ export default {
         // this.isLoading = true;
         console.log('User',this.userData);
     },
-    getmain: async function() {
+    getmain: async function(bool=false) {
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
       //   .then(res => {
@@ -793,8 +793,15 @@ export default {
       //   .catch(error => {
       //     this.$toast.error("error:" + error, { duration: 2000 });
       //   });
-      let architectureData = await this.getArchitecture();
-      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      // let architectureData = await this.getArchitecture();
+      // this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      if(bool) {
+        let architectureData = await this.getArchitecture();
+        this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      }else {
+        this.maindata = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
+      }
+      
     },
     getpoolstat: async function() {
       //取得池狀態清單
@@ -818,7 +825,7 @@ export default {
         let pool = [];
         if (!this.sel_area) {
           this.pooldata = pool;
-          this.nowpooldata = pool
+          this.nowpooldata = pool;
           this.isLoading = true;
           return;
         }
@@ -828,6 +835,8 @@ export default {
         let getPondDataList = await this.getPondDataList(para);
         let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
         pool = data;
+        // 2024/12/19先拿掉shape
+        pool.forEach(x=>{delete x['shape']});
         this.pooldata = pool;
         this.nowpooldata = _.cloneDeep(pool);
         this.isLoading = true;
@@ -948,7 +957,7 @@ export default {
             setTimeout(()=>{
                 if(res) {
                   this.dialog.main = false;
-                  this.getmain();
+                  this.getmain(true);
                 }
             },50)
             // await this.$axios
@@ -981,7 +990,7 @@ export default {
             setTimeout(()=>{
                 if(res) {
                   this.dialog.main = false;
-                  this.getmain();
+                  this.getmain(true);
                 }
             },50)
             // await this.$axios
@@ -1017,7 +1026,7 @@ export default {
             setTimeout(()=>{
                 if(res) {
                   this.dialog.main = false;
-                  this.getmain();
+                  this.getmain(true);
                   this.sel_main = "";
                   this.sel_area = "";
                   this.pooldata = [];
@@ -1053,7 +1062,7 @@ export default {
             setTimeout(()=>{
                 if(res) {
                   this.dialog.main = false;
-                  this.getmain();
+                  this.getmain(true);
                   this.sel_main = "";
                   this.sel_area = "";
                   this.pooldata = [];
@@ -1198,7 +1207,7 @@ export default {
             res = await this.deleteFactoryList(id);
             setTimeout(()=>{
                 if(res) {
-                  this.getmain();
+                  this.getmain(true);
                   this.sel_main = "";
                   this.sel_area = "";
                 }
@@ -1211,7 +1220,7 @@ export default {
             res = await this.deletePondAreaList(id);
             setTimeout(()=>{
                 if(res) {
-                  this.getmain();
+                  this.getmain(true);
                   this.sel_main = "";
                   this.sel_area = "";
                 }
@@ -1225,9 +1234,9 @@ export default {
             res = await this.deletePondList(id);
             setTimeout(()=>{
                 if(res) {
-                  this.getmain();
-                  this.sel_main = "";
-                  this.sel_area = "";
+                  this.getmain(true);
+                  // this.sel_main = "";
+                  // this.sel_area = "";
                   this.sel_pool = "";
                   this.getPoolData(); //重取得清單
                 }

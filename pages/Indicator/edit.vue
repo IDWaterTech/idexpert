@@ -1384,8 +1384,13 @@ export default {
       this.$axios.get(url, { httpsAgent: agent }).catch(err => {
         alert("fetchURL失敗：" + err.message);
       });
-    const promiseArray = myurl.map(fetchURL);
-    console.log("req", this.req);
+    // const promiseArray = myurl.map(fetchURL);
+    const promiseArray = [];
+    promiseArray.push(JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture());
+    let allcolData = await this.getAllColNameList();
+    let allcols = typeof (allcolData)=='string'?[]:allcolData;
+    promiseArray.push(allcols);
+    console.log("req", this.req,promiseArray);
     //
     this.sdate = String(this.req.sdate).length > 0 ? this.req.sdate : "";
     this.edate = this.req.hasOwnProperty('edate') && String(this.req.edate).length > 0 ? this.req.edate : this.sdate; 
@@ -1399,34 +1404,56 @@ export default {
     this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0]?.name_ch : [];
     //---
     // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
-    await Promise.all(promiseArray).then(([...data]) => {
-      let res = data[0]; // first promise resolved
-      this.maindata = res.data;
-      console.log("場",this.maindata);
-      if (Number(this.req.sel_pool) > 0) {
-        //await this.areachange();
-        this.areadata();
-        this.areachange();
-        this.sel_pool = Number(this.req.sel_pool);
-      }
-      //抓all項目
-      res = data[1];
-      var allitems = [];
-      for (let i = 0; i < Object.keys(res.data).length; i++) {
-        let colsclass = Object.keys(res.data)[i]; //water,env....
+    // await Promise.all(promiseArray).then(([...data]) => {
+    //   let res = data[0]; // first promise resolved
+    //   this.maindata = res.data;
+    //   console.log("場",this.maindata);
+    //   if (Number(this.req.sel_pool) > 0) {
+    //     //await this.areachange();
+    //     this.areadata();
+    //     this.areachange();
+    //     this.sel_pool = Number(this.req.sel_pool);
+    //   }
+    //   //抓all項目
+    //   res = data[1];
+    //   var allitems = [];
+    //   for (let i = 0; i < Object.keys(res.data).length; i++) {
+    //     let colsclass = Object.keys(res.data)[i]; //water,env....
+    //     if (i!=0) {
+    //           allitems.push({ divider: true });
+    //         }
+    //         allitems.push({ header: colsclass });//group name
+    //         allitems.push(...Object.keys(res.data[colsclass]));
+    //   }
+
+    //   // this.waterdatacols = allitems;
+    //   this.allcols = Object.assign({}, res.data);//{adv:{每日成長量: "每日成長量(cm)",...},...}
+    //   console.log("子項目 api",this.allcols);
+    //   this.isLoading = true;
+    // });
+
+    this.maindata = promiseArray[0];
+    console.log("場",this.maindata);
+    if (Number(this.req.sel_pool) > 0) {
+      //await this.areachange();
+      this.areadata();
+      this.areachange();
+      this.sel_pool = Number(this.req.sel_pool);
+    }
+    var allitems = [];
+      for (let i = 0; i < Object.keys(promiseArray[1]).length; i++) {
+        let colsclass = Object.keys(promiseArray[1])[i]; //water,env....
         if (i!=0) {
               allitems.push({ divider: true });
             }
             allitems.push({ header: colsclass });//group name
-            allitems.push(...Object.keys(res.data[colsclass]));
+            allitems.push(...Object.keys(promiseArray[1][colsclass]));
       }
 
       // this.waterdatacols = allitems;
-      this.allcols = Object.assign({}, res.data);//{adv:{每日成長量: "每日成長量(cm)",...},...}
+      this.allcols = Object.assign({}, promiseArray[1]);//{adv:{每日成長量: "每日成長量(cm)",...},...}
       console.log("子項目 api",this.allcols);
       this.isLoading = true;
-    });
-
     // //參數代入
     if (Object.keys(this.req).length > 0 && this.defitem && this.sdate && this.edate) {
       await this.getdata();
@@ -1624,7 +1651,7 @@ export default {
       let data = typeof (getAllDataList)=='string'?[]:getAllDataList;
       let data2 = _.cloneDeep(data);
       this.item = _.cloneDeep(data);
-      this.item.items.forEach(function(x) {//給折線圖用的資料
+      this.item.items?.forEach(function(x) {//給折線圖用的資料
         delete x.id; //"刪掉id欄位"
         delete x.updated_user; //"刪掉updated_user欄位"
         delete x.group;//"刪掉group欄位"

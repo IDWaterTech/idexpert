@@ -1901,8 +1901,9 @@ export default {
       //       var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
       //       this.maindata = data;
       //   });
-      let architectureData = await this.getArchitecture();
-      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      // let architectureData = await this.getArchitecture();
+      // this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+      this.maindata = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
       // var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
       // this.maindata = data;
       // let reqid = this.req.id;

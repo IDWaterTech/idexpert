@@ -1547,8 +1547,9 @@ export default {
     //     }
     //     console.log(this.defaultPool);
     //   });
-    let architectureData = await this.getArchitecture();
-    this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+    // let architectureData = await this.getArchitecture();
+    // this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+    this.maindata = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
     this.sel_main = undefined;
     this.defaultPool = '';
     if(this.maindata.length>0) {
@@ -1559,12 +1560,14 @@ export default {
     console.log(this.defaultPool);
       
     //get all cols
-    await this.$axios
-      .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, { httpsAgent: agent })
-      .then(res => {
-        console.log("all-col-name:", res.request.responseURL);
-        this.allcols = res.data;
-      });
+    let allcolData = await this.getAllColNameList();
+    this.allcols = typeof (allcolData)=='string'?[]:allcolData;
+    // await this.$axios
+    //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, { httpsAgent: agent })
+    //   .then(res => {
+    //     console.log("all-col-name:", res.request.responseURL);
+    //     this.allcols = res.data;
+    //   });
   },
   computed: {
     // mpurl: function () {

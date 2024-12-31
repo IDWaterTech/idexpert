@@ -49,6 +49,7 @@ Vue.mixin({
                 }
             }catch(err) {
                 console.log(err);
+                return [];
             }
             
         },
@@ -67,6 +68,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 取得池況狀態顏色
@@ -88,6 +90,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增池況狀態顏色
@@ -181,6 +184,24 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("事件錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
+            }
+        },
+        // 取得所有欄位
+        getAllColNameList:async function(parm) {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`)
+                console.log("所有欄位:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    return [];
+                }
+
+            }catch(error) {
+                this.$toast.error("事件錯誤：" + error, { duration: 2000 });
+                console.log(error);
+                return [];
             }
         },
         // 取得水質欄位清單
@@ -197,6 +218,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 取得水質折線圖清單
@@ -231,6 +253,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增水質紀錄
@@ -305,6 +328,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 取得觀察網清單
@@ -321,6 +345,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增觀察網
@@ -481,6 +506,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增飼料事件
@@ -554,6 +580,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 取得事件類型
@@ -570,6 +597,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增事件
@@ -858,6 +886,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增ip
@@ -915,6 +944,7 @@ Vue.mixin({
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
                 console.log(error);
+                return [];
             }
         },
         // 新增設備

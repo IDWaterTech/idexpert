@@ -3680,8 +3680,9 @@ export default {
             //     .catch(error=>{
             //         console.log(error);
             //     })
-            let architectureData = await this.getArchitecture();
-            this.allData = typeof (architectureData)=='string'?[]:architectureData;
+            // let architectureData = await this.getArchitecture();
+            // this.allData = typeof (architectureData)=='string'?[]:architectureData;
+            this.allData = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
             this.querrySelectedLst = {};
             this.querryDataLst = {}
             this.allData.forEach(f=>{

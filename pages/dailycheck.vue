@@ -731,7 +731,7 @@ export default {
     },
     async created() {
         await this._pageCheck(); //驗證頁面是否可檢視
-        await this.getAllUser();
+        // await this.getAllUser();
         this.getaccList();//取得所有帳號，比對執行者用
         this.getstepdata();
         await this.getSelectPoolData(); //取得非空池的池
@@ -742,6 +742,8 @@ export default {
         // 取得所有帳號
         getaccList: async function() {
             let getuserData = await this.getUserList();
+            this.userData = typeof (getuserData)=='string'?[]:getuserData;
+            this.userData = this.userData.filter(x=>x.is_active==true);
             var data = Array.isArray(getuserData)?getuserData:[];
             var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0]?.department}));//只要正常啟用帳號
             this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
@@ -1475,12 +1477,12 @@ export default {
             }
             
         },
-        async getAllUser() {
-            let getuserData = await this.getUserList();
-            this.userData = typeof (getuserData)=='string'?[]:getuserData;
-            this.userData = this.userData.filter(x=>x.is_active==true);
-            console.log('User',this.userData);
-        },
+        // async getAllUser() {
+        //     let getuserData = await this.getUserList();
+        //     this.userData = typeof (getuserData)=='string'?[]:getuserData;
+        //     this.userData = this.userData.filter(x=>x.is_active==true);
+        //     console.log('User',this.userData);
+        // },
         // 全部指定
         delayAllOpen(item) {
             this.delayAll = {daily_check_ids:new Array(),delay_day:1,scheduling_date:item.scheduling_date,operation:'rescheduled',operation_reason:''}

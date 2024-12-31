@@ -109,9 +109,9 @@ export default {
             //     });
             let architectureData = await this.getArchitecture();
             this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+            localStorage.setItem('architecture',JSON.stringify(this.maindata));
             var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
             this.maindata = data;
-            localStorage.setItem('architecture',JSON.stringify(this.maindata));
         },
         setNestedDisabled: function (obj, name, onlyshowlevel = 1) {
             //全部都設成disabled

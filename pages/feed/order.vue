@@ -1088,9 +1088,11 @@ export default {
       //     //this.getdata();
       //   });
       
-      let architectureData = await this.getArchitecture();
-      this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
+      //let architectureData = await this.getArchitecture();
+      //this.factoryData = typeof (architectureData)=='string'?[]:architectureData;
       // this.factoryid = res.data[0].id;
+      this.factoryData = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
+
       var item = [];
       let data = _.cloneDeep(this.factoryData);
       data.forEach(element => {
