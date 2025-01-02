@@ -3,13 +3,13 @@
         <v-overlay :value="!isLoading" :absolute="true">
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card class="bg-card" style="margin-bottom: 16px;padding-top: 8px;">
+        <v-card class="bg-card mb-4 pt-2">
             <div class="content" style="padding-bottom: 4px;">
                 <!-- 搜尋列 -->
                 <div class="search">
-                    <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
+                    <v-row class="mb-0 pr-4 align-center">
                         <!-- 搜尋 -->
-                        <v-col cols="6" md="3" style="padding-bottom: 0;padding-top: 4px;">
+                        <v-col cols="6" md="3" class="pb-0 pt-1">
                             <!-- <div class="search-container">
                                 <locate-select 
                                     id="search"
@@ -56,13 +56,13 @@
                         </v-col> -->
                     </v-row>
                 </div>
-                <div class="result" v-if="poolData.daily&&poolData.daily.length>0" style="padding-bottom: 0;">
+                <div class="result pb-0" v-if="poolData.daily&&poolData.daily.length>0">
                     <div class="exe flex-align-center">
-                        <span class="flex-align-center" style="margin-left: 8px;">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
+                        <span class="flex-align-center ml-2">執行階段： {{ poolData.phase_name }} - {{poolData.step_name}} <v-btn class="btn-secondary btn-small green" @click="getNextWork" style="margin-left: 8px;">檢視下一工作</v-btn></span>
                         <div class="execute flex-align-center">
-                            <span style="margin-right: 8px;margin-left: 8px;">隱藏執行/不執行</span>
+                            <span class="mx-2">隱藏執行/不執行</span>
                             <v-select v-model="hiddenList" clearable multiple deletable-chips chips dense hide-details
-                                    placeholder="選擇要隱藏的日期" :items="dateList" style="max-width: 200px;margin-top: 0;"
+                                    placeholder="選擇要隱藏的日期" :items="dateList" class="mt-0" max-width="200px"
                                     :disabled="dateList.length==0" @change="dataHidden">
                                     <template v-slot:selection="{ item, index }">
                                         <v-chip v-if="index === 0">
@@ -104,9 +104,9 @@
                         </v-col>
                     </v-row> -->
                     <!-- 排程清單 -->
-                    <div class="result-content">
-                        <v-card class="result-card" v-for="(item,id) in poolData.daily" :key="'date_'+id" style="margin-right: 16px;">
-                            <div class="card-title" style="cursor: default;margin: 8px;padding-top: 0;">
+                    <div class="result-content mt-4">
+                        <v-card class="result-card mr-4 d-flex flex-column" v-for="(item,id) in poolData.daily" :key="'date_'+id">
+                            <div class="card-title mx-1 my-1 pt-0" style="cursor: default;">
                                 <div class="title">
                                     <v-card-title>{{ item.scheduling_date.slice(5).replace('-','/') }}</v-card-title>
                                 </div>
@@ -133,8 +133,8 @@
                                 </div>
                             </div>
                             <div class="daily-content">
-                                <div class="daily-check" v-for="(daily,did) in item.todo" :key="'daily_'+daily.id+'_'+did">
-                                    <div class="check-title">
+                                <div class="daily-check mx-3 my-1 mb-2 px-1 py-1" v-for="(daily,did) in item.todo" :key="'daily_'+daily.id+'_'+did">
+                                    <div class="check-title mx-2 my-2 mt-0">
                                         <div class="title" style="max-width: 50%;">
                                             <v-card-title>{{ daily.action_name }}</v-card-title>
                                         </div>
@@ -161,18 +161,18 @@
                                             </v-tooltip>
                                         </div>
                                     </div>
-                                    <div class="description">
+                                    <div class="description mx-2 my-2 ml-3">
                                         {{daily.action_remark}}
                                     </div>
-                                    <div class="content">
+                                    <div class="content mt-1 pt-2">
                                         <div class="remark">
                                             {{ daily.msg }}
                                         </div>
                                         <div class="excute" v-if="daily.execute_status!=='0'">
-                                            <div class="date">
+                                            <div class="date d-inline-block">
                                                 {{ daily.execute_time.slice(0,16) }}
                                             </div>
-                                            <div class="excutor">
+                                            <div class="excutor d-inline-block">
                                                 {{ daily.executor_name }}
                                             </div>
                                         </div>
@@ -195,9 +195,9 @@
                     </div>
                     
                 </div>
-                <div class="result" v-else style="overflow-x: hidden;">
-                    <div class="result-content">
-                        <v-card class="result-card flex-all-center" style="width: 100%;height: 74vh;">
+                <div class="result px-2 py-2" v-else style="overflow-x: hidden;">
+                    <div class="result-content mt-4">
+                        <v-card class="result-card d-flex flex-column flex-all-center" style="width: 100%;height: 74vh;">
                             無資料
                         </v-card>
                     </div>
@@ -212,23 +212,22 @@
             <v-form ref="editform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;max-width: 80%;">
+                        <div class="d-inline-block" style="max-width: 80%;">
                             <span>{{editItem.num==3?nowDaily.slice(5).replace('-','/')+'之後的「'+editItem.action_name+'」(所有相同名稱的動作) 均不執行':'執行編修'}}</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="editDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="editDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div v-if="editItem.num!==3" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;">
+                        <div v-if="editItem.num!==3" class="card-title flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>執行狀態</v-card-title></div>
                             <div class="title flex-align-center" v-if="editItem.execute_status!=='0'">
-                                <span style="font-size: 14px;margin-right: 8px;">{{ editItem.execute_status=='1'?'已執行':'不執行' }}</span>
+                                <span class="mr-2" style="font-size: 14px">{{ editItem.execute_status=='1'?'已執行':'不執行' }}</span>
                                 <v-btn  class="btn-secondary btn-small delete" @click="editItem.execute_status = '0';editItem.msg=''">取消</v-btn>
                             </div>
                             <div class="title" v-else>
@@ -238,14 +237,14 @@
                         </div>
                         <!-- 財務 -->
                         <!-- <v-card-text style="display: flex;align-items: center;padding: 0;">
-                            <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;width: 100%;">
+                            <div class="card-title flex-align-start" style="cursor: pointer;flex-direction: column;width: 100%;">
                                 <div class="title">
                                     <v-card-title>實際花費的人力 </v-card-title>
                                     <v-text-field v-model.number="editItem.actual_member" type="number" label="花費的人力" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                                     </v-text-field>
                                 </div>
                             </div>
-                            <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;width: 100%;">
+                            <div class="card-title flex-align-start" style="cursor: pointer;flex-direction: column;width: 100%;">
                                 <div class="title">
                                     <v-card-title>實際花費的金錢 </v-card-title>
                                     <v-text-field v-model.number="editItem.actual_spend" type="number" label="花費的金錢" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
@@ -254,14 +253,14 @@
                             </div>
                         </v-card-text> -->
                         
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
-                            <div class="title"><v-card-title>說明 <span v-if="editItem.execute_status=='2'" class="error-text" style="margin-left: 4px;">*{{editItem.num==3?'':'不執行'}}請填入原因</span></v-card-title></div>
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
+                            <div class="title"><v-card-title>說明 <span v-if="editItem.execute_status=='2'" class="error-text ml-1">*{{editItem.num==3?'':'不執行'}}請填入原因</span></v-card-title></div>
                             <!-- <v-text-field v-model="editItem.action_remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field> -->
                             <v-textarea v-model="editItem.msg" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>
                         </div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="editDialog=false">取消</v-btn>
                         <v-btn class="btn-primary" :class="{'disabled':(editItem.execute_status=='2'&&editItem.msg=='')}" @click="submitEdit">確認</v-btn>
@@ -277,27 +276,26 @@
             <v-form ref="delayform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>{{ isDelay?'指定:':'複製:' }} {{ delayItem.action_name }}</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="delayDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="delayDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-column flex-align-start " style="cursor: pointer;">
                             <div class="title"><v-card-title>{{ isDelay?'指定':'複製' }}至哪天執行?</v-card-title></div>
-                            <div class="calendar">
+                            <div class="calendar" style="width: 100%;">
                                 <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (delayDate = getNowDate())">mdi-calendar</v-icon></v-btn></span>
                                 <v-menu v-model="menu_inspecteddate" :close-on-content-click="false" :nudge-right="40" 
                                     transition="scale-transition" offset-y min-width="auto">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field v-model="delayDate" class="mt-0" clearable readonly dense :rules="rules.require"
+                                        <v-text-field v-model="delayDate" class="mt-0" clearable readonly dense :rules="rules.require" full-width
                                             v-bind="attrs" v-on="on"></v-text-field>
                                     </template>
                                     <v-date-picker v-model="delayDate" locale="zh-tw" no-title @input="
@@ -307,13 +305,13 @@
                             </div>
                             
                         </div>
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>{{ isDelay?'指定':'複製' }}原因 </v-card-title></div>
-                            <v-text-field v-model="delayItem.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="delayItem.operation_reason" label="原因" autocomplete="off" class="mr-1 mt-1 pt-0" style="width: 100%;">
                             </v-text-field>
                         </div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="delayDialog=false">取消</v-btn>
                         <v-btn class="btn-primary" :class="{'disabled':(delayDate==null)}" @click="submitDelay">確認</v-btn>
@@ -329,14 +327,13 @@
             <v-form ref="addform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>新增動作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="addDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="addDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
@@ -355,10 +352,10 @@
                         
                     </div> -->
                     <div class="basic">
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div v-if="!actionInputShow" class="title"><v-card-title>動作名稱 </v-card-title></div>
                             <div v-if="!actionInputShow" class="content flex-align-center" style="width: 100%;">
-                                <v-text-field v-model="addItem.name_ch" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;flex:1">
+                                <v-text-field v-model="addItem.name_ch" label="名稱" autocomplete="off" :rules="rules.require" class="mr-1 mt-1 pt-0" style="width: 100%;flex:1">
                                 </v-text-field>
                                 <v-btn class="btn-secondary btn-small" @click="actionInputShow=true">帶入</v-btn>
                             </div>
@@ -370,13 +367,13 @@
                             </div>
                             
                         </div>
-                        <!-- <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <!-- <div class="card-title flex-align-start" style="cursor: pointer;flex-direction: column;">
                             <div class="title"><v-card-title>動作名稱(英文) </v-card-title></div>
                             <v-text-field v-model="addItem.name_en" label="名稱" autocomplete="off" :rules="rules.require" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field>
                         </div> -->
-                        <v-card-text style="display: flex;align-items: center;padding: 0;">
-                            <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <v-card-text class="flex-align-center px-0 py-0">
+                            <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                                 <div class="title"><v-card-title>起始日</v-card-title></div>
                                 <div class="calendar">
                                     <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (addItem.start_date = getNowDate())">mdi-calendar</v-icon></v-btn></span>
@@ -393,7 +390,7 @@
                                 </div>
                                 
                             </div>
-                            <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                            <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                                 <div class="title"><v-card-title>持續至</v-card-title></div>
                                 <div class="calendar">
                                     <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (addItem.end_date = getNowDate())">mdi-calendar</v-icon></v-btn></span>
@@ -414,14 +411,14 @@
                         </v-card-text>
                         <!-- 財務 -->
                         <!-- <v-card-text style="display: flex;align-items: center;padding: 0;">
-                            <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;width: 100%;">
+                            <div class="card-title flex-align-start" style="cursor: pointer;flex-direction: column;width: 100%;">
                                 <div class="title">
                                     <v-card-title>預估花費的人力 </v-card-title>
                                     <v-text-field v-model.number="addItem.estimated_member" type="number" label="花費的人力" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                                     </v-text-field>
                                 </div>
                             </div>
-                            <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;width: 100%;">
+                            <div class="card-title flex-align-start" style="cursor: pointer;flex-direction: column;width: 100%;">
                                 <div class="title">
                                     <v-card-title>預估花費的金錢 </v-card-title>
                                     <v-text-field v-model.number="addItem.estimated_spend" type="number" label="花費的金錢" autocomplete="off" min="0" hide-details style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
@@ -429,20 +426,20 @@
                                 </div>
                             </div>
                         </v-card-text> -->
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>備註 </v-card-title></div>
                             <v-text-field v-model="addItem.remark" filled dense  label="備註" clearable style="padding-top: 0;width: 100%;"></v-text-field>
                             <!-- <v-text-field v-model="editItem.action_remark" label="說明" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
                             </v-text-field> -->
                             <!-- <v-textarea v-model="addItem.action_remark" hide-details filled clearable placeholder="備註..." style="width: 100%;"></v-textarea> -->
                         </div>
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>新增原因 </v-card-title></div>
-                            <v-text-field v-model="addItem.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="addItem.operation_reason" label="原因" autocomplete="off" class="mr-1 mt-1 pt-0" style="width: 100%;">
                             </v-text-field>
                         </div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="addDialog=false">取消</v-btn>
                         <v-btn class="btn-primary" :class="{'disabled':(addItem.name_ch==''||addItem.start_date==null||addItem.end_date==null)}" @click="submitAdd">確認</v-btn>
@@ -454,24 +451,23 @@
         <v-dialog v-model="nextStepDialog" max-width="500px">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title" style="border-bottom: none;">
-                    <div style="display: inline-block;">
+                    <div class="d-inline-block">
                         <span></span> 
                     </div>
                     <!-- <div class="add" style="float: right;display: inline-block;">
                         <v-btn class="btn-secondary close"
                                 title="取消" 
-                                @click="delayDialog = false;" 
-                                style="border: none;min-width: 0;padding: 0 4px;">
+                                @click="delayDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div> -->
                 </v-card-title>
                 <div class="basic">
-                    <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                    <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                         <div class="title"><v-card-title>已完成目前工作項，按下確認開啟隔天新的工作項</v-card-title></div>
                     </div>
                 </div>
-                <v-card-actions style="padding: 24px 12px;">
+                <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn class="btn-primary" @click="nextStepDialog=false;searchPool();">確認</v-btn>
                 </v-card-actions>
@@ -485,22 +481,21 @@
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span v-if="delayAll.scheduling_date">指定{{delayAll.scheduling_date.slice(5).replace('-','/')}}之後未執行的所有動作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="delayAllDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="delayAllDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>指定天數</v-card-title></div>
-                            <div class="calendar">
+                            <div class="calendar" style="width: 100%;">
                                 <v-text-field
                                     v-model.number="delayAll.delay_day"
                                     type="number" dense hide-details
@@ -511,13 +506,13 @@
                             </div>
                             
                         </div>
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>指定原因 </v-card-title></div>
-                            <v-text-field v-model="delayAll.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="delayAll.operation_reason" label="原因" autocomplete="off" class="mr-1 mt-1 pt-0" style="width: 100%;">
                             </v-text-field>
                         </div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="delayAllDialog=false">取消</v-btn>
                         <v-btn class="btn-primary" :class="{'disabled':(delayAll.delay_day==0)}" @click="submitDelayAll">確認</v-btn>
@@ -530,39 +525,38 @@
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>下一工作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="nextWorkDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="nextWorkDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div v-if="nextWork.length>0" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div v-if="nextWork.length>0" class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
                                 {{ action }}
                             </div> -->
-                            <v-row class="border-bottom" style="width: 100%;display: flex;align-items: center;">
+                            <v-row class="border-bottom flex-align-center" style="width: 100%;">
                                 <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">第幾天開始執行</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">持續執行至第幾天</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">說明</span></v-col>
                             </v-row>
-                            <v-row class="content border-bottom" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="width: 100%;display: flex;align-items: center;">
+                            <v-row class="content border-bottom flex-align-center" v-for="(action,id) in nextWork" :key="'next_action_'+id" style="width: 100%;">
                                 <v-col cols="3"><span>{{ action.name_ch }}</span></v-col>
                                 <v-col cols="3"><span>Day {{action.start_on_which_day}}<br/></span></v-col>
                                 <v-col cols="3"><span>Day {{action.end_on_which_day}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.remark}}<br/></span></v-col>
                             </v-row>
                         </div>
-                        <div v-else class="card-title" style="width:200px;display: flex;flex-direction: column;align-items: flex-start;padding-top: 8px;">無資料</div>
+                        <div v-else class="card-title flex-align-start flex-column pt-2" style="width:200px;">無資料</div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-primary" @click="nextWorkDialog=false">確認</v-btn>
                     </v-card-actions>
@@ -574,39 +568,38 @@
             <v-form ref="delayAllform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>{{logData.action_name}}資訊</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="logDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="logDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div v-if="logData.log.length>0" class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div v-if="logData.log.length>0" class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <!-- <div class="title" v-for="(action,id) in nextWork" :key="'next_action_'+id">
                                 {{ action }}
                             </div> -->
-                            <v-row class="border-bottom" style="width: 100%;display: flex;align-items: center;">
+                            <v-row class="border-bottom flex-align-center" style="width: 100%;">
                                 <v-col cols="3"><span style="font-weight:bold">動作</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">原因</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">時間</span></v-col>
                                 <v-col cols="3"><span style="font-weight:bold">人員</span></v-col>
                             </v-row>
-                            <v-row class="content border-bottom" v-for="(action,id) in logData.log" :key="'log_'+id" style="width: 100%;display: flex;align-items: center;">
+                            <v-row class="content border-bottom flex-align-center" v-for="(action,id) in logData.log" :key="'log_'+id" style="width: 100%;">
                                 <v-col cols="3"><span>{{ action.operation=='rescheduled'?'指定':action.operation=='copy'?'複製':'新增' }}</span></v-col>
                                 <v-col cols="3"><span>{{action.operation_reason}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operation_time}}<br/></span></v-col>
                                 <v-col cols="3"><span>{{action.operator}}<br/></span></v-col>
                             </v-row>
                         </div>
-                        <div v-else class="card-title" style="width:200px;display: flex;flex-direction: column;align-items: flex-start;padding-top: 8px;">無資料</div>
+                        <div v-else class="card-title flex-align-start flex-column pt-2" style="width:200px;">無資料</div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-primary" @click="logDialog = false;">確認</v-btn>
                     </v-card-actions>
@@ -618,22 +611,21 @@
             <v-form ref="copyAllform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>一鍵複製</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="copyDialog = false;" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="copyDialog = false;">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>複製至哪天執行?</v-card-title></div>
-                            <div class="calendar">
+                            <div class="calendar" style="width: 100%;">
                                 <span class="pa-0 ma-0" slot="prepend"><v-btn class="btn-icon just-icon"><v-icon style="font-size: 1.25rem;" @click="() => (delayDate = getNowDate())">mdi-calendar</v-icon></v-btn></span>
                                 <v-menu v-model="copy_inspecteddate" :close-on-content-click="false" :nudge-right="40" 
                                     transition="scale-transition" offset-y min-width="auto">
@@ -648,20 +640,20 @@
                             </div>
                             
                         </div>
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;">
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;">
                             <div class="title"><v-card-title>原因 </v-card-title></div>
-                            <v-text-field v-model="copyCheckData.operation_reason" label="原因" autocomplete="off" style="margin-right: 4px;padding-top: 0;width: 100%;margin-top: 4px;">
+                            <v-text-field v-model="copyCheckData.operation_reason" label="原因" autocomplete="off" class="mr-1 mt-1 pt-0" style="width: 100%;">
                             </v-text-field>
                         </div>
-                        <div class="card-title" style="cursor: pointer;display: flex;flex-direction: column;align-items: flex-start;max-height: 200px;overflow-y: scroll;">
-                            <div class="title flex-align-center"><v-card-title>選擇要複製的動作 </v-card-title> <v-checkbox v-model="checkAll" label="全選" hide-details style="margin-top: 0;margin-left: 8px;" @change="changeCopy()"></v-checkbox></div>
-                            <div class="copy_list" v-for="(copy,id) in copyList" :key="'copy_'+id" style="width: 100%;padding: 4px;border-bottom: 1px solid rgba(0,0,0,0.1);">
-                                <v-checkbox v-model="copy.checked" :label="`${copy.action_name+(copy.action_remark!==''?'：':'')}`" hide-details style="margin-top: 0;" @change="changeCopy(copy.action_id)"></v-checkbox>
-                                <span v-if="copy.action_remark!==''" style="margin-left: 32px;" @click="changeCopy(copy.action_id)">{{ (copy.action_remark!==''?copy.action_remark:'') }}</span>
+                        <div class="card-title flex-align-start flex-column" style="cursor: pointer;max-height: 200px;overflow-y: scroll;">
+                            <div class="title flex-align-center"><v-card-title>選擇要複製的動作 </v-card-title> <v-checkbox v-model="checkAll" label="全選" hide-details class="mt-0 ml-2" @change="changeCopy()"></v-checkbox></div>
+                            <div class="copy_list px-1 py-1 border-bottom" v-for="(copy,id) in copyList" :key="'copy_'+id" style="width: 100%;">
+                                <v-checkbox v-model="copy.checked" :label="`${copy.action_name+(copy.action_remark!==''?'：':'')}`" hide-details class="mt-0" @change="changeCopy(copy.action_id)"></v-checkbox>
+                                <span v-if="copy.action_remark!==''" class="ml-8" @click="changeCopy(copy.action_id)">{{ (copy.action_remark!==''?copy.action_remark:'') }}</span>
                             </div>
                         </div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="copyDialog=false">取消</v-btn>
                         <v-btn class="btn-primary" :class="{'disabled':(copyCheckData.date==null||copyCheckData.list.length==0)}" @click="submitCopy">確認</v-btn>
@@ -1804,19 +1796,14 @@ export default {
 
 <style lang="scss" scoped>
 .result {
-    padding: 8px;
     overflow-x: scroll;
 }
 .result-content {
     @include flexAlignCenter();
-    margin-top: 16px;
 }
 .v-card.result-card {
-    display: flex;
-    flex-direction: column;
     @include size(280px,64vh);
     min-width: 280px;
-    // margin-right: 16px;
     .card-title {
         border: none;
     }
@@ -1828,15 +1815,9 @@ export default {
 .daily-check{
     background-color: #fff;
     box-shadow: 0 0 4px $color-black-10;
-    // border-left: 4px solid $color-primary;
-    margin: 4px 12px;
-    margin-bottom: 8px;
     border-radius: 4px;
-    padding: 4px;
     .check-title {
         @include flexCenterBetween();
-        margin: 8px;
-        padding-top: 0;
         .title {
             .v-card__title {
                 font-size: 1rem;
@@ -1860,20 +1841,12 @@ export default {
         }
     }
     .description {
-        margin: 8px;
-        margin-left: 12px;
         color: $color-dark-75;
     }
     .content {
-        margin-top: 4px;
-        padding-top: 8px !important;
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         .excute {
             @include flexCenterBetween();
-
-            .date,.excutor {
-                display: inline-block;
-            }
         }
     }
 }

@@ -67,118 +67,12 @@
           </div>
           <div class="result">
             <div class="result-card">
-              <!-- 統整小卡 養殖池 -->
-              <v-row v-if="false" style="margin-bottom: 4px;width: 100%;align-items: flex-start;height: 100%;position: relative;" id="chart">
-                <!-- 統整小卡 直式 -->
-                <v-col cols="12" md="3" style="padding-top: 0; padding-bottom: 4px;display: flex;flex-direction: column;">
-                  <v-row style="margin-bottom: 0;">
-                    <v-col cols="12" md="12" sm="4" style="padding: 0;">
-                      <v-card class="dashboard">
-                        <div class="icon" style="border-radius: 50%;">
-                          <v-icon >mdi-focus-field</v-icon>
-                        </div>
-                        <div class="total-text">
-                          <div class="title">
-                            養殖池
-                          </div>
-                          <div class="content" style="padding: 0;">
-                            <!-- {{ total.pool }} 個 -->
-                            <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=" 池" :myReady="onReady"></number-count-up>
-                          </div>
-                        </div>
-                      </v-card>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="4"
-                      :style="{'padding':`${windowWidth>959.98||windowWidth<599.98?'0':'0 8px'}`}">
-                      <v-card class="dashboard pond">
-                        <div class="icon" style="border-radius: 50%;">
-                          <v-icon >mdi-dots-grid</v-icon>
-                        </div>
-                        <div class="total-text">
-                          <div class="title">
-                            小池數
-                          </div>
-                          <div class="content" style="padding: 0;">
-                            <!-- {{ total.pond }} 個 -->
-                            <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=" 個" :myReady="onReady"></number-count-up>
-                          </div>
-                        </div>
-                      </v-card>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="4" style="padding: 0;">
-                      <v-card class="dashboard predict">
-                        <div class="icon" style="border-radius: 50%;">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.468 8.18c-.484-.547-.04-1.404.686-1.325l6.166.675c2.095.23 3.307 2.49 2.338 4.362l-.169.326c-.969 1.871-3.514 2.187-4.91.608L6.468 8.18Zm6.984-5.654a.231.231 0 0 1-.126-.042 3.796 3.796 0 0 0-5.918 3.82.197.197 0 0 1 0 .079c-.044.206-.36.263-.403.056A4.217 4.217 0 0 1 13.6 2.162c.17.122.06.37-.148.364Z" fill="#E8956F"/><path d="M15.375 5.8a.234.234 0 0 1-.113-.067 3.794 3.794 0 0 0-6.017.618.233.233 0 0 1-.089.084c-.188.1-.402-.085-.292-.268a4.216 4.216 0 0 1 6.732-.694c.143.156-.017.379-.221.327Z" fill="#E8956F"/><path fill-rule="evenodd" clip-rule="evenodd" d="m14.739 17.26-.342.081a.306.306 0 0 0-.112.052l-.779.574a.2.2 0 0 1-.273-.034.178.178 0 0 1 .032-.257l.877-.646a.006.006 0 0 0 .003-.007l.572-.135a4.4 4.4 0 0 0-.144-.75l-.65.092a.314.314 0 0 0-.118.042l-.847.505a.204.204 0 0 1-.271-.058.177.177 0 0 1 .054-.253l.953-.569a.006.006 0 0 0 .003-.006l.76-.108a4.834 4.834 0 0 0-1.083-1.678 3.108 3.108 0 0 0 2.592-1.684 3.11 3.11 0 0 0 .353-1.372c1.555 1.018 2.59 2.62 2.675 4.461.134 2.883-2.104 5.394-5.194 6.075l-.557 1.315a.94.94 0 1 1-1.528-1.034l-.022.004a.94.94 0 1 1 .24-1.767l1.297.638-.001.01c.961-.935 1.534-2.164 1.51-3.49Zm.919-1.37a.134.134 0 0 0-.05.013c-.12.054-.099.22.033.216a2.272 2.272 0 0 0 2.155-1.82c.026-.127-.143-.17-.212-.058a.132.132 0 0 0-.016.04 2.044 2.044 0 0 1-1.91 1.61Zm.194 1.89c.083 0 .165.008.246.022a2.044 2.044 0 0 0 1.56-.386.142.142 0 0 1 .026-.017c.137-.062.26.081.142.174a2.27 2.27 0 0 1-.843.412c-.402.102-.807.09-1.18-.016-.123-.035-.083-.19.046-.19h.003Zm-3.956 3.124c-.178-.023-.24.128-.063.157.144.023.292.032.442.025.132-.006.102-.146-.03-.152a4.04 4.04 0 0 1-.349-.03Zm.596 1.569c-.13.125-.214-.016-.087-.145.083-.085.16-.172.234-.26.084-.103.213-.043.14.066a2.115 2.115 0 0 1-.287.339Z" fill="#E8956F"/></svg>
-                        </div>
-                        <div class="total-text">
-                          <div class="title">
-                            預估放養
-                          </div>
-                          <div class="content" style="padding: 0;">
-                            <number-count-up v-if="showPredict" :id="'num3'" :endVal="total.predict" suffix=" 隻" :myReady="onReady"></number-count-up>
-                          </div>
-                        </div>
-                      </v-card>
-                    </v-col>
-                  </v-row>
-                  
-                </v-col>
-                <!-- 養殖池 -->
-                <v-col cols="12" md="9" style="margin-bottom: 4px;padding-top: 0;padding-right: 0;padding-bottom: 0;">
-                  <v-card class="result-card pool-detail" style="height: calc(100% - 14px);position: absolute;width: calc(100% / 12 * 9 - 12px);"
-                    :style="{'position':`${windowWidth>959.98?'absolute':'initial'}`,
-                              'width':`${windowWidth>959.98?'calc(100% / 12 * 9 - 12px)':'100%'}`}">
-                    <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
-                      <div class="title">
-                          <v-card-title style="padding: 0;">養殖池資訊</v-card-title>
-                      </div>
-                      <!-- <div class="chevron" >
-                        <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
-                        <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
-                      </div> -->
-                    </div>
-                    <div v-if="resultListOpen" class="content" style="padding: 0 12px;">
-                      <v-row style="margin-bottom: 0;">
-                        <v-col cols="12">
-                          <el-table :data="mainpool.items" style="width: 100%;" max-height="200" show-summary size="mini"
-                            :summary-method="getSummaries">
-                            <!-- headers{ text: "name", value: "name", groupable: false }, -->
-                            <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
-                              <template slot-scope="scope">
-                                <a v-if="$store.state.mydata.gobal_api.apiUrl.includes(':8011')" :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
-                                    scope.row.name
-                                }}</a>
-                                <div v-else>{{
-                                    scope.row.name
-                                }}</div>
-                              </template>
-                            </el-table-column>
-                            <el-table-column v-for="(item, key) in headers.filter(
-                              x => x.text != fixedname
-                            )" :fixed="item.text == fixedname" :prop="item.value" :label="item.text" :key="key" align="center"
-                              >
-                            </el-table-column>
-                          </el-table>
-                          <v-data-table :headers="headers" :items="mainpool.items" item-key="unit" :footer-props="footerProps"
-                            no-data-text="查無資料" disable-sort :loading="tableloading" style="height: 100%;width: 100%;" v-if="false">
-                          </v-data-table>
-                        </v-col>
-                        <!-- 圓餅圖 -->
-                        <!-- <v-col cols="12" md="4">
-
-                        </v-col> -->
-                      </v-row>
-                    </div>
-                    
-                  </v-card>
-                </v-col>
-              </v-row>
               <!-- 圖表 -->
               <v-row style="margin-bottom: 0;" >
                 <v-col cols="12" style="padding-top: 0;">
                   <v-card class="result-card">
                     <div class="content">
-                      <div class="header-bar" style="padding: 12px 0;padding-top: 4px;">
+                      <div class="header-bar py-3 px-0 pt-1">
                         <v-tabs v-model="currenttab" show-arrows @change="closepanel()">
                           <!-- 上方tab -->
                           <v-tab v-for="(tab, idx) in tabs" :key="'tabs-'+idx" :href="`#` + tab.name">
@@ -252,7 +146,7 @@
                                     ">主要觀測項目</v-btn> -->
                                   </v-col>
                                   <!-- 圖表顯示控制 -->
-                                  <v-col cols="6" md="6" sm="8" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="6" sm="8" class="flex-center-end pt-0" style="width: 100%;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -296,7 +190,7 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 無資料 -->
-                                <v-row v-if="waterdata.length < 1 && waterloading == false" style="margin-bottom: 0;min-height: 47vh;">
+                                <v-row v-if="waterdata.length < 1 && waterloading == false" class="mb-0" style="min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -470,10 +364,10 @@
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
                                 <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
+                                  <v-col cols="6" align-self="center" class="pt-0" v-if="windowWidth<959.98" >
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -501,7 +395,7 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in feeddata"
                                     :key="item.id" v-show="
                                       defPool.飼料.includes(item.name) || defPool.飼料.length == 0
@@ -515,7 +409,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="feeddata.length < 1 && feedloading == false" style="margin-bottom: 0;min-height: 47vh;">
+                                <v-row v-if="feeddata.length < 1 && feedloading == false" class="mb-0" style="min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -573,10 +467,10 @@
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
                                 <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
+                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -618,7 +512,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="obsdata.length < 1 && obsloading == false" style="margin-bottom: 0;min-height: 47vh;">
+                                <v-row v-if="obsdata.length < 1 && obsloading == false" class="mb-0" style="min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -675,10 +569,10 @@
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
                                 <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
+                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -777,10 +671,10 @@
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
                                 <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
+                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -823,7 +717,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="pbiodata.length < 1 && pbioloading == false" style="margin-bottom: 0;min-height: 47vh;">
+                                <v-row v-if="pbiodata.length < 1 && pbioloading == false" class="mb-0" style="min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -880,16 +774,16 @@
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
                                 <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
+                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
+                                        class="mt-0 ml-2"
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
                                       ></v-switch>
                                     </div>
                                     
@@ -927,7 +821,7 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 無資料 -->
-                                <v-row v-if="materialdata.length < 1 && materialloading == false" style="margin-bottom: 0;min-height: 47vh;">
+                                <v-row v-if="materialdata.length < 1 && materialloading == false" class="mb-0" style="min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -1764,106 +1658,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css";
-.basic {
-  h4 {
-    color: rgba(0,0,0,0.3);
-  }
-  .el-table__body-wrapper {
-    height: 100%;
-  }
-  .el-table__empty-block {
-    width: 100%;
-  }
-  .search.row {
-    .col-12 {
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-    .select_area .v-text-field__details {
-      display: none !important;
-   }
-  }
-}
-.v-expansion-panel::before{
-  box-shadow: none !important;
-}
 
-.v-sheet.result-card.pool-detail.v-card:not(.v-sheet--outlined) {
-  // box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-}
-.v-card.dashboard {
-  // padding: 24px;
-  padding: 8px 12px;
-  // border-bottom: 4px solid $color-primary;
-  border-left: 4px solid $color-primary;
-  @include flexAlignCenter();
-  margin-bottom: 12px;
-  background-color: rgba($color-primary,0.08);
-  .icon {
-    @include size(40px);
-    // background-color: rgba($color-primary,0.1);
-    text-align: center;
-    padding-top: 8px;
-    margin-right: 24px;
-    .v-icon {
-      color: $color-primary;
-    }
-  }
-  &.pond {
-    // border-bottom: 4px solid #92CF90;
-    border-left: 4px solid #92CF90;
-    background-color: rgba(#92CF90,0.07);
-    .icon {
-      // background-color: rgba(#92CF90,0.1);
-    }
-    .v-icon {
-      color: #92CF90;
-    }
-  }
-  &.predict {
-    // border-bottom: 4px solid #E8956F;
-    border-left: 4px solid #E8956F;
-    background-color: rgba(#E8956F,0.07);
-    .icon {
-      // background-color: rgba(#E8956F,0.1);
-    }
-  }
-  .total-text {
-    .title,.content {
-      color: $color-dark;
-      font-size: 1rem !important;
-    }
-    .content {
-      font-weight: bold;
-      padding: 0;
-      font-size: 1.2rem !important;
-    }
-  }
-}
-.v-card.result-card.pool-detail {
-  background-color: #fff;
-  .card-title {
-    border-bottom: 1px solid $color-black-10;
-    background-color: rgba($color-primary,0.1);
-  }
-  .v-card__title {
-    font-size: 1rem;
-  }
-  .title {
-    width: 100%;
-  }
-  .chevron {
-    // padding: 16px;
-    .v-icon {
-      color: $color-dark;
-    }
-  }
-  .content .col-12 {
-    padding: 0;
-    
-  }
-}
 .spector {
   color: $color-primary;
   // text-decoration: underline;
@@ -1879,44 +1674,5 @@ export default {
 .change-row {
   display: flex;
   flex-direction: column;
-}
-::v-deep {
-  .iCountUp {
-    font-size: 1.2rem !important;
-    color: $color-dark !important;
-  }
-  // 養殖池table
-  .el-table,.el-table tr,.el-table th.el-table__cell {
-    background-color: #fff;
-  }
-  .el-table__footer-wrapper tbody td.el-table__cell,
-  .el-table__fixed-footer-wrapper tbody td.el-table__cell {
-    background-color: #f5f7fa;
-  }
-  .el-table__body tr.hover-row>td.el-table__cell {
-    background-color: rgba($color-primary,0.1);
-  }
-  .el-table__fixed-footer-wrapper tbody td.el-table__cell,.el-table__footer-wrapper tbody td.el-table__cell {
-    font-weight: bold;
-  }
-  // 布局圖
-  .custom-overlay {
-    position: fixed;
-    .v-overlay__content {
-      @include size(100%);
-      .v-icon.v-icon.v-icon--link {
-        position: absolute;
-        top: 80px;
-        // right: 0;
-        // width: 24px;
-        // height: 24px;
-        // background-color: $color-primary;
-        // border-radius: 4px;
-      }
-      img {
-        @include positionCenter();
-      }
-    }
-  }
 }
 </style>

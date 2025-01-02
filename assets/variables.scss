@@ -43,6 +43,12 @@ $color-black-10: rgba(0,0,0,0.1);
   display: flex;
   align-items: flex-end;
 }
+
+// flex start
+@mixin flexAlignStart {
+  display: flex;
+  align-items: flex-start;
+}
 // flex center
 @mixin flexAllCenter {
   @include flexAlignCenter();
@@ -87,6 +93,9 @@ $color-black-10: rgba(0,0,0,0.1);
 }
 .flex-align-end {
   @include flexAlignEnd();
+}
+.flex-align-start {
+  @include flexAlignStart();
 }
 .flex-all-center {
   @include flexAllCenter();
@@ -530,6 +539,11 @@ $color-black-10: rgba(0,0,0,0.1);
         .add {
           float: right;
           display: inline-block;
+          .v-btn {
+            border: none;
+            min-width: 0;
+            padding: 0 4px;
+          }
         }
       }
       .card-title {
@@ -566,6 +580,9 @@ $color-black-10: rgba(0,0,0,0.1);
       }
       .basic {
         padding: 0 12px;
+      }
+      .v-card__actions {
+        padding: 24px 12px;
       }
     }
     

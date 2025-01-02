@@ -4,12 +4,11 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
     <v-card 
-      class="bg-card" 
-      style="margin-bottom: 12px;">
-      <div class="content" style="padding-top:12px">
+      class="bg-card mb-3">
+      <div class="content pt-3">
         <!-- 搜尋欄 -->
-        <div class="search" style="margin-bottom: -12px;">
-          <v-row style="margin-bottom: 0;">
+        <div class="search">
+          <v-row class="mb-0">
             <!-- 場/區/池 -->
             <v-col cols="12" md="2" sm="3">
               <v-autocomplete
@@ -127,10 +126,10 @@
         </div>
         <!-- 搜尋結果 -->
         <div class="result">
-          <v-row class="fill-height" style="margin-bottom: 0;">
-            <v-col style="border-radius: 4px;background-color: white;padding-top: 0;">
+          <v-row class="fill-height pb-0">
+            <v-col class="pt-0" style="border-radius: 4px;background-color: white;">
               <v-sheet height="64" class="pa-1">
-                <v-toolbar flat>
+                <v-toolbar flat height="56">
                   <!-- 新增紀事 -->
                   <v-btn class="btn-secondary green mr-4" @click="openedit('add')"><v-icon>mdi-calendar-plus</v-icon>新增</v-btn>
                   <!-- 今天 -->
@@ -217,7 +216,7 @@
                       <v-toolbar-title class="pl-2 ml-2"><span v-html="`【${selectedEvent.event_level_name}】${selectedEvent.name}`"></span></v-toolbar-title>
                       <!-- <v-toolbar-title v-html="`[${selectedEvent.event_level_name}]_${selectedEvent.name}`"></v-toolbar-title> -->
                       <v-spacer></v-spacer>
-                      <v-btn class="mr-2 box-shadow-none" style="border: none;min-width: 0;padding: 0 4px;background-color: transparent;"  @click="selectedOpen = false" >
+                      <v-btn class="mr-2 box-shadow-none px-1 py-0" style="border: none;min-width: 0;background-color: transparent;"  @click="selectedOpen = false" >
                         <v-icon style="color: #fff">mdi-close</v-icon>
                       </v-btn>
                       
@@ -244,7 +243,7 @@
                 </v-menu>
               </v-sheet>
             </v-col>
-            <v-col cols="12" style="padding-top: 0;padding-bottom: 0;">
+            <v-col cols="12" class="pt-0 pb-0">
               <span>
                 資料範圍：「場→可顯示場、區、池事件」、「區→可顯示區、池事件」、「池→可顯示池事件」
               </span>
@@ -268,22 +267,21 @@
       <v-form ref="eventSetform" v-model="eventSetvalid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               飼料表事件設定
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="dialog.eventSet = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="dialog.eventSet = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="basic" style="padding-left: 8px;padding-top: 8px;">
+            <div class="basic pl-2 pt-2">
               <!-- 選擇事件 -->
-              <v-card-text class="flex-align-center" style="margin-bottom: 14px;">
+              <v-card-text class="flex-align-center mb-3">
                 <v-autocomplete class="reload" v-model="eventSetList" label="選擇事件進行編輯" filled dense :items="eventSetData" item-text="title" item-value="id" clearable @change="eventSetChange">
                   <v-btn slot="append" class="btn-icon just-icon" @click="eventSetGet"><v-icon style="font-size: 1.3rem;">mdi-reload</v-icon></v-btn>
                   <!-- <v-tooltip bottom slot="append">
@@ -341,7 +339,7 @@
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn v-if="eventSet.mode=='add'" tile class="btn-secondary" @click="dialog.eventSet = false">取消</v-btn>
             <v-btn v-if="eventSet.mode=='add'" tile class="btn-primary" @click="eventSetAdd">新增</v-btn>
@@ -359,20 +357,19 @@
       <v-form ref="editform" v-model="addvalid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               {{(edited.mode=="add")?"新增":"編輯"}}紀事
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="dialog.add = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="dialog.add = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="basic" style="padding-left: 8px;padding-top: 8px;">
+            <div class="basic pl-2 pt-2">
               <v-card-text class="flex-align-center">
                 <v-switch
                   v-model="edited.is_all_day"
@@ -478,7 +475,7 @@
                   > -->
                 </v-autocomplete>
                 <treeselect
-                  class="select-template"
+                  class="select-template mt-2"
                   v-model="edited.poolid"
                   :options="maindatacpd_edited"
                   :default-expand-level="1"
@@ -493,7 +490,7 @@
                   "
                   :limit="1"
                   :limitText="() => `+${edited.poolid.length - 1}`"
-                  style="font-size:1rem;margin-top: 8px;"
+                  style="font-size:1rem;"
                   >
                     <!-- <div slot="value-label" slot-scope="{ node }">
                       {{
@@ -568,7 +565,7 @@
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="dialog.add = false">取消</v-btn>
             <v-btn class="btn-primary" @click="editsubmit(edited.mode)">確認</v-btn>
@@ -1451,8 +1448,5 @@ export default {
   .v-dialog .v-sheet.v-card.custom-dialog .v-input {
     margin-top: 0;
   }
-  // .v-dialog .v-sheet.v-card.custom-dialog .v-text-field.reload .theme--light.v-icon {
-  //   margin-top: 8px;
-  // }
 }
 </style>

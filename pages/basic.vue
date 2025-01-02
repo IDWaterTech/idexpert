@@ -3,7 +3,7 @@
     <v-overlay :value="!showAlert" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-    <v-card class="bg-card" style="margin-bottom: 16px;">
+    <v-card class="bg-card mb-4">
       <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
                 <div class="title">
@@ -12,14 +12,14 @@
                 </div>
             </v-row>
         </div> -->
-      <div class="content" style="padding-left: 0;padding-top:12px;padding-bottom: 0;">
+      <div class="content pl-0 pt-3 pb-0">
         <!-- 搜尋 -->
         <div class="search">
-          <v-row style="margin-bottom: 4px;align-items: center;">
+          <v-row class="mb-1" style="align-items: center;">
             <!-- 選擇場區 -->
             <v-col cols="12" md="4" sm="4" style="position: relative;">
-              <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false"
-                @scopeSel_data="get_scopeData($event);resultListOpen=true;" style="margin-right: 0;"></locate-select>
+              <locate-select class="select-template mr-0" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false"
+                @scopeSel_data="get_scopeData($event);resultListOpen=true;"></locate-select>
             </v-col>
             <v-col cols="12" md="2" sm="2" style="position: relative;">
               <!-- <v-select 
@@ -121,73 +121,12 @@
         <div class="result">
           <div class="result-card">
             <!-- 統整小卡 整列式 -->
-            <v-row style="margin-bottom: 4px;">
-              <!-- <v-col cols="12" md="3" sm="6"  style="padding-top: 0; padding-bottom: 0;">
-                  <v-card class="dashboard warning-alert">
-                    <div class="icon" style="border-radius: 50%;">
-                      <v-icon >mdi-alert-outline</v-icon>
-                    </div>
-                    <div class="total-text">
-                      <div class="title">
-                        警示
-                      </div>
-                      <div class="content" style="padding: 0;">
-                        <number-count-up v-if="showAlert" :id="'num4'" :endVal="total.warning" suffix=" 池" :myReady="onReady"></number-count-up>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" md="3" sm="6"  style="padding-top: 0; padding-bottom: 0;">
-                  <v-card class="dashboard">
-                    <div class="icon" style="border-radius: 50%;">
-                      <v-icon >mdi-focus-field</v-icon>
-                    </div>
-                    <div class="total-text">
-                      <div class="title">
-                        養殖池
-                      </div>
-                      <div class="content" style="padding: 0;">
-                        <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=" 池" :myReady="onReady"></number-count-up>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" md="3" sm="6"  style="padding-top: 0; padding-bottom: 0;">
-                  <v-card class="dashboard pond">
-                    <div class="icon" style="border-radius: 50%;">
-                      <v-icon >mdi-dots-grid</v-icon>
-                    </div>
-                    <div class="total-text">
-                      <div class="title">
-                        小池數
-                      </div>
-                      <div class="content" style="padding: 0;">
-                        <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=" 個" :myReady="onReady"></number-count-up>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" md="3" sm="6"  style="padding-top: 0; padding-bottom: 0;">
-                  <v-card class="dashboard predict">
-                    <div class="icon" style="border-radius: 50%;">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.468 8.18c-.484-.547-.04-1.404.686-1.325l6.166.675c2.095.23 3.307 2.49 2.338 4.362l-.169.326c-.969 1.871-3.514 2.187-4.91.608L6.468 8.18Zm6.984-5.654a.231.231 0 0 1-.126-.042 3.796 3.796 0 0 0-5.918 3.82.197.197 0 0 1 0 .079c-.044.206-.36.263-.403.056A4.217 4.217 0 0 1 13.6 2.162c.17.122.06.37-.148.364Z" fill="#E8956F"/><path d="M15.375 5.8a.234.234 0 0 1-.113-.067 3.794 3.794 0 0 0-6.017.618.233.233 0 0 1-.089.084c-.188.1-.402-.085-.292-.268a4.216 4.216 0 0 1 6.732-.694c.143.156-.017.379-.221.327Z" fill="#E8956F"/><path fill-rule="evenodd" clip-rule="evenodd" d="m14.739 17.26-.342.081a.306.306 0 0 0-.112.052l-.779.574a.2.2 0 0 1-.273-.034.178.178 0 0 1 .032-.257l.877-.646a.006.006 0 0 0 .003-.007l.572-.135a4.4 4.4 0 0 0-.144-.75l-.65.092a.314.314 0 0 0-.118.042l-.847.505a.204.204 0 0 1-.271-.058.177.177 0 0 1 .054-.253l.953-.569a.006.006 0 0 0 .003-.006l.76-.108a4.834 4.834 0 0 0-1.083-1.678 3.108 3.108 0 0 0 2.592-1.684 3.11 3.11 0 0 0 .353-1.372c1.555 1.018 2.59 2.62 2.675 4.461.134 2.883-2.104 5.394-5.194 6.075l-.557 1.315a.94.94 0 1 1-1.528-1.034l-.022.004a.94.94 0 1 1 .24-1.767l1.297.638-.001.01c.961-.935 1.534-2.164 1.51-3.49Zm.919-1.37a.134.134 0 0 0-.05.013c-.12.054-.099.22.033.216a2.272 2.272 0 0 0 2.155-1.82c.026-.127-.143-.17-.212-.058a.132.132 0 0 0-.016.04 2.044 2.044 0 0 1-1.91 1.61Zm.194 1.89c.083 0 .165.008.246.022a2.044 2.044 0 0 0 1.56-.386.142.142 0 0 1 .026-.017c.137-.062.26.081.142.174a2.27 2.27 0 0 1-.843.412c-.402.102-.807.09-1.18-.016-.123-.035-.083-.19.046-.19h.003Zm-3.956 3.124c-.178-.023-.24.128-.063.157.144.023.292.032.442.025.132-.006.102-.146-.03-.152a4.04 4.04 0 0 1-.349-.03Zm.596 1.569c-.13.125-.214-.016-.087-.145.083-.085.16-.172.234-.26.084-.103.213-.043.14.066a2.115 2.115 0 0 1-.287.339Z" fill="#E8956F"/></svg>
-                    </div>
-                    <div class="total-text">
-                      <div class="title">
-                        預估放樣
-                      </div>
-                      <div class="content" style="padding: 0;">
-                        <number-count-up v-if="showPredict" :id="'num3'" :endVal="total.predict" suffix=" 隻" :myReady="onReady"></number-count-up>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col> -->
-
-              <v-col cols="12" lg="3" sm="6" style="padding-top: 0; padding-bottom: 0;">
+            <v-row class="mb-1" style="margin-bottom: 4px;">
+              <v-col cols="12" lg="3" sm="6" class="pt-0 pb-0">
                 <v-card class="dashboard warning-alert">
                   <div class="icon">
                     <v-icon>mdi-alert-outline</v-icon>
-                    <div class="total-text" style="margin-left: 8px;">
+                    <div class="total-text ml-2">
                       <div class="title" style="font-weight: bold;">
                         警示
                       </div>
@@ -198,16 +137,16 @@
                     <div class="content">
                       <number-count-up v-if="showAlert" :id="'num4'" :endVal="total.warning" suffix=""
                         :myReady="onReady"></number-count-up>
-                      <span style="margin-left: 8px;"> 個</span>
+                      <span class="ml-2"> 個</span>
                     </div>
                   </div>
                 </v-card>
               </v-col>
-              <v-col cols="12" lg="3" md="6" sm="6" style="padding-top: 0; padding-bottom: 0;">
+              <v-col cols="12" lg="3" md="6" sm="6"  class="pt-0 pb-0">
                 <v-card class="dashboard">
                   <div class="icon">
                     <v-icon>mdi-focus-field</v-icon>
-                    <div class="total-text" style="margin-left: 8px;">
+                    <div class="total-text ml-2">
                       <div class="title" style="font-weight: bold;">
                         養殖池
                       </div>
@@ -217,16 +156,16 @@
                     <div class="content">
                       <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=""
                         :myReady="onReady"></number-count-up>
-                      <span style="margin-left: 8px;"> 池</span>
+                      <span class="ml-2"> 池</span>
                     </div>
                   </div>
                 </v-card>
               </v-col>
-              <v-col cols="12" lg="3" md="6" sm="6" style="padding-top: 0; padding-bottom: 0;">
+              <v-col cols="12" lg="3" md="6" sm="6"  class="pt-0 pb-0">
                 <v-card class="dashboard pond">
                   <div class="icon">
                     <v-icon>mdi-dots-grid</v-icon>
-                    <div class="total-text" style="margin-left: 8px;">
+                    <div class="total-text ml-2">
                       <div class="title" style="font-weight: bold;">
                         小池數
                       </div>
@@ -236,12 +175,12 @@
                     <div class="content">
                       <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=""
                         :myReady="onReady"></number-count-up>
-                      <span style="margin-left: 8px;"> 個</span>
+                      <span class="ml-2"> 個</span>
                     </div>
                   </div>
                 </v-card>
               </v-col>
-              <v-col cols="12" lg="3" md="6" sm="6" style="padding-top: 0; padding-bottom: 0;">
+              <v-col cols="12" lg="3" md="6" sm="6"  class="pt-0 pb-0">
                 <v-card class="dashboard predict">
                   <div class="icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -255,7 +194,7 @@
                         d="m14.739 17.26-.342.081a.306.306 0 0 0-.112.052l-.779.574a.2.2 0 0 1-.273-.034.178.178 0 0 1 .032-.257l.877-.646a.006.006 0 0 0 .003-.007l.572-.135a4.4 4.4 0 0 0-.144-.75l-.65.092a.314.314 0 0 0-.118.042l-.847.505a.204.204 0 0 1-.271-.058.177.177 0 0 1 .054-.253l.953-.569a.006.006 0 0 0 .003-.006l.76-.108a4.834 4.834 0 0 0-1.083-1.678 3.108 3.108 0 0 0 2.592-1.684 3.11 3.11 0 0 0 .353-1.372c1.555 1.018 2.59 2.62 2.675 4.461.134 2.883-2.104 5.394-5.194 6.075l-.557 1.315a.94.94 0 1 1-1.528-1.034l-.022.004a.94.94 0 1 1 .24-1.767l1.297.638-.001.01c.961-.935 1.534-2.164 1.51-3.49Zm.919-1.37a.134.134 0 0 0-.05.013c-.12.054-.099.22.033.216a2.272 2.272 0 0 0 2.155-1.82c.026-.127-.143-.17-.212-.058a.132.132 0 0 0-.016.04 2.044 2.044 0 0 1-1.91 1.61Zm.194 1.89c.083 0 .165.008.246.022a2.044 2.044 0 0 0 1.56-.386.142.142 0 0 1 .026-.017c.137-.062.26.081.142.174a2.27 2.27 0 0 1-.843.412c-.402.102-.807.09-1.18-.016-.123-.035-.083-.19.046-.19h.003Zm-3.956 3.124c-.178-.023-.24.128-.063.157.144.023.292.032.442.025.132-.006.102-.146-.03-.152a4.04 4.04 0 0 1-.349-.03Zm.596 1.569c-.13.125-.214-.016-.087-.145.083-.085.16-.172.234-.26.084-.103.213-.043.14.066a2.115 2.115 0 0 1-.287.339Z"
                         fill="#E8956F" />
                     </svg>
-                    <div class="total-text" style="margin-left: 8px;">
+                    <div class="total-text ml-2">
                       <div class="title" style="font-weight: bold;">
                         預估放養
                       </div>
@@ -265,7 +204,7 @@
                     <div class="content">
                       <number-count-up v-if="showPredict" :id="'num3'" :endVal="total.predict" suffix=""
                         :myReady="onReady"></number-count-up>
-                      <span style="margin-left: 8px;"> 隻</span>
+                      <span class="ml-2"> 隻</span>
                     </div>
                   </div>
                 </v-card>
@@ -273,7 +212,7 @@
 
             </v-row>
             <!-- 養殖池 -->
-            <v-row style="margin-bottom: 12px;align-items: stretch;height: 100%;" id="chart">
+            <v-row class="mb-3" style="align-items: stretch;height: 100%;" id="chart">
               <!-- AI建議 -->
               <!-- <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
                   <v-card class="result-card pool-detail" style="height: calc(100% - 14px);overflow: hidden;">
@@ -303,11 +242,11 @@
                   </v-card>
                 </v-col> -->
               <!-- 養殖池 -->
-              <v-col cols="12" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
+              <v-col cols="12" class="mb-1 pt-0 pb-0">
                 <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
-                  <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
+                  <div class="card-title px-3 py-2">
                     <div class="title">
-                      <v-card-title style="padding: 0;"><span class="mr-1">養殖池資訊</span>
+                      <v-card-title class="px-0 py-0"><span class="mr-1">養殖池資訊</span>
                         <v-checkbox v-model="isHideEmpty" color="green" value="空池" hide-details><span style="color:green;" slot="label">隱藏空池</span></v-checkbox>
                       </v-card-title>
                     </div>
@@ -317,7 +256,7 @@
                       </div> -->
                   </div>
                   <div v-if="resultListOpen" class="content">
-                    <v-row style="margin-bottom: 16px;">
+                    <v-row class="mb-4">
                       <v-col cols="12">
                         <el-table v-if="showAlert" :data="mainpool.items.filter(x=>x.state!=isHideEmpty)" style="width: 100%;" max-height="240" show-summary size="mini"
                           :summary-method="getSummaries" :row-style="isTagColor">
@@ -354,11 +293,11 @@
 
             </v-row>
             <!-- 下方水質地圖 -->
-            <v-row style="margin-bottom: 0;">
-              <v-col cols="12" style="padding-top: 0;">
+            <v-row class="mb-0">
+              <v-col cols="12" class="pt-0">
                 <v-card class="result-card water">
                   <div class="content">
-                    <div class="header-bar water-bar" style="padding: 12px 0;padding-top: 4px;">
+                    <div class="header-bar water-bar px-0 py-3 pt-1">
                       <v-tabs v-model="currenttab" show-arrows>
                         <!-- 上方tab -->
                         <v-tab v-for="(tab, idx) in tabsMap" :key="'tabs-'+idx" :href="`#` + tab.name">
@@ -401,8 +340,8 @@
         </div>
       </div>
     </v-card>
-    <v-overlay v-if="showmp && sel_main" :absolute="showmp" :value="showmp" style="padding: 24px;"
-      class="custom-overlay">
+    <v-overlay v-if="showmp && sel_main" :absolute="showmp" :value="showmp"
+      class="custom-overlay px-6 py-6">
       <img v-img :src="mpurl" width="100%" class="grey lighten-2" />
       <v-icon @click="showmp = false" style="background-color: rgba(0,0,0,0.25);border-radius: 4px;">mdi-close</v-icon>
     </v-overlay>
@@ -1993,24 +1932,16 @@ export default {
 }
 
 .v-sheet.result-card.pool-detail.v-card:not(.v-sheet--outlined) {
-  // box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.10);
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 }
 .v-card.dashboard {
   padding: 16px 24px;
-  // padding: 8px 12px;
   border-bottom: 4px solid $color-primary;
-  // border-left: 4px solid $color-primary;
-  @include flexAlignCenter();
-  display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  @include flexAlignStart();
   margin-bottom: 12px;
   background-color: rgba($color-primary,0.08);
   .icon {
-    //width: 40px;
-    //height: 40px;
-    // background-color: rgba($color-primary,0.1);
     border-radius: 50%;
     padding-top: 0;
     display: flex;
@@ -2022,26 +1953,17 @@ export default {
   }
   &.pond {
     border-bottom: 4px solid #92CF90;
-    // border-left: 4px solid #92CF90;
     background-color: rgba(#92CF90,0.07);
-    .icon {
-      // background-color: rgba(#92CF90,0.1);
-    }
     .v-icon {
       color: #92CF90;
     }
   }
   &.predict {
     border-bottom: 4px solid #E8956F;
-    // border-left: 4px solid #E8956F;
     background-color: rgba(#E8956F,0.07);
-    .v-icon {
-      // background-color: rgba(#E8956F,0.1);
-    }
   }
   &.warning-alert {
     border-bottom: 4px solid #E65151;
-    // border-left: 4px solid #E65151;
     background-color: rgba(#E65151,0.07);
     .v-icon {
       color: #E65151;
@@ -2061,9 +1983,8 @@ export default {
       font-size: 1.2rem !important;
     }
     &.number-text {
-      display: flex;
+      @include flexAlignStart();
       flex-direction: row;
-      align-items: flex-start;
       width: 100%;
       .content {
         padding: 0;
@@ -2087,18 +2008,6 @@ export default {
   }
 }
 
-.spector {
-  color: $color-primary;
-  // text-decoration: underline;
-  cursor: pointer;
-  padding-bottom: 2px;
-  border-bottom: 1px solid $color-primary;
-  width: 88px;
-}
-.pool-name {
-  color: $color-dark;
-  padding-left: 4px;
-}
 .v-application.v-application--is-ltr {
   .result-card.water {
     overflow-x: scroll;
@@ -2109,9 +2018,6 @@ export default {
     }
   }
 }
-
-
-
 ::v-deep {
   .iCountUp {
     font-size: 2rem !important;
@@ -2140,10 +2046,6 @@ export default {
         position: absolute;
         top: 80px;
         right: 0;
-        // width: 24px;
-        // height: 24px;
-        // background-color: $color-primary;
-        // border-radius: 4px;
       }
       img {
         @include positionCenter();
