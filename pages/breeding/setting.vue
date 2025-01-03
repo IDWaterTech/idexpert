@@ -5,11 +5,11 @@
     <div>
         <!-- <h1 style="color:white;">養殖設定</h1>
         <span ></span> -->
-        <v-card class="bg-card" style="margin-bottom: 16px;">
-            <div class="content" style="padding-left: 0;padding-top:0;padding-bottom: 0;">
+        <v-card class="bg-card mb-4">
+            <div class="content pl-0 pt-0 pb-0">
                 <div class="result">
                     <!-- <div class="result-card" style="background-color: #fff;"> -->
-                        <v-row style="margin-bottom: 4px;align-items: center;">
+                        <v-row class="align-center mb-1">
                             <v-col cols="12">
                                 <div class="header-bar">
                                     <v-tabs show-arrows>

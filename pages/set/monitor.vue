@@ -4,10 +4,10 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
     <v-card class="bg-card">
-      <div class="content" style="padding-top:12px">
+      <div class="content pt-3">
         <!-- 上方列 -->
-        <v-row class="flex-center-between" style="margin-bottom: 16px;">
-          <div class="tag-groups" style="margin-left: 8px;">
+        <v-row class="flex-center-between mb-4" >
+          <div class="tag-groups ml-2">
             <span 
               class="span"
               v-for="(item, index) in cols"
@@ -20,7 +20,7 @@
                 })
               ">{{ getgroupname(item) }} | </span>
           </div>
-          <div class="open" style="padding-right: 12px;">
+          <div class="open pr-3">
             <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
               <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
             </v-btn>
@@ -35,13 +35,13 @@
             v-for="(item, index) in cols"
             :key="'result_card_'+index"
             :id="item"
-            style="width: 100%;">
-            <v-card class="result-card" style="width: 100%;">
+            class="full-width">
+            <v-card class="result-card full-width">
               <div class="title border-bottom flex-center-between">
                 <v-card-title style="font-size: 14px;">
                   {{ getgroupname(item) }}
                   </v-card-title>
-                  <div class="chevron" style="margin-right: 16px;">
+                  <div class="chevron mr-4">
                     <v-btn class="btn-icon green" @click="addShow(item)"><v-icon>mdi-plus</v-icon></v-btn>
                     <v-icon v-if="adjustOpen(index)" @click="expandArrayChange(index)">mdi-triangle-small-up</v-icon>
                     <v-icon v-else @click="expandArrayChange(index)">mdi-triangle-small-down</v-icon>
@@ -123,20 +123,19 @@
             <div class="add">
                 <v-btn class="btn-secondary close"
                         title="取消" 
-                        @click="editDialog = false" 
-                        style="border: none;min-width: 0;padding: 0 4px;">
+                        @click="editDialog = false">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </div>
         </v-card-title>
         <v-card-text>
-          <div class="basic" style="padding-left: 8px;padding-top: 8px;">
+          <div class="basic pl-2 pt-2">
             <div class="card-title">
               <div class="title">
                   <v-card-title>基本資料</v-card-title>
               </div>
             </div>
-            <v-card-text style="display: flex;flex-direction:column;">
+            <v-card-text  class="d-flex flex-column">
               <div class="search flex-align-center">
                 <v-text-field filled dense v-model="editedItem.name_en" disabled >
                   <span style="width:100px" slot="prepend">項目(英文)</span>
@@ -146,14 +145,14 @@
                 </v-text-field>
               </div>
             </v-card-text>
-            <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
-              <div class="search flex-align-center" style="width: 100%;">
-                <v-text-field label="ppm、°c、g、..." filled dense v-model="editedItem.unit"  style="width: 100%;">
+            <v-card-text class="d-flex flex-column pt-0">
+              <div class="search flex-align-center full-width">
+                <v-text-field class="full-width" label="ppm、°c、g、..." filled dense v-model="editedItem.unit">
                   <span  slot="prepend" style="width:80px">單位</span>
                 </v-text-field>
               </div>
             </v-card-text>
-            <v-card-text style="display: flex;flex-direction:column;padding-top: 0;margin-bottom: 16px;">
+            <v-card-text  class="d-flex flex-column pt-0 mb-4">
               <v-switch
                 v-model="editedItem.is_enable_alert"
                 dense
@@ -164,14 +163,14 @@
                 <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定<br><strong>※ 全部指標通知規則：做水、放養中<br>※ 限定指標通知規則(水位百分比)：蓄水、做水、放養中</strong></span>
             </v-card-text>
             <v-spacer></v-spacer>
-            <div class="card-title" style="margin-bottom: 16px;">
+            <div class="card-title mb-4">
               <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
                   <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
-            <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
-              <v-row style="padding: 0 12px;">
+            <v-card-text class="d-flex flex-column pt-4">
+              <v-row class="px-3 py-0">
                 <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
                 <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
                 <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
@@ -180,8 +179,8 @@
                 <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
-            <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
-              <span class="subtitle-1  font-weight-black" style="text-align: center;"
+            <v-card-text class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1  font-weight-black text-center"
                 >最小值←→最大值</span
               >
               <v-row>
@@ -220,8 +219,8 @@
                 ></v-col>
               </v-row>
             </v-card-text>
-            <v-card-text  class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
-              <span class="subtitle-1" style="color:red;text-align: center;"
+            <v-card-text  class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1 text-center" style="color:red;"
                 >危險下限值←→危險上限值</span
               >
               <v-row>
@@ -261,8 +260,8 @@
                 ></v-col>
               </v-row>
             </v-card-text>
-            <v-card-text  class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
-              <span class="subtitle-1" style="color:orange;text-align: center;"
+            <v-card-text  class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1 text-center" style="color:orange;"
                 >警戒下限值←→警戒上限值</span
               >
               <v-row>
@@ -331,7 +330,7 @@
               ></v-text-field>
             </v-col> -->
         </v-card-text>
-        <v-card-actions style="padding: 24px 12px;">
+        <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn class="btn-secondary" @click="editDialog = false">取消</v-btn>
           <v-btn class="btn-primary" @click="editsubmit">確定</v-btn>
@@ -348,21 +347,20 @@
             <div class="add">
                 <v-btn class="btn-secondary close"
                         title="取消" 
-                        @click="addDialog = false" 
-                        style="border: none;min-width: 0;padding: 0 4px;">
+                        @click="addDialog = false">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="basic" style="padding-left: 8px;padding-top: 8px;">
+            <div class="basic pl-2 pt-2">
               <div class="card-title">
                 <div class="title">
                     <v-card-title>基本資料</v-card-title>
                 </div>
               </div>
-              <v-card-text style="display: flex;flex-direction:column;">
-                <div class="search" style="display: flex;align-items: center;">
+              <v-card-text class="d-flex flex-column">
+                <div class="search flex-align-center">
                   <v-text-field
                     filled dense
                     v-model="addItem.name_en"
@@ -380,15 +378,15 @@
                     ></v-text-field>
                 </div>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
-                <div class="search flex-align-center" style="width: 100%;">
-                  <v-text-field label="ppm、°c、g、..." filled dense v-model="addItem.unit" :rules="rules.require" style="width: 100%;">
+              <v-card-text class="d-flex flex-column pt-0">
+                <div class="search flex-align-center full-width">
+                  <v-text-field class="full-width" label="ppm、°c、g、..." filled dense v-model="addItem.unit" :rules="rules.require">
                   <span  slot="prepend" style="width:80px">單位</span>
                 </v-text-field>
                 </div>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
-                <div class="search" style="display: flex;flex-direction:column;width: 100%;">
+              <v-card-text class="d-flex flex-column pt-0">
+                <div class="search d-flex flex-column full-width">
                   <v-switch
                   v-model="addItem.is_enable_alert"
                   dense
@@ -400,14 +398,14 @@
                 </div>
               </v-card-text>
               <v-spacer></v-spacer>
-            <div class="card-title" style="margin-bottom: 16px;">
+            <div class="card-title mb-4">
               <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
                   <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
-            <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
-              <v-row style="padding: 0 12px;">
+            <v-card-text class="d-flex flex-column pt-4">
+              <v-row class="px-3 py-0">
                 <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
                 <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
                 <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
@@ -416,8 +414,8 @@
                 <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
-            <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
-              <span class="subtitle-1  font-weight-black"  style="text-align: center;"
+            <v-card-text class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1  font-weight-black text-center"
                     >最小值←→最大值</span
                   >
                   <v-row>
@@ -462,8 +460,8 @@
                     ></v-col>
                   </v-row>
             </v-card-text>
-            <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
-              <span class="subtitle-1" style="color:red;text-align: center;" 
+            <v-card-text class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1 text-center" style="color:red;" 
                     >危險下限值←→危險上限值</span
                   >
                   <v-row>
@@ -507,8 +505,8 @@
                     ></v-col>
                   </v-row>
             </v-card-text>
-            <v-card-text class="slider" style="display: flex;flex-direction:column;padding-top: 16px;">
-              <span class="subtitle-1" style="color:orange;text-align: center;"
+            <v-card-text class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1 text-center" style="color:orange;"
                     >警戒下限值←→警戒上限值</span
                   >
                   <v-row>
@@ -554,7 +552,7 @@
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="addDialog = false">取消</v-btn>
             <v-btn class="btn-primary" @click="addsubmit">確定</v-btn>

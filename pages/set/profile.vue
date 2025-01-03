@@ -1,29 +1,29 @@
 <template>
   <div style="width: 100%;height: 100%;">
-    <v-card  class="login profile">
+    <v-card  class="login profile px-6 py-10">
       <v-overlay :value="$route.query.hasOwnProperty('code')" :absolute="true">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
-      <div class="card-title">
+      <div class="card-title mb-0 pb-4 border-bottom">
         <!-- {{ this.$auth.$state.user.picture }} -->
-          <div class="title" style="display: flex;align-items: center;">
+          <div class="title flex-align-center">
             <v-avatar size="60"
               ><v-img :src="this.$auth.$state.user.picture"></v-img
             ></v-avatar>
-            <div class="information">
+            <div class="information flex-column pa-3">
               <span class="title">{{ $auth.$state.user.name }}</span>
               <span style="max-width: 200px;font-size: 0.85rem;font-weight: 500;">{{ $auth.$state.user.email }}</span>
             </div>
           </div>
       </div>
       <v-divider></v-divider>
-      <div class="content notify">
+      <div class="content notify pt-4 mb-10 flex-column">
         <v-subheader class="title">
           <v-icon class="mx-2">mdi-bell-circle-outline</v-icon>接收通知
         </v-subheader>
-        <div class="notify-item">
+        <div class="notify-item flex-column pl-1">
           <!-- <v-icon color="#EA4335" class="mr-2">mdi-gmail</v-icon> -->
-          <div class="mail">
+          <div class="mail mx-2 my-4">
             <!-- {{ profile.is_sys_enable_email }} -->
             <span>Mail</span>
             <el-switch
@@ -38,7 +38,7 @@
           
           <!-- <v-icon color="#00B900" class="mr-2"
             >mdi-alpha-l-circle-outline</v-icon> -->
-          <div class="mail line flex-align-center">
+          <div class="mail mx-2 my-4 line flex-align-center">
             <span>Line</span>
             <el-switch
               class="mx-2"
@@ -77,8 +77,8 @@
             > -->
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <button class="btn-icon just-icon" :disabled="!profile.line_token" v-bind="attrs"
-                    v-on="on" @click="testMsg" style="cursor: pointer;">
+                <button class="btn-icon just-icon cursor-pointer" :disabled="!profile.line_token" v-bind="attrs"
+                    v-on="on" @click="testMsg">
                   <v-icon style="font-size: 2rem;">mdi-send-circle-outline</v-icon>
                 </button>
                 
@@ -305,19 +305,8 @@ export default {
   padding: 0;
 }
 .v-application.v-application--is-ltr .v-card.login.profile {
-  padding: 40px 24px;
-  .card-title {
-    margin-bottom: 0;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-  }
   .notify {
-    // padding: 0 8px;
-    padding-top: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 40px;
+    @include flexAlignStart();
     width: 100%;
     .title {
       &.theme--light.v-subheader {
@@ -330,12 +319,9 @@ export default {
       
     }
     .notify-item {
-      flex-direction: column;
-      align-items: flex-start;
-      padding-left: 4px;
+      @include flexAlignStart();
     }
     .mail {
-      margin: 16px 8px;
       & > span {
         font-size: 1rem;
         font-weight: bold;
@@ -345,10 +331,7 @@ export default {
     }
   }
   .information {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
+    @include flexAlignStart();
     .title {
       font-weight: bold;
     }

@@ -3,14 +3,14 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-    <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
-      <div class="content" style="padding-left: 0;padding-top:12px;padding-bottom: 0;">
+    <v-card class="bg-card mb-3" style="min-height:86vh">
+      <div class="content pl-0 pt-3 pb-0">
         <!-- 搜尋 -->
         <div class="search">
-          <v-row style="margin-bottom: 0;margin-left: 4px;">
+          <v-row class="mb-0 ml-1">
             <!-- 選場 -->
             <v-col cols="12" md="4" sm="5">
-              <v-row no-gutters align="center" dense style="margin-bottom: 0;">
+              <v-row no-gutters align="center" dense class="mb-0">
                 <v-col cols="6">
                   <v-select
                     v-model="sel_main"
@@ -89,7 +89,7 @@
             </v-col>
             <!-- 選區 -->
             <v-col cols="12" md="4" sm="5">
-              <v-row no-gutters align="center" style="margin-bottom: 0;">
+              <v-row no-gutters align="center" class="mb-0">
                 <v-col cols="6">
                   <v-select
                     v-model="sel_area"
@@ -166,7 +166,7 @@
               <!-- 表頭 -->
               <div class="card-title">
                 <div class="title flex-align-center">
-                  <v-card-title style="margin-right: 24px;">池清單</v-card-title>
+                  <v-card-title class="mr-6">池清單</v-card-title>
                   <div class="search flex-align-center">
                     <!-- <v-autocomplete
                       v-model="sel_pool"
@@ -189,7 +189,7 @@
                 </div>
                 
                 <div class="chevron flex-align-center" style="margin-left: 8px;">
-                  <v-btn class="btn-secondary green" :class="{'disabled':!sel_area}" @click="showdialog_pool('add')" style="padding: 0 8px;background-color: transparent !important;;">
+                  <v-btn class="btn-secondary green px-2 py-0" :class="{'disabled':!sel_area}" @click="showdialog_pool('add')" style="background-color: transparent !important;">
                       <v-icon>mdi-plus</v-icon>新增池
                   </v-btn>
                   
@@ -198,7 +198,7 @@
               </div>
               <div class="content">
                 <v-row v-if="pooldata.length>0 && !tableview">
-                  <v-col cols="12"><v-checkbox v-model="sortbyid" hide-details label="以id排序" style="margin-top: 0;padding-top: 0;display: inline-block"></v-checkbox></v-col>
+                  <v-col cols="12"><v-checkbox v-model="sortbyid" hide-details label="以id排序" class="mt-0 pt-0 d-inline-block"></v-checkbox></v-col>
                   
                   <v-col cols="12" md="3" sm="6"
                     v-for="item in ((sortbyid)?pooldata_sorted:pooldata)"
@@ -253,7 +253,7 @@
                     </v-card>
                   </v-col>
                 </v-row>
-                <v-row v-if="pooldata.length==0 && !tableview"><div class="content flex-all-center" style="height: 56vh;width: 100%;">無資料</div></v-row>
+                <v-row v-if="pooldata.length==0 && !tableview"><div class="content flex-all-center full-width" style="height: 56vh;">無資料</div></v-row>
                 <v-data-table light
                   v-if="tableview"
                   class="flex-table data-table bg-transparent"
@@ -306,10 +306,10 @@
                     :value="tab">
                     <!-- 圖表 -->
                     <div v-show="nowTab=='地圖配置'">
-                      <settinglayout  class="mx-3" style="width: 100%;margin-top: 24px;" :areas="areas1"></settinglayout>
+                      <settinglayout  class="mx-3 mt-6 full-width" :areas="areas1"></settinglayout>
                     </div>
                     <div v-show="nowTab=='池況顏色'">
-                      <settingcolor class="mx-3" style="width: 100%;"></settingcolor>
+                      <settingcolor class="mx-3 full-width"></settingcolor>
                     </div>
                   </v-tab-item>
               </v-tabs-items>
@@ -327,7 +327,7 @@
       <v-form ref="mainform" v-model="mainvalid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               {{
               edititem.type == "add"
                 ? "新增"
@@ -345,15 +345,14 @@
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="dialog.main = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="dialog.main = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="basic search" style="padding-left: 8px;padding-top: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+            <div class="basic search pl-2 pt-2">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   placeholder="請輸入名稱"
                   v-model="edititem.value"
@@ -361,7 +360,7 @@
                   autocomplete="off" clearable filled dense
                 ><span style="width:80px;" slot="prepend">名稱</span></v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   v-if="edititem.class == 'area'"
                   placeholder="請輸入英文代稱(wc、tf、zw...)"
@@ -372,7 +371,7 @@
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="dialog.main = false">取消</v-btn>
             <v-btn class="btn-primary" @click="editsubmit">送出</v-btn>
@@ -385,7 +384,7 @@
       <v-form ref="poolform" v-model="poolvalid" lazy-validation>
         <v-card v-if="sel_area && areadata" class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               {{ areadata.filter(x => x.id == sel_area)[0].name }}-養殖池-{{
                 edititem_pool.type == "add" ? "新增" : "編輯"
               }}
@@ -393,15 +392,14 @@
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="dialog.pool = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="dialog.pool = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="basic search" style="padding-left: 8px;padding-top: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+            <div class="basic search pl-2 pt-2">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   autocomplete="off"
                   v-model="edititem_pool.parm.name"
@@ -414,7 +412,7 @@
                   <span style="width:50px;" slot="prepend">名稱</span>
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;padding-top: 0;">
+              <v-card-text class="d-flex pt-0">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.volume"
@@ -424,7 +422,7 @@
                   clearable
                   filled
                   dense
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:50px;" slot="prepend">體積</span>
                   <span style="width:25px;" slot="append">m<sup>3</sup></span>
@@ -437,13 +435,13 @@
                   clearable
                   filled
                   dense
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:50px;" slot="prepend">深度</span>
                   <span style="width:25px;" slot="append">m</span>
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;padding-top: 0;">
+              <v-card-text class="d-flex pt-0">
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.num"
@@ -453,7 +451,7 @@
                   @keypress="(evt)=>{if(evt.key=='.'){ evt.preventDefault();}else{return true;}}"
                   filled
                   dense
-                  style="margin-right: 16px;"
+                  class="mr-4"
                   ><span style="width:50px;" slot="prepend">池子數</span>
                   <span style="width:25px;" slot="append">個</span>
                 </v-text-field>
@@ -467,7 +465,7 @@
                   filled
                   dense
                   required
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:50px;" slot="prepend">曝氣盤</span>
                   <span style="width:25px;" slot="append">個</span>
@@ -483,7 +481,7 @@
                   filled
                   dense
                   required
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:70px;" slot="prepend">最大水位高度</span>
                   <span style="width:25px;" slot="append">cm</span>
@@ -497,7 +495,7 @@
                   filled
                   dense
                   required
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:70px;" slot="prepend">感測到水底高度</span>
                   <span style="width:25px;" slot="append">cm</span>
@@ -514,7 +512,7 @@
                   filled
                   dense
                   required
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:70px;" slot="prepend">底面積</span>
                   <span style="width:25px;" slot="append">m<sup>2</sup></span>
@@ -528,26 +526,26 @@
                   filled
                   dense
                   required
-                  style="margin-right: 16px;"
+                  class="mr-4"
                 >
                   <span style="width:70px;" slot="prepend">觀察觀飼料百分比</span>
                   <span style="width:10px;" slot="append">%</span>
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   autocomplete="off"
                   v-model="edititem_pool.parm.video_url"
                   clearable
                   placeholder="輸入影像IP(例：武曲171)"
-                  style="margin-right: 16px;margin-top: 0;"
+                  class="mr-4 mt-0"
                 >
                   <template slot="prepend"
                     ><span style="width:50px;">觀察網影像</span></template
                   >
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-select
                   v-model="edititem_pool.parm.pond_state_id"
                   :items="poolstat"
@@ -555,7 +553,7 @@
                   item-text="name_ch"
                   item-value="id"
                   :disabled="true"
-                  style="margin-right: 16px;margin-top: 0;"
+                  class="mr-4 mt-0"
                   ><template slot="prepend"
                     ><span style="width:50px;">狀態</span></template
                   ></v-select
@@ -579,7 +577,7 @@
             <!-- v-if="edititem_pool.type == `add`" -->
             
           <!-- </v-card-text> -->
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="dialog.pool = false">取消</v-btn>
             <v-btn class="btn-primary" @click="poolsubmit(edititem_pool.type)">送出</v-btn>
@@ -592,12 +590,11 @@
       <v-form ref="ipform" v-model="ipvalid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">ip設定</div>
+            <div class="d-inline-block">ip設定</div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="dialog.ip = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="dialog.ip = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -605,8 +602,8 @@
           
           <v-card-text>
             <!-- <span>{{ `${this.selected_ip.factory_name}_${this.selected_ip.pond_area_name}` }}</span> -->
-            <div class="basic search" style="padding-left: 8px;padding-top: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+            <div class="basic search pl-2 pt-2" style="padding-left: 8px;padding-top: 8px;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-textarea
                   height="400"
                   outlined
@@ -619,12 +616,12 @@
                 >
                 </v-textarea>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field class="text-area" v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="dialog.ip = false">取消</v-btn>
             <v-btn class="btn-primary" @click="updateip">更新</v-btn>

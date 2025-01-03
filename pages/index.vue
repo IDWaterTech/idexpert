@@ -347,11 +347,6 @@ export default {
 
 <style lang="scss" scoped>
 #selector {
-    // background-image:url('../assets/maps.gif');
-    // background-size:100%;
-    // background-repeat: repeat-y;
-    // background-attachment: fixed;
-    // height:100%;
     width:100%;
     position: fixed;
     top: 0;
@@ -377,18 +372,6 @@ video {
   width: 100%;
   // height: calc(100vh - 112px);
   position: relative;
-}
-.background {
-  @include size(100%,30vh);
-  background-color: rgba($color-light,0.1);
-  width: calc(100% + 36px);
-  position: fixed;
-  left: -12px;
-  bottom: -15vh;
-  transform: rotate(-3deg);
-  &.mirro {
-    transform: rotate(3deg);
-  }
 }
 .menu-card.v-sheet.v-card {
   transition: all 0.3s;
@@ -470,12 +453,7 @@ video {
     }
     &:hover {
       margin-top: 0;
-      // background-color: rgba($color-dark-25,0.3);
-      // background-color: #EFF2F3;
-      // width: 100%;
-      // height: 100%;
       background-color: $color-black-10;
-      // position: relative;
       &:not(.v-sheet--outlined) {
         box-shadow: 0 0 5px rgba(0,0,0,0.2);
       }
@@ -500,9 +478,7 @@ video {
       }
     }
     &:focus,&:hover {
-      // background-color: rgba($color-dark-25,0.3);
       background-color: #EFF2F3;
-      // opacity: 0.8;
     }
     &:before {
       content:'';
@@ -523,7 +499,6 @@ video {
   .title-icon {
     margin: 12px;
     @include size(40px);
-    // background-color: rgba($color-primary-25,0.5);
     background-color: rgba(255,255,255,0.4);
     border-radius: 50%;
     color: $color-primary-75;
@@ -572,25 +547,6 @@ video {
         list-style: none;
       }
     }
-  }
-}
-.background-circle {
-  @include size(160vw);
-  border-radius: 54vw;
-  background-color: rgba(244, 251, 255, 0.02);
-  transform: translateX(-50%);
-  position: fixed;
-  top: 90vh;
-  left: -30vw;
-  animation: rotate-1906d359 10s infinite linear;
-  transition: all 1s;
-}
-@keyframes rotate {
-  0%{
-    transform: rotate(0deg);
-  }
-  100%{
-    transform: rotate(360deg);
   }
 }
 </style>

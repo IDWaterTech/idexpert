@@ -97,14 +97,13 @@
         <v-form v-model="editvalid" ref="addform">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
-                    <div style="display: inline-block;">
+                    <div class="d-inline-block">
                         <span>{{ nowCata }}編輯</span> 
                     </div>
                     <div class="add">
                         <v-btn class="btn-secondary close"
                                 title="取消" 
-                                @click="editDialog = false;" 
-                                style="border: none;min-width: 0;padding: 0 4px;">
+                                @click="editDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
@@ -167,7 +166,7 @@
                         ></v-textarea>
                     </v-card-text>
                 </div>
-                <v-card-actions style="padding: 24px 12px;">
+                <v-card-actions>
                     <v-spacer spacer></v-spacer>
                     <v-btn class="btn-secondary" @click="editDialog = false">取消</v-btn>
                     <v-btn class="btn-primary" @click="save">{{edititem.created_time?'修改':'新增'}}</v-btn>

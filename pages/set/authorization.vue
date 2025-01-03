@@ -3,14 +3,14 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-    <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
+    <v-card class="bg-card result-card mb-3" style="min-height:86vh">
       <!-- 表頭 -->
-      <div class="card-title" style="cursor: pointer;margin: 0 8px;padding: 12px;">
+      <div class="card-title mx-2 my-0 pa-3 border-bottom cursor-pointer">
         <div class="title">
               <v-card-title style="padding: 0;font-size: 1.1rem;">角色清單</v-card-title>
           </div>
           <div class="chevron">
-            <v-btn class="btn-secondary green" @click="showadd" style="padding: 0 8px;"><v-icon>mdi-plus</v-icon> 新增角色</v-btn>
+            <v-btn class="btn-secondary green px-2 py-0" @click="showadd"><v-icon>mdi-plus</v-icon> 新增角色</v-btn>
             <!-- <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                   <button class="btn-secondary green" @click="showadd" v-bind="attrs" v-on="on" style="padding: 4px 8px;display: flex;align-items: center;">
@@ -22,7 +22,7 @@
           </div>
       </div>
       <!-- 清單 -->
-      <div class="content" style="width: 100%;">
+      <div class="content full-width">
         <!-- 表格 -->
         <el-table
           :data="roledata"
@@ -34,8 +34,8 @@
           <el-table-column type="expand" fixed width="30px">
             <template slot-scope="props">
               <v-row>
-                <v-col cols="11" style="padding:0 16px">
-                  <div style="min-height:250px;margin-left: 48px;">
+                <v-col cols="11" class="px-4 py-0">
+                  <div class="ml-12" style="min-height:250px;">
                     <div v-show="false">{{ props.row.privilege }}</div>
                     <!-- {{props.row.privilege.map(item => {return item.id;})}} -->
                     <span>授權項目</span>
@@ -57,7 +57,7 @@
                       zIndex="0"
                       v-model="expandtree"
                       :value-consists-of="'ALL_WITH_INDETERMINATE'"
-                      style="margin-top: 8px;"
+                      class="mt-2"
                     >
                       <div slot="value-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                       <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
@@ -158,22 +158,21 @@
       <v-form ref="addform" v-model="valid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               新增角色
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="adddialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="adddialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           
           <v-card-text>
-            <div class="basic" style="padding-left: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+            <div class="basic pl-2">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   v-model="addform.name"
                   :rules="rules.require"
@@ -182,7 +181,7 @@
                   autocompleted="false"
                 ></v-text-field>
                 </v-card-text>
-                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-card-text class="d-flex flex-column pt-0">
                   <v-text-field
                     v-model="addform.desc"
                     :rules="rules.require"
@@ -192,7 +191,7 @@
                     style="margin-top: 0;padding-top: 0;"
                   ></v-text-field>
                 </v-card-text>
-                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-card-text class="d-flex flex-column pt-0">
                   職位
                   <treeselect
                     v-model="addform.position_id"
@@ -212,7 +211,7 @@
                     </div>
                   </treeselect>
                 </v-card-text>
-                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-card-text class="d-flex flex-column pt-0">
                   單位
                   <treeselect
                     v-model="addform.department_id"
@@ -230,7 +229,7 @@
                   </treeselect>
                 </v-card-text>
                 <!-- {{positdata.filter(x=>x.is_leaf==false)}} -->
-                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-card-text class="d-flex flex-column pt-0">
                   授權
                   <treeselect
                     :flat="true"
@@ -252,7 +251,7 @@
                     <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                   </treeselect>
                 </v-card-text>
-                <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+                <v-card-text class="d-flex flex-column pt-0">
                   <el-switch
                     v-model="addform.is_active"
                     active-color="#13ce66"
@@ -263,7 +262,7 @@
                 </v-card-text>
             </div> 
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="adddialog = false">取消</v-btn>
             <v-btn class="btn-primary" @click="addsubmit">新增</v-btn>
@@ -277,22 +276,21 @@
       <v-form ref="editform" v-model="editvalid" lazy-validation>
         <v-card  class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               編輯角色
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="editdialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="editdialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           
           <v-card-text>
-            <div class="basic" style="padding-left: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+            <div class="basic pl-2" style="padding-left: 8px;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                     v-model="editform.name"
                     :rules="rules.require"
@@ -301,7 +299,7 @@
                     autocompleted="false"
                   ></v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                     v-model="editform.desc"
                     :rules="rules.require"
@@ -312,7 +310,7 @@
                   ></v-text-field>
               </v-card-text>  
               
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 職位
                 <treeselect
                   v-model="editform.position_id"
@@ -329,7 +327,7 @@
                 ><div slot="value-label" slot-scope="{ node }">{{ node.raw.unit }}-{{ node.raw.label }}</div>
                 </treeselect>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 單位
                   <treeselect
                   v-model="editform.department_id"
@@ -346,7 +344,7 @@
                 >
                 </treeselect>
               </v-card-text>  
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 授權項目
                 <treeselect
                   :flat="true"
@@ -368,7 +366,7 @@
                   <div slot="option-label" slot-scope="{ node }">{{ node.raw.name }}</div>
                 </treeselect>
               </v-card-text>    
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <el-switch
                     v-model="editform.is_active"
                     active-color="#13ce66"
@@ -381,7 +379,7 @@
             </div>
             
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="editdialog = false">取消</v-btn>
             <v-btn class="btn-primary" @click="editsubmit">修改</v-btn>
@@ -732,7 +730,6 @@ export default {
     background-color: #fff;
   }
   .card-title {
-    border-bottom: 1px solid $color-black-10;
     .title {
       width: 100%;
       font-size: 1rem;

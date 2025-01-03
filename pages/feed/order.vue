@@ -4,9 +4,7 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
     <v-card 
-      class="bg-card" 
-      style="margin-bottom: 12px;"
-      :style="{'minHeight':`${windowHeight>880?'88vh':'84vh'}`}">
+      class="bg-card mb-3" :style="{'minHeight':`${windowHeight>880?'88vh':'84vh'}`}">
       <!-- <div class="card-title">
           <v-row style="margin-bottom: 0;">
               <div class="title">
@@ -15,10 +13,10 @@
               </div>
           </v-row>
       </div> -->
-      <div class="content" style="padding-top:12px">
+      <div class="content pt-3">
         <!-- 搜尋欄 -->
         <div class="search">
-          <v-row style="margin-bottom: 12px;">
+          <v-row class="mb-3">
             <v-col cols="12" md="6">
               <div class="search-container">
                 <!-- 選擇場 -->
@@ -36,9 +34,9 @@
         </div>
         <!-- 搜尋結果 -->
         <div class="result">
-          <v-row style="margin-bottom: 0;">
+          <v-row class="mb-0">
             <v-col cols="12">
-              <v-card class="result-card" style="height: 100%">
+              <v-card class="result-card px-6 py-3 pb-2" style="height: 100%">
                 <v-data-table
                   ref="feedtable"
                   :headers="headers"
@@ -57,7 +55,7 @@
                 >
                   <!-- group -->
                   <template v-slot:[`group.header`]="{ items, isOpen, toggle }">
-                    <th :colspan="headers.length"  style="margin-top: 12px;">
+                    <th :colspan="headers.length" class="mt-3">
                       <v-icon @click="toggle"
                         >{{ isOpen ? "mdi-chevron-up" : "mdi-chevron-down" }}
                       </v-icon>
@@ -66,8 +64,8 @@
                   </template>
                   <!-- initial_val投餵量 -->
                   <template v-slot:[`item.initial_val`]="{ item }">
-                    <v-row style="margin: 8px 0;">
-                      <v-col cols="12" sm="9" style="padding: 0 8px;">
+                    <v-row class="mx-0 my-2">
+                      <v-col cols="12" sm="9" class="px-2 py-0">
                         <v-autocomplete
                           v-model="item.feed_combo_id"
                           :items="combo_sorted"
@@ -108,7 +106,7 @@
                           ><span slot="append">g</span>
                         </v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="3" style="padding: 0 8px;">
+                      <v-col cols="12" sm="3" class="px-2 py-0">
                         <v-btn tile class="btn-primary btn-secondary" @click="()=>{item.initial_val = formula_eval(item.initial_val, formula);setformula_val(item);}" :disabled="!formula || !item.initial_val">
                           計算
                         </v-btn>
@@ -119,8 +117,8 @@
                   <!-- 主成分-->
                   <template v-slot:[`item.main_items`]="{ item }">
                     <v-row class="ma-1" dense>
-                      <div class="chip" style="display: flex;flex-direction:column">
-                        <v-row style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
+                      <div class="chip d-flex flex-column">
+                        <v-row class="mb-0" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
                           <v-chip
                             v-for="mfla in item.main_items"
                             :key="item.id+'_main_'+mfla.id"
@@ -138,8 +136,8 @@
                   <!-- 次成分 -->
                   <template v-slot:[`item.sub_items`]="{ item }">
                     <v-row class="ma-1" dense>
-                      <div class="chip" style="display: flex;flex-direction:column">
-                        <v-row  style="margin-bottom: 0;" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
+                      <div class="chip d-flex flex-column">
+                        <v-row  class="mb-0" :style="{justifyContent:`${windowWidth<599.98?'flex-end':'flex-start'}`}">
                           <v-chip
                             v-for="fla in item.sub_items"
                             :key="item.id+'_sub_'+fla.id"
@@ -217,7 +215,7 @@
                     <v-toolbar elevation="1" class="header-bar" :style="{height:`${windowWidth<599.98?'88px':'64px'}`}">
                       <v-row :style="{marginBottom:`${windowWidth<599.98?'0':'12px'}`}">
                         <!-- 左側 -->
-                        <v-col cols="12" sm="6" style="padding: 8px 12px;">
+                        <v-col cols="12" sm="6" class="px-3 py-2">
                           <div class="header-left" style="max-width: 300px;">
                             <!-- 計算 -->
                             <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div>
@@ -225,30 +223,28 @@
                           </div>
                         </v-col>
                         <!-- 右側 -->
-                        <v-col cols="12" sm="6" style="padding: 8px 12px;">
+                        <v-col cols="12" sm="6" class="px-3 py-2">
                           <div class="header-right" :style="{justifyContent:`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                             <!-- 計算 -->
                             <!-- <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div> -->
                             <!-- windowwidth>958.98 icon+文字 -->
                             <div class="data-time">
-                              <span style="margin-right: 4px;">資料時間：{{ imptimeidx?sdate+ '-' +imptimeidx:'無' }}</span>
+                              <span class="mr-1">資料時間：{{ imptimeidx?sdate+ '-' +imptimeidx:'無' }}</span>
                               <v-tooltip v-if="imptimeidx" bottom >
                                   <template v-slot:activator="{ on, attrs }">
-                                      <button class="btn-icon just-icon delete" 
+                                      <v-btn class="btn-icon just-icon delete" 
                                         @click="delimpsubmit" 
                                         v-bind="attrs" v-on="on"
-                                        style="width: 24px;height: 24px;"
                                         >
                                           <v-icon>mdi-trash-can</v-icon>
-                                      </button>
+                                      </v-btn>
                                   </template>
                                   <span>刪除此場[{{ imptimeidx }}]資料</span>
                               </v-tooltip>
-                              <button v-else
-                                class="btn-add delete disabled"
-                                style="width: 24px;height: 24px;">
-                                <v-icon>mdi-trash-can</v-icon>
-                              </button>
+                              <v-btn v-else
+                                class="btn-icon just-icon disabled">
+                                <v-icon style="font-size: 1.25rem;">mdi-trash-can</v-icon>
+                              </v-btn>
                             </div>
                             
                             <div v-if="windowWidth>959.98" class="btn-groups">
@@ -308,7 +304,16 @@
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
       <v-card class="card-dialog custom-dialog" min-height="350">
-        <v-card-title>匯入料表</v-card-title>
+        <v-card-title class="add-title">
+          <div class="d-inline-block">匯入料表</div>
+          <div class="add">
+            <v-btn  class="btn-secondary close"
+                    title="取消" 
+                    @click="importdialog = false">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
+        </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row align-content="center" class="my-2">
@@ -379,7 +384,16 @@
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
       <v-card min-height="250" class="card-dialog  custom-dialog">
-        <v-card-title>設定</v-card-title>
+        <v-card-title class="add-title">
+          <div class="d-inline-block">設定</div>
+          <div class="add">
+            <v-btn  class="btn-secondary close"
+                    title="取消" 
+                    @click="submitdig = false">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
+        </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-row class="my-2" justify="center">
@@ -1492,8 +1506,6 @@ export default {
     box-shadow: 0 0 10px $color-black-10;
   }
   .v-card.result-card {
-    padding: 12px 24px;
-    padding-bottom: 8px;
     background-color: $color-lighten;
     .data-time {
       @include flexAlignCenter();
@@ -1510,18 +1522,12 @@ export default {
       .theme--light.v-data-table {
         background-color: $color-lighten;
       }
-      .result-content {
-        padding: 0 24px;
-
-      }
     }
   }
 }
 .v-application .elevation-1{
   box-shadow: none !important;
-  // & table {
-  //   min-height: 48vh;
-  // }
+
 }
 .v-application--is-ltr .v-input--selection-controls__input {
   margin-right: 0;
@@ -1529,11 +1535,6 @@ export default {
 ::v-deep {
   .result {
     margin-top: -8px;
-    
-    // .v-data-table__wrapper {
-      // height: 40vh;
-      // overflow: scroll;
-    // }
     .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
       background: transparent;
     }
@@ -1589,12 +1590,8 @@ export default {
         @include flexAlignCenter();
         width: 100%;
       }
-      // .header-right {
-        // justify-content: flex-end;
-      // }
       .caculator {
         width: 100%;
-        // max-width: 300px;
         margin: 4px;
         .theme--light.v-text-field--outlined:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot fieldset {
           color: $color-form;

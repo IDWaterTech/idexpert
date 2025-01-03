@@ -3,21 +3,21 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-    <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
+    <v-card class="bg-card result-card mb-3" style="min-height:86vh">
       <!-- 表頭 -->
-      <div class="card-title" style="cursor: pointer;margin: 0 8px;padding: 12px;">
+      <div class="card-title mx-2 my-0 pa-3 border-bottom cursor-pointer">
         <div class="title">
-              <v-card-title style="padding: 0;font-size: 1.1rem;">設備清單</v-card-title>
+              <v-card-title class="pa-0" style="font-size: 1.1rem;">設備清單</v-card-title>
           </div>
           <div class="chevron">
-            <v-btn class="btn-secondary green" @click="showdevdialog()" style="padding: 0 8px;"><v-icon>mdi-plus</v-icon> 新增設備</v-btn>
+            <v-btn class="btn-secondary green px-2 py-0" @click="showdevdialog()"><v-icon>mdi-plus</v-icon> 新增設備</v-btn>
           </div>
       </div>
       <!-- 清單 -->
-      <div class="content" style="width: 100%;">
+      <div class="content full-width">
         <el-table
           :data="devicedata"
-          style="width: 100%"
+          class="full-width"
           max-height="300"
         >
           <!-- <el-table-column prop="id" label="ID" align="center">
@@ -66,21 +66,20 @@
       <v-form ref="devform" v-model="dialog.valid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               設備-{{ dialog.addmode ? "新增" : "編輯" }}
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="dialog.dev = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="dialog.dev = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="basic" style="padding-left: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 16px;">
+            <div class="basic pl-2">
+              <v-card-text class="d-flex flex-column pt-4">
                 <!-- 機台編號 -->
                 <v-text-field
                   autocomplete="off"
@@ -97,7 +96,7 @@
                   >
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <!-- 通道 -->
                 <v-text-field
                   autocomplete="off"
@@ -114,7 +113,7 @@
                   >
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <!-- 暱名 -->
                 <v-text-field
                   autocomplete="off"
@@ -130,7 +129,7 @@
                   >
                 </v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <treeselect
                   v-model="dialog.parm.pond_id"
                   :options="maindata"
@@ -156,7 +155,7 @@
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="dialog.dev = false">取消</v-btn>
             <v-btn class="btn-primary" @click="submitdevdialog(dialog.addmode)">確定</v-btn>
@@ -419,7 +418,6 @@ export default {
     background-color: #fff;
   }
   .card-title {
-    border-bottom: 1px solid $color-black-10;
     .title {
       width: 100%;
       font-size: 1rem;

@@ -1,12 +1,12 @@
 <template>
     <div>
         <!-- <div v-if="!isLoad">Loading...</div> -->
-        <div v-if="isLoad" class="content" style="padding-top:24px">
+        <div v-if="isLoad" class="content pa-6">
             <v-row>
                 <v-col class="d-flex"
                         cols="12"
                         sm="6">
-                    <v-select v-if="!isError && isField" :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)" style="padding-left: 12px;margin-top: 0;">                
+                    <v-select v-if="!isError && isField" class="pl-3 mt-0" :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)">                
                     </v-select>   
                     <div v-if="!isError && !isField" class="select-field">
                         <locate-select :dataScope="'field'" :defaultSelect="nowField" :isMulti="false" @scopeSel_data="changeFactory($event)"></locate-select>
@@ -15,20 +15,20 @@
 
                 </v-col>
             </v-row>
-            <v-row style="margin-top: 0;">
+            <v-row class="mt-0">
                 <v-col cols="12"
                         sm="12">
                     <div v-if="areas.length > 0" class="tabs">
                         <v-tabs v-model="nowAreaTag" show-arrows :style="{paddingLeft: isField?'12px':'0'}" style="overflow-x: hidden;">
-                            <div v-if="!isField" class="icons">
+                            <div v-if="!isField" class="icons mr-4">
                                 <!-- <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon> -->
                                 <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="userDialog" class="my-3">mdi-pencil</v-icon>
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <button class="confirm" v-show="editData.length>0" @click="selectchecked()" v-bind="attrs"
+                                        <v-btn class="btn-icon" v-show="editData.length>0" @click="selectchecked()" v-bind="attrs"
                                         v-on="on">
                                             <v-icon>mdi-check</v-icon>
-                                        </button>
+                                        </v-btn>
                                     </template>
                                     <span>全部儲存</span>
                                 </v-tooltip>
@@ -39,7 +39,7 @@
                                 :href="`#` + area.areaNo"
                                 class="title"
                             >
-                            <v-icon v-if="area.areaNo=='setting'" style="margin-right: 4px;">mdi-cog-outline</v-icon>
+                            <v-icon v-if="area.areaNo=='setting'" class="mr-1">mdi-cog-outline</v-icon>
                             {{ area.name }}
                             </v-tab>
 
@@ -48,7 +48,8 @@
                                 :key="area.areaNo" 
                                 :value="area.areaNo"
                                 :style="{overflowX:`${nowAreaTag=='setting'&& nowLayout=='color'?'initial':'scroll'}`}"
-                                style="margin-bottom: 16px;overflow-x: scroll;overflow-y: hidden;"
+                                class="mb-4"
+                                style="overflow-x: scroll;overflow-y: hidden;"
                             >
                                 <poollayout :water="[]"  id="layout" :areas="areas" :layout="layout" :nowAreaTag="nowAreaTag" :nowAreaId="nowAreaId" :showedit="mapshowedit" :statcolor="statcolor" :successData="successData" :setting="setting" @editPoolOuter="edit($event)" @saveSuccess="saveDelete($event)"></poollayout>
                                 <!-- <setting v-else class="mt-3" @update="settingUpdated"></setting> -->
@@ -58,8 +59,8 @@
                             
                         </v-tabs>
                     </div>
-                    <div v-show="areas.length == 0 && !$route.query.field" class="nodata tabs">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行區的設定</div>
-                    <div v-show="areas.length == 0 && $route.query.field" class="nodata tabs">無資料!</div>
+                    <div v-show="areas.length == 0 && !$route.query.field" class="nodata tabs pl-6">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行區的設定</div>
+                    <div v-show="areas.length == 0 && $route.query.field" class="nodata tabs pl-6">無資料!</div>
                     <!-- <v-row v-if="areas.length > 0 && nowAreaTag!=='setting'" class="mx-0 parent-row">
                     <div class="mx-3 my-1 update-time">
                         <span>最後更新時間：{{ MaxDate }}</span>
@@ -83,80 +84,80 @@
             </v-card>
         </v-dialog>
     </div>
-  </template>
-  
-  <script>
-  import poollayout from "@/pages/map/poolslayout.vue";
-  import setting from "~/pages/map/settingcolor.vue";
-  import { Doughnut } from 'vue-chartjs';
-  import md5 from "md5";
-  export default {
-      layout: 'emptynologin',
-      middleware: "auth",
-      components: {
-          poollayout,
-          setting
-      },
-      data() {
-          return {
-              mydialog: false,
-              fatorys: [],
-              areas: [],
-              pools: [],
-              mapshowedit: false,
-              fatoryData: [],
-              nowFactory: '',
-              nowArea: '',
-              nowAreaTag: '',
-              nowAreaId:{
-                factory_id: null,
-                pond_area_id: null
-              },
-              nowField: '',
-              editData: [],// 要變更的資料，全部儲存用
-              oldEditDataLength: 0,// 全部儲存的按鈕顯示時，tab的底線位置用
-              statcolor: [
-                //   { name_ch: "無", color: "#fff", id: 1 },
-                //   { name_ch: "default", color: "#00273E" },
-                //   { name_ch: "放養中", color: "#F1E78D", id: 4 },
-                //   { name_ch: "放養中(鎖排汙)", color: "#CBAAE5", id: 32 },
-                //   { name_ch: " 集中暫養", color: "#8DA0E5", id: 31 },
-                //   { name_ch: "尚未洗池", color: "#E8DDBF", id: 6 },
-                //   { name_ch: "已清洗", color: "#A8E6DB", id: 7 },
-                //   { name_ch: "蓄水中", color: "#D3B280", id: 8 },
-                //   { name_ch: "蓄水完畢", color: "#A5D380", id: 9 },
-                //   { name_ch: "消毒中", color: "#80D3AB", id: 10 },
-                //   { name_ch: "做水中", color: "#C5E8E6", id: 11 },
-                //   { name_ch: "預備放苗", color: "#83C9F0", id: 12 },
-                //   { name_ch: "空池", color: "#BFDAE8", id: 3 },
-                //   { name_ch: "養殖審核", color: "#D3808F", id: 33 }
-              ],
-              myuser: "web",
-              successData: [],
-              cmpkey: { wc: 0, tf: 0, zw: 0 ,sp: 0},
-              setting: 'color',
-              layout: [],
-              nowLayout:'',
-              oldAreaTag: '',
-              MaxDate:"-",
-              // 判斷url的參數
-              isField: false,
-              isLoad: false,
-              isError: false,
-              openUserDialog: false,
-              ipadminpwd:''
-          }
-      },
-      props:{
-          auth:{
-              type: Boolean,
-              default: false
-          },
-          field:{
-            default: null
-          }
-      },
-      async created() {
+</template>
+
+<script>
+import poollayout from "@/pages/map/poolslayout.vue";
+import setting from "~/pages/map/settingcolor.vue";
+import { Doughnut } from 'vue-chartjs';
+import md5 from "md5";
+export default {
+    layout: 'emptynologin',
+    middleware: "auth",
+    components: {
+        poollayout,
+        setting
+    },
+    data() {
+        return {
+            mydialog: false,
+            fatorys: [],
+            areas: [],
+            pools: [],
+            mapshowedit: false,
+            fatoryData: [],
+            nowFactory: '',
+            nowArea: '',
+            nowAreaTag: '',
+            nowAreaId:{
+            factory_id: null,
+            pond_area_id: null
+            },
+            nowField: '',
+            editData: [],// 要變更的資料，全部儲存用
+            oldEditDataLength: 0,// 全部儲存的按鈕顯示時，tab的底線位置用
+            statcolor: [
+            //   { name_ch: "無", color: "#fff", id: 1 },
+            //   { name_ch: "default", color: "#00273E" },
+            //   { name_ch: "放養中", color: "#F1E78D", id: 4 },
+            //   { name_ch: "放養中(鎖排汙)", color: "#CBAAE5", id: 32 },
+            //   { name_ch: " 集中暫養", color: "#8DA0E5", id: 31 },
+            //   { name_ch: "尚未洗池", color: "#E8DDBF", id: 6 },
+            //   { name_ch: "已清洗", color: "#A8E6DB", id: 7 },
+            //   { name_ch: "蓄水中", color: "#D3B280", id: 8 },
+            //   { name_ch: "蓄水完畢", color: "#A5D380", id: 9 },
+            //   { name_ch: "消毒中", color: "#80D3AB", id: 10 },
+            //   { name_ch: "做水中", color: "#C5E8E6", id: 11 },
+            //   { name_ch: "預備放苗", color: "#83C9F0", id: 12 },
+            //   { name_ch: "空池", color: "#BFDAE8", id: 3 },
+            //   { name_ch: "養殖審核", color: "#D3808F", id: 33 }
+            ],
+            myuser: "web",
+            successData: [],
+            cmpkey: { wc: 0, tf: 0, zw: 0 ,sp: 0},
+            setting: 'color',
+            layout: [],
+            nowLayout:'',
+            oldAreaTag: '',
+            MaxDate:"-",
+            // 判斷url的參數
+            isField: false,
+            isLoad: false,
+            isError: false,
+            openUserDialog: false,
+            ipadminpwd:''
+        }
+    },
+    props:{
+        auth:{
+            type: Boolean,
+            default: false
+        },
+        field:{
+        default: null
+        }
+    },
+    async created() {
         await this._pageCheck(); //驗證頁面是否可檢視
         this.getFactoryData();
         this.myuser = this.$auth.$state.user ? this.$auth.$state.user.email : '';
@@ -179,12 +180,12 @@
         }
         
         console.log('index Created');
-      },
-      async mounted() {
-          console.log('index Mounted');
-          await this.getStateColor();
-      },
-      methods: {
+    },
+    async mounted() {
+        console.log('index Mounted');
+        await this.getStateColor();
+    },
+    methods: {
         showcard: function () {
             this.mydialog = true;
             //this.$toast.success(`hello`, { duration: 2000 });
@@ -476,9 +477,9 @@
                 alert('修改失敗!請稍後再試!');
             }
         },
-      },
-      watch: {
-          mapshowedit() {
+    },
+    watch: {
+        mapshowedit() {
             // 取消編輯需要清除原本暫存的資料
             if (!this.mapshowedit) {
                 this.editData = [];
@@ -486,8 +487,8 @@
                 this.oldEditDataLength = 0;
                 // console.log('Cancel Edit');
             }
-          },
-          editData() {
+        },
+        editData() {
             // 因為全部儲存的按鈕顯示會為動態的，而tabs的底線會停止不跟著文字移動，因此需要額外推底線24px(按鈕大小)
             let tabBottom = document.getElementsByClassName('v-tabs-slider-wrapper');
             //   console.log('old', this.oldEditDataLength);
@@ -507,86 +508,77 @@
                 this.oldEditDataLength = this.editData.length;
             }
 
-          },
+        },
         nowAreaTag() {
             //   console.log('nowAreaTag',this.nowAreaTag)
             if(this.oldAreaTag!==this.nowAreaTag && this.nowAreaTag!=='setting') {
             this.changeArea(this.nowAreaTag);
             }
             setTimeout(()=>{
-            if(document.getElementById(this.nowAreaTag)) {
-                let area = document.getElementById(this.nowAreaTag);
-                area.scrollTo({
-                    top: 0,
-                    left: 0,
-                    behavior: 'smooth',
-                });
-                // console.log('scroll',area)
-            }
-            if(this.nowAreaTag=='setting') {
-                // 如果點選設定，編輯的icon消失，且原本暫存資料清空
-                if (this.mapshowedit) {
-                    this.editData = [];
-                    this.successData = [];
-                    this.oldEditDataLength = 0;
-                    this.mapshowedit = false;
-                    // console.log('Cancel Edit');
+                if(document.getElementById(this.nowAreaTag)) {
+                    let area = document.getElementById(this.nowAreaTag);
+                    area.scrollTo({
+                        top: 0,
+                        left: 0,
+                        behavior: 'smooth',
+                    });
+                    // console.log('scroll',area)
                 }
-                // 點選設定時，如果此時的tabs超出寬(出現左右箭頭)，則需要位移-112px('顏色設定'+'配置設定'的寬度)，讓整個設定的子項都顯示在螢幕上
-                if(document.getElementsByClassName('v-slide-group__content')) {
+                if(this.nowAreaTag=='setting') {
+                    // 如果點選設定，編輯的icon消失，且原本暫存資料清空
+                    if (this.mapshowedit) {
+                        this.editData = [];
+                        this.successData = [];
+                        this.oldEditDataLength = 0;
+                        this.mapshowedit = false;
+                        // console.log('Cancel Edit');
+                    }
+                    // 點選設定時，如果此時的tabs超出寬(出現左右箭頭)，則需要位移-112px('顏色設定'+'配置設定'的寬度)，讓整個設定的子項都顯示在螢幕上
+                    if(document.getElementsByClassName('v-slide-group__content')) {
+                        let a = document.getElementsByClassName('v-slide-group__content');
+                        for(let i=0;i<a.length;i++) {
+                            if(a[i].style.transform) {
+                                let trans = parseInt(a[i].style.transform.split('translateX(')[1].split('px)')[0]);
+                                if(trans!==0) {
+                                    a[i].style.transform = 'translateX('+(trans-112)+'px)';
+                                }
+                            } 
+                        }
+                    }
+                }else {
+                    this.setting = 'color';
+                }
+                // 如前一個點選設定，且有位移，則需要歸位+112px
+                if(this.oldAreaTag=='setting' && this.nowAreaTag!=='setting') {
                     let a = document.getElementsByClassName('v-slide-group__content');
                     for(let i=0;i<a.length;i++) {
                         if(a[i].style.transform) {
                             let trans = parseInt(a[i].style.transform.split('translateX(')[1].split('px)')[0]);
-                            if(trans!==0) {
-                                a[i].style.transform = 'translateX('+(trans-112)+'px)';
+                            if(trans!==(112)) {
+                                a[i].style.transform = 'translateX('+(trans+112)+'px)';
                             }
-                        } 
-                    }
-                }
-            }else {
-                this.setting = 'color';
-            }
-            // 如前一個點選設定，且有位移，則需要歸位+112px
-            if(this.oldAreaTag=='setting' && this.nowAreaTag!=='setting') {
-                let a = document.getElementsByClassName('v-slide-group__content');
-                for(let i=0;i<a.length;i++) {
-                    if(a[i].style.transform) {
-                        let trans = parseInt(a[i].style.transform.split('translateX(')[1].split('px)')[0]);
-                        if(trans!==(112)) {
-                            a[i].style.transform = 'translateX('+(trans+112)+'px)';
                         }
                     }
                 }
-            }
-            this.oldAreaTag = this.nowAreaTag;
-        },50)
-      }
+                this.oldAreaTag = this.nowAreaTag;
+            },50)
+        }
     }
-  }
-  </script>
-  
+}
+</script>
+
 <style lang="scss">
 .v-card.map {
     .content {
-        padding: 12px 24px;
         height: 100%;
         min-height: 100%;
-        padding-top: 0;
-    //   overflow-y: scroll;
-    }
-    .nodata {
-        padding-left: 12px;
     }
     .v-select__selection--comma {
-    color: #00273E;
+        color: #00273E;
     }
     .theme--light.v-label,.theme--light.v-icon,.theme--light.v-input {
         color: $color-form;
     }
-    // .theme--light.v-input {
-    //     margin-top: 0;
-    // }
     .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
     
         border-color: $color-form;
@@ -602,21 +594,10 @@
     .v-select.v-text-field:not(.v-text-field--single-line) input {
         cursor: pointer;
     }
-    
-    .pool-content {
-        @include size(100%,120px);
-        border: #002134;
-        border-radius: 4px;
-        color:#002134;
-        padding: 20px;
-    }
     .v-main__wrap {
         padding: 24px;
     }
     .tabs {
-        // .tab-item {
-        //     overflow-y: scroll;
-        // }
         .v-tabs {
             margin-bottom: 8px;
         }
@@ -634,49 +615,12 @@
             }
         }
     }
-    .block {
-        color: #00273E;
-        border-radius: 6px;
-        box-shadow: 0 0 10px $color-black-10;
-        // min-width: 120px;
-    }
-    //   .road {
-    //       font-size: 14px;
-    //       padding: 12px;
-    //       margin: 0 12px;
-    //   }
-    .nodata {
-        padding-left: 24px;
-    }
-    .last-update {
-        font-size: 14px;
-        color: #00273E;
-        padding-right: 28px;
-    }
-    .edit-action.theme--light.v-icon:hover::after {
-        opacity: 0.1;
-    }
-    .mdi-pencil.theme--light.v-icon:hover::after {
+    .edit-action.theme--light.v-icon:hover::after,.mdi-pencil.theme--light.v-icon:hover::after {
         opacity: 0.1;
     }
     .icons {
         @include flexAlignCenter();
         margin-right: 16px;
-        .confirm {
-            @include size(24px);
-            border-radius: 4px;
-            background-color: $color-primary;
-            float: right;
-            box-shadow: 0 0 5px rgba(0,0,0,0.15);
-            transition: 0.3s;
-            &:hover {
-                background-color: lighten($color: $color-primary, $amount: 1.5);
-            }
-            .theme--light.v-icon {
-                color: #fff;
-                font-size: 14px;
-            }
-        }
     }
     
     // 設定
@@ -786,19 +730,4 @@
         }
     }
 }
-    
-// scrollbar
-::-webkit-scrollbar {
-    @include size(6px);
-}
-::-webkit-scrollbar-track {
-    background: none; 
-}
-::-webkit-scrollbar-thumb {
-    background-color: $color-primary-25;
-}
-// ::-webkit-scrollbar-button {
-//     border-radius: 4px;
-//     background: transparent;
-// }
   </style>

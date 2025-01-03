@@ -42,8 +42,8 @@
             <v-col cols="12">
                 <div v-if="passObj.nowEnd" class="error-text" style="padding: 12px;"><b>此循環已結束({{ passObj.ended_date }})</b></div>
                 <div v-for="(mitem,id) in mainItems" :key="'status_'+mitem.phase_id+'_'+Math.floor(Math.random() * 1000)" class="timeline">
-                    <v-row class="template-outer" 
-                        style="align-items: flex-start;margin-bottom: 0;"
+                    <v-row class="template-outer flex-align-start" 
+                        style="margin-bottom: 0;"
                         :style="{'flexDirection':`${windowWidth<834?'column':'row'}`}">
                         <!-- 狀態+最新執行時間 -->
                         <div v-if="templatemode=='cycleedit'" class="left">
@@ -311,7 +311,7 @@
         <v-dialog v-model="viewOpen" :max-width="`${viewDetail.type==3?'500px':'75%'}`" :width="`${viewDetail.type==3?'500px':'75%'}`">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
-                    <div style="display: inline-block;"
+                    <div  class="d-inline-block"
                         :style="{'color':`${viewDetail.status&&viewDetail.status=='異常'?'#A60017':viewDetail.status&&viewDetail.status=='警告'?'#f79c2b':'#00324E'}`}">
                         <span v-text="viewDetail.type==1?'疾病報告':viewDetail.type==2?'水質報告':viewDetail.type==3?'事件':''"></span>
                         <span v-if="viewDetail.status"> - {{ viewDetail.status }}</span>
@@ -325,13 +325,12 @@
                         </v-btn> -->
                         <v-btn  class="btn-secondary close"
                                 title="取消" 
-                                @click="viewOpen = false" 
-                                style="border: none;min-width: 0;padding: 0 4px;">
+                                @click="viewOpen = false">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
                 </v-card-title>
-                <div class="basic" v-if="viewDetail.type && viewDetail.type!==3" style="padding-bottom: 24px;">
+                <div class="basic pb-6" v-if="viewDetail.type && viewDetail.type!==3">
                     <!-- <div class="card-title" style="margin-bottom: 0;">
                         <div class="title">
                             <v-card-title>基本資訊</v-card-title>
@@ -349,7 +348,7 @@
                     <v-card-text>
                         <!-- <embed :src="viewDetail.file" style="overflow:scroll;height:500px;width:100%;max-width:500px"> -->
                         <v-responsive>
-                            <iframe :src="viewDetail.file" style="overflow:hidden;height:600px;width:100%;" ></iframe>
+                            <iframe :src="viewDetail.file" class="full-width overflow-hidden" style="height:600px;" ></iframe>
                         </v-responsive>
                     </v-card-text>
                 </div>
@@ -360,7 +359,7 @@
                         </div>
                     </div>
                     <v-card-text>
-                        <div class="content" style="margin-bottom: 40px;">
+                        <div class="content mb-10">
                             事件起訖： {{ viewDetail.started_date }} ~ {{ viewDetail.ended_date }} <br>
                             創建人員： {{ viewDetail.created_user }} <br>
                             事件等級：{{ viewDetail.event_level_name }}<br>
@@ -375,29 +374,28 @@
             <v-form v-model="editWorkvalid" ref="editWorkform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>編輯：{{ editItem.step_name }}</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="editWorkDialog = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="editWorkDialog = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="margin-bottom: 0;">
+                        <div class="card-title mb-0">
                             <div class="title">
                                 <v-card-title>備註說明</v-card-title>
                             </div>
                         </div>
-                        <v-card-text class="flex-align-center" style="padding-top: 0;">
-                            <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
+                        <v-card-text class="flex-align-center pt-0" style="padding-top: 0;">
+                            <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" class="mr-1 mt-1 pt-0">
                             </v-text-field>
                         </v-card-text>
-                        <div class="card-title border-bottom" style="margin-bottom: 8px;">
+                        <div class="card-title border-bottom mb-2">
                             <div class="title">
                                 <v-card-title>預設動作</v-card-title>
                             </div>
@@ -417,18 +415,18 @@
                             <v-card-text v-if="editItem.actionList&&editItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{editItem.step_name}})開始後第「{{editItem.actionList[0].start_on_which_day}}」天開始執行動作({{editItem.actionList[0].action_name}})，持續執行到第「{{editItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
-                            <v-card-text v-for="(item,id) in editItem.actionList" :key="'editAction_'+item.action_id+'_'+id" class="work-item" style="padding-top: 0;" >
-                                <v-row class="flex-align-center" style="padding-top: 0;">
-                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
-                                    <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                            <v-card-text v-for="(item,id) in editItem.actionList" :key="'editAction_'+item.action_id+'_'+id" class="work-item pt-0">
+                                <v-row class="flex-align-center pt-0">
+                                    <v-col cols="3" class="px-2 py-1">{{ item.action_name }}</v-col>
+                                    <v-col cols="4" class="px-2 py-1">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off" class="mr-1 pt-0">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end_on_which_day" type="number" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" class="mr-1 pt-0">
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
+                                    <v-col cols="1" class="px-0 py-0"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
                                 </v-row>
                                 <!-- 財務 -->
                                 <!-- <v-row style="display: flex;align-items: center;padding-top: 0;margin-bottom: 8px;border-bottom: 1px solid rgba(0,0,0,0.1);">
@@ -456,7 +454,7 @@
                         </div>
                         
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
                         <v-btn class="btn-primary" @click="editWorkSubmit">確認</v-btn>
@@ -470,14 +468,13 @@
             <v-form v-model="editActionItemvalid" ref="editActionItemform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>加入動作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="editActionItemDialog = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="editActionItemDialog = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
@@ -505,7 +502,7 @@
                                 <span>刪除動作</span>
                             </v-tooltip>
                         </v-card-text>
-                        <div v-if="stepmode!==''" class="card-title" style="margin-bottom: 0;">
+                        <div v-if="stepmode!==''" class="card-title mb-0">
                             <div class="title">
                                 <v-card-title>{{stepmode=='edit'?'編輯動作':'新增動作'}}</v-card-title>
                             </div>
@@ -519,7 +516,7 @@
                         </v-card-text>
                         
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="editActionItemDialog=false">取消</v-btn>
                         <v-btn class="btn-primary" @click="editActionItemSubmit">{{stepmode=='edit'||stepmode=='add'?'儲存':'加入'}}</v-btn>
@@ -532,14 +529,13 @@
             <v-form v-model="addWorkvalid" ref="addWorkform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>加入工作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="addWorkDialog = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="addWorkDialog = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
@@ -596,7 +592,7 @@
                         </div>
                         
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
                         <v-btn class="btn-secondary" @click="addWorkDialog=false">取消</v-btn>
@@ -610,14 +606,13 @@
             <v-form v-model="addWorkActionvalid" ref="addWorkActionform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>新增工作</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="addWorkActionDialog = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="addWorkActionDialog = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
@@ -697,7 +692,7 @@
                             </v-card-text>
                         </div>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
                         <v-btn class="btn-secondary" @click="addWorkActionDialog=false">取消</v-btn>
@@ -710,14 +705,13 @@
         <v-dialog v-model="executeDialog" max-width="500px">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
-                    <div style="display: inline-block;">
+                    <div class="d-inline-block">
                         <span>{{executeList.action_name}}</span>
                     </div>
                     <div class="add">
                         <v-btn  class="btn-secondary close"
                                 title="取消" 
-                                @click="executeDialog = false" 
-                                style="border: none;min-width: 0;padding: 0 4px;">
+                                @click="executeDialog = false">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
@@ -753,20 +747,19 @@
             <v-form v-model="recordvalid" ref="recordform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>間補/收成紀錄</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="關閉" 
-                                    @click="recordDialog = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="recordDialog = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
                     </v-card-title>
                     <div v-if="!passObj.nowEnd" class="basic">
-                        <div class="card-title" @click="addRecordOpen = !addRecordOpen" style="cursor: pointer;">
+                        <div class="card-title cursor-pointer" @click="addRecordOpen = !addRecordOpen">
                             <div class="title">
                                 <v-card-title>1. 填寫紀錄</v-card-title>
                             </div>
@@ -808,7 +801,7 @@
                         <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;">
                             <v-textarea v-model="recordNew.remark" label="說明" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>
                         </v-card-text>
-                        <v-card-actions v-if="addRecordOpen" style="padding: 24px 12px;">
+                        <v-card-actions v-if="addRecordOpen">
                             <v-spacer></v-spacer>
                             <!-- <v-btn class="btn-secondary" @click="recordDialog=false">關閉</v-btn> -->
                             <v-btn v-if="!passObj.nowEnd" class="btn-primary" @click="recordSubmit">加入</v-btn>
@@ -862,14 +855,13 @@
             <v-form v-model="endCyclevalid" ref="endCycleform">
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div style="display: inline-block;">
+                        <div class="d-inline-block">
                             <span>結束循環</span> 
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="關閉" 
-                                    @click="endCycleDialog = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="endCycleDialog = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
@@ -888,7 +880,7 @@
                         </v-menu>
                         <span class="error-text">※ 結束循環後，不可新增和刪除間補/收成紀錄，請先確認已填寫完畢，再結束循環!!</span>
                     </div>
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <!-- <v-btn class="btn-secondary" @click="editWorkDialog=false">取消</v-btn> -->
                         <v-btn class="btn-secondary" @click="endCycleDialog=false">取消</v-btn>
@@ -3292,8 +3284,7 @@ export default {
 
 <style lang="scss" scoped>
 .left,.right {
-    display: flex;
-    align-items: flex-start;
+    @include flexAlignStart();
 }
 
 .left,.right {

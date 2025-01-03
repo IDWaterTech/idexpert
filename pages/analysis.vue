@@ -1,6 +1,6 @@
 <template>
   <div class="basic">
-    <v-card class="bg-card" style="margin-bottom: 16px;">
+    <v-card class="bg-card mb-4">
         <!-- <div class="card-title">
             <v-row style="margin-bottom: 0;">
                 <div class="title">
@@ -9,13 +9,13 @@
                 </div>
             </v-row>
         </div> -->
-        <div class="content" style="padding-top: 12px;">
+        <div class="content pt-3">
           <!-- 搜尋 -->
           <div class="search">
-            <v-row style="margin-bottom: 4px;align-items: center;">
+            <v-row class="align-center mb-1">
               <!-- 選擇場區 -->
               <v-col cols="12" md="4" sm="12" style="position: relative;">
-                <locate-select class="select-template" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;closepanel();" style="margin-right: 0;"></locate-select>
+                <locate-select class="select-template mr-0" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false" @scopeSel_data="get_scopeData($event);resultListOpen=true;closepanel();"></locate-select>
               </v-col>
               <!-- 選擇起始日 -->
               <v-col cols="12" md="3" sm="12">
@@ -68,8 +68,8 @@
           <div class="result">
             <div class="result-card">
               <!-- 圖表 -->
-              <v-row style="margin-bottom: 0;" >
-                <v-col cols="12" style="padding-top: 0;">
+              <v-row class="mb-0">
+                <v-col cols="12" class="pt-0">
                   <v-card class="result-card">
                     <div class="content">
                       <div class="header-bar py-3 px-0 pt-1">
@@ -84,16 +84,16 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6" align-self="center" class="mutiselect">
                                     <v-select v-model="defitem" clearable multiple filled deletable-chips chips dense hide-details
                                       placeholder="指定項目" :items="Object.keys(allcols.water)" v-if="allcols.water"
                                       :disabled="waterloading == true">
                                     </v-select>
-                                    <div  v-if="windowWidth<959.98" class="spector" @click="setDefitem" style="padding-top: 4px;">主要觀測項目
+                                    <div  v-if="windowWidth<959.98" class="spector pt-1" @click="setDefitem">主要觀測項目
 
                                     </div>
                                   </v-col>
@@ -117,19 +117,18 @@
                                     </v-select>
                                   </v-col>
                                   <!-- 查詢 -->
-                                  <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                  <v-col cols="12" md="1" class="d-flex full-width" align-self="center" v-if="windowWidth>959.98"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
                                 </v-row>
                                 <!-- 觀測項目/圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6"  md="6" sm="4" align-self="center" style="padding-top: 0;" v-if="windowWidth<959.98">
+                                <v-row class="mb-0">
+                                  <v-col cols="6"  md="6" sm="4" class="pt-0" align-self="center" v-if="windowWidth<959.98">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
                                   <!-- 主要觀測項目 -->
-                                  <v-col v-if="windowWidth>959.98" cols="6" md="6" sm="4" align-self="center" style="padding-top: 0;">
+                                  <v-col v-if="windowWidth>959.98" cols="6" md="6" sm="4" class="pt-0" align-self="center">
                                     <div class="spector" @click="setDefitem">主要觀測項目
 
                                     </div>
@@ -146,17 +145,17 @@
                                     ">主要觀測項目</v-btn> -->
                                   </v-col>
                                   <!-- 圖表顯示控制 -->
-                                  <v-col cols="6" md="6" sm="8" class="flex-center-end pt-0" style="width: 100%;">
+                                  <v-col cols="6" md="6" sm="8" class="flex-center-end pt-0 full-width">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
+                                        class="mt-0 ml-2"
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -174,12 +173,12 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in waterdata"
                                     :key="item.id" v-show="
                                       defPool.水質.includes(item.name) || defPool.水質.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <!-- defitem -->
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.water" xColName="inspected_date"
                                       :defaultitem="defalutItemList" :loading="waterloading" :title="item.name" :urldata="{
@@ -206,9 +205,9 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6"  class="mutiselect">
                                     <v-select v-model="defitem_env" clearable multiple deletable-chips chips hide-details placeholder="指定項目"
@@ -238,7 +237,7 @@
                                     </v-select>
                                   </v-col> -->
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                    class="d-flex full-width"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -258,22 +257,22 @@
                                   </v-col> -->
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
-                                  <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" style="padding-top: 0;">
+                                <v-row class="mb-0">
+                                  <v-col cols="6" class="pt-0" align-self="center"  v-if="windowWidth<959.98">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end" style="width: 100%;padding-top: 0;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0 full-width">
                                     
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
+                                        class="mt-0 ml-2"
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -296,7 +295,7 @@
                                     :key="item.id" v-show="
                                       defPool.環境.includes(item.name) || defPool.環境.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.env" xColName="inspected_date"
                                       :defaultitem="defalutItemList_env" :loading="envloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -321,9 +320,9 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6" align-self="center" class="mutiselect">
                                     <v-select v-model="defitem_feed" clearable multiple filled deletable-chips chips dense hide-details
@@ -341,7 +340,7 @@
                                   
                                   
                                   <v-col cols="12" md="1" align-self="center"  v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                    class="d-flex full-width"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -363,21 +362,22 @@
                                   </v-col> -->
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="6" align-self="center" class="pt-0" v-if="windowWidth<959.98" >
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0 full-width">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
+                                        class="mt-0 ml-2"
                                         style="margin-top: 0;margin-left: 8px;"
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -400,7 +400,7 @@
                                     :key="item.id" v-show="
                                       defPool.飼料.includes(item.name) || defPool.飼料.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.feed" xColName="inspected_date"
                                       :defaultitem="defalutItemList_feed" :loading="feedloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -425,9 +425,9 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6" align-self="center" class="mutiselect">
                                     <v-select v-model="defitem_obs" clearable multiple filled deletable-chips chips dense hide-details
@@ -445,7 +445,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                    class="d-flex full-width"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -466,21 +466,21 @@
                                   </v-col> -->
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0 full-width">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
+                                        class="mt-0 ml-2"
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -498,12 +498,12 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in obsdata"
                                     :key="item.id" v-show="
                                       defPool.觀察.includes(item.name) || defPool.觀察.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.obs" xColName="inspected_date"
                                       :defaultitem="defalutItemList_obs" :loading="obsloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -528,9 +528,9 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6" align-self="center" class="mutiselect">
                                     <v-select v-model="defitem_adv" clearable multiple filled deletable-chips chips dense hide-details
@@ -547,7 +547,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                    class="d-flex full-width"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -568,21 +568,21 @@
                                   </v-col> -->
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0 full-width">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
+                                        class="mt-0 ml-2"
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -600,12 +600,12 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in advdata"
                                     :key="item.id" v-show="
                                       defPool.進階.includes(item.name) || defPool.進階.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.adv" xColName="inspected_date"
                                       :defaultitem="defalutItemList_adv" :loading="advloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -614,7 +614,7 @@
                                       }"></WaterQuality_Vcharts2>
                                   </v-col>
                                 </v-row>
-                                <v-row v-if="advdata.length < 1 && advloading == false" style="margin-bottom: 0;min-height: 47vh;">
+                                <v-row v-if="advdata.length < 1 && advloading == false" class="mb-0" style="min-height: 47vh;">
                                   <v-spacer></v-spacer>
                                   <v-col cols="4" class="text-center">
                                     <h4>暫無資料</h4>
@@ -630,9 +630,9 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6" align-self="center" class="mutiselect">
                                     <v-select v-model="defitem_pbio" clearable multiple filled deletable-chips chips dense hide-details
@@ -649,7 +649,7 @@
                                   </v-col>
 
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                    class="d-flex full-width"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -670,21 +670,21 @@
                                   </v-col> -->
                                 </v-row>
                                 <!-- 圖表顯示控制 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0 full-width">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
                                         v-model="chartToggle"
                                         label="" dense hide-details inset
-                                        style="margin-top: 0;margin-left: 8px;"
+                                        class="mt-0 ml-2"
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -702,13 +702,13 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in pbiodata"
                                     :key="item.id" v-show="
                                       defPool.益生菌.includes(item.name) ||
                                       defPool.益生菌.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.pbio" xColName="inspected_date"
                                       :defaultitem="defalutItemList_pbio" :loading="pbioloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -733,9 +733,9 @@
                               <v-progress-circular indeterminate size="64"></v-progress-circular>
                             </v-overlay>
                             <v-card>
-                              <v-card-text style="padding: 12px 0;">
+                              <v-card-text class="px-0 py-3">
                                 <!-- 搜尋 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <!-- 指定項目 -->
                                   <v-col cols="12" md="6" align-self="center" class="mutiselect">
                                     <v-select v-model="defitem_material" clearable multiple filled deletable-chips chips dense hide-details
@@ -752,7 +752,7 @@
                                   </v-col>
                                   
                                   <v-col cols="12" md="1" align-self="center" v-if="windowWidth>959.98"
-                                    style="width: 100%;display: flex;"
+                                    class="d-flex full-width"
                                     :style="{'justifyContent':`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
@@ -777,7 +777,7 @@
                                   <v-col cols="6" align-self="center"  v-if="windowWidth<959.98" class="pt-0">
                                     <v-btn class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel">查詢</v-btn>
                                   </v-col>
-                                  <v-col cols="6" md="12" class="flex-center-end pt-0" style="width: 100%;">
+                                  <v-col cols="6" md="12" class="flex-center-end pt-0 full-width">
                                     <div class="chart-toggle flex-align-center">
                                       區塊顯示
                                       <v-switch
@@ -787,7 +787,7 @@
                                       ></v-switch>
                                     </div>
                                     
-                                    <div v-if="windowWidth>959.98" class="change-row">
+                                    <div v-if="windowWidth>959.98" class="change-row d-flex flex-column">
                                         <!-- 顯示：{{ colstyle + 1 }}欄式 -->
                                         <v-btn-toggle v-model="colstyle" dark mandatory class="btn-toggles">
                                           <v-btn small>
@@ -805,13 +805,13 @@
                                   </v-col>
                                 </v-row>
                                 <!-- 圖表 -->
-                                <v-row style="margin-bottom: 0;">
+                                <v-row class="mb-0">
                                   <v-col cols="12" :md="colstyle == 2 ? '4' : colstyle == 1 ? '6' : '12'" v-for="item in materialdata"
                                     :key="item.id" v-show="
                                       defPool.用料.includes(item.name) ||
                                       defPool.用料.length == 0
                                     ">
-                                    <h1 class="pool-name">{{ item.name }}</h1>
+                                    <h1 class="pool-name pl-1">{{ item.name }}</h1>
                                     <WaterQuality_Vcharts2 :chartToggle="chartToggle" :rowsData="item.items" :legendAliasOut="allcols.breeding_material" xColName="inspected_date"
                                       :defaultitem="defalutItemList_material" :loading="materialloading" :title="item.name" :urldata="{
                                         sel_main: sel_main,
@@ -1661,7 +1661,6 @@ export default {
 
 .spector {
   color: $color-primary;
-  // text-decoration: underline;
   cursor: pointer;
   padding-bottom: 2px;
   border-bottom: 1px solid $color-primary;
@@ -1669,10 +1668,5 @@ export default {
 }
 .pool-name {
   color: $color-dark;
-  padding-left: 4px;
-}
-.change-row {
-  display: flex;
-  flex-direction: column;
 }
 </style>

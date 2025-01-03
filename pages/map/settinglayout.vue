@@ -1,8 +1,8 @@
 <template>
-    <div class="setting-layout pa-3" style="margin: 0!important;width: calc(100% - 24px);">
+    <div class="setting-layout pa-3 ma-0" style="width: calc(100% - 24px);">
         <!-- 欄位 -->
-        <v-row v-if="areas.ponds?.length>0" style="align-items: center;margin-bottom: 12px;flex-wrap: nowrap;">
-            <div class="icon-group" style="width: 60px;margin-bottom: 8px;">
+        <v-row v-if="areas.ponds?.length>0" class="align-center flex-nowrap mb-3">
+            <div class="icon-group mb-2" style="width: 60px;">
                 <!-- <div v-if="!edit" class="icons">
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
@@ -14,11 +14,11 @@
                         <span>編輯</span>
                     </v-tooltip>
                 </div> -->
-                <div class="icons" style="justify-content: center;">
+                <div class="icons justify-center">
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn class="btn-icon" v-bind="attrs"
-                            v-on="on" @click="save()" style="margin: 0 4px;">
+                            <v-btn class="btn-icon mx-1 my-0" v-bind="attrs"
+                            v-on="on" @click="save()">
                                 <v-icon>mdi-check</v-icon>
                             </v-btn>
                         </template>
@@ -26,8 +26,8 @@
                     </v-tooltip>
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn class="btn-icon delete" v-bind="attrs"
-                            v-on="on" @click="cancelEdit()" style="margin: 0 4px;">
+                            <v-btn class="btn-icon delete mx-1 my-0" v-bind="attrs"
+                            v-on="on" @click="cancelEdit()">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </template>
@@ -35,9 +35,9 @@
                     </v-tooltip>
                 </div>
             </div>
-            <div class="title-col text-center mx-3"
+            <div class="title-col text-center mx-3 mb-2 pa-1"
                 v-for="c in maxCols" :key="c"
-                style="margin-bottom: 8px;width: 120px;min-width: 120px;">
+                style="width: 120px;min-width: 120px;">
                 <div v-if="maxCols > 1" class="icon-group">
                     <div class="icons">
                         <v-tooltip bottom>
@@ -48,7 +48,7 @@
                         </v-tooltip>
                     </div>
                 </div>
-                <span style="width: 100%;">欄 {{ c }}</span>
+                <span class="full-width">欄 {{ c }}</span>
                 <div class="icon-group">
                     <div class="icons">
                         <v-tooltip bottom>
@@ -61,10 +61,10 @@
                 </div>
             </div>
         </v-row>
-        <div v-if="areas.ponds?.length>0" style="width: 100%;">
-            <v-row v-for="(pond,pid) in ponds" :key="pid" class="parent-row" id="rowL">
+        <div v-if="areas.ponds?.length>0" class="full-width">
+            <v-row v-for="(pond,pid) in ponds" :key="pid" class="parent-row mb-3" id="rowL">
             <!-- 列 -->
-                <div class="title-col text-center" style="min-width: 60px;justify-content: center;">
+                <div class="title-col text-center justify-center pa-1" style="min-width: 60px;">
                     <div class="icon-group">
                         列 {{ pid+1 }}
                         <div class="icons">
@@ -85,8 +85,8 @@
                 </div>
                     
                 <div v-for="(b,bid) in pond.pond" :key="bid"
-                    class="mx-3 my-1 text-center setting-block"
-                    style="cursor: pointer;flex-shrink: 0;"
+                    class="mx-3 my-1 text-center setting-block cursor-pointer"
+                    style="flex-shrink: 0;"
                     :style="{ 
                         minWidth: `${getWidth(b)}`,
                         borderColor:`${b.rows.length==0?'rgba(#00273E,0.5)':'#00273E'}`,
@@ -95,18 +95,18 @@
                         backgroundColor:`${b.name=='road'&&b.id==''?'transparent':'white'}`,
                         }"
                     :class="{'block':b.rows.length==0 && (b.id!==''||b.name!=='road'),'road':b.id==''&&b.name=='road'}">
-                    <div v-if="b.rows.length>0" style="width: 100%;height: 100%;" :style="{marginLeft:`${ $route.path=='/map'?'12px':'0' }`}">
-                        <v-row v-for="(row,rid) in b.rows" :key="rid" style="width: 100%;margin-bottom: 0;">
-                            <div style="width: 100%;border-width: 2px;margin: 4px 0;"
-                                class="road-width flex-align-center"
+                    <div v-if="b.rows.length>0" class="full-width" style="height: 100%;" :style="{marginLeft:`${ $route.path=='/map'?'12px':'0' }`}">
+                        <v-row v-for="(row,rid) in b.rows" :key="rid" class="mb-0 full-width">
+                            <div style="border-width: 2px;"
+                                class="road-width flex-align-center mx-0 my-1 full-width"
                                 :style="{
                                     borderColor:`${row.state==''&& row.name !=='road' && row.rows.length==0?'rgba(#00273E,0.5)':'#00273E'}`,
                                     borderStyle:`${row.rows.length>0||(row.id==''&&row.name=='road')?'none':row.state=='' && row.name !== 'road'?'dotted':'solid'}`,
                                     backgroundColor:`${row.name=='road' && row.id==''?'#e4e4e4':'white'}`,
                                     borderWidth:`${row.rows.length>0||(row.id==''&&row.name=='road')?'none':'2px'}`,}"
                                 :class="{'block':row.rows.length==0 && (row.id!==''||row.name!=='road'),'road':row.id==''&&row.name=='road'}">
-                                <div style="width: 100%;height: 100%;" @click="openDialog(pid,bid,rid)">
-                                    <div v-if="row.name=='road'" style="width: 100%;z-index: 1000;">走道</div>
+                                <div class="full-width" style="height: 100%;" @click="openDialog(pid,bid,rid)">
+                                    <div v-if="row.name=='road'" class="full-width" style="z-index: 1000;">走道</div>
                                     <div v-else-if="row.name=='tank'">生化槽</div>
                                     <div v-else-if="row.state!==''">{{ row.name }}</div>
                                     <div v-else>空白</div>
@@ -124,10 +124,10 @@
                             </div>
                         </v-row>
                     </div>
-                    <div v-else @click="openDialog(pid,bid)" style="height: 100%;margin: 0;"
+                    <div v-else class="ma-0" @click="openDialog(pid,bid)" style="height: 100%;"
                         :style="{padding:`${b.id==''&&b.name=='road'?'0':'12px'}`,}">
                         <!-- <div v-if="b.name=='road' && b.id==''">走道</div> -->
-                        <div v-if="b.name == 'road' && b.id==''" style="width: 100%;height: 100%;">
+                        <div v-if="b.name == 'road' && b.id==''" class="full-width" style="height: 100%;">
                             <div v-if="b.cols>1 || b.roadDirection=='horizontal'" class="horizontal text-center">走道</div>
                             <div v-else
                                 :class="{
@@ -149,8 +149,19 @@
         <div v-if="areas.ponds?.length==0">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
         <!-- dialog -->
         <v-dialog v-model="addDialog" max-width="500px">
-            <v-card style="max-height: inherit;">
-                <v-card-title>編輯</v-card-title>
+            <v-card class="custom-dialog" style="max-height: inherit;">
+                <v-card-title class="add-title">
+                    <div class="d-inline-block">
+                        編輯
+                    </div>
+                    <div class="add">
+                    <v-btn  class="btn-secondary close"
+                            title="取消" 
+                            @click="addDialog = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    </div>
+                </v-card-title>
                 <v-card-text>
                     <div class="select type">
                         <span>類型：</span>
@@ -208,10 +219,9 @@
                     <span v-if="isPondName" class="note">注意：其他池已使用此名稱，按下確認鈕後，原使用此名稱的池會變成 '空白' !</span>
                     
                     <v-card-actions>
-                        <div class="buttons flex-center-end" style="width:100%;">
-                            <button class="cancel" @click="cancelEditBlock()">取消</button>
-                            <button class="confirm" @click="saveBlock()">確認</button>
-                        </div>
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn btn-secondary" @click="cancelEditBlock()">取消</v-btn>
+                        <v-btn class="btn btn-primary" @click="saveBlock()">確認</v-btn>
                     </v-card-actions>
                 </v-card-text>
             </v-card>
@@ -1109,25 +1119,22 @@ export default {
 }
 </script>
   
-<style lang="scss">
+<style lang="scss" scoped>
     * {
         box-sizing: border-box;
     }
     .parent-row {
         @include size(100%);
-        margin-bottom: 12px;
         flex-wrap: nowrap;
-    //   min-width: 1200px;
     }
-        .row + .row {
-            align-items: center;
-        }
-        .v-card.map, .v-card.bg-card {
+    .row + .row {
+        align-items: center;
+    }
+    .v-card.map, .v-card.bg-card {
         .block {
             color: #00273E;
             border-radius: 6px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 100%;
             width: 120px;
         }
         .icon-group {
@@ -1135,19 +1142,6 @@ export default {
                 display: flex;
                 margin-right: 0;
                 justify-content: space-around;
-                .confirm {
-                    transition: all 0.3s;
-                    &:hover {
-                        background-color: lighten($color: $color-primary, $amount: 2);
-                    }
-                    &.close {
-                        background-color: $color-accent;
-                        &:hover {
-                            background-color: lighten($color: $color-accent, $amount: 2);
-                        }
-                    }
-                    
-                }
                 .col-row-plus,.col-row-minus {
                     @include size(24px);
                     color: $color-accent;
@@ -1166,39 +1160,32 @@ export default {
                         background-color: rgba($color-primary,0.25);
                     }
                 }
-                .edit i {
-                    color: rgba(0, 0, 0, 0.54);
-                }
             }
         }
     }
 
     .title-col {
         @include flexCenterBetween();
-        padding: 4px;
         border: 1px solid rgba($color-dark,0.5);
         border-radius: 4px;
-        // width: 120px;
     }
     // road
     .road {
         position: relative;
         padding: 0;
-    //   width: 100%;
         border: none;
         background-color: transparent;
         border-radius: 4px;
-    //   width: 120px;
         & > div {
-        position: relative;
-        @include size(100%);
-        @include flexAlignCenter();
+            position: relative;
+            @include size(100%);
+            @include flexAlignCenter();
         }
         & > div.icon-group {
-        width: initial;
+            width: initial;
         }
         &:hover {
-        background-color: #c6c6c6;
+            background-color: #c6c6c6;
         }
         .horizontal,.top,.center,.bottom,.vertical {
             padding: 0;
@@ -1209,26 +1196,22 @@ export default {
             border-radius: 4px;
         }
         .horizontal {
-        padding: 6px;
-        // margin: 0 12px;
-        // width: calc(100% - 24px);
+            padding: 6px;
         }
         .top,.center,.bottom, .vertical {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 36px;
-        height: calc(100% + 32px);
-        @include flexAllCenter();
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            @include size(36px,calc(100% + 32px));
+            @include flexAllCenter();
         }
         .vertical {
-        border-radius: 4px;
-        height: auto;
-        // height: calc(100% + 56px);
-        margin-top: -24px;
-        span {
-            padding: 8px 0;
-        }
+            border-radius: 4px;
+            height: auto;
+            margin-top: -24px;
+            span {
+                padding: 8px 0;
+            }
         }
         .center {
             border-radius: 0;
@@ -1237,58 +1220,29 @@ export default {
         }
         
         .bottom {
-        border-radius: 0 0 4px 4px;
-        margin-top: 0;
-        &.vertical {
-            margin-top: -48px;
-            height: calc(100% + 84px);
-        }
+            border-radius: 0 0 4px 4px;
+            margin-top: 0;
+            &.vertical {
+                margin-top: -48px;
+                height: calc(100% + 84px);
+            }
         }
         .top {
             border-radius: 4px 4px 0 0;
             margin-top: -24px;
             &.vertical {
-            margin-top: -24px;
-            height: calc(100% + 84px);
-            //   height: calc(100% + 12px);
+                margin-top: -24px;
+                height: calc(100% + 84px);
             }
-            // margin-top: 0;
         }
         .center.bottom{
-        margin-top: -56px;
-        height: calc(100% + 120px);
+            margin-top: -56px;
+            height: calc(100% + 120px);
         }
-        
     }
 
     // dialog
     .v-dialog__content {
-        //width: inherit;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        .v-card {
-            min-height: inherit;
-            .v-card__title {
-                color: #00273E;
-                font-weight: bold;
-            }
-        }
-        .buttons {
-            margin-bottom: 12px;
-            button {
-                padding: 8px 16px;
-                margin: 4px;
-                background-color: $color-primary;
-                color: #fff;
-                border-radius: 4px;
-                &.cancel {
-                    background-color: #fff;
-                    border: 1px solid $color-primary;
-                    color: $color-primary;
-                }
-            }
-        }
         .select {
             @include flexAlignCenter();
             margin-bottom: 8px;

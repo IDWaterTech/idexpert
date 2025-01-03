@@ -4,11 +4,11 @@
       <v-overlay :value="!isLoading" :absolute="true">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
-      <div class="content" style="padding-left: 0;padding-top:0;padding-bottom: 0;">
+      <div class="content pl-0 pt-0 pb-0">
         <div class="result">
-          <v-row style="margin-bottom: 8px;">
+          <v-row class="mb-2">
             <v-col cols="12">
-              <div class="header-bar" style="margin-bottom: 16px;">
+              <div class="header-bar mb-4">
                 <v-tabs v-model="tablindex" show-arrows @change="changeTabs">
                   <v-tab :href="`#廠商設定`">廠商設定</v-tab>
                   <v-tab :href="`#成份設定`">成份設定</v-tab>
@@ -22,12 +22,12 @@
                 <v-tab-item value="廠商設定">
                   <div class="search">
                     <v-row>
-                      <v-col cols="7" md="3" sm="6" style="padding: 0;padding-left: 8px;">
+                      <v-col cols="7" md="3" sm="6" class="pa-0 pl-2">
                           <v-autocomplete v-model="manuidx" hide-details dense filled clearable :items="manu" placeholder="選擇廠商" item-text="name_ch" item-value="id" @change="manselect" style="min-width: 200px;">
                     
                           </v-autocomplete>
                       </v-col>
-                      <v-col cols="5" md="3" sm="6" style="padding: 0;">
+                      <v-col cols="5" md="3" sm="6" class="pa-0">
                         <v-tooltip bottom>
                           <template v-slot:activator="{ on, attrs }">
                               <button class="btn-icon just-icon" @click="getmanudata" v-bind="attrs" v-on="on">
@@ -59,7 +59,7 @@
                       <v-card class="result-card">
                         <div class="card-title">
                           <div class="title">
-                            <v-card-title style="width: 100%;">廠商資訊</v-card-title>
+                            <v-card-title class="full-width">廠商資訊</v-card-title>
                             <!-- <div class="chevron" style="display: flex;align-items: center;margin-left: 8px;">
                               <v-btn class="btn-secondary green" @click="openAdd" style="padding: 0 8px;">
                                   <v-icon>mdi-plus</v-icon>新增廠商
@@ -108,7 +108,7 @@
                 <v-tab-item value="成份設定">
                   <div class="search">
                     <v-row>
-                      <v-col cols="12" lg="3" md="3" sm="6" class="flex-align-center" style="padding: 0;padding-left: 8px;">
+                      <v-col cols="12" lg="3" md="3" sm="6" class="flex-align-center pa-0 pl-2">
                         <v-chip v-if="fic_idx&&fic_idx!==null"
                             :color="`${nowtag.is_main?'#408FBC':'#BFCBD2'}`"
                             style="font-size: 12px;margin: 2px;"
@@ -131,7 +131,7 @@
                           
                       </v-col>
                       
-                      <v-col cols="12" lg="3" md="3" sm="6" style="padding: 0;">
+                      <v-col cols="12" lg="3" md="3" sm="6" class="pa-0">
                         <v-tooltip bottom>
                           <template v-slot:activator="{ on, attrs }">
                               <button class="btn-icon just-icon" @click="getficdata" v-bind="attrs" v-on="on">
@@ -241,9 +241,9 @@
                       <v-card class="result-card">
                         <div class="card-title">
                           <div class="title">
-                            <v-card-title style="width: 100%;">成份資訊</v-card-title>
-                            <div class="chevron flex-align-center" style="margin-left: 8px;">
-                              <v-btn class="btn-secondary green" @click="openAdd" style="padding: 0 8px;">
+                            <v-card-title class="full-width">成份資訊</v-card-title>
+                            <div class="chevron flex-align-center ml-2">
+                              <v-btn class="btn-secondary green px-2 py-0" @click="openAdd">
                                   <v-icon>mdi-plus</v-icon>新增成份
                               </v-btn>
                               
@@ -308,7 +308,7 @@
                     <div class="search">
                       <!-- {{ combo }} -->
                       <v-row>
-                        <v-col cols="12" md="3" sm="6" style="padding: 0;padding-left: 8px;">
+                        <v-col cols="12" md="3" sm="6" class="pa-0 pl-2">
                           <v-autocomplete
                             v-model="comboidx"
                             style="min-width: 200px;"
@@ -324,8 +324,8 @@
                             ></v-autocomplete>
                         </v-col>
                         
-                        <v-col cols="12" md="3" sm="6" class="flex-align-center" style="padding: 0;">
-                          <v-checkbox v-model="isEnable" label="顯示已停用套餐" @change="checkTemp" hide-details style="margin-right: 16px;"></v-checkbox>
+                        <v-col cols="12" md="3" sm="6" class="flex-align-center pa-0">
+                          <v-checkbox v-model="isEnable" class="mr-4" label="顯示已停用套餐" @change="checkTemp" hide-details></v-checkbox>
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                                 <button class="btn-icon just-icon" @click="getcombodata" v-bind="attrs" v-on="on">
@@ -355,7 +355,7 @@
                       <v-card class="result-card">
                         <div class="card-title">
                           <div class="title">
-                            <v-card-title style="width: 100%;">套餐資訊</v-card-title>
+                            <v-card-title class="full-width">套餐資訊</v-card-title>
                             <!-- <div class="chevron" style="display: flex;align-items: center;margin-left: 8px;">
                               <v-btn class="btn-secondary green" @click="openAdd" style="padding: 0 8px;">
                                   <v-icon>mdi-plus</v-icon>新增廠商
@@ -586,17 +586,16 @@
       <v-form ref="manform" v-model="manvalid" >
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div v-if="mode=='edit'" class="edit" style="display: inline-block;">
+            <div v-if="mode=='edit'" class="edit d-inline-block">
               編輯{{tablindex.split('設定')[0]}}
             </div>
-            <div v-else class="edit" style="display: inline-block;">
+            <div v-else class="edit d-inline-block">
               新增{{tablindex.split('設定')[0]}}
             </div>
             <div class="add">
                 <v-btn class="btn-secondary close"
                         title="取消" 
-                        @click="editForm = false" 
-                        style="border: none;min-width: 0;padding: 0 4px;">
+                        @click="editForm = false">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
             </div>
@@ -732,10 +731,9 @@
               clearable
               multiple
               hide-details
-              class="items"
-              style="align-items: center;"
+              class="items align-center"
               >
-              <div  slot="prepend" class="card-title" style="margin: 12px 0;width:100px;">
+              <div  slot="prepend" class="card-title mx-0 my-3" style="width:100px;">
                 <div class="title">
                     <v-card-title>成份參數</v-card-title>
                 </div>
@@ -805,17 +803,16 @@
                 >備註</span
               ></v-text-field>
             <v-divider></v-divider>
-            <div class="card-title" style="margin: 12px 0;">
+            <div class="card-title mx-0 my-3">
               <div class="title">
-                  <v-card-title style="display: inline-block;">配方</v-card-title>
+                  <v-card-title class="d-inline-block">配方</v-card-title>
                   <span v-if="comboNull" class="error-text">*請填寫配方</span>
               </div>
             </div>
             <!-- 主成分 -->
-            <div class="main-items">
+            <div class="main-items pa-2 mb-2">
               <v-autocomplete
                 v-model="combofield.main_items"
-                style="align-items: center;"
                 :items="ficwithdetail_main"
                 item-text="name"
                 item-value="id"
@@ -827,10 +824,10 @@
                 multiple
                 hide-details
                 label="選擇主成分"
-                class="items"
+                class="items align-center"
                 @change="mainchange"
                 >
-                <div  slot="prepend" class="card-title" style="margin: 12px 0;width:50px;">
+                <div  slot="prepend" class="card-title mx-0 my-3" style="width:50px;">
                   <div class="title">
                       <v-card-title>主成份</v-card-title>
                   </div>
@@ -887,9 +884,9 @@
                 </div>
               </v-row> -->
               
-              <v-row v-for="item in combofield.main_items" :key="item.id" class="meal-item">
-                <v-col cols="12" style="padding-bottom: 0;">
-                    <div class="flex-align-center" style="margin-top: 4px;">
+              <v-row v-for="item in combofield.main_items" :key="item.id" class="align-center mx-2 my-0 mb-2 border-bottom">
+                <v-col cols="12" class="pb-0">
+                    <div class="flex-align-center mt-1">
                       <span>{{
                         ficwithdetail_main.filter(x => x.id == item)[0].name
                       }}</span>
@@ -937,10 +934,9 @@
             </div>
             
             <!-- 次成份 -->
-            <div class="main-items sub-border">
+            <div class="main-items sub-border pa-2 mb-2">
               <v-autocomplete
                 v-model="combofield.sub_items"
-                style="align-items: center;margin-top: 4px;"
                 :items="ficwithdetail_sub"
                 item-text="name"
                 item-value="id"
@@ -952,10 +948,10 @@
                 multiple
                 hide-details
                 label="選擇次成分"
-                class="items sub_chips"
+                class="items sub_chips align-center mt-1"
                 @change="subchange"
                 >
-                <div  slot="prepend" class="card-title" style="margin: 12px 0;width:50px;">
+                <div  slot="prepend" class="card-title mx-0 my-3" style="margin: 12px 0;width:50px;">
                   <div class="title">
                       <v-card-title>次成份</v-card-title>
                   </div>
@@ -1015,13 +1011,13 @@
                   </v-text-field>
                 </div>
               </v-row> -->
-              <v-row class="border-bottom" v-for="item in combofield.sub_items" :key="item.id" style="align-items: center;margin: 0 8px;">
-                <v-col cols="12" style="padding-bottom: 0;">
-                    <div class="flex-align-center" style="margin-top: 4px;">
+              <v-row class="border-bottom align-center mx-2 my-0" v-for="item in combofield.sub_items" :key="item.id">
+                <v-col cols="12" class="pb-0">
+                    <div class="flex-align-center mt-1">
                       <span>{{
                       ficwithdetail_sub.filter(x => x.id == item)[0].name
                     }}</span>
-                      <div class="chips">
+                      <div class="chips mx-2 my-0">
                         <v-chip
                           class="mx-1 params"
                           v-for="parmitem in ficwithdetail_sub.filter(
@@ -1066,7 +1062,7 @@
             
           </v-card-text>
           <!-- <v-divider></v-divider> -->
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn tile @click="editForm = false" class="btn-secondary">取消</v-btn>
               <v-btn tile @click="editsave" v-if="mode=='edit'" class="btn-primary">修改</v-btn>
@@ -2551,27 +2547,15 @@ export default {
         background-color: #fff;
     }
 }
-.chips {
-  margin: 0 8px;
-}
-
 .main-items {
   @include size(100%);
   border: 1px solid $color-primary;
   border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 8px;
 }
 .sub-border {
   border-color: $color-dark-25;
 }
-.meal-item {
-  align-items: center;
-  margin: 0 8px;
-  border-bottom: 1px solid $color-black-10;
-  margin-bottom: 8px;
- 
-}
+
 ::v-deep {
   .result .header-bar .theme--light.v-tabs > .v-tabs-bar {
     background: #fff;

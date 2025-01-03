@@ -1,5 +1,5 @@
 <template>
-  <div style="position: relative;width: 100%;height: 100%;">
+  <div class="full-width" style="position: relative;height: 100%;">
     <!-- <v-container style="height: 100%;"> -->
       <!-- <h1 style="color:lightblue;">登入</h1> -->
       <!-- <strong>{{ $auth.$state.redirect }}</strong> -->
@@ -28,17 +28,18 @@
                 hoverMode="grab"
                 :clickEffect="true"
                 clickMode="push"
-                style="position: absolute;width: 100%;height: 100%;"
+                class="full-width"
+                style="position: absolute;height: 100%;"
               >
               </vue-particles>
-            <v-card  class="login">
-              <div class="card-title">
+            <v-card  class="login mb-6 pa-10 flex-column overflow-hidden">
+              <div class="card-title mb-12">
                   <div class="title">
                       <img src="../assets/logo.jpg" style="max-height: 120px;" />
                       <h3>專家系統</h3>
                   </div>
               </div>
-              <div class="content">
+              <div class="content mb-8">
                 <v-row>
                   <!-- 帳密輸入 -->
                   <!-- <v-col cols="12">
@@ -269,51 +270,24 @@ export default {
 
 <style lang="scss" scoped>
 .v-application.v-application--is-ltr {
-  .tech-bg {
-    // max-height: 480px;
-    @include positionCenter();
-    width: 80%;
-    margin-left: -24px;
-  }
   .v-card.login {
     @include positionCenter();
-    overflow: hidden;
-    margin-bottom: 24px;
-    padding: 40px;
     @include flexAllCenter();
-    flex-direction: column;
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.10), 0px 0px 10px 0px rgba(255,255,255,0.4);
     .card-title {
       @include flexAllCenter();
-      margin-bottom: 48px;
       .title {
         color: $color-primary;
         h3 {
-          // margin-top: -12px;
           color: $color-primary;
           font-weight: bold;
         }
       }
     }
     .content {
-      margin-bottom: 32px;
       .google-btn {
         border-radius: 4px;
       }
-    }
-  }
-}
-@media (max-width: 959.98px) {
-  .v-application.v-application--is-ltr {
-    .tech-bg {
-      width: 90%;
-    }
-  }
-}
-@media (max-width: 768px) {
-  .v-application.v-application--is-ltr {
-    .tech-bg {
-      display: none;
     }
   }
 }

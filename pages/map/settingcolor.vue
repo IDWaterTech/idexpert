@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-row style="margin-left: 0;margin-right: 0;">
+    <v-row class="ml-0 mr-0">
       <v-col md="4" sm="6">
         <v-card style="height: 100%;">
-          <v-list dense style="overflow: hidden;">
+          <v-list class="overflow-hidden pb-0" dense style="overflow: hidden;">
             <v-subheader
               ><h2>養殖池狀態-清單</h2>
               <v-spacer></v-spacer
@@ -50,7 +50,7 @@
               </v-row>
             </div> -->
 
-            <v-list-item-group v-model="selectedItem" style="width: 100%; max-width: inherit;">
+            <v-list-item-group v-model="selectedItem" class="full-width" style=" max-width: inherit;">
               <template v-for="(item, index) in statLst">
                 <v-divider v-if="index < 1" :key="index" light></v-divider>
                 
@@ -59,17 +59,16 @@
                   :style="`background-color:${item.color};`"
                   @click="chgcolor(item)"
                 >
-                  <template v-slot:default="{ active }">
+                  <!-- <template v-slot:default="{ active }"> -->
                     <v-list-item-content>
-                      <v-list-item-title v-text="item.name_ch"></v-list-item-title>
+                      <v-list-item-title>{{ item.name_ch }}</v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>
                       <v-list-item-action-text
-                        v-text="item.action"
-                      ></v-list-item-action-text>
+                      >{{ item.action }}</v-list-item-action-text>
                       {{ item.color }}
                     </v-list-item-action>
-                  </template>
+                  <!-- </template> -->
                 </v-list-item>
               </template>
             </v-list-item-group>
@@ -107,12 +106,12 @@
       <v-col md="6" sm="6">
         <!-- <v-card> -->
           <div
+          class="pa-3"
           :disabled="!(selectedItem != undefined && selectedItem > -1)"
-          style="padding: 12px;"
         >
-            <v-row style="margin: 0;margin-bottom: 12px;">
+            <v-row class="ma-0 mb-3">
               <div
-                class="title choose-color"
+                class="title choose-color pa-1 mr-1"
                 :style="
                   `background-color:${
                     selectedItem != undefined && selectedItem > -1
@@ -130,7 +129,6 @@
                 }}
               </div>
               <div
-               
               >
                 <v-icon color="green" @click="colorsubmit" size="40"
                   >mdi-checkbox-marked-outline</v-icon
@@ -350,26 +348,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-list {
-  padding-bottom: 0;
-}
 .v-sheet.v-card {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   border-radius: 4px !important;
 }
 .choose-color {
   width: calc(100% - 88px);
-  padding: 4px;
   border-radius: 4px;
-  margin-right: 4px;
 }
 .v-color-picker__canvas {
   border-radius: 4px;
 }
 .v-dialog__content {
   width: inherit;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
+  @include positionCenter();
 }
 </style>

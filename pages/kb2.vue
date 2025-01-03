@@ -2,7 +2,7 @@
     <div>
         <v-card class="kb bg-card" :style="{'minHeight':`${windowHeight>880?'90vh':'86vh'}`}">
             <div class="card-title">
-                <v-row style="margin-bottom: 0;">
+                <v-row class="mb-0">
                     <!-- <div class="title">
                         <v-icon>mdi-database-edit-outline</v-icon>
                         <v-card-title>知識庫-鷹眼 v2.0</v-card-title>
@@ -97,21 +97,21 @@
                             </div>
                             <v-dialog v-model="dialog.pdf" scrollable max-width="75%" width="75%">
                                 <v-card>
-                                    <v-card-title class="add-title" style="display: flex;width: 100%;">
+                                    <v-card-title class="add-title d-flex full-width">
                                         <div class="flex-align-center" style="width: calc(100% - 40px);">
                                             <span><a :href="url.xls" target="_blank">計算公式</a></span>
                                             <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
-                                                    <a :href="formulaUrl" target="_blank" v-bind="attrs" v-on="on" style="margin-left: 16px;"><v-icon>mdi-link</v-icon></a>
+                                                    <a :href="formulaUrl" target="_blank" v-bind="attrs" v-on="on" class="ml-4"><v-icon>mdi-link</v-icon></a>
                                                 </template>
                                                 <span>在新分頁中開啟</span>
                                             </v-tooltip>
                                             
                                         </div>
-                                        <div class="add" style="float: right;">
-                                            <v-btn class="btn-secondary close" title="取消" @click="dialog.pdf = false;"
-                                                style="border: none;min-width: 0;padding: 0 4px;">
+                                        <div class="add float-right">
+                                            <v-btn class="btn-secondary close px-1 py-0" title="取消" @click="dialog.pdf = false;"
+                                                style="border: none;min-width: 0;">
                                                 <v-icon>mdi-close</v-icon>
                                             </v-btn>
                                         </div>
@@ -124,8 +124,8 @@
                                     </v-card-title> -->
                                     <v-card-text style="height: 600px;">
                                         <v-responsive>
-                                            <iframe :src="formulaUrl"
-                                                style="overflow:hidden;height:600px;width:100%;"></iframe>
+                                            <iframe :src="formulaUrl" class="full-width overflow-hidden"
+                                                style="height:600px;"></iframe>
                                         </v-responsive>
                                     </v-card-text>
                                     <!-- <v-card-actions>
@@ -186,15 +186,15 @@
                         <v-progress-circular indeterminate size="64"></v-progress-circular>
                     </v-overlay>
                     <div class="result-content" >
-                        <v-card class="result-card" style="padding-bottom: 12px">
+                        <v-card class="result-card pb-3">
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
-                            <div class="timeline flex-align-center" style="margin: 0 16px;">
-                                <span v-if="!isSearchDate" @click="searchDate" style="cursor: pointer">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
-                                <v-row v-else style="margin-bottom: 0;">
+                            <div class="timeline flex-align-center mx-4 my-0">
+                                <span v-if="!isSearchDate" class="cursor-pointer" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
+                                <v-row v-else class="mb-0">
                                     <v-col cols=12 md="3" sm="3">
-                                        <v-row class="item-row item" style="margin-bottom: 0;">
+                                        <v-row class="item-row item mb-0">
                                             <v-col cols="12" md="4" sm="4">
-                                                <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${BaseParm['InspectedDate']&&BaseParm['InspectedDate']!==''&&BaseParm['InspectedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon @click="() => (BaseParm['InspectedDate'] = getNowDate())">mdi-calendar</v-icon>資料日期</span>
+                                                <span class="pa-0 ma-0" slot="prepend" :style="{'color':`${BaseParm['InspectedDate']&&BaseParm['InspectedDate']!==''&&BaseParm['InspectedDate']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-btn class="btn-icon just-icon" @click="() => (BaseParm['InspectedDate'] = getNowDate())"><v-icon>mdi-calendar</v-icon></v-btn>資料日期</span>
                                             </v-col>
                                             <v-col cols="12" md="8" sm="8">
                                                 <v-menu v-model="menu_inspecteddate"
@@ -223,11 +223,11 @@
                                         </v-row>
                                     </v-col>
                                     <v-col cols=12 md="3" sm="3">
-                                        <v-row class="item-row item" style="margin-bottom: 0;">
+                                        <v-row class="item-row item mb-0">
                                             <v-col cols="12" md="4" sm="4">
                                                 <span class="pa-0 ma-0"
-                                                    slot="prepend" :style="{'color':`${BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==''&&BaseParm['InspectedTime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-icon
-                                                        @click="() => (BaseParm['InspectedTime'] = getNowTime())">mdi-timeline-clock-outline</v-icon>資料時間</span>
+                                                    slot="prepend" :style="{'color':`${BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==''&&BaseParm['InspectedTime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-btn class="btn-icon just-icon" @click="() => (BaseParm['InspectedTime'] = getNowTime())"><v-icon
+                                                        >mdi-timeline-clock-outline</v-icon></v-btn>資料時間</span>
                                             </v-col>
                                             <v-col cols="12" md="8" sm="8">
                                                 <v-text-field
@@ -261,7 +261,7 @@
                                     </v-col>
 
                                 </v-row>
-                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" style="margin-left: 16px;color:#006AA6;cursor: pointer;text-decoration:underline;margin-right: 8px;">詳細資訊</span>
+                                <span v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" @click="isShowResult=!isShowResult" class="ml-4 mr-2 cursor-pointer" style="color:#006AA6;text-decoration:underline;">詳細資訊</span>
                                 <v-tooltip v-if="BaseParm['InspectedTime']&&BaseParm['InspectedTime']!==null&&!isSearchDate" bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <button
@@ -285,9 +285,9 @@
                     <!-- <v-overlay :value="!isLoading" :absolute="true">
                         <v-progress-circular indeterminate size="64"></v-progress-circular>
                     </v-overlay> -->
-                    <v-row style="margin-bottom: 0;">
+                    <v-row class="mb-0">
                         <!-- 參數設定 -->
-                        <v-col cols="12" md="6" sm="12" id="params">
+                        <v-col cols="12" md="6" sm="12" id="params" class="pr-2 pt-1 pl-0">
                             <v-card class="result-card column">
                                 <!-- 表頭標題+按鈕群 -->
                                 <div class="card-title"
@@ -693,7 +693,8 @@
                                                                                         format="yyyy-MM-DD HH:mm"
                                                                                         show-time placeholder=""
                                                                                         @change="onChange" @ok="onOk"
-                                                                                        style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                        class="mx-1"
+                                                                                        style="min-width: none;width: calc(100% - 9px);" />
                                                                                 </div>
 
                                                                             </v-col>
@@ -1650,7 +1651,8 @@
                                                                                         format="yyyy-MM-DD HH:mm"
                                                                                         show-time placeholder=""
                                                                                         @change="onChange" @ok="onOk"
-                                                                                        style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                        class="ml-1 mr-4"
+                                                                                        style="min-width: none;width: calc(100% - 9px);" />
                                                                                 </div>
 
                                                                             </v-col>
@@ -1683,7 +1685,8 @@
                                                                                         format="yyyy-MM-DD HH:mm"
                                                                                         show-time placeholder=""
                                                                                         @change="onChange" @ok="onOk"
-                                                                                        style="min-width: none;width: calc(100% - 9px);margin-left: 4px;margin-right: 16px;" />
+                                                                                        class="ml-1 mr-4"
+                                                                                        style="min-width: none;width: calc(100% - 9px);" />
                                                                                 </div>
                                                                             </v-col>
                                                                         </v-row>
@@ -2129,7 +2132,7 @@
                             </v-card>
                         </v-col>
                         <!-- AI 建議 -->
-                        <v-col cols="12" md="6" sm="12" id="ai">
+                        <v-col cols="12" md="6" sm="12" id="ai" class="pr-3 pt-1 pl-0">
                             <v-card class="result-card ai-suggestion">
                                 <!-- 表頭 -->
                                 <div class="card-title">
@@ -2211,7 +2214,7 @@
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
                                                     expand-icon="mdi-chevron-down">
                                                     <div  class="flex-align-center">
-                                                        <div class="circle"
+                                                        <div class="circle mr-1"
                                                             v-if="suggData.WaterQuality.length+suggData.Observation.length>0">
                                                             <span>{{
                                                                 suggData.WaterQuality.length+suggData.Observation.length
@@ -2251,8 +2254,7 @@
                                                                             :key="'water-'+item.id">
                                                                             <td v-html="setBR(item.status)"></td>
                                                                             <td>
-                                                                                <div class="alertOpen flex-center-end"
-                                                                                    style="cursor: pointer;"
+                                                                                <div class="alertOpen flex-center-end cursor-pointer"
                                                                                     @click="openDialog('水質',item)">
                                                                                     <v-icon>mdi-dots-vertical-circle-outline</v-icon>
                                                                                 </div>
@@ -2269,8 +2271,7 @@
                                                                             :key="'Obser-'+item.id">
                                                                             <td v-html="setBR(item.status)"></td>
                                                                             <td>
-                                                                                <div class="alertOpen flex-center-end"
-                                                                                    style="cursor: pointer;"
+                                                                                <div class="alertOpen flex-center-end cursor-pointer"
                                                                                     @click="openDialog('觀察網',item)">
                                                                                     <v-icon>mdi-dots-vertical-circle-outline</v-icon>
                                                                                 </div>
@@ -2368,7 +2369,7 @@
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
                                                     expand-icon="mdi-chevron-down">投餌方案
-                                                    <div style="margin-left: 4px;" title="計算方式">
+                                                    <div class="ml-1" title="計算方式">
                                                         <v-btn class="btn-icon" style="border-radius: 4px;"
                                                             @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
                                                     </div>
@@ -3197,19 +3198,19 @@
                         <b :style="`font-size:${cellsize+0.1}em`">狀態作動</b> <span :style="`font-size:${cellsize}em`"
                             v-html="setBR(dialogContent.status)"></span>
                     </v-card-text>
-                    <v-card-text class="dialog-text border-bottom"
-                        style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;">
+                    <v-card-text class="dialog-text border-bottom flex-align-start"
+                        style="flex-direction: column;padding: 8px 16px;">
                         <b :style="`font-size:${cellsize+0.1}em`">可能影響原因</b> <span :style="`font-size:${cellsize}em`">{{
                             dialogContent.factor }}</span>
                     </v-card-text>
-                    <v-card-text class="dialog-text border-bottom"
-                        style="display: flex;align-items: flex-start;flex-direction: column;padding: 8px 16px;">
+                    <v-card-text class="dialog-text border-bottom flex-align-start"
+                        style="flex-direction: column;padding: 8px 16px;">
                         <b :style="`font-size:${cellsize+0.1}em`">會造成結果</b> <span
                             :style="`font-size:${cellsize}em`">{{dialogContent.result==''?'無':dialogContent.result
                             }}</span>
                     </v-card-text>
                 </div>
-                <v-card-actions style="padding: 24px 12px;">
+                <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn class="btn-primary" @click="alertDialog=false">關閉</v-btn>
                 </v-card-actions>
@@ -3246,23 +3247,20 @@
         <v-dialog id="chipsDialog" v-model="chipsDialog" max-width="500px" style="z-index: 9999;">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
-                    <div style="display: inline-block;">
+                    <div class="d-inline-block">
                         <span>{{ chipsDialogTitle.name }}</span>
                     </div>
                     <div class="add">
-                        <v-btn class="btn-secondary close" title="取消" @click="chipsDialog = false;"
-                            style="border: none;min-width: 0;padding: 0 4px;">
+                        <v-btn class="btn-secondary close" title="取消" @click="chipsDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
                 </v-card-title>
                 <div class="basic" style="padding: 24px 12px;">
                     <v-card-text class="dialog-text" style="border-bottom: none;">
-                        <v-row  class="flex-align-center" style="width: 100%;">
-                            <v-col cols="6" v-for="(item,id) in chipsDialogData" :key="'dialog'+id"
-                                style="width: 100%;">
-                                <div class="chips flex-align-center"
-                                    style="margin-bottom: 8px;width: 100%;">
+                        <v-row  class="flex-align-center full-width">
+                            <v-col cols="6" v-for="(item,id) in chipsDialogData" class="full-width" :key="'dialog'+id">
+                                <div class="chips flex-align-center mb-2 full-width">
                                     <span class="pa-0 ma-0" slot="prepend"
                                         style="width:60px;min-height:inherit">{{item.name_ch}}</span>
                                     <el-input-number class="ml-2" v-model="item.value" size="mini" :step="1" :min="0"
@@ -3275,7 +3273,7 @@
                         <!-- <v-text-field v-for="(item,id) in chipsDialogData" :key="'dialog'+id" v-model.number="item.value" dense hide-details class="mt-0" style="width: 100%;"><span class="pa-0 ma-0" slot="prepend" style="width:80px;">{{item.name_ch}}</span></v-text-field> -->
                     </v-card-text>
                 </div>
-                <v-card-actions style="padding: 24px 12px;">
+                <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn class="btn-secondary" @click="chipsDialog=false;">取消</v-btn>
                     <v-btn class="btn-primary" @click="confirmChips">確認</v-btn>
@@ -3286,23 +3284,22 @@
         <v-dialog id="remarkDialog" v-model="remarkDialog" max-width="500px" width="500" style="z-index: 9999;">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
-                    <div style="display: inline-block;">
+                    <div class="d-inline-block">
                         <span>紀錄</span>
                     </div>
                     <div class="add">
-                        <v-btn class="btn-secondary close" title="取消" @click="remarkDialog = false;"
-                            style="border: none;min-width: 0;padding: 0 4px;">
+                        <v-btn class="btn-secondary close" title="取消" @click="remarkDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
                 </v-card-title>
-                <div class="basic" style="padding:  0 12px 24px 12px;">
-                    <v-card-text style="padding: 0 8px;">
+                <div class="basic pt-0 pb-6 px-3">
+                    <v-card-text class="px-2 py-0">
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>警示：</v-card-title>
                                 <!-- <span v-for="item in suggData.Observation" :key="'ob'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
-                                <span class="record-title">水質：</span>
+                                <span class="record-title d-block mb-2 mr-1 pl-1">水質：</span>
                                 <span v-for="(item,id) in suggData.WaterQuality" :key="'water'+item.id"
                                     style="font-size: 0.85rem;line-height: 14px">{{ id+1 }}. {{ item.status
                                     }}<br></span>
@@ -3315,7 +3312,7 @@
                         <div class="card-title">
                             <div class="title">
                                 <!-- <span v-for="item in suggData.WaterQuality" :key="'water'+item.id" style="font-size: 0.85rem;line-height: 14px">‧ {{ item.status }}<br></span> -->
-                                <span class="record-title">觀察網：</span>
+                                <span class="record-title d-block mb-2 mr-1 pl-1">觀察網：</span>
                                 <span v-for="(item,id) in suggData.Observation" :key="'ob'+item.id"
                                     style="font-size: 0.85rem;line-height: 14px">{{ id+1 }}. {{ item.status
                                     }}<br></span>
@@ -3326,7 +3323,7 @@
                         </div>
 
                     </v-card-text>
-                    <v-card-text style="padding: 0 8px;">
+                    <v-card-text class="px-2 py-0">
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>投餌量：</v-card-title>
@@ -3338,7 +3335,7 @@
                         </div>
 
                     </v-card-text>
-                    <v-card-text style="padding: 0 8px;">
+                    <v-card-text class="px-2 py-0">
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>投料判斷列表：</v-card-title>
@@ -3349,7 +3346,7 @@
                         </div>
 
                     </v-card-text>
-                    <v-card-text style="padding: 0 8px;">
+                    <v-card-text class="px-2 py-0">
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>動態數據資訊：</v-card-title>
@@ -3360,7 +3357,7 @@
                         </div>
 
                     </v-card-text>
-                    <v-card-text style="padding: 0 8px;">
+                    <v-card-text class="px-2 py-0">
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>養殖前期做水添加物：</v-card-title>
@@ -3371,7 +3368,7 @@
                         </div>
 
                     </v-card-text>
-                    <v-card-text style="padding: 0 8px;">
+                    <v-card-text class="px-2 py-0">
                         <div class="card-title">
                             <div class="title">
                                 <v-card-title>其他：</v-card-title>
@@ -3383,7 +3380,7 @@
 
                     </v-card-text>
                 </div>
-                <v-card-actions style="padding: 24px 12px;">
+                <v-card-actions>
                     <v-spacer spacer></v-spacer>
                     <v-btn class="btn-secondary" @click="remarkDialog = false;">取消</v-btn>
                     <v-btn class="btn-primary" v-if="nowUser==$auth.$state.user.email" @click="saveRemark()">確認</v-btn>
@@ -3399,13 +3396,12 @@
                     :label="formulaData?'pdf':'xls'"
                     ></v-switch>
             </v-card-title> -->
-                <v-card-title class="add-title" style="display: block;width: 100%;">
+                <v-card-title class="add-title d-block full-width">
                     <div style="display: inline-block;">
                         <span>計算方式</span>
                     </div>
-                    <div class="add" style="float: right;display: inline-block;">
-                        <v-btn class="btn-secondary close" title="取消" @click="feedDialog = false;"
-                            style="border: none;min-width: 0;padding: 0 4px;">
+                    <div class="add d-inline-block">
+                        <v-btn class="btn-secondary close" title="取消" @click="feedDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
@@ -3417,7 +3413,7 @@
                 </v-card-text>
                 <v-card-text style="height: 600px;">
                     <v-responsive>
-                        <iframe :src="url.feed.xls" style="overflow:hidden;height:600px;width:100%;"></iframe>
+                        <iframe :src="url.feed.xls" class="full-width overflow-hidden" style="height:600px;"></iframe>
                     </v-responsive>
                 </v-card-text>
             </v-card>
@@ -4803,9 +4799,6 @@ export default {
         * {
             color: $color-dark;
         }
-        button.v-icon {
-            color: $color-primary;
-        }
         .content {
             padding-top: 0;
             padding-bottom: 2px;
@@ -4821,7 +4814,7 @@ export default {
                 }
             }
             .result > .row {
-                align-items: flex-start;
+                @include flexAlignStart();
             }
         }
         .v-card.result-card {
@@ -4843,7 +4836,6 @@ export default {
                     }
                 }
                 .title {
-                    //border-bottom: 1px solid rgba(0,0,0,0.1);
                     .v-icon.v-icon {
                         font-size: 1.1rem;
                     }
@@ -4859,7 +4851,6 @@ export default {
                 .btn-groups {
                     width: 100%;
                     @include flexCenterEnd();
-                    // border-bottom: 1px solid rgba(0,0,0,0.1);
                     padding: 8px;
                     button {
                         &.btn-icon.just-icon {
@@ -4900,8 +4891,6 @@ export default {
                         padding-right: 4px;
                         & >.col-12 {
                             padding-left: 0;
-                            // padding-right: 4px;
-                            
                         }
                     }
                 }
@@ -4991,10 +4980,6 @@ export default {
                 .v-text-field.sum-field {
                     @include flexAlignCenter();
                 }   
-                .v-text-field.sum-field .v-input__control {
-                    // margin-left: 32px;   
-                    
-                }
                 .v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
                     padding: 0 4px;
                 }
@@ -5031,8 +5016,6 @@ export default {
                     }
                     .v-chip.chips-value.v-size--default {
                         background: $color-primary-75;
-                        // background: rgba($color-accent,0.35);
-                        // color: $color-dark;
                     }
                 }
             }
@@ -5071,8 +5054,7 @@ export default {
             font-size: 1.1rem;
         }
         .dialog-text {
-            display: flex;
-            align-items: flex-start;
+            @include flexAlignStart();
             flex-direction: column;
             padding: 8px 16px;
             border-bottom:1px solid $color-black-10;
@@ -5102,12 +5084,12 @@ export default {
 .v-expansion-panel-content>>> .v-expansion-panel-content__wrap {
     padding: 0 !important;
 }
+// AI建議 - 警示前的數字統計(紅圈數字)
 .circle {
     @include size(20px);
     border-radius: 50%;
     background-color: $color-accent;
     position: relative;
-    margin-right: 4px;
     span {
         color: #fff !important;
         @include positionCenter();
@@ -5117,23 +5099,12 @@ export default {
 .nonItem {
     background-color: rgba($color-dark-25,0.5);
 }
-#params,#ai {
-    padding-top: 4px;
-    padding-right: 8px;
-    padding-left: 0;
-}
-#ai {
-    padding-right: 12px;
-}
+// 實際作動紀錄警示部分:觀察網/水質標題
 .record-title {
     font-size: 14px;
     background-color:#E6B8BE;
     font-weight: bold;
-    display:block;
-    margin-bottom:8px;
     border-radius:4px 4px 0 0;
-    padding-left: 4px;
-    margin-right: 4px;
 }
 @media (max-width:960px) {
     .v-application.v-application--is-ltr {

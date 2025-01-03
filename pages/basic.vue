@@ -15,7 +15,7 @@
       <div class="content pl-0 pt-3 pb-0">
         <!-- 搜尋 -->
         <div class="search">
-          <v-row class="mb-1" style="align-items: center;">
+          <v-row class="mb-1 align-center">
             <!-- 選擇場區 -->
             <v-col cols="12" md="4" sm="4" style="position: relative;">
               <locate-select class="select-template mr-0" :dataScope="'area'" :defaultSelect="defaultPool" :isMulti="false"
@@ -98,8 +98,8 @@
             <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center">
               <!-- <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
                   class="mx-1" dense hide-details style="max-width: 120px;"></v-text-field> -->
-              <button class="flex-align-center" icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
-                style="font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;text-align: left;">
+              <button class="flex-align-center mt-n1 text-left" icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
+                style="font-size: 0.85rem;color: #6c9bcd;">
                 <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
               </button>
 
@@ -109,10 +109,10 @@
             </v-col>
           </v-row>
           <!-- 大螢幕布局圖 -->
-          <v-row v-if="sel_main&&windowWidth>959.98 " style="margin-bottom: 0;">
-            <v-col cols="12" sm="12" style="padding-top: 0;">
-              <button class="flex-align-center" icon @click="showmpFun" v-if="sel_main" slot="prepend"
-                style="font-size: 0.85rem;color: #6c9bcd;margin-top: -4px;">
+          <v-row v-if="sel_main&&windowWidth>959.98 " class="mb-0">
+            <v-col cols="12" sm="12" class="pt-0">
+              <button class="flex-align-center mt-n1" icon @click="showmpFun" v-if="sel_main" slot="prepend"
+                style="font-size: 0.85rem;color: #6c9bcd;">
                 <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
               </button>
             </v-col>
@@ -121,7 +121,7 @@
         <div class="result">
           <div class="result-card">
             <!-- 統整小卡 整列式 -->
-            <v-row class="mb-1" style="margin-bottom: 4px;">
+            <v-row class="mb-1">
               <v-col cols="12" lg="3" sm="6" class="pt-0 pb-0">
                 <v-card class="dashboard warning-alert">
                   <div class="icon">
@@ -212,7 +212,7 @@
 
             </v-row>
             <!-- 養殖池 -->
-            <v-row class="mb-3" style="align-items: stretch;height: 100%;" id="chart">
+            <v-row class="mb-3 align-stretch" style="height: 100%;" id="chart">
               <!-- AI建議 -->
               <!-- <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
                   <v-card class="result-card pool-detail" style="height: calc(100% - 14px);overflow: hidden;">
@@ -258,7 +258,7 @@
                   <div v-if="resultListOpen" class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table v-if="showAlert" :data="mainpool.items.filter(x=>x.state!=isHideEmpty)" style="width: 100%;" max-height="240" show-summary size="mini"
+                        <el-table v-if="showAlert" class="full-width" :data="mainpool.items.filter(x=>x.state!=isHideEmpty)" max-height="240" show-summary size="mini"
                           :summary-method="getSummaries" :row-style="isTagColor">
                           <!-- headers{ text: "name", value: "name", groupable: false }, -->
                           <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
@@ -283,7 +283,8 @@
                         </el-table>
                         <v-data-table :headers="headers" :items="mainpool.items" item-key="unit"
                           :footer-props="footerProps" no-data-text="查無資料" disable-sort :loading="tableloading"
-                          style="height: 100%;width: 100%;" v-if="false">
+                          class="full-width"
+                          style="height: 100%;" v-if="false">
                         </v-data-table>
                       </v-col>
                     </v-row>
@@ -329,8 +330,8 @@
                       :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]"
                       :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"
                       @goIndicator="goIndicator($event)"></poollayout>
-                    <span v-else
-                      style="color: #999;text-align: center;width: 100%;display: block;line-height: 16vh;">暫無資料</span>
+                    <span v-else class="text-center d-block full-width"
+                      style="color: #999;line-height: 16vh;">暫無資料</span>
                   </div>
                 </v-card>
               </v-col>

@@ -4,14 +4,14 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
     <!-- <div><v-btn @click="compareStatus({id:[24,23],status:'空池'})">空池</v-btn></div> -->
-    <v-card class="bg-card" style="margin-bottom: 12px;min-height:86vh">
-      <div class="content" style="padding-top:12px">
+    <v-card class="bg-card mb-3" style="min-height:86vh">
+      <div class="content pt-3">
         <!-- 搜尋 -->
         <div class="search">
-          <v-row style="margin-bottom: 0;align-items: center;padding-right: 16px;">
-            <v-col cols="12" md="8" style="padding: 0;">
-              <v-row style="margin-bottom: 0;align-items: center;">
-                <v-col cols="12" md="3" style="padding-bottom: 0;padding-top: 4px;">
+          <v-row class="mb-0 pr-4 align-center">
+            <v-col cols="12" md="8" class="pa-0">
+              <v-row class="mb-0 align-center">
+                <v-col cols="12" md="3" class="py-0">
                   <!-- 選擇池 -->
                   <!-- <div class="search-container">
                     <locate-select 
@@ -35,7 +35,7 @@
                   </div>
                 </v-col>
                 <!-- 選擇起日 -->
-                <v-col cols="12" md="3" class="text-center" style="padding-bottom: 0;">
+                <v-col cols="12" md="3" class="text-center pb-0">
                   <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
                     offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -47,7 +47,7 @@
                   </v-menu>
                 </v-col>
                 <!-- 選擇訖日 -->
-                <v-col cols="12" md="3" class="text-center" style="padding-bottom: 0;">
+                <v-col cols="12" md="3" class="text-center pb-0">
                   <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
                     offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -66,11 +66,11 @@
               </v-row>
             </v-col>
             <!-- 按鈕-新增/執行 -->
-            <v-col cols="12" md="4" style="padding: 0;">
-              <v-row style="margin-bottom: 0;align-items: center;">
-                <v-col cols="12" style="padding: 0;padding-right: 8px;">
+            <v-col cols="12" md="4" class="pa-0">
+              <v-row class="mb-0 align-center">
+                <v-col cols="12" class="pa-0 pr-2">
                   <div class="btn-groups">
-                    <v-btn tile class="btn-secondary" @click="showadd(false)" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
+                    <v-btn tile class="btn-secondary px-2 py-0 mr-2" @click="showadd(false)" :class="{'disabled':!isLoading}">
                       <v-icon>mdi-plus</v-icon>
                       新增循環
                     </v-btn>
@@ -88,7 +88,7 @@
                         </template>
                         <span>未授權</span>
                     </v-tooltip> -->
-                    <v-btn tile class="btn-secondary green" @click="reportOpen" style="padding: 0 8px;" :class="{'disabled':!isLoading}">
+                    <v-btn tile class="btn-secondary green px-2 py-0 mr-2" @click="reportOpen" :class="{'disabled':!isLoading}">
                       <v-icon style="font-size: 1rem;">mdi-file-multiple-outline</v-icon>
                       新增檢驗
                     </v-btn>
@@ -101,14 +101,14 @@
           </v-row>
         </div>
         <!-- 結果 -->
-        <div class="result" style="padding: 0;padding-top: 4px;">
+        <div class="result pa-0 pt-1">
           <!-- 循環清單 -->
           <div class="result-list">
             <v-card class="result-card" >
               <!-- 表頭 -->
-              <div class="card-title"  @click="resultListOpen = !resultListOpen" style="cursor: pointer;margin: 8px;">
+              <div class="card-title ma-2 pa-0 cursor-pointer"  @click="resultListOpen = !resultListOpen">
                   <div class="title">
-                      <v-card-title>循環清單</v-card-title>
+                      <v-card-title class="pa-3">循環清單</v-card-title>
                   </div>
                   <div class="chevron">
                     <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
@@ -117,7 +117,7 @@
               </div>
               <!-- 清單 -->
               <div v-show="resultListOpen" class="content">
-                <el-table ref="circletable" style="width:100%" :data="circleData" highlight-current-row
+                <el-table ref="circletable" class="full-width" :data="circleData" highlight-current-row
                   height="62vh"
                   @cell-click="clickRow"
                   @select="handleSelectionChange" :header-cell-name="cellClass">
@@ -232,11 +232,11 @@
           <div class="result-list">
             <v-card v-if="currentDataId!==null && currentDataId!==''" class="result-card" >
               <!-- 表頭 -->
-              <div class="card-title" style="cursor: pointer;margin: 8px">
+              <div class="card-title ma-2 pa-0 cursor-pointer">
                 <v-row style="margin-bottom: 0;">
-                  <v-col cols="12" md="8" sm="6" style="padding: 4px;">
+                  <v-col class="pa-1" cols="12" md="8" sm="6">
                     <div class="title">
-                      <v-card-title>循環紀錄</v-card-title>
+                      <v-card-title class="pa-3">循環紀錄</v-card-title>
                       <span style="font-size: 14px;" v-if="circleData.length>0">{{ circleData.filter(x=>x.id==currentDataId)[0].name }}</span>
                     </div>
                     <!-- 財務 -->
@@ -252,11 +252,11 @@
                     </div> -->
                     
                   </v-col>
-                  <v-col v-show="nowTab=='循環紀錄'" cols="12" md="4" sm="6" style="padding: 4px 0;">
+                  <v-col v-show="nowTab=='循環紀錄'" class="px-0 py-1" cols="12" md="4" sm="6">
                     <div class="btn-groups">
                       <v-tooltip bottom>
                           <template v-slot:activator="{ on, attrs }">
-                            <button class="btn-icon just-icon" @click="getTemp(tempid)" v-bind="attrs" v-on="on">
+                            <button class="btn-icon just-icon mr-2" @click="getTemp(tempid)" v-bind="attrs" v-on="on">
                               <v-icon style="font-size: 24px;">mdi-reload</v-icon>
                             </button>
                           </template>
@@ -291,7 +291,7 @@
                           <div slot="option-label" slot-scope="{ node }">{{ `${node.raw.label}` }}</div>
                         </treeselect>
                       </div>
-                      <div class="open" style="padding-right: 12px;">
+                      <div class="open pr-3">
                         <v-btn class="btn-icon just-icon" v-if="!nowExpand" title="展開" @click="nowExpand = true;">
                           <v-icon style="font-size: 1.2rem;">mdi-view-dashboard</v-icon>
                         </v-btn>
@@ -307,7 +307,7 @@
                   </v-col>
                 </v-row>
               </div> 
-              <div v-show="resultCycleOpen && nowTab=='循環紀錄'" style="padding-bottom: 12px;">
+              <div v-show="resultCycleOpen && nowTab=='循環紀錄'" class="pb-3">
                 <FeedTemplate2 :passObj="passObj" :nowExpand="nowExpand" :accdata="accdata" :templatemode="'cycleedit'" :waterReport="waterReport" :diseaseReport="diseaseReport" :eventReport="eventReport" @getTemp="getTemp(currentDataId)" @end="end($event)" @compareStatus="compareStatus" @getDisease="getDisease" @getWater="getWater" @reportEditOpen="reportEditOpen" @wordPepare="wordPepare"></FeedTemplate2>
               </div>
             </v-card>
@@ -323,15 +323,14 @@
       <v-form v-model="addvalid" ref="cycleform">
         <v-card style="min-height:80vh" class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               新增-養殖循環
               <!-- <span class="error-text">Note:目前無法新增，因多池資料結構有更改</span> -->
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="addDialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="addDialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -346,8 +345,8 @@
               <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
             </div> -->
           </div>
-          <div v-if="addChooseOpen" class="basic" style="padding-left: 8px;">
-            <v-card-text  class="flex-align-center" style="padding-top: 0;">
+          <div v-if="addChooseOpen" class="basic pl-2">
+            <v-card-text  class="flex-align-center pt-0">
               <!-- {{ addparm.pool_id }} -->
               <!-- <locate-select 
                 class="select-template"
@@ -386,7 +385,7 @@
             <!-- <span style="padding-left: 8px;color: red"><b>Note:多池選擇下，體積水量可能會不同數值，影響初始放苗數，待討論</b><br></span> -->
           </div>
           <!-- 基本資料 -->
-          <div class="card-title" @click="addbasicDataOpen = !addbasicDataOpen" style="cursor: pointer">
+          <div class="card-title cursor-pointer" @click="addbasicDataOpen = !addbasicDataOpen">
               <div class="title">
                   <v-card-title>2. 基本資料設定</v-card-title>
               </div>
@@ -397,19 +396,19 @@
           </div>
           <div v-show="addbasicDataOpen" class="basic">
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col  cols="6" style="padding: 0;padding-left: 8px;">
-                  <v-text-field v-model="addparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" disabled  style="margin-right: 4px;padding-top: 0;">
+              <v-row class="pt-4 align-center">
+                <v-col  cols="6" class="pa-0 pl-2">
+                  <v-text-field v-model="addparm.name" label="名稱/批號" class="pr-1 pt-0" :rules="rules.require" autocomplete="off" disabled>
                   </v-text-field>
                 </v-col>
-                <v-col  cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col  cols="6" class="pa-0 pr-2">
                   <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="addparm.started_date" label="選擇起日" :rules="rules.require"
                         prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
                                                   () => (addparm.started_date = getNowDate())
-                                                " style="padding-top: 0;"></v-text-field>
+                                                " class="pt-0"></v-text-field>
                     </template>
                     <v-date-picker v-model="addparm.started_date" no-title locale="zh-tw" @input="menu_adddate = false">
                     </v-date-picker>
@@ -445,18 +444,18 @@
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-select v-model="addparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
                     item-text="name_ch" clearable :rules="rules.require" label="選擇種苗">
                   </v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-menu v-model="menu_stockeddate" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="addparm.stocked_date" label="放苗日" :rules="rules.require"
-                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                        prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on" @click:prepend="
                                                   () => (addparm.stocked_date = getNowDate())
                                                 "></v-text-field>
                     </template>
@@ -467,25 +466,25 @@
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-select v-model="addparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-text-field v-model.number="addparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-autocomplete v-model="addparm.person_in_charge" dense filled :items="accdata" item-value="username"
                     :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
                     <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                     <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                   </v-autocomplete>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-autocomplete v-model="addparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require"
                     @change="tempChange" label="選擇樣板">
                   </v-autocomplete>
@@ -493,13 +492,13 @@
               </v-row>
             </v-card-text> 
             <v-card-text style="display: flex;">
-              <v-text-field filled dense type="number" v-model.number="addparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details>
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" label="預估存活率(%)(選)">
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" v-model.number="addparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.cn" label="目標CN比(選)">
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" label="預估FCR(選)">
               </v-text-field>
@@ -511,7 +510,7 @@
               </v-text-field>
             </v-card-text>       -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight"  label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;" @keyup="limitCharacter">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight"  label="放養初始重量(g/單隻)(選)" @keyup="limitCharacter">
               </v-text-field>
             </v-card-text>
             
@@ -538,16 +537,16 @@
               <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
             </div> -->
           </div>
-          <div v-if="dataid.length>0" class="basic" style="padding-left: 8px;">
-            <v-card-text class="flex-align-center" style="padding-top: 0;">
-              <v-row class="border-bottom" style="margin-bottom: 12px;align-items: center;padding: 0 8px 8px;">
-                <v-col cols="3" style="padding: 0">
-                  <span style="color:#40657A;font-weight: bold;display: inline-block;">
+          <div v-if="dataid.length>0" class="basic pl-2">
+            <v-card-text class="flex-align-center pt-0">
+              <v-row class="border-bottom mb-3 align-center" style="padding: 0 8px 8px;">
+                <v-col cols="3" class="pa-0">
+                  <span class="d-inline-block" style="color:#40657A;font-weight: bold;">
                     統一密度：
                   </span>
                 </v-col>
                 <v-col cols="9" style="padding: 0;">
-                  <div class="volume flex-center-between" style="width: 100%;">
+                  <div class="volume flex-center-between full-width">
                     <el-input-number
                       class="ml-2"
                       v-model="all_num_per_unit"
@@ -558,24 +557,24 @@
                       prop="number"
                       @keyup.enter.native="calcutorPerUnit(true)"
                     ></el-input-number>
-                    <div class="btn-groups" style="margin-left: 8px;">
-                      <v-btn class="btn-secondary" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
-                      <v-btn class="btn-secondary delete" style="padding: 0 4px;min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
+                    <div class="btn-groups ml-2">
+                      <v-btn class="btn-secondary px-1 py-0 mr-2" style="min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
+                      <v-btn class="btn-secondary delete px-1 py-0 mr-2" style="min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
                     </div>
                   </div>
                 </v-col>
               </v-row>
               
             </v-card-text>
-            <v-card-text style="padding-top: 0;">
+            <v-card-text class="pt-0">
               <v-row>
                 <!-- <div class="pond" style="padding: 8px 0;width: 100%;border-bottom: 1px solid rgba(0,0,0,0.1);display: inline-block;"> -->
-                  <v-col cols="12" md="6" sm="6" v-for="pond in dataVolumn" :key="'volume'+pond.id" style="padding: 0;padding-bottom: 8px;">
-                    <span style="color:#40657A;margin-left: 8px;font-weight: bold;">
+                  <v-col cols="12" md="6" sm="6" class="pa-0 pb-2" v-for="pond in dataVolumn" :key="'volume'+pond.id">
+                    <span class="ml-2" style="color:#40657A;font-weight: bold;">
                       {{ pond.name }}
                     </span>
                     
-                    <div class="volume" style="display: flex;flex-direction: column;align-items: flex-start;">
+                    <div class="volume flex-align-start flex-column">
                       <el-input-number
                         type="number"
                         :id="pond.name"
@@ -595,7 +594,7 @@
                               }
                             "
                       ></el-input-number>
-                      <span style="font-size: 0.85rem;margin-left: 8px;">初始放苗量：{{ pond.estimated_num }}</span>
+                      <span class="ml-2">初始放苗量：{{ pond.estimated_num }}</span>
                     </div>
                   </v-col>
                 <!-- </div> -->
@@ -644,7 +643,7 @@
           
           </div>
           
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="cancelDialog">取消</v-btn>
             <v-btn class="btn-primary" @click="submitadd">新增</v-btn>
@@ -661,20 +660,19 @@
       <v-form v-model="editvalid" ref="editform">
         <v-card style="min-height:80vh" class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               修改循環
             </div>
             <div class="add">
               <v-btn class="btn-secondary close"
                       title="取消" 
-                      @click="editDialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="editDialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <!-- 基本資料 -->
-          <div class="card-title" style="cursor: pointer">
+          <div class="card-title cursor-pointer">
             <!-- <div class="title">
                 <v-card-title>基本資料設定</v-card-title>
             </div>
@@ -685,16 +683,16 @@
           </div>
           <div class="basic">
             <v-card-text class="flex-align-center">
-              <v-row  style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                  <v-text-field v-model="editparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="margin-right: 4px;padding-top: 0;" disabled>
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
+                  <v-text-field v-model="editparm.name" label="名稱/批號" class="mr-1 pt-0" :rules="rules.require" autocomplete="off" disabled>
                   </v-text-field>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
                         prepend-icon="mdi-calendar" readonly disabled @click:prepend="
                                                   () => (editparm.started_date = getNowDate())
-                                                " style="padding-top: 0;"></v-text-field>
+                                                " class="pt-0"></v-text-field>
                   <!-- <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
@@ -710,18 +708,18 @@
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-select v-model="editparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
                     item-text="name_ch" clearable :rules="rules.require" label="選擇種苗">
                   </v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-menu v-model="menu_stockeddate_edit" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="editparm.stocked_date" label="放苗日" :rules="rules.require"
-                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                        prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on" @click:prepend="
                                                   () => (editparm.stocked_date = getNowDate())
                                                 "></v-text-field>
                     </template>
@@ -732,40 +730,40 @@
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                  <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;"></v-select>
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
+                  <v-select v-model="editparm.water_source" class="mr-1" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源"></v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)"><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>   
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
                     :filter="filterincharge" clearable :rules="rules.require" label="養殖負責">
                     <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                     <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                   </v-autocomplete>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <!-- <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
                   </v-autocomplete> -->
-                  <v-text-field filled dense type="text" v-model="editparm.temp_name_ch" label="樣板選擇" hide-details style="margin-right: 4px;" disabled>
+                  <v-text-field filled dense type="text" v-model="editparm.temp_name_ch" class="mr-1" label="樣板選擇" hide-details disabled>
                   </v-text-field>
                 </v-col>
               </v-row>
             </v-card-text> 
-            <v-card-text style="display: flex;">
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;">
+            <v-card-text class="d-flex">
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details>
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)">
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" v-model.number="editparm.cn" label="目標CN比(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.cn" label="目標CN比(選)">
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)">
               </v-text-field>
@@ -775,7 +773,7 @@
               </v-text-field>
             </v-card-text>   -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;" @keyup="limitCharacter">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" @keyup="limitCharacter">
               </v-text-field>
             </v-card-text>
             
@@ -824,7 +822,7 @@
           </div>
           
           
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="cancelEdit()">取消</v-btn>
             <v-btn class="btn-primary" @click="submitEdit">修改</v-btn>
@@ -837,14 +835,13 @@
       <!-- <v-form v-model="viewvalid" ref="viewform"> -->
         <v-card style="min-height:80vh" class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               檢視循環
             </div>
             <div class="add">
               <v-btn class="btn-secondary close"
                       title="取消" 
-                      @click="viewDialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="viewDialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -852,32 +849,32 @@
           <!-- 基本資料 -->
           <div class="basic">
             <v-card-text class="flex-align-center">
-              <v-row  style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                  <v-text-field v-model="editparm.name" label="名稱/批號" :rules="rules.require" autocomplete="off" style="margin-right: 4px;padding-top: 0;" disabled>
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
+                  <v-text-field v-model="editparm.name" class="mr-1 pt-0" label="名稱/批號" :rules="rules.require" autocomplete="off" disabled>
                   </v-text-field>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-text-field v-model="editparm.started_date" label="選擇起日" :rules="rules.require"
                         prepend-icon="mdi-calendar" readonly disabled @click:prepend="
                                                   () => (editparm.started_date = getNowDate())
-                                                " style="padding-top: 0;"></v-text-field>
+                                                " class="pt-0"></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-select v-model="editparm.seedling_id" dense filled :items="SeedlingData" item-value="id" 
                     item-text="name_ch" clearable :rules="rules.require" label="選擇種苗" disabled>
                   </v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-menu v-model="menu_stockeddate_edit" :close-on-content-click="false" :nudge-right="40"
                     transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="editparm.stocked_date" label="放苗日" :rules="rules.require"
-                        prepend-icon="mdi-calendar" style="padding-top: 0;margin-top: -4px;" readonly v-bind="attrs" v-on="on" @click:prepend="
+                        prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on" @click:prepend="
                                                   () => (editparm.stocked_date = getNowDate())
                                                 " disabled></v-text-field>
                     </template>
@@ -888,46 +885,46 @@
               </v-row>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
-                  <v-select v-model="editparm.water_source" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" style="margin-right: 4px;" disabled></v-select>
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
+                  <v-select v-model="editparm.water_source" class="mr-1" clearable :items="optData.WaterSource" filled dense item-value="name_en" item-text="name_ch" :rules="rules.require" label="水源" disabled></v-select>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <v-text-field v-model.number="editparm.water_source_salinity" type="number" dense filled :rules="rules.require" label="鹽度(度)" disabled><span class="pa-0 ma-0" slot="append">ppt</span></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>   
             <v-card-text class="flex-align-center">
-              <v-row style="align-items: center;padding-top: 16px;">
-                <v-col cols="6" style="padding: 0;padding-left: 8px;">
+              <v-row class="pt-4 align-center">
+                <v-col cols="6" class="pa-0 pl-2">
                   <v-autocomplete v-model="editperson_in_charge" dense filled :items="accdata" item-value="username"
                     :filter="filterincharge" clearable :rules="rules.require" label="養殖負責" disabled hide-details>
                     <span slot="selection" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                     <span slot="item" slot-scope="data">{{data.item.position}}-{{data.item.account_name}}</span>
                   </v-autocomplete>
                 </v-col>
-                <v-col cols="6" style="padding: 0;padding-right: 8px;">
+                <v-col cols="6" class="pa-0 pr-2">
                   <!-- <v-autocomplete v-model="editparm.temp_id" dense filled :items="template_items" item-text="name_ch" item-value="id" :rules="rules.require" clearable @change="tempChange" label="選擇樣板" disabled>
                   </v-autocomplete> -->
-                  <v-text-field filled dense type="text" v-model="editparm.temp_name_ch" label="選擇樣板" hide-details style="margin-right: 4px;" disabled>
+                  <v-text-field filled dense type="text" v-model="editparm.temp_name_ch" class="mr-1" label="選擇樣板" hide-details disabled>
                   </v-text-field>
                 </v-col>
               </v-row>
             </v-card-text> 
-            <v-card-text style="display: flex;margin-top: 24px;">
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details style="margin-right: 4px;" disabled>
+            <v-card-text class="d-flex mt-6">
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details disabled>
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)" disabled>
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" v-model.number="editparm.cn" label="目標CN比(選)" style="margin-right: 4px;" disabled>
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.cn" label="目標CN比(選)" disabled>
               </v-text-field>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)" disabled>
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" style="margin-right: 4px;" disabled>
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" disabled>
               </v-text-field>
             </v-card-text>
             
@@ -966,7 +963,7 @@
           </div>
           
           
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-primary" @click="viewDialog = false">確認</v-btn>
           </v-card-actions>
@@ -978,27 +975,26 @@
       <v-form v-model="reportvalid" ref="addform">
           <v-card class="custom-dialog">
               <v-card-title class="add-title">
-                  <div style="display: inline-block;">
+                  <div class="d-inline-block">
                       <span>{{addReport[0].pond_ids?'修改':'新增'}}檢驗報告</span> 
                   </div>
                   <div class="add">
                       <v-btn class="btn-secondary close"
                               title="取消" 
-                              @click="reportDialog = false; addReport=[{msg:''}]" 
-                              style="border: none;min-width: 0;padding: 0 4px;">
+                              @click="reportDialog = false; addReport=[{msg:''}]">
                           <v-icon>mdi-close</v-icon>
                       </v-btn>
                   </div>
               </v-card-title>
               <div class="basic">
-                <v-card-text v-for="(add,id) in addReport" :key="'add_'+id" style="position: relative;display: flex;flex-direction: column;padding: 8px 16px;border-radius: 4px;margin-top: 8px;">
-                  <div class="textfield" style="display: flex;flex-direction: column;align-items: flex-start;">
+                <v-card-text v-for="(add,id) in addReport" :key="'add_'+id" class="d-flex flex-column px-4 py-2 mt-2" style="position: relative;border-radius: 4px;">
+                  <div class="textfield flex-align-start flex-column">
                     <div class="select-type" style="width: 50%;">
                       <v-select v-model="add.type" dense filled :items="addOtherType" item-text="name_ch"
                         item-value="id" label="項目類型" style="padding-top: 8px;margin-right: 16px;" @change="selectadd($event,id)"></v-select>
                     </div>
-                    <div class="select-item" style="width: 100%;">
-                        <div class="select-bacteria flex-align-end" style="width: 100%;">
+                    <div class="select-item full-width">
+                        <div class="select-bacteria flex-align-end full-width">
                           <v-select
                               v-model="add.status"
                               :items="addStatus"
@@ -1006,21 +1002,20 @@
                               item-value="name_ch"
                               item-text="name_ch"
                               filled dense 
-                              class="mt-0 select-sample"
-                              style="width: 100%;margin-right: 16px;"
+                              class="mt-0 select-sample mr-4 full-width"
                               label="檢驗結果"
                               hide-details
                               >
                           </v-select>
-                          <v-text-field v-model="add.position" label="檢驗單位" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;"></v-text-field>
+                          <v-text-field v-model="add.position" class="pt-2 mt-0 full-width" label="檢驗單位" :rules="rules.require" autocomplete="off"></v-text-field>
                         </div>
-                        <div class="select-bacteria flex-align-end" style="margin-bottom: 12px;width: 100%;">
-                          <div class="date-time-picker" style="display: flex;flex-direction: column;align-items: flex-start;color: #6c9bcd;width: 100%;margin-right: 16px;">
+                        <div class="select-bacteria flex-align-end mb-3 full-width">
+                          <div class="date-time-picker flex-align-start flex-column mr-4 full-width" style="color: #6c9bcd;">
                               <v-menu v-model="menu_reportdate" :close-on-content-click="false" :nudge-right="40"
                                 transition="scale-transition" offset-y min-width="auto">
                                 <template v-slot:activator="{ on, attrs }">
                                   <v-text-field v-model="add.execute_date" label="檢驗時間" :rules="rules.require"
-                                    prepend-icon="mdi-calendar" style="padding-top: 0;margin-bottom: 12px;width: 100%;" hide-details readonly v-bind="attrs" v-on="on" @click:prepend="
+                                    prepend-icon="mdi-calendar" class="pt-0 mb-3 full-width"  hide-details readonly v-bind="attrs" v-on="on" @click:prepend="
                                                               () => (add.execute_date = getNowDate())
                                                             "></v-text-field>
                                 </template>
@@ -1032,7 +1027,7 @@
                             </div>  
                             <!-- {{ bacteriaAll.filter(x=>x.id==add.species)[0].test }} -->
                         </div>
-                        <div v-if="add.type==1" class="select-bacteria flex-align-end" style="margin-bottom: 12px;width: 100%;">
+                        <div v-if="add.type==1" class="select-bacteria flex-align-end mb-3 full-width">
                             <v-select
                                 v-model="add.species"
                                 :items="bacteriaAll"
@@ -1040,8 +1035,7 @@
                                 item-value="id"
                                 item-text="name_ch"
                                 @change="getReportDisease"
-                                filled dense class="mt-0"
-                                style="width: 100%;"
+                                filled dense class="mt-0 full-width"
                                 label="檢驗物種"
                                 hide-details
                                 >
@@ -1054,8 +1048,7 @@
                                 item-value="id"
                                 item-text="name_ch"
                                 @change="select($event,id,false,'method')"
-                                filled dense class="mt-0"
-                                style="width: 100%;"
+                                filled dense class="mt-0 full-width"
                                 label="檢驗方式"
                                 hide-details
                                 >
@@ -1075,8 +1068,7 @@
                           multiple
                           chips
                           @change="select($event,id,false,'disease')"
-                          filled dense class="mt-0"
-                          style="width: 100%;margin: 8px 0;"
+                          filled dense class="mx-0 my-8"
                           label="感染項目"
                           hide-details
                           item-value="id"
@@ -1096,7 +1088,7 @@
                               
                           </template>
                         </v-select>
-                        <div class="search-container" style="margin-bottom: 12px;">
+                        <div class="search-container mb-3">
                             <span 
                                 style="font-size: 12px;line-height: 12px;color: #6c9bcd;"
                                 :style="{'color':`${isSelectPool?'#6c9bcd':'red'}`}">採樣池</span>
@@ -1116,17 +1108,17 @@
                         </div>
                           <!-- <v-text-field v-model="add.position" label="檢驗單位" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field> -->
                       </div>
-                      <div class="select-item" style="width: 100%;">
-                        <v-text-field v-model="add.msg" label="項目說明" :rules="rules.checklength" autocomplete="off" style="padding-top: 8px;margin-top: 0;"></v-text-field>
+                      <div class="select-item full-width">
+                        <v-text-field v-model="add.msg" class="pt-2 mt-0" label="項目說明" :rules="rules.checklength" autocomplete="off"></v-text-field>
                         <!-- <v-file-input v-if="add.type==1" v-model="add.files" multiplelabel="File input"></v-file-input> -->
-                        <v-file-input v-if="add.type!==0&&!add.id" v-model="add.file" accept=".pdf" :rules="rules.require" label="上傳文件(限*pdf)" @change="submitFiles($event,id)" style="margin-top: 0;"></v-file-input>
-                        <v-text-field v-else v-model="add.filename" label="檢驗報告" style="padding-top: 8px;margin-top: 0;width: 100%;" disabled hide-details></v-text-field>
+                        <v-file-input v-if="add.type!==0&&!add.id" v-model="add.file" class="mt-0" accept=".pdf" :rules="rules.require" label="上傳文件(限*pdf)" @change="submitFiles($event,id)"></v-file-input>
+                        <v-text-field v-else v-model="add.filename" class="pt-2 mt-0 full-width" label="檢驗報告"  disabled hide-details></v-text-field>
                         <span v-if="add.pond_ids" class="error-text">*欲修改報告，請先刪除此檢驗報告重新新增</span>
                       </div>
                   </div>
                 </v-card-text>
               </div>
-              <v-card-actions style="padding: 24px 12px;">
+              <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn class="btn-secondary" @click="reportDialog = false">取消</v-btn>
                   <v-btn class="btn-primary" @click="submitreport">{{addReport[0].pond_ids?'修改':'新增'}}</v-btn>
@@ -4473,31 +4465,6 @@ export default {
 .v-card.bg-card {
   .btn-groups {
     @include flexCenterEnd();
-    button {
-      margin-right: 8px;
-    }
-  }
-  .result {
-    padding: 8px 12px;
-    .v-card.result-card {
-      .card-title {
-        padding: 0;
-        .title {
-          .v-card__title {
-            padding: 12px;
-          }
-        }
-      }
-    }
-  }
-  
-}
-
-.close {
-  width: 24px;
-  height: 24px !important;
-  & .v-icon {
-    margin: 0;
   }
 }
 ::v-deep {
@@ -4565,38 +4532,41 @@ export default {
         .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
             padding-top: 8px;
         }
-    }
-    .select-item {
-        .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
-            padding-top: 0;
-        }
-        .select-sample {
-            &.v-input--hide-details > .v-input__control > .v-input__slot {
-                margin-bottom: 22px !important;
-            }
-        }
-    }
-    .v-dialog .v-sheet.v-card.custom-dialog .v-autocomplete.v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
-      margin-top: -24px;
-    }
-    .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
-        color: #fff;
-    }
-    .select-template {
-      &.error-text .vue-treeselect__control .vue-treeselect__placeholder {
-        color: red;
+  }
+  .select-item {
+      .v-select.v-text-field--enclosed:not(.v-text-field--single-line):not(.v-text-field--outlined) .v-select__selections {
+          padding-top: 0;
       }
-      .vue-treeselect__control .vue-treeselect__multi-value-item {
-        padding: 0 4px;
+      .select-sample {
+          &.v-input--hide-details > .v-input__control > .v-input__slot {
+              margin-bottom: 22px !important;
+          }
       }
-      .vue-treeselect__control .vue-treeselect__placeholder::before,
-      .vue-treeselect__control .vue-treeselect__placeholder::after {
-        content: '';
-      }
-      .vue-treeselect__control {
-        background-color: transparent;
-      }
+  }
+  .v-dialog .v-sheet.v-card.custom-dialog .v-autocomplete.v-input--is-label-active.v-text-field--filled:not(.v-text-field--single-line) input {
+    margin-top: -24px;
+  }
+  .v-dialog .v-sheet.v-card.custom-dialog .v-text-field .v-chip .theme--light.v-icon {
+      color: #fff;
+  }
+  .select-template {
+    &.error-text .vue-treeselect__control .vue-treeselect__placeholder {
+      color: red;
     }
+    .vue-treeselect__control .vue-treeselect__multi-value-item {
+      padding: 0 4px;
+    }
+    .vue-treeselect__control .vue-treeselect__placeholder::before,
+    .vue-treeselect__control .vue-treeselect__placeholder::after {
+      content: '';
+    }
+    .vue-treeselect__control {
+      background-color: transparent;
+    }
+  }
+  .vue-treeselect--has-value .vue-treeselect__multi-value {
+    margin-bottom: 0;
+  }
 }
 
 @media (max-width:960px) {
@@ -4605,7 +4575,6 @@ export default {
       justify-content: flex-start;
     }
   } 
-
 }
 // 財務
 // @media (max-width:599.98px) {

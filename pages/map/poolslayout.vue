@@ -1,9 +1,9 @@
 <template>
-  <div class="poollayout" style="padding-top: 20px;">
-    <div v-if="!isLoad" style="padding-left: 12px;">Loading...</div>
+  <div class="poollayout pt-5">
+    <div v-if="!isLoad" class="pl-3">Loading...</div>
     <div v-else>
       <div v-if="nowAreaTag!=='setting' && ponds.length>0 && isSetting">
-        <v-row  v-for="(pond,pid) in ponds" :key="pid" class="mx-0 parent-row" :id="`pid-${pid}`" style="display: flex;align-items: stretch;">
+        <v-row  v-for="(pond,pid) in ponds" :key="pid" class="mx-0 parent-row mb-3 d-flex align-stretch" :id="`pid-${pid}`">
           <div v-for="(b,bid) in pond.pond" :key="bid"
             :class="{'block':(b.name=='tank'||b.state!=='')&& b.rows.length==0 && b.isSetting,'text-center my-1':windowWidth>=700 && b.name!=='road','road':b.id==''&&b.name=='road','rows-display':b.rows.length>0,'edit-block':showedit,'danger-water':b.level=='danger','warning-water':b.level=='warning',}"
             :style="{
@@ -96,14 +96,14 @@
             <!-- <div v-else-if="b.name == 'tank'">生化槽</div> -->
           </div>
         </v-row>
-        <v-row v-if="MaxDate && $route.path!=='/basic'" class="mx-0 parent-row">
+        <v-row v-if="MaxDate && $route.path!=='/basic'" class="mx-0 parent-row mb-3">
           <div class="mx-3 my-1 update-time">
             <span>最後更新時間：{{ MaxDate }}</span>
           </div>
         </v-row>
       </div>
       <div v-else-if="nowAreaTag=='setting'">
-        <v-row style="margin-bottom: 24px;margin-left: 12px;max-width: 240px;" :style="{marginTop:`${setting=='color'?'-20px':'-32px'}`}">
+        <v-row class="mb-6 ml-3" style="max-width: 240px;" :style="{marginTop:`${setting=='color'?'-20px':'-32px'}`}">
           <div
             class="setting-item"
             style="font-size: 16px;"
@@ -123,16 +123,16 @@
                 v-if="setting=='layout'"
                 :items="layout"
                 v-model="nowLayout"
-                class="select-area"
-                style="font-size: 16px;width: 120px;margin-top: -4px;max-width:120px"
+                class="select-area mt-n1"
+                style="font-size: 16px;width: 120px;max-width:120px"
             ></v-select>  
         </div>
         </v-row>
         
-        <v-row style="width: 100%;padding-top: 32px;margin-top: -20px;"
-          class="mx-0"
-          :class="{'parent-row':`${nowAreaTag=='setting'&&setting=='layout'}`}">
-          <settingcolor v-if="setting=='color'" class="mx-3" style="width: 100%;"></settingcolor>
+        <v-row
+          class="mx-0 pt-8 mt-n5 full-width"
+          :class="{'parent-row mb-3':`${nowAreaTag=='setting'&&setting=='layout'}`}">
+          <settingcolor v-if="setting=='color'" class="mx-3 full-width"></settingcolor>
           <settinglayout v-if="setting=='layout'" style="width: calc(100% - 24px);" :areas="areas1"></settinglayout>
         </v-row>
       </div>
@@ -429,7 +429,62 @@ export default {
     statcolor:{
       type: Array,
       default() {
-        return []
+        return [
+          {
+              "id": 1,
+              "name_ch": "無",
+              "name_en": "None",
+              "color": "#FFFFFF"
+          },
+          {
+              "id": 3,
+              "name_ch": "空池",
+              "name_en": "Empty",
+              "color": "#BFDAE8"
+          },
+          {
+              "id": 4,
+              "name_ch": "放養中",
+              "name_en": "Breeding",
+              "color": "#F1E78D"
+          },
+          {
+              "id": 13,
+              "name_ch": "",
+              "name_en": "",
+              "color": "#FFFFFF"
+          },
+          {
+              "id": 33,
+              "name_ch": "蓄水",
+              "name_en": "Storage",
+              "color": "#DBC5A4"
+          },
+          {
+              "id": 34,
+              "name_ch": "做水",
+              "name_en": "Conditioning",
+              "color": "#C5E8E6"
+          },
+          {
+              "id": 36,
+              "name_ch": "清池",
+              "name_en": "Cleaning",
+              "color": "#8BE3D3"
+          },
+          {
+              "id": 37,
+              "name_ch": "養殖審核",
+              "name_en": "Checking",
+              "color": "#D7BEDD"
+          },
+          {
+              "id": 38,
+              "name_ch": "備池",
+              "name_en": "Preparing",
+              "color": "#92CDEE"
+          }
+        ]
       }
     },
     water: {
@@ -1084,23 +1139,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-td {
-  font-size: 1.2em;
-  text-align: center;
-  vertical-align: middle;
-  min-width: 80px;
-}
-tr {
-  height: 50px;
-  max-height: 80px;
-}
+// td {
+//   font-size: 1.2em;
+//   text-align: center;
+//   vertical-align: middle;
+//   min-width: 80px;
+// }
+// tr {
+//   height: 50px;
+//   max-height: 80px;
+// }
 v-row > div{
   justify-content: center;
   align-items: center;  
 }
 .parent-row {
   @include size(100%);
-  margin-bottom: 12px;
   flex-wrap: nowrap;
   // min-width: 1200px;
 }
@@ -1123,8 +1177,6 @@ v-row > div{
 .road {
   position: relative;
   padding: 0;
-  // width: 100%;
-  // min-width: 120px;
   & > div {
     position: relative;
     @include size(100%);
@@ -1135,13 +1187,10 @@ v-row > div{
       @include size(100%,36px);
       background-color: #e4e4e4;
       margin: 0;
-      // margin-right: -12px;
       border-radius: 4px;
   }
   .horizontal {
     padding: 6px;
-    // margin: 0 12px;
-    // width: calc(100% - 24px);
   }
   .top,.center,.bottom, .vertical {
     position: absolute;
@@ -1153,8 +1202,6 @@ v-row > div{
   }
   .vertical {
     border-radius: 4px;
-    // height: auto;
-    // margin-top: -24px;
   }
   .center {
       border-radius: 0;
@@ -1166,15 +1213,11 @@ v-row > div{
       border-radius: 4px 4px 0 0;
       margin-top: 24px;
       height: calc(100% + 84px);
-      // margin-top: 0;
   }
-  
-  
   .bottom {
     border-radius: 0 0 4px 4px;
     margin-top: 0;
   }
-
 }
 .sub-row {
   width: 100%;
@@ -1199,12 +1242,10 @@ v-row > div{
 }
 .update-time {
   width: 100%;
-  // text-align: right;
   font-size: 14px;
   color: #00273E;
 }
 .danger-water,.warning-water {
-  // box-sizing: border-box;
   overflow: hidden;
   position: relative;
   &::before {
@@ -1216,20 +1257,13 @@ v-row > div{
   }
 }
 .danger-water {
-//  border: 6px solid $color-accent;
-//  background-color: #d3808f;
-  // animation: scale 2s 2;
   &::before {
-    // background-color: rgba($color-accent,0.6);
     background-color: rgba(#fefefe,0.3);
-    
     animation: breath 1.2s infinite;
   }
 }
 .warning-water {
-  // border: 4px solid #FBBC05;
   &::before {
-    // background-color: rgba(#f79c2b,0.2);
     background-color: rgba(#fefefe,0.5);
     animation: breath 2.5s infinite;
  }
@@ -1240,15 +1274,12 @@ v-row > div{
 @keyframes breath {
   0% {
     opacity: 0.6;
-    // transform: scale(0.98);
   }
   50% {
     opacity: 1;
-    // transform: scale(1);
   }
   100% {
     opacity: 0.6;
-    // transform: scale(0.98);
   }
 }
 @keyframes scale {

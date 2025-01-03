@@ -6,7 +6,7 @@
                     未授權無法進入此頁 !
                 </h1>
                 <h3>請管理人員開通權限</h3>
-                <v-btn class="btn-primary" @click="toHomePage()" style="margin-top: 24px;">
+                <v-btn class="btn-primary mt-6" @click="toHomePage()">
                     返回首頁
                 </v-btn>
             </div>

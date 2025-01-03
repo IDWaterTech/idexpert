@@ -1,18 +1,18 @@
 <template>
     <div>
         <v-row  v-if="filterTemplate.length>0">
-            <v-col cols="12" md="4" sm="6" style="padding: 0;">
-                <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
+            <v-col cols="12" md="4" sm="6" class="pa-0">
+                <div class="search flex-align-center ml-4 mt-2">
                     <v-autocomplete :disabled="editmode!=='edit'||isEditDefault" v-model="tempSelect" hide-details dense filled :items="filterTemplate" item-text="name_ch" item-value="id" @change="tempChange" style="min-width: 200px;">
                     
                     </v-autocomplete>
                     
                 </div>
             </v-col>
-            <v-col cols="12" md="8" sm="6" style="padding: 0;">
-                <div class="search" style="display: flex;align-items: center;margin-left: 16px;margin-top: 8px;">
-                    <v-checkbox v-model="isEnable" label="顯示已停用樣板" @change="checkTemp" hide-details style="margin-right: 16px;"></v-checkbox>
-                    <div class="chevron" style="display: flex;align-items: center;">
+            <v-col cols="12" md="8" sm="6" class="pa-0">
+                <div class="search flex-align-center ml-4 mt-2">
+                    <v-checkbox v-model="isEnable" class="mr-4" label="顯示已停用樣板" @change="checkTemp" hide-details></v-checkbox>
+                    <div class="chevron flex-align-center">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on, attrs }">
                                 <button :class="{'disabled':editmode=='edit'&&!isEditDefault}" class="btn-icon" @click="editmode='edit';tempSelect= filterTemplate[0].id;tempChange();nowExpand = true;isEditDefault=false;" v-bind="attrs" v-on="on">
@@ -61,13 +61,13 @@
                 </div>
             </v-col>
         </v-row>
-        <div class="content" style="padding: 0;margin-top: 24px;margin-right: 16px;margin-left: 16px;">
+        <div class="content pa-0 mt-6 mr-4 ml-4">
             <div class="result">
                 <v-card class="result-card">
                     <!-- 表頭 -->
                     <div class="card-title">
                         <div class="title">
-                            <v-row style="align-items: center;margin-bottom: 0;justify-content: space-between;">
+                            <v-row class="align-center justify-space-between mb-0">
                                 <!-- <v-col cols="4" md="4" sm="4" style="padding: 0;"> -->
                                     <!-- <v-card-title>養殖歷程</v-card-title> -->
                                     <v-card-title v-if="isEditDefault">預設樣板編輯</v-card-title>
@@ -76,7 +76,7 @@
                                     
                                 <!-- </v-col> -->
                                 <!-- <v-col cols="8" md="8" sm="8" style="padding: 0 8px;"> -->
-                                    <div class="btn-groups" style="margin-right: 8px;">
+                                    <div class="btn-groups mr-2" style="margin-right: 8px;">
                                         <div class="open">
                                             <v-tooltip v-if="!isEditDefault" bottom>
                                                 <template v-slot:activator="{ on, attrs }">

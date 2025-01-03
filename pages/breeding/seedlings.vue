@@ -3,16 +3,16 @@
         <v-overlay :value="!isLoading" :absolute="true">
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <div class="content" style="padding: 0;margin-top: 24px;margin-right: 16px;margin-left: 16px;">
+        <div class="content pa-0 mt-6 mr-4 ml-4">
             <div class="result">
                 <v-card class="result-card">
                     <!-- 表頭 -->
-                    <div class="card-title">
+                    <div class="card-title px-4 py-3">
                         <div class="title">
                             <v-card-title>種苗清單</v-card-title>
                         </div>
-                        <div class="chevron flex-align-center" style="margin-left: 8px;">
-                            <v-btn class="btn-secondary green" @click="openAdd" style="padding: 0 8px;">
+                        <div class="chevron flex-align-center ml-2">
+                            <v-btn class="btn-secondary green px-2 py-0" @click="openAdd">
                                 <v-icon>mdi-plus</v-icon>新增種苗
                             </v-btn>
                             <!-- <v-tooltip bottom>
@@ -74,17 +74,16 @@
                 >
                 <v-card class="custom-dialog">
                     <v-card-title class="add-title">
-                        <div v-if="seedFormData.mode=='add'" style="display: inline-block;">
+                        <div v-if="seedFormData.mode=='add'" class="d-inline-block">
                             新增種苗
                         </div>
-                        <div v-else style="display: inline-block;">
+                        <div v-else class="d-inline-block">
                             修改種苗
                         </div>
                         <div class="add">
                             <v-btn class="btn-secondary close"
                                     title="取消" 
-                                    @click="dialog.seedForm = false" 
-                                    style="border: none;min-width: 0;padding: 0 4px;">
+                                    @click="dialog.seedForm = false">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
                         </div>
@@ -120,7 +119,7 @@
                         </v-text-field>
                     </v-card-text>
                     <!-- <v-divider></v-divider> -->
-                    <v-card-actions style="padding: 24px 12px;">
+                    <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn tile @click="dialog.seedForm = false" class="btn-secondary">取消</v-btn>
                         <v-btn tile @click="editsave" v-if="seedFormData.mode=='edit'" class="btn-primary">修改</v-btn>
@@ -439,7 +438,6 @@
         background-color: #fff;
     }
     .card-title {
-        padding: 12px 16px !important;
         cursor: pointer;
     } 
 }

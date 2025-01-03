@@ -3,13 +3,13 @@
         <v-overlay :value="!isLoading" :absolute="true">
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-card class="bg-card" style="margin-bottom: 16px;">
-            <div class="content" style="padding-left: 0;padding-top:12px;padding-bottom: 0;">
-                <v-row>
+        <v-card class="bg-card mb-4">
+            <div class="content pl-0 pt-3 pb-0">
+                <v-row class="align-start">
                     <v-col cols="12" md="2" sm="5">
                         <div class="report-list">
-                            <div class="report-title">請選擇欲下載的報表</div>
-                            <div class="search-bar">
+                            <div class="report-title border-bottom pb-2">請選擇欲下載的報表</div>
+                            <div class="search-bar pa-2 mt-2">
                                 <v-text-field
                                     v-model="searchString"
                                     prepend-inner-icon="mdi-magnify"
@@ -19,15 +19,15 @@
                                     hide-details
                                     @change="searchStringList"></v-text-field>
                             </div>
-                            <div class="list">
-                                <div class="item" :class="{'active':item.id==nowList.id}" v-for="(item,i) in reportList" :key="'list_'+i" @click="searchParams(item)">
+                            <div class="list px-2 py-4">
+                                <div class="item pa-4" :class="{'active':item.id==nowList.id}" v-for="(item,i) in reportList" :key="'list_'+i" @click="searchParams(item)">
                                     <span>{{ item.name_ch }}</span>
                                 </div>
                             </div>
                         </div>
                     </v-col>
                     <v-col cols="12" md="10" sm="7">
-                        <div class="report-search">
+                        <div class="report-search pa-4">
                             <v-row v-if="nowList.id"><div class="report-title">{{ nowList.name_ch }}下載</div></v-row>
                             <v-form v-model="downloadvalid" ref="downloadform">
                                 <v-row v-if="showStartDate">
@@ -35,7 +35,6 @@
                                         <!-- 場/區/池 -->
                                         <locate-select v-if="(form.name=='pool'||form.name=='area'||form.name=='field')"  :dataScope="form.name" class="select-template" defaultSelect="" :isMulti="form.is_multi"
                                         @scopeSel_data="get_scopeData($event,form)" :class="{'error':isPoolError}"></locate-select>
-                                        <span v-if="(form.name=='pool'||form.name=='area'||form.name=='field')&&!isPoolError" style="height: 14px;display: block;"></span>
                                         <!-- 開始日期 -->
                                         <v-menu v-if="form.type=='date'&&form.remark=='start'" v-model="menu_startdate[i]" :close-on-content-click="false" :nudge-right="40"
                                             transition="scale-transition" offset-y min-width="auto">
@@ -71,32 +70,32 @@
                                                 closeDate('end',i)"></v-date-picker>
                                         </v-menu>
                                         <!-- 開始日期+時間 -->
-                                        <div v-if="form.type=='time'&&form.remark=='start'&&form.value!==null&&form.value!==''" class="date-time-picker" style="width:100%">
-                                            <span class="label">{{ form.name }}</span>
+                                        <div v-if="form.type=='time'&&form.remark=='start'&&form.value!==null&&form.value!==''" class="date-time-picker full-width">
+                                            <span class="label ml-9 mt-n3">{{ form.name }}</span>
                                         </div>
-                                        <div v-if="form.type=='time'&&form.remark=='start'" class="date-time-picker" style="width:100%">
+                                        <div v-if="form.type=='time'&&form.remark=='start'" class="date-time-picker full-width">
                                             <v-icon
+                                                class="mr-2"
                                                 :class="{'error-icon':isStartTimeError}"
-                                                @click="showDate=false;form.value = getNowDateTime();showDate=true;"
-                                                style="margin-right: 8px;">mdi-calendar</v-icon>
+                                                @click="showDate=false;form.value = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                                             <a-date-picker v-if="showDate" v-model="form.value" format="yyyy-MM-DD HH:mm:ss" :class="{'error--text':isStartTimeError}" :disabled-date="disabledStartDate" show-time :placeholder="form.name" :rules="rules.require" @change="onChange($event,form.remark)" @ok="onOk" />
                                         </div>
-                                        <div v-if="form.type=='time'&&form.remark=='start' && isStartTimeError" class="date-time-picker" style="width:100%">
-                                            <span class="error-text">*必填項目</span>
+                                        <div v-if="form.type=='time'&&form.remark=='start' && isStartTimeError" class="date-time-picker full-width">
+                                            <span class="error-text ml-8">*必填項目</span>
                                         </div>
                                         <!-- 結束日期+時間 -->
-                                        <div v-if="form.type=='time'&&form.remark=='end'&&form.value!==null&&form.value!==''" class="date-time-picker" style="width:100%">
-                                            <span class="label">{{ form.name }}</span>
+                                        <div v-if="form.type=='time'&&form.remark=='end'&&form.value!==null&&form.value!==''" class="date-time-picker full-width">
+                                            <span class="label ml-9 mt-n3">{{ form.name }}</span>
                                         </div>
-                                        <div v-if="form.type=='time'&&form.remark=='end'" class="date-time-picker" style="width:100%">
+                                        <div v-if="form.type=='time'&&form.remark=='end'" class="date-time-picker full-width">
                                             <v-icon
+                                                class="mr-2"
                                                 :class="{'error-icon':isEndTimeError}"
-                                                @click="showDate=false;form.value = getNowDateTime();showDate=true;"
-                                                style="margin-right: 8px;">mdi-calendar</v-icon>
+                                                @click="showDate=false;form.value = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                                             <a-date-picker v-if="showDate" v-model="form.value" format="yyyy-MM-DD HH:mm:ss" :class="{'error--text':isEndTimeError}" :disabled-date="disabledEndDate" show-time :placeholder="form.name" :rules="rules.require" @change="onChange($event,form.remark)" @ok="onOk" />
                                         </div>
-                                        <div v-if="form.type=='time'&&form.remark=='end' && isEndTimeError" class="date-time-picker" style="width:100%">
-                                            <span class="error-text">*必填項目</span>
+                                        <div v-if="form.type=='time'&&form.remark=='end' && isEndTimeError" class="date-time-picker full-width">
+                                            <span class="error-text ml-8">*必填項目</span>
                                         </div>
                                         <!-- 下拉選單 -->
                                         <v-select
@@ -133,10 +132,10 @@
                                 </v-row>
                             </v-form>
                             
-                            <div v-if="download.length>0" class="download">
+                            <div v-if="download.length>0" class="download mt-6">
                                 <v-btn class="btn-primary download" @click="downloadReport">下載</v-btn>
                             </div>
-                            <span v-else style="margin-top: -24px;display: block;">請選擇左側列表中欲下載之報表</span>
+                            <span v-else class="d-block mt-n6">請選擇左側列表中欲下載之報表</span>
                         </div>
                     </v-col>
                 </v-row>
@@ -648,10 +647,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-card.bg-card .content .row {
-    display: flex;
-    align-items: flex-start !important;
-}
 .content {
     .report-list {
         * {
@@ -660,20 +655,11 @@ export default {
         .report-title {
             font-size: 1rem;
             font-weight: bold;
-            padding-bottom: 8px;
-            border-bottom: 1px solid $color-black-10;
-            
-        }
-        .search-bar {
-            padding: 8px;
-            margin-top: 8px;
         }
         .list {
-            padding: 16px 8px;
             height: 60vh;
             overflow-y: scroll;
             .item {
-                padding: 16px;
                 cursor: pointer;
                 transition: all 0.3s;
                 border-radius: 4px;
@@ -690,14 +676,11 @@ export default {
         @include size(100%,72vh);
         border: 1px solid $color-primary;
         border-radius: 4px;
-        padding: 16px;
         overflow-y: scroll;
         .download {
-            margin-top: 24px;
             @include flexCenterEnd();
         }
         .error-text {
-            margin-left: 32px;
             font-size: 0.75rem;
         }
         .error-icon {
@@ -708,15 +691,12 @@ export default {
         .date-time-picker {
             .label {
                 font-size: 0.75rem;
-                margin-left: 36px;
                 color: rgba(0,0,0,0.6);
-                margin-top: -12px;
             }
         }
         .report-title {
             font-size: 1.25rem;
             font-weight: bold;
-            // padding-bottom: 8px;
             color: $color-dark;
             
         }

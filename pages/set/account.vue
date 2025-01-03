@@ -3,9 +3,9 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-    <v-card class="bg-card result-card" style="margin-bottom: 12px;min-height:86vh">
+    <v-card class="bg-card result-card mb-3" style="min-height:86vh">
       <!-- 表頭 -->
-      <div class="card-title" style="cursor: pointer;margin: 8px;padding: 12px;">
+      <div class="card-title ma-2 pa-3 border-bottom cursor-pointer">
           <div class="title">
               <v-card-title style="padding: 0;">帳號清單</v-card-title>
           </div>
@@ -29,10 +29,10 @@
           </div>
       </div>
       <!-- 清單 -->
-      <div class="content" style="padding-top:12px;width: 100%;">
+      <div class="content pt-3 full-width">
         <el-table
           :data="accdata"
-          style="width: 100%"
+          class="full-width"
           height="67vh"
           row-key="id"
           :expand-row-keys="expands"
@@ -188,7 +188,7 @@
           >
             <template slot-scope="scope">
               <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
-              <span style="width: 36px;display: inline-block;">Mail</span>
+              <span class="d-inline-block" style="width: 36px;">Mail</span>
               <v-tooltip v-if="scope.row.is_sys_enable_email" bottom>
                   <template v-slot:activator="{ on, attrs }">
                       <v-btn  class="btn-circle" 
@@ -220,7 +220,7 @@
               > -->
               <br />
               <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon> -->
-              <span style="width: 36px;display: inline-block;">Line</span>
+              <span class="d-inline-block" style="width: 36px;">Line</span>
               <v-tooltip v-if="scope.row.is_sys_enable_line" bottom>
                   <template v-slot:activator="{ on, attrs }">
                       <v-btn  class="btn-circle" 
@@ -251,7 +251,7 @@
               ></el-switch> -->
               <br />
               <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon> -->
-              <span style="width: 36px;display: inline-block;">KB</span>
+              <span class="d-inline-block" style="width: 36px;">KB</span>
               <v-tooltip v-if="scope.row.is_sys_enable_line_kb" bottom>
                   <template v-slot:activator="{ on, attrs }">
                       <v-btn  class="btn-circle" 
@@ -289,7 +289,7 @@
           >
             <template slot-scope="scope">
               <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
-              <span style="width: 36px;display: inline-block;">Line</span>
+              <span class="d-inline-block" style="width: 36px;">Line</span>
               <v-tooltip v-if="scope.row.line_notify" bottom>
                   <template v-slot:activator="{ on, attrs }">
                       <v-btn  class="btn-circle" 
@@ -380,14 +380,13 @@
       <v-form ref="annform" v-model="annvalid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               發佈公告
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="annDialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="annDialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -402,8 +401,8 @@
                 <v-icon v-if="!addChooseOpen">mdi-triangle-small-down</v-icon>
               </div> -->
             </div>
-            <div class="basic" style="padding-left: 8px;">
-              <v-card-text class="flex-align-center" style="padding-top: 0;">
+            <div class="basic pl-2">
+              <v-card-text class="flex-align-center pt-0" style="padding-top: 0;">
                 <v-alert
                   type="success"
                   dense
@@ -428,12 +427,12 @@
               </div>
             </div> -->
             <div class="basic" style="padding-left: 8px;">
-              <v-card-text class="flex-align-center" style="padding-top: 0;">
+              <v-card-text class="flex-align-center pt-0">
                 <v-textarea v-model="annmsg" filled clearable placeholder="請輸入內容..."> </v-textarea>
               </v-card-text>
             </div>
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="annDialog = false">取消</v-btn>
             <v-btn class="btn-primary" :loading="annsubmitbtn" @click="annsubmit" :class="{'disabled':annmsg== undefined || annmsg.length<=0}">發佈</v-btn>
@@ -449,14 +448,13 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
-            <div style="display: inline-block;">
+            <div class="d-inline-block">
               新增使用者帳號
             </div>
             <div class="add">
               <v-btn  class="btn-secondary close"
                       title="取消" 
-                      @click="addDialog = false" 
-                      style="border: none;min-width: 0;padding: 0 4px;">
+                      @click="addDialog = false">
                   <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -469,7 +467,7 @@
               
             </div> -->
             <div class="basic" style="padding-left: 8px;">
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   v-model="addform.username"
                   :rules="rules.require"
@@ -483,7 +481,7 @@
                   placeholder="王小明"
                 ></v-text-field>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;">
+              <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
                   v-model="addform.password"
                   :rules="rules.require"
@@ -497,9 +495,9 @@
                   type="password"
                 ></v-text-field>
               </v-card-text>
-              <v-card-text class="flex-align-center" style="padding-top: 0;">
+              <v-card-text class="flex-align-center pt-0">
                 帳號預設狀態：
-                <div class="input-group" style="margin-left: 8px;">
+                <div class="input-group ml-2">
                   <el-tag
                     :type="addform.is_active ? 'success' : 'info'"
                     disable-transitions
@@ -513,7 +511,7 @@
                 </div>
                 
               </v-card-text>
-              <v-card-text class="flex-align-center" style="padding-top: 0;">
+              <v-card-text class="flex-align-center pt-0">
                 允許接收通知：
                 <div class="input-group flex-align-center">
                   <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
@@ -521,25 +519,25 @@
                     v-model="addform.is_sys_enable_email"
                     active-color="#13ce66"
                     inactive-color="#eee"
-                    style="margin: 16px 16px 16px 8px;"
+                    class="my-4 mr-4 ml-2"
                   ></el-switch>
                   <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
                   Line<el-switch
                     v-model="addform.is_sys_enable_line"
                     active-color="#13ce66"
                     inactive-color="#eee"
-                    style="margin: 16px 16px 16px 8px;"
+                    class="my-4 mr-4 ml-2"
                   ></el-switch>
                   <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
                   KB<el-switch
                     v-model="addform.is_sys_enable_line_kb"
                     active-color="#13ce66"
                     inactive-color="#eee"
-                    style="margin: 16px 16px 16px 8px;"
+                    class="my-4 mr-4 ml-2"
                   ></el-switch>
                 </div>
               </v-card-text>
-              <v-card-text style="display: flex;flex-direction:column;padding-top: 0;width: 100%;">
+              <v-card-text class="d-flex flex-column pt-0 full-width">
                 <v-select
                   :items="maindata"
                   item-text="name"
@@ -548,8 +546,7 @@
                   multiple
                   chips
                   placeholder="所屬場別"
-                  style="width: 100%;"
-                  class="mutiselect"
+                  class="mutiselect full-width"
                 ></v-select>
                 <treeselect
                   v-model="addform.position_id"
@@ -559,10 +556,9 @@
                   :default-expand-level="1"
                   placeholder="請選擇職位"
                   :disable-branch-nodes="true"
-                  class="select-template"
-                  style="width: 100%;"
+                  class="select-template full-width"
                   :rules="rules.length"
-                  :class="{'error':isDataidError}"
+                  :class="{error:isDataidError}" 
                 >
                   <div slot="value-label" slot-scope="{ node }">
                     {{ node.raw.unit }}-{{ node.raw.label }}
@@ -572,7 +568,7 @@
             </div>
             
           </v-card-text>
-          <v-card-actions style="padding: 24px 12px;">
+          <v-card-actions >
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="addDialog = false">取消</v-btn>
             <v-btn class="btn-primary" @click="addsubmit">確認</v-btn>
@@ -587,22 +583,21 @@
       </v-overlay>
       <v-card  class="custom-dialog">
         <v-card-title class="add-title">
-          <div style="display: inline-block;">
+          <div class="d-inline-block">
             修改
           </div>
           <div class="add">
             <v-btn  class="btn-secondary close"
                     title="取消" 
-                    @click="editDialog = false" 
-                    style="border: none;min-width: 0;padding: 0 4px;">
+                    @click="editDialog = false">
                 <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>
         </v-card-title>
         <v-card-text>
-          <div class="basic" style="padding-left: 8px;">
+          <div class="basic pl-2">
             <v-card-text>
-              <v-card-subtitle style="padding-left: 0;">{{ editedData.username }}</v-card-subtitle>
+              <v-card-subtitle class="pl-0">{{ editedData.username }}</v-card-subtitle>
               <v-text-field :rules="rules.require"
                   label="使用者名稱" v-model="editedData.account_name"> </v-text-field>
               <v-autocomplete
@@ -616,8 +611,8 @@
                 dense
                 deletable-chips
                 chips
-                style="width:600px;margin-top: 8px;"
-                class="mutiselect"
+                style="width:600px;"
+                class="mutiselect mt-2"
                 label="所屬場別"
                 ></v-autocomplete>
               <treeselect
@@ -631,16 +626,16 @@
                 :disable-branch-nodes="true"
                 class="select-template"
                 :rules="rules.length"
-                :class="{'error':isDataidError}"
+                :class="{error:isDataidError}"
               >
                 <div slot="value-label" slot-scope="{ node }">
                   {{ node.raw.unit }}-{{ node.raw.label }}
                 </div>
               </treeselect>
             </v-card-text>
-            <v-card-text class="flex-align-center" style="padding-top: 0;">
+            <v-card-text class="flex-align-center pt-0">
               帳號狀態：
-              <div class="input-group" style="margin-left: 8px;">
+              <div class="input-group ml-2" style="margin-left: 8px;">
                 <el-tag
                   :type="editedData.is_active ? 'success' : 'info'"
                   disable-transitions
@@ -655,7 +650,7 @@
               </div>
               
             </v-card-text>
-            <v-card-text class="flex-align-center" style="padding-top: 0;">
+            <v-card-text class="flex-align-center pt-0">
                 允許接收通知：
                 <div class="input-group flex-align-center">
                   <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
@@ -663,7 +658,7 @@
                     v-model="editedData.is_sys_enable_email"
                     active-color="#13ce66"
                     inactive-color="#eee"
-                    style="margin: 16px 16px 16px 8px;"
+                    class="my-4 mr-4 ml-2"
                     @change="changeState()"
                   ></el-switch>
                   <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
@@ -671,7 +666,7 @@
                     v-model="editedData.is_sys_enable_line"
                     active-color="#13ce66"
                     inactive-color="#eee"
-                    style="margin: 16px 16px 16px 8px;"
+                    class="my-4 mr-4 ml-2"
                     @change="changeState()"
                   ></el-switch>
                   <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
@@ -679,7 +674,7 @@
                     v-model="editedData.is_sys_enable_line_kb"
                     active-color="#13ce66"
                     inactive-color="#eee"
-                    style="margin: 16px 16px 16px 8px;"
+                    class="my-4 mr-4 ml-2"
                     @change="changeState()"
                   ></el-switch>
                 </div>
@@ -964,7 +959,6 @@ export default {
       this.editedData = _.cloneDeep(data);
     },
     async submitEdit() {
-      this.dialogLoading = false;
       const updUser = this.$auth.$state.user.email;
       this.editedData["updated_user"] = updUser;
       let parm = _.cloneDeep(this.editedData);
@@ -976,6 +970,7 @@ export default {
       console.log(parm);
       this.isDataidError = true;
       if(parm.position_id.length>0) {
+        this.dialogLoading = false;
         this.isDataidError = false;
         var res = await this.patchUserList(parm,this.editedData.id);
         setTimeout(async ()=>{
@@ -1354,7 +1349,6 @@ export default {
     background-color: #fff;
   }
   .card-title {
-    border-bottom: 1px solid $color-black-10;
     .title {
       width: 100%;
     }

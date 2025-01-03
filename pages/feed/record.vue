@@ -3,7 +3,7 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-    <v-card class="bg-card" style="margin-bottom: 24px;">
+    <v-card class="bg-card mb-6">
       <!-- <div class="card-title">
         <v-row style="margin-bottom: 0;">
           <div class="title">
@@ -12,9 +12,9 @@
           </div>
         </v-row>
       </div> -->
-      <div class="content" style="padding-top:12px">
+      <div class="content pt-3">
         <div class="search" >
-          <v-row style="margin-bottom: 0;">
+          <v-row class="mb-0">
             <v-col cols="12" md="2">
               <!-- 選擇場 -->
               <div class="search-container">
@@ -79,7 +79,7 @@
           </v-row>
         </div>
         <div class="result">
-          <v-row style="margin-bottom: 0;">
+          <v-row class="mb-0">
             <v-col cols="12">
               <!-- 當日餐別明細 -->
               <v-expansion-panels accordion multiple v-model="mealDetails" class="result-card">
@@ -143,8 +143,8 @@
                       </template> -->
                       <template v-slot:[`item.main_items`]="{ item }">
                         <v-row class="ma-1" dense>
-                          <div class="chip" style="display: flex;flex-direction:column">
-                            <v-row style="margin-bottom: 0;">
+                          <div class="chip d-flex flex-column">
+                            <v-row class="mb-0">
                               <v-chip
                                 v-for="(mfla,mid) in item.main_items"
                                 :key="mid"
@@ -160,8 +160,8 @@
                       </template>
                       <template v-slot:[`item.sub_items`]="{ item }">
                         <v-row class="ma-1" dense>
-                          <div class="chip" style="display: flex;flex-direction:column">
-                            <v-row  style="margin-bottom: 0;">
+                          <div class="chip d-flex flex-column">
+                            <v-row class="mb-0">
                               <v-chip
                                 v-for="(fla,fid) in item.sub_items"
                                 :key="fid"
@@ -180,13 +180,13 @@
                 </v-expansion-panel>
               </v-expansion-panels>
               <!-- 料表 -->
-              <v-card class="result-card" >
+              <v-card class="result-card pa-3 pb-2" >
                 <!-- 表頭 -->
-                <div class="card-title">
+                <div class="card-title pa-0">
                   <div class="title">
-                    <v-row style="margin-right: 12px;margin-left: 12px;margin-bottom: 12px;">
+                    <v-row class="mr-3 ml-3 mb-3">
                       <v-col cols="12" md="6">
-                        <v-row style="margin-bottom: 0;">
+                        <v-row class="mb-0" style="margin-bottom: 0;">
                           <v-col cols="6" v-if="false">
                             <v-autocomplete
                               v-model="showmain"
@@ -230,17 +230,15 @@
                           <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
                           <v-btn
                             tile
-                            class="btn-primary"
+                            class="btn-primary mx-1 my-0"
                             @click="downloadcsv"
-                            style="margin: 0 4px;"
                             :disabled="feedData.length==0"
                             >下載</v-btn>
                           <v-btn
-                            class="btn-primary green"
+                            class="btn-primary green mx-1 my-0"
                             tile
                             @click="execsubmit"
                             :disabled="multipleSelection.length == 0"
-                            style="margin: 0 4px;"
                             >執行</v-btn>
                         </div>
                       </v-col>
@@ -284,7 +282,7 @@
                       prop="feed_total"
                       label="總量(扣除已選次成份)"
                       width="160"
-                    ><template #default="scope"><span style="width: 100%;text-align: right;">{{ scope.row.feed_total }}</span><br></template></el-table-column>
+                    ><template #default="scope"><span class="text-right full-width">{{ scope.row.feed_total }}</span><br></template></el-table-column>
                     <!-- 主成分 -->
                     <el-table-column label="主成分" v-if="showmain.length > 0" width="200">
                       <template #default="scope">
@@ -330,7 +328,7 @@
                     <!-- 觀察網 -->
                     <el-table-column label="是否有觀察網/觀察網(不含糖)" width="120" align="center">
                       <template #default="scope">
-                        <div v-if="!scope.row.hasOwnProperty('children')" style="width: 100%;text-align: center;">
+                        <div v-if="!scope.row.hasOwnProperty('children')" class="text-center full-width">
                           <span>{{ `${scope.row.has_observation?'有':'無'}` }}</span><br>
                           <span>{{ scope.row.observation_total }}</span>
                         </div>
@@ -363,7 +361,7 @@
                     >
                     </el-table-column>
                     <!-- 本來要弄button按鈕，目前不需要 -->
-                    <el-table-column align="right" v-if="false" style="justify-content: center;">
+                    <el-table-column align="right" v-if="false" class="justify-center">
                       <!-- <template #header>
                       <el-input
                         v-model="search"
@@ -1121,15 +1119,11 @@ export default {
     box-shadow: 0 0 10px $color-black-10;
   }
   .v-card.result-card {
-    padding: 12px;
-    padding-bottom: 8px;
     background-color: $color-lighten;
     .card-title {
       @include flexAlignCenter();
       width: 100%;
-      padding: 0 !important;
       .title {
-        // border-bottom: 1px solid rgba(0,0,0,0.1);
         width: 100%;
         .col-12 {
           padding: 0;
@@ -1145,9 +1139,6 @@ export default {
             font-size: 1rem;
             padding: 8px;
         }
-        // .right {
-        //   padding: 0 12px;
-        // }
       }
     }
     .content {
@@ -1235,9 +1226,6 @@ export default {
     .el-table .el-table__header-wrapper td.el-table__cell, .el-table th.el-table__cell.is-leaf {
       border-bottom: 1px solid transparent;
     }
-    // .el-table .el-table__fixed-header-wrapper th.el-table__cell.is-leaf {
-    //   border-bottom: 1px solid transparent;
-    // }
     .el-table .cell {
       padding: 0 16px;
     }
@@ -1268,8 +1256,6 @@ export default {
       }
     }
     .el-table__row.el-table__row--level-1 .cell {
-      // font-size: 0.875rem;
-      // min-height: 48px;
       @include flexAlignCenter();
       padding: 8px;
     }
@@ -1295,8 +1281,6 @@ export default {
     .v-chip.v-chip--outlined.v-chip.v-chip,.v-chip.v-chip.v-chip.item-chip {
       height: 24px;
       margin: 4px 2px;
-      // border-color: $color-primary;
-      // color: $color-primary;
       background-color: $color-primary-25;
       color: $color-dark;
       border-color: transparent;
