@@ -32,9 +32,9 @@
         class="flex-all-center"
         style="z-index: 2;"
         :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
-      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span> <span style="margin-left: 4px;">{{ item.parm_name=='DO'||item.parm_name=='NO2'||item.parm_name=='NH4'?'ppm':item.parm_name=='Temperature'?'°C':item.parm_name=='water_level_percentage'?'%':'' }}</span></span>
+      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span> <span class="ml-1">{{ item.parm_name=='DO'||item.parm_name=='NO2'||item.parm_name=='NH4'?'ppm':item.parm_name=='Temperature'?'°C':item.parm_name=='water_level_percentage'?'%':'' }}</span></span>
       <span v-if="item.inspected_time" style="font-size: 12px;" :style="{'color':item.level=='danger'?'#fff':'#00324E'}">
-        <div style="padding: 1px 4px;border: 1px solid #fff;margin-right: 4px;border-radius: 50%;display: inline-block;" :style="{'borderColor':item.level=='danger'?'#fff':'#00324E'}">{{ item.inspected_time.slice(8,10) }}</div>
+        <div class="mr-1 d-inline-block" style="padding: 1px 4px;border: 1px solid #fff;border-radius: 50%;" :style="{'borderColor':item.level=='danger'?'#fff':'#00324E'}">{{ item.inspected_time.slice(8,10) }}</div>
         {{ item.inspected_time.slice(-5) }}</span>
       <!-- <span v-if="item.inspected_time">{{ item.inspected_time.slice(-5) }}</span> -->
 

@@ -109,6 +109,12 @@ $color-black-10: rgba(0,0,0,0.1);
 .flex-center-start {
   @include flexCenterStart();
 }
+.cursor-pointer{
+  cursor: pointer;
+}
+.full-width{
+  width: 100%;
+}
 
 /* 按鈕 */
 //btn btn-primary主要底色+白文字 btn-secondary次要邊框+邊框色文字
@@ -181,9 +187,6 @@ $color-black-10: rgba(0,0,0,0.1);
   }
 }
 // btn 只有icon無文字 .btn-icon.just-icon 只有icon無底色
-.v-btn:not(.v-btn--round).v-size--default {
-  
-}
 .btn-icon,.btn-icon-secondary,.btn-icon.v-btn:not(.v-btn--round).v-size--default,.btn-icon-secondary.v-btn:not(.v-btn--round).v-size--default {
   @include size(24px);
   box-shadow: none !important;

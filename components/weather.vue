@@ -1,15 +1,14 @@
 <template>
   <el-popover placement="top-start" width="300">
         <v-row style="color:#FFF;" justify="center" align="center" dense >
-            <v-col cols="12" class="border-bottom" style="padding-bottom: 8px;">
+            <v-col cols="12" class="border-bottom pb-2">
                 <h3>氣象資訊</h3>
             </v-col>
             <v-col cols="12" justify="center">
               <!-- {{ toggle_weather }}_{{ toggle_weather2 }}<br/> -->
               <v-btn-toggle
                   v-model="toggle_weather" @change="changeloc(toggle_weather)"
-                  class="field-toggle"
-                  style="margin-top: 8px;"
+                  class="field-toggle mt-2"
                 >
                 <v-btn :value="1" :class="{'v-btn--active':toggle_weather==1}">研發<br/>一場</v-btn>
                 <v-btn :value="2" :class="{'v-btn--active':toggle_weather==2}">彰化<br/>芳苑</v-btn>

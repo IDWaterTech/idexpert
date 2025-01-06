@@ -16,10 +16,9 @@
                             <v-text-field v-model="tempMain.remark" filled dense hide-details label="備註" clearable :disabled="templatemode!=='add'&&!passObj.tempMain.is_enable||tempMain.id==1"></v-text-field>
                         </v-col>
                         <v-col cols="2" class="flex-align-center" v-if="templatemode=='add'" style="justify-content: flex-start;">
-                            <v-btn class="btn-primary" title="儲存樣板"
+                            <v-btn class="btn-primary px-2 py-0" title="儲存樣板"
                                 :class="{'disabled':!(tempMain.name_ch && tempMain.name_en) || templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                @click="saveTemp"
-                                style="padding: 0 8px;">
+                                @click="saveTemp">
                                 <v-icon style="font-size: 1.5rem;">mdi-content-save</v-icon>儲存
                             </v-btn>
                             <v-btn class="btn-secondary delete" title="清空樣板"
@@ -27,11 +26,10 @@
                                 style="padding: 0 8px;">清空樣板
                             </v-btn>
                         </v-col>
-                        <v-col cols="2" class="flex-align-center" v-if="templatemode=='edit'" style="justify-content: flex-start;">
+                        <v-col cols="2" class="flex-align-center px-2 py-0" v-if="templatemode=='edit'" style="justify-content: flex-start;">
                             <v-btn class="btn-primary" title="儲存編輯"
                                 :class="{'disabled':!(tempMain.name_ch && tempMain.name_en)|| templatemode=='edit'&&!passObj.tempMain.is_enable}"
-                                @click="saveEdit"
-                                style="padding: 0 8px;">
+                                @click="saveEdit">
                                 <v-icon style="font-size: 1.5rem;">mdi-content-save</v-icon>儲存
                             </v-btn>
                         </v-col>
@@ -40,10 +38,9 @@
             </v-col>
             <!-- 主要樣版內容 -->
             <v-col cols="12">
-                <div v-if="passObj.nowEnd" class="error-text" style="padding: 12px;"><b>此循環已結束({{ passObj.ended_date }})</b></div>
+                <div v-if="passObj.nowEnd" class="error-text pa-3"><b>此循環已結束({{ passObj.ended_date }})</b></div>
                 <div v-for="(mitem,id) in mainItems" :key="'status_'+mitem.phase_id+'_'+Math.floor(Math.random() * 1000)" class="timeline">
-                    <v-row class="template-outer flex-align-start" 
-                        style="margin-bottom: 0;"
+                    <v-row class="template-outer align-start mb-0"
                         :style="{'flexDirection':`${windowWidth<834?'column':'row'}`}">
                         <!-- 狀態+最新執行時間 -->
                         <div v-if="templatemode=='cycleedit'" class="left">
@@ -74,7 +71,7 @@
                                     :style="{'borderColor':`${templatemode=='cycleedit'?mitem.color:status[id].color}`}"></div>
                             </div>
                             <!-- 表格 -->
-                            <div class="content" style="width: 100%;padding: 12px 24px;">
+                            <div class="content px-6 py-3 full-width">
                                 <v-card class="result-card item-card">
                                     <!-- 表頭 -->
                                     <div class="card-title"
@@ -285,7 +282,7 @@
                                     </div>
                                     <div v-if="adjustOpen(mitem,id)&&(mitem.stepList==undefined||mitem.stepList.length==0)" class="content no-work">尚未設定工作</div>
                                 </v-card>
-                                <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1)" style="padding: 12px 16px;">
+                                <div v-if="templatemode=='cycleedit' && id == (mainItems.length-1)" class="px-4 py-3">
                                     <v-btn class="btn-secondary btn-small"  @click="record()" >間補/收成紀錄</v-btn>
                                     <v-btn v-if="!passObj.nowEnd" class="btn-primary btn-small"  @click="endCycleOpen()" >結束循環</v-btn>
                                     <!-- <v-btn v-if="authorization.verify" class="btn-primary btn-small"  @click="endCycle()" >結束循環</v-btn>
@@ -391,7 +388,7 @@
                                 <v-card-title>備註說明</v-card-title>
                             </div>
                         </div>
-                        <v-card-text class="flex-align-center pt-0" style="padding-top: 0;">
+                        <v-card-text class="flex-align-center pt-0">
                             <v-text-field v-model="editItem.remark" label="備註" autocomplete="off" class="mr-1 mt-1 pt-0">
                             </v-text-field>
                         </v-card-text>
@@ -422,7 +419,7 @@
                                         <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off" class="mr-1 pt-0">
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="4" style="padding: 4px 8px;">
+                                    <v-col cols="4" class="px-2 py-1">
                                         <v-text-field v-model="item.end_on_which_day" type="number" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" class="mr-1 pt-0">
                                         </v-text-field>
                                     </v-col>
@@ -508,11 +505,11 @@
                             </div>
                         </div>
                         <v-card-text v-if="actionInputShow">
-                            <v-text-field v-model="stepformedit.name_ch" @change="checkValue('name_ch')" filled dense :rules="rules.require" label="動作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
-                            <v-text-field v-model="stepformedit.name_en" @change="checkValue('name_en')" filled dense :rules="rules.require" label="動作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.name_ch" class="pt-3" @change="checkValue('name_ch')" filled dense :rules="rules.require" label="動作名稱(中)" clearable></v-text-field>
+                            <v-text-field v-model="stepformedit.name_en" class="pt-3" @change="checkValue('name_en')" filled dense :rules="rules.require" label="動作名稱(英)" clearable></v-text-field>
                         </v-card-text>
                         <v-card-text style="padding-top: 0;">
-                            <v-text-field v-model="stepformedit.remark" :disabled="stepmode==''" @change="checkValue('remark')" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="stepformedit.remark" class="pt-3" :disabled="stepmode==''" @change="checkValue('remark')" filled dense  label="備註" clearable></v-text-field>
                         </v-card-text>
                         
                     </div>
@@ -541,7 +538,7 @@
                         </div>
                     </v-card-title>
                     <div class="basic">
-                        <div class="card-title" style="margin-bottom: 0;">
+                        <div class="card-title mb-0">
                             <v-autocomplete v-model="editItem.step_id" dense filled :rules="rules.require" :items="addWorkList" item-text="name_ch"
                                     item-value="id" @change="addWorkItemChange"></v-autocomplete>
                             <div class="chevron" v-if="templatemode!=='cycleedit'">
@@ -560,23 +557,23 @@
                             </div>
                         </div>
                         
-                        <div class="card-title" style="margin-bottom: 0;">
+                        <div class="card-title mb-0">
                             <div class="title">
                                 <v-card-title>工作說明</v-card-title>
                             </div>
                         </div>
-                        <v-card-text class="flex-align-center" style="padding-top: 0;">
-                            <v-text-field v-model="editItem.remark" disabled autocomplete="off" style="margin-right: 4px;padding-top: 0;margin-top: 4px;">
+                        <v-card-text class="flex-align-center pt-0">
+                            <v-text-field v-model="editItem.remark" class="mr-1 pt-0 mt-1" disabled autocomplete="off">
                             </v-text-field>
                         </v-card-text>
-                        <div class="card-title border-bottom" style="margin-bottom: 8px;">
+                        <div class="card-title border-bottom mb-2">
                             <div class="title">
                                 <v-card-title>預設動作</v-card-title>
                             </div>
                         </div>
                         <div class="content" v-if="editItem.actionList&&editItem.actionList.length>0" style="max-height: 30vh;overflow-y: scroll;">
-                            <v-card-text class="flex-align-center" v-for="item in editItem.actionList" :key="'addAction_'+templatemode=='cycleedit'?item.id:item.action_id+'_'+Math.floor(Math.random()*999)+100" style="padding-top: 0;" >
-                                <v-row class="flex-align-center" style="padding-top: 0;">
+                            <v-card-text class="flex-align-center pt-0" v-for="item in editItem.actionList" :key="'addAction_'+templatemode=='cycleedit'?item.id:item.action_id+'_'+Math.floor(Math.random()*999)+100">
+                                <v-row class="flex-align-center pt-0">
                                     <v-col cols="3">{{ item.action_name }}</v-col>
                                     <v-col cols="3">Day {{ item.start_on_which_day }} ~ Day {{ item.end_on_which_day }}</v-col>
                                     <!-- 財務 -->
@@ -628,13 +625,13 @@
                             </v-text-field>
                         </v-card-text> -->
                         <v-card-text>
-                            <v-text-field v-model="addItem.name_ch" filled dense :rules="rules.require" label="工作名稱(中)" clearable style="padding-top: 12px;"></v-text-field>
-                            <v-text-field v-model="addItem.name_en" filled dense :rules="rules.require" label="工作名稱(英)" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="addItem.name_ch" class="pt-3" filled dense :rules="rules.require" label="工作名稱(中)" clearable></v-text-field>
+                            <v-text-field v-model="addItem.name_en" class="pt-3" filled dense :rules="rules.require" label="工作名稱(英)" clearable></v-text-field>
                         </v-card-text>
                         <v-card-text style="padding-top: 0;">
-                            <v-text-field v-model="addItem.remark" filled dense  label="備註" clearable style="padding-top: 12px;"></v-text-field>
+                            <v-text-field v-model="addItem.remark" class="pt-3" filled dense  label="備註" clearable></v-text-field>
                         </v-card-text>
-                        <div class="card-title border-bottom" style="margin-bottom: 8px;">
+                        <div class="card-title border-bottom mb-2">
                             <div class="title">
                                 <v-card-title>預設動作</v-card-title>
                             </div>
@@ -654,15 +651,15 @@
                             <v-card-text v-if="addItem.actionList&&addItem.actionList.length>0">
                                 <span class="error-text">*說明：工作({{addItem.name_ch}})開始後第「{{addItem.actionList[0].start_on_which_day}}」天開始執行動作({{addItem.actionList[0].action_name}})，持續執行到第「{{addItem.actionList[0].end_on_which_day}}」天</span>
                             </v-card-text>
-                            <v-card-text v-for="(item,id) in addItem.actionList"  class="work-item flex-align-center" :key="'addWorkAction_'+item.action_id" style="padding-top: 0;" >
-                                <v-row class="flex-align-center" style="padding-top: 0;">
-                                    <v-col cols="3" style="padding: 4px 8px;">{{ item.action_name }}</v-col>
-                                    <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.start_on_which_day" type="number" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                            <v-card-text v-for="(item,id) in addItem.actionList"  class="work-item flex-align-center pt-0" :key="'addWorkAction_'+item.action_id">
+                                <v-row class="flex-align-center pt-0">
+                                    <v-col cols="3" class="px-2 py-1">{{ item.action_name }}</v-col>
+                                    <v-col cols="4" class="px-2 py-1">
+                                        <v-text-field v-model="item.start_on_which_day" type="number" class="mr-1 pt-0" :rules="rules.require" label="第幾天開始執行" @focusout="detectEndDay(id)" autocomplete="off">
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="4" style="padding: 4px 8px;">
-                                        <v-text-field v-model="item.end_on_which_day" type="number" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off" style="margin-right: 4px;padding-top: 0;">
+                                    <v-col cols="4" class="px-2 py-1">
+                                        <v-text-field v-model="item.end_on_which_day" type="number" class="mr-1 pt-0" @focusout="detectOverEndDay(id)" :rules="rules.require" label="持續執行至第幾天" autocomplete="off">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols="1" style="padding: 0;"><v-btn class="btn-icon delete" @click="removeAction(item.action_id,id)"><v-icon>mdi-trash-can</v-icon></v-btn></v-col>
@@ -716,25 +713,25 @@
                         </v-btn>
                     </div>
                 </v-card-title>
-                <div class="basic" style="padding-bottom: 48px;">
+                <div class="basic pb-12">
                     <!-- <div class="card-title" style="margin-bottom: 0;">
                         <div class="title">
                             <v-card-title>執行狀態</v-card-title>
                         </div>
                     </div> -->
                     <v-card-text>
-                        <v-row class="border-bottom flex-align-center" style="width: 100%;">
+                        <v-row class="border-bottom flex-align-center full-width">
                             <v-col cols="1">#</v-col>
                             <v-col cols="3"><span style="font-weight:bold">排程日期</span></v-col>
                             <v-col cols="4"><span style="font-weight:bold">狀態/說明</span></v-col>
                             <v-col cols="4"><span style="font-weight:bold">執行時間/執行人員</span></v-col>
                         </v-row>
-                        <v-row class="content border-bottom flex-align-center" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did" style="width: 100%;">
+                        <v-row class="content border-bottom flex-align-center full-width" v-for="(daily,did) in executeList.dailyCheckList" :key="'daily_'+did">
                             <v-col cols="1">{{ did+1 }}</v-col>
                             <v-col cols="3"><span>{{daily.scheduling_date}}<br/></span></v-col>
                             <v-col cols="4"><span :style="{'color':`${daily.execute_status==2?'red':'initial'}`}">{{ daily.execute_status==1?'已執行':'不執行' }}</span>
                                 <br/>
-                                <span style="max-height: 48px;overflow-y: scroll;display: block;">{{daily.msg}}</span></v-col>
+                                <span class="d-block" style="max-height: 48px;overflow-y: scroll;">{{daily.msg}}</span></v-col>
                             <v-col cols="4"><span>{{daily.execute_time.split(' ')[0].split('-').slice(1,3).join('/') +" "+ daily.execute_time.split(' ')[1].split(':').slice(0,2).join(':')}}<br/>{{daily.executor}}</span></v-col>
                         </v-row>
                         
@@ -776,30 +773,30 @@
                                 </span></v-radio>
                             </v-radio-group>
                         </div>
-                        <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;padding-bottom: 0;">
+                        <v-card-text v-if="addRecordOpen" class="flex-align-center pt-0 pb-0">
                             <v-menu v-model="menu_adddate" :close-on-content-click="false" :nudge-right="40"
                                 transition="scale-transition" offset-y min-width="auto">
                                 <template v-slot:activator="{ on, attrs }">
                                 <v-text-field v-model="recordNew.harvest_date" label="選擇日期" :rules="rules.require"
                                     prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
                                                             () => (recordNew.harvest_date = getNowDate())
-                                                            " style="padding-top: 0;margin-top: 8px;"></v-text-field>
+                                                            " class="pt-0 mt-2"></v-text-field>
                                 </template>
                                 <v-date-picker v-model="recordNew.harvest_date" :max="getNowDate()" no-title locale="zh-tw" @input="menu_adddate = false">
                                 </v-date-picker>
                             </v-menu>
-                            <v-text-field v-model="recordNew.harvest_yield" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}總重量`" type="number" :rules="rules.require"
-                                autocomplete="off" @keyup="limitCharacter('harvest_yield')" style="padding-top: 0;margin-left: 4px;margin-top: 8px;"><span class="pa-0 ma-0" slot="append">Kg</span>
+                            <v-text-field v-model="recordNew.harvest_yield" class="pt-0 ml-1 mt-2" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}總重量`" type="number" :rules="rules.require"
+                                autocomplete="off" @keyup="limitCharacter('harvest_yield')"><span class="pa-0 ma-0" slot="append">Kg</span>
                             </v-text-field>
                         </v-card-text>
-                        <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;">
-                            <v-text-field v-model="recordNew.single_weight" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}平均個體重`" type="number" :rules="rules.require"
-                                autocomplete="off" @keyup="limitCharacter('single_weight')" style="padding-top: 0;margin-left: 4px;width: 50%;margin-top: 8px;"><span class="pa-0 ma-0" slot="append">g</span>
+                        <v-card-text v-if="addRecordOpen" class="flex-align-center pt-0">
+                            <v-text-field v-model="recordNew.single_weight" class="pt-0 ml-1 mt-2" :label="`${recordNew.harvest_type=='1'?'間補':'收成'}平均個體重`" type="number" :rules="rules.require"
+                                autocomplete="off" @keyup="limitCharacter('single_weight')" style="width: 50%;"><span class="pa-0 ma-0" slot="append">g</span>
                             </v-text-field>
-                            <span style="width: 50%;padding-left: 12px;">約 {{ recordNew.harvest_yield&&recordNew.single_weight?Math.round(((recordNew.harvest_yield*1000) / recordNew.single_weight)):0 }} 隻</span>
+                            <span class="pl-3" style="width: 50%;">約 {{ recordNew.harvest_yield&&recordNew.single_weight?Math.round(((recordNew.harvest_yield*1000) / recordNew.single_weight)):0 }} 隻</span>
                         </v-card-text>
-                        <v-card-text v-if="addRecordOpen" class="flex-align-center" style="padding-top: 0;">
-                            <v-textarea v-model="recordNew.remark" label="說明" hide-details filled clearable placeholder="說明..." style="width: 100%;"></v-textarea>
+                        <v-card-text v-if="addRecordOpen" class="flex-align-center pt-0">
+                            <v-textarea v-model="recordNew.remark" label="說明" class="full-width" hide-details filled clearable placeholder="說明..."></v-textarea>
                         </v-card-text>
                         <v-card-actions v-if="addRecordOpen">
                             <v-spacer></v-spacer>
@@ -808,28 +805,28 @@
                         </v-card-actions>
                     </div>
                     
-                    <div class="basic" style="padding-bottom: 24px;">
+                    <div class="basic pb-6">
                         <div v-if="!passObj.nowEnd" class="card-title">
                             <div class="title">
                                 <v-card-title>2. 紀錄</v-card-title>
                             </div>
                         </div>
-                        <v-card-text class="flex-align-center" style="padding-top: 0;">
+                        <v-card-text class="flex-align-center pt-0">
                                 <v-data-table light 
                                     :headers="computedHeaders"
                                     :items="recordList"
                                     no-data-text="無紀錄"
                                     hide-default-footer
                                     disable-pagination
-                                    style="max-height: 300px;overflow-y: scroll;width: 100%;"
-                                    class="data-table">
+                                    style="max-height: 300px;overflow-y: scroll;"
+                                    class="data-table full-width">
                                     <template v-slot:[`item.remark`]="{ item }">
-                                        <span style="width: 100%;max-height: 48px;overflow-y: scroll;display: block;">{{ item.remark }}</span>
+                                        <span class="full-width d-block" style="max-height: 48px;overflow-y: scroll;">{{ item.remark }}</span>
                                     </template>
                                     <template v-slot:[`item.action`]="{ index }">
                                         <v-tooltip v-if="!passObj.nowEnd" bottom>
                                             <template v-slot:activator="{ on, attrs }">
-                                                <v-btn  class="btn-icon delete"
+                                                <v-btn class="btn-icon delete"
                                                     title="刪除" 
                                                     @click="recordDelete(index)" 
                                                     v-bind="attrs" v-on="on">
@@ -866,14 +863,14 @@
                             </v-btn>
                         </div>
                     </v-card-title>
-                    <div class="basic" style="margin-top: 24px;">
+                    <div class="basic mt-6">
                         <v-menu v-model="end_date" :close-on-content-click="false" :nudge-right="40"
                             transition="scale-transition" offset-y min-width="auto">
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field v-model="endDate" label="選擇結束日期" :rules="rules.require"
                                 prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" @click:prepend="
                                                         () => (endDate = getNowDate())
-                                                        " style="padding-top: 0;margin-top: 8px;"></v-text-field>
+                                                        " class="pt-0 mt-2"></v-text-field>
                             </template>
                             <v-date-picker v-model="endDate" :max="getNowDate()" no-title locale="zh-tw" @input="end_date = false">
                             </v-date-picker>
@@ -3347,25 +3344,6 @@ export default {
             left: 6px;
         }
     }
-    // &:before {
-    //     content: '';
-    //     position: absolute;
-    //     width: 100%;
-    //     height: 100%;
-    //     border-left: 2px solid $color-primary;
-    // }
-    // &:after {
-    //     content: '';
-    //     width: 16px;
-    //     height: 16px;
-    //     border-radius: 50%;
-    //     background-color: #fff;
-    //     border: 5px solid $color-primary;
-    //     position: absolute;
-    //     top: 0;
-    //     left: -7px;
-    // }
-
 }
 .v-card.result-card {
     &.item-card.theme--light {
@@ -3373,31 +3351,12 @@ export default {
     }
     .card-title {
         padding: 4px 12px !important;
-    //     cursor: pointer;
         .title {
-    //         width: 100%;
             .v-card__title {
-    //             font-size: 1rem;
                 padding: 0;
             }
-        }
-        
-    //     .chevron {
-    //         .v-icon {
-    //             color: $color-dark;
-    //         }
-    //     }      
+        }    
     } 
-}
-// .work-item {
-//     border-bottom: 1px solid rgba(0,0,0,0.1);
-//     border-radius: 4px;
-//     margin-bottom: 4px;
-// }
-.add-step {
-    text-align: center;
-    margin-top: -24px;
-    padding-bottom: 24px;
 }
 .v-application.v-application--is-ltr .v-card.bg-card .content {
     &.no-work {
@@ -3408,10 +3367,6 @@ export default {
 }
 
 ::v-deep {
-    // .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) {
-    //     background-color: rgba($color: $color-primary, $alpha: 0.1);
-    // }
-    
     .theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr.danger-bg {
         background-color: #FBEEEE;
     }

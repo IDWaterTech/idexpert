@@ -1,10 +1,10 @@
 <template>
     <div style="overflow-y: scroll;" id="waterObservation">
         <!-- {{cardData}} -->
-        <v-row style="margin-bottom: 0;height: 73vh;align-items: stretch;width: 100%;">
+        <v-row class="mb-0 align-stretch full-width" style="height: 73vh;">
             <!-- 警示 -->
-            <v-col cols="12" md="3" style="padding-right: 0;">
-                <v-card class="kb-card">
+            <v-col cols="12" md="3" class="pr-0">
+                <v-card class="kb-card pa-4 flex-column justify-center">
                     <div class="top alert-line">
                         <div class="title">
                             <div class="number"><span>{{(cardData.water.length+cardData.observation.length)}}</span></div>
@@ -12,7 +12,7 @@
                         </div>
                         <div class="subtitle">水質{{cardData.water.length}} / 觀察網{{cardData.observation.length}}</div>
                     </div>
-                    <div v-if="alert.length>0" class="cata">
+                    <div v-if="alert.length>0" class="cata full-width mt-4">
                         <div class="judge-cata">
                             {{ judgeCata(alert[nowAlert]) }}
                         </div>
@@ -22,20 +22,20 @@
                         <div class="chrevon">
                             <v-btn class="btn-icon just-icon" :class="{'disabled':alert.length==0}" @click="alertChange('left')"><v-icon>mdi-menu-left</v-icon></v-btn>
                         </div>
-                        <div class="main-content" v-if="alert.length>0" style="width: 100%;">
+                        <div class="main-content full-width" v-if="alert.length>0">
                             <v-card-text class="dialog-text border-bottom">
                                 <b>狀態作動</b>
-                                <span style="padding-top: 8px;">
+                                <span class="pt-2">
                                     {{alert[nowAlert].status }}</span>
                             </v-card-text>
                             <v-card-text class="dialog-text border-bottom">
                                 <b>可能影響原因</b>
-                                <span style="padding-top: 8px;">
+                                <span class="pt-2">
                                     {{alert[nowAlert].factor }}</span>
                             </v-card-text>
                             <v-card-text class="dialog-text border-bottom">
                                 <b>會造成結果</b> 
-                                <span style="padding-top: 8px;">
+                                <span class="pt-2">
                                     {{alert[nowAlert].result==''?'無':alert[nowAlert].result}}</span>
                             </v-card-text>
                             <div class="num-of-alert">
@@ -53,9 +53,9 @@
                 </v-card>
             </v-col>
             <v-col cols="12" md="2" sm="4">
-                <v-row style="margin-bottom: 0;height: 100%;">
-                    <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
-                        <v-card class="kb-card">
+                <v-row class="mb-0" style="height: 100%;">
+                    <v-col cols="12" class="px-0" style="height: 50%;padding-bottom: 6px;padding-top: 0;">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -63,29 +63,29 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content" style="display: flex;flex-direction: column;align-items: center;padding: 0;padding-top: 12px;">
-                                <div class="main-content flex-center-between" style="width: 100%;">
+                            <div class="content flex-align-center flex-column pa-0 pt-3">
+                                <div class="main-content flex-center-between full-width">
                                     <div class="feed" v-if="cardData.nextFeed.length>0">
                                         <span style="font-size: 0.75rem;color:#40657A;font-weight: bold;">方案{{cardData.nextFeed.length>0?cardData.nextFeed[0].Name:''}}</span>
                                     </div>
                                     <div class="choose">
                                         <span style="font-size: 0.75rem;color: #40657A;font-weight: bold;">{{cardData.nextFeed.length>0?cardData.nextFeed[0].FeedSize:''}}</span>
                                     </div>
-                                    <div class="choose" style="">
+                                    <div class="choose">
                                         <span style="font-size: 0.75rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0&&(cardData.nextFeed[0].NextFeedIncrementPct!==''&&cardData.nextFeed[0]?.NextFeedIncrementPct.includes('-')==false)?'+':''}}
                                             <span v-if="cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''" style="font-size: 0.75rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed[0].NextFeedIncrementPct}}</span>
                                         </span><br>
                                     </div>
                                 </div>
-                                <div class="main-content flex-center-between" style="width: 100%;">
+                                <div class="main-content flex-center-between full-width">
                                     <!-- <div class="choose" style="">
                                         
                                         <span style="font-size: 0.85rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''?'+':''}}
                                             <span v-if="cardData.nextFeed.length>0&&cardData.nextFeed[0].NextFeedIncrementPct!==''" style="font-size: 1.5rem;color: #A60017;font-weight: bold;">{{cardData.nextFeed[0].NextFeedIncrementPct}}</span>
                                         </span><br>
                                     </div> -->
-                                    <div class="feed" style="width: 100%;display: flex;justify-content: center;align-items: flex-end;">
-                                        <span class="number-of-data" style="padding-top: 0;">
+                                    <div class="feed full-width flex-align-end justify-center">
+                                        <span class="number-of-data pt-0" style="padding-top: 0;">
                                             {{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeed:'-'}}
                                         </span> g
                                     </div>
@@ -94,8 +94,8 @@
                             </div>
                         </v-card>
                     </v-col>
-                    <v-col cols="12" style="height: 50%;padding: 6px 0 0 0;">
-                        <v-card class="kb-card">
+                    <v-col cols="12" class="px-0" style="height: 50%;padding-top: 6px;padding-bottom: 0;">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -103,7 +103,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content number-of-content">
+                            <div class="content number-of-content pt-6 text-right d-flex justify-center full-width">
                                 <div class="main-content">
                                     <span class="number-of-data">
                                         {{cardData.adg}} 
@@ -115,9 +115,9 @@
                 </v-row>
             </v-col>
             <v-col cols="12" md="2" sm="4">
-                <v-row style="margin-bottom: 0;height: 100%;">
-                    <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
-                        <v-card class="kb-card">
+                <v-row class="mb-0" style="height: 100%;">
+                    <v-col cols="12" class="px-0" style="height: 50%;padding-bottom: 6px;padding-top: 0;">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -125,7 +125,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content number-of-content">
+                            <div class="content number-of-content pt-6 text-right d-flex justify-center full-width">
                                 <div class="main-content">
                                     <span class="number-of-data">
                                         {{cardData.lime}} 
@@ -134,8 +134,8 @@
                             </div>
                         </v-card>
                     </v-col>
-                    <v-col cols="12" style="height: 50%;padding: 6px 0 0 0;">
-                        <v-card class="kb-card">
+                    <v-col cols="12" class="px-0" style="height: 50%;padding-top: 6px;padding-bottom: 0;">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -143,7 +143,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content number-of-content">
+                            <div class="content number-of-content pt-6 text-right d-flex justify-center full-width">
                                 <div class="main-content">
                                     <span class="number-of-data">
                                         {{cardData.sugar}} 
@@ -155,9 +155,9 @@
                 </v-row>
             </v-col>
             <v-col cols="12" md="2" sm="4">
-                <v-row style="margin-bottom: 0;height: 100%;">
-                    <v-col cols="12" style="height: 50%;padding: 0 0 6px 0;">
-                        <v-card class="kb-card">
+                <v-row class="mb-0" style="height: 100%;">
+                    <v-col cols="12" class="px-0" style="height: 50%;padding-bottom: 6px;padding-top: 0;">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -165,7 +165,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content number-of-content">
+                            <div class="content number-of-content pt-6 text-right d-flex justify-center full-width">
                                 <div class="main-content">
                                     <span class="number-of-data">
                                         {{cardData.observationFeed}} 
@@ -174,8 +174,8 @@
                             </div>
                         </v-card>
                     </v-col>
-                    <v-col cols="12" style="height: 50%;padding: 6px 0 0 0;">
-                        <v-card class="kb-card">
+                    <v-col cols="12" class="px-0" style="height: 50%;padding-top: 6px;padding-bottom: 0;">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
@@ -183,7 +183,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content number-of-content">
+                            <div class="content number-of-content pt-6 text-right d-flex justify-center full-width">
                                 <div class="main-content">
                                     <span class="number-of-data">
                                         {{cardData.biomass}} 
@@ -195,9 +195,9 @@
                 </v-row>
             </v-col>
             <v-col cols="12" md="3">
-                <v-row style="margin-bottom: 0;height: 100%;">
+                <v-row class="mb-0" style="height: 100%;">
                     <v-col cols="12" style="height: 50%;padding: 0 6px 6px 0;">
-                        <v-card class="kb-card">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top alert-line">
                                 <div class="title">
                                     <div class="main">
@@ -205,7 +205,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content ring" style="width: 100%;">
+                            <div class="content ring full-width">
                                 <div class="ring-of-data">
                                     <!-- <ve-ring v-if="isChart" :data="chartDataSurvival" :settings="chartSetting" :extend="chartExtend" width="150px" height="150px"></ve-ring> -->
                                     <RingChart :chartData="chartDataSurvival" :colors="chartSurvivalColor"></RingChart>
@@ -215,7 +215,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="12" style="height: 50%;padding: 6px 6px 0 0;">
-                        <v-card class="kb-card">
+                        <v-card class="kb-card pa-4 flex-column justify-center">
                             <div class="top alert-line">
                                 <div class="title">
                                     <div class="main">
@@ -223,7 +223,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="content ring" style="width: 100%;">
+                            <div class="content ring full-width">
                                 <div class="ring-of-data">
                                     <!-- <ve-ring v-if="isChart" :data="chartDataSurvival" :settings="chartSetting" :extend="chartExtend" width="150px" height="150px"></ve-ring> -->
                                     <RingChart :chartData="chartDataWeight" :colors="chartWeightColor"></RingChart>
@@ -358,13 +358,8 @@ export default {
 <style lang="scss" scoped>
     .v-card.result-card .theme--light.v-card.kb-card {
         background-color: #fff !important;
-        padding: 16px;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        *{
+        @include flexAlignStart();        *{
             color: $color-dark;
         }
         
@@ -407,14 +402,6 @@ export default {
         .content {
             @include flexCenterBetween();
             width: 100%;
-            // height: 100%;
-            &.number-of-content {
-                padding-top: 24px;
-                text-align: right;
-                display: flex;
-                justify-content: center;
-                width: 100%;
-            }
             &.ring {
                 @include flexAllCenter();
             }
@@ -430,17 +417,14 @@ export default {
                 word-break: break-all;
             }
             .dialog-text {
-                display: flex;
-                align-items: flex-start;
+                @include flexAlignStart();
                 flex-direction: column;
                 padding: 8px 16px;
                 margin-bottom: 24px;
             }
         }
         .cata {
-            width: 100%;
             @include flexCenterEnd();
-            margin-top: 16px;
             .judge-cata {
                 padding: 2px 8px;
                 background-color: $color-primary;

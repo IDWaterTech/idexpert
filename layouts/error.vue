@@ -2,7 +2,7 @@
   <v-app dark class="adjust-height">
     <v-card class="bg-card">
       <div class="img-error"></div>
-      <div class="content" style="width: 100%;">
+      <div class="content full-width">
         <div class="bg404">{{ error.statusCode }}</div>
         <div v-if="error.statusCode === 404" class="not-found">
           <h1>
@@ -17,7 +17,7 @@
           <h3>似乎有東西出錯了! 請返回首頁</h3>
         </div>
         
-        <v-btn class="btn-primary" @click="toHomePage()" style="margin-top: 24px;">
+        <v-btn class="btn-primary mt-6" @click="toHomePage()">
             返回首頁
         </v-btn>
         
