@@ -3,222 +3,284 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
+    <!-- <v-overlay :value="isOriginImg" style="z-index: 999;top: 0;">
+      <v-img :src="originImg" :height="innerHeight" v-click-outside="{
+        handler: ()=>{isOriginImg=false}
+        }">
+        <template v-slot:placeholder>
+          <div class="d-flex align-center justify-center fill-height">
+            <v-progress-circular
+              color="grey-lighten-4"
+              indeterminate
+            ></v-progress-circular>
+          </div>
+        </template>
+      </v-img>
+      <div class="fullscreen-v-img d-flex justify-end" style="position: fixed;top: 0;left: 0;width: 100%;background-color: rgba(33,33,33,0.46);z-index: 999;">
+        <div class="header-v-img"><div data-v-5928e1c7="" class="buttons-v-img"><span data-v-5928e1c7=""><a data-v-5928e1c7="" :href="originImg" target="_blank"><svg data-v-5928e1c7="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 475.078 475.077" xml:space="preserve"><path data-v-5928e1c7="" d="M467.083,318.627c-5.324-5.328-11.8-7.994-19.41-7.994H315.195l-38.828,38.827c-11.04,10.657-23.982,15.988-38.828,15.988    c-14.843,0-27.789-5.324-38.828-15.988l-38.543-38.827H27.408c-7.612,0-14.083,2.669-19.414,7.994    C2.664,323.955,0,330.427,0,338.044v91.358c0,7.614,2.664,14.085,7.994,19.414c5.33,5.328,11.801,7.99,19.414,7.99h420.266    c7.61,0,14.086-2.662,19.41-7.99c5.332-5.329,7.994-11.8,7.994-19.414v-91.358C475.078,330.427,472.416,323.955,467.083,318.627z     M360.025,414.841c-3.621,3.617-7.905,5.424-12.854,5.424s-9.227-1.807-12.847-5.424c-3.614-3.617-5.421-7.898-5.421-12.844    c0-4.948,1.807-9.236,5.421-12.847c3.62-3.62,7.898-5.431,12.847-5.431s9.232,1.811,12.854,5.431    c3.613,3.61,5.421,7.898,5.421,12.847C365.446,406.942,363.638,411.224,360.025,414.841z M433.109,414.841    c-3.614,3.617-7.898,5.424-12.848,5.424c-4.948,0-9.229-1.807-12.847-5.424c-3.613-3.617-5.42-7.898-5.42-12.844    c0-4.948,1.807-9.236,5.42-12.847c3.617-3.62,7.898-5.431,12.847-5.431c4.949,0,9.233,1.811,12.848,5.431    c3.617,3.61,5.427,7.898,5.427,12.847C438.536,406.942,436.729,411.224,433.109,414.841z" fill="#FFFFFF"></path><path data-v-5928e1c7="" d="M224.692,323.479c3.428,3.613,7.71,5.421,12.847,5.421c5.141,0,9.418-1.808,12.847-5.421l127.907-127.908    c5.899-5.519,7.234-12.182,3.997-19.986c-3.23-7.421-8.847-11.132-16.844-11.136h-73.091V36.543c0-4.948-1.811-9.231-5.421-12.847    c-3.62-3.617-7.901-5.426-12.847-5.426h-73.096c-4.946,0-9.229,1.809-12.847,5.426c-3.615,3.616-5.424,7.898-5.424,12.847V164.45    h-73.089c-7.998,0-13.61,3.715-16.846,11.136c-3.234,7.801-1.903,14.467,3.999,19.986L224.692,323.479z" fill="#FFFFFF"></path></svg></a></span><span data-v-5928e1c7="">×</span></div></div>
+      </div>
+    </v-overlay> -->
     <v-card class="bg-card">
-        <!-- <div class="card-title">
-            <v-row style="margin-bottom: 0;">
-                <div class="title">
-                    <v-icon>mdi-video-box</v-icon>
-                    <v-card-title>影像辨識</v-card-title>
-                </div>
-            </v-row>
-        </div> -->
-        <div class="content" style="padding-top:12px">
-          <div class="search" style="margin-bottom: 12px;">
-            <v-row style="margin-bottom: 0;">
-              <v-col cols="12" md="3" class="caculate" sm="12" style="position: relative;">
-                <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
-                <!-- <label v-if="nowPool!==''" class="label-select">*請選擇養殖區域(必選)</label> -->
-              </v-col>
-              <!-- 選擇起日 -->
-              <v-col cols="12" md="2" sm="12"  class="caculate">
-                <v-menu class="my-1" v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
-                  transition="scale-transition" offset-y min-width="auto">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="sdate" label="選擇起日" prepend-icon="mdi-calendar" readonly v-bind="attrs" hide-details
-                      v-on="on" clearable @click:prepend="() => (sdate = getNowDate())"></v-text-field>
-                  </template>
-                  <v-date-picker v-model="sdate" @input="menu_startdate = false" locale="zh-tw" no-title></v-date-picker>
-                </v-menu>
-              </v-col>
-              <!-- 選擇訖日 -->
-              <v-col cols="12" md="2" sm="12"  class="caculate">
-                <v-menu class="my-1" v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
-                  transition="scale-transition" offset-y min-width="auto">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly v-bind="attrs" hide-details
-                      v-on="on" clearable @click:prepend="() => (edate = getNowDate())"></v-text-field>
-                  </template>
-                  <v-date-picker v-model="edate" @input="menu_enddate = false" locale="zh-tw" no-title></v-date-picker>
-                </v-menu>
-              </v-col>
-              <!-- 選擇類別 觀察網/菌相 -->
-              <v-col cols="12" md="3" sm="12" align-self="center"  class="caculate">
-                <v-radio-group class="my-1" row v-model="dataClass" mandatory @change="()=>{recogData={}}" hide-details>
-                  <v-radio v-for="(item, i) in dataClassList" :label="item.name" :value="item.name" :key="i">
-                    <span slot="label" class="flex-align-center">
-                      <v-icon class="mr-1">{{ item.icon }}</v-icon>{{ `${item.name}` }}
-                    </span></v-radio>
-                </v-radio-group>
-              </v-col>
-              <!-- 查詢 -->
-              <v-col cols="12" md="2" sm="12">
-                <div class="flex-align-center" style="justify-content: flex-end;margin-right: 16px;">
-                  <v-btn
-                    tile
-                    @click="getRecog"
-                    :disabled="(!(sdate && edate))||(poolid==undefined||poolid==''||poolid==null)"
-                    class="btn-primary"
-                    >查詢</v-btn
-                  >
-                  <v-tooltip v-if="dataClass == '菌相'" bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
-                      </template>
-                      <span>新增菌相資料</span>
-                  </v-tooltip>
-                  <div class="step" v-if="false&&innerWidth <= 768">
-                    <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
-                    <v-btn v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" class="btn-secondary" @click="stepLoad()">同步</v-btn>
-                    <!-- <v-tooltip v-if="dataClass == '菌相'" bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
-                      </template>
-                      <span>新增菌相資料</span>
-                    </v-tooltip> -->
-                  </div>
-                  
-                </div>
-              </v-col>
-            </v-row>
-            <div class="step" v-if="false&&innerWidth>768">
-              <v-row class="flex-center-between" style="margin-bottom: 0;">
-                <v-col cols="11" style="padding: 0 12px;width: 100%;">
+      <!-- <div class="card-title">
+          <v-row style="margin-bottom: 0;">
+              <div class="title">
+                  <v-icon>mdi-video-box</v-icon>
+                  <v-card-title>影像辨識</v-card-title>
+              </div>
+          </v-row>
+      </div> -->
+      <div class="content pt-3">
+        <div class="search mb-3">
+          <v-row class="mb-0">
+            <v-col cols="12" md="3" class="caculate" sm="12" style="position: relative;">
+              <locate-select :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+              <!-- <label v-if="nowPool!==''" class="label-select">*請選擇養殖區域(必選)</label> -->
+            </v-col>
+            <!-- 選擇起日 -->
+            <v-col cols="12" md="2" sm="12"  class="caculate">
+              <v-menu class="my-1" v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
+                transition="scale-transition" offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field v-model="sdate" label="選擇起日" prepend-icon="mdi-calendar" readonly v-bind="attrs" hide-details
+                    v-on="on" clearable @click:prepend="() => (sdate = getNowDate())"></v-text-field>
+                </template>
+                <v-date-picker v-model="sdate" @input="menu_startdate = false" locale="zh-tw" no-title></v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- 選擇訖日 -->
+            <v-col cols="12" md="2" sm="12"  class="caculate">
+              <v-menu class="my-1" v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
+                transition="scale-transition" offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly v-bind="attrs" hide-details
+                    v-on="on" clearable @click:prepend="() => (edate = getNowDate())"></v-text-field>
+                </template>
+                <v-date-picker v-model="edate" @input="menu_enddate = false" locale="zh-tw" no-title></v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- 選擇類別 觀察網/菌相 -->
+            <v-col cols="12" md="3" sm="12" align-self="center"  class="caculate">
+              <v-radio-group class="my-1" row v-model="dataClass" mandatory @change="()=>{recogData={}}" hide-details>
+                <v-radio v-for="(item, i) in dataClassList" :label="item.name" :value="item.name" :key="i">
+                  <span slot="label" class="flex-align-center">
+                    <v-icon class="mr-1">{{ item.icon }}</v-icon>{{ `${item.name}` }}
+                  </span></v-radio>
+              </v-radio-group>
+            </v-col>
+            <!-- 查詢 -->
+            <v-col cols="12" md="2" sm="12">
+              <div class="flex-align-center justify-end mr-4">
+                <v-btn
+                  tile
+                  @click="getRecog"
+                  :disabled="(!(sdate && edate))||(poolid==undefined||poolid==''||poolid==null)"
+                  class="btn-primary"
+                  >查詢</v-btn
+                >
+                <v-tooltip v-if="dataClass == '菌相'" bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
+                    </template>
+                    <span>新增菌相資料</span>
+                </v-tooltip>
+                <div class="step" v-if="false&&innerWidth <= 768">
                   <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
-                  <v-btn class="btn-secondary" v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" @click="stepLoad()">同步</v-btn>
-                </v-col>
-                <!-- <v-col v-if="dataClass == '菌相'" cols="1" style="padding: 0 12px;">
-                  <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
-                      </template>
-                      <span>新增菌相資料</span>
-                  </v-tooltip>
-                  
-                </v-col> -->
-              </v-row>
-            </div>
-            
-          </div>
-          <!-- 搜尋結果 -->
-          <div class="result">
-            <v-row style="margin-bottom: 0;width: 100%;">
-              <v-col cols="12">
-                <v-card class="result-card">
-                  <!-- 觀察網 -->
-                  <v-data-table
-                    v-if="dataClass == '觀察網'"
-                    class="edit-table data-table bg-transparent"
-                    :headers="headers"
-                    :items="recogData.items" dense
-                    :footer-props="footerProps"
-                    no-data-text="查無資料"
-                    height="56vh"
-                    fixed-header>
-                    <template v-slot:[`item.feed_img`]="{ item }">
-                      <!-- <img :src="item.feed_img" style="height:200px"> -->
-                      <!-- <div slot-scope="scope"> -->
-                        <img v-img="{ group: item.id }" :src="item.feed_img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
-                      <!-- </div> -->
+                  <v-btn v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" class="btn-secondary" @click="stepLoad()">同步</v-btn>
+                  <!-- <v-tooltip v-if="dataClass == '菌相'" bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
                     </template>
-                    <template v-slot:[`item.shrimp_img`]="{ item }">
-                      <!-- <img :src="item.shrimp_img" style="height:200px"> -->
-                      <img v-img="{ group: item.id }" :src="item.shrimp_img" :height="`${innerWidth>768?'120px':'80px'}`" />
-                    </template>
-                    <template v-slot:[`item.shrimp`]="{ item }">
-                      <div style="text-align: left;display: flex;justify-content: flex-start;">
-                        <span v-html="item.shrimp" style="line-height: 24px;word-break: break-all;" :style="{textAlign:`${innerWidth>599.98?'left':'right'}`}"></span>
-                      </div>
-                    </template>
-                  </v-data-table>
-
-                  <!-- 菌盤 -->
-                  <v-data-table
-                    v-if="dataClass == '菌相'"
-                    class="edit-table"
-                    :headers="headers"
-                    :items="recogData.items" dense
-                    :footer-props="footerProps"
-                    no-data-text="查無資料"
-                    height="56vh"
-                    fixed-header>
-                    <template v-slot:[`item.images`]="{ item }">
-                        <img v-img="{ group: item.id }" v-for="(img,i) in item.images" :key="i" :src="img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
-                        <span v-if="item.images.length>0"><br>共{{item.images.length}}張</span>
-                    </template>
-                    <template v-slot:[`item.info`]="{item}">
-                      <span>加熱：</span><span  :style="(item.is_heated)?'color:red;':''">{{ item.is_heated? '有' : '無' }}</span><br/>
-                      <span>水樣稀釋倍率：{{ item.dilution }}</span><br/>
-                      <span>塗盤體積：{{ item.volume }}(ul)</span><br/>
-                      <span>檢驗時間：{{ item.inspected_time }}</span>
-                    </template>
-                    <template v-slot:[`item.class`]="{ item }">
-                      <div style="text-align: left;display: flex;justify-content: flex-start;">
-                        <span v-html="item.class" style="line-height: 24px;word-break: break-all;" :style="{textAlign:`${innerWidth>599.98?'left':'right'}`}"></span>
-                      </div>
-                    </template>
-                    <template v-slot:[`item.action`]="{item}">
-                      <!-- <v-btn class="btn-icon"  @click="openBacteria('edit',item)">
-                          <v-icon color="white">mdi-pencil</v-icon>
-                      </v-btn> -->
-                      <v-btn class="btn-icon delete"  @click="delitem('bacteria',item.id)">
-                          <v-icon color="white">mdi-trash-can</v-icon>
-                      </v-btn>
-                    </template>
-                  </v-data-table>
-                </v-card>
+                    <span>新增菌相資料</span>
+                  </v-tooltip> -->
+                </div>
+                
+              </div>
+            </v-col>
+          </v-row>
+          <div class="step" v-if="false&&innerWidth>768">
+            <v-row class="flex-center-between mb-0">
+              <v-col cols="11" class="px-3 py-0 full-width">
+                <span class="subtitle-1 red--text">每日早上7:00從GCP下載所有昨日非空池狀態養殖池的觀察網資料</span>
+                <v-btn class="btn-secondary" v-if="userData.length>0&&userData.filter(x=>x.username == $auth.$state.user.email)[0].department.filter(y=>y=='技術部').length>0" @click="stepLoad()">同步</v-btn>
               </v-col>
+              <!-- <v-col v-if="dataClass == '菌相'" cols="1" style="padding: 0 12px;">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn class="btn-secondary green" @click="openBacteria('add')" v-bind="attrs" v-on="on">新增</v-btn>
+                    </template>
+                    <span>新增菌相資料</span>
+                </v-tooltip>
+                
+              </v-col> -->
             </v-row>
           </div>
+          
         </div>
-      </v-card>
-      <!-- 新增/編輯菌相 -->
-      <v-dialog v-model="editDialog" max-width="500px">
+        <!-- 搜尋結果 -->
+        <div class="result">
+          <v-row class="mb-0 full-width">
+            <v-col cols="12">
+              <v-card class="result-card pa-6 pb-2">
+                <!-- 觀察網 -->
+                <v-data-table
+                  v-if="dataClass == '觀察網'"
+                  class="edit-table data-table bg-transparent"
+                  :headers="headers"
+                  :items="recogData.items" dense
+                  :footer-props="footerProps"
+                  no-data-text="查無資料"
+                  height="56vh"
+                  fixed-header>
+                  <template v-slot:[`item.feed_img`]="{ item }">
+                    <!-- <img :src="item.feed_img" style="height:200px"> -->
+                    <!-- <div slot-scope="scope"> -->
+                      <!-- <img v-img="{ group: item.id }" :src="item.feed_img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" /> -->
+                    <!-- </div> -->
+                    <!-- <el-image
+                      ref='elImageObserve'
+                      :src="item.feed_img"
+                      :preview-src-list="srcList"
+                      @click="loadObserveImages(item,1)"
+                      :style="{height:`${innerWidth>768?'120px':'80px'}`}">
+                    </el-image> -->
+                    <img :src="item.feed_img" class="cursor-pointer" @click="viewOrigin(item,'observe1')" :style="{height:`${innerWidth>768?'120px':'80px'}`}"/>
+                  </template>
+                  <template v-slot:[`item.shrimp_img`]="{ item }">
+                    <!-- <img :src="item.shrimp_img" style="height:200px"> -->
+                    <!-- <img v-img="{ group: item.id }" :src="item.shrimp_img" :height="`${innerWidth>768?'120px':'80px'}`" /> -->
+                    <!-- <el-image
+                      ref='elImageObserve'
+                      :src="item.shrimp_img"
+                      :preview-src-list="srcList"
+                      @click="loadObserveImages(item,2)"
+                      :style="{height:`${innerWidth>768?'120px':'80px'}`}">
+                    </el-image> -->
+                    <img :src="item.shrimp_img" class="cursor-pointer" @click="viewOrigin(item,'observe2')" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
+                  </template>
+                  <template v-slot:[`item.shrimp`]="{ item }">
+                    <div class="d-flex justify-start text-left">
+                      <span v-html="item.shrimp" style="line-height: 24px;word-break: break-all;" :style="{textAlign:`${innerWidth>599.98?'left':'right'}`}"></span>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.action`]="{ item }">
+                    <v-tooltip v-if="!item.original_img||item.original_img==''||item.original_img==null" bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn class="btn-icon v-btn--disabled" v-bind="attrs" v-on="on" style="pointer-events:initial"><v-icon>mdi-image-search-outline</v-icon></v-btn>
+                        </template>
+                        <span>無原始圖可檢視</span>
+                    </v-tooltip>
+                    <v-tooltip v-else bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn class="btn-icon" @click="viewOrigin(item,'origin')" v-bind="attrs" v-on="on"><v-icon>mdi-image-search-outline</v-icon></v-btn>
+                        </template>
+                        <span>檢視原始圖檔</span>
+                    </v-tooltip>
+                  </template>
+                  
+                </v-data-table>
+                <!-- 菌盤 -->
+                <v-data-table
+                  v-if="dataClass == '菌相'"
+                  class="edit-table"
+                  :headers="headers"
+                  :items="recogData.items" dense
+                  :footer-props="footerProps"
+                  no-data-text="查無資料"
+                  height="56vh"
+                  fixed-header>
+                  <template v-slot:[`item.images`]="{ item }">
+                      <!-- <img v-img="{ group: item.id }" v-for="(img,i) in item.images" :key="i" :src="img" :style="{height:`${innerWidth>768?'120px':'80px'}`}" /> -->
+                      <!-- <el-image
+                      v-for="(img,i) in item.images"
+                      :key="i"
+                      ref='elImageBacteria'
+                      :src="item.img"
+                      :preview-src-list="srcList"
+                      @click="loadBacteriaImages(item)"
+                      :style="{height:`${innerWidth>768?'120px':'80px'}`}">
+                    </el-image> -->
+                      <img :src="img" v-for="(img,i) in item.images" :key="i" class="cursor-pointer"  @click="viewOrigin(item,'bacteria')" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
+                      <span v-if="item.images.length>0"><br>共{{item.images.length}}張</span>
+                  </template>
+                  <template v-slot:[`item.info`]="{item}">
+                    <span>加熱：</span><span  :style="(item.is_heated)?'color:red;':''">{{ item.is_heated? '有' : '無' }}</span><br/>
+                    <span>水樣稀釋倍率：{{ item.dilution }}</span><br/>
+                    <span>塗盤體積：{{ item.volume }}(ul)</span><br/>
+                    <span>檢驗時間：{{ item.inspected_time }}</span>
+                  </template>
+                  <template v-slot:[`item.class`]="{ item }">
+                    <div class="d-flex justify-start text-left">
+                      <span v-html="item.class" style="line-height: 24px;word-break: break-all;" :style="{textAlign:`${innerWidth>599.98?'left':'right'}`}"></span>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.action`]="{item}">
+                    <!-- <v-btn class="btn-icon"  @click="openBacteria('edit',item)">
+                        <v-icon color="white">mdi-pencil</v-icon>
+                    </v-btn> -->
+                    <v-btn class="btn-icon delete"  @click="delitem('bacteria',item.id)">
+                        <v-icon color="white">mdi-trash-can</v-icon>
+                    </v-btn>
+                  </template>
+                </v-data-table>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+      </div>
+    </v-card>
+    <!-- 圖片預覽 -->
+    <el-image-viewer
+      v-if="isOriginImg"
+      :on-close="()=>{isOriginImg=false}"
+      :url-list="srcList"
+    />
+    <!-- 新增/編輯菌相 -->
+    <v-dialog v-model="editDialog" max-width="500px">
         <v-overlay :value="!dialogLoading" :absolute="true">
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
         <v-form v-model="editvalid" ref="addform">
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
-                    <div style="display: inline-block;">
+                    <div class="d-inline-block">
                         <span>{{nowBacteria=='add'?'新增':'編輯'}}</span> 
                     </div>
                     <div class="add">
                         <v-btn class="btn-secondary close"
                                 title="取消" 
-                                @click="editDialog = false;" 
-                                style="border: none;min-width: 0;padding: 0 4px;">
+                                @click="editDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
                 </v-card-title>
                 <div class="basic">
-                  <div class="card-title" style="margin: 12px;">
+                  <div class="card-title ma-3">
                       <div class="title">
                           <v-card-title>1. 基本資料</v-card-title>
                       </div>
                     </div>
-                  <v-card-text v-if="nowBacteria=='add'" style="display: flex;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                  <v-card-text v-if="nowBacteria=='add'" class="d-flex flex-column mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <locate-select v-if="editDialog" :dataScope="'pool'" defaultSelect="" :isMulti="false" @scopeSel_data="get_scopeDataAdd($event)" class="select-template"></locate-select>
                           <div v-if="isPoolError" class="error-text">*必要項目</div>
                         </v-col>
-                        <v-col  cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col  cols="6" class="pa-0 pl-2" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">檢測時間</span>
                           </div>
-                          <div class="date-time-picker" style="width:100%">
+                          <div class="date-time-picker full-width">
                             <v-icon
                               @click="showDate=false;editItem.inspected_time = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
                             <a-date-picker v-if="showDate" v-model="editItem.inspected_time" format="yyyy-MM-DD HH:mm" :show-time="{ format: 'HH:mm' }" placeholder="" @change="onChange" @ok="onOk" />
                           </div>
-                          <span v-if="isInspectedTime" class="error-text ml-2" style="font-size: 12px;margin-bottom: 8px;">*必要項目</span>
+                          <span v-if="isInspectedTime" class="error-text ml-2 mb-2" style="font-size: 12px;">*必要項目</span>
                         </v-col>
                       </v-row>
                   </v-card-text>
-                    <v-card-text style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                    <v-card-text class="d-flex flex-column pt-0 mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">水樣稀釋倍率(X)</span>
                           </div>
@@ -230,10 +292,10 @@
                             placeholder="水樣稀釋倍率"
                             autocompleted="false"
                             step="0.1"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">塗盤體積(ul)</span>
                           </div>
@@ -244,19 +306,19 @@
                             :rules="rules.require"
                             placeholder="塗盤體積"
                             autocompleted="false"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    <div class="card-title" style="margin: 12px;">
+                    <div class="card-title ma-3">
                       <div class="title">
                           <v-card-title>2. 輸入菌數<span style="color: red">(*請輸入盤上菌落數)</span></v-card-title>
                       </div>
                     </div>
-                    <v-card-text style="display: flex;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                    <v-card-text class="d-flex flex-column mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <v-radio-group class="my-1" row v-model="nowAdd" label="菌盤" mandatory @change="addChange" hide-details>
                             <v-radio v-for="(item, i) in ['chormager','nb']" :label="item" :value="item" :key="i">
                               <span slot="label" class="flex-align-center">
@@ -264,16 +326,16 @@
                               </span></v-radio>
                           </v-radio-group>
                         </v-col>
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker"><span style="font-size: 16px;margin-right: 9px;">有無加熱{{ nowAdd=='chormager'?'(不可選擇)':'' }}</span></div>
-                          <v-checkbox v-model="editItem.is_heated" :label="editItem.is_heated?'有':'無'" hide-details style="margin-top: 0;" :disabled="nowAdd=='chormager'"></v-checkbox>
+                          <v-checkbox v-model="editItem.is_heated" class="mt-0" :label="editItem.is_heated?'有':'無'" hide-details :disabled="nowAdd=='chormager'"></v-checkbox>
                           <!-- <v-switch v-model="editItem.is_heated" hide-details :label="editItem.is_heated?'有':'無'" style="margin-top: 0;" :disabled="nowAdd=='chormager'"></v-switch> -->
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    <v-card-text v-if="nowAdd=='chormager'" style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                    <v-card-text v-if="nowAdd=='chormager'" class="d-flex flex-column pt-0 mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">溶藻弧菌(白菌)</span>
                           </div>
@@ -283,10 +345,10 @@
                             v-model="editItem.class1"
                             placeholder="溶藻弧菌(白菌)"
                             autocompleted="false"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">霍亂弧菌(靛菌)</span>
                           </div>
@@ -296,14 +358,14 @@
                             v-model="editItem.class2"
                             placeholder="霍亂弧菌(靛菌)"
                             autocompleted="false"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    <v-card-text v-if="nowAdd=='chormager'" style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                    <v-card-text v-if="nowAdd=='chormager'" class="d-flex flex-column pt-0 mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">腸炎弧菌(紫菌)</span>
                           </div>
@@ -313,10 +375,10 @@
                             v-model="editItem.class3"
                             placeholder="腸炎弧菌(紫菌)"
                             autocompleted="false"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="6" style="padding: 0;padding-left: 8px;">
+                        <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">創傷弧菌(藍菌)</span>
                           </div>
@@ -326,14 +388,14 @@
                             v-model="editItem.class4"
                             placeholder="創傷弧菌(藍菌)"
                             autocompleted="false"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
                       </v-row>
                     </v-card-text>
-                    <v-card-text style="display: flex;padding-top: 0;flex-direction: column;margin-bottom: 16px;">
-                      <v-row style="align-items: center;padding-top: 16px;">
-                        <v-col v-if="nowAdd=='nb'" cols="6" style="padding: 0;padding-left: 8px;">
+                    <v-card-text class="d-flex flex-column pt-0 mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col v-if="nowAdd=='nb'" cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">{{editItem.is_heated?'枯草桿菌(加熱)的數量':'總菌數(不加熱)'}}</span>
                           </div>
@@ -343,23 +405,22 @@
                             v-model="editItem.class5"
                             :placeholder="editItem.is_heated?'枯草桿菌數量':'總菌數'"
                             autocompleted="false"
-                            style="margin-right: 8px;margin-top: 0;padding-top: 0;"
+                            class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
-                        <v-col :cols="nowAdd=='nb'?'6':'12'" style="padding: 0;padding-left: 8px;">
+                        <v-col :cols="nowAdd=='nb'?'6':'12'" class="pa-0 pl-2">
                           <div class="date-time-picker">
                             <span style="font-size: 16px;margin-right: 9px;">影像</span>
                           </div>
                           <span v-if="nowBacteria=='edit'" class="error-text ml-2" style="font-size: 12px;">*欲編輯影像請刪除後重新新增</span>
                           <!-- <v-file-input v-if="nowBacteria=='add'" v-model="editItem.images" :rules="rules.require" accept="image/*" label="上傳影像(限*jpg/*png)" counter multiple
                           style="margin-top: 0;width: 100%;"></v-file-input> -->
-                          <v-file-input v-if="nowBacteria=='add'" v-model="editItem.img" :rules="rules.require" accept="image/*" label="上傳影像(限*jpg/*png)"
-                          style="margin-top: 0;width: 100%;"></v-file-input>
+                          <v-file-input v-if="nowBacteria=='add'" v-model="editItem.img" class="mt-0 full-width" :rules="rules.require" accept="image/*" label="上傳影像(限*jpg/*png)"></v-file-input>
                         </v-col>
                       </v-row>
                     </v-card-text>
                 </div>
-                <v-card-actions style="padding: 24px 12px;">
+                <v-card-actions>
                     <v-spacer spacer></v-spacer>
                     <v-btn class="btn-secondary" @click="editDialog = false">取消</v-btn>
                     <v-btn class="btn-primary" @click="save">{{nowBacteria=='add'?'新增':'修改'}}</v-btn>
@@ -379,7 +440,9 @@ export default {
   layout: "emptynologin2",
   middleware: "auth",
   components: {
-    beca
+    beca,
+    "el-image-viewer": () =>
+            import("element-ui/packages/image/src/image-viewer"),
   },
   head(){
     return{
@@ -426,6 +489,7 @@ export default {
       dataClassList: [{ "name": "觀察網", "icon": "mdi-archive-eye-outline" }, { "name": "菌相", "icon": "mdi-bacteria-outline" }],
       tableHeight: window.innerHeight - 64 - 80 -64,
       innerWidth: window.innerWidth,
+      innerHeight: window.innerHeight,
       nowPool: '',
       footerProps: {
         "items-per-page-text": "每頁",
@@ -458,6 +522,9 @@ export default {
       dialogLoading: true,
       userData:[],
       nowAdd:'chormager',
+      isOriginImg:false,
+      originImg:'',
+      srcList:[]
     };
   },
   methods: {
@@ -465,6 +532,7 @@ export default {
       let getuserData = await this.getUserList();
       this.userData = typeof (getuserData)=='string'?[]:getuserData;
       this.userData = this.userData.filter(x=>x.is_active==true);
+      this.isLoading = true;
     },
     delitem:async function(item,itemid){
       switch (item) {
@@ -563,10 +631,13 @@ export default {
                             蝦子重量(g)：[ ${d.shrimp_weight==null?'':d.shrimp_weight} ]<br>
                             蝦子長度(cm)：[ ${d.shrimp_length==null?'':d.shrimp_length} ]<br>
                             飼料殘餌率：${d.leftover_rate}<br>
+                            底網面積偵測結果: ${d.area_flag?d.area_flag:''}<br>
+                            模糊偵測結果: ${d.quality_flag?d.quality_flag:''}<br>
                             檢測時間：${d.inspected_time}`,
                   feed_img:d.feed_img,
                   id:d.id,
-                  shrimp_img:d.shrimp_img
+                  shrimp_img:d.shrimp_img,
+                  original_img:d.original_img
                 })
               })
             }
@@ -785,40 +856,41 @@ export default {
       });
       return obj;
     },
-    getMainData: async function () {
-      let reqid = this.poolid;
-      let getedItem = {};
-      //取得整場架構資料
-      //visible寫死名稱含^=false，寫死池的狀態=無=false
-      // await this.$axios
-      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
-      //   .then(res => {
-      //     this.maindata = res.data;
-      //     var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-      //     this.maindata = data;
-      //     this.isLoading = true;
-      //   });
-      let architectureData = await this.getArchitecture();
-      this.maindata = typeof (architectureData)=='string'?[]:architectureData;
-      var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
-      this.maindata = data;
-      this.isLoading = true;
-      //用id抓到name
-      this.maindata.forEach(x => {
-        x.node.forEach(y => {
-          var item = y.node.filter(z => z.id == reqid);
-          if (item.length == 1) {
-            getedItem = item[0];
-            return;
-          }
-        });
-      });
-      //把區域名稱加進去
-      if (getedItem.hasOwnProperty("name")) {
-        this.poolName = getedItem.name;
-        console.log(getedItem);
-      }
-    },
+    // getMainData: async function () {
+    //   let reqid = this.poolid;
+    //   let getedItem = {};
+    //   //取得整場架構資料
+    //   //visible寫死名稱含^=false，寫死池的狀態=無=false
+    //   // await this.$axios
+    //   //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`)
+    //   //   .then(res => {
+    //   //     this.maindata = res.data;
+    //   //     var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+    //   //     this.maindata = data;
+    //   //     this.isLoading = true;
+    //   //   });
+    //   // let architectureData = await this.getArchitecture();
+    //   // this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+    //   this.maindata = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
+    //   var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
+    //   this.maindata = data;
+    //   this.isLoading = true;
+    //   //用id抓到name
+    //   this.maindata.forEach(x => {
+    //     x.node.forEach(y => {
+    //       var item = y.node.filter(z => z.id == reqid);
+    //       if (item.length == 1) {
+    //         getedItem = item[0];
+    //         return;
+    //       }
+    //     });
+    //   });
+    //   //把區域名稱加進去
+    //   if (getedItem.hasOwnProperty("name")) {
+    //     this.poolName = getedItem.name;
+    //     console.log(getedItem);
+    //   }
+    // },
     async stepLoad() {
       this.isLoading = false;
       // console.log('Step Load',this.isLoading);
@@ -949,10 +1021,28 @@ export default {
         this.editItem.is_heated = false;
       }
     },
+    viewOrigin(item,type) {
+      this.srcList = [];
+      this.isOriginImg = true;
+      if(type=='origin') {
+        this.originImg = item.original_img;
+        this.srcList.push(item.original_img);
+      }else if(type=='observe1'){
+        this.srcList.push(item.feed_img);
+        this.srcList.push(item.shrimp_img);
+      }else if(type=='observe2'){
+        this.srcList.push(item.shrimp_img);
+        this.srcList.push(item.feed_img);
+      }else {
+        this.srcList = _.cloneDeep(item.images);
+      }
+      
+      // window.open(this.originImg, "_blank");
+    },
   },
   async mounted() {
     //取得整場架構資料
-    await this.getMainData();
+    // await this.getMainData();
     // 取得user資料
     await this.getAllUser();
     //監控視窗
@@ -985,33 +1075,13 @@ export default {
     .red--text {
       color: $color-accent !important;
     }
-    .search {
-      margin-bottom: 12px;
-      // .caculate {
-      //   max-width: calc((100%  / 4) - (100% / 12) / 4 );
-      // }
-      // .caculate-8 {
-      //   max-width: calc((100% / 12 * 8) - ((100% / 12) / 1.5));
-      // }
-    }
     .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
       box-shadow: 0 0 10px $color-black-10;
     }
     .v-card.result-card {
-      padding: 24px;
-      padding-bottom: 8px;
       background-color: $color-lighten;
       .theme--light.v-data-table {
         background-color: $color-lighten;
-      }
-      .header-bar {
-        width: 100%;
-        @include flexAlignCenter();
-        padding: 12px 24px;
-        border-bottom: 1px solid $color-black-10;
-        h5 {
-          width: 100%;
-        }
       }
     }
   }
