@@ -6,23 +6,22 @@
                 <v-col class="d-flex"
                         cols="12"
                         sm="6">
-                    <v-select v-if="!isError && isField" class="pl-3 mt-0" :items="fatorys" label="場" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)">                
+                    <v-select v-if="!isError && isField" class="pl-3 mt-0" :items="fatorys" hide-details :disabled="isField" v-model="nowFactory" @change="changeFactory($event)">                
                     </v-select>   
-                    <div v-if="!isError && !isField" class="select-field">
-                        <locate-select :dataScope="'field'" :defaultSelect="nowField" :isMulti="false" @scopeSel_data="changeFactory($event)"></locate-select>
-                        <label v-if="nowField!==''" class="label-select">場</label>
+                    <div v-if="!isError && !isField">
+                        <locate-select class="select-template" :dataScope="'field'" :defaultSelect="nowField" :isMulti="false" @scopeSel_data="changeFactory($event)"></locate-select>
+                        <!-- <label v-if="nowField!==''" class="label-select">場</label> -->
                     </div>
-
                 </v-col>
             </v-row>
             <v-row class="mt-0">
                 <v-col cols="12"
                         sm="12">
                     <div v-if="areas.length > 0" class="tabs">
-                        <v-tabs v-model="nowAreaTag" show-arrows :style="{paddingLeft: isField?'12px':'0'}" style="overflow-x: hidden;">
-                            <div v-if="!isField" class="icons mr-4">
+                        <v-tabs class="mb-2" v-model="nowAreaTag" show-arrows :style="{paddingLeft: isField?'12px':'0'}" style="overflow-x: hidden;">
+                            <div v-if="!isField" class="icons flex-align-center mr-4">
                                 <!-- <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="mapshowedit = !mapshowedit" class="my-3">mdi-pencil</v-icon> -->
-                                <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="userDialog" class="my-3">mdi-pencil</v-icon>
+                                <v-icon v-show="nowAreaTag!=='setting'" :class="{'edit-action':mapshowedit}" @click="userDialog" class="my-3 ma-4 cursor-pointer">mdi-pencil</v-icon>
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-btn class="btn-icon" v-show="editData.length>0" @click="selectchecked()" v-bind="attrs"
@@ -43,17 +42,17 @@
                             {{ area.name }}
                             </v-tab>
 
-                            <v-tabs-items v-model="nowAreaTag" touchless>
-                            <v-tab-item v-for="area in areas"
-                                :key="area.areaNo" 
-                                :value="area.areaNo"
-                                :style="{overflowX:`${nowAreaTag=='setting'&& nowLayout=='color'?'initial':'scroll'}`}"
-                                class="mb-4"
-                                style="overflow-x: scroll;overflow-y: hidden;"
-                            >
-                                <poollayout :water="[]"  id="layout" :areas="areas" :layout="layout" :nowAreaTag="nowAreaTag" :nowAreaId="nowAreaId" :showedit="mapshowedit" :statcolor="statcolor" :successData="successData" :setting="setting" @editPoolOuter="edit($event)" @saveSuccess="saveDelete($event)"></poollayout>
-                                <!-- <setting v-else class="mt-3" @update="settingUpdated"></setting> -->
-                            </v-tab-item>
+                            <v-tabs-items class="pt-6" v-model="nowAreaTag" touchless>
+                                <v-tab-item v-for="area in areas"
+                                    :key="area.areaNo" 
+                                    :value="area.areaNo"
+                                    :style="{overflowX:`${nowAreaTag=='setting'&& nowLayout=='color'?'initial':'scroll'}`}"
+                                    class="mb-4"
+                                    style="overflow-x: scroll;overflow-y: hidden;"
+                                >
+                                    <poollayout :water="[]"  id="layout" :areas="areas" :layout="layout" :nowAreaTag="nowAreaTag" :nowAreaId="nowAreaId" :showedit="mapshowedit" :statcolor="statcolor" :successData="successData" :setting="setting" @editPoolOuter="edit($event)" @saveSuccess="saveDelete($event)"></poollayout>
+                                    <!-- <setting v-else class="mt-3" @update="settingUpdated"></setting> -->
+                                </v-tab-item>
                             
                             </v-tabs-items>
                             
@@ -567,48 +566,14 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-card.map {
     .content {
         height: 100%;
         min-height: 100%;
     }
-    .v-select__selection--comma {
-        color: #00273E;
-    }
-    .theme--light.v-label,.theme--light.v-icon,.theme--light.v-input {
-        color: $color-form;
-    }
-    .theme--light.v-text-field > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-    
-        border-color: $color-form;
-    }
-    .input-pool {
-        input,.update-time,.theme--light.v-label,.theme--light.v-icon,.theme--light.v-input {
-            color: #1b375b;
-        }
-        .theme--light.v-text-field > .v-input__control > .v-input__slot:before, .theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-            border-color: #00273E;
-        }
-    }
-    .v-select.v-text-field:not(.v-text-field--single-line) input {
-        cursor: pointer;
-    }
-    .v-main__wrap {
-        padding: 24px;
-    }
-    .tabs {
-        .v-tabs {
-            margin-bottom: 8px;
-        }
-        .theme--light.v-tabs-items {
-            padding-top: 24px;
-        }
-    }
     .my-3 {
         &.theme--light.v-icon {
-            margin: 16px;
-            cursor: pointer;
             color: rgba(0, 0, 0, 0.54);
             &.edit-action {
                 color:$color-form;
@@ -617,117 +582,6 @@ export default {
     }
     .edit-action.theme--light.v-icon:hover::after,.mdi-pencil.theme--light.v-icon:hover::after {
         opacity: 0.1;
-    }
-    .icons {
-        @include flexAlignCenter();
-        margin-right: 16px;
-    }
-    
-    // 設定
-    .setting-item {
-        font-size: 14px;
-        @include flexAlignCenter();
-        margin-left: 24px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .select-area {
-        margin-left: 20px;
-        .v-text-field__details {
-            display: none;
-        }
-        .theme--light.v-label, .theme--light.v-icon, .theme--light.v-input {
-            margin-top: -20px;
-        }
-    }
-    .layout-box {
-        @include flexAlignCenter();
-        .theme--light.v-label, .theme--light.v-icon, .theme--light.v-input {
-        margin-top: 0;
-        max-width: 60px;
-        .select-area .theme--light.v-label, .select-area .theme--light.v-icon, .select-area .theme--light.v-input {
-            margin-top: 0;
-        }
-        .v-select__selection--comma {
-            color: $color-form;
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        }
-        .v-text-field > .v-input__control > .v-input__slot:after {
-            transform: scaleX(1);
-        }
-        .v-select.v-text-field:not(.v-text-field--single-line) input {
-            display: none;
-        }
-    }
-    // 連結帶參數,select disabled
-    .theme--light.v-text-field.v-input--is-disabled .v-input__slot::before {
-        border-image: none;
-    }
-    .v-input--is-disabled .theme--light.v-label {
-        display: none;
-    }
-    .theme--light.v-text-field.v-input--is-disabled  > .v-input__control > .v-input__slot:before,.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
-        border-color: transparent;
-    }
-    .v-select.v-input.v-input--is-disabled > .v-input__control > .v-input__slot {
-        background: #E6EBEE;
-        border-radius: 4px;
-        padding-left: 8px;
-    }
-    .v-input--is-disabled .v-select__selection--comma {
-        color: $color-dark-50;
-    }
-    .v-select.v-input--is-disabled:not(.v-input--is-readonly):not(.v-autocomplete) {
-        padding-top: 16px;
-    }
-    // locateSelect
-    .select-field {
-        position: relative;
-        .font-size-large {
-            font-size: 16px;
-        }
-        .vue-treeselect__control,.vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__placeholder {
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .vue-treeselect__control {
-            border: none;
-            border-radius: 0;
-            border-bottom: 1px solid $color-form;
-        .vue-treeselect__placeholder {
-            color: #00273E;
-            &::before {
-            content: '*'
-            }
-            &::after {
-            content: '(必選)';
-            }
-        }
-        .vue-treeselect__control-arrow, .vue-treeselect__option-arrow,.vue-treeselect__x-container {
-            color: $color-form;
-        }
-        .vue-treeselect__x-container {
-            display: none;
-        }
-        }
-        .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) .vue-treeselect__control:hover {
-            border-color: $color-form;
-        }
-        .vue-treeselect--searchable .vue-treeselect__input-container,.vue-treeselect__input,.vue-treeselect--focused {
-            font-size: 14px;
-            color: #00273E;
-        }
-        .label-select {
-            font-size: 10px;
-            color: $color-form !important;
-            position: absolute;
-            left: 6px;
-            top: -12px;
-        
-        }
     }
 }
   </style>

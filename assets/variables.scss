@@ -251,6 +251,7 @@ $color-black-10: rgba(0,0,0,0.1);
     background-color: transparent !important;
     .theme--light.v-icon {
       color: $color-primary !important;
+      font-size: 1.25rem;
     }
     &:hover {
       background-color: $color-primary-25 !important;

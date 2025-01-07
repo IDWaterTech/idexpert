@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-row class="ml-0 mr-0">
+    <v-row class="ml-0 mr-0 align-start">
       <v-col md="4" sm="6">
-        <v-card style="height: 100%;">
+        <v-card>
           <v-list class="overflow-hidden pb-0" dense style="overflow: hidden;">
             <v-subheader
               ><h2>養殖池狀態-清單</h2>
@@ -75,33 +75,7 @@
           </v-list>
         </v-card>
         
-        <v-dialog v-model="adddialog" max-width="500px">
-          <v-card class="custom-dialog" style="max-height: inherit;">
-            <v-form ref="form" v-model="valid" lazy-validation>
-              <v-card-title>新增狀態項目</v-card-title>
-              <v-card-text
-                ><v-text-field
-                  v-model="addItem.name_ch"
-                  label="新增項目(中文)" filled dense
-                  :rules="rules.require"
-                ></v-text-field
-              ></v-card-text>
-              <v-card-text
-                ><v-text-field
-                  v-model="addItem.name_en"
-                  label="新增項目(英文)" filled dense
-                  :rules="rules.require"
-                ></v-text-field
-              ></v-card-text>
-              <v-card-actions
-                ><v-spacer></v-spacer
-                ><v-btn tile color="primary" @click="coloradd"
-                  >新增</v-btn
-                ></v-card-actions
-              >
-            </v-form>
-          </v-card>
-        </v-dialog>
+        
       </v-col>
       <v-col md="6" sm="6">
         <!-- <v-card> -->
@@ -152,6 +126,45 @@
         
       </v-col>
     </v-row>
+    <!-- 新增狀態顏色 -->
+    <v-dialog v-model="adddialog" max-width="500px">
+      <v-card class="custom-dialog" style="max-height: inherit;">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-card-title class="add-title">
+            <div class="d-inline-block">
+                <span>新增狀態項目</span>
+            </div>
+            <div class="add">
+                <v-btn class="btn-secondary close" title="取消" @click="adddialog = false;">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </div>
+          </v-card-title>
+          <div class="basic px-3 py-6">
+            <v-card-text
+            ><v-text-field
+              v-model="addItem.name_ch"
+              label="新增項目(中文)" filled dense
+              :rules="rules.require"
+            ></v-text-field
+          ></v-card-text>
+          <v-card-text
+            ><v-text-field
+              v-model="addItem.name_en"
+              label="新增項目(英文)" filled dense
+              :rules="rules.require"
+            ></v-text-field
+          ></v-card-text>
+          </div>
+          <v-card-actions
+            ><v-spacer></v-spacer
+            ><v-btn tile color="primary" @click="coloradd"
+              >新增</v-btn
+            ></v-card-actions
+          >
+        </v-form>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 

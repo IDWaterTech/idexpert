@@ -306,10 +306,10 @@
                     :value="tab">
                     <!-- 圖表 -->
                     <div v-show="nowTab=='地圖配置'">
-                      <settinglayout  class="mx-3 mt-6 full-width" :areas="areas1"></settinglayout>
+                      <settinglayout  class="pt-8 full-width" :areas="areas1"></settinglayout>
                     </div>
                     <div v-show="nowTab=='池況顏色'">
-                      <settingcolor class="mx-3 full-width"></settingcolor>
+                      <settingcolor class="pt-8 full-width"></settingcolor>
                     </div>
                   </v-tab-item>
               </v-tabs-items>

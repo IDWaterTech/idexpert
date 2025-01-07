@@ -11,7 +11,7 @@
             </div>
             <div class="content">
                 <!-- 搜尋 -->
-                <div class="search" id="dashboard">
+                <div class="search mt-n1" id="dashboard">
                     <v-row class="my-0" :style="{'height':`${windowWidth<959.58?'260px':'initial'}`,
                             'overflowY':`${windowWidth<959.58?'scroll':'initial'}`,
                             'overflowX':`${windowWidth<959.58?'hidden':'initial'}`,
@@ -96,18 +96,17 @@
                                 <v-btn class="btn-icon just-icon" v-if="nowExpand" @click="expandPanel(false)" title="收縮"><v-icon>mdi-view-stream</v-icon></v-btn>
                             </div>
                             <v-dialog v-model="dialog.pdf" scrollable max-width="75%" width="75%">
-                                <v-card>
+                                <v-card class="custom-dialog">
                                     <v-card-title class="add-title d-flex full-width">
                                         <div class="flex-align-center" style="width: calc(100% - 40px);">
                                             <span><a :href="url.xls" target="_blank">計算公式</a></span>
-                                            <v-switch v-model="formulaData" :label="formulaData?'pdf':'xls'"></v-switch>
+                                            <v-switch v-model="formulaData" class="mt-0 mx-2 pt-0" :label="formulaData?'pdf':'xls'" hide-details></v-switch>
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <a :href="formulaUrl" target="_blank" v-bind="attrs" v-on="on" class="ml-4"><v-icon>mdi-link</v-icon></a>
                                                 </template>
                                                 <span>在新分頁中開啟</span>
                                             </v-tooltip>
-                                            
                                         </div>
                                         <div class="add float-right">
                                             <v-btn class="btn-secondary close px-1 py-0" title="取消" @click="dialog.pdf = false;"
@@ -186,7 +185,7 @@
                         <v-progress-circular indeterminate size="64"></v-progress-circular>
                     </v-overlay>
                     <div class="result-content" >
-                        <v-card class="result-card pb-3">
+                        <v-card class="result-card pb-3 border-bottom">
                             <Kb2CardGroups :cardData="cardData2"></Kb2CardGroups>
                             <div class="timeline flex-align-center mx-4 my-0">
                                 <span v-if="!isSearchDate" class="cursor-pointer" @click="searchDate">{{BaseParm['InspectedDate']}} {{BaseParm['InspectedTime']}}</span>
@@ -288,7 +287,7 @@
                     <v-row class="mb-0">
                         <!-- 參數設定 -->
                         <v-col cols="12" md="6" sm="12" id="params" class="pr-2 pt-1 pl-0">
-                            <v-card class="result-card column">
+                            <v-card class="result-card column border-bottom">
                                 <!-- 表頭標題+按鈕群 -->
                                 <div class="card-title"
                                     :class="{'next-line':windowWidth<425 && (nowSelectPool!==''&&nowSelectPool!==null&&querrySelected!==''&&querrySelected!==null)}">
@@ -296,7 +295,7 @@
                                         <v-icon>mdi-pencil</v-icon>
                                         <v-card-title>參數設定</v-card-title>
                                     </div>
-                                    <div class="btn-groups">
+                                    <div class="btn-groups pa-2">
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button class="btn-icon-secondary" @click="postParm(false)" v-bind="attrs"
@@ -676,8 +675,8 @@
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
                                                                                     <!-- FeedParm['LastFeedDatetime'] = $moment(new Date(), 'YYYY-MM-DD HH:mm') -->
-                                                                                    <v-icon
-                                                                                        @click="showDate=false;FeedParm['LastFeedDatetime'] = getNowDateTime();showDate=true">mdi-calendar</v-icon>
+                                                                                    <v-btn class="btn-icon just-icon" @click="showDate=false;FeedParm['LastFeedDatetime'] = getNowDateTime();showDate=true"><v-icon>mdi-calendar</v-icon></v-btn>
+                                                                                    
                                                                                     <span
                                                                                     :style="{'color':`${FeedParm['LastFeedDatetime']&&FeedParm['LastFeedDatetime']!==''&&FeedParm['LastFeedDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                         style="font-size: 14px;margin-right: 9px;padding-left: 4px;"
@@ -1634,8 +1633,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
-                                                                                    <v-icon
-                                                                                        @click="showDate=false;ObservationData['SamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
+                                                                                    <v-btn class="btn-icon just-icon" @click="showDate=false;ObservationData['SamplingDatetime'] = getNowDateTime();showDate=true;"><v-icon>mdi-calendar</v-icon></v-btn>
                                                                                     <span
                                                                                         style="font-size: 14px;margin-right: 9px;padding-left: 4px;"
                                                                                         :style="{'color':`${ObservationData['SamplingDatetime']&&ObservationData['SamplingDatetime']!==''&&ObservationData['SamplingDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
@@ -1669,8 +1667,7 @@
                                                                         <v-row class="item-row item">
                                                                             <v-col cols="12" md="2" sm="2">
                                                                                 <div class="date-time-picker">
-                                                                                    <v-icon
-                                                                                        @click="showDate=false;ObservationData['LastSamplingDatetime'] = getNowDateTime();showDate=true;">mdi-calendar</v-icon>
+                                                                                    <v-btn class="btn-icon just-icon" @click="showDate=false;ObservationData['LastSamplingDatetime'] = getNowDateTime();showDate=true;"><v-icon>mdi-calendar</v-icon></v-btn>
                                                                                     <span
                                                                                         style="font-size: 14px;margin-right: 9px;padding-left: 4px;"
                                                                                         :style="{'color':`${ObservationData['LastSamplingDatetime']&&ObservationData['LastSamplingDatetime']!==''&&ObservationData['LastSamplingDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
@@ -2133,14 +2130,14 @@
                         </v-col>
                         <!-- AI 建議 -->
                         <v-col cols="12" md="6" sm="12" id="ai" class="pr-3 pt-1 pl-0">
-                            <v-card class="result-card ai-suggestion">
+                            <v-card class="result-card ai-suggestion border-bottom">
                                 <!-- 表頭 -->
                                 <div class="card-title">
                                     <div class="title">
                                         <v-icon>mdi-crosshairs-gps</v-icon>
                                         <v-card-title>AI 建議</v-card-title>
                                     </div>
-                                    <div class="btn-groups">
+                                    <div class="btn-groups pa-2">
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <button @click="openRemark" v-bind="attrs" v-on="on"
@@ -2540,9 +2537,21 @@
                                                                                 </v-btn>
                                                                             </span>
                                                                             <v-dialog v-model='sugerdlg' width="500">
-                                                                                <v-card>
-                                                                                    <v-card-title>砂糖量計算</v-card-title>
-                                                                                    <v-card-text>
+                                                                                <v-card  class="custom-dialog">
+                                                                                    <v-card-title class="add-title">
+                                                                                            <div class="d-inline-block">
+                                                                                                <span>砂糖量計算</span> 
+                                                                                            </div>
+                                                                                            <div class="add">
+                                                                                                <v-btn class="btn-secondary close"
+                                                                                                        title="取消" 
+                                                                                                        @click="sugerdlg = false;">
+                                                                                                    <v-icon>mdi-close</v-icon>
+                                                                                                </v-btn>
+                                                                                            </div>
+                                                                                        </v-card-title>
+                                                                                    <!-- <v-card-title>砂糖量計算</v-card-title> -->
+                                                                                    <v-card-text class="px-6 py-3">
                                                                                         <v-row class="item-row" dense>
                                                                                             <v-col cols=12 md="12"
                                                                                                 sm="12">
@@ -3193,18 +3202,16 @@
                         <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
                     </div> -->
                 </v-card-title>
-                <div class="basic" style="padding: 24px 12px;">
-                    <v-card-text class="dialog-text">
+                <div class="basic px-3 py-6">
+                    <v-card-text class="dialog-text flex-align-start flex-column border-bottom px-4 py-2">
                         <b :style="`font-size:${cellsize+0.1}em`">狀態作動</b> <span :style="`font-size:${cellsize}em`"
                             v-html="setBR(dialogContent.status)"></span>
                     </v-card-text>
-                    <v-card-text class="dialog-text border-bottom flex-align-start"
-                        style="flex-direction: column;padding: 8px 16px;">
+                    <v-card-text class="dialog-text border-bottom flex-align-start flex-column px-4 py-2">
                         <b :style="`font-size:${cellsize+0.1}em`">可能影響原因</b> <span :style="`font-size:${cellsize}em`">{{
                             dialogContent.factor }}</span>
                     </v-card-text>
-                    <v-card-text class="dialog-text border-bottom flex-align-start"
-                        style="flex-direction: column;padding: 8px 16px;">
+                    <v-card-text class="dialog-text border-bottom flex-align-start flex-column px-4 py-2">
                         <b :style="`font-size:${cellsize+0.1}em`">會造成結果</b> <span
                             :style="`font-size:${cellsize}em`">{{dialogContent.result==''?'無':dialogContent.result
                             }}</span>
@@ -3256,8 +3263,8 @@
                         </v-btn>
                     </div>
                 </v-card-title>
-                <div class="basic" style="padding: 24px 12px;">
-                    <v-card-text class="dialog-text" style="border-bottom: none;">
+                <div class="basic px-3 py-6">
+                    <v-card-text class="dialog-text flex-align-start flex-column px-4 py-2">
                         <v-row  class="flex-align-center full-width">
                             <v-col cols="6" v-for="(item,id) in chipsDialogData" class="full-width" :key="'dialog'+id">
                                 <div class="chips flex-align-center mb-2 full-width">
@@ -3389,19 +3396,15 @@
         </v-dialog>
         <!-- 投餌料公式 -->
         <v-dialog v-model="feedDialog" scrollable max-width="75%">
-            <v-card>
-                <!-- <v-card-title>計算公式
-                <v-switch
-                    v-model="formulaData"
-                    :label="formulaData?'pdf':'xls'"
-                    ></v-switch>
-            </v-card-title> -->
-                <v-card-title class="add-title d-block full-width">
-                    <div style="display: inline-block;">
-                        <span>計算方式</span>
+            <v-card  class="custom-dialog">
+                <v-card-title class="add-title">
+                    <div class="d-inline-block">
+                        <span>計算方式</span> 
                     </div>
-                    <div class="add d-inline-block">
-                        <v-btn class="btn-secondary close" title="取消" @click="feedDialog = false;">
+                    <div class="add">
+                        <v-btn class="btn-secondary close"
+                                title="取消" 
+                                @click="feedDialog = false;">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </div>
@@ -4802,9 +4805,6 @@ export default {
         .content {
             padding-top: 0;
             padding-bottom: 2px;
-            .search {
-                margin-top: -4px;
-            }
             .row {
                 .tag {
                     font-size: 0.85rem;
@@ -4819,7 +4819,6 @@ export default {
         }
         .v-card.result-card {
             background-color: $color-lighten;
-            box-shadow: 0px 0px 10px 0px $color-black-10;
             margin: 0 2px;
             .theme--light.v-card {
                 background-color: $color-lighten;
@@ -4851,7 +4850,6 @@ export default {
                 .btn-groups {
                     width: 100%;
                     @include flexCenterEnd();
-                    padding: 8px;
                     button {
                         &.btn-icon.just-icon {
                             .theme--light.v-icon {
@@ -5047,17 +5045,7 @@ export default {
             border-radius: 4px;
             padding: 0 8px;
         }
-        .v-card__title.add-title {
-            color: $color-dark;
-            font-weight: bold;
-            border-bottom: 1px solid $color-black-10;
-            font-size: 1.1rem;
-        }
         .dialog-text {
-            @include flexAlignStart();
-            flex-direction: column;
-            padding: 8px 16px;
-            border-bottom:1px solid $color-black-10;
             font-size: 16px;
             span {
                 font-size: 14px;

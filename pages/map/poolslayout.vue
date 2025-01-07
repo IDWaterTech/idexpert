@@ -38,7 +38,7 @@
             <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="sub-row" :class="{'mx-3':$route.path=='/map'}">
               <v-row v-for="(row,sid) in b.rows" :key="sid" style="margin-bottom: 0;">
                   <div
-                      :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning','pointer':$route.path=='/basic'&& row.rows.length==0}"
+                      :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning','cursor-pointer':$route.path=='/basic'&& row.rows.length==0}"
                       :style="
                         row.name=='tank'?`background:#C7D380;width:120px`:row.state == '無'? b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
                       "
@@ -105,15 +105,15 @@
       <div v-else-if="nowAreaTag=='setting'">
         <v-row class="mb-6 ml-3" style="max-width: 240px;" :style="{marginTop:`${setting=='color'?'-20px':'-32px'}`}">
           <div
-            class="setting-item"
+            class="setting-item ml-6 cursor-pointer"
             style="font-size: 16px;"
             :style="setting=='color'?'color:#6c9bcd':'color: rgba(0, 0, 0, 0.54)'"
             @click="setting='color'">
             顏色設定    
         </div>
-        <div class="layout-box">
+        <div class="layout-box flex-align-center">
             <div v-if="setting=='color'"
-                class="setting-item"
+                class="setting-item ml-6 cursor-pointer"
                 style="font-size: 16px;"
                 :style="setting=='layout'?'color:#6c9bcd':'color: rgba(0, 0, 0, 0.54)'"
                 @click="setting='layout'">
@@ -408,7 +408,7 @@ export default {
       //     { name_ch: "空池", color: "#BFDAE8",id: 3 },
       //     { name_ch: "養殖審核", color: "#D3808F",id: 33 }
       // ],
-      stateColor: this.statcolor,
+      stateColor: [],
       maxCols: 12,
       editState: false, //編輯池況
       editData: [],
@@ -537,6 +537,7 @@ export default {
   async created() {
     // this.nowLayout();
     // this.getPondData();
+    this.stateColor = this.statcolor;
     this.getPondData();
     // await this.getStateColor();
     if(this.$route.path == '/basic') {
@@ -555,13 +556,13 @@ export default {
   },
   methods: {
     getItemColor: function(data) {
-      // console.log('getItemColor',data);
+      console.log('getItemColor',data,this.stateColor);
       if (data == ""||data==undefined||data == []) {
         return "white";
       }
       let data2 = this.stateColor.filter(x => x.name_ch == data);
-      // console.log(data2,this.stateColor);
-      if (data2.length == 1) {
+      console.log('getColor',data2,this.stateColor);
+      if (data2.length > 0) {
         return data2[0].color;
       }
     },
@@ -1139,16 +1140,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// td {
-//   font-size: 1.2em;
-//   text-align: center;
-//   vertical-align: middle;
-//   min-width: 80px;
-// }
-// tr {
-//   height: 50px;
-//   max-height: 80px;
-// }
 v-row > div{
   justify-content: center;
   align-items: center;  
@@ -1156,7 +1147,6 @@ v-row > div{
 .parent-row {
   @include size(100%);
   flex-wrap: nowrap;
-  // min-width: 1200px;
 }
 .col-m-b {
   margin-bottom: 12px;
@@ -1165,6 +1155,21 @@ v-row > div{
   @include flexAlignCenter();
   padding-top: 12px;
   padding-bottom: 12px;
+}
+// 設定
+.setting-item {
+  font-size: 14px;
+  @include flexAlignCenter();
+  transition: all 0.3s;
+}
+.select-area {
+  margin-left: 20px;
+  .v-text-field__details {
+      display: none;
+  }
+  .theme--light.v-label, .theme--light.v-icon, .theme--light.v-input {
+      margin-top: -20px;
+  }
 }
 .block {
   width: 100%;
@@ -1243,7 +1248,7 @@ v-row > div{
 .update-time {
   width: 100%;
   font-size: 14px;
-  color: #00273E;
+  color: $color-dark;
 }
 .danger-water,.warning-water {
   overflow: hidden;
@@ -1267,9 +1272,6 @@ v-row > div{
     background-color: rgba(#fefefe,0.5);
     animation: breath 2.5s infinite;
  }
-}
-.pointer {
-  cursor: pointer;
 }
 @keyframes breath {
   0% {
