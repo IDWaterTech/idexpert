@@ -26,14 +26,14 @@
                   v-model="showFeeding"
                   dense hide-details
                   :label="`只顯示放養中`"
-                  class="checkbox-feed"
+                  class="checkbox-feed mr-1"
                 ></v-checkbox>
               </div>
             </v-col>
           </v-row>
         </div>
         <!-- 搜尋結果 -->
-        <div class="result">
+        <div class="result mt-n2">
           <v-row class="mb-0">
             <v-col cols="12">
               <v-card class="result-card px-6 py-3 pb-2" style="height: 100%">
@@ -212,19 +212,19 @@
                   </template>
                   <!-- top -->
                   <template v-slot:top>
-                    <v-toolbar elevation="1" class="header-bar" :style="{height:`${windowWidth<599.98?'88px':'64px'}`}">
+                    <v-toolbar elevation="1" class="header-bar px-0 py-3" :style="{height:`${windowWidth<599.98?'88px':'64px'}`}">
                       <v-row :style="{marginBottom:`${windowWidth<599.98?'0':'12px'}`}">
                         <!-- 左側 -->
                         <v-col cols="12" sm="6" class="px-3 py-2">
-                          <div class="header-left" style="max-width: 300px;">
+                          <div class="header-left flex-align-center full-width" style="max-width: 300px;">
                             <!-- 計算 -->
-                            <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div>
+                            <div class="caculator ma-1 full-width"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div>
                             
                           </div>
                         </v-col>
                         <!-- 右側 -->
                         <v-col cols="12" sm="6" class="px-3 py-2">
-                          <div class="header-right" :style="{justifyContent:`${windowWidth<599.98?'flex-start':'flex-end'}`}">
+                          <div class="header-right flex-align-center full-width" :style="{justifyContent:`${windowWidth<599.98?'flex-start':'flex-end'}`}">
                             <!-- 計算 -->
                             <!-- <div class="caculator"><v-text-field v-model="formula" title="新值=[原值]*[公式]" placeholder="公式範例:[原值]*[8*(2+5)]，預設相乘" outlined dense hide-details clearable></v-text-field></div> -->
                             <!-- windowwidth>958.98 icon+文字 -->
@@ -262,25 +262,25 @@
                             <div v-else class="btn-groups" style="justify-content: flex-start;">
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-icon" @click="showimport" v-bind="attrs" v-on="on">
+                                    <v-btn class="btn-icon" @click="showimport" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-database-import</v-icon>
-                                    </button>
+                                    </v-btn>
                                 </template>
                                 <span>匯入</span>
                               </v-tooltip>
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-icon green" @click="showsubmitdig" v-bind="attrs" v-on="on">
+                                    <v-btn class="btn-icon green" @click="showsubmitdig" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-circle-edit-outline</v-icon>
-                                    </button>
+                                    </v-btn>
                                 </template>
                                 <span>設定</span>
                               </v-tooltip>
                               <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <button class="btn-icon clear" @click="dataclear" v-bind="attrs" v-on="on">
+                                    <v-btn class="btn-icon clear" @click="dataclear" v-bind="attrs" v-on="on">
                                         <v-icon>mdi-shimmer</v-icon>
-                                    </button>
+                                    </v-btn>
                                 </template>
                                 <span>清除</span>
                               </v-tooltip>
@@ -1497,31 +1497,15 @@ export default {
     }
     .checkbox-feed {
       flex: 1;
-      .v-input--selection-controls__input {
-        margin-right: 4px;
-      }
     }
   }
-  .v-sheet.result-card.v-card:not(.v-sheet--outlined) {
-    box-shadow: 0 0 10px $color-black-10;
-  }
   .v-card.result-card {
-    background-color: $color-lighten;
     .data-time {
       @include flexAlignCenter();
     }
     .btn-groups {
       @include flexCenterEnd();
-      // width: 100%;
       max-width: 280px;
-    }
-    button {
-      &.v-btn:not(.v-btn--round).v-size--default {
-        padding: 0 12px;
-      }
-      .theme--light.v-data-table {
-        background-color: $color-lighten;
-      }
     }
   }
 }
@@ -1534,7 +1518,6 @@ export default {
 }
 ::v-deep {
   .result {
-    margin-top: -8px;
     .theme--light.v-text-field--filled > .v-input__control > .v-input__slot {
       background: transparent;
     }
@@ -1549,9 +1532,6 @@ export default {
       margin-bottom: 4px;
       th {
         border-radius: 4px 4px 0 0 !important;
-      }
-      button {
-        background-color: transparent;
       }
       
       .mdi:before {
@@ -1573,7 +1553,6 @@ export default {
     // header
     .header-bar {
       background-color: $color-lighten;
-      padding: 12px 0 !important;
       .theme--light.v-tabs > .v-tabs-bar,.theme--light.v-tabs-items,
       .theme--light.v-data-table,.v-toolbar__content, .v-toolbar__extension {
         background-color: $color-lighten;
@@ -1585,14 +1564,7 @@ export default {
         width: 100%;
       }
       
-      // top
-      .header-right,.header-left {
-        @include flexAlignCenter();
-        width: 100%;
-      }
       .caculator {
-        width: 100%;
-        margin: 4px;
         .theme--light.v-text-field--outlined:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot fieldset {
           color: $color-form;
         }

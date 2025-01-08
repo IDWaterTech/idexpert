@@ -6,8 +6,8 @@
     <v-card class="bg-card result-card mb-3" style="min-height:86vh">
       <!-- 表頭 -->
       <div class="card-title ma-2 pa-3 border-bottom cursor-pointer">
-          <div class="title">
-              <v-card-title style="padding: 0;">帳號清單</v-card-title>
+          <div class="title full-width">
+              <v-card-title class="pa-0">帳號清單</v-card-title>
           </div>
           <div class="chevron">
             <v-tooltip bottom>
@@ -407,7 +407,7 @@
                   type="success"
                   dense
                   icon="mdi-bell-outline"
-                  class="multi-line"
+                  class="multi-line full-width"
                   >【IDWaterExpert】 
                   公告者：{{
                     $auth.$state.user.name.replace(
@@ -1341,7 +1341,6 @@ export default {
 <style lang="scss" scoped>
 .multi-line {
   white-space: pre-line;
-  width: 100%;
 }
 
 .v-card.result-card {

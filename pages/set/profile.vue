@@ -18,7 +18,7 @@
       </div>
       <v-divider></v-divider>
       <div class="content notify pt-4 mb-10 flex-column">
-        <v-subheader class="title">
+        <v-subheader class="title pa-0">
           <v-icon class="mx-2">mdi-bell-circle-outline</v-icon>接收通知
         </v-subheader>
         <div class="notify-item flex-column pl-1">
@@ -302,7 +302,6 @@ export default {
 <style lang="scss" scoped>
 .v-subheader {
   font-size: 1.5em;
-  padding: 0;
 }
 .v-application.v-application--is-ltr .v-card.login.profile {
   .notify {

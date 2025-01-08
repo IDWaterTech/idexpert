@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-row style="margin-bottom: 0;">
-        <v-col cols="12" md="4" sm="6" style="padding: 0;">
-            <div class="search flex-align-center" style="margin-left: 16px;margin-top: 8px;">
+    <v-row class="mb-0">
+        <v-col cols="12" md="4" sm="6" class="pa-0">
+            <div class="search flex-align-center ml-4 mt-2">
                 <v-autocomplete v-model="nowCata" hide-details :items="cataSelect" @change="cataChange" style="min-width: 200px;">
                 
                 </v-autocomplete>
@@ -10,11 +10,11 @@
             </div>
         </v-col>
     </v-row>
-    <v-row style="margin-bottom: 0;">
-        <div class="content" style="padding: 0;margin-top: 24px;width: 100%;margin-right: 16px;margin-left: 16px;">
+    <v-row class="mb-0">
+        <div class="content pa-0 mt-6 mx-4 full-width">
             <div class="result">
                 <v-card class="result-card">
-                    <div class="card-title">
+                    <div class="card-title px-4 py-3">
                         <div class="title">
                             <v-card-title>{{nowCata}}清單</v-card-title>
                         </div>
@@ -109,14 +109,14 @@
                     </div>
                 </v-card-title>
                 <div class="basic">
-                    <v-card-text style="display: flex;padding-top: 0;">
+                    <v-card-text class="d-flex pt-0">
                         <v-text-field
                             v-model="edititem.name_ch"
                             :rules="rules.require"
                             label="中文名稱"
                             placeholder="中文名稱"
                             autocompleted="false"
-                            style="margin-right: 8px;"
+                            class="mr-2"
                         ></v-text-field>
                         <v-text-field
                             v-model="edititem.name_en"
@@ -124,10 +124,10 @@
                             label="英文名稱"
                             placeholder="英文名稱"
                             autocompleted="false"
-                            style="margin-right: 8px;"
+                            class="mr-2"
                         ></v-text-field>
                     </v-card-text>
-                    <v-card-text v-if="nowCata=='疾病'" style="display: flex;padding-top: 0;">
+                    <v-card-text v-if="nowCata=='疾病'" class="d-flex pt-0">
                         <v-select
                             v-model="edititem.species_id"
                             :rules="rules.requireSelect"
@@ -135,8 +135,7 @@
                             :menu-props="{ maxHeight: '400' }"
                             multiple
                             chips
-                            filled dense class="mt-0"
-                            style="width: 100%;margin: 8px 0;"
+                            filled dense class="ma-0 mb-2 full-width"
                             label="感染品種"
                             item-value="id"
                             item-text="name_ch"
@@ -157,12 +156,12 @@
                             </template>
                         </v-select>
                     </v-card-text>
-                    <v-card-text style="display: flex;padding-top: 0;">
+                    <v-card-text class="d-flex pt-0">
                         <v-textarea
                             filled 
                             v-model="edititem.remark"
                             placeholder="備註"
-                            style="margin-right: 8px;"
+                            class="mr-2"
                         ></v-textarea>
                     </v-card-text>
                 </div>
@@ -514,10 +513,6 @@ export default {
     &.item-card.theme--light {
         background-color: #fff;
     }
-    .card-title {
-        padding: 12px 16px !important;
-     
-    } 
 }
 ::v-deep {
     .v-dialog .v-sheet.v-card.custom-dialog .v-textarea.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {

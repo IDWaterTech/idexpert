@@ -53,28 +53,8 @@
   
 <style lang="scss">
 .v-card.map {
-    // padding: 16px;
     min-height: 84vh;
-    // overflow-y: scroll;
     margin-bottom: 24px;
     overflow: hidden;
-    .card-title {
-        padding: 12px 24px;
-        padding-bottom: 0;
-        // background-color: #006AA6;
-        // color: #fefefe;
-        .row {
-            margin-left: 0;
-            margin-top: 0;
-        }
-        .title {
-            @include flexAlignCenter();
-        }
-    }
-    .v-card__title {
-        color: #00273E;
-        font-weight: bold;
-    }
-    
 }
 </style>

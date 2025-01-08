@@ -6,8 +6,8 @@
     <v-card class="bg-card result-card mb-3" style="min-height:86vh">
       <!-- 表頭 -->
       <div class="card-title mx-2 my-0 pa-3 border-bottom cursor-pointer">
-        <div class="title">
-              <v-card-title style="padding: 0;font-size: 1.1rem;">角色清單</v-card-title>
+        <div class="title full-width">
+              <v-card-title class="pa-0" style="font-size: 1.1rem;">角色清單</v-card-title>
           </div>
           <div class="chevron">
             <v-btn class="btn-secondary green px-2 py-0" @click="showadd"><v-icon>mdi-plus</v-icon> 新增角色</v-btn>
@@ -731,7 +731,6 @@ export default {
   }
   .card-title {
     .title {
-      width: 100%;
       font-size: 1rem;
     }
     .chevron {

@@ -82,9 +82,9 @@
           <v-row class="mb-0">
             <v-col cols="12">
               <!-- 當日餐別明細 -->
-              <v-expansion-panels accordion multiple v-model="mealDetails" class="result-card">
-                <v-expansion-panel class="my-1">
-                    <v-expansion-panel-header class="pa-3" style="min-height: 20px;" expand-icon="mdi-triangle-small-down">當日餐別明細</v-expansion-panel-header>
+              <v-expansion-panels accordion multiple v-model="mealDetails" class="result-card mb-4">
+                <v-expansion-panel class="my-1 px-2 py-3">
+                    <v-expansion-panel-header class="pa-3 mx-3 my-0 border-bottom" style="min-height: 20px;" expand-icon="mdi-triangle-small-down">當日餐別明細</v-expansion-panel-header>
                     <v-expansion-panel-content>
                       <v-data-table
                         ref="feedtable"
@@ -182,8 +182,8 @@
               <!-- 料表 -->
               <v-card class="result-card pa-3 pb-2" >
                 <!-- 表頭 -->
-                <div class="card-title pa-0">
-                  <div class="title">
+                <div class="card-title flex-align-center pa-0 full-width">
+                  <div class="title full-width">
                     <v-row class="mr-3 ml-3 mb-3">
                       <v-col cols="12" md="6">
                         <v-row class="mb-0" style="margin-bottom: 0;">
@@ -225,9 +225,9 @@
                         <div class="right flex-align-center"
                           :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}"
                         >
-                          <v-btn icon @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
-                          <v-btn icon @click="cellsize = 1"><v-icon>mdi-format-color-text</v-icon></v-btn>
-                          <v-btn icon @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
+                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
+                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize = 1"><v-icon class="mt-1">mdi-format-color-text</v-icon></v-btn>
+                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
                           <v-btn
                             tile
                             class="btn-primary mx-1 my-0"
@@ -246,7 +246,7 @@
                   </div>
                 </div>
                 <!-- 清單 -->
-                <div class="result-list">
+                <div class="result-list pa-3 pt-0">
                   <el-table
                     id="outTable"
                     ref="mutitable"
@@ -1119,25 +1119,10 @@ export default {
     box-shadow: 0 0 10px $color-black-10;
   }
   .v-card.result-card {
-    background-color: $color-lighten;
     .card-title {
-      @include flexAlignCenter();
-      width: 100%;
       .title {
-        width: 100%;
         .col-12 {
           padding: 0;
-        }
-        .v-icon.v-icon {
-            font-size: 1rem;
-        }
-        .theme--light.v-icon {
-            color: $color-primary;
-        }
-        .v-card__title {
-            color: $color-primary;
-            font-size: 1rem;
-            padding: 8px;
         }
       }
     }
@@ -1145,33 +1130,19 @@ export default {
       min-height: 39vh;
     }
     .result-list {
-      padding: 0 12px 12px;
       min-height: 21vh;
     }
     
   }
 }
-.v-application.v-application--is-ltr .v-card.bg-card .content .title .theme--light.v-icon {
-  font-size: 1.25rem;
-}
-.v-application.v-application--is-ltr .v-card.bg-card .content .title .theme--light.v-icon.mdi-format-color-text {
-  padding-top: 6px;
-  font-size: 1.35rem;
-}
 ::v-deep {
   .result {
     // 當日餐點明細
-    .theme--light.v-expansion-panels {
-      margin-bottom: 16px;
-    }
     .theme--light.v-expansion-panels .v-expansion-panel {
       background-color: $color-lighten;
       color: $color-dark;
-      padding: 12px 8px;
     }
     .theme--light.v-expansion-panels .v-expansion-panel-header {
-      border-bottom: 1px solid $color-black-10;
-      margin: 0 12px;
       width: calc(100% - 24px);
     }
     .theme--light.v-expansion-panels .v-expansion-panel-header,.v-expansion-panel--active > .v-expansion-panel-header {
@@ -1191,18 +1162,9 @@ export default {
       font-size: 0.8rem;
     }
     // 料表
-    .right .theme--light.v-icon {
-      color: $color-primary;
-    }
     .theme--light.v-text-field--filled > .v-input__control > .v-input__slot,
     .theme--light.v-text-field--filled:not(.v-input--is-focused):not(.v-input--has-state) > .v-input__control > .v-input__slot:hover {
       background: $color-lighten;
-    }
-    .theme--light.v-label {
-      font-size: 15px;
-    }
-    .theme--light.v-label.v-label--active {
-      color: $color-form;
     }
     .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
       border-color: $color-form;
@@ -1212,9 +1174,6 @@ export default {
     }
     .v-text-field--filled > .v-input__control > .v-input__slot {
       min-height: 48px;
-    }
-    .v-text-field--filled .v-label.v-label--active {
-      top: 12px;
     }
     .el-table, .el-table__expanded-cell,.el-table tr,.el-table th.el-table__cell {
       background: $color-lighten;

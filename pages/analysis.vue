@@ -93,7 +93,7 @@
                                       placeholder="指定項目" :items="Object.keys(allcols.water)" v-if="allcols.water"
                                       :disabled="waterloading == true">
                                     </v-select>
-                                    <div  v-if="windowWidth<959.98" class="spector pt-1" @click="setDefitem">主要觀測項目
+                                    <div  v-if="windowWidth<959.98" class="spector pt-1 cursor-pointer" @click="setDefitem">主要觀測項目
 
                                     </div>
                                   </v-col>
@@ -129,7 +129,7 @@
                                   </v-col>
                                   <!-- 主要觀測項目 -->
                                   <v-col v-if="windowWidth>959.98" cols="6" md="6" sm="4" class="pt-0" align-self="center">
-                                    <div class="spector" @click="setDefitem">主要觀測項目
+                                    <div class="spector cursor-pointer" @click="setDefitem">主要觀測項目
 
                                     </div>
                                     <!-- <v-btn rounded block color="primary" @click="
@@ -1661,7 +1661,6 @@ export default {
 
 .spector {
   color: $color-primary;
-  cursor: pointer;
   padding-bottom: 2px;
   border-bottom: 1px solid $color-primary;
   width: 88px;
