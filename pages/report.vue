@@ -108,21 +108,23 @@
                                             @change="formChange($event,i)"
                                             :rules="rules.require"
                                             :multiple="form.is_multi"
+                                            :class="`${form.order==1||form.order==2||windowWidth<960?'mt-0':'mt-6'}`"
                                             ></v-select>
                                         <!-- 文字 -->
                                         <v-text-field
-                                            v-if="form.type=='text'" col=12 md="6" :rules="rules.require" :label="form.name"
+                                            v-if="form.type=='text'" col=12 md="6" :class="`${form.order==1||form.order==2||windowWidth<960?'mt-0':'mt-6'}`" :rules="rules.require" :label="form.name"
                                             v-model="form.value" dense type="text" @change="formChange($event,i)">
                                             </v-text-field>
                                         <!-- 數字 -->
                                         <v-text-field
-                                            v-if="form.type=='number'" col=12 md="6" :rules="rules.require" :label="form.name"
+                                            v-if="form.type=='number'" col=12 md="6" :class="`${form.order==1||form.order==2||windowWidth<960?'mt-0':'mt-6'}`" :rules="rules.require" :label="form.name"
                                             v-model.number="form.value" dense type="number" min="0" @change="formChange($event,i)">
                                             </v-text-field>
                                         <!-- true/false  -->
                                         <v-checkbox 
                                             v-if="form.type=='boolean'"
                                             v-model="form.value"
+                                            :class="`${form.order==1||form.order==2||windowWidth<960?'mt-0':'mt-6'}`"
                                             dense hide-details
                                             @change="formChange($event,i)"
                                             :label="form.name"></v-checkbox>
@@ -175,7 +177,8 @@ export default {
             showStartDate:true,
             showEndDate:[],
             isLoading: false,
-            file:''
+            file:'',
+            windowWidth: window.innerWidth,
         }
     },
     async created() {
@@ -258,7 +261,10 @@ export default {
                     // }
                     // item.input_config['select'] = {type:'select',name:'I \'m a selection',option:[{name:'option1',id:1},{name:'option2',id:2}],is_multi:true}
                     this.nowParameter = _.cloneDeep(item.input_config);
+                    console.log('input',this.nowParameter)
                     var keyLst = Object.keys(this.nowParameter);
+                    console.log('key',keyLst);
+                    
                     keyLst.forEach((k,i)=>{
                         if(this.nowParameter[k].type=='text'){
                             this.nowParameter[k].value = '';
@@ -292,6 +298,7 @@ export default {
                         this.nowParameter[k].para=k;
                         this.download.push(this.nowParameter[k]);
                     })
+                    this.download.sort((a,b)=>a.order-b.order);
                     this.get_scopeData(null,this.download.filter(x=>x.type=='select_range').length>0?this.download.filter(x=>x.type=='select_range')[0].name:'');
                 }else {
                     this.nowList = {};
