@@ -23,7 +23,7 @@
         </v-subheader>
         <div class="notify-item flex-column pl-1">
           <!-- <v-icon color="#EA4335" class="mr-2">mdi-gmail</v-icon> -->
-          <div class="mail mx-2 my-4">
+          <div class="mail mx-2 my-2">
             <!-- {{ profile.is_sys_enable_email }} -->
             <span>Mail</span>
             <el-switch
@@ -35,10 +35,10 @@
             ></el-switch
             >
           </div>
-          
+
           <!-- <v-icon color="#00B900" class="mr-2"
             >mdi-alpha-l-circle-outline</v-icon> -->
-          <div class="mail mx-2 my-4 line flex-align-center">
+          <div class="mail ma-2 line flex-align-center">
             <span>Line</span>
             <el-switch
               class="mx-2"
@@ -55,9 +55,9 @@
               :href="interactionLink"
               :disabled="
                 !profile.is_personal_enable_line ||
-                  profile.line_token.length != 0
+                  profile.line_user_id != null
               "
-              v-if="!profile.line_token"
+              v-if="profile.line_user_id==null"
               >尚未綁定</v-btn
             >
             <v-btn
@@ -65,8 +65,8 @@
               style="color:white;"
               tile
               @click="revoke"
-              :disabled="!profile.line_token"
-              v-if="profile.line_token"
+              :disabled="profile.line_user_id==null"
+              v-else
               class="btn-primary delete mx-2"
             >
               <!-- <v-icon :disabled="!profile.line_token">mdi-vector-polyline-remove</v-icon> -->
@@ -77,16 +77,21 @@
             > -->
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <button class="btn-icon just-icon cursor-pointer" :disabled="!profile.line_token" v-bind="attrs"
+                <button class="btn-icon just-icon cursor-pointer" :disabled="profile.line_user_id==null" v-bind="attrs"
                     v-on="on" @click="testMsg">
                   <v-icon style="font-size: 2rem;">mdi-send-circle-outline</v-icon>
                 </button>
-                
+
               </template>
               <span>發送測試訊息</span>
             </v-tooltip>
           </div>
-                  
+          <div class="mail mx-2 mb-4 line d-flex flex-column line_note pa-2 full-width">
+            <span style="font-size: 0.85rem;">Line驗證碼：<span id="text">{{ profile.line_vcode }}</span><v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
+            <span style="font-size: 0.85rem;">綁定者Line ID： {{ profile.line_user_id==null?'-': profile.line_user_id}}</span>
+          </div>
+
+          <span></span>
         </div>
       </div>
     </v-card>
@@ -112,6 +117,8 @@ export default {
         is_personal_enable_line: false,
         is_sys_enable_email: false,
         is_sys_enable_line: false,
+        line_user_id:null,
+        line_vcode:'',
         line_token: undefined
       },
       interactionLink: ``,
@@ -127,58 +134,68 @@ export default {
       let parm = {
         is_personal_enable_email: this.profile.is_personal_enable_email,
         is_personal_enable_line: this.profile.is_personal_enable_line,
-        line_token: this.profile.line_token
+        updated_user: this.$auth.$state.user.email
       };
-      await this.$axios
-        .patch(
-          `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/${this.profile.user_id}/`,
-          parm,
-          {
-            headers: accheader
+      var res = false;
+      res = await this.patchPersonalSettingList(parm,this.profile.user_id);
+      setTimeout(()=>{
+          if(res) {
+            this.getUser();
           }
-        )
-        .then(res => {
-          if (res.data == "修改成功") {
-            if (data != "nomsg") {
-              this.$toast.success(`修改成功`, { duration: 2000 });
-            }
-          } else {
-            if (data != "nomsg") {
-              this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
-            }
-          }
-          // this.profile = res.data;
-          // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
-        })
-        .catch(error => {
-          if (data != "nomsg") {
-            this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
-          }
-        })
-        .finally(() => {
-          this.getUser();
-        });
+      },50)
+      // await this.$axios
+      //   .patch(
+      //     `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/${this.profile.user_id}/`,
+      //     parm,
+      //     {
+      //       headers: accheader
+      //     }
+      //   )
+      //   .then(res => {
+      //     if (res.data == "修改成功") {
+      //       if (data != "nomsg") {
+      //         this.$toast.success(`修改成功`, { duration: 2000 });
+      //       }
+      //     } else {
+      //       if (data != "nomsg") {
+      //         this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
+      //       }
+      //     }
+      //     // this.profile = res.data;
+      //     // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
+      //   })
+      //   .catch(error => {
+      //     if (data != "nomsg") {
+      //       this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+      //     }
+      //   })
+      //   .finally(() => {
+      //     this.getUser();
+      //   });
     },
     getUser: async function() {
       let accheader = { account: this.$auth.$state.user.email };
-      await this.$axios
-        .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
-          headers: accheader
-        })
-        .then(res => {
-          if (res.data != "帳號資料不存在") {
-            this.profile = res.data;
-            // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
-          } else {
-            this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
-          }
-        })
-        .catch(error => {
-          this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
-        })
-        .finally(() => {
-          //this.getdata();
-        });
+      let getPersinalSettingList = await this.getPersinalSettingList(accheader);
+      let data = typeof (getPersinalSettingList)=='string'?{}:getPersinalSettingList;
+      this.profile = data;
+      // await this.$axios
+      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
+      //     headers: accheader
+      //   })
+      //   .then(res => {
+      //     if (res.data != "帳號資料不存在") {
+      //       this.profile = res.data;
+      //       // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
+      //     } else {
+      //       this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
+      //     }
+      //   })
+      //   .catch(error => {
+      //     this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
+      //   })
+      //   .finally(() => {
+      //     //this.getdata();
+      //   });
     },
     testMsg: async function() {
       let msg = `這是您由系統主動發送的測試訊息，時間：${dayjs(
@@ -249,6 +266,26 @@ export default {
         .finally(() => {
           //this.getdata();
         });
+    },
+    copy() {
+      var node = document.getElementById("text");
+      if (document.body.createTextRange) {
+          var range = document.body.createTextRange();
+          range.moveToElementText(node);
+          range.select();
+          document.execCommand("copy");
+          alert("複製成功!");
+      } else if (window.getSelection) {
+          var selection = window.getSelection();
+          var range = document.createRange();
+          range.selectNodeContents(node);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          document.execCommand("copy");
+          alert("複製成功!");
+      } else {
+          alert('無法複製內容、瀏覽器不支援');
+      }
     }
   },
   async mounted() {
@@ -291,7 +328,7 @@ export default {
         })
         .finally(() => {
           //重導頁不要有code
-          
+
         });
         location.href = location.href.replace(location.search, "");
     }
@@ -315,7 +352,7 @@ export default {
       & .v-icon {
         color: $color-primary;
       }
-      
+
     }
     .notify-item {
       @include flexAlignStart();
@@ -326,6 +363,10 @@ export default {
         font-weight: bold;
         color: $color-primary;
         margin-right: 8px;
+      }
+      &.line_note {
+        border: 1px solid $color-primary;
+        border-radius: 4px;
       }
     }
   }
