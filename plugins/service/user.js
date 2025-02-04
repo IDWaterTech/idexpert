@@ -11,12 +11,19 @@ Vue.mixin({
                 let data = await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent }) //所有使用者的清單
                 console.log("所有使用者的清單:" + data.request.responseURL);
                 if(data.status==200) {
-                return data.data;
+                    return data.data;
+                }else {
+                    return []
                 }
-
             }catch(error) {
-                this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return [];
             }
         },
         // 修改使用者資訊
@@ -32,16 +39,29 @@ Vue.mixin({
             { httpsAgent: agent }
             )
             console.log("修改使用者的清單:" + data.request.responseURL);
-            if(data.data == "修改成功") {
-            this.$toast.success("修改成功", { duration: 2000 });
-            return true;
-            }else {
-            this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+            if(data.status==200) {
+                if(data.data.messages[0]=='修改成功') {
+                    this.$toast.success("修改成功", { duration: 2000 });
+                    return true;
+                }else {
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                    return false;
+                }
+            }else{
+                this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                return false;
             }
 
         }catch(error) {
-            this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-            console.log(error);
+            if(error.response) {
+                console.error('API Error:', error.response);
+                this.$toast.error("修改失敗：" + error.response.data.messages[0], { duration: 2000 });
+            }
+            else {
+                this.$toast.error("修改失敗：" + error, { duration: 2000 });
+                console.log(error);
+            }
+            return false;
         }
         },
         // 刪除使用者
@@ -58,16 +78,22 @@ Vue.mixin({
                     }
                 )
                 console.log("刪除使用者的清單:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
-                this.$toast.success("刪除成功", { duration: 2000 });
-                return true;
+                if(data.status==200) {
+                    this.$toast.success("刪除成功", { duration: 2000 });
+                    return true;
                 }else {
-                this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                    this.$toast.success("刪除失敗：" + data.data.messages[0], { duration: 2000 });
+                    return false;
                 }
-
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return false;
             }
         },
         // 新增使用者
@@ -84,22 +110,37 @@ Vue.mixin({
                     }
                 )
                 console.log("新增使用者:" + data.request.responseURL);
-                if (data.data == "資料建立有問題") {
-                    alert("新增結果：" + data.data + "(帳號可能已存在)");
-                }else if(data.data == "新增成功") {
-                this.$toast.success("新增結果：" + data.data, {
-                    duration: 2000
-                });
-                return true;
+                if(data.status==200) {
+                    console.log(data);
+                    if(data.data.messages[0]=='新增成功') {
+                        this.$toast.success("新增結果：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                        return true;
+                    }else {
+                        this.$toast.error("新增失敗：" + data.data.messages[0], {
+                            duration: 2000
+                        });
+                        return false;
+                    }
                 }else {
-                this.$toast.success("新增結果：" + data.data, {
-                    duration: 2000
-                });
+                    console.log(data);
+                    this.$toast.error("新增失敗：" + data.data.messages[0], {
+                        duration: 2000
+                    });
+                    return false;
                 }
 
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                if(error.response) {
+                    console.error('API Error:', error.response);
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                }
+                else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return false;
             }
         },
         // 取得組織清單
@@ -145,24 +186,71 @@ Vue.mixin({
         // 取得個別帳號資料
         getPersinalSettingList:async function(parm) {
             try {
+                console.log('parm',parm)
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`,{
                     headers: parm
                 })
-                console.log("個別帳號清單:" + data.request.responseURL);
-                if (data.data != "帳號資料不存在") {
-                    // console.log('getUser',res.data);'
-                    return data.data.is_personal_enable_line;
-                    this.accdata[id].line_notify = res.data.is_personal_enable_line
-                    
-                    // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
-                } else {
+                if(data.status==200) {
+                    return data.data;
+                }else{
+                    return {};
+                }
+                // console.log("個別帳號清單:" + data.request.responseURL);
+                // if (data.data != "帳號資料不存在") {
+                //     // console.log('getUser',res.data);'
+                //     return data.data.is_personal_enable_line;
+                //     // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
+                // } else {
+                //     return false;
+                // // this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
+                // }
+
+            }catch(error) {
+                if(error.response) {
+                    this.$toast.error("錯誤：" + error.response.data.messages[0], { duration: 2000 });
+                    console.error('API Error:', error.response);
+                }else {
+                    this.$toast.error("錯誤：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return {};
+                // this.$toast.error("錯誤：" + error, { duration: 2000 });
+                // console.log(error);
+            }
+        },
+        // 修改個別帳號資料
+        patchPersonalSettingList:async function(parm,id) {
+            try {
+                let accheader = { account: this.$auth.$state.user.email };
+                let data = await this.$axios
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/${id}/`,parm,
+                    {
+                      headers: accheader
+                    })
+                console.log("修改個別帳號資料:" + data.request.responseURL);
+                if(data.status==200) {
+                    if(data.data.messages[0]=='修改成功') {
+                        this.$toast.success("修改成功", { duration: 2000 });
+                        return true;
+                    }else {
+                        this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                        return false;
+                    }
+                }else{
+                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
                     return false;
-                // this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
                 }
 
             }catch(error) {
-                this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
+                if(error.response) {
+                    console.error('API Error:', error.response);
+                    this.$toast.error("修改失敗：" + error.response.data.messages[0], { duration: 2000 });
+                }
+                else {
+                    this.$toast.error("修改失敗：" + error, { duration: 2000 });
+                    console.log(error);
+                }
+                return false;
             }
         },
         // 取得授權清單
@@ -197,7 +285,7 @@ Vue.mixin({
                         duration: 2000
                     });
                 }
-    
+
             }catch(error) {
                 this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
@@ -215,7 +303,7 @@ Vue.mixin({
                 }else {
                     this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
                 }
-    
+
             }catch(error) {
                 this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
@@ -232,12 +320,12 @@ Vue.mixin({
                 }else {
                     this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
                 }
-    
+
             }catch(error) {
                 this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
                 console.log(error);
             }
         },
-        
+
 	}
 })

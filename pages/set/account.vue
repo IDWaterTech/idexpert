@@ -290,7 +290,7 @@
             <template slot-scope="scope">
               <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
               <span class="d-inline-block" style="width: 36px;">Line</span>
-              <v-tooltip v-if="scope.row.line_notify" bottom>
+              <v-tooltip v-if="scope.row.is_personal_enable_line" bottom>
                   <template v-slot:activator="{ on, attrs }">
                       <v-btn  class="btn-circle" 
                               v-bind="attrs" v-on="on"
@@ -867,9 +867,10 @@ export default {
       this.isLoading = false;
       let getuserData = await this.getUserList();
       this.accdata = typeof (getuserData)=='string'?[]:getuserData;
-      this.accdata.forEach(async (acc,cid)=>{
-        await this.getUser(acc.username,cid);
-      })
+      console.log('accdata',this.accdata)
+      // this.accdata.forEach(async (acc,cid)=>{
+      //   await this.getUser(acc.username,cid);
+      // })
       this.isLoading = true;
       console.log('acc',this.accdata);
       // await this.$axios
@@ -1301,10 +1302,13 @@ export default {
       // }
     },
     getUser: async function(account,id) {
+      console.log(account);
       let accheader = { account: account };
+      console.log(accheader);
       let getPersinalSettingList = await this.getPersinalSettingList(accheader);
-      let data = typeof (getPersinalSettingList)=='string'?false:getPersinalSettingList;
-      this.accdata[id].line_notify = data;
+      let data = typeof (getPersinalSettingList)=='string'?{}:getPersinalSettingList;
+      console.log(data);
+      this.accdata[id].line_notify = data.is_personal_enable_line;
       // await this.$axios
       //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
       //     headers: accheader
