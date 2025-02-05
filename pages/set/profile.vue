@@ -87,8 +87,15 @@
             </v-tooltip>
           </div>
           <div class="mail mx-2 mb-4 line d-flex flex-column line_note pa-2 full-width">
-            <span style="font-size: 0.85rem;">Line驗證碼：<span id="text">{{ profile.line_vcode }}</span><v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
+            <span style="font-size: 0.85rem;">Line驗證碼：<span id="text">{{"綁定艾滴科技專家系統驗證碼：" + profile.line_vcode }}</span><v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
             <span style="font-size: 0.85rem;">綁定者Line ID： {{ profile.line_user_id==null?'-': profile.line_user_id}}</span>
+            <span style="font-size: 0.85rem;">艾滴科技專家系統Line：<strong>@176jtagf</strong>
+              <a href="https://lin.ee/w0836yv" target="_blank"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="24" border="0"></a>
+            </span>
+            <div class="d-flex justify-center align-center">
+              <img src="https://qr-official.line.me/sid/L/176jtagf.png" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
+            </div>
+            <span></span>
           </div>
 
           <span></span>
@@ -122,7 +129,8 @@ export default {
         line_token: undefined
       },
       interactionLink: ``,
-      req: this.$route.query
+      req: this.$route.query,
+      innerWidth: window.innerWidth,
     };
   },
   async created() {
@@ -282,7 +290,9 @@ export default {
           selection.removeAllRanges();
           selection.addRange(range);
           document.execCommand("copy");
-          alert("複製成功!");
+          this.$toast.success("複製成功!!，請將文字內容貼入「艾滴科技專家系統」Line對話框內進行綁定作業！", { duration: 5000 });
+          // alert("複製成功!!");
+          
       } else {
           alert('無法複製內容、瀏覽器不支援');
       }
