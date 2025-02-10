@@ -87,15 +87,26 @@
             </v-tooltip>
           </div>
           <div class="mail mx-2 mb-4 line d-flex flex-column line_note pa-2 full-width">
-            <span style="font-size: 0.85rem;">Line驗證碼：<span id="text">{{"綁定艾滴科技專家系統驗證碼：" + profile.line_vcode }}</span><v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
-            <span style="font-size: 0.85rem;">綁定者Line ID： {{ profile.line_user_id==null?'-': profile.line_user_id}}</span>
-            <span style="font-size: 0.85rem;">艾滴科技專家系統Line：<strong>@176jtagf</strong>
-              <a href="https://lin.ee/w0836yv" target="_blank"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="24" border="0"></a>
+            <span style="font-size: 0.85rem;" class="d-flex align-center">1.確認綁定狀態： {{ profile.line_user_id==null?'-': '綁定成功'}}
+              <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <button class="btn-icon just-icon cursor-pointer" :disabled="profile.line_user_id==null" v-bind="attrs"
+                    v-on="on" @click="testMsgCloud">
+                  <v-icon v-if="profile.line_user_id!=null">mdi-lightning-bolt-circle</v-icon>
+                </button>
+
+              </template>
+              <span>發送測試訊息</span>
+            </v-tooltip>
             </span>
-            <div class="d-flex justify-center align-center">
-              <img src="https://qr-official.line.me/sid/L/176jtagf.png" :style="{height:`${innerWidth>768?'120px':'80px'}`}" />
+            <span style="font-size: 0.85rem;">2.加入Line帳號：<strong class="mr-2">@176jtagf</strong><a href="https://lin.ee/w0836yv" target="_blank"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="24" border="0"></a>
+              <div class="d-flex justify-center align-center">
+              <img src="https://qr-official.line.me/sid/L/176jtagf.png" :style="{height:`${innerWidth>768?'81px':'64px'}`}" />
             </div>
-            <span></span>
+            </span>
+            <span style="font-size: 0.85rem;">3.輸入Line驗證碼：「<span id="text">{{"綁定艾滴科技專家系統驗證碼：" + profile.line_vcode }}</span>」<v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
+            
+            <span>4.發送測試訊息</span>
           </div>
 
           <span></span>
@@ -204,6 +215,40 @@ export default {
       //   .finally(() => {
       //     //this.getdata();
       //   });
+    },
+    testMsgCloud: async function() {
+      let msg = `這是您由系統主動發送的測試訊息，時間：${dayjs(
+        new Date()
+      ).format("YYYY-MM-DD HH:mm:ss")}`;
+      // let line_token = this.profile.line_token;
+      if (confirm(`是否測試發送訊息 [${msg}]`)) {
+        await this.sentMsgCloud(msg);
+      } else {
+        this.$toast.info(`取消發送訊息`, { duration: 2000 });
+      }
+    },
+    sentMsgCloud: async function(message) {
+      var parm = {
+        sender:this.$auth.$state.user.email,
+        receivers:[`${this.$auth.$state.user.email}`],
+        content: message,
+      };
+      var header = {'x-api-key': '16069c362a26aa860be9c11bf791a05cdebe9bbec3f504df77dd0275c82adfa3',
+      };
+
+      await this.$axios
+        .post(`${this.$store.state.mydata.gobal_api.apiUrl}/line/push/`,parm/*,{headers:header}*/)
+        .then(res => {
+          console.log(res);
+          this.$toast.success(`成功:${res.data.detail}`, { duration: 2000 });
+        })
+        .catch(error => {
+          console.log('error',error)
+          this.$toast.error(`失敗:${error}`, { duration: 2000 });
+        })
+        .finally(() => {
+          //this.getdata();
+        });
     },
     testMsg: async function() {
       let msg = `這是您由系統主動發送的測試訊息，時間：${dayjs(
