@@ -18,8 +18,14 @@ $ npm run start
 # build 正式站(使用 .env.production)
 $ npm run generate
 
-# build 測試站(使用.env.test)
-$ npm run generate:test
+### build 測試站(使用.env.test)
+$ npm run generate:test  
+進入資料夾：/var/web/site/frontend/  
+上傳dist.tar
+原資料夾改名：mv dist dist20250210
+解壓：tar xvf dist.tar
+
+重啟：docker restart webnginx
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
