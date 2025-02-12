@@ -87,7 +87,15 @@
             </v-tooltip>
           </div>
           <div class="mail mx-2 mb-4 line d-flex flex-column line_note pa-2 full-width">
-            <span style="font-size: 0.85rem;" class="d-flex align-center">1.確認綁定狀態： {{ profile.line_user_id==null?'-': '綁定成功'}}
+            <span style="font-size: 0.85rem;" class="d-flex align-center">1.確認綁定狀態： {{ profile.line_user_id==null?'未綁定': '綁定成功'}}</span>
+            <span style="font-size: 0.85rem;">2.加入Line帳號：<strong class="mr-2">@176jtagf</strong><a href="https://lin.ee/w0836yv" target="_blank"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="24" border="0"></a>
+              <div class="d-flex justify-center align-center">
+              <img src="https://qr-official.line.me/sid/L/176jtagf.png" :style="{height:`${innerWidth>768?'81px':'64px'}`}" />
+            </div>
+            </span>
+            <span style="font-size: 0.85rem;">3.輸入Line驗證碼：「<span id="text">{{"綁定艾滴科技專家系統驗證碼：" + profile.line_vcode }}</span>」<v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
+            
+            <span class="d-flex align-center" style="font-size: 0.85rem;">4.發送測試訊息：
               <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <button class="btn-icon just-icon cursor-pointer" :disabled="profile.line_user_id==null" v-bind="attrs"
@@ -99,14 +107,6 @@
               <span>發送測試訊息</span>
             </v-tooltip>
             </span>
-            <span style="font-size: 0.85rem;">2.加入Line帳號：<strong class="mr-2">@176jtagf</strong><a href="https://lin.ee/w0836yv" target="_blank"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="24" border="0"></a>
-              <div class="d-flex justify-center align-center">
-              <img src="https://qr-official.line.me/sid/L/176jtagf.png" :style="{height:`${innerWidth>768?'81px':'64px'}`}" />
-            </div>
-            </span>
-            <span style="font-size: 0.85rem;">3.輸入Line驗證碼：「<span id="text">{{"綁定艾滴科技專家系統驗證碼：" + profile.line_vcode }}</span>」<v-btn class="btn-icon just-icon" @click="copy()"><v-icon>mdi-content-copy</v-icon></v-btn></span>
-            
-            <span>4.發送測試訊息</span>
           </div>
 
           <span></span>
