@@ -2794,7 +2794,7 @@ export default {
         }
       }
     },
-    // 結束養殖循環
+    // 結束循環-結束養殖循環
     end(evt) {
       let data = _.cloneDeep(this.circleData.filter(x=>x.id==this.currentDataId)[0]);
       console.log('end',data,evt);
@@ -2803,7 +2803,11 @@ export default {
       data.estimated_survival_rate = parseFloat(data.estimated_survival_rate.split('%')[0]);
       data.ended_date = dayjs( new Date(evt)).format("YYYY-MM-DD");
       this.editparm = _.cloneDeep(data);
-      this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+      // console.log("accdata:",this.accdata);
+      // console.log("editparm:",this.editparm);
+      //單一人多單位會造成資料無法抓到，技術部-鍾曜澤、養殖組-鍾曜澤
+      // this.editperson_in_charge = this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge})[0].username;
+      
       this.submitEdit(true);//編輯執行結束的時間及更改養殖狀態
     },
     async getTemp(id,isDownload=false,item=null) {
