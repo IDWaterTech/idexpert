@@ -2397,6 +2397,7 @@ export default {
       let getuserData = await this.getUserList();
       var data = typeof (getuserData)=='string'?[]:getuserData;
       this.allUser = _.cloneDeep(data);
+      //這邊只串到1個單位 多個單位未考慮
       var mydata = data.filter(x=>x.is_active == true).map(x=>({username:x.username,id:x.id,account_name:x.account_name,position:x.position[0]?.department}));//只要正常啟用帳號
       this.accdata = Object.assign([],mydata.filter(x=>x.id!==1));//排除特殊人物
       // await this.$axios
