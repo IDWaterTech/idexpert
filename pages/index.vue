@@ -17,7 +17,7 @@
     
     <!-- 內容 -->
     <div class="wrapper">
-      <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;">
+      <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;" justify="center">
         <!-- 主標 -->
         <v-col cols="12" md="12">
           <!-- <div class="welcome" style="padding: 24px;">
@@ -80,34 +80,79 @@ export default {
   layout: "emptynologin2",
   data() {
     return {
+      isfranchise:true,//是否加盟者
       menuList: [],
       bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       isLoading: false,
+      UserData:{Username:'',IsSaved:false},//使用者相關資訊
     }
   },
   async created() {
     if(this.$auth.$state.loggedIn) {
       await this._pageCheck();
+      await this.getUserData();
       await this.getAllMenu();
     }else {
       window.location.href='/login';
     }
   },
   methods: {
+    // 取得使用者資料
+    getUserData: async function() {
+      // this.isLoading = false;
+      let userDataList = await this.getUserList();
+      var userDataListCheck = typeof (userDataList)=='string'?[]:userDataList;
+      var acc = userDataListCheck.filter(x=>x.username == this.$auth.$state.user.email)[0];
+      this.UserData = _.cloneDeep(acc);
+      //console.log('UserData!!!!!!!!!!',this.UserData);
+      // this.isLoading = true;
+    },
     // 所有menu
     async getAllMenu() {
       this.isLoading = false;
-      let datalst;
+      let dataLst = {};
       try{
-        datalst = await this.getMenuAuthorization(true);
+        let franchiselst = {
+          status: 200,
+          data: [{
+            "id": 2,
+            "name": "近況更新",
+            "url": "/recent",
+            "icon": "mdi-heart",
+            "type": "Menu",
+            "is_drop_down": false,
+            "is_show": true,
+            "disabled": false
+          }, {
+            "id": 3,
+            "name": "歷史數據",
+            "url": "/history",
+            "icon": "mdi-reload",
+            "type": "Menu",
+            "is_drop_down": false,
+            "is_show": true,
+            "disabled": false
+          }
+          ]
+        };
+        //datalst = this.isfranchise?franchiselst:await this.getMenuAuthorization(true);
+        dataLst = await this.getMenuAuthorization(true);
+        
+        if(this.UserData.is_customer==true){//加盟者身份
+          //var newData = _.cloneDeep(dataLst.data.filter(x=>['近況更新','歷史數據'].includes(x.name)));//篩選出disabled=false的資料
+          var newData = _.cloneDeep(dataLst.data.filter(x=>x.is_client_accessible==true));//篩選出disabled=false的資料
+          console.log('dataLst 原始：',dataLst.data);
+          dataLst.data = newData;
+        }
+        console.log('dataLst!!!!!!!!!!!',dataLst);
       }catch {
         console.log(error);
       }
-      if(datalst) {
-          if(datalst.status==200 && datalst.data.length>0) {
-            this.menuList = datalst.data;
+      if(dataLst) {
+          if(dataLst.status==200 && dataLst.data.length>0) {
+            this.menuList = dataLst.data;
             // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
             // 有子層的父層增加isOpen參數，用來開合子層
             this.menuList.forEach(m=>{
@@ -327,6 +372,8 @@ export default {
     }
   },
   mounted() {
+    console.log('mounted');
+    
     //監控視窗
     window.addEventListener('resize', () => {
       this.windowHeight = window.innerHeight;
@@ -378,6 +425,7 @@ video {
   padding: 24px 12px 48px;
   cursor: pointer;
   // height: 100%;
+  //max-width: 250px;
   border-bottom: 6px solid $color-primary;
   margin-top: 0;
   position: relative;

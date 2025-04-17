@@ -6,39 +6,32 @@
     <v-card class="bg-card result-card mb-3" style="min-height:86vh">
       <!-- 表頭 -->
       <div class="card-title ma-2 pa-3 border-bottom cursor-pointer">
-          <div class="title full-width">
-              <v-card-title class="pa-0">帳號清單</v-card-title>
-          </div>
-          <div class="chevron">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                  <button class="btn-icon green" @click="showaddDialog" v-bind="attrs" v-on="on">
-                      <v-icon>mdi-plus</v-icon>
-                  </button>
-              </template>
-              <span>新增帳號</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                  <button class="btn-icon" @click="showannDialog" v-bind="attrs" v-on="on">
-                      <v-icon>mdi-cellphone-message</v-icon>
-                  </button>
-              </template>
-              <span>發布公告</span>
-            </v-tooltip>
-          </div>
+        <div class="title full-width">
+          <v-card-title class="pa-0">帳號清單</v-card-title>
+        </div>
+        <div class="chevron">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <button class="btn-icon green" @click="showaddDialog" v-bind="attrs" v-on="on">
+                <v-icon>mdi-plus</v-icon>
+              </button>
+            </template>
+            <span>新增帳號</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <button class="btn-icon" @click="showannDialog" v-bind="attrs" v-on="on">
+                <v-icon>mdi-cellphone-message</v-icon>
+              </button>
+            </template>
+            <span>發布公告</span>
+          </v-tooltip>
+        </div>
       </div>
       <!-- 清單 -->
       <div class="content pt-3 full-width">
-        <el-table
-          :data="accdata"
-          class="full-width"
-          height="67vh"
-          row-key="id"
-          :expand-row-keys="expands"
-          @expand-change="expandSelect"
-          :header-cell-style="tableHeaderStyle"
-        >
+        <el-table :data="accdata" class="full-width" height="67vh" row-key="id" :expand-row-keys="expands"
+          @expand-change="expandSelect" :header-cell-style="tableHeaderStyle">
           <!-- <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left" inline>
@@ -86,69 +79,47 @@
               </el-form>
             </template>
           </el-table-column> -->
-          <el-table-column
-            v-for="(item, key) in accCols.filter(
+          <el-table-column v-for="(item, key) in accCols.filter(
               x => !accColsHide.includes(x.text)
-            )"
-            :prop="item.value"
-            :label="item.text"
-            :key="key"
-            :width="item.width"
-            v-show="false"
-          >
+            )" :prop="item.value" :label="item.text" :key="key" :width="item.width" v-show="false">
           </el-table-column>
-          <el-table-column
-            prop="department"
-            label="單位"
-            width="200"
-          >
+          <el-table-column prop="account_name" label="姓名" width="200">
             <template slot-scope="scope">
-              <v-chip
-                class="ma-2"
-                :color="getUnitSet('color', item)"
-                text-color="white"
-                v-for="(item, key) in scope.row.department"
-                :key="key"
-                ><v-avatar left>
-                  <v-icon>{{ getUnitSet("icon", item) }}</v-icon> </v-avatar
-                >{{ item }}</v-chip
-              >
+              <span>{{ scope.row.account_name }}</span><br />
+              <span>{{ scope.row.username }}</span><br />
+              <span v-if="scope.row.is_customer === true">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon color="primary" v-bind="attrs" v-on="on">
+                      mdi-handshake
+                    </v-icon>
+                  </template>
+                  <span>加盟客戶</span>
+                </v-tooltip>
+              </span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="factory_id"
-            label="所屬場別"
-            width="200"
-          >
+          <el-table-column prop="department" label="單位" width="200">
             <template slot-scope="scope">
-              <v-chip
-                class="ma-2"
-                label
-                color="teal"
-                text-color="white"
-                v-for="item in scope.row.factory_id"
-                :key="item"
-              >
-                {{ maindata.filter(x=>x.id == item).length==1?maindata.filter(x=>x.id == item)[0].name:item}} </v-chip
-              >
+              <v-chip class="ma-2" :color="getUnitSet('color', item)" text-color="white"
+                v-for="(item, key) in scope.row.department" :key="key"><v-avatar left>
+                  <v-icon>{{ getUnitSet("icon", item) }}</v-icon> </v-avatar>{{ item }}</v-chip>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="position"
-            label="職位"
-          >
+          <el-table-column prop="factory_id" label="所屬場別" width="200">
             <template slot-scope="scope">
-              <div
-                class="ma-2"
-                
-                v-for="(item, key) in scope.row.position"
-                :key="key"
-                >{{
-                  item.department == "艾滴科技股份有限公司"
-                    ? ""
-                    : item.department + "-"
-                }}{{ item.name }}</div
-              >
+              <v-chip class="ma-2" label color="teal" text-color="white" v-for="item in scope.row.factory_id"
+                :key="item">
+                {{ maindata.filter(x=>x.id == item).length==1?maindata.filter(x=>x.id == item)[0].name:item}} </v-chip>
+            </template>
+          </el-table-column>
+          <el-table-column prop="position" label="職位">
+            <template slot-scope="scope">
+              <div class="ma-2" v-for="(item, key) in scope.row.position" :key="key">{{
+                item.department == "艾滴科技股份有限公司"
+                ? ""
+                : item.department + "-"
+                }}{{ item.name }}</div>
               <!-- <v-chip
                 class="ma-2"
                 :color="getUnitSet('color', item.department)"
@@ -163,16 +134,10 @@
               > -->
             </template>
           </el-table-column>
-          <el-table-column
-            prop="is_active"
-            label="狀態"
-          >
+          <el-table-column prop="is_active" label="狀態">
             <template slot-scope="scope">
-              <el-tag
-                :type="scope.row.is_active ? 'success' : 'danger'"
-                disable-transitions
-                >{{ scope.row.is_active ? "啟用中" : "停用中" }}</el-tag
-              >
+              <el-tag :type="scope.row.is_active ? 'success' : 'danger'" disable-transitions>{{ scope.row.is_active ?
+                "啟用中" : "停用中" }}</el-tag>
               <!-- <el-switch
                 v-model="scope.row.is_active"
                 active-color="#13ce66"
@@ -181,33 +146,25 @@
               ></el-switch> -->
             </template>
           </el-table-column>
-          <el-table-column
-            prop="is_active"
-            label="允許接收通知"
-            align="left"
-          >
+          <el-table-column prop="is_active" label="允許接收通知" align="left">
             <template slot-scope="scope">
               <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
               <span class="d-inline-block" style="width: 36px;">Mail</span>
               <v-tooltip v-if="scope.row.is_sys_enable_email" bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-check-circle</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>允許接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-check-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>允許接收</span>
               </v-tooltip>
               <v-tooltip v-else bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle delete" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-close-circle-outline</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>禁止接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle delete" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-close-circle-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>禁止接收</span>
               </v-tooltip>
               <!-- <v-btn v-if="scope.row.is_sys_enable_email" class="btn-circle"><v-icon>mdi-check-circle</v-icon></v-btn>
               <v-btn v-else  class="btn-circle delete"><v-icon >mid-close-circle</v-icon></v-btn> -->
@@ -222,24 +179,20 @@
               <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon> -->
               <span class="d-inline-block" style="width: 36px;">Line</span>
               <v-tooltip v-if="scope.row.is_sys_enable_line" bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-check-circle</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>允許接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-check-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>允許接收</span>
               </v-tooltip>
               <v-tooltip v-else bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle delete" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-close-circle-outline</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>禁止接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle delete" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-close-circle-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>禁止接收</span>
               </v-tooltip>
               <!-- <v-btn v-if="scope.row.is_sys_enable_line" class="btn-circle"><v-icon>mdi-check-circle</v-icon></v-btn>
               <v-btn v-else  class="btn-circle delete"><v-icon >mid-close-circle</v-icon></v-btn> -->
@@ -253,24 +206,20 @@
               <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon> -->
               <span class="d-inline-block" style="width: 36px;">KB</span>
               <v-tooltip v-if="scope.row.is_sys_enable_line_kb" bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-check-circle</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>允許接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-check-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>允許接收</span>
               </v-tooltip>
               <v-tooltip v-else bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle delete" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-close-circle-outline</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>禁止接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle delete" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-close-circle-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>禁止接收</span>
               </v-tooltip>
               <!-- <v-btn v-if="scope.is_sys_enable_line_kb" class="btn-circle"><v-icon>mdi-check-circle</v-icon></v-btn>
               <v-btn v-else  class="btn-circle delete"><v-icon >mid-close-circle</v-icon></v-btn> -->
@@ -282,33 +231,25 @@
               ></el-switch> -->
             </template>
           </el-table-column>
-          <el-table-column
-            prop="line_notify"
-            label="個人通知允許"
-            align="left"
-          >
+          <el-table-column prop="line_notify" label="個人通知允許" align="left">
             <template slot-scope="scope">
               <!-- <v-icon color="#EA4335">mdi-gmail</v-icon> -->
               <span class="d-inline-block" style="width: 36px;">Line</span>
               <v-tooltip v-if="scope.row.is_personal_enable_line" bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-check-circle</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>允許接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-check-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>允許接收</span>
               </v-tooltip>
               <v-tooltip v-else bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-circle delete" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;">
-                          <v-icon>mdi-close-circle-outline</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>禁止接收</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-circle delete" v-bind="attrs" v-on="on" style="pointer-events: inherit;">
+                    <v-icon>mdi-close-circle-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>禁止接收</span>
               </v-tooltip>
             </template>
           </el-table-column>
@@ -322,21 +263,16 @@
               ].includes($auth.$state.user.email.toLowerCase())
             "
           > -->
-          <el-table-column
-            label="操作"
-          >
+          <el-table-column label="操作">
             <template slot-scope="scope">
               <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-icon"
-                              title="編輯" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;"
-                              @click="handleEdit(scope.$index, scope.row)">
-                          <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>編輯</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-icon" title="編輯" v-bind="attrs" v-on="on" style="pointer-events: inherit;"
+                    @click="handleEdit(scope.$index, scope.row)">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+                <span>編輯</span>
               </v-tooltip>
               <v-tooltip v-if="
                   [
@@ -344,16 +280,13 @@
                     'jeff.wang@idwater.com.tw'
                   ].includes($auth.$state.user.email.toLowerCase())
                 " bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                      <v-btn  class="btn-icon delete"
-                              title="刪除" 
-                              v-bind="attrs" v-on="on"
-                              style="pointer-events: inherit;"
-                              @click="handleDelete(scope.$index, scope.row)">
-                          <v-icon>mdi-trash-can</v-icon>
-                      </v-btn>
-                  </template>
-                  <span>刪除</span>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="btn-icon delete" title="刪除" v-bind="attrs" v-on="on" style="pointer-events: inherit;"
+                    @click="handleDelete(scope.$index, scope.row)">
+                    <v-icon>mdi-trash-can</v-icon>
+                  </v-btn>
+                </template>
+                <span>刪除</span>
               </v-tooltip>
               <!-- <el-button
                   v-if="
@@ -384,17 +317,15 @@
               發佈公告
             </div>
             <div class="add">
-              <v-btn  class="btn-secondary close"
-                      title="取消" 
-                      @click="annDialog = false">
-                  <v-icon>mdi-close</v-icon>
+              <v-btn class="btn-secondary close" title="取消" @click="annDialog = false">
+                <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
             <div class="card-title">
               <div class="title">
-                  <v-card-title>＊模擬畫面＊</v-card-title>
+                <v-card-title>＊模擬畫面＊</v-card-title>
               </div>
               <!-- <div class="chevron" >
                 <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
@@ -403,17 +334,12 @@
             </div>
             <div class="basic pl-2">
               <v-card-text class="flex-align-center pt-0" style="padding-top: 0;">
-                <v-alert
-                  type="success"
-                  dense
-                  icon="mdi-bell-outline"
-                  class="multi-line full-width"
-                  >【IDWaterExpert】 
+                <v-alert type="success" dense icon="mdi-bell-outline" class="multi-line full-width">【IDWaterExpert】
                   公告者：{{
-                    $auth.$state.user.name.replace(
-                      $auth.$state.user.family_name,
-                      ""
-                    )
+                  $auth.$state.user.name.replace(
+                  $auth.$state.user.family_name,
+                  ""
+                  )
                   }}
                   內容：{{ (annmsg!= undefined && annmsg.length>0)?annmsg:'...' }}
                 </v-alert>
@@ -435,7 +361,8 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="annDialog = false">取消</v-btn>
-            <v-btn class="btn-primary" :loading="annsubmitbtn" @click="annsubmit" :class="{'disabled':annmsg== undefined || annmsg.length<=0}">發佈</v-btn>
+            <v-btn class="btn-primary" :loading="annsubmitbtn" @click="annsubmit"
+              :class="{'disabled':annmsg== undefined || annmsg.length<=0}">發佈</v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -452,10 +379,8 @@
               新增使用者帳號
             </div>
             <div class="add">
-              <v-btn  class="btn-secondary close"
-                      title="取消" 
-                      @click="addDialog = false">
-                  <v-icon>mdi-close</v-icon>
+              <v-btn class="btn-secondary close" title="取消" @click="addDialog = false">
+                <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
           </v-card-title>
@@ -468,107 +393,62 @@
             </div> -->
             <div class="basic" style="padding-left: 8px;">
               <v-card-text class="d-flex flex-column pt-0">
-                <v-text-field
-                  v-model="addform.username"
-                  :rules="rules.require"
-                  label="帳號"
-                  placeholder="xxx@idwater.com.tw"
-                ></v-text-field>
-                <v-text-field
-                  v-model="addform.account_name"
-                  :rules="rules.require"
-                  label="使用者名稱"
-                  placeholder="王小明"
-                ></v-text-field>
+                <v-text-field v-model="addform.username" :rules="rules.require" label="帳號"
+                  placeholder="xxx@idwater.com.tw"></v-text-field>
+                <v-text-field v-model="addform.account_name" :rules="rules.require" label="使用者名稱"
+                  placeholder="王小明"></v-text-field>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0">
-                <v-text-field
-                  v-model="addform.password"
-                  :rules="rules.require"
-                  label="設定密碼"
-                  type="password"
-                ></v-text-field>
-                <v-text-field
-                  v-model="addform.password2"
-                  :rules="rules.require.concat(rules.eqpwd)"
-                  label="確認密碼"
-                  type="password"
-                ></v-text-field>
+                <v-text-field v-model="addform.password" :rules="rules.require" label="設定密碼"
+                  type="password"></v-text-field>
+                <v-text-field v-model="addform.password2" :rules="rules.require.concat(rules.eqpwd)" label="確認密碼"
+                  type="password"></v-text-field>
               </v-card-text>
               <v-card-text class="flex-align-center pt-0">
                 帳號預設狀態：
                 <div class="input-group ml-2">
-                  <el-tag
-                    :type="addform.is_active ? 'success' : 'info'"
-                    disable-transitions
-                    >{{ addform.is_active ? "啟用" : "停用" }}</el-tag
-                  >
-                  <el-switch
-                    v-model="addform.is_active"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                  ></el-switch>
+                  <el-tag :type="addform.is_active ? 'success' : 'info'" disable-transitions>{{ addform.is_active ? "啟用"
+                    : "停用" }}</el-tag>
+                  <el-switch v-model="addform.is_active" active-color="#13ce66" inactive-color="#eee"></el-switch>
                 </div>
-                
+
               </v-card-text>
               <v-card-text class="flex-align-center pt-0">
                 允許接收通知：
                 <div class="input-group flex-align-center">
                   <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
-                  Mail<el-switch
-                    v-model="addform.is_sys_enable_email"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                    class="my-4 mr-4 ml-2"
-                  ></el-switch>
+                  Mail<el-switch v-model="addform.is_sys_enable_email" active-color="#13ce66" inactive-color="#eee"
+                    class="my-4 mr-4 ml-2"></el-switch>
                   <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
-                  Line<el-switch
-                    v-model="addform.is_sys_enable_line"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                    class="my-4 mr-4 ml-2"
-                  ></el-switch>
+                  Line<el-switch v-model="addform.is_sys_enable_line" active-color="#13ce66" inactive-color="#eee"
+                    class="my-4 mr-4 ml-2"></el-switch>
                   <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
-                  KB<el-switch
-                    v-model="addform.is_sys_enable_line_kb"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                    class="my-4 mr-4 ml-2"
-                  ></el-switch>
+                  KB<el-switch v-model="addform.is_sys_enable_line_kb" active-color="#13ce66" inactive-color="#eee"
+                    class="my-4 mr-4 ml-2"></el-switch>
+                </div>
+              </v-card-text>
+              <v-card-text class="flex-align-center pt-0">
+                是否為加盟客戶：
+                <div class="input-group flex-align-center">
+                  <el-switch v-model="addform.is_customer" active-color="#13ce66" inactive-color="#eee"
+                    class="my-4 mr-4 ml-2"></el-switch>
                 </div>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0 full-width">
-                <v-select
-                  :items="maindata"
-                  item-text="name"
-                  item-value="id"
-                  v-model="addform.factory_id"
-                  multiple
-                  chips
-                  placeholder="所屬場別"
-                  class="mutiselect full-width"
-                ></v-select>
-                <treeselect
-                  v-model="addform.position_id"
-                  :multiple="true"
-                  :options="options"
-                  :flat="true"
-                  :default-expand-level="1"
-                  placeholder="請選擇職位"
-                  :disable-branch-nodes="true"
-                  class="select-template full-width"
-                  :rules="rules.length"
-                  :class="{error:isDataidError}" 
-                >
+                <v-select :items="maindata" item-text="name" item-value="id" v-model="addform.factory_id" multiple chips
+                  placeholder="所屬場別" class="mutiselect full-width"></v-select>
+                <treeselect v-model="addform.position_id" :multiple="true" :options="options" :flat="true"
+                  :default-expand-level="1" placeholder="請選擇職位" :disable-branch-nodes="true"
+                  class="select-template full-width" :rules="rules.length" :class="{error:isDataidError}">
                   <div slot="value-label" slot-scope="{ node }">
                     {{ node.raw.unit }}-{{ node.raw.label }}
                   </div>
                 </treeselect>
               </v-card-text>
             </div>
-            
+
           </v-card-text>
-          <v-card-actions >
+          <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="addDialog = false">取消</v-btn>
             <v-btn class="btn-primary" @click="addsubmit">確認</v-btn>
@@ -581,16 +461,14 @@
       <v-overlay :value="!dialogLoading" :absolute="true">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
-      <v-card  class="custom-dialog">
+      <v-card class="custom-dialog">
         <v-card-title class="add-title">
           <div class="d-inline-block">
             修改
           </div>
           <div class="add">
-            <v-btn  class="btn-secondary close"
-                    title="取消" 
-                    @click="editDialog = false">
-                <v-icon>mdi-close</v-icon>
+            <v-btn class="btn-secondary close" title="取消" @click="editDialog = false">
+              <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>
         </v-card-title>
@@ -598,36 +476,13 @@
           <div class="basic pl-2">
             <v-card-text>
               <v-card-subtitle class="pl-0">{{ editedData.username }}</v-card-subtitle>
-              <v-text-field :rules="rules.require"
-                  label="使用者名稱" v-model="editedData.account_name"> </v-text-field>
-              <v-autocomplete
-                v-model="editedData.factory_id"
-                filled
-                clearable
-                multiple
-                :items="maindata"
-                item-text="name"
-                item-value="id"
-                dense
-                deletable-chips
-                chips
-                style="width:600px;"
-                class="mutiselect mt-2"
-                label="所屬場別"
-                ></v-autocomplete>
-              <treeselect
-                v-model="editedData.position"
-                :multiple="true"
-                :options="options"
-                :flat="true"
-                :default-expand-level="3"
-                placeholder="請選擇職位"
-                label="職位"
-                :disable-branch-nodes="true"
-                class="select-template"
-                :rules="rules.length"
-                :class="{error:isDataidError}"
-              >
+              <v-text-field :rules="rules.require" label="使用者名稱" v-model="editedData.account_name"> </v-text-field>
+              <v-autocomplete v-model="editedData.factory_id" filled clearable multiple :items="maindata"
+                item-text="name" item-value="id" dense deletable-chips chips style="width:600px;"
+                class="mutiselect mt-2" label="所屬場別"></v-autocomplete>
+              <treeselect v-model="editedData.position" :multiple="true" :options="options" :flat="true"
+                :default-expand-level="3" placeholder="請選擇職位" label="職位" :disable-branch-nodes="true"
+                class="select-template" :rules="rules.length" :class="{error:isDataidError}">
                 <div slot="value-label" slot-scope="{ node }">
                   {{ node.raw.unit }}-{{ node.raw.label }}
                 </div>
@@ -636,57 +491,42 @@
             <v-card-text class="flex-align-center pt-0">
               帳號狀態：
               <div class="input-group ml-2" style="margin-left: 8px;">
-                <el-tag
-                  :type="editedData.is_active ? 'success' : 'info'"
-                  disable-transitions
-                  >{{ editedData.is_active ? "啟用" : "停用" }}</el-tag
-                >
-                <el-switch
-                  v-model="editedData.is_active"
-                  active-color="#13ce66"
-                  inactive-color="#eee"
-                  @change="changeState()"
-                ></el-switch>
+                <el-tag :type="editedData.is_active ? 'success' : 'info'" disable-transitions>{{ editedData.is_active ?
+                  "啟用" : "停用" }}</el-tag>
+                <el-switch v-model="editedData.is_active" active-color="#13ce66" inactive-color="#eee"
+                  @change="changeState()"></el-switch>
               </div>
-              
+
             </v-card-text>
             <v-card-text class="flex-align-center pt-0">
-                允許接收通知：
-                <div class="input-group flex-align-center">
-                  <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
-                  Mail<el-switch
-                    v-model="editedData.is_sys_enable_email"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                    class="my-4 mr-4 ml-2"
-                    @change="changeState()"
-                  ></el-switch>
-                  <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
-                  Line<el-switch
-                    v-model="editedData.is_sys_enable_line"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                    class="my-4 mr-4 ml-2"
-                    @change="changeState()"
-                  ></el-switch>
-                  <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
-                  KB<el-switch
-                    v-model="editedData.is_sys_enable_line_kb"
-                    active-color="#13ce66"
-                    inactive-color="#eee"
-                    class="my-4 mr-4 ml-2"
-                    @change="changeState()"
-                  ></el-switch>
-                </div>
-              </v-card-text>
+              允許接收通知：
+              <div class="input-group flex-align-center">
+                <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
+                Mail<el-switch v-model="editedData.is_sys_enable_email" active-color="#13ce66" inactive-color="#eee"
+                  class="my-4 mr-4 ml-2" @change="changeState()"></el-switch>
+                <!-- <v-icon color="#00B900">mdi-alpha-l-circle-outline</v-icon>Line -->
+                Line<el-switch v-model="editedData.is_sys_enable_line" active-color="#13ce66" inactive-color="#eee"
+                  class="my-4 mr-4 ml-2" @change="changeState()"></el-switch>
+                <!-- <v-icon color="#009688">mdi-database-edit-outline</v-icon>KB -->
+                KB<el-switch v-model="editedData.is_sys_enable_line_kb" active-color="#13ce66" inactive-color="#eee"
+                  class="my-4 mr-4 ml-2" @change="changeState()"></el-switch>
+              </div>
+            </v-card-text>
+            <v-card-text class="flex-align-center pt-0">
+              是否為加盟客戶：
+              <div class="input-group flex-align-center">
+                <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
+                {{ editedData.is_customer }}
+                <el-switch v-model="editedData.is_customer" active-color="#13ce66" inactive-color="#eee"
+                  class="my-4 mr-4 ml-2" @change="changeState()"></el-switch>
+              </div>
+            </v-card-text>
           </div>
         </v-card-text>
         <v-card-actions style="padding-bottom: 24px;">
           <v-spacer></v-spacer>
           <v-btn class="btn-secondary" @click="editDialog = false">取消</v-btn>
-          <v-btn @click="submitEdit" class="btn-primary" tile
-            >修改</v-btn
-          >
+          <v-btn @click="submitEdit" class="btn-primary" tile>修改</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -729,7 +569,7 @@ export default {
       ],
       accCols: [
         { text: "帳號", value: "username", width: 300 },
-        { text: "姓名", value: "account_name", width: 150},
+        { text: "姓名", value: "account_name", width: 300},
         { text: "單位", value: "department", width: 150 },
         { text: "職位", value: "position", width: 150 },
         { text: "狀態", value: "is_active", width: 150},
@@ -741,7 +581,7 @@ export default {
         require: [v => !!v || "*必要項目"],
         eqpwd: [v => v == this.addform.password || "*密碼不一致"]
       },
-      accColsHide: ["單位", "職位", "狀態","所屬場別"], //隱藏欄位、或需要特殊建立的欄位
+      accColsHide: ["帳號","姓名","單位", "職位", "狀態","所屬場別"], //隱藏欄位、或需要特殊建立的欄位
       editDialog: false,
       editedData: {}, //編輯中的資料
       expands: [], //Expand only one line into the current line id
@@ -760,6 +600,7 @@ export default {
         is_sys_enable_email: false,
         is_sys_enable_line: false,
         is_sys_enable_line_kb: false,
+        is_customer:false,
         position_id: [],
         factory_id: [],
       },
@@ -968,7 +809,7 @@ export default {
       delete parm.department;
       delete parm.highest_position_id;
       delete parm.id;
-      console.log(parm);
+      // console.log("送出修改：",parm);
       this.isDataidError = true;
       if(parm.position_id.length>0) {
         this.dialogLoading = false;
