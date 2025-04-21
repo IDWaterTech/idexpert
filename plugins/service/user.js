@@ -2,6 +2,15 @@ import Vue from "vue";
 import https from "https";
 Vue.mixin({
 	methods: {
+        // 取得單一使用者資料
+        _getUserData: async function() {
+            let userDataList = await this.getUserList();
+            var userDataListCheck = typeof (userDataList)=='string'?[]:userDataList;
+            var acc = userDataListCheck.filter(x=>x.username == this.$auth.$state.user.email)[0];
+            let UserData = _.cloneDeep(acc);
+            console.log("_UserData:",UserData);
+            return UserData;
+        },
 	    // 取得使用者清單
         getUserList:async function() {
             try {
