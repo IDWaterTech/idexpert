@@ -8,7 +8,7 @@ Vue.mixin({
             var userDataListCheck = typeof (userDataList)=='string'?[]:userDataList;
             var acc = userDataListCheck.filter(x=>x.username == this.$auth.$state.user.email)[0];
             let UserData = _.cloneDeep(acc);
-            console.log("_UserData:",UserData);
+            // console.log("_UserData:",UserData);
             return UserData;
         },
 	    // 取得使用者清單
