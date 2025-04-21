@@ -56,6 +56,37 @@ import https from "https";
                     accPagelst = _.cloneDeep(datalst.data);
                     console.log("accPagelst:",accPagelst);
                     console.log("accPage api:",datalst.request.responseURL);
+                    let user = await this._getUserData();
+                    //User資料結構
+                    //   {
+                    //     "id": 3,
+                    //     "username": "jianwei.wen@idwater.com.tw",
+                    //     "account_name": "溫健偉",
+                    //     "department": [
+                    //         "技術部"
+                    //     ],
+                    //     "position": [
+                    //         {
+                    //             "position_id": 124,
+                    //             "department": "技術部",
+                    //             "name": "軟體工程師"
+                    //         }
+                    //     ],
+                    //     "is_active": true,
+                    //     "is_sys_enable_line": true,
+                    //     "is_sys_enable_email": false,
+                    //     "is_sys_enable_line_kb": false,
+                    //     "is_personal_enable_line": true,
+                    //     "factory_id": [
+                    //         2,
+                    //         40,
+                    //         30
+                    //     ],
+                    //     "line_vcode": "RfQZZqIq",
+                    //     "line_user_id": "U97475a8613ee871944c4dc42b7eaf63e",
+                    //     "is_customer": true,
+                    //     "highest_position_id": 124
+                    // }
                     let data = [];
                     let nowmainid = 0;
                     accPagelst.forEach(main=>{
@@ -75,7 +106,11 @@ import https from "https";
                         nowmainid++;
                       }
                     })
-                    accPagelst = data;
+                    if(user.is_customer==true) {//加盟者
+                      accPagelst = data.filter(x=>x.is_client_accessible==true || (user.department.includes('技術部') && x.name=="管理"));//只顯示加盟者可見的頁面
+                    }else{
+                      accPagelst = data;
+                    }
                     this.$store.commit('mydata/set_listitems', accPagelst);
                   }
                   // await this.$axios
