@@ -44,7 +44,14 @@
                   </div>
                   <div class="content">
                     <v-row class="mb-4">
-                      <v-col cols="12">
+                      <v-col cols="3" class="text-center">
+                          <div>
+                            <img src="https://test.idwatertech.com/media/shrimp_record/20241209105823_117/LINE_ALBUM_2024_%E8%9D%A6%E6%B3%81%E7%85%A7%E7%89%87%E6%97%A5%E5%B8%B8%E8%A7%80%E5%AF%9F%E6%89%93%E6%A8%A3%E6%94%BE%E8%8B%97%E6%94%B6%E6%88%90%E7%AD%89%E8%88%87%E8%9D%A6%E9%9A%BB%E6%9C%89%E9%97%9C%E7%9A%84%E7%85%A7%E7%89%87%E7%B4%80%E9%8C%84_241209_9.jpg" 
+                            style="max-height: 300px;" @click="viewOrigin('https://test.idwatertech.com/media/shrimp_record/20241209105823_117/LINE_ALBUM_2024_%E8%9D%A6%E6%B3%81%E7%85%A7%E7%89%87%E6%97%A5%E5%B8%B8%E8%A7%80%E5%AF%9F%E6%89%93%E6%A8%A3%E6%94%BE%E8%8B%97%E6%94%B6%E6%88%90%E7%AD%89%E8%88%87%E8%9D%A6%E9%9A%BB%E6%9C%89%E9%97%9C%E7%9A%84%E7%85%A7%E7%89%87%E7%B4%80%E9%8C%84_241209_9.jpg',undefined)" /><br/>
+                            <span>2024-12-09 10:58:23</span>
+                          </div>
+                      </v-col>
+                      <v-col cols="9">
                         <el-table :data="farmData" class="full-width" max-height="240" size="mini">
                           <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
                           <el-table-column prop="item_value" label="數值" width="180"></el-table-column>
@@ -70,10 +77,10 @@
                   <div class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table :data="feedData" class="full-width" max-height="500" size="mini">
+                        <el-table :data="feedData" class="full-width" max-height="600" size="mini">
                           <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
                           <el-table-column prop="item_value" label="使用量/數值" width="180"></el-table-column>
-                          <el-table-column prop="item_price" label="金額" width="180"></el-table-column>
+                          <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
                         </el-table>
                       </v-col>
                     </v-row>
@@ -172,6 +179,12 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <!-- 圖片預覽 -->
+          <el-image-viewer
+            v-if="isOriginImg"
+            :on-close="()=>{isOriginImg=false}"
+            :url-list="srcList"
+          />
         </div>
       </div>
     </v-card>
@@ -196,6 +209,8 @@ export default {
     },
     data() {
         return {
+            srcList: [],
+            isOriginImg: false,
             poolid: '',
             isLoading: false,
             isOriginImg: false,
@@ -205,7 +220,7 @@ export default {
                         {item_name: '白蝦放養密度(尾/噸)', item_value: '252'}, {item_name: '白蝦放養總量(尾/水)', item_value: '210168.00'},
                         // {item_name: '目標收成重量(公克/尾)', item_value: '35'},
                         {item_name: '平均蝦重(g)', item_value: '35'},
-                        { item_name: '當前育成率', item_qty: '-', item_value: '-' },
+                        
                       ],
           feedData: [{ item_name: '溶氧(ppm)', item_value: '28.5' }, { item_name: '酸鹼值', item_value: '7.8' },
           { item_name: '氨氮(ppm)', item_value: '5.2' }, { item_name: '水位(%)', item_value: '0.02' },
@@ -215,37 +230,41 @@ export default {
           //   , { item_name: '預估存活率', item_value: '(歷史數據才有)' }
           //----------------------
           { item_name: '用電量(度)', item_qty: '-', item_value: '10000' },
-          { item_name: '攤提契約用電量', item_qty: '-', item_value: '300' },
+          //暫隱{ item_name: '攤提契約用電量', item_qty: '-', item_value: '300' },
           { item_name: '飼料(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '糖(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '益生菌(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' }, 
-          { item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
+          { item_name: '當前育成率', item_qty: '-', item_value: '-' },
+          { item_name: '目標收成蝦重(g)', item_qty: '-', item_value: '-' },
+          { item_name: '預估育成率', item_qty: '-', item_value: '-' },
+          { item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
+          //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
           // { item_name: '檢測費(試劑、儀器)', item_qty: '-', item_value: '-' },
           // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' }, 
-          { item_name: '雜費(展開show細項)', item_qty: 5, item_value: '-' },
-          { item_name: '每月人事費用', item_qty: '-', item_value: '-' },
+          //暫隱{ item_name: '雜費(展開show細項)', item_qty: 5, item_value: '-' },
+          //暫隱{ item_name: '每月人事費用', item_qty: '-', item_value: '-' },
           //{ item_name: '蝦苗(元/尾)', item_qty: '0.25', item_value: '-' },
-          { item_name: '蝦苗(總價)', item_qty: '-', item_value: '60000' },
+          //暫隱{ item_name: '蝦苗(總價)', item_qty: '-', item_value: '60000' },
           ],
           feeData_Backup: [{ item_name: '用電量(度)', item_qty: '-', item_value: '10000' },
-          { item_name: '攤提契約用電量', item_qty: '-', item_value: '300' },
+          //暫隱{ item_name: '攤提契約用電量', item_qty: '-', item_value: '300' },
           { item_name: '飼料(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '糖(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '益生菌(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' }, 
-          { item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
+          //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
           // { item_name: '檢測費(試劑、儀器)', item_qty: '-', item_value: '-' },
           // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' }, 
-          { item_name: '雜費(展開show細項)', item_qty: 5, item_value: '-' },
-          { item_name: '每月人事費用', item_qty: '-', item_value: '-' },
+          //暫隱{ item_name: '雜費(展開show細項)', item_qty: 5, item_value: '-' },
+          //暫隱{ item_name: '每月人事費用', item_qty: '-', item_value: '-' },
           //{ item_name: '蝦苗(元/尾)', item_qty: '0.25', item_value: '-' },
           { item_name: '蝦苗(總價)', item_qty: '-', item_value: '60000' },
           ],
           incomeData: [
-          { item_name: '目標收成蝦重(g)', item_qty: '-', item_value: '-' },
-          { item_name: '預估育成率', item_qty: '-', item_value: '-' },
-          { item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
+          // { item_name: '目標收成蝦重(g)', item_qty: '-', item_value: '-' },
+          // { item_name: '預估育成率', item_qty: '-', item_value: '-' },
+          // { item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
           { item_name: '預估白蝦單價(元/公斤)', item_qty: '383.2', item_value: '-' }, { item_name: '預估收益(元/水)', item_qty: '-', item_value: '766400' },
           { item_name: '單位成本(元/公斤)', item_qty: '-', item_value: '35' }, 
           ],
@@ -253,6 +272,12 @@ export default {
         };
     },
     methods: {
+      //看圖片
+        viewOrigin(item,type) {
+          this.srcList = [];//清空
+          this.isOriginImg = true;
+          this.srcList.push(item);//放入圖片
+        },
         async getAllUser() {
             let getuserData = await this.getUserList();
             this.userData = typeof getuserData === 'string' ? [] : getuserData.filter(x => x.is_active);

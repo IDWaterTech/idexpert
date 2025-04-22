@@ -492,9 +492,13 @@
               </v-row>
             </v-card-text> 
             <v-card-text style="display: flex;">
-              <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details>
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.estimated_harvest_weight" label="目標收成蝦重(g)" :rules="rules.require" hide-details>
               </v-text-field>
-              <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" label="預估存活率(%)(選)">
+              <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" label="預估育成率(%)" :rules="rules.require">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text>
+              <v-text-field filled dense type="number" v-model.number="addparm.pond_water_level" label="養殖池水位高度(m)" :rules="rules.require">
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
@@ -757,9 +761,13 @@
               </v-row>
             </v-card-text> 
             <v-card-text class="d-flex">
-              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details>
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="目標收成蝦重(g)" :rules="rules.require" hide-details>
               </v-text-field>
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)">
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估育成率(%)" :rules="rules.require">
+              </v-text-field>
+            </v-card-text>
+            <v-card-text class="d-flex">
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="養殖池水位高度(m)" :rules="rules.require">
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
@@ -912,9 +920,13 @@
               </v-row>
             </v-card-text> 
             <v-card-text class="d-flex mt-6">
-              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="預估收成個體重(g)(選)" hide-details disabled>
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="目標收成蝦重(g)" :rules="rules.require" hide-details disabled>
               </v-text-field>
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估存活率(%)(選)" disabled>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估育成率(%)" :rules="rules.require" disabled>
+              </v-text-field>
+            </v-card-text>
+            <v-card-text class="d-flex">
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="養殖池水位高度(m)" :rules="rules.require" disabled>
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
@@ -1249,7 +1261,7 @@ export default {
         estimated_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
-        estimated_harvest_weight:undefined,//預估收成個體重
+        estimated_harvest_weight:undefined,//目標收成蝦重
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
@@ -1385,7 +1397,7 @@ export default {
         estimated_num: 0, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
-        estimated_harvest_weight:undefined,//預估收成個體重
+        estimated_harvest_weight:undefined,//目標收成蝦重
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人

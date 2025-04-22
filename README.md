@@ -20,12 +20,19 @@ $ npm run generate
 
 ### build 測試站(使用.env.test)
 $ npm run generate:test  
-進入資料夾：/var/web/site/frontend/  
-上傳dist.tar
-原資料夾改名：mv dist dist20250210
-解壓：tar xvf dist.tar
-
-重啟：docker restart webnginx
 ```
+★遠端-進入遠端資料夾：`cd /var/web/site/frontend/`
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+遠端-刪除dist.tar：`rm dist.tar`
+
+本機-壓縮tar：`7z a -ttar dist.tar dist`
+
+本機-上傳dist.tar(mobaXterm上傳)
+
+★遠端-原資料夾改名+日期時間(例：dist20250101)：`mv dist dist2025`  
+
+★遠端-解壓：`tar xvf dist.tar`
+
+★遠端-重啟：`docker restart webnginx`
+
+本機-刪除tar：`Remove-Item dist.tar`

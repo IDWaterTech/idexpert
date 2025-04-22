@@ -443,8 +443,7 @@
                           </v-col> -->
                           <v-col cols="12" md="6" v-for="(item,id) in observeChartData" :key="'chart_'+item.name_en+id">
                             <h3 class="pool-name">{{ item.name_ch }}{{item.name_en=='feed_amount'?'':'(%)'}}</h3>
-                            <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="item.name_en=='feed_amount'?null:100"></Stackbar>
-                            
+                            <Stackbar :value="item.chartData.series" :xAxis="item.chartData.xAxis" :legend="item.chartData.legend" :myColors="item.chartData.colors" :min="0" :max="item.name_en=='feed_amount' ? null : 100 "></Stackbar>
                           </v-col>
                         </v-row>
                       </v-tab-item>
