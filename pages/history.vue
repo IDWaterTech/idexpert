@@ -41,6 +41,32 @@
                       </v-col> -->
                       <v-col cols="12" class="text-center">
                         <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
+                          <!-- 選擇起日 -->
+                          <div style="padding: 12px;">
+                            <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
+                              transition="scale-transition" offset-y min-width="auto">
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="sdate" label="選擇起日" prepend-icon="mdi-calendar" readonly
+                                  v-bind="attrs" v-on="on" class="select-color" hide-details
+                                  @click:prepend="() => (sdate = getNowDate())"></v-text-field>
+                              </template>
+                              <v-date-picker v-model="sdate" locale="zh-tw" no-title
+                                @input="menu_startdate = false"></v-date-picker>
+                            </v-menu>
+                          </div>
+                          <!-- 選擇迄日 -->
+                          <div style="padding: 12px;">
+                            <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
+                              transition="scale-transition" offset-y min-width="auto">
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly
+                                  v-bind="attrs" v-on="on" class="select-color" hide-details
+                                  @click:prepend="() => (edate = getNowDate())"></v-text-field>
+                              </template>
+                              <v-date-picker v-model="edate" locale="zh-tw" no-title
+                                @input="menu_enddate = false"></v-date-picker>
+                            </v-menu>
+                          </div>
                           <div style="padding: 12px;"><v-autocomplete v-model="defitem" :items="waterdatacols"
                               item-text="name" item-value="name" no-data-text="查無資料" label="*指定項目(必選)" hide-details
                               class="select-color" clearable @change="changeDefItem()">
@@ -103,7 +129,7 @@
                   <div class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table :data="feedData" class="full-width" max-height="600" size="mini">
+                        <el-table :data="feedData" class="full-width" max-height="600">
                           <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
                           <el-table-column prop="item_value" label="使用量/數值" width="180"></el-table-column>
                           <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
@@ -178,6 +204,7 @@
 
 <script>
 import "element-ui/lib/theme-chalk/index.css";
+import dayjs from "dayjs";
 import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
 export default {
     layout: "emptynologin2",
@@ -193,6 +220,14 @@ export default {
     },
     data() {
       return {
+        //---日曆
+        menu_startdate: false,
+        menu_enddate:false,
+        sdate: "",
+        // sdate: dayjs(new Date(2021, 0, 11))
+        //   .add(-10, "day")
+        //   .format("YYYY-MM-DD"),
+        edate:"",
         //---chart相關
         waterloading: false, //折線圖，
         defitem: [],
@@ -213,9 +248,7 @@ export default {
         { item_name: '平均蝦重(g)', item_value: '35' },
         { item_name: '當前育成率', item_qty: '-', item_value: '-' },
         ],
-        feedData: [{ item_name: '溶氧(ppm)', item_value: '28.5' }, { item_name: '酸鹼值', item_value: '7.8' },
-        { item_name: '氨氮(ppm)', item_value: '5.2' }, { item_name: '水位(%)', item_value: '0.02' },
-        { item_name: '水溫(°C)', item_value: '30' }, { item_name: '亞硝酸(ppm)', item_value: '0.1' },
+        feedData: [
         //{ item_name: '預估蝦子重量', item_value: '(歷史數據才有)' }, 
         // { item_name: '預估平均每日增重(adg)', item_value: '(歷史數據才有)' }
         //   , { item_name: '預估存活率', item_value: '(歷史數據才有)' }
@@ -226,10 +259,10 @@ export default {
         { item_name: '糖(展開show細項)', item_qty: '-', item_value: '-' },
         { item_name: '益生菌(展開show細項)', item_qty: '-', item_value: '-' },
         { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' },
-        { item_name: '當前育成率', item_qty: '-', item_value: '-' },
-        { item_name: '目標收成蝦重(g)', item_qty: '-', item_value: '-' },
-        { item_name: '預估育成率', item_qty: '-', item_value: '-' },
-        { item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
+        //暫隱{ item_name: '當前育成率', item_qty: '-', item_value: '-' },
+        //暫隱{ item_name: '目標收成蝦重(g)', item_qty: '-', item_value: '-' },
+        //暫隱{ item_name: '預估育成率', item_qty: '-', item_value: '-' },
+        //暫隱{ item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
           //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
           // { item_name: '檢測費(試劑、儀器)', item_qty: '-', item_value: '-' },
           // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' }, 
@@ -1884,7 +1917,11 @@ export default {
     },
     get_scopeData(evt) {
       this.poolid = evt;
-    }
+    },
+    getNowDate: function() {
+      let mydate = dayjs().format("YYYY-MM-DD");
+      return mydate;
+    },
   },
     async mounted() {
         await this.getAllUser();
