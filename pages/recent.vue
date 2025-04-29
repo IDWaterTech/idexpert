@@ -71,7 +71,7 @@
                           <img
                             :src="farmData.observation_image.url" class="elevation-5"
                             @click="viewOrigin($event.target.src,undefined)" /><br />
-                          <span>觀察網 {{ farmData.observation_image.datetime }}</span>
+                          <span>打樣 {{ farmData.observation_image.datetime }}</span>
                         </div>
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
@@ -114,9 +114,9 @@
                   <div class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table :data="feedData" class="full-width" max-height="600">
-                          <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="item_value" label="使用量/數值" width="180"></el-table-column>
+                        <el-table :data="farmData.aquaculture_info" class="full-width" max-height="600">
+                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
+                          <el-table-column prop="value" label="使用量/數值" width="180"></el-table-column>
                           <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
                         </el-table>
                       </v-col>
