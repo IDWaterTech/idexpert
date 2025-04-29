@@ -242,19 +242,21 @@
                         <div class="card-title">
                           <div class="title">
                             <v-card-title class="full-width">成份資訊</v-card-title>
+                            <v-switch v-model="fic_show_disable" label="顯示已停用"></v-switch>
                             <div class="chevron flex-align-center ml-2">
                               <v-btn class="btn-secondary green px-2 py-0" @click="openAdd">
                                   <v-icon>mdi-plus</v-icon>新增成份
                               </v-btn>
                               
                             </div>
+                            
                           </div>
                         </div>
                         <div  v-if="tablindex == '成份設定'" class="content">
                           
                           <v-data-table light 
                             :headers="ficHeaders"
-                            :items="manuFilterData" dense
+                            :items="(fic_show_disable)?manuFilterData:manuFilterData.filter(x=>x.is_enable==true)" dense
                             :id="'table-fic'"
                             hide-default-footer
                             disable-pagination
@@ -263,6 +265,19 @@
                             maxHeight="55vh"
                             style="height: 55vh;overflow-y: scroll;"
                             class="data-table bg-transparent">
+                            <template v-slot:[`item.name`]="{ item }">
+                              <span>{{ item.name }}</span>
+                              <span v-if="item.is_visible_to_franchisee === true">
+                                <v-tooltip bottom>
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-icon color="primary" v-bind="attrs" v-on="on">
+                                      mdi-handshake
+                                    </v-icon>
+                                  </template>
+                                  <span>加盟客戶</span>
+                                </v-tooltip>
+                              </span>
+                            </template>
                             <template v-slot:[`item.manufacturer`]="{ item }">
                                 {{manu.filter(x=>x.id==item.manufacturer_id)[0].name_ch}}
                             </template>
@@ -277,6 +292,7 @@
                                 {{ p.name_ch }}： {{ p.value }}
                               </v-chip>
                             </template>
+                            <!-- 操作 -->
                             <template  v-slot:[`item.actions`]="{item}">
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
@@ -293,6 +309,15 @@
                                         </button>
                                     </template>
                                     <span>刪除</span>
+                                </v-tooltip>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <!-- 注意：啟用中會是disabled的樣式 所以這邊寫起來會感覺不合理 -->
+                                        <button :class="`btn-icon ${item.is_enable==true?'disabled':''}`" :style="`${item.is_enable==true?'':'background-color: #ff8600 !important;'}`" v-bind="attrs" v-on="on">
+                                            <v-icon>mdi-cancel</v-icon>
+                                        </button>
+                                    </template>
+                                    <span>已停用</span>
                                 </v-tooltip>
                             </template>
                           </v-data-table>
@@ -582,7 +607,7 @@
       </div>
     </v-card>
     <!-- 新增/編輯 Dialog (廠商/成分 資料存於editItem;套餐設定 資料存於combofield，因需要分開主/次成分 ) -->
-    <v-dialog v-model="editForm"  max-width="500px">
+    <v-dialog v-model="editForm" scrollable max-width="500px">
       <v-form ref="manform" v-model="manvalid" >
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
@@ -629,7 +654,7 @@
             <v-autocomplete v-if="mode=='add'" v-model="editItem.feed_ingredient_category_id" hide-details dense filled placeholder="選擇成份類別" :items="feed_ingredient_category"
               item-text="name_ch" item-value="id"
               :rules="rules.require">
-              <span slot="prepend" style="width:100px;"
+              <span slot="prepend" :style="{width:'100px'}"
                 >成份類別</span
               >
             </v-autocomplete>
@@ -642,7 +667,7 @@
               :rules="rules.require"
               :disabled="true"
             >
-              <span slot="prepend" style="width:100px;"
+              <span slot="prepend" :style="{width:'100px'}"
                 >正在新增(之後不show)</span
               >
             </v-text-field> -->
@@ -652,7 +677,7 @@
               clearable
               placeholder="1號料_cn15,1號料_cn22,..."
               :rules="rules.require"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{width:'100px'}"
                 >成份名稱</span
               ></v-text-field
             >
@@ -662,7 +687,7 @@
               clearable
               placeholder="10001,10002..."
               :rules="rules.require"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{width:'100px'}"
                 >飼料成分產編</span
               ></v-text-field
             >
@@ -677,9 +702,7 @@
               filled
               clearable
               :rules="rules.require"
-              ><span slot="prepend" style="width:100px;"
-                >廠商</span
-              ></v-autocomplete
+              ><span slot="prepend" :style="{ width: '100px' }">廠商</span></v-autocomplete
             >
             <v-text-field
               v-model.number="editItem.price"
@@ -687,7 +710,7 @@
               clearable
               placeholder="15,20,150,..."
               :rules="rules.require"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{ width: '100px' }"
                 >價格/單位數量</span
               ></v-text-field
             >
@@ -697,7 +720,7 @@
               clearable
               placeholder="個,包,盒..."
               :rules="rules.require"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{ width: '100px' }"
                 >單位</span
               ></v-text-field
             >
@@ -707,16 +730,18 @@
               clearable
               placeholder="100,6,50,..."
               :rules="rules.require"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{ width: '100px' }"
                 >單位數量</span
               ></v-text-field
             >
+            <v-switch v-model="editItem.is_visible_to_franchisee" hide-details :label="`加盟客戶是否可檢視：${editItem.is_visible_to_franchisee?'可檢視':'禁止檢視'}`"></v-switch>
+            <v-switch v-model="editItem.is_enable" hide-details :label="`是否啟用成份：${editItem.is_enable?'已啟用':'停用中'}`"></v-switch>
             <!-- <v-text-field
               label="備註"
               clearable outlined
               placeholder="memo"
             ></v-text-field> -->
-            <v-divider style="margin-bottom:16px"></v-divider>
+            <v-divider class="mt-1 mb-2"></v-divider>
             
             <v-autocomplete
               v-model="fingparam"
@@ -733,18 +758,18 @@
               hide-details
               class="items align-center"
               >
-              <div  slot="prepend" class="card-title mx-0 my-3" style="width:100px;">
+              <div  slot="prepend" class="card-title mx-0 my-3" :style="{width:'100px'}">
                 <div class="title">
                     <v-card-title>成份參數</v-card-title>
                 </div>
               </div>
-              <!-- <span slot="prepend" style="width:100px;">成份參數</span> -->
+              <!-- <span slot="prepend" :style="{width:'100px'}">成份參數</span> -->
               
               <v-btn
                 slot="append-outer"
                 class="btn-icon"
                 @click="showparam"
-                style="border-radius: 12px;"
+                :style="{'border-radius': '12px'}"
                 ><v-icon>mdi-plus</v-icon></v-btn
               >
             </v-autocomplete>
@@ -758,7 +783,7 @@
                   :rules="rules.require"
                   placeholder="90%,0.85,..."
                 >
-                  <span slot="prepend" style="width:50px;">{{
+                  <span slot="prepend" :style="{width:'50px'}">{{
                     parmdata.filter(x => x.id == item)[0].name_ch
                   }}</span>
                 </v-text-field>
@@ -766,7 +791,7 @@
             </v-row>
           </v-card-text>
           <v-card-text v-else-if="tablindex=='套餐設定'" class="pt-5">
-            <div class="card-title" style="margin: 0 0 12px;">
+            <div class="card-title ma-0 mb-2">
               <div class="title">
                   <v-card-title>基本資料</v-card-title>
               </div>
@@ -778,7 +803,7 @@
               placeholder="1號套餐"
               :rules="rules.require"
               counter maxlength="50"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{width:'100px'}"
                 >套餐名稱</span
               ></v-text-field
             >
@@ -790,7 +815,7 @@
               :rules="rules.require"
               counter maxlength="50"
               :disabled="mode == 'edit'"
-              ><span slot="prepend" style="width:100px;"
+              ><span slot="prepend" :style="{width:'100px'}"
                 >套餐名稱(英)</span
               ></v-text-field
             >
@@ -799,7 +824,7 @@
               filled
               clearable
               placeholder="memo"
-            ><span slot="prepend" style="width:100px;"
+            ><span slot="prepend" :style="{width:'100px'}"
                 >備註</span
               ></v-text-field>
             <v-divider></v-divider>
@@ -810,7 +835,7 @@
               </div>
             </div>
             <!-- 主成分 -->
-            <div class="main-items pa-2 mb-2">
+            <div class="pa-2 mb-2 main-items">
               <v-autocomplete
                 v-model="combofield.main_items"
                 :items="ficwithdetail_main"
@@ -827,12 +852,12 @@
                 class="items align-center"
                 @change="mainchange"
                 >
-                <div  slot="prepend" class="card-title mx-0 my-3" style="width:50px;">
+                <div  slot="prepend" class="card-title mx-0 my-3" :style="{width:'50px'}">
                   <div class="title">
                       <v-card-title>主成份</v-card-title>
                   </div>
                 </div>
-              <!-- <span slot="prepend" style="width:50px;"
+              <!-- <span slot="prepend" :style="{width:'50px'}"
                   >主成份</span> -->
               </v-autocomplete>
               <!-- <v-row v-for="item in combofield.main_items" :key="item.id" style="align-items: center;margin: 0 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
@@ -867,7 +892,7 @@
                     placeholder="範例：1,0.2,0.5,0.8...."
                     :rules="rules.require"
                   >
-                    <span slot="prepend" style="width:100px;"
+                    <span slot="prepend" :style="{width:'100px'}"
                     >公式</span>
                   </v-text-field>
                   <v-text-field
@@ -878,7 +903,7 @@
                     hide-details
                     placeholder="備註：該混料只需8成"
                   >
-                    <span slot="prepend" style="width:100px;"
+                    <span slot="prepend" :style="{width:'100px'}"
                     >備註</span>
                   </v-text-field>
                 </div>
@@ -898,7 +923,7 @@
                           )[0].parameters"
                           :key="'add_main_parm_'+parmitem.id"
                           color="#408FBC"
-                          style="color:#fff;font-size: 12px;margin: 2px;"
+                          :style="{color:'#fff','font-size':'12px',margin:'2px'}"
                           >{{ `${parmitem.name}:${parmitem.value}` }}</v-chip
                         >
                       </div>
@@ -915,7 +940,7 @@
                     placeholder="範例：1,0.2,0.5,0.8...."
                     :rules="rules.require"
                   >
-                    <span slot="prepend" style="width:50px;"
+                    <span slot="prepend" :style="{width:'50px'}"
                     >公式</span>
                   </v-text-field>
                   <v-text-field
@@ -926,7 +951,7 @@
                     hide-details
                     placeholder="備註：該混料只需8成"
                   >
-                    <span slot="prepend" style="width:50px;"
+                    <span slot="prepend" :style="{width:'50px'}"
                     >備註</span>
                   </v-text-field>
                 </v-col>
@@ -951,12 +976,12 @@
                 class="items sub_chips align-center mt-1"
                 @change="subchange"
                 >
-                <div  slot="prepend" class="card-title mx-0 my-3" style="margin: 12px 0;width:50px;">
+                <div  slot="prepend" class="card-title mx-0 my-3" :style="{width:'50px'}">
                   <div class="title">
                       <v-card-title>次成份</v-card-title>
                   </div>
                 </div>
-                <!-- <span slot="prepend" style="width:50px;"
+                <!-- <span slot="prepend" :style="{width:'50px'}"
                   >次成份</span> -->
               </v-autocomplete>
               <!-- <span
@@ -995,7 +1020,7 @@
                     placeholder="範例：*0.5*1.5*300%*1(2+50)"
                     :rules="rules.require"
                   >
-                    <span slot="prepend" style="width:100px;"
+                    <span slot="prepend" :style="{width:'100px'}"
                     >公式 = sum(主成份) *</span>
                   </v-text-field>
                   <v-text-field
@@ -1006,7 +1031,7 @@
                     hide-details
                     placeholder="備註：粗蛋白率*CN比*含氮率"
                   >
-                    <span slot="prepend" style="width:100px;"
+                    <span slot="prepend" :style="{width:'100px'}"
                     >備註</span>
                   </v-text-field>
                 </div>
@@ -1025,7 +1050,7 @@
                           )[0].parameters"
                           :key="'add_sub_parm_'+parmitem.id"
                           color="#BFCBD2"
-                          style="color:#00324E;font-size: 12px;margin: 2px;"
+                          :style="{color:'#00324E','font-size':'12px',margin:'2px'}"
                           >{{ `${parmitem.name}:${parmitem.value}` }}</v-chip
                         >
                       </div>
@@ -1040,9 +1065,9 @@
                     placeholder="範例：1,0.2,0.5,0.8...."
                     :rules="rules.require"
                   >
-                    <span slot="prepend" style="width:50px;"
+                    <span slot="prepend" :style="{width:'50px'}"
                     >公式</span>
-                    <span slot="prepend" style="width:120px;"
+                    <span slot="prepend" :style="{width:'120px'}"
                     > = sum(主成份) * </span>
                   </v-text-field>
                   <v-text-field
@@ -1053,7 +1078,7 @@
                     hide-details
                     placeholder="備註：該混料只需8成"
                   >
-                    <span slot="prepend" style="width:50px;"
+                    <span slot="prepend" :style="{width:'50px'}"
                     >備註</span>
                   </v-text-field>
                 </v-col>
@@ -1062,7 +1087,7 @@
             
           </v-card-text>
           <!-- <v-divider></v-divider> -->
-          <v-card-actions>
+          <v-card-actions class="py-1">
               <v-spacer></v-spacer>
               <v-btn tile @click="editForm = false" class="btn-secondary">取消</v-btn>
               <v-btn tile @click="editsave" v-if="mode=='edit'" class="btn-primary">修改</v-btn>
@@ -1087,7 +1112,7 @@
             clearable
             placeholder="純度,粗蛋白率..."
             :rules="rules.require"
-            ><span slot="prepend" style="width:100px;"
+            ><span slot="prepend" :style="{width:'100px'}"
               >參數(中文)</span
             ></v-text-field
           >
@@ -1097,12 +1122,12 @@
             clearable
             placeholder="pure,..."
             :rules="rules.require"
-            ><span slot="prepend" style="width:100px;"
+            ><span slot="prepend" :style="{width:'100px'}"
               >參數(英文)</span
             ></v-text-field
           >
         </v-card-text>
-        <v-card-actions style="padding: 24px 12px;">
+        <v-card-actions class="pa-1">
           <v-spacer></v-spacer>
           <v-btn tile @click="dialog.param = false" class="btn-secondary">取消</v-btn>
           <v-btn tile @click="parmsubmit" class="btn-primary">新增</v-btn>
@@ -1200,6 +1225,7 @@ export default {
         { text: '備註', value: 'remark', sortable: false,width:"10%"},
         { text: '操作', value: 'actions', sortable: false,width:"10%"},
       ],
+      fic_show_disable: false,
       ficHeaders:[
         { text: '名稱', value: 'name', sortable: true,width:"15%"},
         { text: '產編', value: 'item_no', sortable: true,width:"10%"},
@@ -1208,6 +1234,8 @@ export default {
         { text: '單位', value: 'unit', sortable: false,width:"5%"},
         { text: '單位數量', value: 'unit_quantity', sortable: false,width:"10%"},
         { text: '成分參數', value: 'parameters', sortable: false,width:"25%"},
+        // { text: 'is_visible_to_franchisee', value: 'is_visible_to_franchisee', sortable: false,width:"2%"},
+        // { text: 'is_enable', value: 'is_enable', sortable: false,width:"2%"},
         { text: '操作', value: 'actions', sortable: false,width:"10%"},
       ],
       comboHeaders:[
@@ -1219,7 +1247,10 @@ export default {
       ],
       manvalid: true,
       editForm: false,
-      editItem: {},
+      editItem: {
+        is_visible_to_franchisee: false,
+        is_enable: true,
+      },
       mode: 'edit',
       tablindexOrigin: "",
       expands: [], //Expand only one line into the current line id
@@ -2287,7 +2318,7 @@ export default {
         setTimeout(()=>{
             if(res) {
               this.isLoading = false;
-              this.fingfield = {};
+              this.fingfield = {is_enable:true,is_visible_to_franchisee:false};
               this.fingfield.feed_ingredient_category_id = this.fic_idx;//並沒有清空類別，所以保留
               this.fingparam = []; //成份參數
               this.fingparamitem = {};
@@ -2444,7 +2475,7 @@ export default {
       if (this.$refs.manform != undefined) {
           this.$refs.manform.reset();
       }
-      this.editItem = {};
+      this.editItem = {is_enable:true,is_visible_to_franchisee:false};
       if(this.tablindex == '成份設定') {
         if(this.fic_idx) {
           this.editItem.feed_ingredient_category_id = _.cloneDeep(this.fic_idx);
@@ -2551,6 +2582,7 @@ export default {
   @include size(100%);
   border: 1px solid $color-primary;
   border-radius: 4px;
+  height: auto !important;
 }
 .sub-border {
   border-color: $color-dark-25;
