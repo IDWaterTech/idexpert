@@ -494,6 +494,18 @@
             <v-card-text style="display: flex;">
               <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.estimated_harvest_weight" label="目標收成蝦重(g)" :rules="rules.require" hide-details>
               </v-text-field>
+              <!-- <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.estimated_harvest_date" label="預估收成日期" hide-details>
+              </v-text-field> -->
+              <v-menu v-model="menu_estimated_harvest_date" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="addparm.estimated_harvest_date" label="預估收成日期"
+                        prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on"
+                        @click:prepend="() => (addparm.estimated_harvest_date = getNowDate())"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="addparm.estimated_harvest_date" no-title locale="zh-tw" @input="menu_estimated_harvest_date = false">
+                    </v-date-picker>
+              </v-menu>
               <v-text-field filled dense type="number" v-model.number="addparm.estimated_survival_rate" label="預估育成率(%)" :rules="rules.require">
               </v-text-field>
             </v-card-text>
@@ -763,11 +775,21 @@
             <v-card-text class="d-flex">
               <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="目標收成蝦重(g)" :rules="rules.require" hide-details>
               </v-text-field>
+              <v-menu v-model="menu_estimated_harvest_date_edit" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.estimated_harvest_date" label="預估收成日期"
+                        prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on"
+                        @click:prepend="() => (editparm.estimated_harvest_date = getNowDate())"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.estimated_harvest_date" no-title locale="zh-tw" @input="menu_estimated_harvest_date_edit = false">
+                    </v-date-picker>
+              </v-menu>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估育成率(%)" :rules="rules.require">
               </v-text-field>
             </v-card-text>
             <v-card-text class="d-flex">
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="養殖池水位高度(m)" :rules="rules.require">
+              <v-text-field filled dense type="number" v-model.number="editparm.pond_water_level" label="養殖池水位高度(m)" :rules="rules.require">
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
@@ -922,11 +944,23 @@
             <v-card-text class="d-flex mt-6">
               <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_weight" label="目標收成蝦重(g)" :rules="rules.require" hide-details disabled>
               </v-text-field>
+              <!-- <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.estimated_harvest_date" label="預估收成日期" hide-details>
+              </v-text-field> -->
+              <v-menu v-model="menu_estimated_harvest_date_edit" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field v-model="editparm.estimated_harvest_date" label="預估收成日期"
+                        prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on"
+                        @click:prepend="() => (editparm.estimated_harvest_date = getNowDate())"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="editparm.estimated_harvest_date" no-title locale="zh-tw" @input="menu_estimated_harvest_date_edit = false">
+                    </v-date-picker>
+              </v-menu>
               <v-text-field filled dense type="number" v-model.number="editparm.estimated_survival_rate" label="預估育成率(%)" :rules="rules.require" disabled>
               </v-text-field>
             </v-card-text>
             <v-card-text class="d-flex">
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_harvest_weight" label="養殖池水位高度(m)" :rules="rules.require" disabled>
+              <v-text-field filled dense type="number" v-model.number="editparm.pond_water_level" label="養殖池水位高度(m)" :rules="rules.require" disabled>
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
@@ -1245,7 +1279,9 @@ export default {
       started_date: dayjs(this.ended_date)
         .add(-3, "month")
         .format("YYYY-MM-DD"),
-      //新增視窗
+      //dialog視窗
+      menu_estimated_harvest_date: false,//預計收成日期
+      menu_estimated_harvest_date_edit: false,//預計收成日期
       addDialog: false,
       addvalid: false,
       menu_adddate: false,
@@ -1262,6 +1298,7 @@ export default {
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
         estimated_harvest_weight:undefined,//目標收成蝦重
+        estimated_harvest_date:undefined,//預計收成日期
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
@@ -1398,6 +1435,7 @@ export default {
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
         estimated_harvest_weight:undefined,//目標收成蝦重
+        estimated_harvest_date:undefined,//預計收成日期
         estimated_survival_rate:70,//預計存活率
         remark:"",//備註
         person_in_charge:undefined,//負責人
@@ -1562,6 +1600,7 @@ export default {
             total:item.total,
             estimated_survival_rate:item.estimated_survival_rate,
             estimated_harvest_weight:item.estimated_harvest_weight,
+            estimated_harvest_date:item.estimated_harvest_date,
             estimated_fcr:item.estimated_fcr,
             cn:item.cn,
             person_in_charge:item.person_in_charge,
