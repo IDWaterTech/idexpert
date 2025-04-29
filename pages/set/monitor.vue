@@ -6,13 +6,9 @@
     <v-card class="bg-card">
       <div class="content pt-3">
         <!-- 上方列 -->
-        <v-row class="flex-center-between mb-4" >
+        <v-row class="flex-center-between mb-4">
           <div class="tag-groups ml-2">
-            <span 
-              class="span"
-              v-for="(item, index) in cols"
-              :key="'tag_'+index"
-              @click="
+            <span class="span" v-for="(item, index) in cols" :key="'tag_'+index" @click="
                 $vuetify.goTo(`#${item}`, {
                   duration: 500,
                   offset: 2,
@@ -31,34 +27,37 @@
         </v-row>
         <!-- 清單 -->
         <div class="result">
-          <v-row
-            v-for="(item, index) in cols"
-            :key="'result_card_'+index"
-            :id="item"
-            class="full-width">
+          <v-row v-for="(item, index) in cols" :key="'result_card_'+index" :id="item" class="full-width">
             <v-card class="result-card full-width">
               <div class="title border-bottom flex-center-between">
                 <v-card-title style="font-size: 14px;">
                   {{ getgroupname(item) }}
-                  </v-card-title>
-                  <div class="chevron mr-4">
-                    <v-btn class="btn-icon green" @click="addShow(item)"><v-icon>mdi-plus</v-icon></v-btn>
-                    <v-icon v-if="adjustOpen(index)" @click="expandArrayChange(index)">mdi-triangle-small-up</v-icon>
-                    <v-icon v-else @click="expandArrayChange(index)">mdi-triangle-small-down</v-icon>
-                  </div>
+                </v-card-title>
+                <div class="chevron mr-4">
+                  <v-btn class="btn-icon green" @click="addShow(item)"><v-icon>mdi-plus</v-icon></v-btn>
+                  <v-icon v-if="adjustOpen(index)" @click="expandArrayChange(index)">mdi-triangle-small-up</v-icon>
+                  <v-icon v-else @click="expandArrayChange(index)">mdi-triangle-small-down</v-icon>
+                </div>
               </div>
               <div class="content" v-if="adjustOpen(index)">
-                <v-data-table
-                  :items="allcols.filter(x => x.group == item)"
-                  :headers="headers"
-                  :footer-props="footerProps"
-                  class="edit-table data-table bg-transparent"
-                >
-                <template v-slot:[`item.is_enable_alert`]="{ item }">
-                    <v-chip
-                      :color="(item.is_enable_alert)?'green':'red'"
-                      dark
-                    >
+                <v-data-table :items="allcols.filter(x => x.group == item)" :headers="headers"
+                  :footer-props="footerProps" class="edit-table data-table bg-transparent">
+                  <template v-slot:[`item.name_ch`]="{ item }">
+                    <span>{{ item.name_ch }}</span>
+                    <span v-if="item.is_visible_to_franchisee === true">
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-icon color="primary" v-bind="attrs" v-on="on">
+                            mdi-handshake
+                          </v-icon>
+                        </template>
+                        <span>加盟客戶</span>
+                      </v-tooltip>
+                    </span><br/>
+                    <span>{{ item.name_en }}</span>
+                  </template>
+                  <template v-slot:[`item.is_enable_alert`]="{ item }">
+                    <v-chip :color="(item.is_enable_alert)?'green':'red'" dark>
                       {{ (item.is_enable_alert)?'啟用':'停用' }}
                     </v-chip>
                   </template>
@@ -73,36 +72,34 @@
                         mdi-trash-can
                       </v-icon>
                     </v-btn>
-                    
+
                   </template>
                 </v-data-table>
               </div>
             </v-card>
           </v-row>
-          
+
         </div>
       </div>
       <!-- 移至最上方 -->
       <div class="fixed-btn">
         <div class="to-self">
-            <v-tooltip left>
-                <template v-slot:activator="{ on, attrs }">
-                    <button 
-                      class="btn-primary" v-bind="attrs" v-on="on"
-                      @click="
+          <v-tooltip left>
+            <template v-slot:activator="{ on, attrs }">
+              <button class="btn-primary" v-bind="attrs" v-on="on" @click="
                         $vuetify.goTo(`#top`, {
                           duration: 500,
                           offset: 2,
                           easing: 'easeInOutCubic'
                         })
-                      " >
-                        <v-icon>mdi-format-vertical-align-top</v-icon>
-                    </button>
-                </template>
-                <span>回到上方</span>
-            </v-tooltip>
+                      ">
+                <v-icon>mdi-format-vertical-align-top</v-icon>
+              </button>
+            </template>
+            <span>回到上方</span>
+          </v-tooltip>
         </div>
-    </div>
+      </div>
     </v-card>
     <!-- <v-btn class="btn-icon .just-icon" style="position: fixed;bottom: 40px;right: 40px;">
       <v-icon
@@ -114,30 +111,28 @@
         })
       ">mdi-format-vertical-align-top</v-icon>
     </v-btn> -->
-    
+
     <!-- 編輯 -->
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card class="custom-dialog">
         <v-card-title class="add-title">
-            編輯項目 - {{ editedItem.group }}
-            <div class="add">
-                <v-btn class="btn-secondary close"
-                        title="取消" 
-                        @click="editDialog = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </div>
+          編輯項目 - {{ editedItem.group }}
+          <div class="add">
+            <v-btn class="btn-secondary close" title="取消" @click="editDialog = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
         </v-card-title>
         <v-card-text>
           <div class="basic pl-2 pt-2">
             <div class="card-title">
               <div class="title">
-                  <v-card-title>基本資料</v-card-title>
+                <v-card-title>基本資料</v-card-title>
               </div>
             </div>
-            <v-card-text  class="d-flex flex-column">
+            <v-card-text class="d-flex flex-column">
               <div class="search flex-align-center">
-                <v-text-field filled dense v-model="editedItem.name_en" disabled >
+                <v-text-field filled dense v-model="editedItem.name_en" disabled>
                   <span style="width:100px" slot="prepend">項目(英文)</span>
                 </v-text-field>
                 <v-text-field filled dense v-model="editedItem.name_ch">
@@ -148,162 +143,100 @@
             <v-card-text class="d-flex flex-column pt-0">
               <div class="search flex-align-center full-width">
                 <v-text-field class="full-width" label="ppm、°c、g、..." filled dense v-model="editedItem.unit">
-                  <span  slot="prepend" style="width:80px">單位</span>
+                  <span slot="prepend" style="width:80px">單位</span>
                 </v-text-field>
               </div>
             </v-card-text>
-            <v-card-text  class="d-flex flex-column pt-0 mb-4">
-              <v-switch
-                v-model="editedItem.is_enable_alert"
-                dense
-                color="success"
-              ><span slot="prepend"
-              style="width:100px">啟用警示</span
-                  ></v-switch>
-                <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定<br><strong>※ 全部指標通知規則：做水、放養中<br>※ 限定指標通知規則(水位百分比)：蓄水、做水、放養中</strong></span>
+            <v-card-text class="d-flex flex-column pt-0 mb-4">
+              <v-switch v-model="editedItem.is_visible_to_franchisee" dense color="success" :label="`加盟客戶是否可檢視：${editedItem.is_visible_to_franchisee?'可檢視':'禁止檢視'}`"></v-switch>
+              <v-switch v-model="editedItem.is_enable_alert" dense color="success"><span slot="prepend"
+                  style="width:100px">啟用警示</span></v-switch>
+              <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定<br><strong>※ 全部指標通知規則：做水、放養中<br>※
+                  限定指標通知規則(水位百分比)：蓄水、做水、放養中</strong></span>
             </v-card-text>
             <v-spacer></v-spacer>
             <div class="card-title mb-4">
               <div class="title">
-                  <v-card-title>警戒範圍</v-card-title>
-                  <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
+                <v-card-title>警戒範圍</v-card-title>
+                <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
               </div>
             </div>
             <v-card-text class="d-flex flex-column pt-4">
               <v-row class="px-3 py-0">
                 <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
-                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
-                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
-                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
-                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
+                <v-col cols="2"
+                  style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
+                <v-col cols="2"
+                  style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
+                <v-col cols="2"
+                  style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
+                <v-col cols="2"
+                  style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
                 <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
               </v-row>
             </v-card-text>
             <v-card-text class="slider d-flex flex-column pt-4">
-              <span class="subtitle-1  font-weight-black text-center"
-                >最小值←→最大值</span
-              >
+              <span class="subtitle-1  font-weight-black text-center">最小值←→最大值</span>
               <v-row>
-                <v-col cols="12" sm="2"
-                  ><v-text-field
-                    v-model.number="minmax[0]"
-                    type="number"
-                    @change="
+                <v-col cols="12" sm="2"><v-text-field v-model.number="minmax[0]" type="number" @change="
                       () => {
                         limit.key += 1;
                       }
-                    "
-                  ></v-text-field
-                ></v-col>
+                    "></v-text-field></v-col>
                 <v-col cols="12" sm="8">
-                  <el-slider
-                    :key="limit.key"
-                    v-model="minmax"
-                    range
-                    :marks="limit.marks"
-                    :min="0"
-                    :max="99999"
-                  >
+                  <el-slider :key="limit.key" v-model="minmax" range :marks="limit.marks" :min="0" :max="99999">
                   </el-slider>
                 </v-col>
-                <v-col cols="12" sm="2"
-                  ><v-text-field
-                    v-model.number="minmax[1]"
-                    type="number"
-                    @change="
+                <v-col cols="12" sm="2"><v-text-field v-model.number="minmax[1]" type="number" @change="
                       () => {
                         limit.key += 1;
                       }
-                    "
-                  ></v-text-field
-                ></v-col>
+                    "></v-text-field></v-col>
               </v-row>
             </v-card-text>
-            <v-card-text  class="slider d-flex flex-column pt-4">
-              <span class="subtitle-1 text-center" style="color:red;"
-                >危險下限值←→危險上限值</span
-              >
+            <v-card-text class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1 text-center" style="color:red;">危險下限值←→危險上限值</span>
               <v-row>
-                <v-col cols="12" sm="2"
-                  ><v-text-field
-                    v-model.number="minmax_critical[0]"
-                    type="number"
-                    @change="
+                <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_critical[0]" type="number" @change="
                       () => {
                         limit_critical.key += 1;
                       }
-                    "
-                  ></v-text-field></v-col
-                ><v-spacer></v-spacer>
+                    "></v-text-field></v-col><v-spacer></v-spacer>
                 <v-col cols="12" sm="6">
-                  <el-slider
-                    :key="limit_critical.key"
-                    v-model="minmax_critical"
-                    range
-                    :marks="limit_critical.marks"
-                    :min="minmax[0]"
-                    :max="minmax[1]"
-                  >
+                  <el-slider :key="limit_critical.key" v-model="minmax_critical" range :marks="limit_critical.marks"
+                    :min="minmax[0]" :max="minmax[1]">
                     <!-- 危險的min max 以minmax最大跟最小為限制 -->
-                  </el-slider> </v-col
-                ><v-spacer></v-spacer>
-                <v-col cols="12" sm="2"
-                  ><v-text-field
-                    v-model.number="minmax_critical[1]"
-                    type="number"
-                    @change="
+                  </el-slider> </v-col><v-spacer></v-spacer>
+                <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_critical[1]" type="number" @change="
                       () => {
                         limit_critical.key += 1;
                       }
-                    "
-                  ></v-text-field
-                ></v-col>
+                    "></v-text-field></v-col>
               </v-row>
             </v-card-text>
-            <v-card-text  class="slider d-flex flex-column pt-4">
-              <span class="subtitle-1 text-center" style="color:orange;"
-                >警戒下限值←→警戒上限值</span
-              >
+            <v-card-text class="slider d-flex flex-column pt-4">
+              <span class="subtitle-1 text-center" style="color:orange;">警戒下限值←→警戒上限值</span>
               <v-row>
-                <v-col cols="12" sm="2"
-                  ><v-text-field
-                    v-model.number="minmax_warning[0]"
-                    type="number"
-                    @change="
+                <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_warning[0]" type="number" @change="
                       () => {
                         limit_warning.key += 1;
                       }
-                    "
-                  ></v-text-field></v-col
-                ><v-spacer></v-spacer>
+                    "></v-text-field></v-col><v-spacer></v-spacer>
                 <v-col cols="12" sm="4">
-                  <el-slider
-                    :key="limit_warning.key"
-                    v-model="minmax_warning"
-                    range
-                    :marks="limit_warning.marks"
-                    :min="minmax_critical[0]"
-                    :max="minmax_critical[1]"
-                  >
+                  <el-slider :key="limit_warning.key" v-model="minmax_warning" range :marks="limit_warning.marks"
+                    :min="minmax_critical[0]" :max="minmax_critical[1]">
                     <!-- 危險的min max 以minmax_critical最大跟最小為限制 -->
-                  </el-slider> </v-col
-                ><v-spacer></v-spacer>
-                <v-col cols="12" sm="2"
-                  ><v-text-field
-                    v-model.number="minmax_warning[1]"
-                    type="number"
-                    @change="
+                  </el-slider> </v-col><v-spacer></v-spacer>
+                <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_warning[1]" type="number" @change="
                       () => {
                         limit_warning.key += 1;
                       }
-                    "
-                  ></v-text-field
-                ></v-col>
+                    "></v-text-field></v-col>
               </v-row>
             </v-card-text>
           </div>
-            <!-- 原本的min max設定 -->
-            <!-- <v-col cols="12" md="5">
+          <!-- 原本的min max設定 -->
+          <!-- <v-col cols="12" md="5">
               <v-text-field
                 label="下限"
                 :value="editedItem.min"
@@ -335,7 +268,7 @@
           <v-btn class="btn-secondary" @click="editDialog = false">取消</v-btn>
           <v-btn class="btn-primary" @click="editsubmit">確定</v-btn>
         </v-card-actions>
-        
+
       </v-card>
     </v-dialog>
     <!-- 新增 -->
@@ -345,210 +278,130 @@
           <v-card-title class="add-title">
             新增項目-{{ this.addItem.class }}
             <div class="add">
-                <v-btn class="btn-secondary close"
-                        title="取消" 
-                        @click="addDialog = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
+              <v-btn class="btn-secondary close" title="取消" @click="addDialog = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
             </div>
           </v-card-title>
           <v-card-text>
             <div class="basic pl-2 pt-2">
               <div class="card-title">
                 <div class="title">
-                    <v-card-title>基本資料</v-card-title>
+                  <v-card-title>基本資料</v-card-title>
                 </div>
               </div>
               <v-card-text class="d-flex flex-column">
                 <div class="search flex-align-center">
-                  <v-text-field
-                    filled dense
-                    v-model="addItem.name_en"
-                    :rules="rules.require"
-                    ><span style="width:80px;" slot="prepend"
-                      >項目(英文)</span
-                    ></v-text-field
-                  >
-                  <v-text-field
-                    filled dense
-                    v-model="addItem.name_ch"
-                    :rules="rules.require"
-                  ><span style="width:80px;" slot="prepend"
-                      >項目(中文)</span
-                    ></v-text-field>
+                  <v-text-field filled dense v-model="addItem.name_en" :rules="rules.require"><span style="width:80px;"
+                      slot="prepend">項目(英文)</span></v-text-field>
+                  <v-text-field filled dense v-model="addItem.name_ch" :rules="rules.require"><span style="width:80px;"
+                      slot="prepend">項目(中文)</span></v-text-field>
                 </div>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0">
                 <div class="search flex-align-center full-width">
-                  <v-text-field class="full-width" label="ppm、°c、g、..." filled dense v-model="addItem.unit" :rules="rules.require">
-                  <span  slot="prepend" style="width:80px">單位</span>
-                </v-text-field>
+                  <v-text-field class="full-width" label="ppm、°c、g、..." filled dense v-model="addItem.unit"
+                    :rules="rules.require">
+                    <span slot="prepend" style="width:80px">單位</span>
+                  </v-text-field>
                 </div>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0">
+                <div>
+                  <v-switch v-model="addItem.is_visible_to_franchisee" dense color="success" :label="`加盟客戶是否可檢視：${addItem.is_visible_to_franchisee?'可檢視':'禁止檢視'}`"></v-switch>
+                </div>
                 <div class="search d-flex flex-column full-width">
-                  <v-switch
-                  v-model="addItem.is_enable_alert"
-                  dense
-                  color="success"
-                ><span style="width:80px;" slot="prepend"
-                      >啟用警示</span
-                    ></v-switch>
-                  <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定<br><strong>※ 全部指標通知規則：做水、放養中<br>※ 限定指標通知規則(水位百分比)：蓄水、做水、放養中</strong></span>
+                  <v-switch v-model="addItem.is_enable_alert" dense color="success"><span style="width:80px;"
+                      slot="prepend">啟用警示</span></v-switch>
+                  <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定<br><strong>※
+                      全部指標通知規則：做水、放養中<br>※ 限定指標通知規則(水位百分比)：蓄水、做水、放養中</strong></span>
                 </div>
               </v-card-text>
               <v-spacer></v-spacer>
-            <div class="card-title mb-4">
-              <div class="title">
+              <div class="card-title mb-4">
+                <div class="title">
                   <v-card-title>警戒範圍</v-card-title>
                   <span class="error-text">*超過範圍(最大值、最小值)(紅色方塊)，視為不合理，不發送訊息通知</span>
+                </div>
               </div>
-            </div>
-            <v-card-text class="d-flex flex-column pt-4">
-              <v-row class="px-3 py-0">
-                <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
-                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
-                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
-                <v-col cols="2" style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
-                <v-col cols="2" style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
-                <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-text class="slider d-flex flex-column pt-4">
-              <span class="subtitle-1  font-weight-black text-center"
-                    >最小值←→最大值</span
-                  >
-                  <v-row>
-                    <v-col cols="12" sm="2"
-                      ><v-text-field
-                        v-model.number="minmax[0]"
-                        type="number"
-                        :min="0"
-                        :max="minmax[1]"
-                        @input="inputchk_addmin"
-                        @change="
+              <v-card-text class="d-flex flex-column pt-4">
+                <v-row class="px-3 py-0">
+                  <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[0]}}</v-col>
+                  <v-col cols="2"
+                    style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[0]}}</v-col>
+                  <v-col cols="2"
+                    style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[0]}}</v-col>
+                  <v-col cols="2"
+                    style="background-color:#34A853;color:white;text-align: center">{{minmax_warning[1]}}</v-col>
+                  <v-col cols="2"
+                    style="background-color:#FBBC05;color:white;text-align: center">{{minmax_critical[1]}}</v-col>
+                  <v-col cols="2" style="background-color:#EA4335;color:white;text-align: center">{{minmax[1]}}</v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-text class="slider d-flex flex-column pt-4">
+                <span class="subtitle-1  font-weight-black text-center">最小值←→最大值</span>
+                <v-row>
+                  <v-col cols="12" sm="2"><v-text-field v-model.number="minmax[0]" type="number" :min="0"
+                      :max="minmax[1]" @input="inputchk_addmin" @change="
                           () => {
                             limit.key += 1;
                           }
-                        "
-                      ></v-text-field
-                    ></v-col>
-                    <v-col cols="12" sm="8">
-                      <el-slider
-                        :key="limit.key"
-                        v-model="minmax"
-                        range
-                        :marks="limit.marks"
-                        :min="0"
-                        :max="99999"
-                      >
-                      </el-slider>
-                    </v-col>
-                    <v-col cols="12" sm="2"
-                      ><v-text-field
-                        v-model.number="minmax[1]"
-                        type="number"
-                        :min="minmax[0]"
-                        :max="99999"
-                        @input="inputchk_addmax"
-                        @change="
+                        "></v-text-field></v-col>
+                  <v-col cols="12" sm="8">
+                    <el-slider :key="limit.key" v-model="minmax" range :marks="limit.marks" :min="0" :max="99999">
+                    </el-slider>
+                  </v-col>
+                  <v-col cols="12" sm="2"><v-text-field v-model.number="minmax[1]" type="number" :min="minmax[0]"
+                      :max="99999" @input="inputchk_addmax" @change="
                           () => {
                             limit.key += 1;
                           }
-                        "
-                      ></v-text-field
-                    ></v-col>
-                  </v-row>
-            </v-card-text>
-            <v-card-text class="slider d-flex flex-column pt-4">
-              <span class="subtitle-1 text-center" style="color:red;" 
-                    >危險下限值←→危險上限值</span
-                  >
-                  <v-row>
-                    <v-col cols="12" sm="2"
-                      ><v-text-field
-                        v-model.number="minmax_critical[0]"
-                        type="number"
-                        :min="minmax[0]"
-                        :max="minmax[1]"
-                        @change="
+                        "></v-text-field></v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-text class="slider d-flex flex-column pt-4">
+                <span class="subtitle-1 text-center" style="color:red;">危險下限值←→危險上限值</span>
+                <v-row>
+                  <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_critical[0]" type="number"
+                      :min="minmax[0]" :max="minmax[1]" @change="
                           () => {
                             limit_critical.key += 1;
                           }
-                        "
-                      ></v-text-field></v-col
-                    ><v-spacer></v-spacer>
-                    <v-col cols="12" sm="6">
-                      <el-slider
-                        :key="limit_critical.key"
-                        v-model="minmax_critical"
-                        range
-                        :marks="limit_critical.marks"
-                        :min="minmax[0]"
-                        :max="minmax[1]"
-                      >
-                        <!-- 危險的min max 以minmax最大跟最小為限制 -->
-                      </el-slider> </v-col
-                    ><v-spacer></v-spacer>
-                    <v-col cols="12" sm="2"
-                      ><v-text-field
-                        v-model.number="minmax_critical[1]"
-                        type="number"
-                        :min="minmax[0]"
-                        :max="minmax[1]"
-                        @change="
+                        "></v-text-field></v-col><v-spacer></v-spacer>
+                  <v-col cols="12" sm="6">
+                    <el-slider :key="limit_critical.key" v-model="minmax_critical" range :marks="limit_critical.marks"
+                      :min="minmax[0]" :max="minmax[1]">
+                      <!-- 危險的min max 以minmax最大跟最小為限制 -->
+                    </el-slider> </v-col><v-spacer></v-spacer>
+                  <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_critical[1]" type="number"
+                      :min="minmax[0]" :max="minmax[1]" @change="
                           () => {
                             limit_critical.key += 1;
                           }
-                        "
-                      ></v-text-field
-                    ></v-col>
-                  </v-row>
-            </v-card-text>
-            <v-card-text class="slider d-flex flex-column pt-4">
-              <span class="subtitle-1 text-center" style="color:orange;"
-                    >警戒下限值←→警戒上限值</span
-                  >
-                  <v-row>
-                    <v-col cols="12" sm="2"
-                      ><v-text-field
-                        v-model.number="minmax_warning[0]"
-                        type="number"
-                        :min="minmax_critical[0]"
-                        :max="minmax_critical[1]"
-                        @change="
+                        "></v-text-field></v-col>
+                </v-row>
+              </v-card-text>
+              <v-card-text class="slider d-flex flex-column pt-4">
+                <span class="subtitle-1 text-center" style="color:orange;">警戒下限值←→警戒上限值</span>
+                <v-row>
+                  <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_warning[0]" type="number"
+                      :min="minmax_critical[0]" :max="minmax_critical[1]" @change="
                           () => {
                             limit_warning.key += 1;
                           }
-                        "
-                      ></v-text-field></v-col
-                    ><v-spacer></v-spacer>
-                    <v-col cols="12" sm="4">
-                      <el-slider
-                        :key="limit_warning.key"
-                        v-model="minmax_warning"
-                        range
-                        :marks="limit_warning.marks"
-                        :min="minmax_critical[0]"
-                        :max="minmax_critical[1]"
-                      >
-                        <!-- 危險的min max 以minmax_critical最大跟最小為限制 -->
-                      </el-slider> </v-col
-                    ><v-spacer></v-spacer>
-                    <v-col cols="12" sm="2"
-                      ><v-text-field
-                        v-model.number="minmax_warning[1]"
-                        type="number"
-                        :min="minmax_critical[0]"
-                        :max="minmax_critical[1]"
-                        @change="
+                        "></v-text-field></v-col><v-spacer></v-spacer>
+                  <v-col cols="12" sm="4">
+                    <el-slider :key="limit_warning.key" v-model="minmax_warning" range :marks="limit_warning.marks"
+                      :min="minmax_critical[0]" :max="minmax_critical[1]">
+                      <!-- 危險的min max 以minmax_critical最大跟最小為限制 -->
+                    </el-slider> </v-col><v-spacer></v-spacer>
+                  <v-col cols="12" sm="2"><v-text-field v-model.number="minmax_warning[1]" type="number"
+                      :min="minmax_critical[0]" :max="minmax_critical[1]" @change="
                           () => {
                             limit_warning.key += 1;
                           }
-                        "
-                      ></v-text-field
-                    ></v-col>
-                  </v-row>
+                        "></v-text-field></v-col>
+                </v-row>
               </v-card-text>
             </div>
           </v-card-text>
@@ -581,43 +434,12 @@ export default {
   data() {
     return {
       headers: [
-        {
-          text: "項目英文",
-          //align: "center",
-          sortable: false,
-          value: "name_en"
-        },
-        {
-          text: "項目中文",
-          // align: "center",
-          sortable: false,
-          value: "name_ch"
-        },
-
-        {
-          text: "單位",
-          align: "center",
-          sortable: false,
-          value: "unit"
-        },
-        {
-          text: "最小值",
-          align: "center",
-          sortable: false,
-          value: "min"
-        },
-        {
-          text: "最大值",
-          align: "center",
-          sortable: false,
-          value: "max"
-        },
-        {
-          text: "啟用警示",
-          align: "center",
-          sortable: false,
-          value: "is_enable_alert"
-        },
+        // { text: "項目英文", sortable: false, value: "name_en" },
+        { text: "項目名稱", sortable: false, value: "name_ch" },
+        { text: "單位", align: "center", sortable: false, value: "unit" },
+        { text: "最小值", align: "center", sortable: false, value: "min" },
+        { text: "最大值", align: "center", sortable: false, value: "max" },
+        { text: "啟用警示", align: "center", sortable: false, value: "is_enable_alert" },
         { text: "Actions", value: "actions", sortable: false }
       ],
       footerProps: {
@@ -656,7 +478,8 @@ export default {
         item: "",
         value: "",
         min: 0,
-        max: 99999
+        max: 99999,
+        is_visible_to_franchisee:false,//加盟客戶是否可檢視
       },
       addDialog: false,
       addItem: {
@@ -664,6 +487,7 @@ export default {
         item: "",
         value: "",
         is_enable_alert:false,
+        is_visible_to_franchisee:false,//加盟客戶是否可檢視
         min: 0,
         max: 99999,
         critical_min: 0,
@@ -892,9 +716,10 @@ export default {
         warning_min: this.editedItem.warning_min,
         data_group: this.editedItem.group,
         is_enable_alert:this.editedItem.is_enable_alert,
-        updated_user: updUser
+        updated_user: updUser,
+        is_visible_to_franchisee:this.editedItem.is_visible_to_franchisee
       };
-      console.log(parm);
+      // console.log(parm);
       var id = this.editedItem.id;
       var res = false;
       res = await this. patchColDataList(parm,id);
