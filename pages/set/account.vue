@@ -432,6 +432,13 @@
                 <div class="input-group flex-align-center">
                   <el-switch v-model="addform.is_customer" active-color="#13ce66" inactive-color="#eee"
                     class="my-4 mr-4 ml-2"></el-switch>
+                </div><br />
+              </v-card-text>
+              <v-card-text>
+                <div class="input-group flex-align-center">
+                 <div :style="{ color: addform.is_customer ? 'black' : 'gray' }">加盟池：</div>
+                 <locate-select class="select-template mr-0" :dataScope="'pool'" :isMulti="true" :defaultSelect="addform.pond_id"
+                  :disabled="addform.is_customer==false" @scopeSel_data="get_scopeData($event);resultListOpen=true;"></locate-select>
                 </div>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0 full-width">
@@ -521,6 +528,13 @@
                   class="my-4 mr-4 ml-2" @change="changeState()"></el-switch>
               </div>
             </v-card-text>
+            <v-card-text>
+                <div class="input-group flex-align-center">
+                 <div :style="{ color: editedData.is_customer ? 'black' : 'gray' }">加盟池：</div>
+                 <locate-select class="select-template mr-0" :defaultSelect="editedData.pond_id" :dataScope="'pool'" :isMulti="true" :disabled="editedData.is_customer==false"
+                @scopeSel_data="get_scopeData_edit($event);resultListOpen=true;"></locate-select>
+                </div>
+              </v-card-text>
           </div>
         </v-card-text>
         <v-card-actions style="padding-bottom: 24px;">
@@ -583,7 +597,7 @@ export default {
       },
       accColsHide: ["帳號","姓名","單位", "職位", "狀態","所屬場別"], //隱藏欄位、或需要特殊建立的欄位
       editDialog: false,
-      editedData: {}, //編輯中的資料
+      editedData: { pond_id:[]}, //編輯中的資料
       expands: [], //Expand only one line into the current line id
       getRowKeys(row) {
         //Set row-key to show only one row
@@ -601,6 +615,7 @@ export default {
         is_sys_enable_line: false,
         is_sys_enable_line_kb: false,
         is_customer:false,
+        pond_id: [],//加盟池
         position_id: [],
         factory_id: [],
       },
@@ -704,14 +719,19 @@ export default {
     };
   },
   methods: {
+    get_scopeData_edit:function(evt) {
+      this.editedData.pond_id = _.cloneDeep(evt);
+    },
+    get_scopeData:function(evt) {
+      // console.log('get_scopeData-evt:',evt);
+      this.addform.pond_id = _.cloneDeep(evt);
+    },
     getaccList: async function() {
       this.isLoading = false;
       let getuserData = await this.getUserList();
       this.accdata = typeof (getuserData)=='string'?[]:getuserData;
       console.log('accdata',this.accdata)
-      // this.accdata.forEach(async (acc,cid)=>{
-      //   await this.getUser(acc.username,cid);
-      // })
+
       this.isLoading = true;
       console.log('acc',this.accdata);
       // await this.$axios
@@ -785,8 +805,10 @@ export default {
       }
     },
     handleEdit(index, row) {
-      console.log(index, row);
-      Object.assign(this.editedData, row);
+      console.log("handleEdit:",index, row);
+      this.editedData = {};
+      // Object.assign(this.editedData, row);
+      this.editedData = _.cloneDeep(row);
       // this.editedData.value = row.account_name;
       this.editedData.position = row.position.map(x => {
         return x["position_id"];
