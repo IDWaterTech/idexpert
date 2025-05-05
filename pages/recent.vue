@@ -124,6 +124,20 @@
                   </div>
                 </v-card>
               </v-col>
+              <!-- 名詞註釋 -->
+              <v-col cols="12" class="mb-1 pt-0 pb-0">
+                <v-card class="result-card pool-detail">
+                  <div class="card-title">名詞註釋</div>
+                  <v-card-text>
+                    <ul>
+                      <li>ppm:百萬分之ㄧ( 1 part per million) = 1 mg/kg =1mg/L。</li>
+                      <li>CFU/mL:每毫升樣品中含有的細菌菌落總數。</li>
+                      <li>ADG:平均每日增重，單位為g。</li>
+                      <li>育成率:目前生存數量÷起始放養數量</li>
+                    </ul>
+                  </v-card-text>
+                </v-card>
+              </v-col>
               <!--隱藏 財務-費用 -->
               <v-col v-if="false" cols="12" class="mb-1 pt-0 pb-0">
                 <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">

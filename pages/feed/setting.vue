@@ -691,6 +691,16 @@
                 >飼料成分產編</span
               ></v-text-field
             >
+            <v-text-field
+              v-model="editItem.generic_name"
+              filled
+              clearable
+              placeholder="料徑2~4mm(g)..."
+              :rules="rules.require"
+              ><span slot="prepend" :style="{width:'100px'}"
+                >飼料成分通用名</span
+              ></v-text-field
+            >
             <v-autocomplete
               style="width"
               dense
@@ -1228,7 +1238,8 @@ export default {
       fic_show_disable: false,
       ficHeaders:[
         { text: '名稱', value: 'name', sortable: true,width:"15%"},
-        { text: '產編', value: 'item_no', sortable: true,width:"10%"},
+        //{ text: '產編', value: 'item_no', sortable: true,width:"10%"},
+        { text: '通用名', value: 'generic_name', sortable: true,width:"10%"},
         { text: '廠商', value: 'manufacturer', sortable: false,width:"15%"},
         { text: '價格/單位數量', value: 'price', sortable: false,width:"10%"},
         { text: '單位', value: 'unit', sortable: false,width:"5%"},
