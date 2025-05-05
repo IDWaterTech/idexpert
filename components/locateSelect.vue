@@ -1,6 +1,7 @@
 <template>
     <div>
         <treeselect
+              :disabled="disabled"
               @input="changeEvent"
               v-model="dataid"
               :options="maindataScope"
@@ -44,6 +45,10 @@ export default {
         limit:{//預設選定項目
             type: String,
             default: '1'
+        },
+        disabled:{
+            type: Boolean,
+            default: false
         }
     },
     data() {
