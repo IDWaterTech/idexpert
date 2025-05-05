@@ -21,10 +21,10 @@
                         <v-col cols="12">
                             <v-card class="result-card pb-2">
                                 <!-- <span>{{ this.$options.head().title }}</span> -->
-                                <v-card-text style="height: 600px;">
+                                <v-card-text>
                                         <v-responsive>
                                             <iframe :src="formulaUrl" class="full-width overflow-hidden"
-                                                style="height:600px;" frameborder="0" allowfullscreen></iframe>
+                                                style="height:1024px;" frameborder="0" allowfullscreen></iframe>
                                         </v-responsive>
                                     </v-card-text>
                             </v-card>
