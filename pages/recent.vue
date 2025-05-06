@@ -15,7 +15,7 @@
                 class="select-template"></locate-select>
             </v-col>
             <v-col cols="1" md="1" sm="1" class="text-center">
-              <v-btn class="mx-2" icon small color="primary">
+              <v-btn class="mx-2" icon small color="primary" @click="getRecent()">
                 <v-icon>mdi-reload</v-icon>
               </v-btn>
             </v-col>
@@ -60,10 +60,10 @@
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
                             <iframe  :src="farmData.observation_video.url" class="elevation-5"
-                            title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯" 
-                            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯"
+                            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br />
-                          <span>觀察網影片 {{ farmData.observation_image.datetime }}</span>
+                          <span>觀察網影片 {{ farmData.observation_video.datetime }}</span>
                         </div>
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
@@ -309,7 +309,7 @@ export default {
           feedData: [{ item_name: '溶氧(ppm)', item_value: '28.5' }, { item_name: '酸鹼值', item_value: '7.8' },
           { item_name: '氨氮(ppm)', item_value: '5.2' }, { item_name: '水位(%)', item_value: '0.02' },
           { item_name: '水溫(°C)', item_value: '30' }, { item_name: '亞硝酸(ppm)', item_value: '0.1' },
-          //{ item_name: '預估蝦子重量', item_value: '(歷史數據才有)' }, 
+          //{ item_name: '預估蝦子重量', item_value: '(歷史數據才有)' },
           // { item_name: '預估平均每日增重(adg)', item_value: '(歷史數據才有)' }
           //   , { item_name: '預估存活率', item_value: '(歷史數據才有)' }
           //----------------------
@@ -318,14 +318,14 @@ export default {
           { item_name: '飼料(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '糖(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '益生菌(展開show細項)', item_qty: '-', item_value: '-' },
-          { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' }, 
+          { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '當前育成率', item_qty: '-', item_value: '-' },
           { item_name: '目標收成蝦重(g)', item_qty: '-', item_value: '-' },
           { item_name: '預估育成率', item_qty: '-', item_value: '-' },
           { item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
-          //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
+          //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' },
           // { item_name: '檢測費(試劑、儀器)', item_qty: '-', item_value: '-' },
-          // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' }, 
+          // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' },
           //暫隱{ item_name: '雜費(展開show細項)', item_qty: 5, item_value: '-' },
           //暫隱{ item_name: '每月人事費用', item_qty: '-', item_value: '-' },
           //{ item_name: '蝦苗(元/尾)', item_qty: '0.25', item_value: '-' },
@@ -336,10 +336,10 @@ export default {
           { item_name: '飼料(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '糖(展開show細項)', item_qty: '-', item_value: '-' },
           { item_name: '益生菌(展開show細項)', item_qty: '-', item_value: '-' },
-          { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' }, 
-          //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' }, 
+          { item_name: '水質改善劑(展開show細項)', item_qty: '-', item_value: '-' },
+          //暫隱{ item_name: '檢測費(展開show細項)', item_qty: '-', item_value: '-' },
           // { item_name: '檢測費(試劑、儀器)', item_qty: '-', item_value: '-' },
-          // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' }, 
+          // { item_name: '檢測費(疾病)', item_qty: 5, item_value: '-' },
           //暫隱{ item_name: '雜費(展開show細項)', item_qty: 5, item_value: '-' },
           //暫隱{ item_name: '每月人事費用', item_qty: '-', item_value: '-' },
           //{ item_name: '蝦苗(元/尾)', item_qty: '0.25', item_value: '-' },
@@ -350,12 +350,30 @@ export default {
           // { item_name: '預估育成率', item_qty: '-', item_value: '-' },
           // { item_name: '預估收成總重(公斤)', item_qty: '2000', item_value: '-' },
           { item_name: '預估白蝦單價(元/公斤)', item_qty: '383.2', item_value: '-' }, { item_name: '預估收益(元/水)', item_qty: '-', item_value: '766400' },
-          { item_name: '單位成本(元/公斤)', item_qty: '-', item_value: '35' }, 
+          { item_name: '單位成本(元/公斤)', item_qty: '-', item_value: '35' },
           ],
           dlg_farmData: false,
         };
     },
     methods: {
+      async getRecent() {
+        // this.isLoading = true;
+        let params = { pond_id: 135 };
+        let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/recent-data`;
+         await this.$axios.get(url, { params: params})
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("recent-data:" , res.data);
+             this.farmData = res.data;
+          } else {
+            this.$toast.error({ message: '取得recent資料失敗：' + res, duration: 2000 });
+          }
+        })
+        .catch((error) => {
+          this.$toast.error({ message: '取得recent資料錯誤：' + error.message, duration: 2000 });
+        });
+        // this.isLoading = false;
+      },
       //看圖片
         viewOrigin(item,type) {
           this.srcList = [];//清空
@@ -394,7 +412,7 @@ export default {
   }
   .content .col-12 {
     padding: 0;
-    
+
   }
 }
 
