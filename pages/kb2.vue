@@ -3399,7 +3399,13 @@
             <v-card  class="custom-dialog">
                 <v-card-title class="add-title">
                     <div class="d-inline-block">
-                        <span>計算方式</span> 
+                        <span>計算方式</span>
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <a :href="url.feed.xls" target="_blank" v-bind="attrs" v-on="on" class="ml-4"><v-icon>mdi-link</v-icon></a>
+                            </template>
+                            <span>在新分頁中開啟</span>
+                        </v-tooltip>
                     </div>
                     <div class="add">
                         <v-btn class="btn-secondary close"
