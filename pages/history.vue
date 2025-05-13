@@ -6,16 +6,28 @@
     <v-card class="bg-card">
       <div class="content pt-3">
         <span>
-          <h2>{{ this.$options.head().title }}</h2>
+          <!-- <h2>{{ this.$options.head().title }}</h2> -->
+        </span>
+        <span>
+          <v-btn to="/recent" color="primary" text>
+            近況更新
+          </v-btn>
+          <v-btn to="/book" color="primary" text>
+            檢測資訊
+          </v-btn>
+          <v-btn to="/history" color="primary" text>
+            歷史數據
+          </v-btn>
         </span>
         <div class="search mb-3">
           <v-row class="mb-0">
             <v-col cols="12" md="3" sm="12" style="position: relative;">
               <locate-select :dataScope="'pool'" :isMulti="false" @scopeSel_data="get_scopeData($event)"
-                class="select-template"></locate-select>
+                :defaultSelect="pond_id.toString()" class="select-template"></locate-select>
+                <v-chip x-small color="primary"  @click="()=>{this.pond_id=135}">135</v-chip>
             </v-col>
             <v-col cols="1" md="1" sm="1" class="text-center">
-              <v-btn class="mx-2" icon small color="primary" @click="refresh()">
+              <v-btn class="mx-2" icon small color="primary" @click="getHistory()">
                 <v-icon>mdi-reload</v-icon>
               </v-btn>
             </v-col>
@@ -42,7 +54,7 @@
                       <v-col cols="12" class="text-center">
                         <v-row style="width: 100%;justify-content: flex-end;margin-bottom: 0;">
                           <!-- 選擇起日 -->
-                          <div style="padding: 12px;">
+                          <div style="padding: 12px;" v-if="false">
                             <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
                               transition="scale-transition" offset-y min-width="auto">
                               <template v-slot:activator="{ on, attrs }">
@@ -55,7 +67,7 @@
                             </v-menu>
                           </div>
                           <!-- 選擇迄日 -->
-                          <div style="padding: 12px;">
+                          <div style="padding: 12px;" v-if="false">
                             <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
                               transition="scale-transition" offset-y min-width="auto">
                               <template v-slot:activator="{ on, attrs }">
@@ -67,11 +79,13 @@
                                 @input="menu_enddate = false"></v-date-picker>
                             </v-menu>
                           </div>
-                          <div style="padding: 12px;"><v-autocomplete v-model="defitem" :items="waterdatacols"
-                              item-text="name" item-value="name" no-data-text="查無資料" label="*指定項目(必選)" hide-details
+                          <!-- 選擇水質項目 -->
+                          <div style="padding: 12px;"><v-autocomplete v-model="defItem" :items="waterDataCols_new"
+                              item-text="name_ch" item-value="name_ch" no-data-text="查無資料" label="*指定項目(必選)" hide-details
                               class="select-color" clearable @change="changeDefItem()">
-                              <template v-slot:item="data">{{ `　${data.item.name}` }}</template>
+                              <template v-slot:item="data">{{ `　${data.item.name_ch}` }}</template>
                             </v-autocomplete></div>
+                          <!-- 選擇min、max -->
                           <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right"
                               :min="0" style="width:100px;height: 40px;"></el-input-number></div>
                           <div style="padding: 12px;">最大值：<el-input-number v-model="chartmax" controls-position="right"
@@ -105,8 +119,8 @@
                     <v-row class="mb-4">
                       <v-col cols="12">
                         <el-table :data="farmData" class="full-width" max-height="240" size="mini">
-                          <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="item_value" label="數值" width="180"></el-table-column>
+                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
+                          <el-table-column prop="value" label="數值" width="180"></el-table-column>
                         </el-table>
                       </v-col>
                     </v-row>
@@ -129,9 +143,9 @@
                   <div class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table :data="feedData" class="full-width" max-height="600">
-                          <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="item_value" label="使用量/數值" width="180"></el-table-column>
+                        <el-table :data="farmData" class="full-width" max-height="600">
+                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
+                          <el-table-column prop="value" label="使用量/數值" width="180"></el-table-column>
                           <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
                         </el-table>
                       </v-col>
@@ -230,14 +244,15 @@ export default {
         edate:"",
         //---chart相關
         waterloading: false, //折線圖，
-        defitem: [],
+        defItem: [],
         waterdatacols: [],//可選擇的水質項目
+        waterDataCols_new: [],//可選擇的水質項目new
         markdata: { maxline: -999, minline: -999 },
         chartmin: undefined,
         chartmax: undefined,
         item: [{ name: "", items: [] }], // 事件
         //---
-        poolid: '',
+        pond_id: '',
         isLoading: false,
         isOriginImg: false,
         srcList: [],
@@ -295,7 +310,53 @@ export default {
       };
     },
   methods: {
-    async refresh() {
+    //取得案場資料
+    getFarmData:async function(){
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/historical-total-data/`;
+      await this.$axios.get(url, { params: { pond_id: this.pond_id } })
+        .then((res) => {
+          if (res.status == 200) {
+            this.farmData = res.data;
+          } else {
+            this.$toast.error({ message: '取得farm-data資料失敗：' + res, duration: 2000 });
+          }
+        })
+        .catch((error) => {
+          this.$toast.error('取得farm-data資料錯誤：', {duration: 2000});
+        });
+    },
+    //取得history資料
+    getHistory: async function() {
+      this.isLoading = false;
+      if(this.defItem== undefined || this.defItem.length == 0){
+        this.$toast.error('請選擇水質項目', {duration: 2000 });
+        this.isLoading = true;
+        return;
+      }
+      let data_item = this.waterDataCols_new.filter(x=>x.name_ch==this.defItem)[0];
+        
+      let params = { pond_id: this.pond_id,items: data_item.name_en, data_group: data_item.data_group};
+      // console.log("params:", params);
+      // this.isLoading = true;
+      // return;
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/historical-daily-data/`;
+      await this.$axios.get(url, { params: params})
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("historical-daily-data:" , res.data);
+             this.item = res.data;
+          } else {
+            this.$toast.error({ message: '取得historical-daily-data資料失敗：' + res, duration: 2000 });
+          }
+        })
+        .catch((error) => {
+          this.$toast.error('取得historical-daily-data資料錯誤：', {duration: 2000});
+        });
+      await this.getFarmData();//取得案場資料
+      //console.log("farmData:", this.farmData);
+      this.isLoading = true;
+
+        return;
       this.item = {
         "id": "117",
         "name": "池1",
@@ -1893,15 +1954,16 @@ export default {
     },
     changeDefItem() {
       // 清除項目
-      if (this.defitem == null) {
-        this.defitem = [];
+      if (this.defItem == null) {
+        this.defItem = [];
       }
+
     },
     //取得指標上下限資料  
     getLimitData: async function () {
       let getColDataList = await this.getColDataList();
       let data = typeof (getColDataList) == 'string' ? [] : getColDataList;
-      var lmtitem = data.filter(x => x.name_ch == this.defitem);
+      var lmtitem = data.filter(x => x.name_ch == this.defItem);
       if (lmtitem.length > 0) {//不可以有null值
         this.markdata.maxline = (lmtitem[0].critical_max == null) ? -999 : lmtitem[0].critical_max;
         this.markdata.minline = (lmtitem[0].critical_min == null) ? -999 : lmtitem[0].critical_min;
@@ -1916,11 +1978,24 @@ export default {
       this.isLoading = true;
     },
     get_scopeData(evt) {
-      this.poolid = evt;
+      this.pond_id = evt;
+      // console.log("pond_id:", this.pond_id);
+      // this.getHistory();
     },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
       return mydate;
+    },
+    getClientDefItem:async function() {
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/historical-fields/`;
+      await this.$axios.get(url).then((response) => {
+        if (response.data != null) {
+          this.waterDataCols_new = response.data;
+        }
+      }).catch((error) => {
+        console.error(error);
+        this.$toast.error("getClientDefItem error:",error);
+      });
     },
   },
     async mounted() {
@@ -1931,6 +2006,7 @@ export default {
         });
     },
     async created() {
+      await this.getClientDefItem();
       //抓欄位資料 waterdatacols ，coldata
       var myitem = [];
       let getAllColForSearchList = await this.getAllColForSearchList();

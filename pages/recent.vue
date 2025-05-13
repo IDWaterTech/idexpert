@@ -6,13 +6,24 @@
     <v-card class="bg-card">
       <div class="content pt-3">
         <span>
-          <h2>{{ this.$options.head().title }}</h2>
+          <!-- <h2>{{ this.$options.head().title }}</h2> -->
+        </span>
+        <span>
+          <v-btn to="/recent" color="primary" text>
+            近況更新
+          </v-btn>
+          <v-btn to="/book" color="primary" text>
+            檢測資訊
+          </v-btn>
+          <v-btn to="/history" color="primary" text>
+            歷史數據
+          </v-btn>
         </span>
         <div class="search mb-3">
           <v-row class="mb-0">
-            <v-col cols="11" md="3" sm="11" style="position: relative;">
+            <v-col cols="10" md="3" sm="10">
               <locate-select :dataScope="'pool'" :isMulti="false" @scopeSel_data="get_scopeData($event)"
-                class="select-template"></locate-select>
+                :defaultSelect="pond_id.toString()" class="select-template"></locate-select>
             </v-col>
             <v-col cols="1" md="1" sm="1" class="text-center">
               <v-btn class="mx-2" icon small color="primary" @click="getRecent()">
@@ -46,12 +57,8 @@
                     <v-row class="mb-4">
                       <v-col cols="12" md="3" class="text-center" v-if="false">
                         <div class="image-wrapper">
-                          <img
-                            src="../assets/ipcam_tmp.png"
-                            style="max-height: 300px;"
-                            class="image-preview"
-                          />
-                          <v-icon class="play-icon" color="white"  large>
+                          <img src="../assets/ipcam_tmp.png" style="max-height: 300px;" class="image-preview" />
+                          <v-icon class="play-icon" color="white" large>
                             mdi-play-circle-outline
                           </v-icon>
                           <span>監視器</span>
@@ -59,37 +66,35 @@
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
-                            <iframe  :src="farmData.observation_video.url" class="elevation-5"
-                            title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯"
-                            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          <iframe :src="farmData.observation_video?.url" v-if="farmData.observation_video" class="elevation-5"
+                            title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br />
-                          <span>觀察網影片 {{ farmData.observation_video.datetime }}</span>
+                          <span>觀察網影片 {{ farmData.observation_video?.datetime }}</span>
                         </div>
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
-                          <img
-                            :src="farmData.observation_image.url" class="elevation-5"
+                          <img :src="farmData.observation_image?.url" class="elevation-5"
                             @click="viewOrigin($event.target.src,undefined)" /><br />
-                          <span>打樣 {{ farmData.observation_image.datetime }}</span>
+                          <span>打樣 {{ farmData.observation_image?.datetime }}</span>
                         </div>
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container">
-                          <img
-                            :src="farmData.bacteria_image.url" class="elevation-5"
+                          <img :src="farmData.bacteria_image?.url" class="elevation-5"
                             @click="viewOrigin($event.target.src,undefined)" /><br />
-                          <span>菌盤 {{ farmData.bacteria_image.datetime }}</span>
+                          <span>菌盤 {{ farmData.bacteria_image?.datetime }}</span>
                         </div>
                       </v-col>
                       <v-col cols="12" md="12" class=".align-start">
                         <v-row justify="center" align="center">
                           <v-spacer></v-spacer>
                           <div style="width: 80%;">
-                            <el-table :data="farmData.site_info"  max-height="500" >
-                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="value" label="數值" width="180"></el-table-column>
-                        </el-table>
+                            <el-table :data="farmData.site_info" max-height="500">
+                              <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
+                              <el-table-column prop="value" label="數值" width="100"></el-table-column>
+                            </el-table>
                           </div>
                           <v-spacer></v-spacer>
                         </v-row>
@@ -103,7 +108,8 @@
                 <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
                   <div class="card-title px-3 py-2">
                     <div class="title">
-                      <v-card-title class="px-0 py-0"><span class="mr-1">養殖資訊</span>
+                      <v-card-title class="px-0 py-0">
+                        <div>養殖資訊</div>
                       </v-card-title>
                     </div>
                     <!-- <div class="chevron" >
@@ -114,9 +120,9 @@
                   <div class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table :data="farmData.aquaculture_info" class="full-width" max-height="600">
+                        <el-table :data="farmData.aquaculture_info" class="full-width">
                           <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="value" label="使用量/數值" width="180"></el-table-column>
+                          <el-table-column prop="value" label="使用量/數值" width="150"></el-table-column>
                           <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
                         </el-table>
                       </v-col>
@@ -127,13 +133,36 @@
               <!-- 名詞註釋 -->
               <v-col cols="12" class="mb-1 pt-0 pb-0">
                 <v-card class="result-card pool-detail">
-                  <div class="card-title">名詞註釋</div>
+                  <div class="card-title px-3 py-2">
+                    <div class="title">
+                      <v-card-title class="px-0 py-0">
+                        <div>名詞註釋</div>
+                      </v-card-title>
+                    </div>
+                  </div>
+                  <div v-if="false" class="card-title d-flex justify-space-between align-center pb-1">
+                    <div class="title">名詞註釋</div>
+                    <div>
+
+                      <v-tooltip bottom v-if="false">
+                        <template v-slot:activator="{ on, attrs }">
+                          <button class="btn-icon green" v-bind="attrs" v-on="on">
+                            <router-link to="/book"><v-icon
+                                class="cursor-pointer">mdi-book-open-page-variant-outline</v-icon></router-link>
+                          </button>
+                        </template>
+                        <span>檢測資訊</span>
+                      </v-tooltip>
+                    </div>
+                  </div>
+                  <!-- <div class="card-title">名詞註釋</div> -->
                   <v-card-text>
                     <ul>
                       <li>ppm:百萬分之ㄧ( 1 part per million) = 1 mg/kg =1mg/L。</li>
                       <li>CFU/mL:每毫升樣品中含有的細菌菌落總數。</li>
                       <li>ADG:平均每日增重，單位為g。</li>
-                      <li>育成率:目前生存數量÷起始放養數量</li>
+                      <li>內存量=當日料量/體重投餌率</li>
+                      <li>育成率=內存量/預估均重/放苗量</li>
                     </ul>
                   </v-card-text>
                 </v-card>
@@ -156,8 +185,8 @@
                       <v-col cols="12">
                         <el-table :data="feeData_Backup" class="full-width" max-height="550" size="mini">
                           <el-table-column prop="item_name" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="item_qty" label="使用量" width="180"></el-table-column>
-                          <el-table-column prop="item_value" label="金額" width="180"></el-table-column>
+                          <el-table-column prop="item_qty" label="使用量" width="100"></el-table-column>
+                          <el-table-column prop="item_value" label="金額" width="100"></el-table-column>
                         </el-table>
                       </v-col>
                     </v-row>
@@ -256,13 +285,13 @@ export default {
     },
     data() {
         return {
-            srcList: [],
-            isOriginImg: false,
-            poolid: '',
-            isLoading: false,
-            isOriginImg: false,
-            srcList: [],
-            nowPool: '',
+          srcList: [],
+          isOriginImg: false,
+          pond_id: '',
+          isLoading: false,
+          isOriginImg: false,
+          srcList: [],
+          nowPool: '',
           farmData: {
             'bacteria_image': { 'url': 'https://cloud.idwatertech.com/media/bacteria/S__8962157_0.jpg/S__8962157_0.jpg.jpg', 'datetime': '2025-04-23 14:46' },
             'observation_image': { 'url': 'https://test.idwatertech.com/media/shrimp_record/20241209105823_117/LINE_ALBUM_2024_%E8%9D%A6%E6%B3%81%E7%85%A7%E7%89%87%E6%97%A5%E5%B8%B8%E8%A7%80%E5%AF%9F%E6%89%93%E6%A8%A3%E6%94%BE%E8%8B%97%E6%94%B6%E6%88%90%E7%AD%89%E8%88%87%E8%9D%A6%E9%9A%BB%E6%9C%89%E9%97%9C%E7%9A%84%E7%85%A7%E7%89%87%E7%B4%80%E9%8C%84_241209_9.jpg', 'datetime': '2025-04-23 14:46' },
@@ -356,9 +385,11 @@ export default {
         };
     },
     methods: {
-      async getRecent() {
-        // this.isLoading = true;
-        let params = { pond_id: 135 };
+      //get近況資料
+      getRecent: async function() {
+        this.isLoading = false;
+        // this.pond_id = 135;
+        let params = { pond_id: this.pond_id };
         let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/recent-data`;
          await this.$axios.get(url, { params: params})
         .then((res) => {
@@ -370,9 +401,9 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.error({ message: '取得recent資料錯誤：' + error.message, duration: 2000 });
+          this.$toast.error('取得recent資料錯誤：', {duration: 2000});
         });
-        // this.isLoading = false;
+        this.isLoading = true;
       },
       //看圖片
         viewOrigin(item,type) {
@@ -386,7 +417,8 @@ export default {
             this.isLoading = true;
         },
         get_scopeData(evt) {
-            this.poolid = evt;
+            this.pond_id = evt;
+            this.getRecent();
         }
     },
     async mounted() {

@@ -6,7 +6,18 @@
         <v-card class="bg-card">
             <div class="content pt-3">
                 <span>
-                    <h2>{{ this.$options.head().title }}</h2>
+                    <!-- <h2>{{ this.$options.head().title }}</h2> -->
+                </span>
+                <span>
+                    <v-btn to="/recent" color="primary" text>
+                        近況更新
+                    </v-btn>
+                    <v-btn to="/book" color="primary" text>
+                        檢測資訊
+                    </v-btn>
+                    <v-btn to="/history" color="primary" text>
+                        歷史數據
+                    </v-btn>
                 </span>
                 <div v-if="false" class="search mb-3">
                     <v-row class="mb-0">
@@ -22,11 +33,11 @@
                             <v-card class="result-card pb-2">
                                 <!-- <span>{{ this.$options.head().title }}</span> -->
                                 <v-card-text>
-                                        <v-responsive>
-                                            <iframe :src="formulaUrl" class="full-width overflow-hidden"
-                                                style="height:1024px;" frameborder="0" allowfullscreen></iframe>
-                                        </v-responsive>
-                                    </v-card-text>
+                                    <v-responsive>
+                                        <iframe :src="formulaUrl" class="full-width overflow-hidden"
+                                            style="height:1024px;" frameborder="0" allowfullscreen></iframe>
+                                    </v-responsive>
+                                </v-card-text>
                             </v-card>
                         </v-col>
                     </v-row>
