@@ -12,11 +12,11 @@
                     <v-btn to="/recent" color="primary" text>
                         近況更新
                     </v-btn>
-                    <v-btn to="/book" color="primary" text>
-                        檢測資訊
-                    </v-btn>
                     <v-btn to="/history" color="primary" text>
                         歷史數據
+                    </v-btn>
+                    <v-btn to="/book" color="primary" text>
+                        指標警戒資訊
                     </v-btn>
                 </span>
                 <div v-if="false" class="search mb-3">

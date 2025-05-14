@@ -12,11 +12,11 @@
           <v-btn to="/recent" color="primary" text>
             近況更新
           </v-btn>
-          <v-btn to="/book" color="primary" text>
-            檢測資訊
-          </v-btn>
           <v-btn to="/history" color="primary" text>
             歷史數據
+          </v-btn>
+          <v-btn to="/book" color="primary" text>
+            指標警戒資訊
           </v-btn>
         </span>
         <div class="search mb-3">
@@ -66,25 +66,36 @@
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
-                          <iframe :src="farmData.observation_video?.url" v-if="farmData.observation_video" class="elevation-5"
-                            title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯" frameborder="0"
+                          <iframe :src="farmData.observation_video?.url" v-if="farmData.observation_video?.url"
+                            class="elevation-5" title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><br />
-                          <span>觀察網影片 {{ farmData.observation_video?.datetime }}</span>
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                          <div v-else>
+                            <v-icon class="ico" x-large>mdi-video-off</v-icon>
+                          </div>
+                          <br /><div>觀察網影片 {{ farmData.observation_video?.datetime }}</div>
                         </div>
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
-                          <img :src="farmData.observation_image?.url" class="elevation-5"
-                            @click="viewOrigin($event.target.src,undefined)" /><br />
-                          <span>打樣 {{ farmData.observation_image?.datetime }}</span>
+                          <img :src="farmData.observation_image?.url" v-if="farmData.observation_image?.url"
+                            class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
+                          <div v-else>
+                            <v-icon class="ico" x-large>mdi-image-off</v-icon>
+                          </div>
+                          <br />
+                          <div>打樣 {{ farmData.observation_image?.datetime }}</div>
                         </div>
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container">
-                          <img :src="farmData.bacteria_image?.url" class="elevation-5"
-                            @click="viewOrigin($event.target.src,undefined)" /><br />
-                          <span>菌盤 {{ farmData.bacteria_image?.datetime }}</span>
+                          <img :src="farmData.bacteria_image?.url" v-if="farmData.bacteria_image?.url"
+                            class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
+                          <div v-else>
+                            <v-icon class="ico" x-large>mdi-image-remove</v-icon>
+                          </div>
+                          <br />
+                          <div>菌盤 {{ farmData.bacteria_image?.datetime }}</div>
                         </div>
                       </v-col>
                       <v-col cols="12" md="12" class=".align-start">
@@ -161,8 +172,8 @@
                       <li>ppm:百萬分之ㄧ( 1 part per million) = 1 mg/kg =1mg/L。</li>
                       <li>CFU/mL:每毫升樣品中含有的細菌菌落總數。</li>
                       <li>ADG:平均每日增重，單位為g。</li>
-                      <li>內存量=當日料量/體重投餌率</li>
-                      <li>育成率=內存量/預估均重/放苗量</li>
+                      <li>內存量=當日料量/體重投餌率。</li>
+                      <li>育成率=內存量/預估均重/放苗量*100%。</li>
                     </ul>
                   </v-card-text>
                 </v-card>
@@ -292,7 +303,8 @@ export default {
           isOriginImg: false,
           srcList: [],
           nowPool: '',
-          farmData: {
+          farmData: {},
+          farmData_back: {
             'bacteria_image': { 'url': 'https://cloud.idwatertech.com/media/bacteria/S__8962157_0.jpg/S__8962157_0.jpg.jpg', 'datetime': '2025-04-23 14:46' },
             'observation_image': { 'url': 'https://test.idwatertech.com/media/shrimp_record/20241209105823_117/LINE_ALBUM_2024_%E8%9D%A6%E6%B3%81%E7%85%A7%E7%89%87%E6%97%A5%E5%B8%B8%E8%A7%80%E5%AF%9F%E6%89%93%E6%A8%A3%E6%94%BE%E8%8B%97%E6%94%B6%E6%88%90%E7%AD%89%E8%88%87%E8%9D%A6%E9%9A%BB%E6%9C%89%E9%97%9C%E7%9A%84%E7%85%A7%E7%89%87%E7%B4%80%E9%8C%84_241209_9.jpg', 'datetime': '2025-04-23 14:46' },
             'observation_video': { 'url': 'https://www.youtube.com/embed/dKUttCHIng8', 'datetime': '2025-04-23 14:46' },
@@ -387,6 +399,7 @@ export default {
     methods: {
       //get近況資料
       getRecent: async function() {
+        this.farmData = {};
         this.isLoading = false;
         // this.pond_id = 135;
         let params = { pond_id: this.pond_id };
@@ -472,4 +485,5 @@ export default {
   border-radius: 8px;
 }
 .image-container img, iframe { @extend .rounded;max-height: 300px; height: auto; width: auto; max-width: 100%; border: 1px solid #ccc; margin-bottom: 1em; }
+.ico {@extend .image-container;@extend .rounded;}
 </style>

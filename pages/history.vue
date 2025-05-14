@@ -12,11 +12,11 @@
           <v-btn to="/recent" color="primary" text>
             近況更新
           </v-btn>
-          <v-btn to="/book" color="primary" text>
-            檢測資訊
-          </v-btn>
           <v-btn to="/history" color="primary" text>
             歷史數據
+          </v-btn>
+          <v-btn to="/book" color="primary" text>
+            指標警戒資訊
           </v-btn>
         </span>
         <div class="search mb-3">
@@ -24,9 +24,8 @@
             <v-col cols="12" md="3" sm="12" style="position: relative;">
               <locate-select :dataScope="'pool'" :isMulti="false" @scopeSel_data="get_scopeData($event)"
                 :defaultSelect="pond_id.toString()" class="select-template"></locate-select>
-                <v-chip x-small color="primary"  @click="()=>{this.pond_id=135}">135</v-chip>
             </v-col>
-            <v-col cols="1" md="1" sm="1" class="text-center">
+            <v-col cols="1" md="1" sm="1" class="text-center" v-if="false">
               <v-btn class="mx-2" icon small color="primary" @click="getHistory()">
                 <v-icon>mdi-reload</v-icon>
               </v-btn>
@@ -37,6 +36,58 @@
           <div class="result-card">
             <!-- 養殖池 -->
             <v-row class="mb-3 align-stretch" style="height: 100%;" id="chart">
+              
+              <!-- 案場資訊 -->
+              <v-col v-if="false" cols="12" class="mb-1 pt-0 pb-0">
+                <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
+                  <div class="card-title px-3 py-2">
+                    <div class="title">
+                      <v-card-title class="px-0 py-0"><span class="mr-1">案場資訊</span>
+                      </v-card-title>
+                    </div>
+                    <!-- <div class="chevron" >
+                        <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
+                        <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
+                      </div> -->
+                  </div>
+                  <div class="content">
+                    <v-row class="mb-4">
+                      <v-col cols="12">
+                        <el-table :data="farmData" class="full-width" max-height="240" size="mini">
+                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
+                          <el-table-column prop="value" label="數值" width="180"></el-table-column>
+                        </el-table>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </v-card>
+              </v-col>
+              <!-- 養殖資訊 -->
+              <v-col cols="12" class="mb-1 pt-0 pb-0">
+                <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
+                  <div class="card-title px-3 py-2">
+                    <div class="title">
+                      <v-card-title class="px-0 py-0"><span class="mr-1">養殖資訊</span>
+                      </v-card-title>
+                    </div>
+                    <!-- <div class="chevron" >
+                        <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
+                        <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
+                      </div> -->
+                  </div>
+                  <div class="content">
+                    <v-row class="mb-4">
+                      <v-col cols="12">
+                        <el-table :data="farmData" class="full-width" max-height="600">
+                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
+                          <el-table-column prop="value" label="累計 使用量/數值" width="180"></el-table-column>
+                          <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
+                        </el-table>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </v-card>
+              </v-col>
               <!-- 圖表 -->
               <v-col cols="12" class="mb-1 pt-0 pb-0">
                 <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
@@ -84,7 +135,11 @@
                               item-text="name_ch" item-value="name_ch" no-data-text="查無資料" label="*指定項目(必選)" hide-details
                               class="select-color" clearable @change="changeDefItem()">
                               <template v-slot:item="data">{{ `　${data.item.name_ch}` }}</template>
-                            </v-autocomplete></div>
+                            </v-autocomplete>
+                          </div>
+                          <v-btn class="mx-2" icon small color="primary" @click="getHistory()">
+                            <v-icon>mdi-reload</v-icon>
+                          </v-btn>
                           <!-- 選擇min、max -->
                           <div style="padding: 12px;">最小值：<el-input-number v-model="chartmin" controls-position="right"
                               :min="0" style="width:100px;height: 40px;"></el-input-number></div>
@@ -97,57 +152,6 @@
                             :markdata="markdata" :isIndicator="true" style="width: 100%;min-height: 26vh;">
                           </WaterQuality_Vcharts2>
                         </v-row>
-                      </v-col>
-                    </v-row>
-                  </div>
-                </v-card>
-              </v-col>
-              <!-- 案場資訊 -->
-              <v-col v-if="false" cols="12" class="mb-1 pt-0 pb-0">
-                <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
-                  <div class="card-title px-3 py-2">
-                    <div class="title">
-                      <v-card-title class="px-0 py-0"><span class="mr-1">案場資訊</span>
-                      </v-card-title>
-                    </div>
-                    <!-- <div class="chevron" >
-                        <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
-                        <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
-                      </div> -->
-                  </div>
-                  <div class="content">
-                    <v-row class="mb-4">
-                      <v-col cols="12">
-                        <el-table :data="farmData" class="full-width" max-height="240" size="mini">
-                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="value" label="數值" width="180"></el-table-column>
-                        </el-table>
-                      </v-col>
-                    </v-row>
-                  </div>
-                </v-card>
-              </v-col>
-              <!-- 養殖資訊 -->
-              <v-col cols="12" class="mb-1 pt-0 pb-0">
-                <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
-                  <div class="card-title px-3 py-2">
-                    <div class="title">
-                      <v-card-title class="px-0 py-0"><span class="mr-1">養殖資訊</span>
-                      </v-card-title>
-                    </div>
-                    <!-- <div class="chevron" >
-                        <v-icon v-if="resultListOpen">mdi-triangle-small-up</v-icon>
-                        <v-icon v-if="!resultListOpen">mdi-triangle-small-down</v-icon>
-                      </div> -->
-                  </div>
-                  <div class="content">
-                    <v-row class="mb-4">
-                      <v-col cols="12">
-                        <el-table :data="farmData" class="full-width" max-height="600">
-                          <el-table-column prop="name_ch" label="項目" :fixed="true" align="center"></el-table-column>
-                          <el-table-column prop="value" label="使用量/數值" width="180"></el-table-column>
-                          <!-- <el-table-column prop="item_price" label="金額" width="180"></el-table-column> -->
-                        </el-table>
                       </v-col>
                     </v-row>
                   </div>
@@ -312,6 +316,7 @@ export default {
   methods: {
     //取得案場資料
     getFarmData:async function(){
+      this.isLoading = false;
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/historical-total-data/`;
       await this.$axios.get(url, { params: { pond_id: this.pond_id } })
         .then((res) => {
@@ -324,12 +329,18 @@ export default {
         .catch((error) => {
           this.$toast.error('取得farm-data資料錯誤：', {duration: 2000});
         });
+        this.isLoading = true;
     },
     //取得history資料
     getHistory: async function() {
       this.isLoading = false;
       if(this.defItem== undefined || this.defItem.length == 0){
-        this.$toast.error('請選擇水質項目', {duration: 2000 });
+        this.$toast.error('請選擇水質項目$', {duration: 2000 });
+        this.isLoading = true;
+        return;
+      }
+      if(this.pond_id == undefined || this.pond_id.length == 0){
+        this.$toast.error('請選擇養殖池', {duration: 2000 });
         this.isLoading = true;
         return;
       }
@@ -352,7 +363,6 @@ export default {
         .catch((error) => {
           this.$toast.error('取得historical-daily-data資料錯誤：', {duration: 2000});
         });
-      await this.getFarmData();//取得案場資料
       //console.log("farmData:", this.farmData);
       this.isLoading = true;
 
@@ -1977,10 +1987,10 @@ export default {
       this.userData = typeof getuserData === 'string' ? [] : getuserData.filter(x => x.is_active);
       this.isLoading = true;
     },
-    get_scopeData(evt) {
+    get_scopeData:async function(evt) {
       this.pond_id = evt;
       // console.log("pond_id:", this.pond_id);
-      // this.getHistory();
+      await this.getFarmData();//取得案場資料
     },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
