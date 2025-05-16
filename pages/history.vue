@@ -335,7 +335,7 @@ export default {
     getHistory: async function() {
       this.isLoading = false;
       if(this.defItem== undefined || this.defItem.length == 0){
-        this.$toast.error('請選擇水質項目$', {duration: 2000 });
+        this.$toast.error('請選擇水質項目', {duration: 2000 });
         this.isLoading = true;
         return;
       }
@@ -2003,8 +2003,9 @@ export default {
           this.waterDataCols_new = response.data;
         }
       }).catch((error) => {
+        this.waterDataCols_new = [];
         console.error(error);
-        this.$toast.error("getClientDefItem error:",error);
+        this.$toast.error("getClientDefItem error:"+error.message);
       });
     },
   },
