@@ -696,7 +696,6 @@
               filled
               clearable
               placeholder="料徑2~4mm(g)..."
-              :rules="rules.require"
               ><span slot="prepend" :style="{width:'100px'}"
                 >飼料成分通用名</span
               ></v-text-field
