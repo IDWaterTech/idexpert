@@ -6,6 +6,7 @@ Vue.mixin({
 	    getArchitecture: async function(_factoryid,isAll=false) {
             // _factoryid 預設只帶該場資料，其他不需要
             try {
+                
                 if(isAll) {
                     let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`);
                     if(data.status==200) {
@@ -29,6 +30,7 @@ Vue.mixin({
                             mainData = resdata.filter(x=>x.id==_factoryid);
                             return (this.$route.path=='/set/account')?data.data:mainData;
                         }
+                        //只顯示該user所屬的場
                         if(localStorage.getItem('factory_id')) {
                             // console.log('locoal',localStorage.getItem('factory_id'))
                             let factory_id = JSON.parse(localStorage.getItem('factory_id'));
@@ -40,6 +42,20 @@ Vue.mixin({
                                 })
                             })
                         }
+                        //只顯示user為加盟者身份時所屬的場
+                        if(localStorage.getItem('is_customer')=='true') {
+                            
+                            const customer_pond = JSON.parse(localStorage.getItem('pond_id'));
+                            const customer_data = resdata.map(x=>({...x,
+                                                            node:(x.node||[]).map(y=>({...y,
+                                                                                    node:(y.node||[]).filter(y=>customer_pond.includes(y.id))
+                                                                                    })
+                                                                                ).filter(x=>x.node.length>0)//第三層node為空的就不顯示
+                                                            })).filter(x=>x.node.length>0)//第二層node為空的就不顯示
+                            mainData = _.cloneDeep(customer_data);
+                            console.log('加盟池：',customer_data);
+                        }
+                        
                         // console.log('url',this.$route.path)
                         return (this.$route.path=='/set/account')?data.data:mainData;
                     }else {
