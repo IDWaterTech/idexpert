@@ -44,6 +44,10 @@ import https from "https";
                   //增加身份判別---
                   //帳號被授權進入的項目
                   localStorage.setItem('factory_id',JSON.stringify(acc[0].factory_id));
+                  //帳號是否是加盟者
+                  localStorage.setItem('is_customer',JSON.stringify(acc[0].is_customer));
+                  //帳號被授權進入的池子(限定加盟者才用到)
+                  localStorage.setItem('pond_id',JSON.stringify(acc[0].pond_id));
                   let accheader = { account: this.$auth.$state.user.email };
                   let accPagelst = [];
                   let datalst;
