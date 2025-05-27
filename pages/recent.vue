@@ -89,13 +89,21 @@
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container">
-                          <img :src="farmData.bacteria_image?.url" v-if="farmData.bacteria_image?.url"
+                          <img :src="farmData.bacteria_image?.[0]?.url" v-if="farmData.bacteria_image?.[0]?.url"
+                            class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
+                            <div v-else>
+                            <v-icon class="ico" x-large>mdi-image-remove</v-icon>
+                          </div>
+                          <br />
+                          <div>菌盤 {{ `[${farmData.bacteria_image?.[0]?.type || '--'}] ${farmData.bacteria_image?.[0]?.datetime || ''}`}}</div>
+                          <!-- -----第2張 -->
+                          <img :src="farmData.bacteria_image?.[1]?.url" v-if="farmData.bacteria_image?.[1]?.url"
                             class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
                           <div v-else>
                             <v-icon class="ico" x-large>mdi-image-remove</v-icon>
                           </div>
                           <br />
-                          <div>菌盤 {{ farmData.bacteria_image?.datetime }}</div>
+                          <div>菌盤 {{ `[${farmData.bacteria_image?.[1]?.type || '--'}] ${farmData.bacteria_image?.[1]?.datetime || ''}`}}</div>
                         </div>
                       </v-col>
                       <v-col cols="12" md="12" class=".align-start">
