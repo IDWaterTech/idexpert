@@ -866,70 +866,21 @@
                       <v-card-title>主成份</v-card-title>
                   </div>
                 </div>
-              <!-- <span slot="prepend" :style="{width:'50px'}"
-                  >主成份</span> -->
               </v-autocomplete>
-              <!-- <v-row v-for="item in combofield.main_items" :key="item.id" style="align-items: center;margin: 0 8px;border-bottom: 1px solid rgba(0,0,0,0.1)">
-                <div style="width: 100px; padding: 12px;">
-                    <div style="display: flex;flex-direction:column;margin-top: 4px;">
-                      <span style="width:100px;margin-bottom: 12px;">{{
-                        ficwithdetail_main.filter(x => x.id == item)[0].name
-                      }}</span>
-                      <div class="chips" style="width: 100%;">
-                        <v-chip
-                          class="mx-1"
-                          v-for="parmitem in ficwithdetail_main.filter(
-                            x => x.id == item
-                          )[0].parameters"
-                          :key="'add_main_parm_'+parmitem.id"
-                          color="#408FBC"
-                          style="color:#fff;font-size: 12px;margin: 2px;"
-                          >{{ `${parmitem.name}:${parmitem.value}` }}</v-chip
-                        >
-                      </div>
-                      
-                    </div>
-                </div>
-                <div style="padding: 12px;">
-                  <v-text-field
-                    v-model="main_formula[item]"
-                    filled
-                    dense
-                    clearable
-                    hide-details
-                    @keyup="limitcharacter"
-                    placeholder="範例：1,0.2,0.5,0.8...."
-                    :rules="rules.require"
-                  >
-                    <span slot="prepend" :style="{width:'100px'}"
-                    >公式</span>
-                  </v-text-field>
-                  <v-text-field
-                    v-model="main_formula_remark[item]"
-                    filled
-                    dense
-                    clearable
-                    hide-details
-                    placeholder="備註：該混料只需8成"
-                  >
-                    <span slot="prepend" :style="{width:'100px'}"
-                    >備註</span>
-                  </v-text-field>
-                </div>
-              </v-row> -->
+            
               
               <v-row v-for="item in combofield.main_items" :key="item.id" class="align-center mx-2 my-0 mb-2 border-bottom">
                 <v-col cols="12" class="pb-0">
                     <div class="flex-align-center mt-1">
-                      <span>{{
-                        ficwithdetail_main.filter(x => x.id == item)[0].name
-                      }}</span>
+                      <span v-if="ficwithdetail_main.filter(x => x.id == item)[0]">
+                        {{ficwithdetail_main.filter(x => x.id == item)[0]?.name}}</span>
+                      <span v-else class="warning-text">注意：{{ `成份已停用[ ${fing.filter(x=>x.id==item)[0].name} ](id:${item})` }}</span>
                       <div class="chips">
                         <v-chip
                           class="mx-1 params"
                           v-for="parmitem in ficwithdetail_main.filter(
                             x => x.id == item
-                          )[0].parameters"
+                          )[0]?.parameters ?? []"
                           :key="'add_main_parm_'+parmitem.id"
                           color="#408FBC"
                           :style="{color:'#fff','font-size':'12px',margin:'2px'}"
@@ -1295,6 +1246,7 @@ export default {
           items.push({ divider: true });
         });
       }
+      console.log('ficwithdetail_main:',items);;
       return items;
     },
     ficwithdetail_sub: function() {
@@ -1708,7 +1660,7 @@ export default {
       this.ficwithdetail = [];
       let getFeedCategoryItemList = await this.getFeedCategoryItemList();
       let data = typeof (getFeedCategoryItemList)=='string'?[]:getFeedCategoryItemList;
-      this.ficwithdetail = data;
+      this.ficwithdetail = _.cloneDeep(data);
       console.log('成份細項',this.ficwithdetail);
       if(this.tablindex=='成份設定') {
         this.manuFilterData = this.fing.filter(x => x.feed_ingredient_category_id == this.fic_idx);
@@ -2580,6 +2532,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.warning-text {
+  color: red;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
 /* .tabitembg {
   background-color: #fafafa;
 } */
