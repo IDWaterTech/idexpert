@@ -711,6 +711,7 @@ export default {
     };
   },
   async mounted() {
+    this.isLoading = false;
     this.$refs.calendar.checkChange();
     //取得整場架構資料
     await this.getMainData();
@@ -718,6 +719,7 @@ export default {
     await this.getEventLevelData();
     //取得事件類型
     await this.getEventCategoryData();
+    this.isLoading = true;
   },
   methods: {
     //清單-刪除
@@ -1409,7 +1411,7 @@ export default {
   },
   async created() {
     await this._pageCheck(); //驗證頁面是否可檢視
-    this.isLoading = false;
+    
   }
 };
 </script>
