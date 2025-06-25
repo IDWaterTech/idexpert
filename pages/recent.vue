@@ -66,7 +66,7 @@
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
-                          <iframe :src="farmData.observation_video?.url" v-if="farmData.observation_video?.url"
+                          <iframe :src="farmData.observation_video?.url" v-if="['-',null,'',undefined].includes(farmData.observation_video?.url)==false"
                             class="elevation-5" title="艾滴科技 ID WATER 用科技引領永續農業！AIoT智能水產養殖 + 廢水灌溉紅樹林提升碳匯" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -78,7 +78,7 @@
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container pa-6">
-                          <img :src="farmData.observation_image?.url" v-if="farmData.observation_image?.url"
+                          <img :src="farmData.observation_image?.url" v-if="['-',null,'',undefined].includes(farmData.observation_image?.url)==false"
                             class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
                           <div v-else>
                             <v-icon class="ico" x-large>mdi-image-off</v-icon>
@@ -89,18 +89,18 @@
                       </v-col>
                       <v-col cols="12" md="4" class="text-center">
                         <div class="image-container">
-                          <img :src="farmData.bacteria_image?.[0]?.url" v-if="farmData.bacteria_image?.[0]?.url"
+                          <img :src="farmData.bacteria_image?.[0]?.url" v-if="['-',null,'',undefined].includes(farmData.bacteria_image?.[0]?.url)==false"
                             class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
                             <div v-else>
-                            <v-icon class="ico" x-large>mdi-image-remove</v-icon>
+                            <v-icon class="ico" x-large>mdi-image-off</v-icon>
                           </div>
                           <br />
                           <div>菌盤 {{ `[${farmData.bacteria_image?.[0]?.type || '--'}] ${farmData.bacteria_image?.[0]?.datetime || ''}`}}</div>
                           <!-- -----第2張 -->
-                          <img :src="farmData.bacteria_image?.[1]?.url" v-if="farmData.bacteria_image?.[1]?.url"
+                          <img :src="farmData.bacteria_image?.[1]?.url" v-if="['-',null,'',undefined].includes(farmData.bacteria_image?.[1]?.url)==false"
                             class="elevation-5" @click="viewOrigin($event.target.src, undefined)" />
                           <div v-else>
-                            <v-icon class="ico" x-large>mdi-image-remove</v-icon>
+                            <v-icon class="ico" x-large>mdi-image-off</v-icon>
                           </div>
                           <br />
                           <div>菌盤 {{ `[${farmData.bacteria_image?.[1]?.type || '--'}] ${farmData.bacteria_image?.[1]?.datetime || ''}`}}</div>
