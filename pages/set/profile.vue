@@ -17,7 +17,7 @@
           </div>
       </div>
       <v-divider></v-divider>
-      <div class="content notify pt-4 mb-10 flex-column">
+      <div class="content notify pt-4 mb-10 flex-column" v-if="!UserData.is_customer">
         <v-subheader class="title pa-0">
           <v-icon class="mx-2">mdi-bell-circle-outline</v-icon>接收通知
         </v-subheader>
@@ -112,6 +112,11 @@
           <span></span>
         </div>
       </div>
+      <div v-else class="content notify pt-4 mb-0 flex-column align-center">
+        <v-subheader class="title pa-0">
+          歡迎使用 艾滴科技專家系統！
+        </v-subheader>
+      </div>
     </v-card>
   </div>
 </template>
@@ -128,6 +133,7 @@ export default {
   middleware: 'auth',
   data() {
     return {
+      UserData:{Username:'',IsSaved:false},//使用者相關資訊
       profile: {
         user_id: undefined,
         email: undefined,
@@ -192,29 +198,62 @@ export default {
       //     this.getUser();
       //   });
     },
+    // 取得使用者資料
+    getUserData: async function() {
+      // this.isLoading = false;
+      let userDataList = await this.getUserList();
+      var userDataListCheck = typeof (userDataList)=='string'?[]:userDataList;
+      var acc = userDataListCheck.filter(x=>x.username == this.$auth.$state.user.email)[0];
+      this.UserData = _.cloneDeep(acc);
+      console.log('UserData!!!!!!!!!!',this.UserData);
+      /*
+      {
+          "id": 3,
+          "username": "XXX@idwater.com.tw",
+          "account_name": "XXX",
+          "department": [
+              "技術部"
+          ],
+          "position": [
+              {
+                  "position_id": 124,
+                  "department": "技術部",
+                  "name": "軟體工程師"
+              }
+          ],
+          "is_active": true,
+          "is_sys_enable_line": true,
+          "is_sys_enable_email": false,
+          "is_sys_enable_line_kb": false,
+          "is_personal_enable_line": true,
+          "factory_id": [2,40,30],
+          "pond_id": [49,50],
+          "line_vcode": "XXXX",
+          "line_user_id": "XXXXXXXXXXXXXX",
+          "is_customer": false,
+          "highest_position_id": 124
+      }
+      */
+    },
+    // 取得個別帳號資料
     getUser: async function() {
       let accheader = { account: this.$auth.$state.user.email };
       let getPersinalSettingList = await this.getPersinalSettingList(accheader);
       let data = typeof (getPersinalSettingList)=='string'?{}:getPersinalSettingList;
+      console.log('getPersinalSettingList:',getPersinalSettingList);
       this.profile = data;
-      // await this.$axios
-      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/personal-settings/`, {
-      //     headers: accheader
-      //   })
-      //   .then(res => {
-      //     if (res.data != "帳號資料不存在") {
-      //       this.profile = res.data;
-      //       // this.$toast.success(`成功:${res.data}`, { duration: 2000 });
-      //     } else {
-      //       this.$toast.error(`失敗:${res.data}`, { duration: 2000 });
-      //     }
-      //   })
-      //   .catch(error => {
-      //     this.$toast.error(`失敗:${error.message}`, { duration: 2000 });
-      //   })
-      //   .finally(() => {
-      //     //this.getdata();
-      //   });
+      /*
+      {
+          "user_id": XXX,
+          "email": "XXXXXXXXXXXXX@idwater.com.tw",
+          "is_sys_enable_line": true,
+          "is_sys_enable_email": false,
+          "is_personal_enable_line": true,
+          "is_personal_enable_email": false,
+          "line_vcode": "XXXXXX",
+          "line_user_id": "XXXXXXXXXXXXX"
+      }
+      */
     },
     testMsgCloud: async function() {
       let msg = `這是您由系統主動發送的測試訊息，時間：${dayjs(
@@ -348,7 +387,8 @@ export default {
     let re_uri = location.href;
     let client_id = `nNb2Igb0DnnmWsauU5mWoP`;
     this.interactionLink = `https://notify-bot.line.me/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${re_uri}&scope=notify&state=abcd`;
-    this.getUser();
+    this.getUser();// 取得個別帳號資料
+    await this.getUserData();// 取得使用者資料
     if (this.$route.query.hasOwnProperty("error")) {
       this.$toast.error(`錯誤:${this.$route.query.error}`, { duration: 5000 });
     }
