@@ -223,7 +223,7 @@
                             <v-icon v-if="tab=='圖表'">mdi-chart-bell-curve-cumulative</v-icon>
                             <v-icon v-if="tab=='編修紀錄'">mdi-text-box-edit-outline</v-icon>
                             <v-icon v-if="tab=='事件紀錄'">mdi-calendar-edit-outline</v-icon>
-                            <v-icon v-if="tab=='觀察網資訊'">mdi-tray-full</v-icon>
+                            <v-icon v-if="tab=='打樣資訊'">mdi-tray-full</v-icon>
                           </div>
                           {{ tab }}
                       </v-tab>
@@ -325,7 +325,7 @@
                           </template>
                         </v-data-table>
                       </v-tab-item>
-                      <v-tab-item :value="'觀察網資訊'" class="result-content">
+                      <v-tab-item :value="'打樣資訊'" class="result-content">
                         <!-- 紀錄清單 -->
                         <div class="result-list">
                           <div class="box-shadow-none border-bottom" style="border-radius: 0;">
@@ -339,7 +339,7 @@
                                   <v-icon v-if="!listOpen">mdi-triangle-small-down</v-icon>
                                 </div>
                               </div>
-                              <v-btn v-if="nowTab=='觀察網資訊'" class="btn-secondary green" :class="{'disabled':optData.length==0}" style="float:right" @click="editObservable('add')"><v-icon>mdi-plus</v-icon>新增</v-btn>
+                              <v-btn v-if="nowTab=='打樣資訊'" class="btn-secondary green" :class="{'disabled':optData.length==0}" style="float:right" @click="editObservable('add')"><v-icon>mdi-plus</v-icon>新增</v-btn>
                             </div>
                             
                           </div>
@@ -1182,7 +1182,7 @@ export default {
       //公式
       formula:"",
       //tab
-      tabs: ['圖表','編修紀錄','事件紀錄','觀察網資訊'],
+      tabs: ['圖表','編修紀錄','事件紀錄','打樣資訊'],
       nowTab: '圖表',
       //編修紀錄checkbox disable判斷
       disabledAllDel:true,
@@ -3177,7 +3177,7 @@ export default {
         this.item = {};
         setTimeout(()=>{this.item = data},500)
 
-      }else if(this.nowTab=='觀察網資訊') {
+      }else if(this.nowTab=='打樣資訊') {
         // if(this.observableData.length>0) {
         //   this.listOpen = false;
         // }else {
