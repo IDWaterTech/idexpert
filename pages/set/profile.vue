@@ -205,7 +205,6 @@ export default {
       var userDataListCheck = typeof (userDataList)=='string'?[]:userDataList;
       var acc = userDataListCheck.filter(x=>x.username == this.$auth.$state.user.email)[0];
       this.UserData = _.cloneDeep(acc);
-      console.log('UserData!!!!!!!!!!',this.UserData);
       /*
       {
           "id": 3,
