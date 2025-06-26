@@ -87,9 +87,19 @@
                                     <div class="feed full-width flex-align-end justify-center">
                                         <span class="number-of-data pt-0" style="padding-top: 0;">
                                             {{cardData.nextFeed.length>0?cardData.nextFeed[0].NextFeed:'-'}}
-                                        </span> g
+                                        </span> g<v-icon class="mx-2" :disabled="cardData.nextFeed.length>0 == false" @click="isShowManualFormula = !isShowManualFormula">mdi-calculator-variant-outline</v-icon>
                                     </div>
-                                    
+                                </div>
+                                <div class="content flex-align-center flex-column pa-0 pt-3" v-if="isShowManualFormula">
+                                    <v-row>
+                                        <v-col cols="12" class="pa-0">
+                                            {{ this.formula_eval(cardData.nextFeed[0]?.NextFeed ?? '-',this.manualFormula) }}
+                                            <v-text-field v-model="manualFormula" placeholder="人工調整，例：*2、/2、+200" outlined dense clearable></v-text-field>
+                                        </v-col>
+                                        <!-- <v-col cols="3">
+                                            <v-btn icon>ok</v-btn>
+                                        </v-col> -->
+                                    </v-row>
                                 </div>
                             </div>
                         </v-card>
@@ -239,7 +249,7 @@
 </template>
 
 <script>
-
+import mee from "math-expression-evaluator";
 export default {
     props: {
         cardData: {
@@ -262,6 +272,8 @@ export default {
     },
     data() {
         return {
+            isShowManualFormula: false,// 是否顯示人工調整飼料量公式
+            manualFormula: '',// 人工調整飼料量公式
             alert:[],
             nowAlert:0,
             chartDataSurvival: {
@@ -289,6 +301,27 @@ export default {
         this.getNewData();
     },
     methods: {
+        formula_eval: function(feed, formula) {
+            if(formula == undefined || formula == null || formula == '') {
+                return feed;
+            }
+            feed = feed == undefined || isNaN(feed) || feed == null ? 0 : feed;
+            var data = isNaN(formula.substr(0, 1))
+                ? `${feed}${formula}`
+                : `${feed}*${formula}`;
+            var result;
+            try {
+                //避免出現其他無法解決符號
+                result = mee.eval(data).toFixed(2);
+                
+            } catch (error) {
+                result = 0;
+            }
+            const factor = Math.pow(10, 0);//0代表小數點後幾位
+            result = _.cloneDeep(Math.ceil(result * factor) / factor);
+            console.log('result factor:',factor, result);
+            return result;
+        },
         alertChange(type) {
             if(type=='left') {
                 if(this.nowAlert!==0) {
