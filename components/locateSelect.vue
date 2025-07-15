@@ -94,6 +94,7 @@ export default {
             }else{
                 console.log('default select',this.defaultSelect);
                 this.dataid = this.defaultSelect;
+                this.$emit('scopeSel_data',this.dataid);
             }
         },
         // 資料改變時，傳出數值
