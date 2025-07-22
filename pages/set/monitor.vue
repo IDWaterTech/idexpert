@@ -1107,11 +1107,11 @@ export default {
               .catch(err => {
                 console.error('mainFormSubmit-err:', err);
                 this.$toast.error("新增失敗");
-              })
-              .finally(() => {
-                console.log('mainFormSubmit-api done.');
-                this.mainFormMode = "edit";
               });
+              // .finally(() => {
+              //   console.log('mainFormSubmit-api done.');
+              //   this.mainFormMode = "edit";
+              // });
             break;
           case 'edit':
             console.log('mainFormSubmit-mainForm:', this.mainForm);
