@@ -3447,6 +3447,7 @@ export default {
             sugerdlg:false,
             FeedRecordData:{FeedAmountForFourMeals:{}},//過去四天單餐投餌量，從required-data api獲得，請附加在suggestion api
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
+            field:undefined,//選擇的場區
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
             BreedingParm:{},//養殖參數
             FeedParm:{FeedCN:undefined,CumulativeFeedAmountInput:0},//飼料參數
@@ -3591,6 +3592,8 @@ export default {
                 f.node.forEach(a=>{
                     a.node.forEach(p=>{
                         if(p.id == evt) {
+                            //console.log('get_scopeData-fap:',f,a,p);場區、池、架構
+                            this.field = f.id;
                             this.BaseParm['Factory'] = f.name;
                             this.BaseParm['PondArea'] = a.name;
                             this.BaseParm['Pond'] = p.name;
@@ -3609,6 +3612,8 @@ export default {
             if(this.nowSelectPool==evt) {
                 this.isLoading = true;
             }
+            
+            this.getlightData();//取得養殖池的警示資料
             
             // console.log('nowSelectDataLst',this.nowSelectDataLst);
             // this.importBasicData();//帶入數據
@@ -3740,13 +3745,17 @@ export default {
             
         },
         getlightData:async function(){
-            let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
-            let getWarningRangeList = await this.getWarningRangeList();
+            //let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
+            let getWarningRangeList = await this.getWarningRangeList(this.field);
             let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
             console.log('getLight',data);
             this.lightData = data;
-            if(this.lightData) {
-                this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temp']);
+            if(this.lightData!=[]) {
+                if(!this.lightData['Temperature']){
+                    return; //如果沒有溫度資料，就不處理
+                }
+                this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temperature']);
+                console.log('lightData',this.lightData['LastTemp']);
                 this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
                 this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
                 this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
@@ -4741,7 +4750,7 @@ export default {
         }
         await this.getsuggData();
         await this.getOptData();
-        await this.getlightData();
+        //await this.getlightData();//取得警戒範圍
         await this.getAllData();
         await this.getQuerry();
         await this.getAllUser();

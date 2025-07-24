@@ -164,10 +164,16 @@ Vue.mixin({
             }
         },
         // 取得水質監測的警告範圍
-        getWarningRangeList:async function() {
+        getWarningRangeList:async function(field_id) {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`)
-                console.log("水質監測的警告範圍清單:" + data.request.responseURL);
+                var parm = { factory_id: field_id };
+                if(field_id == undefined || field_id == null) {
+                    return [];
+                }
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/warning-range/`,{params: parm})
+                // console.log("水質監測的警告範圍參數:" , parm);
+                // console.log("水質監測的警告範圍URL:" , data.request.responseURL);
+                // console.log("水質監測的警告範圍DATA:" , data.data);
                 if(data.status==200) {
                     return data.data;
                 }else {
@@ -176,7 +182,8 @@ Vue.mixin({
 
             }catch(error) {
                 this.$toast.error("錯誤：" + error, { duration: 2000 });
-                console.log(error);
+                //console.log(error);
+                console.error(`${data.request.responseURL} 錯誤，使用預設資料`, error);
                 return [];
             }
         },
