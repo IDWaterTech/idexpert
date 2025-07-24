@@ -229,7 +229,7 @@ export default {
     // });
     // this.chtData_new_1.rows = array;
     this.chtData_new_1.rows = this.sheetdata;
-    console.log("chtData_new_1:",this.chtData_new_1);
+    //console.log("chtData_new_1:",this.chtData_new_1);
   },
   computed: {
     sheetdata: function() {

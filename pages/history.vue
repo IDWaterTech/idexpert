@@ -322,6 +322,7 @@ export default {
         .then((res) => {
           if (res.status == 200) {
             this.farmData = res.data;
+            //console.log("案場資料farmData:", this.farmData);
           } else {
             this.$toast.error({ message: '取得farm-data資料失敗：' + res, duration: 2000 });
           }
@@ -1991,6 +1992,7 @@ export default {
       this.pond_id = evt;
       // console.log("pond_id:", this.pond_id);
       await this.getFarmData();//取得案場資料
+      await this.getClientDefItem();//取得客戶端定義的欄位資料
     },
     getNowDate: function() {
       let mydate = dayjs().format("YYYY-MM-DD");
@@ -1998,9 +2000,14 @@ export default {
     },
     getClientDefItem:async function() {
       let url = `${this.$store.state.mydata.gobal_api.apiUrl}/client/historical-fields/`;
-      await this.$axios.get(url).then((response) => {
-        if (response.data != null) {
+      var parm = { pond_id: this.pond_id };
+      //console.log("historical-fields data:", parm);
+      await this.$axios.get(url,{ params: parm}).then((response) => {
+        //console.log("historical-fields URL:", response.config.url);
+        if (response.data != null && Array.isArray(response.data)) {//有資料且為陣列
           this.waterDataCols_new = response.data;
+        }else {
+          this.waterDataCols_new = [];
         }
       }).catch((error) => {
         this.waterDataCols_new = [];

@@ -18,7 +18,7 @@ Vue.mixin({
                 rejectUnauthorized: false
                 });
                 let data = await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent }) //所有使用者的清單
-                console.log("所有使用者的清單:" + data.request.responseURL);
+                //console.log("所有使用者的清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
                 }else {

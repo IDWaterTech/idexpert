@@ -744,7 +744,7 @@
                                                                                     title="過去一天最後一筆的溶氧資料"
                                                                                     :style="{'color':`${WaterQualityData['Do']&&WaterQualityData['Do']!==''&&WaterQualityData['Do']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
-                                                                                        :color="getColor('Do')"></v-badge>溶氧</span><span
+                                                                                        :color="getColor('DO')"></v-badge>溶氧</span><span
                                                                                     style="font-size: 12px;"
                                                                                     :style="{'paddingLeft':`${windowWidth<1263.98&&windowWidth>959.98?'24px':'0'}`,
                                                                                             'color':`${WaterQualityData['Do']&&WaterQualityData['Do']!==''&&WaterQualityData['Do']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">Do</span>
@@ -788,14 +788,14 @@
                                                                                     :style="{'color':`${WaterQualityData['Temp']&&WaterQualityData['Temp']!==''&&WaterQualityData['Temp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     title="過去一天最後一筆的水溫資料->粉料、砂糖量(做水)、尿素"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
-                                                                                        :color="getColor('Temp')"></v-badge>水溫</span>
+                                                                                        :color="getColor('Temperature')"></v-badge>水溫</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
                                                                                     v-model.number="WaterQualityData['Temp']"
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"
-                                                                                    @blur="valueCheck('Temp',WaterQualityData['Temp'])"><span
+                                                                                    @blur="valueCheck('Temperature',WaterQualityData['Temp'])"><span
                                                                                         slot="append" :style="{'color':`${WaterQualityData['Temp']&&WaterQualityData['Temp']!==''&&WaterQualityData['Temp']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">°C</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
@@ -826,14 +826,14 @@
                                                                                     slot="prepend"
                                                                                         title="循環內最後一筆資料"><v-badge
                                                                                         title="紅：危險值，橘：警告值，綠：正常值" inline
-                                                                                        :color="getColor('Salinity')"></v-badge>鹽度</span>
+                                                                                        :color="getColor('salinity')"></v-badge>鹽度</span>
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
                                                                                 <v-text-field
                                                                                     v-model.number="WaterQualityData['Salinity']"
                                                                                     type="number" dense hide-details
                                                                                     class="mt-0"
-                                                                                    @blur="valueCheck('Salinity',WaterQualityData['Salinity'])"><span
+                                                                                    @blur="valueCheck('salinity',WaterQualityData['Salinity'])"><span
                                                                                         slot="append" :style="{'color':`${WaterQualityData['Salinity']&&WaterQualityData['Salinity']!==''&&WaterQualityData['Salinity']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}">ppt</span></v-text-field>
                                                                             </v-col>
                                                                         </v-row>
@@ -3621,7 +3621,7 @@ export default {
         },
         // 帶入參數
         getSelectData(evt) {
-            console.log('Change Select',evt);
+            //console.log('Change Select',evt);
             this.isSearch = false;
             this.isShowResult = false;
             this.goAnchor('top');
@@ -3748,14 +3748,14 @@ export default {
             //let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
             let getWarningRangeList = await this.getWarningRangeList(this.field);
             let data = typeof (getWarningRangeList)=='string'?[]:getWarningRangeList;
-            console.log('getLight',data);
+            //console.log('getLight',data);
             this.lightData = data;
             if(this.lightData!=[]) {
                 if(!this.lightData['Temperature']){
                     return; //如果沒有溫度資料，就不處理
                 }
                 this.lightData['LastTemp'] = _.cloneDeep(this.lightData['Temperature']);
-                console.log('lightData',this.lightData['LastTemp']);
+                //console.log('lightData',this.lightData['LastTemp']);
                 this.lightData['LastTemp']['critical'][1].forEach((x,i)=>{this.lightData['LastTemp']['critical'][1][i]=x.replace('Temp','LastTemp')});
                 this.lightData['LastTemp']['critical'][2].forEach((x,i)=>{this.lightData['LastTemp']['critical'][2][i]=x.replace('Temp','LastTemp')});
                 this.lightData['LastTemp']['warning'][1].forEach((x,i)=>{this.lightData['LastTemp']['warning'][1][i]=x.replace('Temp','LastTemp')});
@@ -3880,7 +3880,7 @@ export default {
                     this.nowUserData.push(user);
                 }
             })
-            console.log('User',this.userData,userDepartment);
+            //console.log('User',this.userData,userDepartment);
         },
         async getUserQueryData() {
             this.isParaLoading = true;
@@ -3928,9 +3928,9 @@ export default {
                     })
                 }
                 this.nowSelectDataLst = this.querryDataLst[this.nowSelectPool];
-                console.log('querryData',this.querryData);
-                console.log('querydatalst',this.querryDataLst);
-                console.log('nowSelectDataLst',this.nowSelectDataLst);
+                // console.log('querryData',this.querryData);
+                // console.log('querydatalst',this.querryDataLst);
+                // console.log('nowSelectDataLst',this.nowSelectDataLst);
                 this.get_scopeData(this.nowSelectPool);
                 this.isParaLoading = false;
                 if(isAdd) {
@@ -4012,9 +4012,9 @@ export default {
 
         },
         importQuerry:async function(_input_data = null,bool=false){
-            console.log("importQuerry: _input_data + bool",_input_data,bool);
+            //console.log("importQuerry: _input_data + bool",_input_data,bool);
             if(this.querrySelected==null && _input_data == null){
-                console.log("importQuerry resetParm!");
+                // console.log("importQuerry resetParm!");
                 this.resetParm();
                 return;
             }else{
@@ -4096,7 +4096,7 @@ export default {
                     this.BreedingParm['InitialWeight'] = this.BreedingParm['InitialWeight'].toFixed(3);
                 }
                 this.BacteriaData = input_data.BacteriaData;
-                console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
+                //console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
                 
                 this.bacteriaSelect = [];
                 this.bacteriaDataObject = (input_data.BacteriaData.DiseaseInfection==undefined)?this.bacteriaDataObject:input_data.BacteriaData.DiseaseInfection;
@@ -4113,7 +4113,7 @@ export default {
                 }else{
                     
                 }
-                console.log('querryDataLst[this.nowSelectPool]',this.ObservationData,this.FeedParm);
+                //console.log('querryDataLst[this.nowSelectPool]',this.ObservationData,this.FeedParm);
                 // 預設投餌方案
                 this.FeedParm['FeedingPlan'] = this.optData.FeedingPlan[0]['name_ch'];
 
@@ -4447,7 +4447,7 @@ export default {
         },
         importBasicData:async function(){//帶入數據
             this.isLoading = false;
-            console.log("importBasicData!!");
+            //console.log("importBasicData!!");
             if(this.nowSelectPool==""){
                 this.isLoading = true;
                 this.$toast.error(`請先選擇養殖池`, { duration: 2000 });
@@ -4589,6 +4589,7 @@ export default {
             var checkstate = ['warning','critical'];
             var checkstate_bool = [false,false];
             for(var ruledatastate in checkstate){
+                //console.log("valueCheck",this.lightData,item,checkstate[ruledatastate]);
                 var ruledata = this.lightData[item][checkstate[ruledatastate]];
                 checkstate_bool[ruledatastate] = false;
                 if(ruledata==null){

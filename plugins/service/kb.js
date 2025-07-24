@@ -149,7 +149,7 @@ Vue.mixin({
             }
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`)
-                console.log("取得水源/蝦況選項項目清單:" + data.request.responseURL);
+                //console.log("取得水源/蝦況選項項目清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
                 }else {
@@ -208,7 +208,7 @@ Vue.mixin({
         getQueryLogList:async function(parm) {
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/query-log/`, { params: parm })
-                console.log("所有查詢紀錄清單:" + data.request.responseURL);
+                //console.log("所有查詢紀錄清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
                 }else {

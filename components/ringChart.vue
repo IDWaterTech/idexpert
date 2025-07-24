@@ -71,7 +71,7 @@
                                 position: 'center',    //显示的位置,center是饼环图中间显示,
                                 formatter: (params)=>{
                                     if(params.name==this.chartData?.rows[0]?.name) {
-                                        console.log('param',params.name,params)
+                                        //console.log('param',params.name,params)
                                         return `{title|${params.data.value==100?oldData.rows[0].value:params.data.value}%}`;
                                     }
                                 },

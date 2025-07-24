@@ -10,7 +10,7 @@ Vue.mixin({
                 if(isAll) {
                     let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/?is_pond_empty=true`);
                     if(data.status==200) {
-                        console.log("場區池整體資料架構API:" + data.request.responseURL);
+                        //console.log("場區池整體資料架構API:" + data.request.responseURL);
                         return data.data;
                     }else {
                         return [];
@@ -23,7 +23,7 @@ Vue.mixin({
                                 await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`,{headers:header});
                 
                     if(data.status==200) {
-                        console.log("場區池整體資料架構API:" + data.request.responseURL);
+                        //console.log("場區池整體資料架構API:" + data.request.responseURL);
                         let mainData = [];
                         let resdata = _.cloneDeep(data.data);
                         if(_factoryid!=null){
