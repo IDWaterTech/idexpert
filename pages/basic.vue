@@ -356,7 +356,7 @@ import _ from "lodash";
 import dayjs from "dayjs";
 import https from "https";
 import poollayout from "@/pages/map/poolslayout.vue";
-import nerdamer from 'nerdamer';
+import nerdamer, { factor } from 'nerdamer';
 //-----
 import "element-ui/lib/theme-chalk/index.css";
 import { create } from 'domain';
@@ -620,7 +620,7 @@ export default {
       //     alert("error:" + error.message);
       //   });
     },
-    get_scopeData:function(evt){
+    get_scopeData:async function(evt){
       console.log('get_scopeData-evt:',evt);//紫微_10026
       console.log('get_scopeData-maindata:',this.maindata);
       if(evt) {
@@ -647,6 +647,7 @@ export default {
         }
         this.showPredict = false;
         this.showAlert = false;
+        await this.getWaterWarn();//取得警戒範圍 與下方areachage有前後關係 一定要先取得警戒範圍再去設定顯示文字
         this.areachange();
       }
     },
@@ -1269,22 +1270,29 @@ export default {
     },
     // 取得範圍
     async getWaterWarn() {
+      var field = this.nowAreaId.factory_id;
       let search = [{
+        factory_id: field,
         // group: 'water',
         name_en: 'DO',
       },{
+        factory_id: field,
         // group: 'water',
         name_en: 'NO2',
       },{
+        factory_id: field,
         // group: 'water',
         name_en: 'pH',
       },{
+        factory_id: field,
         // group: 'water',
         name_en: 'NH4',
       },{
+        factory_id: field,
         // group: 'water',
         name_en: 'Temperature',
       },{
+        factory_id: field,
         // group: 'env',
         name_en: 'water_level_percentage',
       }]
@@ -1325,23 +1333,7 @@ export default {
       console.log('lightData',this.lightData);
       // await this.getWaterData();
       this.waterloading = true;
-      // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/warning-range/`;
-      //   await this.$axios.get(url).then(async res => {
-      //       if(res.status==200){
-      //           this.lightData = res.data;
-      //           console.log(this.lightData)
-      //           //list轉成格式：{'Do':'teal','pH':'teal','Temp':'teal','Salinity':'teal','AmmoniaN':'teal','NO2':'teal'}
-      //           await this.getWaterData();
-      //           // console.log("get lightData ok");
-                
-      //       }else{
-      //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-      //       }
-      //   })
-      //   .catch(error=>{
-      //     this.waterloading = true;
-      //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-      //   });
+
     },
     getAlertNum() {
       // console.log('get alert item',this.waterParm);
@@ -1647,7 +1639,7 @@ export default {
     //   });
     this.currenttab = this.tabsMap[0].name;
     // await this.getWaterData();
-    await this.getWaterWarn();
+    //await this.getWaterWarn();
     let getAllColForSearchList = await this.getAllColForSearchList();
     let data = typeof (getAllColForSearchList)=='string'?[]:getAllColForSearchList;
     this.colData = [];

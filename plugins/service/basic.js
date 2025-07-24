@@ -1209,7 +1209,8 @@ Vue.mixin({
         getBasicWarningRangeList:async function(parm) {
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/warning-range/`, { params: parm })
-                console.log("水質監測的警告範圍清單:" + data.request.responseURL);
+                console.log("水質監測的警告範圍URL:" , data.request.responseURL);
+                console.log("水質監測的警告範圍參數:" , parm);
                 if(data.status==200) {
                     return data.data;
                 }else {
