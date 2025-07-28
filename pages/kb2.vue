@@ -4589,10 +4589,11 @@ export default {
             var checkstate = ['warning','critical'];
             var checkstate_bool = [false,false];
             for(var ruledatastate in checkstate){
-                //console.log("valueCheck",this.lightData,item,checkstate[ruledatastate]);
-                var ruledata = this.lightData[item][checkstate[ruledatastate]];
+                //console.log("valueCheck:",this.lightData,item,checkstate[ruledatastate],ruledatastate);
+                item=(item=='Do')?'DO':item;//Do轉成DO
+                var ruledata = this.lightData[item]?.[checkstate[ruledatastate]];
                 checkstate_bool[ruledatastate] = false;
-                if(ruledata==null){
+                if(ruledata==null || ruledata==undefined){
                     continue;
                 }
                 
