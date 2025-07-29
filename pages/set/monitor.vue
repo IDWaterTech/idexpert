@@ -32,7 +32,7 @@
                       <div class="chevron mr-4">
                         <v-btn class="btn-icon green" @click="() => {
                           fieldItemsFormMode = 'add';
-                          $refs.fieldItemsForm.reset();
+                          if ($refs.fieldItemsForm) {$refs.fieldItemsForm.reset();}
                           getMyItemsGroup(true, '指標');
                           fieldItemsDialog = true;
                         }"><v-icon>mdi-plus</v-icon></v-btn>
@@ -43,8 +43,8 @@
                     </div>
                     <!-- 表格 -->
                     <div class="content">
-                      <v-data-table :items="col_settings" :headers="col_headers" :loading="!isLoading" loading-text="載入中..." no-data-text="無資料"
-                        class="edit-table data-table bg-transparent">
+                      <v-data-table :items="col_settings" :headers="col_headers" :loading="!isLoading"
+                        loading-text="載入中..." no-data-text="無資料" class="edit-table data-table bg-transparent">
                         <!-- 警戒範圍 -->
                         <template v-slot:[`item.warning`]="{ item }">
                           <v-row class="px-3 py-0">
@@ -67,7 +67,8 @@
                           <div class="d-flex justify-center">
                             <v-icon v-if="item.is_enable_alert" color="success">mdi-bell-outline</v-icon>
                             <v-icon v-else>mdi-bell-off</v-icon>
-                            <v-switch v-if="false" :input-value="item.is_enable_alert" dense color="success" class="ml-2" @click.native.prevent.stop.capture
+                            <v-switch v-if="false" :input-value="item.is_enable_alert" dense color="success"
+                              class="ml-2" @click.native.prevent.stop.capture
                               :label="`${(item.is_enable_alert)?'啟用':'停用'}`"></v-switch>
                           </div>
                         </template>
@@ -76,7 +77,8 @@
                           <div class="d-flex justify-center">
                             <v-icon v-if="item.is_visible_to_franchisee" color="success">mdi-bell-outline</v-icon>
                             <v-icon v-else>mdi-bell-off</v-icon>
-                            <v-switch v-if="false" v-model="item.is_visible_to_franchisee" dense color="success" class="ml-2" @click.native.prevent.stop.capture
+                            <v-switch v-if="false" v-model="item.is_visible_to_franchisee" dense color="success"
+                              class="ml-2" @click.native.prevent.stop.capture
                               :label="`${(item.is_visible_to_franchisee)?'可檢視':'禁止檢視'}`"></v-switch>
                           </div>
                         </template>
@@ -103,8 +105,9 @@
                         <v-card-title>{{(fieldItemsFormMode=='add')?`新增`:`修改`}}-案場指標</v-card-title>
                         <v-card-text scrollable style="max-height: 400px;">
                           <v-select class="align-center mt-2" clearable outlined dense :items="myItemsData.indicator"
-                            v-model="fieldItemsForm.data_col_id" item-text="name_ch" item-value="id" required :disabled="fieldItemsFormMode=='edit'"
-                            :rules="[v => !!v || '此欄位必填']" label="選擇欲加入的指標..."></v-select>
+                            v-model="fieldItemsForm.data_col_id" item-text="name_ch" item-value="id" required
+                            :disabled="fieldItemsFormMode=='edit'" :rules="[v => !!v || '此欄位必填']"
+                            label="選擇欲加入的指標..."></v-select>
                           <v-row class="px-3 py-0 my-2">
                             <v-col class="d-flex align-center text-center" cols="2">最小值</v-col>
                             <v-col class="d-flex align-center text-center" cols="2">危險下限值</v-col>
@@ -145,6 +148,9 @@
                             </v-col>
                             <v-col cols="12">
                               <v-switch v-model="fieldItemsForm.is_enable_alert" label="警報通知"></v-switch>
+                              <span style="color:red;">接收訊息條件：被授權接收通知功能+本人開啟接收+所屬場別+項目啟用通知警報+養殖池狀態限定<br><strong>※
+                                全部指標通知規則：做水、放養中<br/>※
+                                限定指標通知規則(水位百分比)：蓄水、做水、放養中</strong></span><br/>
                               <v-switch v-model="fieldItemsForm.is_visible_to_franchisee" label="加盟客戶檢視"></v-switch>
                             </v-col>
                           </v-row>
