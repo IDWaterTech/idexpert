@@ -368,11 +368,11 @@
       </v-form>
     </v-dialog>
     <!-- 新增帳號 -->
-    <v-dialog v-model="addDialog" max-width="500px">
+    <v-dialog v-model="addDialog" max-width="500px" scrollable>
       <v-overlay :value="!dialogLoading" :absolute="true">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
-      <v-form ref="form" v-model="valid" lazy-validation>
+      <v-form ref="form" v-model="valid" lazy-validation scrollable>
         <v-card class="custom-dialog">
           <v-card-title class="add-title">
             <div class="d-inline-block">
@@ -384,7 +384,7 @@
               </v-btn>
             </div>
           </v-card-title>
-          <v-card-text>
+          <v-card-text scrollable style="max-height: 500px;" class="py-4">
             <!-- <div class="card-title">
               <div class="title">
                   <v-card-title>＊模擬畫面＊</v-card-title>
@@ -392,19 +392,19 @@
               
             </div> -->
             <div class="basic" style="padding-left: 8px;">
-              <v-card-text class="d-flex flex-column pt-0">
+              <div class="d-flex flex-column pt-0">
                 <v-text-field v-model="addform.username" :rules="rules.require" label="帳號"
                   placeholder="xxx@idwater.com.tw"></v-text-field>
                 <v-text-field v-model="addform.account_name" :rules="rules.require" label="使用者名稱"
                   placeholder="王小明"></v-text-field>
-              </v-card-text>
-              <v-card-text class="d-flex flex-column pt-0">
+              </div>
+              <div class="d-flex flex-column pt-0">
                 <v-text-field v-model="addform.password" :rules="rules.require" label="設定密碼"
                   type="password"></v-text-field>
                 <v-text-field v-model="addform.password2" :rules="rules.require.concat(rules.eqpwd)" label="確認密碼"
                   type="password"></v-text-field>
-              </v-card-text>
-              <v-card-text class="flex-align-center pt-0">
+              </div>
+              <div class="flex-align-center pt-0">
                 帳號預設狀態：
                 <div class="input-group ml-2">
                   <el-tag :type="addform.is_active ? 'success' : 'info'" disable-transitions>{{ addform.is_active ? "啟用"
@@ -412,8 +412,8 @@
                   <el-switch v-model="addform.is_active" active-color="#13ce66" inactive-color="#eee"></el-switch>
                 </div>
 
-              </v-card-text>
-              <v-card-text class="flex-align-center pt-0">
+              </div>
+              <div class="flex-align-center pt-0">
                 允許接收通知：
                 <div class="input-group flex-align-center">
                   <!-- <v-icon color="#EA4335">mdi-gmail</v-icon>Mail -->
@@ -426,22 +426,22 @@
                   KB<el-switch v-model="addform.is_sys_enable_line_kb" active-color="#13ce66" inactive-color="#eee"
                     class="my-4 mr-4 ml-2"></el-switch>
                 </div>
-              </v-card-text>
-              <v-card-text class="flex-align-center pt-0">
+              </div>
+              <div class="flex-align-center pt-0">
                 是否為加盟客戶：
                 <div class="input-group flex-align-center">
                   <el-switch v-model="addform.is_customer" active-color="#13ce66" inactive-color="#eee"
                     class="my-4 mr-4 ml-2"></el-switch>
                 </div><br />
-              </v-card-text>
-              <v-card-text>
+              </div>
+              <div>
                 <div class="input-group flex-align-center">
                  <div :style="{ color: addform.is_customer ? 'black' : 'gray' }">加盟池：</div>
                  <locate-select class="select-template mr-0" :dataScope="'pool'" :isMulti="true" :defaultSelect="addform.pond_id"
                   :disabled="addform.is_customer==false" @scopeSel_data="get_scopeData($event);resultListOpen=true;"></locate-select>
                 </div>
-              </v-card-text>
-              <v-card-text class="d-flex flex-column pt-0 full-width">
+              </div>
+              <div class="d-flex flex-column pt-0 full-width">
                 <v-select :items="maindata" item-text="name" item-value="id" v-model="addform.factory_id" multiple chips
                   placeholder="所屬場別" class="mutiselect full-width"></v-select>
                 <treeselect v-model="addform.position_id" :multiple="true" :options="options" :flat="true"
@@ -451,7 +451,7 @@
                     {{ node.raw.unit }}-{{ node.raw.label }}
                   </div>
                 </treeselect>
-              </v-card-text>
+              </div>
             </div>
 
           </v-card-text>
