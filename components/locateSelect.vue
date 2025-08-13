@@ -94,7 +94,8 @@ export default {
             }else{
                 console.log('default select',this.defaultSelect);
                 this.dataid = this.defaultSelect;
-                this.$emit('scopeSel_data',this.dataid);
+                //預設項目需回傳EMIT事件會造成無限迴圈
+                // this.$emit('scopeSel_data',this.dataid);
             }
         },
         // 資料改變時，傳出數值
@@ -173,7 +174,7 @@ export default {
     },
     created() {
         this.setDefault();//預設項目
-        console.log('default select',this.defaultSelect);
+        //console.log('default select',this.defaultSelect);
     },
     watch: {
         defaultSelect() {
