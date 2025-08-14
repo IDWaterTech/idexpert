@@ -359,9 +359,13 @@ export default {
                             this.file+=x.split('_')[0]+'_'
                         })
                     }else {
+                        // console.log('evt this.download:',this.download);
+                        // console.log('evt this.download form:',form);
                         this.download.filter(x=>x.name==form.name)[0].value = [];
-                        this.download.filter(x=>x.name==form.name)[0].value.push(parseInt(evt.split('_')[evt.split('_').length-1]))
-                        this.file = x.split('_')[0]+'_';
+                        this.download.filter(x=>x.name==form.name)[0].value.push(parseInt(evt.split('_')[evt.split('_').length-1]));
+                        // console.log('evt',evt);
+                        // console.log('evt this.download after:',this.download);
+                        this.file = evt.split('_')[0]+'_';
                     }
                     
                     // this.download.filter(x=>x.name==form.name)[0].value = evt.split('_')[evt.split('_').length-1]; 
@@ -541,22 +545,24 @@ export default {
                             })
                             parm[d.para] = _.cloneDeep(value_area);
                         }else if(d.name=='field'){
-                            
+                            // console.log('field d:',d);
+                            // console.log('field maindata:',maindata);
                             let value_field = [];
                             maindata.forEach(m=>{
                                 if(d.value.includes(m.id)) {
-                                    m.node.forEach(a=>{
-                                        value_field = [...value_field,...a.node.map(p=>p.id)]
-                                    })
+                                    value_field = [...value_field,m.id];
+                                    // m.node.forEach(a=>{
+                                    //     value_field = [...value_field,...a.node.map(p=>p.id)]
+                                    // });
                                 }
-                            })
+                            });
                             parm[d.para] = _.cloneDeep(value_field);
                         }else {
                             parm[d.para]=d.value
                         }
                     }else{parm[d.para]=d.value}
                 });
-                console.log(parm);
+                // console.log("parm",parm);
                 let data = [
                     {
                         name: '123',
