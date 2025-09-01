@@ -56,7 +56,38 @@
                                         </v-form>
                                     </v-card>
                                 </v-dialog>
+                                <!-- 清單 -->
+                                <div>
+                                    {{ rects }}
+                                    <hr />
+                                    selectedRectIndex:{{ selectedRectIndex }}
+                                    <v-list dense>
+                                        <v-subheader>標記清單</v-subheader>
+                                        <v-list-item-group v-model="selectedRectIndex" color="red">
+                                            <v-list-item v-for="(rect, rowIndex) in rects" :key="rowIndex"
+                                                :class="rectCellClass(rect, rowIndex)"
+                                                @click="rectCellClick(rect, rowIndex)" class="cursor-pointer">
+                                                <v-list-item-content>
+                                                    <v-list-item-title>
+                                                        <span class="mr-5">({{ rowIndex }})</span>{{ rect.name }}
+                                                    </v-list-item-title>
+                                                </v-list-item-content>
 
+
+                                                <v-list-item-action class="d-flex align-center">
+                                                    <span>時間：{{ formatTimestamp(rect.timestamp) }}<v-btn icon small
+                                                            @click.stop="handleDeleteLabel(rect)">
+                                                            <v-icon>mdi-delete</v-icon>
+                                                        </v-btn></span>
+
+                                                </v-list-item-action>
+
+                                            </v-list-item>
+                                        </v-list-item-group>
+                                    </v-list>
+
+
+                                </div>
 
 
 
@@ -453,19 +484,15 @@ export default {
             }
         },
         // 标签所在行单元格样式
-        rectCellClass({ row, column, rowIndex, columnIndex }) {
-            //利用单元格的样式的回调方法，给行列索引赋值
-            row.index = rowIndex;
-            column.index = columnIndex;
-            if (this.selectedRectIndex === rowIndex) {
-                return 'cell-clicked';
-            }
-            return '';
+        rectCellClass(row, rowIndex) {
+            if (!row) return ''
+            return this.selectedRectIndex === rowIndex ? 'cell-clicked' : ''
         },
         // 点击标签所在行
-        rectCellClick(row, column, cell, event) {
-            this.selectedRectIndex = row.index;
-            this.selectedRect = this.rects[row.index];
+        rectCellClick(row, rowIndex) {
+            console.log("rectCellClick:", row);
+            this.selectedRectIndex = rowIndex;
+            this.selectedRect = this.rects[rowIndex];
             this.drawCanvas();
         },
         // 图片路径单元格格样式
@@ -484,6 +511,19 @@ export default {
         },
         //------------------------------------------------------
         //------------------------------------------------------
+        formatTimestamp: function (timestamp) {
+            const date = new Date(timestamp);
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+
+            // return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            return `${month}-${day} ${hours}:${minutes}:${seconds}`;
+        },
         async getAllUser() {
             let getuserData = await this.getUserList();
             this.userData = typeof getuserData === 'string' ? [] : getuserData.filter(x => x.is_active);
