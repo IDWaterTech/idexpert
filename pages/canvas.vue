@@ -139,6 +139,8 @@ export default {
                 url: require('@/assets/logo.jpg'),
                 },
             ],
+            image_width: 0,
+            image_height: 0,
             /* 状态变量 */
             creating: false,
             canvasChanged: false,
@@ -210,6 +212,9 @@ export default {
             this.currentImage.onload = () => {
                 this.currentImage.width *= this.dpr;
                 this.currentImage.height *= this.dpr;
+                this.image_width = this.currentImage.naturalWidth;
+                this.image_height = this.currentImage.naturalHeight;
+                console.log("圖片寬高:", this.image_width, this.image_height);
                 this.setSize();
                 this.drawCanvas();
             };
@@ -337,6 +342,7 @@ export default {
             } else if (this.selectedRect) {
                 // 拖动或缩放
                 this.selectedRect.mouseMove(e, this);
+                this.selectedRect.yolo = this.getYoloFormat(this.selectedRect, this.image_width, this.image_height);
             }
             // 画布状态发生变化重新渲染
             if (this.creating || this.selectedRect) {
@@ -372,6 +378,7 @@ export default {
                     type: 'success'
                 });
                 this.currentRect.name = this.labelName;
+                this.currentRect.yolo = this.getYoloFormat(this.currentRect, this.image_width, this.image_width);
                 this.rects.push(this.currentRect);
                 this.canvasChanged = true;
             } else {
@@ -394,6 +401,7 @@ export default {
         },
         // 保存标签
         handleSaveLabel() {
+            // 畫布有無改變
             if (this.canvasChanged) {
                 this.rects.forEach(item => {
                     if (item.changed) {
@@ -459,14 +467,16 @@ export default {
             this.checkChanged();
             this.targetImageIndex = (index + length) % length;
             if (this.canvasChanged) {
-                // 画布状态被改变，提示保存
+                // 框有被改變，提示是否保存☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆←
                 this.showSaveAlert = true;
+                
             } else {
                 this.executeSwitch();
             }
         },
         // 执行切换
         executeSwitch() {
+            console.log("執行切換圖片:", this.targetImageIndex);
             this.canvasChanged = false;
             this.currentImageIndex = this.targetImageIndex;
             this.rects = [];
@@ -476,9 +486,13 @@ export default {
         },
         // 判断画布状态是否发生变化
         checkChanged() {
+            console.log("判断画布状态是否发生变化 checkChanged:", this.rects);
+            
             for (let i = 0; i < this.rects.length; i++) {
                 if (this.rects[i].changed) {
                     this.canvasChanged = true;
+                    console.log("畫布有發生改變");
+                    
                     break;
                 }
             }
@@ -511,6 +525,7 @@ export default {
         },
         //------------------------------------------------------
         //------------------------------------------------------
+        //timestamp 轉換成 YYYY-MM-DD HH:MM:SS
         formatTimestamp: function (timestamp) {
             const date = new Date(timestamp);
 
@@ -523,6 +538,41 @@ export default {
 
             // return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
             return `${month}-${day} ${hours}:${minutes}:${seconds}`;
+        },
+        // 轉換成 yolo 格式
+        getYoloFormat: function (currentRect, image_width, image_height) {
+            // 假設圖片大小
+            // const image_width = this.image_width;
+            // const image_height = this.image_height;
+
+            // === 還原到原圖座標 ===
+            const real_minX = currentRect.minX / currentRect.scale;
+            const real_maxX = currentRect.maxX / currentRect.scale;
+            const real_minY = currentRect.minY / currentRect.scale;
+            const real_maxY = currentRect.maxY / currentRect.scale;
+
+            // === 計算中心與寬高 ===
+            const x_center_px = (real_minX + real_maxX) / 2;
+            const y_center_px = (real_minY + real_maxY) / 2;
+            const width_px = real_maxX - real_minX;
+            const height_px = real_maxY - real_minY;
+
+            // === 轉換成 YOLO 格式 (0~1) ===
+            const x_center = x_center_px / image_width;
+            const y_center = y_center_px / image_height;
+            const width = width_px / image_width;
+            const height = height_px / image_height;
+
+            // === 加入到 currentRect ===
+            var yolo = {
+                // class_id: 0, // 你可以依需求換類別 ID
+                // x_center: Number(x_center.toFixed(6)),
+                // y_center: Number(y_center.toFixed(6)),
+                // width: Number(width.toFixed(6)),
+                // height: Number(height.toFixed(6)),
+                format: `0 ${x_center.toFixed(6)} ${y_center.toFixed(6)} ${width.toFixed(6)} ${height.toFixed(6)}`
+            };
+            return yolo;
         },
         async getAllUser() {
             let getuserData = await this.getUserList();
