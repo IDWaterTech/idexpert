@@ -20,6 +20,12 @@
                     <v-row class="mb-0 full-width">
                         <v-col cols="12">
                             <v-card class="result-card pa-6 pb-2">
+                                <v-file-input v-model="imgFile" accept="image/png, image/jpeg, image/bmp" show-size
+                                    placeholder="選擇圖片(png、jpeg、jpg...)" prepend-icon="mdi-camera"
+                                    @change="imgFileChange"
+                                    label="選擇圖片"></v-file-input>
+                                <img :src="previewImgUrl" alt="Current Image" style="max-width: 200px; max-height: 200px; margin-bottom: 10px; cursor: pointer;"
+                                    v-if="previewImgUrl" />
                                 缩放率: {{ (Math.round(scale * 100) / 100).toFixed(2) }}
                                 <div ref="wrapper" class="left-top">
                                     <canvas ref="canvas" model="canvas" @mousedown="handleMouseDown"
@@ -129,6 +135,7 @@ export default {
             nowPool: '',
             canvas: null,
             wrapper: null,
+            imgFile: null,
             images: [
                 {
                 id: 1,
@@ -214,7 +221,7 @@ export default {
                 this.currentImage.height *= this.dpr;
                 this.image_width = this.currentImage.naturalWidth;
                 this.image_height = this.currentImage.naturalHeight;
-                console.log("圖片寬高:", this.image_width, this.image_height);
+                // console.log("圖片寬高:", this.image_width, this.image_height);
                 this.setSize();
                 this.drawCanvas();
             };
@@ -323,7 +330,6 @@ export default {
             this.currentX = mouseX;
             this.currentY = mouseY;
             const ctx = this.canvas.getContext('2d');
-            console.log('mousemove:', this.creating);
             if (this.creating) {
                 // 新建
                 ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -468,7 +474,21 @@ export default {
             this.targetImageIndex = (index + length) % length;
             if (this.canvasChanged) {
                 // 框有被改變，提示是否保存☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆←
-                this.showSaveAlert = true;
+                // this.$confirm("畫布有改變，是否儲存？", "提示", {
+                //     confirmButtonText: "儲存",
+                //     cancelButtonText: "不儲存",
+                //     type: "warning"
+                // }).then(() => {
+                //     this.handleSaveChange(true);
+                // }).catch(() => {
+                //     this.handleSaveChange(false);
+                // });
+                if (confirm("畫布有改變，是否儲存？")) {
+                    this.handleSaveChange(true);   // 使用者按「確定」
+                } else {
+                    this.handleSaveChange(false);  // 使用者按「取消」
+                }
+                // this.showSaveAlert = true;
                 
             } else {
                 this.executeSwitch();
@@ -525,6 +545,10 @@ export default {
         },
         //------------------------------------------------------
         //------------------------------------------------------
+        imgFileChange:function(){
+            this.images[0].url = this.previewImgUrl;
+            this.init();
+            },  
         //timestamp 轉換成 YYYY-MM-DD HH:MM:SS
         formatTimestamp: function (timestamp) {
             const date = new Date(timestamp);
@@ -595,6 +619,11 @@ export default {
             });
             return names;
         },
+        //----------
+        previewImgUrl() {
+            var file = this.imgFile;
+            return file ? URL.createObjectURL(file) : null;
+        }
     },
     async mounted() {
         this.init();
