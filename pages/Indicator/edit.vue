@@ -57,7 +57,7 @@
                   v-model="defitem"
                   :items="waterdatacols"
                   item-text="name"
-                  item-value="name"
+                  item-value="value"
                   no-data-text="查無資料"
                   label="*指定項目(必選)" hide-details
                   class="select-color"
@@ -258,16 +258,16 @@
                           :show-select="showselect"
                           no-data-text="查無資料">
                           <template v-slot:[`item.actions`]="{ item }">
-                            <button class="btn-icon" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
+                            <button class="btn-icon" :disabled="['feed','pbio','breeding_material'].includes(item.group)" @click="editItem(item)">
                                 <v-icon>mdi-pencil</v-icon>
                             </button>
                             
-                            <button class="btn-icon delete" :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)">
+                            <button class="btn-icon delete" :disabled="['feed','pbio','breeding_material'].includes(item.group)" @click="delItem(item)">
                                 <v-icon>mdi-trash-can</v-icon>
                             </button>
                             
                             <!-- <v-icon small class="mr-2" :disabled="['feed','pbio'].includes(item.group)" @click="editItem(item)">
-                              mdi-pencil
+                              mdi-pencil  
                             </v-icon>
                             <v-icon small :disabled="['feed','pbio'].includes(item.group)" @click="delItem(item)"  color="red">
                               mdi-delete
@@ -503,7 +503,7 @@
                           v-model="defitem"
                           :items="waterdatacols"
                           item-text="name"
-                          item-value="name"
+                          item-value="value"
                           no-data-text="查無資料"
                           placeholder="指定項目(必選)"
                           hide-details
@@ -1351,7 +1351,7 @@ export default {
         myitem.push({ divider: true });
       }
       myitem.push({ header: element });//group name
-      myitem.push(...data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.name_en})));
+      myitem.push(...data.filter(x=>x.group==element).map(x=>({'name':x.name_ch,'value':x.id})));
     }
     //  myitem = data.map(x=>({'name':x.name_ch,'value':x.name_en}));
     this.waterdatacols = myitem;
@@ -1593,16 +1593,20 @@ export default {
       this.chartmax = undefined;
       //指定的項目是歸屬於哪個類別，水質/投餵
       var defitem_tmp = this.defitem; //判斷項目是屬於水質還是投餵用
-      let itemclass = ``;
-      let mycols = this.allcols;
-      for (const idx in Object.keys(mycols)) {
-        var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(
-          keys => keys == defitem_tmp
-        );
-        if (tmp !== undefined && tmp == defitem_tmp) {
-          itemclass = Object.keys(mycols)[idx];
-        }
-      }
+      
+     
+      //改用this.coldata找群組
+      let itemclass = this.coldata.filter(x=>x.id==defitem_tmp)[0]?.group;
+      let itemid = this.coldata.filter(x=>x.id==defitem_tmp)[0]?.id;
+      // let mycols = this.allcols;
+      // for (const idx in Object.keys(mycols)) {
+      //   var tmp = Object.keys(mycols[Object.keys(mycols)[idx]]).find(
+      //     keys => keys == defitem_tmp
+      //   );
+      //   if (tmp !== undefined && tmp == defitem_tmp) {
+      //     itemclass = Object.keys(mycols)[idx];
+      //   }
+      // }
 
       //抓折線圖資料囉
       let parm = {
@@ -1611,7 +1615,8 @@ export default {
         factory_id: this.sel_main,
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
-        items: this.defitem,
+        //items: this.defitem, 改id
+        id: itemid.split("_")[1],//資料長這樣"env_19",
         data_group: itemclass
       };
       // let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
@@ -1645,6 +1650,7 @@ export default {
       //歸零
       this.item = "";
       this.headers = [];
+      // console.log("送出api的參數:", parm);
       //抓資料
       let getAllDataList = await this.getAllDataList(parm);
       let data = typeof (getAllDataList)=='string'?[]:getAllDataList;
@@ -1663,24 +1669,13 @@ export default {
       //   inspected_date: "2024-12-09 11:33:00",
       //   member: 3.98,
       //   device: null
-      // },{
-      //   inspected_date: "2024-12-07 22:37:45",
-      //   device: 2.21,
-      //   member: null
-      // },{
-      //   inspected_date: "2024-12-07 01:37:06",
-      //   device: 0.02,
-      //   member: null
-      // },{
-      //   inspected_date: "2024-12-06 16:37:19",
-      //   device: 0.11,
-      //   member: null
-      // },{
-      //   inspected_date: "2024-12-06 10:35:00",
-      //   device: null,
-      //   member: 0
       // },]
-      if (data2.items.length > 0) {
+      if(Array.isArray(data2) && data2.length === 0){
+        this.isLoading = true;
+        return;//有可能是參數的欄位或值錯誤
+      }
+      
+      if (data2.items?.length > 0) {
         let cols = Object.keys(data2.items[0]);
         data2.items.sort((a,b)=>new Date(b.inspected_date)-new Date(a.inspected_date));
         for (const key in cols) {
@@ -1704,7 +1699,6 @@ export default {
         sortable: false,
         width: "20%",
       });
-      
       this.item2 = data2;
       if ( this.item.items.length>0) {
         this.getLimitData();
@@ -2088,13 +2082,15 @@ export default {
     },
     editItem: async function(item) {
       //編輯中的物件item
+      console.log("edit item:", item);
+      
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.id = item.id;
       this.editedItem.value = item[Object.keys(item)[3]];
       this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
      
       //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
-      var colitem = this.coldata.filter(x=>x.name_ch==this.defitem);
+      var colitem = this.coldata.filter(x=>x.id==this.defitem);
       if (colitem.length == 1) {
         this.num = {}; //清空
         this.num_min =
@@ -2118,7 +2114,7 @@ export default {
       this.atime = "";
       
       //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
-      var colitem = this.coldata.filter(x=>x.name_ch==this.defitem);
+      var colitem = this.coldata.filter(x=>x.id==this.defitem);
       if (colitem.length == 1) {
         this.num = {}; //清空
         this.num_min =
@@ -2232,8 +2228,11 @@ export default {
       if (valid) {
         this.isAddDisabled = true;
         // let colclass = this.getItemClass(this.defitem);
-        var defitemall = this.coldata.filter(x=>x.name_ch==this.defitem)[0];
+        // var defitemall = this.coldata.filter(x=>x.name_ch==this.defitem)[0];
+        let defitemall = this.coldata.filter(x=>x.id==this.defitem)[0];
         let colclass = defitemall.group;
+        let colId = Number(this.defitem.split("_")[1]);//資料長這樣"env_19",要取19
+        //部分群組禁止新增
         if(['feed','pbio','breeding_material'].includes(colclass)){
           this.$toast.error(`僅供查詢，禁止新增該群資料：${colclass}`, { duration: 2000 });
           return;
@@ -2243,7 +2242,8 @@ export default {
         let url = apiurl;
         const updUser = this.$auth.$state.user.email;
         let parms = {
-          items: defitemall.name_en, //inflow (要用英文的)
+          // items: defitemall.name_en, //inflow (要用英文的)
+          id:colId,
           inspected_time: `${this.adate} ${this.atime}:00`, //無秒數，直接補0
           data: [],
           created_user: updUser, //建立者名稱

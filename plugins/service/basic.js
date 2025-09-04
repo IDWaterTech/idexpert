@@ -243,9 +243,11 @@ Vue.mixin({
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`, { params: parm })
                 console.log("折線圖清單:" + data.request.responseURL);
                 if(data.data=='欄位資料有誤'){
-                    this.$toast.error(`取得結果：欄位資料有誤`, { duration: 2000 });
+                    this.$toast.error(`取得結果：取得欄位資料有誤`, { duration: 2000 });
+                    console.error(`取得結果：取得欄位資料有誤,參數:${JSON.stringify(parm)},回傳:${JSON.stringify(data.data)},URL:${data.request.responseURL}`);
                     return [];
                 }else{
+                    // console.log('取得結果：',data);
                     return data.data;
                 }
 
