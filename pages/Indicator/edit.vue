@@ -1616,7 +1616,7 @@ export default {
         pond_area_id: this.sel_area,
         pond_id: this.sel_pool,
         //items: this.defitem, 改id
-        id: itemid.split("_")[1],//資料長這樣"env_19",
+        id: itemid.split("_")[itemid.split("_").length-1],//資料長這樣" water_testing_106",
         data_group: itemclass
       };
       // let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
@@ -2229,9 +2229,10 @@ export default {
         this.isAddDisabled = true;
         // let colclass = this.getItemClass(this.defitem);
         // var defitemall = this.coldata.filter(x=>x.name_ch==this.defitem)[0];
+        console.log("add defitem",this.defitem);
         let defitemall = this.coldata.filter(x=>x.id==this.defitem)[0];
         let colclass = defitemall.group;
-        let colId = Number(this.defitem.split("_")[1]);//資料長這樣"env_19",要取19
+        let colId = Number(this.defitem.split("_")[this.defitem.split("_").length-1]);//資料長這樣"env_19",要取19
         //部分群組禁止新增
         if(['feed','pbio','breeding_material'].includes(colclass)){
           this.$toast.error(`僅供查詢，禁止新增該群資料：${colclass}`, { duration: 2000 });
