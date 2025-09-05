@@ -323,6 +323,7 @@ Vue.mixin({
                     // this.$toast.success("刪除成功", { duration: 2000 });
                     return true;
                 }else {
+                    console.error("刪除失敗!:", data,parm);
                     return false;
                     // this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
                 }

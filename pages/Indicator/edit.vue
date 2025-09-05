@@ -481,7 +481,7 @@
                 <div class="basic" style="padding-left: 8px;">
                   <v-card-text class="flex-align-center" style="padding-top: 0;font-size: 18px;">
                     {{maindata.filter(x=>x.id==sel_main)[0].name}}-{{maindata.filter(x=>x.id==sel_main)[0].node.filter(x=>x.id==sel_area)[0].name}}-
-                    <span class="error-text font-weight-black" style="font-size: 18px;">{{defitem}}</span>
+                    <span class="error-text font-weight-black" style="font-size: 18px;">{{coldata.filter(x=>x.id==defitem)[0].name_ch}}</span>
                   </v-card-text>
                 </div></v-card-text>
               <v-card-text style="padding-top: 8px">
@@ -1989,7 +1989,8 @@ export default {
       this.editedItem.id = item.id;
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.value = item[Object.keys(item)[3]];
-      this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
+      console.log("del item:", item);
+      this.editedItem.class = item.group;//this.getItemClass(Object.keys(item)[3]); //water,adv...
       this.delDialog = true;
     },
     delsubmit: async function() {
@@ -2006,7 +2007,8 @@ export default {
           this.getdata();//重取得資料
           this.showselect = false;
         }else {
-          alert("刪除失敗!");
+          alert("刪除失敗!:" + res);
+          console.log("刪除失敗!:",res);
         }
       },50)
       // await this.$axios
@@ -2032,7 +2034,7 @@ export default {
         for (let i = 0; i < this.selected.length; i++) {
           const item = this.selected[i];
           const editedItem = item;
-          editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
+          editedItem.class = item.group;//this.getItemClass(Object.keys(item)[3]); //water,adv...
           let url = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/${editedItem.id}/`;
           let deldata = { data_group: editedItem.class };
           // console.log("DEL data:", deldata);
@@ -2087,7 +2089,7 @@ export default {
       this.editedItem.inspected_date = item.inspected_date;
       this.editedItem.id = item.id;
       this.editedItem.value = item[Object.keys(item)[3]];
-      this.editedItem.class = this.getItemClass(Object.keys(item)[3]); //water,adv...
+      this.editedItem.class = item.group;//this.getItemClass(Object.keys(item)[3]); //water,adv...
      
       //{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, "warning_max": null, "critical_min": null, "critical_max": null, "is_enable_alert": false }
       var colitem = this.coldata.filter(x=>x.id==this.defitem);
