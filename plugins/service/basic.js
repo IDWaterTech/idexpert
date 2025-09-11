@@ -408,17 +408,19 @@ Vue.mixin({
         // 刪除觀察網
         deleteObservationRecordList:async function(id) {
             try {
+                if(id==null) return true;//如果是null表示沒有新增過，直接回傳true
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/shrimp-record/${id}/`)
                 console.log("刪除觀察網:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
-                    return true;
-                }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
-                }
-    
+                return data.data;
+                // if(data.data == "刪除成功") {
+                //     return true;
+                // }else {
+                //     this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                // }
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                return error;
+                // this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                // console.log(error);
             }
         },
         // 新增殘餌
@@ -466,16 +468,18 @@ Vue.mixin({
             try {
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/leftover-record/${id}/`)
                 console.log("刪除殘餌:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
-                    this.$toast.success("成功", { duration: 2000 });
-                    return true;
-                }else {
-                    this.$toast.success("失敗：" + data.data, { duration: 2000 });
-                }
+                return data.data;
+                // if(data.data == "刪除成功") {
+                //     this.$toast.success("成功", { duration: 2000 });
+                //     return true;
+                // }else {
+                //     this.$toast.success("失敗：" + data.data, { duration: 2000 });
+                // }
     
             }catch(error) {
-                this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                return error;
+                // this.$toast.error("刪除失敗ERR：" + error, { duration: 2000 });
+                // console.log(error);
             }
         },
         // 取得水質在時間範圍內的數值

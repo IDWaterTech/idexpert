@@ -1189,6 +1189,7 @@ export default {
       // select
       nowArea:'',
       observableHeaders:[
+        // {groupable: false,text: "id",value: "shrimp_id",width:"10%", sortable: true},
         {groupable: false,text: "檢測時間",value: "inspected_time",width:"10%", sortable: true},
         //{groupable: false,text: "池",value: "pond",width:"5%", sortable: false },
         {groupable: false,text: "觀察網隻數",value: "observation_qty",width:"6%", sortable: false },
@@ -1400,7 +1401,7 @@ export default {
     this.sel_pool =
       Number(this.req.sel_pool) > 0 ? Number(this.req.sel_pool) : 0;
 
-    this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0]?.name_ch : [];
+    this.defitem = this.req.defitem != undefined && this.req.defitem.length > 0 ?  this.coldata.filter(x=>x.name_ch==this.req.defitem)[0]?.id : [];
     //---
     // console.log(this.sdate,this.sel_main,this.sel_area,this.sel_pool);
     // await Promise.all(promiseArray).then(([...data]) => {
@@ -1609,6 +1610,8 @@ export default {
       // }
 
       //抓折線圖資料囉
+      // console.log('itemclass',itemclass,'itemid',itemid,'defitem_tmp',defitem_tmp,'this.coldata',this.coldata);
+      // return;
       let parm = {
         started_date: this.sdate,
         ended_date: this.edate,
@@ -3105,70 +3108,55 @@ export default {
     // 蝦隻狀態刪除
     async delObservable(item) {
       if (confirm(`確認刪除此觀察網紀錄?`)) {
-        var res = false;
+        console.log('del',item,this.observableData);
+        
+
         let index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
-        res = await this.deleteObservationRecordList(this.observableData[index].shrimp_id);
-        setTimeout(()=>{
-            if(res) {
-              if(this.observableData[index].leftover_id==null) {
-                this.getObservationData();
-              }else {
-                this.deleteObservable(this.observableData[index].leftover_id);
-              }
-            }
-        },50)
-        // let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/shrimp-record/'+this.observableData[index].shrimp_id+'/'}`;
-        // await this.$axios.delete(url)
-        //   .then(res => {
-        //     if(res.data=='刪除成功'){
+        Promise.all([
+          this.deleteObservationRecordList(this.observableData[index].shrimp_id),//shrimp-record/
+          this.deleteObservable(this.observableData[index].leftover_id)
+        ]).then(([res1, res2]) => {
+          // 兩個都完成後再做後續處理
+          console.log('RecordList刪除結果:', res1);
+          console.log('Observable刪除結果:', res2);
+          this.getObservationData(); // 例如刷新資料
+          this.$toast.success("刪除成功", { duration: 2000 });
+        }).catch(err => {
+          console.error('刪除發生錯誤', err);
+          this.$toast.error("刪除失敗 ERR：" + (err?.message || err), { duration: 2000 });
+        });
+
+        // var res = false;
+        // let index = this.observableData.map(e => e.shrimp_id).indexOf(item.shrimp_id);
+        // res = await this.deleteObservationRecordList(this.observableData[index].shrimp_id);
+        // setTimeout(()=>{
+        //     if(res) {
         //       if(this.observableData[index].leftover_id==null) {
         //         this.getObservationData();
         //       }else {
         //         this.deleteObservable(this.observableData[index].leftover_id);
         //       }
-              
-        //     }else{
-        //         this.$toast.error("刪除失敗:" + res.data, { duration: 2000 });
         //     }
-
-        //     console.log("修改API:" + res.request.responseURL);
-        // })
-        // .catch(error => {
-        //     this.$toast.error("error:" + error, { duration: 2000 });
-        // })
-        // .finally(() => {
-        // });
+        // },50)
       }
     
     },
     // 殘餌量刪除
     async deleteObservable(id) {
       var res = false;
-      res = await this.deleteLeftoverRecordList(id);
-      setTimeout(()=>{
-          if(res) {
-            this.observeDialog = false;
-            this.getObservationData();
-          }
-      },50)
-      // let url =`${this.$store.state.mydata.gobal_api.apiUrl+'/leftover-record/'+id+'/'}`;
-      //   await this.$axios.delete(url)
-      //     .then(res => {
-      //       if(res.data=='刪除成功'){
-      //         this.observeDialog = false;
-      //         this.getObservationData();
-      //         this.$toast.success("成功", { duration: 2000 });
-      //       }else{
-      //           this.$toast.error("失敗:" + res.data, { duration: 2000 });
-      //       }
-
-      //       console.log("修改API:" + res.request.responseURL);
-      //   })
-      //   .catch(error => {
-      //       this.$toast.error("error:" + error, { duration: 2000 });
-      //   })
-      //   .finally(() => {
-      //   });
+      res = await this.deleteLeftoverRecordList(id);///leftover-record
+      if(res=="刪除成功"){
+        this.$toast.success("成功", { duration: 2000 });
+      }else{
+        this.$toast.error("刪除失敗:" + res, { duration: 2000 });
+      }
+      this.getObservationData();
+      // setTimeout(()=>{
+      //     if(res) {
+      //       this.observeDialog = false;
+      //       this.getObservationData();
+      //     }
+      // },50)
     },
   },
   watch: {
