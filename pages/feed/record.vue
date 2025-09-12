@@ -13,68 +13,37 @@
         </v-row>
       </div> -->
       <div class="content pt-3">
-        <div class="search" >
+        <div class="search">
           <v-row class="mb-0">
             <v-col cols="12" md="2">
               <!-- 選擇場 -->
               <div class="search-container">
-                <locate-select :dataScope="'field'" :defaultSelect="factoryData.length>0?factoryData[0]?.name+'_'+factoryData[0]?.id:''" :isMulti="false" @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
+                <locate-select :dataScope="'field'"
+                  :defaultSelect="factoryData.length>0?factoryData[0]?.name+'_'+factoryData[0]?.id:''" :isMulti="false"
+                  @scopeSel_data="get_scopeData($event)" class="select-template"></locate-select>
               </div>
             </v-col>
             <!-- 選擇日期sdate -->
             <v-col cols="12" md="2">
-              <v-menu
-                v-model="menu_sdate"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-              >
+              <v-menu v-model="menu_sdate" :close-on-content-click="false" :nudge-right="40"
+                transition="scale-transition" offset-y min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="sdate"
-                    label="選擇日期"
-                    filled
-                    dense
-                    hide-details
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                    @change="getimptimedata"
-                    @click:clear="
+                  <v-text-field v-model="sdate" label="選擇日期" filled dense hide-details prepend-icon="mdi-calendar"
+                    readonly v-bind="attrs" v-on="on" @change="getimptimedata" @click:clear="
                       () => {
                         (totalData = {}), (imptimedata = []),(feedData = []),(stime = '');
                       }
-                    "
-                    clearable
-                    @click:prepend="() => ((sdate = getNowDate()), getimptimedata())"
-                  ></v-text-field>
+                    " clearable @click:prepend="() => ((sdate = getNowDate()), getimptimedata())"></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="sdate" locale="zh-tw"
-                  @change="getimptimedata" no-title
-                  @input="menu_sdate = false"
-                ></v-date-picker>
+                <v-date-picker v-model="sdate" locale="zh-tw" @change="getimptimedata" no-title
+                  @input="menu_sdate = false"></v-date-picker>
               </v-menu>
             </v-col>
             <!-- 選擇時間點imptimedata -->
             <v-col cols="12" md="2">
-              <v-autocomplete
-                v-model="stime"
-                dense filled
-                item-text="time"
-                item-value="time"
-                
-                :items="imptimedata"
-                label="選擇資料時間"
-                hide-details
-                solo
-                :no-data-text="`${stime_loading?'資料載入中':'查無資料'}`"
-                :disabled = "!sdate"
-                @change="getfeedData"
-              ></v-autocomplete>
+              <v-autocomplete v-model="stime" dense filled item-text="time" item-value="time" :items="imptimedata"
+                label="選擇資料時間" hide-details solo :no-data-text="`${stime_loading?'資料載入中':'查無資料'}`" :disabled="!sdate"
+                @change="getfeedData"></v-autocomplete>
             </v-col>
           </v-row>
         </div>
@@ -84,28 +53,19 @@
               <!-- 當日餐別明細 -->
               <v-expansion-panels accordion multiple v-model="mealDetails" class="result-card mb-4">
                 <v-expansion-panel class="my-1 px-2 py-3">
-                    <v-expansion-panel-header class="pa-3 mx-3 my-0 border-bottom" style="min-height: 20px;" expand-icon="mdi-triangle-small-down">當日餐別明細</v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                      <v-data-table
-                        ref="feedtable"
-                        :headers="detailHeaders"
-                        :items="comboTotal"
-                        class="elevation-1 data-table bg-transparent"
-                        no-data-text="查無資料"
-                        :footer-props="{
+                  <v-expansion-panel-header class="pa-3 mx-3 my-0 border-bottom" style="min-height: 20px;"
+                    expand-icon="mdi-triangle-small-down">當日餐別明細</v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-data-table ref="feedtable" :headers="detailHeaders" :items="comboTotal"
+                      class="elevation-1 data-table bg-transparent" no-data-text="查無資料" :footer-props="{
                           'items-per-page-text': '每頁',
                           'items-per-page-options': [-1, 25, 50, 100]
-                        }"
-                      >
-                      
+                        }">
+
                       <template v-slot:[`item.combomark`]="{ item }">
-                        <v-switch
-                          v-model="item.combomark"
-                          color="#f5d564"
-                          @click="combomarkclick(item.combo_name,item.combomark)"
-                          label="" dense hide-details inset
-                          
-                        ></v-switch>
+                        <v-switch v-model="item.combomark" color="#f5d564"
+                          @click="combomarkclick(item.combo_name,item.combomark)" label="" dense hide-details
+                          inset></v-switch>
                       </template>
                       <template v-slot:[`item.combo_name`]="{ item }">
                         <span>{{ item.combo_name }}</span>
@@ -145,13 +105,8 @@
                         <v-row class="ma-1" dense>
                           <div class="chip d-flex flex-column">
                             <v-row class="mb-0">
-                              <v-chip
-                                v-for="(mfla,mid) in item.main_items"
-                                :key="mid"
-                                style="font-size: 12px;margin: 2px;color: #fff;"
-                                color="#408FBC"
-                                class="main"
-                              >
+                              <v-chip v-for="(mfla,mid) in item.main_items" :key="mid"
+                                style="font-size: 12px;margin: 2px;color: #fff;" color="#408FBC" class="main">
                                 {{ mid }}： {{ mfla }}g
                               </v-chip>
                             </v-row>
@@ -162,13 +117,8 @@
                         <v-row class="ma-1" dense>
                           <div class="chip d-flex flex-column">
                             <v-row class="mb-0">
-                              <v-chip
-                                v-for="(fla,fid) in item.sub_items"
-                                :key="fid"
-                                style="font-size: 12px;margin: 2px;color: #00324E;"
-                                color="#BFCBD2"
-                                class="sub"
-                              >
+                              <v-chip v-for="(fla,fid) in item.sub_items" :key="fid"
+                                style="font-size: 12px;margin: 2px;color: #00324E;" color="#BFCBD2" class="sub">
                                 {{ fid }}： {{ fla }}g
                               </v-chip>
                             </v-row>
@@ -180,7 +130,7 @@
                 </v-expansion-panel>
               </v-expansion-panels>
               <!-- 料表 -->
-              <v-card class="result-card pa-3 pb-2" >
+              <v-card class="result-card pa-3 pb-2">
                 <!-- 表頭 -->
                 <div class="card-title flex-align-center pa-0 full-width">
                   <div class="title full-width">
@@ -188,58 +138,32 @@
                       <v-col cols="12" md="6">
                         <v-row class="mb-0" style="margin-bottom: 0;">
                           <v-col cols="6" v-if="false">
-                            <v-autocomplete
-                              v-model="showmain"
-                              multiple
-                              chips
-                              clearable
-                              no-data-text="無項目"
-                              :items="main_allitems"
-                              filled
-                              hide-details
-                              label="顯示主成份項目"
-                              class="items"
-                              :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"
-                            ></v-autocomplete>
+                            <v-autocomplete v-model="showmain" multiple chips clearable no-data-text="無項目"
+                              :items="main_allitems" filled hide-details label="顯示主成份項目" class="items"
+                              :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"></v-autocomplete>
                           </v-col>
                           <v-col cols="6">
-                            <v-autocomplete
-                              v-model="showsub"
-                              multiple
-                              chips
-                              clearable
-                              no-data-text="無項目"
-                              :items="sub_allitems"
-                              filled
-                              hide-details
-                              label="顯示次成份項目"
-                              class="items"
-                              :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"
-                            ></v-autocomplete>
+                            <v-autocomplete v-model="showsub" multiple chips clearable no-data-text="無項目"
+                              :items="sub_allitems" filled hide-details label="顯示次成份項目" class="items"
+                              :style="{'width':`${windowWidth>375?'100%':'calc(100% - 56px)'}`}"></v-autocomplete>
                           </v-col>
                         </v-row>
-                        
+
                       </v-col>
-                      <v-col cols="12" md="6"
-                        :style="{'padding-top':`${windowWidth>960?'0':'12px'}`}">
+                      <v-col cols="12" md="6" :style="{'padding-top':`${windowWidth>960?'0':'12px'}`}">
                         <div class="right flex-align-center"
-                          :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}"
-                        >
-                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
-                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize = 1"><v-icon class="mt-1">mdi-format-color-text</v-icon></v-btn>
-                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
-                          <v-btn
-                            tile
-                            class="btn-primary mx-1 my-0"
-                            @click="downloadcsv"
-                            :disabled="feedData.length==0"
-                            >下載</v-btn>
-                          <v-btn
-                            class="btn-primary green mx-1 my-0"
-                            tile
-                            @click="execsubmit"
-                            :disabled="multipleSelection.length == 0"
+                          :style="{'justifyContent':`${windowWidth>960?'flex-end':'flex-start'}`}">
+                          <v-btn class="btn-icon just-icon mx-1"
+                            @click="cellsize -= 0.1"><v-icon>mdi-format-annotation-minus</v-icon></v-btn>
+                          <v-btn class="btn-icon just-icon mx-1" @click="cellsize = 1"><v-icon
+                              class="mt-1">mdi-format-color-text</v-icon></v-btn>
+                          <v-btn class="btn-icon just-icon mx-1"
+                            @click="cellsize += 0.1"><v-icon>mdi-format-annotation-plus</v-icon></v-btn>
+                          <v-btn tile class="btn-primary mx-1 my-0" @click="downloadcsv"
+                            :disabled="feedData.length==0">下載</v-btn>
+                          <v-btn class="btn-primary green mx-1 my-0" tile @click="execsubmit"
                             >執行</v-btn>
+                            <!-- 原本有加打勾多選，保留備忘 :disabled="multipleSelection.length == 0" -->
                         </div>
                       </v-col>
                     </v-row>
@@ -247,28 +171,12 @@
                 </div>
                 <!-- 清單 -->
                 <div class="result-list pa-3 pt-0">
-                  <el-table
-                    id="outTable"
-                    ref="mutitable"
-                    :data="feedData2"
-                    :row-style="isTagColor"
-                    row-key="id"
-                    default-expand-all
-                    @selection-change="handleSelectionChange"
-                    @select-all="selectall"
-                    :cell-style="cellStyle"
-                    :key="mutitablekey"
-                  >
+                  <el-table id="outTable" ref="mutitable" :data="feedData2" :row-style="isTagColor" row-key="id"
+                    default-expand-all @selection-change="handleSelectionChange" @select-all="selectall"
+                    :cell-style="cellStyle" :key="mutitablekey">
                     <!-- 減少一欄佔空間所以用area_name2解決 -->
-                    <el-table-column
-                      prop="area_name2"
-                      label="區域"
-                      sortable
-                      :sort-by="['area_name2']"
-                      fixed="left"
-                      width="150"
-                      align="center"
-                    >
+                    <el-table-column prop="area_name2" label="區域" sortable :sort-by="['area_name2']" fixed="left"
+                      width="150" align="center">
                       <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
                     </el-table-column>
                     <!-- <el-table-column
@@ -278,49 +186,38 @@
                       width="100"
                     /> -->
                     <!-- 總量(主+次) -->
-                    <el-table-column
-                      prop="feed_total"
-                      label="總量(扣除已選次成份)"
-                      width="160"
-                    ><template #default="scope"><span class="text-right full-width">{{ scope.row.feed_total }}</span><br></template></el-table-column>
+                    <el-table-column prop="feed_total" label="總量(扣除已選次成份)" width="160"><template #default="scope"><span
+                          class="text-right full-width">{{ scope.row.feed_total
+                          }}</span><br></template></el-table-column>
                     <!-- 主成分 -->
                     <el-table-column label="主成分" v-if="showmain.length > 0" width="200">
                       <template #default="scope">
                         <div v-if="scope.row.hasOwnProperty('main_items')">
-                          <v-chip
-                            class="item-chip main"
-                            label
-                            style="font-size: 12px;margin: 2px;color: #fff;"
-                                color="#408FBC"
-                            v-for="(main, idx) in scope.row.main_items.filter(x =>
+                          <v-chip class="item-chip main" label style="font-size: 12px;margin: 2px;color: #fff;"
+                            color="#408FBC" v-for="(main, idx) in scope.row.main_items.filter(x =>
                               showmain.includes(x.name)
-                            )"
-                            :key="idx"
-                            @click="()=>{snackbar = true;snackText = main.name}"
-                          >
-                            <span :style="`font-size:${cellsize}em`">{{ `${main.name.substr(0,1)}：${Math.round((main.feed_amount + Number.EPSILON) * 100) / 100}` }}</span>
+                            )" :key="idx" @click="()=>{snackbar = true;snackText = main.name}">
+                            <span :style="`font-size:${cellsize}em`">{{
+                              `${main.name.substr(0,1)}：${Math.round((main.feed_amount + Number.EPSILON) * 100) / 100}`
+                              }}</span>
                           </v-chip>
-                          
+
                         </div>
-                        
+
                       </template>
                     </el-table-column>
-                    
+
                     <!-- 次成分 -->
                     <el-table-column label="次成分" v-if="showsub.length > 0" width="200">
                       <template #default="scope">
                         <div v-if="scope.row.hasOwnProperty('sub_items')">
-                          <v-chip
-                            class="item-chip sub"
-                            label
-                            style="font-size: 12px;margin: 2px;color: #00324E;"
-                            color="#BFCBD2"
-                            v-for="(sub, idx) in scope.row.sub_items.filter(x =>
+                          <v-chip class="item-chip sub" label style="font-size: 12px;margin: 2px;color: #00324E;"
+                            color="#BFCBD2" v-for="(sub, idx) in scope.row.sub_items.filter(x =>
                               showsub.includes(x.name)
-                            )"
-                            :key="idx"
-                          >
-                            <span :style="`font-size:${cellsize}em`">{{ `${sub.name.substr(0,1)}：${Math.round((sub.feed_amount + Number.EPSILON) * 100) / 100}` }}</span>
+                            )" :key="idx">
+                            <span :style="`font-size:${cellsize}em`">{{
+                              `${sub.name.substr(0,1)}：${Math.round((sub.feed_amount + Number.EPSILON) * 100) / 100}`
+                              }}</span>
                           </v-chip>
                         </div>
                       </template>
@@ -341,24 +238,33 @@
                       label="觀察網(不含糖)"
                       width="120"
                     /> -->
-                    
+
                     <!-- 餐別 -->
-                    <el-table-column
-                      prop="feed_combo_name"
-                      label="餐別"
-                      min-width="150"
-                    />
-                    <el-table-column
-                      prop="executed_user"
-                      label="執行人員"
-                    />
-                    <el-table-column
-                      align="center"
-                      type="selection"
-                      :selectable="checkSelectable"
-                      width="55"
-                      fixed="right"
-                    >
+                    <el-table-column prop="feed_combo_name" label="餐別" min-width="150" />
+                    <el-table-column prop="remark" label="備註">
+                      <template #default="scope">
+                        <div v-if="!scope.row.hasOwnProperty('children')">
+                          <span v-if="scope.row.is_executed!=null">{{ scope.row.remark }}</span>
+                          <v-text-field v-else  v-model="scope.row.remark" :disabled="scope.row.is_executed!=null"></v-text-field>
+                          
+                        </div>
+                      </template>
+                    </el-table-column>
+                    <!-- 狀態 -->
+                    <el-table-column prop="status" label="狀態" min-width="150">
+                      <template #default="scope">
+                        <div v-if="!scope.row.hasOwnProperty('children')" class="text-center full-width">
+                           <span v-if="scope.row.is_executed!=null">{{ scope.row.status }}</span>
+                          <v-select v-else hide-details v-model="scope.row.status" :items="['未執行','執行','不執行']" label="執行狀態" :disabled="scope.row.is_executed!=null" filled dense></v-select>
+                          <br />
+                          <span>{{ scope.row.executed_user }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="executed_user" label="執行人員" v-if="false" />
+                    <!-- checkbox (暫不使用 改下拉選擇是否執行→status欄位)-->
+                    <el-table-column align="center" type="selection" :selectable="checkSelectable" width="55" v-if="false"
+                      fixed="right">
                     </el-table-column>
                     <!-- 本來要弄button按鈕，目前不需要 -->
                     <el-table-column align="right" v-if="false" class="justify-center">
@@ -370,13 +276,9 @@
                       />
                     </template> -->
                       <template #default="scope">
-                        <el-button
-                          size="small"
-                          @click="handleEdit(scope.$index, scope.row)"
-                          v-if="!scope.row.hasOwnProperty('children')"
-                          :disabled="scope.row.is_executed"
-                          >{{ scope.row.is_executed ? "已執行" : "執行" }}</el-button
-                        >
+                        <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
+                          v-if="!scope.row.hasOwnProperty('children')" :disabled="scope.row.is_executed">{{
+                          scope.row.is_executed ? "已執行" : "執行" }}</el-button>
                       </template>
                     </el-table-column>
                     <!-- <el-table-column prop="id" label="ID" width="180"> </el-table-column> -->
@@ -385,21 +287,16 @@
                     </template>
                   </el-table>
                   <!-- 主成分全名 -->
-                  <v-snackbar
-                    v-model="snackbar"
-                    :centered="true"
-                    timeout="2000"
-                    color="green"
-                  >
+                  <v-snackbar v-model="snackbar" :centered="true" timeout="2000" color="green">
                     {{ snackText }}
-                </v-snackbar>
+                  </v-snackbar>
                 </div>
               </v-card>
             </v-col>
           </v-row>
         </div>
       </div>
-    </v-card> 
+    </v-card>
   </div>
 </template>
 
@@ -710,6 +607,8 @@ export default {
       //     feed_total: 1000,
       //     ovserve_total: 30,
       //     is_executed: false,
+      //     "executed_user": "jeff",
+      //     "remark": "",           //備註
       //     main_items: [
       //       { main_id: 1, main_name: "蝦料1", feed_amount: 100 },
       //       { main_id: 2, main_name: "蝦料2", feed_amount: 110 }
@@ -721,12 +620,11 @@ export default {
       //   },
       // ];
       //取得料表
-      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist/`;
       var parm = {
         factory_id: this.factoryid,
         feed_time: `${this.sdate} ${this.stime}`
       };
-      let getFeedCheckList = await this.getFeedCheckList(parm,bool);
+      let getFeedCheckList = await this.getFeedCheckList(parm,bool);//api:feed-checklist
       let feedCheckData = typeof (getFeedCheckList)=='string'?[]:getFeedCheckList;
       this.feedData = feedCheckData;
       this.gettotalData(); //取得合計
@@ -783,48 +681,38 @@ export default {
     },
     //執行
     execsubmit: async function() {
-      var parm = {
-        executed_user: this.$auth.$state.user.email,
-        id: this.multipleSelection.map(x => x.id),
-        is_executed: true
-      };
+      if(confirm("確定要執行嗎?(狀態=未執行，可無限制填寫備註)")==false) {
+        this.$toast.success('已取消執行', { duration: 2000 });
+        return;
+      }
+      // 將 children 轉換成新格式
+      const result = this.feedData2
+        .flatMap(group => group.children) // 取得所有 children
+        .filter(child => child.is_executed == null) // 篩選 is_executed 為 null 的 代表未曾設定
+        .map((child, index) => ({
+          id: child.id, // ID
+          status: child.status, // 狀態
+          remark: child.remark, // 備註
+          executed_user: this.$auth.$state.user.email // 執行人員
+        }));
+        var parm = result;
+      // console.log("exesubmit:",result);
+      // var parm = {
+      //   executed_user: this.$auth.$state.user.email,
+      //   id: this.multipleSelection.map(x => x.id),
+      //   is_executed: true,
+      //   remark: this.multipleSelection.map(x => x.remark)
+      // };
+      // console.log("執行參數", parm);
+      
       var res = false;
-        res = await this.postFeedCheckUpdateList(parm);
+        res = await this.postFeedCheckUpdateList(parm);///api:feed-checklist-batch-update
         setTimeout(()=>{
           if(res) {
             // 原本是清空資料，怪怪der，因此更改為重新撈取資料(因為要執行者和是否執行的資訊)
             this. getfeedData(true);
           }
-        },50)
-      
-      // console.log(parm);
-      // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`;
-      // await this.$axios
-      //   .post(url, parm)
-      //   .then(res => {
-      //     if (res.data == "修改成功") {
-      //       // this.feedData = []; //清空表格資料
-      //       // this.stime = "";
-
-      //       // 原本是清空資料，怪怪der，因此更改為重新撈取資料(因為要執行者和是否執行的資訊)
-      //       this. getfeedData(true);
-
-      //       this.$toast.success(`執行成功：${parm.id.length}筆`, {
-      //         duration: 2000
-      //       });
-      //     } else {
-      //       this.$toast.error(`執行失敗：${res.data}`, { duration: 2000 });
-      //     }
-      //     console.log("執行API:" + res.request.responseURL);
-      //   })
-      //   .catch(error => {
-      //     this.$toast.error(`執行失敗:${error}`, {
-      //       duration: 2000
-      //     });
-      //   })
-      //   .finally(() => {
-      //     //this.getdata();
-      //   });
+        },50);
     },
     //多選用
     handleSelectionChange(val) {
@@ -854,12 +742,12 @@ export default {
         }
       });
     },
-    //是否可選
+    //Function 的返回值用來決定這一行的 CheckBox 是否可以勾選
     checkSelectable(row) {
-      if (row.hasOwnProperty("children")) {
+      if (row.hasOwnProperty("children")) {//代表是區域列-不會有checkbox
         return false;
       } else {
-        return row.is_executed == false;
+        return row.is_executed == false;//代表是資料列-且未執行才可選
       }
     },
     getNowDate: function() {

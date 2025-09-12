@@ -149,20 +149,23 @@ Vue.mixin({
             }
         },
         // 執行料表
-        postFeedCheckUpdateList:async function(addform) {
+        postFeedCheckUpdateList:async function(addForm) {
             try {
                 let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`,addform)
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-checklist-batch-update/`,addForm)
                 console.log("執行料表:" + data.request.responseURL);
-                if(data.data == "修改成功") {
-                    this.$toast.success(`執行成功：${addform.id.length}筆`, {
-                        duration: 2000
-                    });
-                    return true;
-                }else {
-                    this.$toast.error(`執行失敗:${error}`, {
-                        duration: 2000
-                    });
+                if (data.data.detail == "Success") {
+                  this.$toast.success(`執行成功：${addForm.length}筆`, {
+                    duration: 2000,
+                  });
+                  // this.$toast.success(`執行成功：${addForm.id.length}筆`, {
+                  //     duration: 2000
+                  // });
+                  return true;
+                } else {
+                  this.$toast.error(`執行失敗:${error}`, {
+                    duration: 2000,
+                  });
                 }
     
             }catch(error) {
