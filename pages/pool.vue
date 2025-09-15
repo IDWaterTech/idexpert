@@ -156,8 +156,8 @@
                   <el-table-column label="養殖天數" prop="days" align="center"></el-table-column>
                   <!-- 養殖密度 -->
                   <el-table-column label="養殖密度" prop="num_per_unit" align="center"></el-table-column>
-                  <!-- 預估放養隻數 -->
-                  <el-table-column label="預估放養隻數" prop="total" align="center"><template slot-scope="scope">{{scope.row.total.toFixed(2)}}</template></el-table-column>
+                  <!-- 當前養殖數量 -->
+                  <el-table-column label="當前養殖數量" prop="total" align="center"><template slot-scope="scope">{{scope.row.current_stock_num?.toFixed(2)}}</template></el-table-column>
                   <!-- 目標CN比 -->
                   <el-table-column label="目標CN比" prop="cn" align="center"></el-table-column>
                   <!-- 品種 -->
@@ -826,7 +826,7 @@
                   <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     @change="
                               () => {
-                                editparm.estimated_num =
+                                editparm.initial_stocking_num =
                                 add_volume * editparm.num_per_unit;
                               }
                             " autocomplete="off"></v-text-field>
@@ -834,8 +834,14 @@
                 <v-col cols="1" class="text-center">=</v-col>
                 <!-- 初始放苗量(估計) -->
                 <v-col cols="4">
-                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                  <v-text-field v-model="editparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
                     disabled autocomplete="off">
+                  </v-text-field>
+                </v-col>
+                <!-- 當前養殖數量 -->
+                <v-col cols="12">
+                  <v-text-field v-model="editparm.current_stock_num" label="當前養殖數量" type="number" :rules="rules.require"
+                    autocomplete="off">
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -2523,7 +2529,7 @@ export default {
         param.multi_data.push({
           pond_id: d.id,
           num_per_unit: d.num_per_unit,
-          initial_stocking_qty:d.estimated_num,//初始化苗量
+          current_stock_num:d.estimated_num,//當前養殖數量
           name: param.name.replace('pool',d.name)
         })
       })
@@ -3669,7 +3675,11 @@ export default {
         this.showadd(true);
         let getData = _.cloneDeep(data);
         // 預估放苗
-        getData.estimated_num = getData.total.toFixed(2);
+        // getData.estimated_num = getData.total.toFixed(2);
+        //改當前養殖數量
+        getData.current_stock_num = getData.current_stock_num.toFixed(2);
+        //初始放苗量
+        getData.initial_stocking_num = getData.initial_stocking_num.toFixed(2);
         // 預估存活要為數值
         getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
         this.editDialog = true;
