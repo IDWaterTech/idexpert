@@ -574,8 +574,8 @@
                       @keyup.enter.native="calcutorPerUnit(true)"
                     ></el-input-number>
                     <div class="btn-groups ml-2">
-                      <v-btn class="btn-secondary px-1 py-0 mr-2" style="min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">確認</v-btn>
-                      <v-btn class="btn-secondary delete px-1 py-0 mr-2" style="min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">清空</v-btn>
+                      <v-btn class="btn-secondary px-1 py-0 mr-2" style="min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(true)">全部填入</v-btn>
+                      <v-btn class="btn-secondary delete px-1 py-0 mr-2" style="min-width: 40px;height: 28px;font-size: 13px;" @click="calcutorPerUnit(false)">全部清空</v-btn>
                     </div>
                   </div>
                 </v-col>
@@ -610,7 +610,8 @@
                               }
                             "
                       ></el-input-number>
-                      <span class="ml-2">初始放苗量：{{ pond.estimated_num }}</span>
+                      <!-- <span class="ml-2">初始放苗量：{{ pond.estimated_num }}</span> -->
+                      <span class="ml-2">初始放苗量：<v-text-field v-model="pond.estimated_num" dense filled></v-text-field></span>
                     </div>
                   </v-col>
                 <!-- </div> -->
@@ -1186,6 +1187,7 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import JSZipUtils from "jszip-utils";
 import { saveAs } from 'file-saver';
+import { log } from "console";
 function loadFile(url, callback) {
   JSZipUtils.getBinaryContent(url,callback);
 }
@@ -2515,11 +2517,13 @@ export default {
 
       param = _.cloneDeep(this.addparm);
       param.created_user = updUser;
+      // console.log("dataVolumn",this.dataVolumn);
       
       this.dataVolumn.forEach(d=>{
         param.multi_data.push({
           pond_id: d.id,
           num_per_unit: d.num_per_unit,
+          num_estimated_num:d.estimated_num,//密度
           name: param.name.replace('pool',d.name)
         })
       })
@@ -2558,9 +2562,9 @@ export default {
       // let parm = Object.assign({},this.addparm);
       // return;
       
-      console.log('>>>>>Submit Data',param);
+       console.log('>>>>>Submit Data',param);
       // debugger;
-      // return;
+        return;
 
       var valid = this.$refs.cycleform.validate();
       
