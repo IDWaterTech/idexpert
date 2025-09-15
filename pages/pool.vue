@@ -2523,7 +2523,7 @@ export default {
         param.multi_data.push({
           pond_id: d.id,
           num_per_unit: d.num_per_unit,
-          num_estimated_num:d.estimated_num,//密度
+          initial_stocking_qty:d.estimated_num,//初始化苗量
           name: param.name.replace('pool',d.name)
         })
       })
@@ -2562,9 +2562,9 @@ export default {
       // let parm = Object.assign({},this.addparm);
       // return;
       
-       console.log('>>>>>Submit Data',param);
+      //console.log('>>>>>Submit Data',param);
       // debugger;
-        return;
+      //return;
 
       var valid = this.$refs.cycleform.validate();
       
