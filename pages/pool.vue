@@ -689,15 +689,6 @@
             </div>
           </v-card-title>
           <!-- 基本資料 -->
-          <div class="card-title cursor-pointer">
-            <!-- <div class="title">
-                <v-card-title>基本資料設定</v-card-title>
-            </div>
-            <div class="chevron" >
-              <v-icon v-if="addbasicDataOpen">mdi-triangle-small-up</v-icon>
-              <v-icon v-if="!addbasicDataOpen">mdi-triangle-small-down</v-icon>
-            </div> -->
-          </div>
           <div class="basic">
             <v-card-text class="flex-align-center">
               <v-row class="pt-4 align-center">
@@ -815,14 +806,14 @@
             <!-- 水體/密度/放養數 -->
             <v-card-text>
               <v-row align="center">
-                <!-- 體積 -->
-                <v-col cols="3">
+                <!-- 體積(不使用) -->
+                <v-col cols="3" v-if="false">
                   <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
                     autocomplete="off"></v-text-field>
                 </v-col>
-                <v-col cols="1" class="text-center">X</v-col>
-                <!-- 密度 -->
-                <v-col cols="3">
+                <v-col v-if="false" cols="1" class="text-center">X</v-col>
+                <!-- 密度(不使用) -->
+                <v-col cols="3" v-if="false">
                   <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     @change="
                               () => {
@@ -831,18 +822,26 @@
                               }
                             " autocomplete="off"></v-text-field>
                 </v-col>
-                <v-col cols="1" class="text-center">=</v-col>
+                <v-col v-if="false" cols="1" class="text-center">=</v-col>
+                <!-- 密度(新) -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    autocomplete="off" dense></v-text-field>
+                </v-col>
                 <!-- 初始放苗量(估計) -->
                 <v-col cols="4">
-                  <v-text-field v-model="editparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
-                    disabled autocomplete="off">
+                  <v-text-field v-model.number="editparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off" dense>
                   </v-text-field>
                 </v-col>
                 <!-- 當前養殖數量 -->
-                <v-col cols="12">
-                  <v-text-field v-model="editparm.current_stock_num" label="當前養殖數量" type="number" :rules="rules.require"
-                    autocomplete="off">
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.current_stock_num" label="當前養殖數量" type="number" :rules="rules.require"
+                    autocomplete="off" dense>
                   </v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <span style="color: red;">*「初始放苗量」限新增時即固定無法修改</span>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -958,7 +957,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field v-model="editparm.estimated_harvest_date" label="預估收成日期"
                         prepend-icon="mdi-calendar" class="pt-0 mt-n1" readonly v-bind="attrs" v-on="on"
-                        @click:prepend="() => (editparm.estimated_harvest_date = getNowDate())"></v-text-field>
+                        @click:prepend="() => (editparm.estimated_harvest_date = getNowDate())" disabled></v-text-field>
                     </template>
                     <v-date-picker v-model="editparm.estimated_harvest_date" no-title locale="zh-tw" @input="menu_estimated_harvest_date_edit = false">
                     </v-date-picker>
@@ -988,14 +987,14 @@
             <!-- 水體/密度/放養數 -->
             <v-card-text>
               <v-row align="center">
-                <!-- 體積 -->
-                <v-col cols="3">
+                <!-- 體積(不使用) -->
+                <v-col cols="3" v-if="false">
                   <v-text-field v-model="add_volume" label="體積(水量)" type="number" disabled
                     autocomplete="off"></v-text-field>
                 </v-col>
-                <v-col cols="1" class="text-center">X</v-col>
-                <!-- 密度 -->
-                <v-col cols="3">
+                <v-col v-if="false" cols="1" class="text-center">X</v-col>
+                <!-- 密度(不使用) -->
+                <v-col cols="3" v-if="false">
                   <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     @change="
                               () => {
@@ -1004,11 +1003,22 @@
                               }
                             " autocomplete="off" disabled></v-text-field>
                 </v-col>
-                <v-col cols="1" class="text-center">=</v-col>
+                <v-col v-if="false" cols="1" class="text-center">=</v-col>
+                <!-- 密度(新) -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
+                    autocomplete="off" disabled dense></v-text-field>
+                </v-col>
                 <!-- 初始放苗量(估計) -->
                 <v-col cols="4">
-                  <v-text-field v-model="editparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
-                    disabled autocomplete="off">
+                  <v-text-field v-model="editparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    disabled autocomplete="off" dense>
+                  </v-text-field>
+                </v-col>
+                <!-- 當前養殖數量 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.current_stock_num" label="當前養殖數量" type="number" :rules="rules.require"
+                    disabled autocomplete="off" dense>
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -1193,7 +1203,6 @@ import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import JSZipUtils from "jszip-utils";
 import { saveAs } from 'file-saver';
-import { log } from "console";
 function loadFile(url, callback) {
   JSZipUtils.getBinaryContent(url,callback);
 }
@@ -1545,8 +1554,9 @@ export default {
       this.isDownload = false;
       this.isEvent = false;
       this.isLoading = true;
+      //更改了
       loadFile(
-        `/documents/circle_v1.docx`,
+        `/documents/circle_v2.docx`,
         function (error, content) {
           if (error) {
             throw error;
@@ -1605,7 +1615,10 @@ export default {
             stocked_date:item.stocked_date,
             water_source:item.water_source=='Groundwater'?'地下水':'海水',
             num_per_unit:item.num_per_unit,
-            total:item.total,
+            // total:item.total,
+            initial_stocking_num:item.initial_stocking_num,//初始放養數量
+            current_stock_num:item.current_stock_num,//當前養殖數量
+
             estimated_survival_rate:item.estimated_survival_rate,
             estimated_harvest_weight:item.estimated_harvest_weight,
             estimated_harvest_date:item.estimated_harvest_date,
@@ -3730,7 +3743,8 @@ export default {
       let parm = _.cloneDeep(this.editparm);
       parm.person_in_charge = this.editperson_in_charge;
       delete parm.estimated_num;//刪除初始放苗量
-      console.log('>>>edit',parm);
+      // console.log('>>>edit',parm);
+      
       if(bool || this.$refs.editform.validate()){
         var res = false;
         res = await this.patchBreedingRecordList2(parm,this.editparm.id);
@@ -3830,8 +3844,12 @@ export default {
         // this.showadd(true);
         let getData = _.cloneDeep(data);
         this.add_volume = this.nowPoolData.volume;
-        // 預估放苗
-        getData.estimated_num = getData.total.toFixed(2);
+        // 預估放苗(不使用)
+        // getData.estimated_num = getData.total.toFixed(2);
+        //改當前養殖數量
+        getData.current_stock_num = getData.current_stock_num.toFixed(2);
+        //初始放苗量
+        getData.initial_stocking_num = getData.initial_stocking_num.toFixed(2);
         // 預估存活要為數值
         getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
         this.viewDialog = true;
