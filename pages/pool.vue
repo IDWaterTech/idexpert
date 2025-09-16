@@ -429,7 +429,7 @@
                   <v-text-field v-model.number="addparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     @change="
                               () => {
-                                addparm.estimated_num =
+                                addparm.initial_stocking_num =
                                   add_volume * addparm.num_per_unit;
                               }
                             " autocomplete="off"></v-text-field>
@@ -437,7 +437,7 @@
                 <v-col cols="1" class="text-center">=</v-col> -->
                 <!-- 初始放苗量(估計) -->
                 <!-- <v-col cols="4">
-                  <v-text-field v-model="addparm.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                  <v-text-field v-model="addparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
                     disabled autocomplete="off">
                   </v-text-field>
                 </v-col> -->
@@ -565,7 +565,8 @@
                   <div class="volume flex-center-between full-width">
                     <el-input-number
                       class="ml-2"
-                      v-model="all_num_per_unit"
+                      type="number"
+                      v-model.number="all_num_per_unit"
                       size="mini"
                       :precision="2"
                       :step="1"
@@ -605,13 +606,13 @@
                         required="true"
                         @change="
                               () => {
-                                pond.estimated_num =
-                                pond.volume * pond.num_per_unit;
+                                pond.initial_stocking_num =
+                                Number(pond.volume) * Number(pond.num_per_unit);
                               }
                             "
                       ></el-input-number>
-                      <!-- <span class="ml-2">初始放苗量：{{ pond.estimated_num }}</span> -->
-                      <span class="ml-2">初始放苗量：<v-text-field v-model="pond.estimated_num" dense filled></v-text-field></span>
+                      <!-- <span class="ml-2">初始放苗量：{{ pond.initial_stocking_num }}</span> -->
+                      <span class="ml-2">初始放苗量<v-text-field type="number" v-model.number="pond.initial_stocking_num" dense filled></v-text-field></span>
                     </div>
                   </v-col>
                 <!-- </div> -->
@@ -641,7 +642,7 @@
                     <v-text-field v-model.number="pond.num_per_unit" label="密度" type="number" :rules="rules.require"
                       @change="
                                 () => {
-                                  pond.estimated_num =
+                                  pond.initial_stocking_num =
                                     add_volume * pond.num_per_unit;
                                 }
                               " autocomplete="off"></v-text-field>
@@ -649,7 +650,7 @@
                   <v-col cols="1" class="text-center">=</v-col>
 
                   <v-col cols="4">
-                    <v-text-field v-model="pond.estimated_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    <v-text-field v-model="pond.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
                       disabled autocomplete="off">
                     </v-text-field>
                   </v-col>
@@ -818,7 +819,7 @@
                     @change="
                               () => {
                                 editparm.initial_stocking_num =
-                                add_volume * editparm.num_per_unit;
+                                Number(add_volume) * Number(editparm.num_per_unit);
                               }
                             " autocomplete="off"></v-text-field>
                 </v-col>
@@ -998,7 +999,7 @@
                   <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     @change="
                               () => {
-                                editparm.estimated_num =
+                                editparm.initial_stocking_num =
                                 add_volume * editparm.num_per_unit;
                               }
                             " autocomplete="off" disabled></v-text-field>
@@ -1311,7 +1312,7 @@ export default {
         stocked_date:undefined, //放苗日
         name: undefined,//名稱或批號
         // num_per_unit: undefined,//放養密度
-        estimated_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
+        initial_stocking_num: undefined, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
         estimated_harvest_weight:undefined,//目標收成蝦重
@@ -1448,7 +1449,7 @@ export default {
         stocked_date:undefined, //放苗日
         name: undefined,//名稱或批號
         num_per_unit: undefined,//放養密度
-        estimated_num: 0, //放養隻數，改由後端算，但這裡是畫面呈現用
+        initial_stocking_num: 0, //放養隻數，改由後端算，但這裡是畫面呈現用
         seedling_id:undefined,//種苗id
         //estimated_harvest_catty:undefined,//預計收成斤數
         estimated_harvest_weight:undefined,//目標收成蝦重
@@ -2161,7 +2162,7 @@ export default {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
       this.addparm.num_per_unit = undefined;
-      this.addparm.estimated_num = undefined;
+      this.addparm.initial_stocking_num = undefined;
       if(!bool) {
         this.addparm.name = this.addparm.name+'_{pool}'
         this.addparm.estimated_survival_rate = 70;
@@ -2241,7 +2242,7 @@ export default {
     getCycleData: async function() {
       let getArchitecture = await this.getArchitecture(null,true);
       let data = typeof (getArchitecture)=='string'?[]:getArchitecture;
-      console.log('可新增循環的池',data);
+      // console.log('可新增循環的池',data);
       let mainData = [];
       let pooldata = [];
       if(localStorage.getItem('factory_id')) {
@@ -2303,7 +2304,7 @@ export default {
           let date = dayjs().format("YYYY-MM-DD HH:mm:ss").split(' ');
           let date1 = date[0].split('-').concat(date[1].split(':'));
           // date1
-          console.log('date',date1);
+          // console.log('date',date1);
           this.addparm.name = '';
           date1.forEach(x=>this.addparm.name+=x);
           
@@ -2542,11 +2543,13 @@ export default {
         param.multi_data.push({
           pond_id: d.id,
           num_per_unit: d.num_per_unit,
-          current_stock_num:d.estimated_num,//當前養殖數量
+          current_stock_num:d.initial_stocking_num,//當前養殖數量
           name: param.name.replace('pool',d.name)
         })
-      })
-      delete param.estimated_num;
+      });
+      console.log('multi_data',param.multi_data);
+      //return;
+      delete param.initial_stocking_num;
       delete param.name;
       delete param.num_per_unit;
 
@@ -2566,7 +2569,7 @@ export default {
       // }
       // param['tempMain'] = tempMain;
       // param['tempContent'] = tempContent;
-      // delete param.estimated_num;//刪除初始放苗量
+      // delete param.initial_stocking_num;//刪除初始放苗量
       // this.dataVolumn.forEach(d=>{
       //   if(d.id==this.dataid[0]) {
       //     param.num_per_unit = d.num_per_unit;
@@ -2760,7 +2763,7 @@ export default {
     end(evt) {
       let data = _.cloneDeep(this.circleData.filter(x=>x.id==this.currentDataId)[0]);
       console.log('end',data,evt);
-      data.estimated_num = data.total;
+      data.initial_stocking_num = data.total;
       // 預估存活要為數值
       data.estimated_survival_rate = parseFloat(data.estimated_survival_rate.split('%')[0]);
       data.ended_date = dayjs( new Date(evt)).format("YYYY-MM-DD");
@@ -3118,7 +3121,7 @@ export default {
           data['main_total'][0].meal+=x.meal;
           data['main_total'][0].feed_amount+=x.feed_amount;
         })
-        data['main_total'][0].feed_amount = data['main_total'][0].feed_amount.toFixed(3);
+        data['main_total'][0].feed_amount = Number(data['main_total'][0].feed_amount.toFixed(3));
         data['main_total'][0].hasTotal = true;
       }else {
         data['main'] = []
@@ -3130,7 +3133,7 @@ export default {
           data['sub_total'][0].meal+=x.meal;
           data['sub_total'][0].feed_amount+=x.feed_amount;
         })
-        data['sub_total'][0].feed_amount = data['sub_total'][0].feed_amount.toFixed(3);
+        data['sub_total'][0].feed_amount = Number(data['sub_total'][0].feed_amount.toFixed(3));
         data['sub_total'][0].hasTotal = true;
       }else {
         data['sub'] = []
@@ -3148,7 +3151,7 @@ export default {
           data2['main_total'][0].meal+=x.meal;
           data2['main_total'][0].feed_amount+=x.feed_amount;
         })
-        data2['main_total'][0].feed_amount = data2['main_total'][0].feed_amount.toFixed(3);
+        data2['main_total'][0].feed_amount = Number(data2['main_total'][0].feed_amount.toFixed(3));
         data2['main_total'][0].hasTotal = true;
       }else {
         data2['main'] = []
@@ -3160,7 +3163,7 @@ export default {
           data2['sub_total'][0].meal+=x.meal;
           data2['sub_total'][0].feed_amount+=x.feed_amount;
         })
-        data2['sub_total'][0].feed_amount = data2['sub_total'][0].feed_amount.toFixed(3);
+        data2['sub_total'][0].feed_amount = Number(data2['sub_total'][0].feed_amount.toFixed(3));
         data2['sub_total'][0].hasTotal = true;
       }else {
         data2['sub'] = []
@@ -3189,8 +3192,8 @@ export default {
           this.clickRowData.recordlst.total[0].single+=x['single_weight'];
         })
         this.clickRowData.recordlst.hasRecord = true;
-        this.clickRowData.recordlst.total[0].total = this.clickRowData.recordlst.total[0].total.toFixed(3);
-        this.clickRowData.recordlst.total[0].single = this.clickRowData.recordlst.total[0].single/lst.length.toFixed(3);
+        this.clickRowData.recordlst.total[0].total = Number(this.clickRowData.recordlst.total[0].total.toFixed(3));
+        this.clickRowData.recordlst.total[0].single = Number(this.clickRowData.recordlst.total[0].single/lst.length.toFixed(3));
         this.clickRowData.recordlst.total[0].num = Math.round((this.clickRowData.recordlst.total[0].total*1000)/this.clickRowData.recordlst.total[0].single);
         // this.clickRowData.recordlst1 = []; // 間補
         // this.clickRowData.recordlst2 = []; // 收成
@@ -3672,7 +3675,7 @@ export default {
               name: name,
               volume: this.allPondsData.filter(x => x.id == data)[0].volume,
               num_per_unit: undefined,
-              estimated_num: undefined
+              initial_stocking_num: undefined
             });
           }
         })
@@ -3688,11 +3691,11 @@ export default {
         this.showadd(true);
         let getData = _.cloneDeep(data);
         // 預估放苗
-        // getData.estimated_num = getData.total.toFixed(2);
+        // getData.initial_stocking_num = getData.total.toFixed(2);
         //改當前養殖數量
-        getData.current_stock_num = getData.current_stock_num.toFixed(2);
+        getData.current_stock_num = Number(getData.current_stock_num.toFixed(2));
         //初始放苗量
-        getData.initial_stocking_num = getData.initial_stocking_num.toFixed(2);
+        getData.initial_stocking_num = Number(getData.initial_stocking_num.toFixed(2));
         // 預估存活要為數值
         getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
         this.editDialog = true;
@@ -3742,7 +3745,7 @@ export default {
       // bool=true 結束循環的日期變更 bool=false 編輯循環
       let parm = _.cloneDeep(this.editparm);
       parm.person_in_charge = this.editperson_in_charge;
-      delete parm.estimated_num;//刪除初始放苗量
+      delete parm.initial_stocking_num;//刪除初始放苗量
       // console.log('>>>edit',parm);
       
       if(bool || this.$refs.editform.validate()){
@@ -3797,17 +3800,20 @@ export default {
       }
     },
     calcutorPerUnit(bool) {
+      
       if(this.dataVolumn.length>0) {
         if(bool) {
           if(this.changeAllNum(this.all_num_per_unit)) {
             this.dataVolumn.forEach(x=>{
               x.num_per_unit = this.all_num_per_unit;
-              x.estimated_num =  (x.volume*this.all_num_per_unit).toFixed(2);
-            })
+              x.initial_stocking_num =  Number((x.volume*this.all_num_per_unit).toFixed(2));//會變字串 需轉數字
+              
+            });
+            
           }else {
             this.dataVolumn.forEach(x=>{
               x.num_per_unit = undefined;
-              x.estimated_num =  undefined;
+              x.initial_stocking_num =  undefined;
             })
             this.all_num_per_unit = undefined;
             }
@@ -3815,7 +3821,7 @@ export default {
         }else {
           this.dataVolumn.forEach(x=>{
             x.num_per_unit = undefined;
-            x.estimated_num =  undefined;
+            x.initial_stocking_num =  undefined;
           })
           this.all_num_per_unit = undefined;
         }
@@ -3845,11 +3851,11 @@ export default {
         let getData = _.cloneDeep(data);
         this.add_volume = this.nowPoolData.volume;
         // 預估放苗(不使用)
-        // getData.estimated_num = getData.total.toFixed(2);
+        // getData.initial_stocking_num = getData.total.toFixed(2);
         //改當前養殖數量
-        getData.current_stock_num = getData.current_stock_num.toFixed(2);
+        getData.current_stock_num = Number(getData.current_stock_num.toFixed(2));
         //初始放苗量
-        getData.initial_stocking_num = getData.initial_stocking_num.toFixed(2);
+        getData.initial_stocking_num = Number(getData.initial_stocking_num.toFixed(2));
         // 預估存活要為數值
         getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
         this.viewDialog = true;
