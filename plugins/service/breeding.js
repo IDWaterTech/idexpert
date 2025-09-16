@@ -154,6 +154,10 @@ Vue.mixin({
         //===== 疾病 =====//
         // 取得疾病檢驗清單
         getDiseaseList:async function(parm) {
+            //下列三個欄位需至少輸入一個欄位
+            // species_id: 品種id (ex: 1)
+            // species_name_ch: 品種中文名稱 (ex: 白蝦)
+            // species_name_en: 品種英文名稱 (ex: WhiteShrimp)
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/`, { params: parm })
                 console.log("疾病檢驗清單:" + data.request.responseURL);
