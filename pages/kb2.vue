@@ -4079,21 +4079,21 @@ export default {
                     
                 })
                 //console.log('Input Observation',this.ObservationData);
-                
+                console.log("this.ObservationData:",this.ObservationData);
                 if(this.ObservationData['SamplingDatetime']) {
                     this.ObservationData['SamplingDatetime'] = this.$moment(new Date(this.ObservationData['SamplingDatetime']), 'YYYY-MM-DD HH:mm');
                 }
                 if(this.ObservationData['LastSamplingDatetime']) {
                     this.ObservationData['LastSamplingDatetime'] = this.$moment(new Date(this.ObservationData['LastSamplingDatetime']), 'YYYY-MM-DD HH:mm');
                 }
-                if(this.ObservationData['ShrimpWeight']) {
-                    this.ObservationData['ShrimpWeight'] = this.ObservationData['ShrimpWeight'].toFixed(3);
+                if(this.ObservationData['ShrimpWeight']) {//體重帶3位小數 資料為string型態toFixed會報錯
+                    this.ObservationData['ShrimpWeight'] = Number(this.ObservationData['ShrimpWeight']).toFixed(3);
                 }
                 if(this.ObservationData['LastShrimpWeight']) {
-                    this.ObservationData['LastShrimpWeight'] = this.ObservationData['LastShrimpWeight'].toFixed(3);
+                    this.ObservationData['LastShrimpWeight'] = Number(this.ObservationData['LastShrimpWeight']).toFixed(3);
                 }
                 if(this.BreedingParm['InitialWeight']) {
-                    this.BreedingParm['InitialWeight'] = this.BreedingParm['InitialWeight'].toFixed(3);
+                    this.BreedingParm['InitialWeight'] = Number(this.BreedingParm['InitialWeight']).toFixed(3);
                 }
                 this.BacteriaData = input_data.BacteriaData;
                 //console.log("DiseaseInfection:",input_data.BacteriaData.DiseaseInfection);
