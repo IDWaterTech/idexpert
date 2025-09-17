@@ -1123,7 +1123,7 @@
                             <v-text-field v-model="add.sample_deco" label="樣品包裝" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;margin-right: 16px;"></v-text-field>
                             <v-text-field v-model="add.sample_store" label="樣品保存" :rules="rules.require" autocomplete="off" style="padding-top: 8px;margin-top: 0;width: 100%;"></v-text-field>
                         </div> -->
-                        
+                        <!-- 感染項目 -->
                         <v-select
                           v-if="add.type==1"
                           v-model="add.disease_id"
@@ -3948,7 +3948,7 @@ export default {
       }
       
     },
-    reportEditOpen(item) {
+    reportEditOpen(item) {//開啟檢驗報告編輯
       this.reportDialog=true;
       if (this.$refs.addform != undefined) {
           this.$refs.addform.reset();
@@ -3963,11 +3963,14 @@ export default {
         }
         if(item.type == 1) {//1是疾病檢驗2是水質檢驗
           this.addReport[0].disease_id = [];
-          //疾病項目disease 給的是每個病的名稱含ID，因此轉成disease_id陣列塞回去 ★★★待處理編輯的部分
-          this.addReport[0].disease.forEach(x=>this.addReport[0].disease_id.push(x.id));
-          console.log('addReport disease:',this.addReport[0].disease);
+          //疾病項目disease 給的是每個病的名稱含ID，因此轉成disease_id陣列塞回去
+          //this.addReport[0].disease.forEach(x=>this.addReport[0].disease_id.push(x.id));
+          this.addReport[0].disease_id = this.addReport[0].disease.map(x => x.id);
+          // console.log('addReport disease:',this.addReport[0]);
           //檢驗項目test比照disease來
-          //this.addReport[0].test.forEach(x=>this.addReport[0].test_id.push(x.id));
+          //this.addReport[0].test.forEach(x=>this.addReport[0].test_id.push(x.id));沒有該參數會出錯
+          this.addReport[0].test_id = this.addReport[0].test.map(x => x.id);
+
           this.addReport[0].species = undefined,
           this.bacteriaAll.forEach(x=>{
             x.test.forEach(t=>{
