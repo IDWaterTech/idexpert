@@ -435,9 +435,9 @@
                             " autocomplete="off"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="text-center">=</v-col> -->
-                <!-- 初始放苗量(估計) -->
+                <!-- 初始放苗量(預估) -->
                 <!-- <v-col cols="4">
-                  <v-text-field v-model="addparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                  <v-text-field v-model="addparm.initial_stocking_num" label="初始放苗量(預估)" type="number" :rules="rules.require"
                     disabled autocomplete="off">
                   </v-text-field>
                 </v-col> -->
@@ -612,7 +612,7 @@
                             "
                       ></el-input-number>
                       <!-- <span class="ml-2">初始放苗量：{{ pond.initial_stocking_num }}</span> -->
-                      <span class="ml-2">初始放苗量<v-text-field type="number" v-model.number="pond.initial_stocking_num" dense filled></v-text-field></span>
+                      <span class="ml-2">初始放苗量(預估)<v-text-field type="number" v-model.number="pond.initial_stocking_num" dense filled></v-text-field></span>
                     </div>
                   </v-col>
                 <!-- </div> -->
@@ -650,7 +650,7 @@
                   <v-col cols="1" class="text-center">=</v-col>
 
                   <v-col cols="4">
-                    <v-text-field v-model="pond.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                    <v-text-field v-model="pond.initial_stocking_num" label="初始放苗量(預估)" type="number" :rules="rules.require"
                       disabled autocomplete="off">
                     </v-text-field>
                   </v-col>
@@ -829,9 +829,9 @@
                   <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     autocomplete="off" dense></v-text-field>
                 </v-col>
-                <!-- 初始放苗量(估計) -->
+                <!-- 初始放苗量(預估) -->
                 <v-col cols="4">
-                  <v-text-field v-model.number="editparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                  <v-text-field v-model.number="editparm.initial_stocking_num" label="初始放苗量(預估)" type="number" :rules="rules.require"
                     disabled autocomplete="off" dense>
                   </v-text-field>
                 </v-col>
@@ -1010,9 +1010,9 @@
                   <v-text-field v-model.number="editparm.num_per_unit" label="密度" type="number" :rules="rules.require"
                     autocomplete="off" disabled dense></v-text-field>
                 </v-col>
-                <!-- 初始放苗量(估計) -->
+                <!-- 初始放苗量(預估) -->
                 <v-col cols="4">
-                  <v-text-field v-model="editparm.initial_stocking_num" label="初始放苗量(估計)" type="number" :rules="rules.require"
+                  <v-text-field v-model="editparm.initial_stocking_num" label="初始放苗量(預估)" type="number" :rules="rules.require"
                     disabled autocomplete="off" dense>
                   </v-text-field>
                 </v-col>
