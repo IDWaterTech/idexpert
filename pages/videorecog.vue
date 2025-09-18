@@ -267,7 +267,7 @@
                         </v-col>
                         <v-col  cols="6" class="pa-0 pl-2" style="padding: 0;padding-left: 8px;">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">檢測時間</span>
+                            <span style="font-size: 16px;margin-right: 9px;">檢測結果時間</span>
                           </div>
                           <div class="date-time-picker full-width">
                             <v-icon
@@ -633,7 +633,7 @@ export default {
                             飼料殘餌率：${d.leftover_rate}<br>
                             底網面積偵測結果: ${d.area_flag?d.area_flag:''}<br>
                             模糊偵測結果: ${d.quality_flag?d.quality_flag:''}<br>
-                            檢測時間：${d.inspected_time}`,
+                            檢測結果時間：${d.inspected_time}`,
                   feed_img:d.feed_img,
                   id:d.id,
                   shrimp_img:d.shrimp_img,
@@ -674,7 +674,7 @@ export default {
           //                     蝦子重量(g)：[ ${d.shrimp_weight==null?'':d.shrimp_weight} ]<br>
           //                     蝦子長度(cm)：[ ${d.shrimp_length==null?'':d.shrimp_length} ]<br>
           //                     飼料殘餌率：${d.leftover_rate}<br>
-          //                     檢測時間：${d.inspected_time}`,
+          //                     檢測結果時間：${d.inspected_time}`,
           //           feed_img:d.feed_img,
           //           id:d.id,
           //           shrimp_img:d.shrimp_img
