@@ -131,7 +131,7 @@
                             <div class="top">
                                 <div class="title">
                                     <div class="main">
-                                        石灰量
+                                        pH改善劑
                                     </div>
                                 </div>
                             </div>
