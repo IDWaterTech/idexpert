@@ -10,7 +10,7 @@
                   v-model="toggle_weather" @change="changeloc(toggle_weather)"
                   class="field-toggle mt-2"
                 >
-                <v-btn :value="1" :class="{'v-btn--active':toggle_weather==1}">研發<br/>一場</v-btn>
+                <!-- <v-btn :value="1" :class="{'v-btn--active':toggle_weather==1}">研發<br/>一場</v-btn> -->
                 <v-btn :value="2" :class="{'v-btn--active':toggle_weather==2}">彰化<br/>芳苑</v-btn>
                 <v-btn :value="3" :class="{'v-btn--active':toggle_weather==3}">台南<br/>北門</v-btn>
                 <v-btn :value="4" :class="{'v-btn--active':toggle_weather==4}">高雄<br/>湖內</v-btn>
@@ -76,8 +76,10 @@ export default {
 data() {
   return {
     loc: {
-      longitude: "121.82030882702146",
-      latitude: "24.83616577553079"
+      // longitude: "121.82030882702146",
+      // latitude: "24.83616577553079",
+      longitude: '120.4107148',//彰化芳苑
+      latitude: '23.9968415'
     },
     location:[],
     weatherdata:{
@@ -114,7 +116,8 @@ data() {
 },
 methods: {
   changeloc:function(locid){
-    var lonlat = {longitude: "121.82030882702146",latitude: "24.83616577553079"};
+    // var lonlat = {longitude: "121.82030882702146",latitude: "24.83616577553079"}; //預設在頭城研發一場
+    var lonlat = {longitude: "120.4107148",latitude: "23.9968415"}; //預設彰化芳苑
     switch (locid) {
       case 1://研發一場
         lonlat = {
@@ -168,9 +171,11 @@ methods: {
       err => {
         this.gettingLocation = false;
         this.errorStr = err.message;
-        //預設在頭城研發一場
-        this.loc.longitude = "121.82030882702146";
-        this.loc.latitude = "24.83616577553079";
+        //預設在頭城研發一場→彰化芳苑
+        // this.loc.longitude = "121.82030882702146";
+        // this.loc.latitude = "24.83616577553079";
+        this.loc.longitude = '120.4107148';
+        this.loc.latitude = '23.9968415';
       }
     );
     }
