@@ -162,7 +162,7 @@
                           <v-btn tile class="btn-primary mx-1 my-0" @click="downloadcsv"
                             :disabled="feedData.length==0">下載</v-btn>
                           <v-btn class="btn-primary green mx-1 my-0" tile @click="execsubmit"
-                            >執行</v-btn>
+                            >儲存</v-btn>
                             <!-- 原本有加打勾多選，保留備忘 :disabled="multipleSelection.length == 0" -->
                         </div>
                       </v-col>
