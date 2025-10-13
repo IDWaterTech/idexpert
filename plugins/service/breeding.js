@@ -876,13 +876,13 @@ Vue.mixin({
                 let data = await this.$axios
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/`,addform,config)
                 console.log("新增疾病檢驗報告:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
+                if(data.data.detail == "Success") {
+                    this.$toast.success("新增結果：" + data.data.messages, {
                         duration: 2000
                     });
                     return true;
                 }else {
-                    this.$toast.error("新增失敗：" + data.data, {
+                    this.$toast.error("新增失敗：" + data.data.messages, {
                         duration: 2000
                     });
                 }
@@ -899,11 +899,12 @@ Vue.mixin({
                 let data = await this.$axios
                 .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/${id}/`,parm,config)
                 console.log("修改疾病檢驗報告:" + data.request.responseURL);
-                if(data.data == "修改成功") {
+                if(data.data.detail == "Success") {
                     this.$toast.success("修改成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                    this.$toast.error("修改失敗：" + data.data, { duration: 2000 });
+                    console.error("修改失敗：",data);
                 }
     
             }catch(error) {
@@ -916,11 +917,11 @@ Vue.mixin({
             try {
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-record/${id}/`)
                 console.log("刪除疾病檢驗報告:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
+                if(data.data.detail == "Success") {
                     this.$toast.success("刪除成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                    this.$toast.success("刪除失敗：" + data.data.messages, { duration: 2000 });
                 }
     
             }catch(error) {

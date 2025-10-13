@@ -1034,7 +1034,7 @@
         </v-card>
       <!-- </v-form> -->
     </v-dialog>
-    <!-- 新增檢驗報告 -->
+    <!-- 新增/修改 檢驗報告 -->
     <v-dialog v-model="reportDialog" max-width="500px"><!--新增檢驗報告-->
       <v-form v-model="reportvalid" ref="addform">
           <v-card class="custom-dialog">
@@ -1089,11 +1089,10 @@
                                 <!-- <span style="font-size: 12px;line-height: 12px;">檢驗時間</span>
                                 <a-date-picker v-model="add.execute_date" :defaultValue="add.execute_date" label="檢驗時間" value="null" format="yyyy-MM-DD" show-time placeholder="檢驗時間" @change="onChange" @ok="onOk" style="min-width: none;margin-left: 4px;margin-right: 16px;width: 100%;" /> -->
                             </div>  
-                            <!-- {{ bacteriaAll.filter(x=>x.id==add.species)[0].test }} -->
                         </div>
                         <div v-if="add.type==1" class="select-bacteria flex-align-end mb-3 full-width">
                             <v-select
-                                v-model="add.species"
+                                v-model="add.species_id"
                                 :items="bacteriaAll"
                                 :menu-props="{ maxHeight: '400' }"
                                 item-value="id"
@@ -1105,9 +1104,8 @@
                                 >
                             </v-select>
                             <v-select
-                                
                                 v-model="add.method_id"
-                                :items="bacteriaAll.filter(x=>x.id==add.species)[0].test"
+                                :items="add.species_id!=undefined?bacteriaAll.filter(x=>x.id==add.species_id)[0]?.test:[]"
                                 :menu-props="{ maxHeight: '400' }"
                                 item-value="id"
                                 item-text="name_ch"
@@ -1127,7 +1125,7 @@
                         <v-select
                           v-if="add.type==1"
                           v-model="add.disease_id"
-                          :items="bacteriaAll.filter(x=>x.id==add.species)[0].test.filter(y=>y.id==add.method_id)[0].disease"
+                          :items="add.species_id!=undefined?bacteriaAll.filter(x=>x.id==add.species_id)[0]?.test.filter(y=>y.id==add.method_id)[0].disease:[]"
                           :menu-props="{ maxHeight: '400' }"
                           multiple
                           chips
@@ -1157,7 +1155,7 @@
                         <v-select
                           v-if="add.type==1"
                           v-model="add.test_id"
-                          :items="bacteriaAll.filter(x=>x.id==add.species)[0].test.filter(y=>y.id==add.method_id)[0].disease"
+                          :items="add.species_id!=undefined?bacteriaAll.filter(x=>x.id==add.species_id)[0]?.test.filter(y=>y.id==add.method_id)[0].disease:[]"
                           :menu-props="{ maxHeight: '400' }"
                           multiple
                           chips
@@ -3287,42 +3285,8 @@ export default {
       this.diseaseReport.sort((a,b)=>{
           return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
       })
-      console.log('疾病檢驗清單',this.diseaseReport);
+      console.log('疾病檢驗清單',_.cloneDeep(this.diseaseReport));
       this.getWater();
-      // await this.$axios
-      //   .get(apiURL, { params: parm }, { httpsAgent: agent })
-      //   .then(res => {
-      //     this.diseaseReport = _.cloneDeep(res.data);
-      //     this.diseaseReport.forEach(d=>{
-      //       d.execute_time = d.execute_date+' 00:00:00';
-      //       d.step_name_ch = '疾病檢驗';
-      //       d.step_name_en = 'disease';
-      //       d.type = 1;
-      //       d.bacteriaSelect = [];
-      //       d.disease.forEach(x=>{
-      //         d.bacteriaSelect.push(x.name_en);
-      //       })
-      //       d.method = this.bacteriaAll[0].test.filter(x=>x.id == d.method_id)[0].name_ch;
-      //       // const blob = new Blob([d.file]);
-      //       // const objectUrl = URL.createObjectURL(blob);
-      //       // d.file = objectUrl;
-            
-      //       // const binaryData = [];
-      //       // binaryData.push(d.file);       
-      //       // d.file = window.URL.createObjectURL(new Blob(binaryData, {type: 'application/pdf'}));
-      //     })
-      //     console.log('疾病檢驗清單',this.diseaseReport);
-      //     // this.goAnchor('#chart'); 
-      //     console.log("疾病檢驗清單", res.request.responseURL);
-      //   })
-      //   .catch(err => {
-      //   })
-      //   .finally(() => {
-      //     this.getWater();
-      //   });
-      // this.diseaseReport.sort((a,b)=>{
-      //     return new Date(b.execute_time).getTime() - new Date(a.execute_time).getTime();
-      // })
     },
     // 取得水質檢驗報告
     async getWater() {
@@ -3938,8 +3902,13 @@ export default {
         setTimeout(async ()=>{
           this.isSelectPool = true;
           this.selectPond = [];
-          this.addReport = [{msg:'',species:this.bacteriaAll[0].id,status: this.addStatus[0].name_ch,type:this.addOtherType[0].id,method_id:this.bacteriaAll[0].test[0].id,
-                             disease_id:[],file:null,pond_id:[],position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
+          this.addReport = [{msg:'',
+                             species_id:this.bacteriaAll[0].id,
+                             status: this.addStatus[0].name_ch,
+                             type:this.addOtherType[0].id,
+                             method_id:this.bacteriaAll[0].test[0].id,
+                             disease_id:[],
+                             file:null,pond_id:[],position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
           // this.$refs.poolSelect.changeEvent();
           this.sampledata(null,0);
         },100)
@@ -3956,6 +3925,7 @@ export default {
       setTimeout(async ()=>{
         this.isSelectPool = true;
         this.addReport = [];
+        console.log('reportEditOpen item:',_.cloneDeep(item));
         this.addReport.push(item);
         this.addReport[0].filename = decodeURI(this.addReport[0].file.split('.pdf')[0].split(item.type==2?'water_quality_testing_record/':'disease_testing_record/')[1].split('_')[0])+'.pdf';
         if(this.addReport[0].pond_ids) {
@@ -3970,28 +3940,30 @@ export default {
           //檢驗項目test比照disease來
           //this.addReport[0].test.forEach(x=>this.addReport[0].test_id.push(x.id));沒有該參數會出錯
           this.addReport[0].test_id = this.addReport[0].test.map(x => x.id);
-
-          this.addReport[0].species = undefined,
-          this.bacteriaAll.forEach(x=>{
-            x.test.forEach(t=>{
-              if(t.id==this.addReport[0].method_id) {
-                let ids = [];
-                t.disease.forEach(d=>ids.push(d.id));
-                let isIncludes = [];
-                this.addReport[0].disease_id.forEach(i=>{
-                  if(ids.includes(i)) {
-                    isIncludes.push(true);
-                  }else {
-                    isIncludes.push(false);
-                  }
-                })
-                if(!isIncludes.includes(false)) {
-                  this.addReport[0].species = x.id;
-                }
-              }
-            })
-          })
-          console.log(this.addReport[0]);
+          // console.log("bacteriaAll:",this.bacteriaAll);
+          // console.log("addReport 1:",_.cloneDeep(this.addReport[0]));
+          // this.addReport[0].species = this.addReport[0].species_id;//資料來源是species_id
+          // this.addReport[0].species = undefined,
+          // this.bacteriaAll.forEach(x=>{//所有物種：如蝦、魚
+          //   x.test.forEach(t=>{//的檢驗方法IIPC、PCR…的ID
+          //     if(t.id==this.addReport[0].method_id) {//與編輯資料上的方法ID相同
+          //       let ids = [];
+          //       t.disease.forEach(d=>ids.push(d.id));//該方法可檢驗的所有疾病ID
+          //       let isIncludes = [];
+          //       this.addReport[0].disease_id.forEach(i=>{
+          //         if(ids.includes(i)) {
+          //           isIncludes.push(true);
+          //         }else {
+          //           isIncludes.push(false);
+          //         }
+          //       })
+          //       if(!isIncludes.includes(false)) {
+          //         this.addReport[0].species = x.id;
+          //       }
+          //     }
+          //   })
+          // })
+          // console.log("addReport 2:",this.addReport[0]);
         }
       },100)
       
@@ -4041,8 +4013,15 @@ export default {
             // console.log('select',index,this.addReport[id].disease_id);
         }else {
             if(type=='method') {
-                this.addReport[id].method_id = this.bacteriaAll.filter(x=>x.id==this.addReport[id].species)[0].test[0].id;
+                // console.log('method',this.bacteriaAll);
+                // debugger;
+                //filter先用物種ID抓出該物種的所有檢驗方法[0] 並從該方法的疾病中抓出第一個疾病ID??
+                // this.addReport[id].method_id = this.bacteriaAll.filter(x=>x.id==this.addReport[id].species_id)[0].test[0].id;
+                //清空疾病清單
                 this.addReport[id].disease_id = [];
+                //清空檢驗清單
+                this.addReport[id].test_id = [];
+
             }
         }
         // for(let i=0;i<this.bacteriaAll.length;i++) {
@@ -4089,6 +4068,7 @@ export default {
     async submitreport() {
       let formData = new FormData();
       let parm = _.cloneDeep(this.addReport[0]);
+      console.log('submitreport 0:',parm);
       this.isSelectPool = true;
       if(parm.pond_ids) {
 
@@ -4302,7 +4282,7 @@ export default {
       let data = typeof (getSpeciesList)=='string'?[]:getSpeciesList;
       if(data.length>0) {
         this.bacteriaAll = data;
-        this.addReport[0].species = this.bacteriaAll[0].id;
+        this.addReport[0].species_id = this.bacteriaAll[0].id;
         await this.getMethod();
       }else {
         this.isLoading = true;
@@ -4331,7 +4311,7 @@ export default {
     // 取得疾病-清單
     async getReportDisease() {
       let parm = {
-        species_id: this.addReport[0].species,
+        species_id: this.addReport[0].species_id,
       };
       // 疾病-清單:
       //[{
@@ -4346,8 +4326,9 @@ export default {
       // }, ...
       let getDiseaseList = await this.getDiseaseList(parm);//api:/breeding/disease/?species_id=XXXXXXX
       let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
+      console.log('把疾病放到對應的物種方法裡 this.addReport[0]:',this.addReport[0]);
       //把疾病放到對應的物種方法裡
-      this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test.forEach(y=>{
+      this.bacteriaAll.filter(x=>x.id == this.addReport[0].species_id)[0].test.forEach(y=>{
         y.disease = data;//不懂原程式使用forEach塞疾病的用意
         //y.disease = [];
         // data.forEach(d=>{
@@ -4355,24 +4336,8 @@ export default {
         // })
         
       })
-      this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
+      this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species_id)[0].test[0].id;
       this.isLoading = true;
-      // await this.$axios
-      //   .get(apiURL, { params: parm })
-      //   .then(res => {
-      //     this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test.forEach(y=>{
-      //       y.disease = [];
-      //       res.data.forEach(d=>{
-      //         y.disease.push(d);
-      //       })
-      //     })
-      //     this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species)[0].test[0].id;
-      //     this.isLoading = true;
-      //     console.log("檢驗疾病清單:", res.request.responseURL)
-      //   })
-      //   .catch(err => {
-      //     alert("檢驗疾病失敗：" + err.message);
-      //   });
     },
     // 過濾篩選
     filterChange(evt) {
