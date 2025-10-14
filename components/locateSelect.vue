@@ -92,7 +92,7 @@ export default {
                 this.dataid = undefined;
                 return;
             }else{
-                console.log('default select',this.defaultSelect);
+                // console.log('default select',this.defaultSelect);
                 this.dataid = this.defaultSelect;
                 //預設項目需回傳EMIT事件會造成無限迴圈
                 // this.$emit('scopeSel_data',this.dataid);

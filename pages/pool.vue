@@ -3903,10 +3903,10 @@ export default {
           this.isSelectPool = true;
           this.selectPond = [];
           this.addReport = [{msg:'',
-                             species_id:this.bacteriaAll[0].id,
-                             status: this.addStatus[0].name_ch,
-                             type:this.addOtherType[0].id,
-                             method_id:this.bacteriaAll[0].test[0].id,
+                             species_id:_.cloneDeep(this.bacteriaAll[0].id),//物種
+                             status: _.cloneDeep(this.addStatus[0].name_ch),//狀態
+                             type:_.cloneDeep(this.addOtherType[0].id),//類型
+                             method_id:_.cloneDeep(this.bacteriaAll[0].test[0].id),//檢驗方法
                              disease_id:[],
                              file:null,pond_id:[],position: '',execute_date: dayjs(new Date()).format("YYYY-MM-DD")}];
           // this.$refs.poolSelect.changeEvent();
@@ -3919,24 +3919,26 @@ export default {
     },
     reportEditOpen(item) {//開啟檢驗報告編輯
       this.reportDialog=true;
-      if (this.$refs.addform != undefined) {
-          this.$refs.addform.reset();
-      }
+      // if (this.$refs.addform != undefined) {
+      //     this.$refs.addform.reset();
+      // }
       setTimeout(async ()=>{
         this.isSelectPool = true;
         this.addReport = [];
-        console.log('reportEditOpen item:',_.cloneDeep(item));
-        this.addReport.push(item);
+        // console.log('reportEditOpen 開啟編輯報告:',_.cloneDeep(item));
+        this.addReport.push(_.cloneDeep(item));
+        //await this.getReportDisease();
         this.addReport[0].filename = decodeURI(this.addReport[0].file.split('.pdf')[0].split(item.type==2?'water_quality_testing_record/':'disease_testing_record/')[1].split('_')[0])+'.pdf';
         if(this.addReport[0].pond_ids) {
           this.addReport[0].pond_id =this.addReport[0].pond_ids;
         }
         if(item.type == 1) {//1是疾病檢驗2是水質檢驗
+          
           this.addReport[0].disease_id = [];
           //疾病項目disease 給的是每個病的名稱含ID，因此轉成disease_id陣列塞回去
           //this.addReport[0].disease.forEach(x=>this.addReport[0].disease_id.push(x.id));
-          this.addReport[0].disease_id = this.addReport[0].disease.map(x => x.id);
-          // console.log('addReport disease:',this.addReport[0]);
+          this.addReport[0].disease_id = _.cloneDeep(this.addReport[0].disease.map(x => x.id));
+          
           //檢驗項目test比照disease來
           //this.addReport[0].test.forEach(x=>this.addReport[0].test_id.push(x.id));沒有該參數會出錯
           this.addReport[0].test_id = this.addReport[0].test.map(x => x.id);
@@ -3965,8 +3967,8 @@ export default {
           // })
           // console.log("addReport 2:",this.addReport[0]);
         }
-      },100)
-      
+      },300);
+      // console.log('設定addReport 結果:',this.addReport[0]);
       
       
     },
@@ -4290,6 +4292,8 @@ export default {
     },
     // 取得檢驗方法
     async getMethod() {
+
+      console.log('getMethod!!!');
       let getMethodList = await this.getMethodList();
       let data = typeof (getMethodList)=='string'?[]:getMethodList;
       // 跟著目前的池物種
@@ -4326,16 +4330,32 @@ export default {
       // }, ...
       let getDiseaseList = await this.getDiseaseList(parm);//api:/breeding/disease/?species_id=XXXXXXX
       let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
-      console.log('把疾病放到對應的物種方法裡 this.addReport[0]:',this.addReport[0]);
       //把疾病放到對應的物種方法裡
-      this.bacteriaAll.filter(x=>x.id == this.addReport[0].species_id)[0].test.forEach(y=>{
-        y.disease = data;//不懂原程式使用forEach塞疾病的用意
+      // console.log('把疾病放到對應的物種方法裡 this.addReport[0]:',this.addReport[0]);
+      // console.log('把疾病放到對應的物種方法裡 disease:',data);
+      // console.log('把疾病放到對應的物種方法裡 bacteriaAll:',this.bacteriaAll);
+      // this.bacteriaAll.filter(x=>x.id == this.addReport[0].species_id)[0].test.forEach(y=>{
+      //   y.disease = _.cloneDeep(data);//不懂原程式使用forEach塞疾病的用意
         //y.disease = [];
         // data.forEach(d=>{
         //   y.disease.push(d);
         // })
         
-      })
+      // })
+      // 使用map重設整個bacteriaAll，避免forEach塞疾病時，y.disease會被覆蓋掉
+      this.bacteriaAll = this.bacteriaAll.map(x => {
+        if (x.id === this.addReport[0].species_id) {
+          return {
+            ...x,
+            test: x.test.map(y => ({
+              ...y,
+              disease: _.cloneDeep(data)
+            }))
+          };
+        }
+        return x;
+      });
+
       this.addReport[0].method_id = this.bacteriaAll.filter(x=>x.id == this.addReport[0].species_id)[0].test[0].id;
       this.isLoading = true;
     },
