@@ -88,3 +88,9 @@ sw.*
 
 # Vim swap files
 *.swp
+
+# Ignore tar archives
+# 只忽略根目錄下的
+dist.tar
+# 忽略所有目錄下的tar（等同於 **/*.tar，Git 會自動匹配所有層級）
+*.tar
