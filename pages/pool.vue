@@ -4342,7 +4342,7 @@ export default {
         // })
         
       // })
-      // 使用map重設整個bacteriaAll，避免forEach塞疾病時，y.disease會被覆蓋掉
+      // 使用map重設整個bacteriaAll，避免forEach塞疾病時，y.disease會被覆蓋掉 2
       this.bacteriaAll = this.bacteriaAll.map(x => {
         if (x.id === this.addReport[0].species_id) {
           return {
