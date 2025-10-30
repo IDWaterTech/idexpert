@@ -839,9 +839,9 @@ Vue.mixin({
             }
         },
         // 取得池清單
-        getPondList:async function() {
+        getPondList:async function(parm=undefined) {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`)
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`, { params: parm })
                 console.log("池清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;

@@ -863,7 +863,6 @@ export default {
         pool.forEach(x=>{delete x['shape']});
         this.pooldata = pool;
         this.nowpooldata = _.cloneDeep(pool);
-        console.log("getPondList[0]:", this.nowpooldata[0]);
         this.isLoading = true;
       }else {
         this.getMapData();
