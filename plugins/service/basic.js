@@ -838,21 +838,38 @@ Vue.mixin({
                 console.log(error);
             }
         },
+        // 取得池清單
+        getPondList:async function() {
+            try {
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`)
+                console.log("池清單:" + data.request.responseURL);
+                if(data.status==200) {
+                    return data.data;
+                }else {
+                    this.$toast.error("錯誤：" + data.detail, { duration: 2000 });
+                    return [];
+                }
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.log(error);
+                return [];
+            }
+        },
         // 新增池
         postPondList:async function(addform) {
             try {
                 let data = await this.$axios
                 .post(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/`,addform,)
                 console.log("新增池:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    this.$toast.success("新增結果：" + data.data, {
+                if(data.data.detail == "Success") {
+                    this.$toast.success("新增結果：" + data.data.messages, {
                         duration: 2000
                     });
                     return true;
                 }else {
-                    this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
-                    });
+                   var msg = `新增失敗：${data.data.detail} 訊息：${data.data.messages}`;
+                    console.error(msg,data);
+                    this.$toast.error(msg, { duration: 2000 });
                 }
     
             }catch(error) {
@@ -866,11 +883,13 @@ Vue.mixin({
                 let data = await this.$axios
                 .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/${id}/`,parm,)
                 console.log("修改池:" + data.request.responseURL);
-                if(data.data == "修改成功") {
+                if(data.data.detail == "Success") {
                     this.$toast.success("修改成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                    var msg = `修改失敗：${data.data.detail} 訊息：${data.data.messages}`;
+                    console.error(msg,data);
+                    this.$toast.error(msg, { duration: 2000 });
                 }
     
             }catch(error) {
@@ -883,11 +902,13 @@ Vue.mixin({
             try {
                 let data = await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiUrl}/pond/${id}/`)
                 console.log("刪除池:" + data.request.responseURL);
-                if(data.data == "刪除成功") {
+                if(data.data.detail == "Success") {
                     this.$toast.success("刪除成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("刪除失敗：" + data.data, { duration: 2000 });
+                    var msg = `刪除失敗：${data.data.detail} 訊息：${data.data.messages}`;
+                    console.error(msg,data);
+                    this.$toast.error(msg, { duration: 2000 });
                 }
     
             }catch(error) {
