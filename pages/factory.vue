@@ -358,7 +358,7 @@
                   v-model="edititem.value"
                   :rules="rules.require"
                   autocomplete="off" clearable filled dense
-                ><span style="width:80px;" slot="prepend">名稱</span></v-text-field>
+                ><span style="width:80px;" slot="prepend">名稱{{ (edititem.type == "edit")?`(ID:${edititem.id})`:'' }}</span></v-text-field>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0">
                 <v-text-field
