@@ -464,7 +464,8 @@ export default {
         { text: "小池數(個)", value: "num", groupable: false },
         { text: "曝氣盤數(個)", value: "aeration_tray_num", groupable: false },
         { text: "狀態", value: "state", groupable: false },
-        { text: "預估放養隻數", value: "estimated_num", groupable: false },
+        //{ text: "預估放養隻數", value: "estimated_num", groupable: false },
+        { text: "預估放養隻數2", value: "current_stock_num", groupable: false },
         { text: "養殖密度", value: "num_per_unit", groupable: false }
         // { text: "放養日期", value: "started_date", groupable: false },
         // {
@@ -662,7 +663,7 @@ export default {
         this.mainpool.items = _.cloneDeep(data);
         console.log(this.mainpool.items);
         this.mainpool.items.forEach(x=>{
-          x.estimated_num = x.estimated_num==null?x.estimated_num:(parseFloat(x.estimated_num).toFixed(2))
+          x.current_stock_num = x.current_stock_num==null?x.current_stock_num:(parseFloat(x.current_stock_num).toFixed(2));
         })
         this.originData = _.cloneDeep(this.mainpool.items);
         // await this.getWaterData();

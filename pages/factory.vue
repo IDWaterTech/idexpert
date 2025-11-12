@@ -486,6 +486,22 @@
                   <span style="width:70px;" slot="prepend">最大水位高度</span>
                   <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
+                </v-card-text>
+              <v-card-text style="display: flex;padding-top: 0;">
+                <v-text-field
+                  autocomplete="off"
+                  v-model.number="edititem_pool.parm.sensor_to_full_level"
+                  :rules="rules.requireNum"
+                  type="number"
+                  clearable
+                  filled
+                  dense
+                  required
+                  class="mr-4"
+                >
+                  <span style="width:70px;background-color: #E1C0FA;" title="與案場本機控制相關參數" slot="prepend">感測到滿水高度</span>
+                  <span style="width:25px;" slot="append">cm</span>
+                </v-text-field>
                 <v-text-field
                   autocomplete="off"
                   v-model.number="edititem_pool.parm.sensor_to_pond_bottom"
@@ -497,7 +513,7 @@
                   required
                   class="mr-4"
                 >
-                  <span style="width:70px;" slot="prepend">感測到水底高度</span>
+                  <span style="width:70px;background-color: #E1C0FA;" title="與案場本機控制相關參數" slot="prepend">感測到水底高度</span>
                   <span style="width:25px;" slot="append">cm</span>
                 </v-text-field>
               </v-card-text>
@@ -641,6 +657,8 @@ import _ from "lodash";
 import md5 from "md5";
 import settinglayout from "@/pages/map/settinglayout.vue";
 import settingcolor from "@/pages/map/settingcolor.vue";
+import { get } from "lodash";
+import { del } from "vue";
 const agent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -699,18 +717,25 @@ export default {
       mainvalid: true,
       itemname: [
         //estimated_num初始投放隻數、num_per_unit放養密度
-        { name: "id", text: "id", visible: true },
+        { name: "id", text: "ID", visible: true },
         { name: "name", text: "名稱", visible: true },
-        { name: "volume", text: "體積(頓)", visible: true },
+        { name: "volume", text: "體積(噸)", visible: true },
         { name: "depth", text: "深度(m)", visible: true },
         { name: "max_water_level", text: "最大水位高度", visible: false },/* 先隱藏，之後有用到再開 */
-        { name: "sensor_to_pond_bottom", text: "感測到水底高度", visible: false },/* 先隱藏，之後有用到再開 */
+        { name: "sensor_to_full_level", text: "感測到滿水高度", visible: true },
+        { name: "sensor_to_pond_bottom", text: "感測到水底高度", visible: true },/* 先隱藏，之後有用到再開 */
         { name: "num", text: "小池數(個)", visible: true },
         { name: "aeration_tray_num", text: "曝氣盤數(個)", visible: true },
+        { name: "pond_state_id", text: "池的狀態的id", visible: false },/* 先隱藏 */
+        { name: "pond_area_id", text: "池的區的id", visible: false },/* 先隱藏 */
         { name: "state", text: "狀態", visible: true },
         { name: "video_url", text: "觀察網影像", visible: true },
         { name: "observation_feed_pct", text: "觀察觀飼料百分比", visible: true },
-        { name: "bottom_area", text: "底面積", visible: true }
+        { name: "bottom_area", text: "底面積", visible: true },
+        { name: "created_user", text: "created_user", visible: false },/* 先隱藏 */
+        { name: "created_time", text: "created_time", visible: false },/* 先隱藏 */
+        { name: "updated_user", text: "更新人員", visible: true },/* 先隱藏 */
+        { name: "updated_time", text: "更新時間", visible: true },/* 先隱藏 */
       ],
       sortbyid:false,
       ipdata:[],
@@ -720,10 +745,11 @@ export default {
       headers:[
         { value: "name", text: "名稱", visible: true, sortable: true },
         { value: "id", text: "id", visible: true, sortable: true },
-        { value: "volume", text: "體積(頓)", visible: true, sortable: false },
+        { value: "volume", text: "體積(噸)", visible: true, sortable: false },
         { value: "depth", text: "深度(m)", visible: true, sortable: false },
         { value: "max_water_level", text: "最大水位高", visible: false, sortable: false },/* 先隱藏，之後有用到再開 */
-        { value: "sensor_to_pond_bottom", text: "感測到水底高", visible: false, sortable: false },/* 先隱藏，之後有用到再開 */
+        { name: "sensor_to_full_level", text: "感測到滿水高度", visible: true },
+        { value: "sensor_to_pond_bottom", text: "感測到水底高度", visible: true, sortable: false },
         { value: "num", text: "小池數(個)", visible: true, sortable: false },
         { value: "aeration_tray_num", text: "曝氣盤數(個)", visible: true, sortable: false },
         { value: "state", text: "狀態", visible: true, sortable: true },
@@ -829,33 +855,15 @@ export default {
         var para = {
           id: this.sel_area
         };
-        let getPondDataList = await this.getPondDataList(para);
-        let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
+        //let getPondDataList = await this.getPondDataList(para);//api:ponds-data
+        let getPondList = await this.getPondList(para);//api:pond
+        let data = typeof (getPondList)=='string'?[]:getPondList;
         pool = data;
         // 2024/12/19先拿掉shape
         pool.forEach(x=>{delete x['shape']});
         this.pooldata = pool;
         this.nowpooldata = _.cloneDeep(pool);
         this.isLoading = true;
-        // await this.$axios
-        //   .get(
-        //     `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
-        //     { params: para },
-        //     { httpsAgent: agent }
-        //   )
-        //   .then(res => {
-        //     console.log("API:" + res.request.responseURL);
-        //     pool = res.data;
-        //   })
-        //   .catch(error => {
-        //     this.$toast.error("error:" + error, { duration: 2000 });
-        //     pool = [];
-        //   })
-        //   .finally(() => {
-        //     /* 不論失敗成功皆會執行 */ 
-        //     this.pooldata = pool;
-        //     this.nowpooldata = _.cloneDeep(pool);
-        //   });
       }else {
         this.getMapData();
       }
@@ -1156,23 +1164,28 @@ export default {
         // this.edititem_pool.parm.pond_state_id = 3;
         //不需要的項目state狀態、estimated_num初始投放隻數、num_per_unit放養密度
         delete this.edititem_pool.parm.state;
-        delete this.edititem_pool.parm.estimated_num;
+        //delete this.edititem_pool.parm.estimated_num;
         delete this.edititem_pool.parm.num_per_unit;
         // delete this.edititem_pool.parm.pond_state_id; //水池狀態不在這修改，但還是要補
         for (const key in this.edititem_pool.parm) {
           var getvalue = this.edititem_pool.parm[key];
+          //console.log(`key:${key}, value:${getvalue}`);
+          
           //排除規則不使用regexp的清單
           const outreg = ["name", "video_url"];
           // console.log(key,typeof(getvalue));
           this.edititem_pool.parm[key] =
             typeof getvalue == "number" ||
-            outreg.filter(x => x == key).length > 0
-              ? getvalue
-              : getvalue.match(/^[\d\.]+/) == null
-              ? null
-              : getvalue.match(/^[\d\.]+/)[0];
+              outreg.filter(x => x == key).length > 0
+              ? getvalue //如果是數字或不使用regexp的欄位，直接帶入
+              : getvalue == null
+                ? null // 如果是null，直接帶入
+                : getvalue.match(/^[\d\.]+/) == null
+                  ? null // 如果沒符合數字格式，帶null
+                  : getvalue.match(/^[\d\.]+/)[0];
         }
       }
+      console.log("edititem_pool.parm:", this.edititem_pool.parm);
       this.dialog.pool = true;
     },
     changePool() {
@@ -1272,6 +1285,7 @@ export default {
       if (this.$refs.poolform.validate()) {
         if (data == "add") {
           //新增池
+          this.$toast.info('新增中，請稍後...', { duration: 2000 });
           this.edititem_pool.parm.created_user = user;
           var parm = this.edititem_pool.parm;
           var res = false;
@@ -1299,6 +1313,7 @@ export default {
           //     this.$toast.error("error:" + error, { duration: 2000 });
           //   });
         } else {
+          this.$toast.info('修改中，請稍後...', { duration: 2000 });
           //編輯池
           this.edititem_pool.parm.updated_user = user;
           const id = this.edititem_pool.parm.id;
@@ -1306,7 +1321,9 @@ export default {
             this.edititem_pool.parm.video_url == null
               ? ""
               : this.edititem_pool.parm.video_url;
-          var parm = this.edititem_pool.parm;
+          var parm = _.cloneDeep(this.edititem_pool.parm);
+          delete parm.created_user;
+          delete parm.created_time;
           var res = false;
           res = await this.patchPondList(parm,id);
           setTimeout(()=>{
