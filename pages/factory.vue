@@ -633,14 +633,15 @@
                 </v-textarea>
               </v-card-text>
               <v-card-text class="d-flex flex-column pt-0">
-                <v-text-field class="text-area" v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
+                <v-text-field disabled class="text-area" v-model="ipadminpwd" color="red" outlined hide-details dense clearable><span slot="prepend-inner" class="text--red">管理密碼<v-icon>mdi-key</v-icon></span></v-text-field>
+                <span style="color:red;">＊禁止ＩＰ設定－已調整為本機NodeRed程式控制</span>
               </v-card-text>
             </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="btn-secondary" @click="dialog.ip = false">取消</v-btn>
-            <v-btn class="btn-primary" @click="updateip">更新</v-btn>
+            <v-btn class="btn-primary" disabled @click="updateip">更新</v-btn><br/>
           </v-card-actions>
         </v-card>
       </v-form>
