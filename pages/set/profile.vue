@@ -102,9 +102,20 @@
                     v-on="on" @click="testMsgCloud">
                   <v-icon v-if="profile.line_user_id!=null">mdi-lightning-bolt-circle</v-icon>
                 </button>
-
               </template>
               <span>發送測試訊息</span>
+            </v-tooltip>
+            </span>
+            <span  class="d-flex align-center" style="font-size: 0.85rem;" v-if="UserData.department?.includes('技術部')">
+              5.查詢公司LINE本月使用總量
+              <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <button class="btn-icon just-icon cursor-pointer" :disabled="profile.line_user_id==null" v-bind="attrs"
+                    v-on="on" @click="checkLineDetail">
+                  <v-icon v-if="profile.line_user_id!=null">mdi-lightning-bolt-circle</v-icon>
+                </button>
+              </template>
+              <span>發送查詢</span>
             </v-tooltip>
             </span>
           </div>
@@ -154,6 +165,27 @@ export default {
     await this._pageCheck();//驗證頁面是否可檢視
   },
   methods: {
+    checkLineDetail: function() {
+      let url = `https://cloud.idwatertech.com:82/api/line/detail`;
+      var parm = {
+        "mykey": "idwater"
+      };
+      console.log('checkLineDetail parm',parm);
+      this.$axios
+        .post(url, parm,{
+            httpsAgent: agent
+          })
+        .then(res => {
+          console.log(res);
+          this.$toast.success(`成功:${JSON.stringify(res.data)}`, { duration: 5000 });
+        })
+        .catch(error => {
+          console.log('error',error)
+        })
+        .finally(() => {
+          //this.getdata();
+        });
+    },
     statchange: async function(data) {
       let accheader = { account: this.$auth.$state.user.email };
       let parm = {
