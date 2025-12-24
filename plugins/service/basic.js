@@ -918,6 +918,7 @@ Vue.mixin({
         },
         // 取得ip清單
         getDeviceSettingList:async function() {
+            return [];//暫時關閉此功能
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`)
                 console.log("ip清單:" + data.request.responseURL);

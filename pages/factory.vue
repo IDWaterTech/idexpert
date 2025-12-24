@@ -77,7 +77,7 @@
                     </template>
                     <span>刪除</span>
                   </v-tooltip>
-                  <v-tooltip bottom>
+                  <v-tooltip bottom v-if="false">
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn class="btn-icon clear" v-bind="attrs" v-on="on" :disabled="!sel_main" @click="showdialog('','ip')" style="color: #fff !important;">IP</v-btn>
                     </template>
@@ -796,7 +796,7 @@ export default {
     await this._pageCheck(); //驗證頁面是否可檢視
     await this.getmain();
     await this.getpoolstat(); //取得池狀態清單
-    await this.getipdata();//取得ip設定
+    //await this.getipdata();//取得ip設定
     await this.getAllUser(); // 取得所有使用者資料，比對是否為技術部
   },
   methods: {
@@ -1355,26 +1355,14 @@ export default {
       console.log(this.edititem_pool.parm);
     },
     getipdata: async function () {
+      return;
       let getDeviceSettingList = await this.getDeviceSettingList();
       let data = typeof (getDeviceSettingList)=='string'?[]:getDeviceSettingList;
       this.ipdata = data;
-      // await this.$axios
-      //   .get(
-      //     `${this.$store.state.mydata.gobal_api.apiUrl}/device-settings/`)
-      //   .then(res => {
-      //     this.ipdata = res.data;
-      //     console.log("API ipdata:" + res.request.responseURL);
-
-      //   })
-      //   .catch(error => {
-      //     this.$toast.error("error:" + error, { duration: 2000 });
-      //     pool = [];
-      //   })
-      //   .finally(() => {
-      //     /* 不論失敗成功皆會執行 */
-      //   });
     },
     updateip: async function(){
+      this.$toast.info('api 停用', { duration: 2000 });
+      return;
       var input_ipadminpwd = md5(this.ipadminpwd);
       //idwadmin56651588
       if(input_ipadminpwd=='0df860f9cad0c35e96feeb0e3cf3619c'){
