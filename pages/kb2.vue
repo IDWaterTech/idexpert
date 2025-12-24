@@ -2366,9 +2366,11 @@
                                             <v-expansion-panel class="my-1">
                                                 <v-expansion-panel-header class="pa-3" style="min-height: 20px;"
                                                     expand-icon="mdi-chevron-down">投餌方案
-                                                    <div class="ml-1" title="計算方式">
-                                                        <v-btn class="btn-icon" style="border-radius: 4px;"
+                                                    <div class="ml-1">
+                                                        <v-btn title="計算方式" class="btn-icon" style="border-radius: 4px;"
                                                             @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
+                                                        <v-btn title="方案參數" class="btn-icon" style="border-radius: 4px;"
+                                                            @click="()=>{panel.panel_row31=!panel.panel_row31;this.$nuxt.$alert('暫未開放');}"><v-icon>mdi-application-variable-outline</v-icon></v-btn>
                                                     </div>
                                                 </v-expansion-panel-header>
 
