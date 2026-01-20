@@ -62,6 +62,14 @@
                       {{ items[0].area_name }}
                     </th>
                   </template>
+                  <!-- meals_per_day餐數 -->
+                   <template v-slot:[`item.meals_per_day`]="{ item }">
+                    <v-autocomplete v-model="item.meals_per_day"
+                    :items="[1, 2, 3, 4, 5, 6,7,8]" dense hide-details
+                      clearable placeholder="選擇餐數">
+                    </v-autocomplete>
+
+                  </template>
                   <!-- initial_val投餵量 -->
                   <template v-slot:[`item.initial_val`]="{ item }">
                     <v-row class="mx-0 my-2">
@@ -190,7 +198,7 @@
                     <v-autocomplete v-model="item.feed_event_settings_id" filled dense hide-details :items="eventSetData" item-text="title" item-value="id" clearable >
                     </v-autocomplete>
                   </template>
-                  <!-- has_observation 放置觀察網 -->
+                  <!-- has_observation 觀察網 -->
                   <template v-slot:[`item.has_observation`]="{ item }">
                     <div class="observe">
                       <v-simple-checkbox v-model="item.has_observation"></v-simple-checkbox>
@@ -505,6 +513,13 @@ export default {
           sortable: false
         },
         {
+          text: "餐數",
+          align: "center",
+          value: "meals_per_day",
+          width: 100,
+          sortable: false
+        },
+        {
           text: "投餵量",
           value: "initial_val",
           align: "center",
@@ -795,6 +810,7 @@ export default {
       }
       var datecount = 0;
       var errormsg = "";
+      // 先檢查有無該時間的資料
       let getFeedRecordRowsList = await this.getFeedRecordRowsList(feedparm);
       let feedRecordRowsData = typeof (getFeedRecordRowsList)=='string'?[]:getFeedRecordRowsList;
       datecount = feedRecordRowsData.success?feedRecordRowsData.data.data_rows:-1;
@@ -825,7 +841,7 @@ export default {
       if(datecount==-1){
         this.dialogLoading = true;
         this.$toast.error(`發生錯誤：${errormsg}`,{duration:2000});
-          return
+          return;
       }
       if(datecount>0 && confirm(`當日已有資料是否覆蓋資料，原資料${datecount}筆將被刪除`)==false) {
         this.dialogLoading = true;
@@ -844,7 +860,8 @@ export default {
         created_user: this.$auth.$state.user.email,
         data: data
       };
-      console.log("parm", parm);
+      console.log("新增的資料：", parm);
+      
       // 有資料再進行新增
       if(data.length>0) {
         var res = false;
@@ -1128,7 +1145,8 @@ export default {
                 (x.area_name = ele.name),
                   (x.pond_name = x.name),
                   (x.pond_id = x.id),
-                  (x.feed_event_settings_id = ""),
+                  (x.meals_per_day = null),//餐數
+                  (x.feed_event_settings_id = ""),//事件
                   (x.has_observation = false),
                   (x.is_executed = false);
               }); //把天府名稱放入area_name,把池名稱放入pond_name,池id放入pond_id
