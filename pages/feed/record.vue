@@ -177,6 +177,9 @@
                     <!-- 減少一欄佔空間所以用area_name2解決 -->
                     <el-table-column prop="area_name2" label="區域" sortable :sort-by="['area_name2']" fixed="left"
                       width="150" align="center">
+                      <template #default="scope">
+                        <span v-if="scope.row.hasOwnProperty('children')==false">{{ scope.row.area_name }}-{{ scope.row }}</span>
+                      </template>
                       <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
                     </el-table-column>
                     <!-- <el-table-column
