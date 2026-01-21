@@ -175,10 +175,10 @@
                     default-expand-all @selection-change="handleSelectionChange" @select-all="selectall"
                     :cell-style="cellStyle" :key="mutitablekey">
                     <!-- 減少一欄佔空間所以用area_name2解決 -->
-                    <el-table-column prop="area_name2" label="區域" sortable :sort-by="['area_name2']" fixed="left"
+                    <el-table-column prop="area_name2" label="區域(餐數)" sortable :sort-by="['area_name2']" fixed="left"
                       width="150" align="center">
                       <template #default="scope">
-                        <span v-if="scope.row.hasOwnProperty('children')==false">{{ scope.row.area_name }}-{{ scope.row }}</span>
+                        <span v-if="scope.row.hasOwnProperty('children')==false">{{ scope.row.area_name }}({{ scope.row.meals_per_day }})</span>
                       </template>
                       <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
                     </el-table-column>
@@ -699,6 +699,8 @@ export default {
           executed_user: this.$auth.$state.user.email // 執行人員
         }));
         var parm = result;
+        // console.log("執行參數", parm);
+        // return;
       // console.log("exesubmit:",result);
       // var parm = {
       //   executed_user: this.$auth.$state.user.email,
