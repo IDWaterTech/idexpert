@@ -860,8 +860,21 @@ export default {
         created_user: this.$auth.$state.user.email,
         data: data
       };
-      console.log("新增的資料：", parm);
-      
+      // console.log("新增的資料：", parm);
+      //檢查餐數是否有設定
+      let null_list = [];
+      data.forEach(item => {
+        if (item.meals_per_day === null) {
+          null_list.push(item.pond_name);
+        }
+      });
+      if(null_list.length>0){
+        this.dialogLoading = true;
+        this.$toast.error(`新增失敗:以下養殖池未設定餐數:${null_list.join(',')}`, {
+          duration: 4000
+        });
+        return;
+      }
       // 有資料再進行新增
       if(data.length>0) {
         var res = false;
@@ -873,32 +886,6 @@ export default {
           }
           this.dialogLoading = true;
         },50)
-        
-        // let url = `${this.$store.state.mydata.gobal_api.apiUrl}/feed-record/`;
-        // await this.$axios
-        //   .post(url, parm)
-        //   .then(res => {
-        //     if (res.data == "新增成功") {
-        //       this.dataclear(); //清除資料
-        //       this.submitdig = false;//關閉dialog
-        //       this.$toast.success(`新增成功`, {
-        //         duration: 2000
-        //       });
-        //     } else {
-        //       this.$toast.error(`新增失敗:${res.data}`, {
-        //         duration: 2000
-        //       });
-        //     }
-        //     console.log("新增API:" + res.request.responseURL);
-        //   })
-        //   .catch(error => {
-        //     this.$toast.error(`新增失敗:${error}`, {
-        //       duration: 2000
-        //     });
-        //   })
-        //   .finally(() => {
-        //     //
-        //   });
       }else {
         this.dialogLoading = true;
         this.$toast.success(`新增失敗:請先設定養殖池的料量`, {
