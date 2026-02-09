@@ -178,7 +178,7 @@
                     <el-table-column prop="area_name2" label="區域(餐數)" sortable :sort-by="['area_name2']" fixed="left"
                       width="150" align="center">
                       <template #default="scope">
-                        <span v-if="scope.row.hasOwnProperty('children')==false">{{ scope.row.area_name }}({{ scope.row.meals_per_day }})</span>
+                        <span v-if="scope.row.hasOwnProperty('children')==false">{{ scope.row.area_name2 }}({{ scope.row.meals_per_day }})</span>
                       </template>
                       <!-- <template slot-scope="scope">{{(scope.row.hasOwnProperty('children'))?scope.row.area_name:''}}</template> -->
                     </el-table-column>
