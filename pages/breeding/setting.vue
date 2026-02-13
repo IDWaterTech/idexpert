@@ -17,14 +17,17 @@
                                         <v-tab v-for="tab in modelitems" :key="'tabs-'+tab.id" :href="`#` + tab.name">
                                             {{ tab.name }}設定
                                         </v-tab>
-                                        <v-tab-item :value="'品種'">
-                                            <species></species>
-                                        </v-tab-item>
                                         <v-tab-item :value="'種苗'">
                                             <seedlings></seedlings>
                                         </v-tab-item>
+                                        <v-tab-item :value="modelitems.filter(x=>x.id==3)[0].name">
+                                            <species></species>
+                                        </v-tab-item>
                                         <v-tab-item :value="'樣板'">
                                             <feedTemp></feedTemp>
+                                        </v-tab-item>
+                                        <v-tab-item :value="modelitems.filter(x=>x.id==4)[0].name">
+                                            <feedTable></feedTable>
                                         </v-tab-item>
                                     </v-tabs>
                                 </div>
@@ -66,10 +69,11 @@
 import seedlings from "@/pages/breeding/seedlings.vue";//種苗
 import feedTemp from "@/pages/breeding/feedTempSetting2.vue";//樣板設定
 import species from "@/pages/breeding/species.vue";//品種設定
+import feedTable from "@/pages/breeding/feedTable.vue";//投餵表設定
 export default {
     layout: "emptynologin2",
     components: {
-        seedlings,feedTemp,species
+        seedlings,feedTemp,species,feedTable
     },
     middleware: "auth",
     head(){
@@ -85,7 +89,7 @@ export default {
             // template_isdisabled:true,
             //下拉
             settingModel:1,
-            modelitems:[{id:1,name:'種苗'},{id:3,name:'品種'},{id:2,name:'樣板'},],
+            modelitems:[{id:1,name:'種苗'},{id:3,name:'品種/疾病/檢驗'},{id:2,name:'樣板'},{id:4,name:'各式投餵表'}],
             
         };
     },
