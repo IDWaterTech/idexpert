@@ -17,7 +17,7 @@
                     <div class="card-title px-4 py-3">
                         <div class="title">
                             <v-card-title>{{nowCata}}清單</v-card-title>
-                            <v-btn @click="getFeedRate">get</v-btn>
+                            <v-btn @click="cataChange">get!!</v-btn>
                         </div>
                         <div class="chevon">
                             <v-btn class="btn-secondary green" @click="openAdd">新增{{nowCata}}</v-btn>
@@ -39,7 +39,8 @@
                                 </v-icon>
                             </template>
                             <template v-slot:[`item.updated_user`]="{ item }">
-                                <div>{{ item.updated_user.split('@')[0] }}</div>
+                                <div>{{ item.updated_user?.toString() }}</div>
+                                <div>{{ item.updated_time }}</div>
                             </template>
                             <template v-slot:[`item.species_chip`]="{ item }">
                                 <div v-if="item.species && item.species.length>0" class="items">
@@ -102,6 +103,17 @@
                 </div>
             </v-card-title>
             <div class="basic">
+                <v-card-text>
+                    <div class="d-flex align-center">
+                        <v-switch v-model="feedRateConfigItemsIsActive" label="是否啟用" filled dense class="my-1 mx-4"></v-switch>
+                    </div>
+                </v-card-text>
+                <v-card-text>
+                    <div class="d-flex align-center">
+                        <v-text-field v-model="feedRateConfigItemsRemark" label="備註" filled dense class="my-1 mx-4"></v-text-field>
+                        <!-- <v-text-field v-model="edititem.name" label="名稱" dense></v-text-field> -->
+                    </div>
+                    </v-card-text> 
                 <v-card-text class="d-flex pt-0">
                        <v-row align="center">
                             <v-col cols="12" md="3" sm="3">
@@ -176,14 +188,6 @@
                             autocompleted="false"
                             class="mr-2"
                         ></v-text-field>
-                        <!-- <v-text-field
-                            v-model="edititem.name_en"
-                            :rules="rules.require"
-                            label="名稱(英)"
-                            placeholder="英文名稱"
-                            autocompleted="false"
-                            class="mr-2"
-                        ></v-text-field> -->
                         <v-text-field
                             v-model="edititem.version_number"
                             :rules="rules.require"
@@ -194,8 +198,16 @@
                         ></v-text-field>
                     </v-card-text>
                     <v-card-text>
+                        <v-text-field
+                            v-model="edititem.remark"
+                            :rules="rules.require"
+                            label="備註"
+                            placeholder="備註"
+                            autocompleted="false"
+                            class="mr-2"
+                        ></v-text-field>
                         <v-switch
-                            dense
+                            dense :disabled="true"
                             v-model="edititem.is_active"
                             label="是否啟用"
                             class="mt-4"
@@ -230,14 +242,14 @@
                             </template>
                         </v-select>
                     </v-card-text>
-                    <v-card-text class="d-flex pt-0">
-                        <v-textarea
+                    <!-- <v-card-text class="d-flex pt-0" v-show="false">
+                        <v-textarea v-show="false"
                             filled 
                             v-model="edititem.remark"
                             placeholder="備註"
                             class="mr-2"
                         ></v-textarea>
-                    </v-card-text>
+                    </v-card-text> -->
                 </div>
                 <v-card-actions>
                     <v-spacer spacer></v-spacer>
@@ -255,17 +267,18 @@
 export default {
     data() {
         return {
-            cataSelect:['體重投餌率'],
+            cataSelect:['體重投餌率','觀察網常數'],
             nowCata: '體重投餌率',
             loading: false,
             headers: [
-                {text: 'ID', value: 'id', sortable: false,width:"10%", showmode: ['體重投餌率']},
-                {text: 'name', value: 'name', sortable: false,width:"10%", showmode: ['體重投餌率']},
-                {text: '版本號', value: 'version_number', sortable: false, showmode: ['體重投餌率']},
-                {text: '是否啟用', value: 'is_active', sortable: false, showmode: ['體重投餌率']},
-                {text: '更新者', value: 'updated_user', sortable: false, showmode: ['體重投餌率']},
-                {text: '更新時間', value: 'updated_time', sortable: false, showmode: ['體重投餌率']},
-                { text: '操作', value: 'udactions', sortable: false,showmode: ['體重投餌率']},
+                {text: 'ID', value: 'id', sortable: false,width:"10%", showmode: ['體重投餌率','觀察網常數']},
+                {text: 'name', value: 'name', sortable: false,width:"10%", showmode: ['體重投餌率','觀察網常數']},
+                {text: '版本號', value: 'version_number', sortable: false, showmode: ['體重投餌率','觀察網常數']},
+                {text: '是否啟用', value: 'is_active', sortable: false, showmode: ['體重投餌率','觀察網常數']},
+                {text: '備註', value: 'remark', sortable: false, showmode: ['體重投餌率','觀察網常數']},
+                {text: '更新資訊', value: 'updated_user', sortable: false, showmode: ['體重投餌率','觀察網常數']},
+                // {text: '更新時間', value: 'updated_time', sortable: false, showmode: ['體重投餌率']},
+                { text: '操作', value: 'udactions', sortable: false,showmode: ['體重投餌率','觀察網常數']},
                 // {id: 'id', name: 'ID', version_number: 'id', is_active: false,updated_user: 'updated_user', updated_time: 'updated_time',showmode: ['體重投餌率']},
                 
             ],
@@ -279,6 +292,8 @@ export default {
                 feeding_rate: null,
             },//體重投餌率細項新增資料
             feedRateConfigItems: [],//體重投餌率設定細項
+            feedRateConfigItemsIsActive:false,//體重投餌率細項是否啟用
+            feedRateConfigItemsRemark:null,//體重投餌率細項備註
             feedRateConfigHeaders: [
                 { text: 'ID', value: 'id', sortable: true , align: 'center' },
                 { text: '起始個體重(g)', value: 'min_weight', sortable: false , align: 'center' },
@@ -289,7 +304,7 @@ export default {
             editDialog: false,
             editDialogMode: 'add',//add新增 edit編輯
             editvalid: false,
-            edititem: {name:'',version_number:'',is_active:true,remark:'',created_user:''},
+            edititem: {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''},
             rules: {
                 require: [v => !!v || "*必要項目"],
                 requireSelect: [v =>  !!v.length || "*必要項目"],
@@ -298,16 +313,38 @@ export default {
         }
     },
     mounted() {
-        this.getFeedRate();
-        // this.cataChange();
+        this.getFeedRate();//預設先取得體重投餌率資料
     },
     methods:{
         cataChange() {
-            if(this.nowCata == '體重投餌率') {
-                this.getFeedRate();
+            console.log(`cataChange > 目前分類:${this.nowCata}`);
+            switch(this.nowCata) {
+                case '體重投餌率':
+                    this.getFeedRate();
+                    break;
+                case '觀察網常數':
+                    this.getObConstants();
+                    break;
             }
         },
-        // 體重投餌率資料
+        // 觀察網常數資料-清單
+        async getObConstants() {
+            this.nowData = [];
+            this.loading = true;
+            await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/observation-constant-versions/`)
+            .then(res => {
+                let data = typeof (res.data)=='string'?[]:res.data;
+                this.nowData = _.cloneDeep(data);
+                console.log("觀察網常數URL:", res.request.responseURL);
+                console.log("觀察網常數資料:", this.nowData);
+            })
+            .catch(err => {
+                this.$toast.error(`取得觀察網常數資料失敗，${err.message}`, { duration: 2000 });
+                alert("取得觀察網常數資料失敗：" + err.message);
+            });
+            this.loading = false;
+        },
+        // 體重投餌率資料-清單
         async getFeedRate() {
             this.nowData = [];
             this.loading = true;
@@ -316,7 +353,7 @@ export default {
                 let data = typeof (res.data)=='string'?[]:res.data;
                 this.nowData = _.cloneDeep(data);
                 console.log("體重投餌率URL:", res.request.responseURL);
-                // console.log("體重投餌率資料:", this.nowData);
+                console.log("體重投餌率資料:", this.nowData);
             })
             .catch(err => {
                 this.$toast.error(`取得體重投餌率資料失敗，${err.message}`, { duration: 2000 });
@@ -325,6 +362,7 @@ export default {
             this.loading = false;
             
         },
+
         //體重投餌率細項資料操作
         async deleteFeedRateConfigItem(item) {
             var newData = _.cloneDeep(this.feedRateConfigItems.filter(x => x.id !== item.id));
@@ -349,6 +387,8 @@ export default {
             // console.log('儲存體重投餌率細項ID:',this.feedRateConfigItemsID);
             // console.log('儲存體重投餌率細項(應該要被改的config):',this.feedRateConfigItems);
             var updateData = {
+                remark: this.feedRateConfigItemsRemark,
+                is_active: this.feedRateConfigItemsIsActive,
                 updated_user: this.$auth.$state.user.email,
                 configs: _.cloneDeep(this.feedRateConfigItems)
             }
@@ -474,6 +514,11 @@ export default {
             // }
             if(this.nowCata=='體重投餌率') {
                 this.editDialogMode = 'add';
+                if(this.$refs.addform) {
+                    // this.$refs.addform.reset();
+                    this.edititem = {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''};
+                }
+                // this.edititem.is_active = true;//強迫新資料預設為啟用
                 this.editDialog = true;
                 
             }
@@ -483,6 +528,8 @@ export default {
                 this.feedRateDialog = true;
                 this.feedRateConfigItemsID = _.cloneDeep(item.id);
                 this.feedRateConfigItems = _.cloneDeep(item.configs);
+                this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
+                this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
                 console.log('體重投餌率item:',this.feedRateConfigItems);
             }else {
                 return;
@@ -508,23 +555,45 @@ export default {
         async deleteItem(item) {
             let url = '';
             var res = false;
-            var title = item.name_ch;
-                if(confirm(`確定刪除 ${title} ?`)){
-                    if(this.nowCata=='品種') {
-                        // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${item.id}/`
-                        res = await this.deleteSpeciesList(item.id);
-                    }else if(this.nowCata=='疾病') {
-                        // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${item.id}/`
-                        res = await this.deleteDiseaseList(item.id);
-                    }else {
-                        // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${item.id}/`
-                        res = await this.deleteMethodList(item.id);
+            // console.log(`刪除項目:${item.name}`);
+            var title = item.name;
+                if(confirm(`確定刪除 ${title} ? ID:${item.id}`)) {
+                    switch(this.nowCata) {
+                        case '體重投餌率':
+                                await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiKbUrl}/weight-feeding-rate-versions/${item.id}/`).then(res => {
+                                    console.log("刪除體重投餌率API:" + res.request.responseURL);
+                                    if(res.data.detail=='Success'){
+                                        res = true;
+                                        this.$toast.success(`刪除成功`, {
+                                            duration: 2000
+                                        });
+                                    }else{
+                                        console.log("刪除體重投餌率API回傳:", res);
+                                        this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
+                                    }
+                                }).catch(error => {
+                                    this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
+                                }).finally(()=>{
+                                    this.cataChange();
+                                });
+                            break;
+                        
                     }
-                    setTimeout(()=>{
-                        if(res) {
-                            this.cataChange();
-                        }
-                    },50)
+                    // if(this.nowCata=='品種') {
+                    //     // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${item.id}/`
+                    //     res = await this.deleteSpeciesList(item.id);
+                    // }else if(this.nowCata=='疾病') {
+                    //     // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${item.id}/`
+                    //     res = await this.deleteDiseaseList(item.id);
+                    // }else {
+                    //     // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${item.id}/`
+                    //     res = await this.deleteMethodList(item.id);
+                    // }
+                    // setTimeout(()=>{
+                    //     if(res) {
+                    //         this.cataChange();
+                    //     }
+                    // },50)
                     
                 }
             
@@ -599,11 +668,10 @@ export default {
             let parm = _.cloneDeep(this.edititem);
             parm.created_user = this.$auth.$state.user.email;
             console.log("新增參數:", parm);
-            return;
             switch(this.nowCata) {
                 case '體重投餌率':
                         await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/weight-feeding-rate-versions/`, parm).then(res => {
-                            console.log('新增體重投餌率API回傳:', res.data);
+                            console.log("新增體重投餌率API:" + res.request.responseURL);
                             if(res.data.detail=='Success'){
                                 res = true;
                                 this.$toast.success(`新增成功`, {
@@ -612,7 +680,6 @@ export default {
                             }else{
                                 this.$toast.error(`新增失敗:${res.data.messages.join()}`, { duration: 2000 });
                             }
-                            console.log("新增體重投餌率API:" + res.request.responseURL);
                         }).catch(error => {
                             this.$toast.error(`新增失敗:${error}`, { duration: 2000 });
                         });
@@ -622,23 +689,6 @@ export default {
             this.editDialog = false;
             this.cataChange();
             
-            // await this.$axios.post(url, parm)
-            //     .then(res => {
-            //         if(res.data=='新增成功'){
-            //             this.editDialog = false;
-            //             this.cataChange();
-            //             this.$toast.success(`新增成功`, {
-            //                 duration: 2000
-            //             });
-            //         }else{
-            //             this.$toast.error(`新增失敗:${res.data}`, { duration: 2000 });
-            //         }
-            //         console.log("新增API:" + res.request.responseURL);
-            //     }).catch(error => {
-            //         this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-            //     })
-            //     .finally(() => {
-            //     });
         }
     }
 }
