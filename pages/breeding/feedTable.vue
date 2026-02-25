@@ -16,8 +16,8 @@
                 <v-card class="result-card">
                     <div class="card-title px-4 py-3">
                         <div class="title">
-                            <v-card-title>{{nowCata}}清單</v-card-title>
-                            <v-btn @click="cataChange">get!!</v-btn>
+                            <v-card-title @click="cataChange">{{nowCata}}-清單</v-card-title>
+                            <!-- <v-btn @click="cataChange">get!!</v-btn> -->
                         </div>
                         <div class="chevon">
                             <v-btn class="btn-secondary green" @click="openAdd">新增{{nowCata}}</v-btn>
