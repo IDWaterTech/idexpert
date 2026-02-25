@@ -87,7 +87,7 @@
             </div>
         </div>
     </v-row>
-    <!-- 新增/編輯 feedRateDialog 體重投餌率 明細 -->
+    <!-- 新增/編輯 feedRateDialog 體重投餌率/觀察網常數 明細 -->
      <v-dialog v-model="feedRateDialog" max-width="500px">
         <v-card class="custom-dialog">
             <v-card-title class="add-title">
@@ -123,13 +123,13 @@
                                 <v-text-field v-model="feedRateConfigADD.max_weight" label="最終個體重(g)" dense></v-text-field>
                             </v-col>
                             <v-col cols="12" md="3" sm="3">
-                                <v-text-field v-model="feedRateConfigADD.feeding_rate" label="數值/比率" dense></v-text-field>
+                                <v-text-field v-model="feedRateConfigADD.value" label="數值/比率" dense></v-text-field>
                             </v-col>
                             <v-col cols="12" md="3" sm="3" align="center">
                                 <v-icon color="primary" @click="feedRateConfigADD = {
                                     min_weight: null,
                                     max_weight: null,
-                                    feeding_rate: null
+                                    value: null
                                 }">mdi-broom</v-icon>
                                 <v-icon color="success" @click="feedRateConfigItemsAdd">mdi-plus-circle</v-icon>
                             </v-col>
@@ -289,7 +289,7 @@ export default {
             feedRateConfigADD: {
                 min_weight: null,
                 max_weight: null,
-                feeding_rate: null,
+                value: null,
             },//體重投餌率細項新增資料
             feedRateConfigItems: [],//體重投餌率設定細項
             feedRateConfigItemsIsActive:false,//體重投餌率細項是否啟用
@@ -298,7 +298,7 @@ export default {
                 { text: 'ID', value: 'id', sortable: true , align: 'center' },
                 { text: '起始個體重(g)', value: 'min_weight', sortable: false , align: 'center' },
                 { text: '最終個體重(g)', value: 'max_weight', sortable: false , align: 'center' },
-                { text: '數值/比率', value: 'feeding_rate', sortable: false , align: 'center' },
+                { text: '數值/比率', value: 'value', sortable: false , align: 'center' },
                 { text: '操作', value: 'actions', sortable: false },
             ],
             editDialog: false,
@@ -373,51 +373,56 @@ export default {
             this.feedRateConfigItems.push({
                 min_weight: this.feedRateConfigADD.min_weight,
                 max_weight: this.feedRateConfigADD.max_weight,
-                feeding_rate: this.feedRateConfigADD.feeding_rate,
+                value: this.feedRateConfigADD.value,
             });
                 //清空新增欄位
                 this.feedRateConfigADD = {
                     min_weight: null,
                     max_weight: null,
-                    feeding_rate: null,
+                    value: null,
                 };
         },
         async saveDetail(item) {
             //儲存體重投餌率細項
             // console.log('儲存體重投餌率細項ID:',this.feedRateConfigItemsID);
             // console.log('儲存體重投餌率細項(應該要被改的config):',this.feedRateConfigItems);
+            if (confirm(`確定儲存 ${this.nowCata} id: ${this.feedRateConfigItemsID} 細項: ${this.feedRateConfigItems.length} 筆 ?`) == false) {
+                return;
+            }
             var updateData = {
                 remark: this.feedRateConfigItemsRemark,
                 is_active: this.feedRateConfigItemsIsActive,
                 updated_user: this.$auth.$state.user.email,
                 configs: _.cloneDeep(this.feedRateConfigItems)
             }
-            // console.log('儲存體重投餌率細項(updateData):',updateData);
-            await this.$axios.patch(`${this.$store.state.mydata.gobal_api.apiKbUrl}/weight-feeding-rate-versions/${this.feedRateConfigItemsID}/`, updateData).then(res => {
-                console.log('修改體重投餌率細項API回傳:', res.data);
-                if(res.data.detail=='Success'){
+            console.log(`儲存-${this.nowCata}細項(updateData):`, updateData);
+            // return;
+            var url = "";
+            switch (this.nowCata) {
+                case '體重投餌率':
+                    url = `weight-feeding-rate-versions`;
+                    break;
+                case '觀察網常數':
+                    url = `observation-constant-versions`;
+                    break;
+                default:
+                    url = `weight-feeding-rate-versions`;
+                    break;
+            }
+            await this.$axios.patch(`${this.$store.state.mydata.gobal_api.apiKbUrl}/${url}/${this.feedRateConfigItemsID}/`, updateData).then(res => {
+                console.log(`修改-${this.nowCata}細項API回傳:`, res.data);
+                if (res.data.detail == 'Success') {
                     this.$toast.success(`修改成功`, {
                         duration: 2000
                     });
-                    this.getFeedRate();//儲存成功後重新取得體重投餌率資料
-                }else{
+                    this.cataChange();//重新整理頁面
+                } else {
                     this.$toast.error(`修改失敗:${res.data.messages.join()}`, { duration: 2000 });
                 }
-                console.log("修改體重投餌率細項API:" + res.request.responseURL);
+                console.log(`修改-${this.nowCata}細項API:${res.request.responseURL}`);
             }).catch(error => {
                 this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
             });
-
-
-
-
-
-
-
-
-
-
-            
             this.feedRateDialog = false;
         },
         // 品種資料
@@ -442,26 +447,6 @@ export default {
                 let parm = {
                     species_id: n.id,
                 };
-                // await this.$axios
-                // .get(apiURL, { params: parm })
-                // .then(res => {
-                //     res.data.forEach(d=>{
-                //         n.disease.push(d);
-                        
-                //     })
-                //     nownum++;
-                //     if(nownum == this.nowData.length) {
-                //         if(this.nowCata == '疾病') {
-                //             this.diseaseData();
-                //         }
-                //     }
-                    
-                //     console.log('疾病檢驗',res.data,nownum)
-                //     console.log("檢驗疾病清單:", res.request.responseURL)
-                // })
-                // .catch(err => {
-                //     alert("檢驗疾病失敗：" + err.message);
-                // });
                 let getDiseaseList = await this.getDiseaseList(parm);
                 let data = typeof (getDiseaseList)=='string'?[]:getDiseaseList;
                 data.forEach(d=>{
@@ -507,34 +492,45 @@ export default {
 
         },
         openAdd() {
-            // this.editDialog = true;
-            // this.edititem = {};
-            // if(this.nowCata=='疾病') {
-            //     this.edititem.species_id = [];
-            // }
-            if(this.nowCata=='體重投餌率') {
-                this.editDialogMode = 'add';
-                if(this.$refs.addform) {
-                    // this.$refs.addform.reset();
-                    this.edititem = {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''};
-                }
-                // this.edititem.is_active = true;//強迫新資料預設為啟用
-                this.editDialog = true;
-                
+            switch(this.nowCata){
+                    case '體重投餌率':
+                        this.editDialogMode = 'add';
+                        if(this.$refs.addform) {
+                            // this.$refs.addform.reset();
+                            this.edititem = {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''};
+                        }
+                        // this.edititem.is_active = true;//強迫新資料預設為啟用
+                        this.editDialog = true;
+                        break;
+                    case '觀察網常數':
+                        this.editDialogMode = 'add';
+                        if(this.$refs.addform) {
+                            // this.$refs.addform.reset();
+                            this.edititem = {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''};
+                        }
+                        // this.edititem.is_active = true;//強迫新資料預設為啟用
+                        this.editDialog = true;
+                        break;
             }
         },
         openEdit(item) {
-            if(this.nowCata=='體重投餌率') {
-                this.feedRateDialog = true;
-                this.feedRateConfigItemsID = _.cloneDeep(item.id);
-                this.feedRateConfigItems = _.cloneDeep(item.configs);
-                this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
-                this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
-                console.log('體重投餌率item:',this.feedRateConfigItems);
-            }else {
-                return;
+            switch(this.nowCata) {
+                case '體重投餌率':
+                    this.feedRateDialog = true;
+                    this.feedRateConfigItemsID = _.cloneDeep(item.id);
+                    this.feedRateConfigItems = _.cloneDeep(item.configs);
+                    this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
+                    this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
+                    break;
+                case '觀察網常數':
+                    this.feedRateDialog = true;
+                    this.feedRateConfigItemsID = _.cloneDeep(item.id);
+                    this.feedRateConfigItems = _.cloneDeep(item.configs);
+                    this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
+                    this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
+                    break;
             }
-            
+            console.log(`'${this.nowCata} item:'`, this.feedRateConfigItems);
         },
         select(evt,bool) {
             console.log(evt)
@@ -549,68 +545,47 @@ export default {
             if(this.editDialogMode=='add') {
                 this.added();
             }else {
-                this.edit();
+                // this.edit();
+                console.log('這裡沒有任何動作，請通知技術人員');
+                alert('這裡沒有任何動作，請通知技術人員');
             }
         },
         async deleteItem(item) {
-            let url = '';
             var res = false;
-            // console.log(`刪除項目:${item.name}`);
             var title = item.name;
-                if(confirm(`確定刪除 ${title} ? ID:${item.id}`)) {
-                    switch(this.nowCata) {
-                        case '體重投餌率':
-                                await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiKbUrl}/weight-feeding-rate-versions/${item.id}/`).then(res => {
-                                    console.log("刪除體重投餌率API:" + res.request.responseURL);
-                                    if(res.data.detail=='Success'){
-                                        res = true;
-                                        this.$toast.success(`刪除成功`, {
-                                            duration: 2000
-                                        });
-                                    }else{
-                                        console.log("刪除體重投餌率API回傳:", res);
-                                        this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
-                                    }
-                                }).catch(error => {
-                                    this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
-                                }).finally(()=>{
-                                    this.cataChange();
-                                });
-                            break;
-                        
-                    }
-                    // if(this.nowCata=='品種') {
-                    //     // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/species/${item.id}/`
-                    //     res = await this.deleteSpeciesList(item.id);
-                    // }else if(this.nowCata=='疾病') {
-                    //     // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease/${item.id}/`
-                    //     res = await this.deleteDiseaseList(item.id);
-                    // }else {
-                    //     // url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/disease-testing-method/${item.id}/`
-                    //     res = await this.deleteMethodList(item.id);
-                    // }
-                    // setTimeout(()=>{
-                    //     if(res) {
-                    //         this.cataChange();
-                    //     }
-                    // },50)
-                    
+            if (confirm(`確定刪除 ${this.nowCata} name: ${title} , ID:${item.id} ?`)) {
+                let url = "";
+                switch (this.nowCata) {
+                    case '體重投餌率':
+                        url = 'weight-feeding-rate-versions';
+                        break;
+                    case '觀察網常數':
+                        url = 'observation-constant-versions';
+                        break;
+                    default:
+                        url = 'weight-feeding-rate-versions';
+                        break;
+
                 }
-            
-            // await this.$axios.delete(url)
-            //     .then((res)=>{
-            //         if(res.data=='刪除成功'){
-            //             this.cataChange();
-            //             this.$toast.success(`刪除成功`, { duration: 2000 });
-            //         }else{
-            //             this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
-            //         }
-                    
-            //         console.log("刪除:", res.request.responseURL);
-            //     })
-            //     .catch((err)=>{
-            //         this.$toast.error(`刪除失敗，${res.data}`, { duration: 2000 });
-            //     })
+                await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiKbUrl}/${url}/${item.id}/`).then(res => {
+                    console.log(`刪除-${this.nowCata}API:` + res.request.responseURL);
+                    if (res.data.detail == 'Success') {
+                        res = true;
+                        this.$toast.success(`刪除成功`, {
+                            duration: 2000
+                        });
+                    } else {
+                        // console.log(`刪除-${this.nowCata}API回傳:`, res);
+                        this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
+                    }
+                }).catch(error => {
+                    this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
+                }).finally(() => {
+                    this.cataChange();
+                });
+
+            }
+
         },
         async edit() {
             // let url = '';
@@ -640,25 +615,6 @@ export default {
                     this.cataChange();//取得清單
                 }
             },50)
-            // await this.$axios.patch(url, parm)
-            //     .then(res => {
-            //         if(res.data=='修改成功'){
-            //             this.editDialog = false;
-            //             this.cataChange();//取得清單
-            //             this.$toast.success(`修改成功`, {
-            //                 duration: 2000
-            //             });
-            //         }else{
-            //             this.$toast.error(`修改失敗:${res.data}`, { duration: 2000 });
-            //         }
-            //         console.log("修改API:" + res.request.responseURL);
-            //     })
-            //     .catch(error => {
-            //         this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
-            //     })
-            //     .finally(() => {
-            //         //this.getdata();
-            //     });
         },
         async added() {
             var res = false;
@@ -668,27 +624,35 @@ export default {
             let parm = _.cloneDeep(this.edititem);
             parm.created_user = this.$auth.$state.user.email;
             console.log("新增參數:", parm);
-            switch(this.nowCata) {
+            var url = "";
+            switch (this.nowCata) {
                 case '體重投餌率':
-                        await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/weight-feeding-rate-versions/`, parm).then(res => {
-                            console.log("新增體重投餌率API:" + res.request.responseURL);
-                            if(res.data.detail=='Success'){
-                                res = true;
-                                this.$toast.success(`新增成功`, {
-                                    duration: 2000
-                                });
-                            }else{
-                                this.$toast.error(`新增失敗:${res.data.messages.join()}`, { duration: 2000 });
-                            }
-                        }).catch(error => {
-                            this.$toast.error(`新增失敗:${error}`, { duration: 2000 });
-                        });
+                    url = `weight-feeding-rate-versions`;
                     break;
-                
+                case '觀察網常數':
+                    url = `observation-constant-versions`;
+                    break;
+                default:
+                    url = `weight-feeding-rate-versions`;
+                    break;
             }
-            this.editDialog = false;
-            this.cataChange();
-            
+            await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/${url}/`, parm).then(res => {
+                console.log(`新增-${this.nowCata}API:` + res.request.responseURL);
+                if (res.data.detail == 'Success') {
+                    res = true;
+                    this.$toast.success(`新增 ${this.nowCata} 成功`, {
+                        duration: 2000
+                    });
+                    this.editDialog = false;
+                    this.cataChange();
+                } else {
+                    this.$toast.error(`新增失敗:${res.data.messages.join()}`, { duration: 2000 });
+                }
+            }).catch(error => {
+                this.$toast.error(`新增失敗:${error}`, { duration: 2000 });
+            });
+
+
         }
     }
 }
