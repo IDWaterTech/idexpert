@@ -88,7 +88,7 @@
         </div>
     </v-row>
     <!-- 新增/編輯 feedRateDialog 體重投餌率/觀察網常數 明細 -->
-     <v-dialog v-model="feedRateDialog" max-width="500px">
+     <v-dialog v-model="feedRateDialog" max-width="500px" max-height="90vh">
         <v-card class="custom-dialog">
             <v-card-title class="add-title">
                 <div class="d-inline-block">
@@ -365,7 +365,8 @@ export default {
 
         //體重投餌率細項資料操作
         async deleteFeedRateConfigItem(item) {
-            var newData = _.cloneDeep(this.feedRateConfigItems.filter(x => x.id !== item.id));
+            var newData = _.cloneDeep(this.feedRateConfigItems.filter(x => x !== item));
+            // var newData = _.cloneDeep(this.feedRateConfigItems.filter(x => x.id !== item.id));
             this.feedRateConfigItems = newData;
         },
         //將資料加入投餌率細項
@@ -416,14 +417,16 @@ export default {
                         duration: 2000
                     });
                     this.cataChange();//重新整理頁面
+                    this.feedRateDialog = false;
                 } else {
                     this.$toast.error(`修改失敗:${res.data.messages.join()}`, { duration: 2000 });
+                    console.error(`修改失敗:${res.data.messages.join()}`, res);
                 }
                 console.log(`修改-${this.nowCata}細項API:${res.request.responseURL}`);
             }).catch(error => {
                 this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
             });
-            this.feedRateDialog = false;
+            
         },
         // 品種資料
         async getSpeciesData() {
