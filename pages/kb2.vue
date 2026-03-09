@@ -2370,7 +2370,7 @@
                                                         <v-btn title="計算方式" class="btn-icon" style="border-radius: 4px;"
                                                             @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
                                                         <v-btn title="方案參數" class="btn-icon" style="border-radius: 4px;"
-                                                            @click="()=>{panel.panel_row31=!panel.panel_row31;this.$nuxt.$alert('暫未開放');}"><v-icon>mdi-application-variable-outline</v-icon></v-btn>
+                                                            @click="()=>{planDialog = !planDialog;}"><v-icon>mdi-application-variable-outline</v-icon></v-btn>
                                                     </div>
                                                 </v-expansion-panel-header>
 
@@ -3429,6 +3429,68 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+        <!-- 方案參數 -->
+         <v-dialog v-model="planDialog" scrollable max-width="75%">
+            <v-card  class="custom-dialog">
+                <v-card-title class="add-title">
+                    <div class="d-inline-block">
+                        <span @click="getPlanList">方案參數</span>
+                    </div>
+                    <div class="add">
+                        <v-btn class="btn-secondary close"
+                                title="取消" 
+                                @click="planDialog = false;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card-title>
+                <v-card-text style="height: 600px;">
+                    <v-data-table :headers="planHeaders"
+                        hide-default-footer
+                        disable-pagination
+                        :loading="planLoading"
+                        style="overflow-y: scroll;height: 57vh;"
+                        class="data-table bg-transparent"
+                        :items="planList">
+                        <template v-slot:[`item.is_active`]="{ item }">
+                            <v-icon :color="item.is_active?'#4CAF50':'#BDBDBD'">
+                                {{ item.is_active?'mdi-check-circle':'mdi-close-circle' }}
+                            </v-icon>
+                        </template>
+                        <template v-slot:[`item.updated_user`]="{ item }">
+                            <div>{{ item.updated_user?.toString() }}</div>
+                            <div>{{ item.updated_time }}</div>
+                        </template>
+                        <template v-slot:[`item.udactions`]="{ item }">
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn  class="btn-icon"
+                                            title="編輯" 
+                                            v-bind="attrs" v-on="on"
+                                            style="pointer-events: inherit;"
+                                            @click="openEdit(item)">
+                                        <v-icon>mdi-pencil</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>編輯</span>
+                            </v-tooltip>
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn  class="btn-icon delete"
+                                            title="刪除" 
+                                            v-bind="attrs" v-on="on"
+                                            style="pointer-events: inherit;"
+                                            @click="deleteItem(item)">
+                                        <v-icon>mdi-trash-can</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>刪除</span>
+                            </v-tooltip>
+                        </template>
+                    </v-data-table>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -3547,7 +3609,17 @@ export default {
                 { text: '增料百分比(%)', value: 'NextFeedIncrementPct', sortable: true,},
                 { text: '建議料號', value: 'FeedSize', sortable: false,},
             ],
-            feedDialog: false,
+            feedDialog: false,//投餌公式dialog
+            planDialog: false,//方案參數dialog
+            planHeaders:[
+                { text: '方案', value: 'name', sortable: true,},
+                {text: '是否啟用', value: 'is_active', sortable: false,},
+                { text: '備註', value: 'remark', sortable: false,},
+                {text: '更新資訊', value: 'updated_user', sortable: false},
+                { text: '操作', value: 'udactions', sortable: false},
+            ],
+            planList: [],
+            planLoading: false,
             isShowResult: false,
             isSearchDate: false,
             oldSearchDate:[],
@@ -4747,6 +4819,23 @@ export default {
                 }
             }
         },
+        async getPlanList(){
+            this.planList = [];
+            this.planLoading = true;
+            let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/breeding-configs/`;
+            await this.$axios.get(url).then(res => {
+                if (res.status == 200 && res.statusText =="OK") {
+                    this.planList = res.data;
+                } else {
+                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                }
+                console.log("取得方案清單API:" + res.request.responseURL);
+            }).catch(error => {
+                this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
+            }).finally(() => {
+                this.planLoading = false;
+            });
+        }
     },
     async created() {
         for(let i=0;i<this.bacteriaAll.length;i++) {
