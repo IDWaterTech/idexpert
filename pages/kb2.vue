@@ -3429,7 +3429,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-        <!-- 方案參數 -->
+        <!-- 方案參數Dialog -->
          <v-dialog v-model="planDialog" scrollable max-width="75%">
             <v-card  class="custom-dialog">
                 <v-card-title class="add-title">
@@ -3437,6 +3437,7 @@
                         <span @click="getPlanList">方案參數</span>
                     </div>
                     <div class="add">
+                        <v-btn  class="btn-secondary green" @click="openPlan('add');">新增方案參數</v-btn>
                         <v-btn class="btn-secondary close"
                                 title="取消" 
                                 @click="planDialog = false;">
@@ -3468,7 +3469,7 @@
                                             title="編輯" 
                                             v-bind="attrs" v-on="on"
                                             style="pointer-events: inherit;"
-                                            @click="openEdit(item)">
+                                            @click="openPlan('edit',item)">
                                         <v-icon>mdi-pencil</v-icon>
                                     </v-btn>
                                 </template>
@@ -3480,7 +3481,7 @@
                                             title="刪除" 
                                             v-bind="attrs" v-on="on"
                                             style="pointer-events: inherit;"
-                                            @click="deleteItem(item)">
+                                            @click="delPlan(item)">
                                         <v-icon>mdi-trash-can</v-icon>
                                     </v-btn>
                                 </template>
@@ -3491,6 +3492,47 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+        <!-- 方案參數-Dialog內的新增/編輯Dialog -->
+         <v-dialog v-model="planFormDialog" max-width="500px" max-height="90vh">
+            <v-card class="custom-dialog">
+                <v-card-title class="add-title">
+                    <div class="d-inline-block">
+                        <span>{{ planFormMode=='add'?'新增':'編輯' }}-方案</span>
+                    </div>
+                    <div class="add">
+                        <v-btn class="btn-secondary close" title="取消" @click="planFormDialog = false;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card-title>
+                <v-card-text>
+                    <v-text-field v-model="planFormData.name" :rules="rules.require" label="名稱" dense placeholder="名稱"
+                        autocompleted="false" class="mr-2"></v-text-field>
+                    
+                </v-card-text>
+                <v-card-text>
+                        <v-text-field
+                            v-model="planFormData.remark"
+                            :rules="rules.require"
+                            label="備註"
+                            placeholder="備註"
+                            autocompleted="false"
+                            class="mr-2"
+                        ></v-text-field>
+                        <v-switch
+                            dense :disabled="planFormMode==='add'"
+                            v-model="planFormData.is_active"
+                            label="是否啟用"
+                            class="mt-4"
+                        ></v-switch>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn class="btn-secondary" @click="planFormDialog = false;">取消</v-btn>
+                        <v-btn class="btn-primary" @click="submitPlanForm(planFormMode)">{{ planFormMode=='add'?'新增':'確認' }}</v-btn>
+                    </v-card-actions>
+            </v-card>
+         </v-dialog>
     </div>
 </template>
 
@@ -3620,6 +3662,9 @@ export default {
             ],
             planList: [],
             planLoading: false,
+            planFormDialog: false,//方案參數-新增編輯dialog
+            planFormMode: 'add',//方案參數-新增編輯dialog的模式
+            planFormData: {name:'',config_values:{},is_active:true,remark:'',created_user:''},//方案參數-新增編輯dialog的資料
             isShowResult: false,
             isSearchDate: false,
             oldSearchDate:[],
@@ -4611,7 +4656,7 @@ export default {
                     
                     // this.$toast.success(`取得基本資料成功`, { duration: 2000 });
                 } else {
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                    this.$toast.error(`發生錯誤:${res.data.messages.toString()}`, { duration: 2000 });
                 }
                 console.log("取得基本資料API:" + res.request.responseURL);
             }).catch(error => {
@@ -4819,21 +4864,88 @@ export default {
                 }
             }
         },
+        //取得-方案參數清單
         async getPlanList(){
             this.planList = [];
             this.planLoading = true;
             let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/breeding-configs/`;
             await this.$axios.get(url).then(res => {
-                if (res.status == 200 && res.statusText =="OK") {
+                if (res.status == 200) {
                     this.planList = res.data;
                 } else {
-                    this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
+                    this.$toast.error(`發生錯誤:${res.data.messages.toString()}`, { duration: 2000 });
                 }
                 console.log("取得方案清單API:" + res.request.responseURL);
             }).catch(error => {
                 this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
             }).finally(() => {
                 this.planLoading = false;
+            });
+        },
+        //開啟-方案參數Dialog-增刪視窗
+        async openPlan(mode,item){
+            this.planFormMode=mode;
+            switch (mode) {
+                case 'add':
+                    this.planFormData = { name: '', config_values: {}, is_active: true, remark: '', created_user: '' };//重置表單
+                    break;
+                case 'edit':
+                    var myplan = _.cloneDeep(item);
+                    this.planFormData = { name: myplan.name, config_values: myplan.config_values, is_active: myplan.is_active, remark: myplan.remark};
+                    break;
+                default:
+                    break;
+            }
+            
+            this.planFormDialog = true;
+        },
+        //送出-方案參數Dialog-增刪視窗
+        submitPlanForm(mode){
+            let url = `${this.$store.state.mydata.gobal_api.apiKbUrl}/breeding-configs/`;
+            switch (mode) {
+                case 'add':
+                    this.planFormData.created_user = this.$auth.$state.user.email;
+                    this.$axios.post(url,this.planFormData).then(res=>{
+                        console.log('res',res);
+                        if(res.data.detail=="Success"){
+                            this.$toast.success("新增方案-成功", { duration: 2000 });
+                            this.planFormData = { name: '', config_values: {}, is_active: true, remark: '', created_user: '' };//送出後重置表單
+                            this.planFormDialog = false;
+                            this.getPlanList();//重新取得方案清單
+                        }else{
+                            this.$toast.error(`新增方案-失敗:${res.data.messages.toString()}`, { duration: 2000 });
+                        }
+                        console.log("新增方案-API:" + res.request.responseURL);
+                        
+                    }).catch(error=>{
+                        this.$toast.error(`新增方案-error:${error}`, { duration: 2000 });
+                    })
+                    break;
+                case 'edit':
+                    this.planFormData.updated_user = this.$auth.$state.user.email;
+                    console.log('edit',this.planFormData);
+                    break;
+                default:
+                    break;
+            }
+            
+        },
+        async delPlan(item) {
+            console.log('delete', item);
+            let url = `${this.$store.state.mydata.gobal_api.apiKbUrl}/breeding-configs/${item.id}/`;
+            if (confirm(`是否刪除該方案？ ${item.name}`)==false) {
+                return;
+            }
+            await this.$axios.delete(url).then(res => {
+                if (res.data.detail == "Success") {
+                    this.$toast.success("刪除方案-成功", { duration: 2000 });
+                    this.getPlanList();//重新取得方案清單
+                } else {
+                    this.$toast.error(`刪除方案-失敗:${res.data.messages.toString()}`, { duration: 2000 });
+                }
+                console.log("刪除方案-API:" + res.request.responseURL);
+            }).catch(error => {
+                this.$toast.error(`刪除方案-error:${error}`, { duration: 2000 });
             });
         }
     },
