@@ -3505,10 +3505,9 @@
                         </v-btn>
                     </div>
                 </v-card-title>
-                <v-card-text>
+                <v-card-text v-if="planFormMode=='add'">
                     <v-text-field v-model="planFormData.name" :rules="rules.require" label="名稱" dense placeholder="名稱"
                         autocompleted="false" class="mr-2"></v-text-field>
-                    
                 </v-card-text>
                 <v-card-text>
                         <v-text-field
@@ -3526,13 +3525,78 @@
                             class="mt-4"
                         ></v-switch>
                     </v-card-text>
+                   <v-card-text v-if="planFormMode!='add'">
+                    <v-data-table :headers="planConfigHeaders" hide-default-footer disable-pagination
+                        :items="planConfigItems"
+                        style="overflow-y: scroll;height: 300px;" class="data-table bg-transparent">
+                        <template v-slot:[`item.name_ch`]="{ item }">
+                            <span>{{ item.name_ch }}</span><br/>
+                            <span>{{ item.name_en }}</span><br/>
+                        </template>
+                        <template v-slot:[`item.udactions`]="{ item }">
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn  class="btn-icon"
+                                            title="編輯" 
+                                            v-bind="attrs" v-on="on"
+                                            style="pointer-events: inherit;"
+                                            @click="openPlanConfigDetail(item)">
+                                        <v-icon>mdi-pencil</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>編輯</span>
+                            </v-tooltip>
+                        </template>
+                    </v-data-table>
+                    </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn class="btn-secondary" @click="planFormDialog = false;">取消</v-btn>
-                        <v-btn class="btn-primary" @click="submitPlanForm(planFormMode)">{{ planFormMode=='add'?'新增':'確認' }}</v-btn>
+                        <v-btn class="btn-primary" @click="submitPlanForm(planFormMode)">{{ planFormMode=='add'?'新增':'儲存' }}</v-btn>
                     </v-card-actions>
             </v-card>
          </v-dialog>
+        <v-dialog v-model="planConfigDetailDialog" max-width="500px" max-height="90vh">
+            <v-card class="custom-dialog">
+                <v-card-title class="add-title">
+                    <div class="d-inline-block">
+                        <span>{{this.planConfigDetail.name_ch}}</span>
+                    </div>
+                    <div class="add">
+                        <v-btn class="btn-secondary close" title="取消" @click="planConfigDetailDialog = false;">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </div>
+                </v-card-title>
+                <v-card-text style="max-height: 70vh;overflow-y: auto;">
+                    <div v-if="this.planConfigDetail.type=='int'">   
+                        <el-input-number v-model="planConfigDetail.value" :step="1" :min="0" prop="number" style="width: 100%;" class="my-4" />
+                    </div>
+                    <div v-else-if="this.planConfigDetail.type=='bool'">   
+                        <v-switch v-model="planConfigDetail.value" :label="planConfigDetail.value?'啟用':'未啟用'" class="my-4"></v-switch>
+                    </div>
+                    <div v-else-if="this.planConfigDetail.type=='list'">
+                        list
+                    </div>
+                    <div v-else-if="this.planConfigDetail.type=='select'">   
+                        select
+                        <!-- <v-select v-model="planConfigDetail.value" :items="planConfigDetail.options" item-text="name_ch" item-value="value" label="選項" dense></v-select> -->
+                    </div>
+                    <div v-else>other</div>
+
+                </v-card-text>
+                <v-card-text>
+                    <v-alert border="right" colored-border type="warning" elevation="2">
+                        注意：按下按OK後不會保存參數值，回到「編輯-方案」按下「儲存」才會儲存修改參數值。
+                    </v-alert>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn class="btn-secondary" @click="planConfigDetailDialog = false;">取消</v-btn>
+                    <v-btn class="btn-primary" @click="planConfigDetailOK">OK</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -3660,7 +3724,19 @@ export default {
                 {text: '更新資訊', value: 'updated_user', sortable: false},
                 { text: '操作', value: 'udactions', sortable: false},
             ],
+            planConfigHeaders:[
+                { text: '名稱', value: 'name_ch', sortable: false,},
+                // { text: '名稱(英)', value: 'name_en', sortable: true,},
+                // { text: '型態', value: 'type', sortable: true,},
+                { text: '參數值', value: 'value', sortable: false,},
+                { text: '預設值', value: 'default', sortable: false,},
+                // { text: '排序', value: 'sort', sortable: false,},
+                { text: '操作', value: 'udactions', sortable: false},
+            ],
+            planConfigItems:[],
             planList: [],
+            planConfigDetailDialog: false,//方案參數-新增編輯項目dialog
+            planConfigDetail:{},//方案參數-新增編輯項目的資料
             planLoading: false,
             planFormDialog: false,//方案參數-新增編輯dialog
             planFormMode: 'add',//方案參數-新增編輯dialog的模式
@@ -4892,6 +4968,7 @@ export default {
                 case 'edit':
                     var myplan = _.cloneDeep(item);
                     this.planFormData = { name: myplan.name, config_values: myplan.config_values, is_active: myplan.is_active, remark: myplan.remark};
+                    this.planConfigItems = _.cloneDeep(item.configs);
                     break;
                 default:
                     break;
@@ -4947,6 +5024,18 @@ export default {
             }).catch(error => {
                 this.$toast.error(`刪除方案-error:${error}`, { duration: 2000 });
             });
+        },
+        openPlanConfigDetail(item) {
+            this.planConfigDetail = _.cloneDeep(item);
+            this.planConfigDetailDialog = true;
+            console.log('planConfigDetail',this.planConfigDetail);
+        },
+        planConfigDetailOK(){
+            // console.log('planConfigDetail',this.planConfigDetail);
+            // console.log('planConfigItems',this.planConfigItems);
+            this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].value = this.planConfigDetail.value;
+            this.planConfigDetail = {};
+            this.planConfigDetailDialog = false;
         }
     },
     async created() {
