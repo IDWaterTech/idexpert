@@ -3527,7 +3527,7 @@
                     </v-card-text>
                    <v-card-text v-if="planFormMode!='add'">
                     <v-data-table :headers="planConfigHeaders" hide-default-footer disable-pagination
-                        :items="planConfigItems"
+                        :items="planConfigItems" fixed-header
                         style="overflow-y: scroll;height: 300px;" class="data-table bg-transparent">
                         <template v-slot:[`item.name_ch`]="{ item }">
                             <span>{{ item.name_ch }}</span><br/>
@@ -3576,7 +3576,13 @@
                         <v-switch v-model="planConfigDetail.value" :label="planConfigDetail.value?'啟用':'未啟用'" class="my-4"></v-switch>
                     </div>
                     <div v-else-if="this.planConfigDetail.type=='list'">
-                        list
+                        {{planConfigDetail.value}}
+                        <v-text-field class="my-4" v-model="newConfigListItem" placeholder="新增項目" dense hide-details
+                            append-outer-icon="mdi-plus"
+                            @click:append-outer="() => { if (this.newConfigListItem && this.newConfigListItem.trim() !== '') { this.planConfigDetail.value.push(this.newConfigListItem.trim()); this.newConfigListItem = null; } }"></v-text-field>
+                        <span style="font-size: 1.2em;">清單項目(依序)：</span><v-chip class="ma-2" color="teal" text-color="white" v-for="(item, id) in planConfigDetail.value" :key="'option' + id"
+                            close @click:close="removeChip(item,id)"
+                            :input-value="planConfigDetail.value.includes(item.value)">{{ item }}</v-chip>
                     </div>
                     <div v-else-if="this.planConfigDetail.type=='select'">   
                         select
@@ -3585,7 +3591,7 @@
                     <div v-else>other</div>
 
                 </v-card-text>
-                <v-card-text>
+                <v-card-text class="mt-2">
                     <v-alert border="right" colored-border type="warning" elevation="2">
                         注意：按下按OK後不會保存參數值，回到「編輯-方案」按下「儲存」才會儲存修改參數值。
                     </v-alert>
@@ -3737,6 +3743,7 @@ export default {
             planList: [],
             planConfigDetailDialog: false,//方案參數-新增編輯項目dialog
             planConfigDetail:{},//方案參數-新增編輯項目的資料
+            newConfigListItem:null,
             planLoading: false,
             planFormDialog: false,//方案參數-新增編輯dialog
             planFormMode: 'add',//方案參數-新增編輯dialog的模式
@@ -5036,6 +5043,14 @@ export default {
             this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].value = this.planConfigDetail.value;
             this.planConfigDetail = {};
             this.planConfigDetailDialog = false;
+        },
+
+        //移除編輯-方案參數Dialog-增刪視窗的Chip(LIST型參數)
+        removeChip(item,index){
+            // this.planConfigItems[index].value = null;
+            console.log('remove',item,index);
+            this.planConfigDetail.value.splice(index,1);
+            console.log('remove2',this.planConfigDetail);
         }
     },
     async created() {
