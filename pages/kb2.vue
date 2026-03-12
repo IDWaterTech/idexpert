@@ -3569,12 +3569,15 @@
                     </div>
                 </v-card-title>
                 <v-card-text style="max-height: 70vh;overflow-y: auto;">
+                    <!-- int -->
                     <div v-if="this.planConfigDetail.type=='int'">   
                         <el-input-number v-model="planConfigDetail.value" :step="1" :min="0" prop="number" style="width: 100%;" class="my-4" />
                     </div>
+                    <!-- bool -->
                     <div v-else-if="this.planConfigDetail.type=='bool'">   
                         <v-switch v-model="planConfigDetail.value" :label="planConfigDetail.value?'啟用':'未啟用'" class="my-4"></v-switch>
                     </div>
+                    <!-- list -->
                     <div v-else-if="this.planConfigDetail.type=='list'">
                         {{planConfigDetail.value}}
                         <v-text-field class="my-4" v-model="newConfigListItem" placeholder="新增項目" dense hide-details
@@ -3584,8 +3587,9 @@
                             close @click:close="removeChip(item,id)"
                             :input-value="planConfigDetail.value.includes(item.value)">{{ item }}</v-chip>
                     </div>
+                    <!-- select -->
                     <div v-else-if="this.planConfigDetail.type=='select'">   
-                        select
+                        <v-select class="my-4" :items="[]" label="選項清單" no-data-text="查無資料" solo></v-select>
                         <!-- <v-select v-model="planConfigDetail.value" :items="planConfigDetail.options" item-text="name_ch" item-value="value" label="選項" dense></v-select> -->
                     </div>
                     <div v-else>other</div>
