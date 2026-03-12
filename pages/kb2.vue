@@ -2370,7 +2370,7 @@
                                                         <v-btn title="計算方式" class="btn-icon" style="border-radius: 4px;"
                                                             @click="panel.panel_row31=!panel.panel_row31;feedDialog=true"><v-icon>mdi-application-cog-outline</v-icon></v-btn>
                                                         <v-btn title="方案參數" class="btn-icon" style="border-radius: 4px;"
-                                                            @click="()=>{planDialog = !planDialog;}"><v-icon>mdi-application-variable-outline</v-icon></v-btn>
+                                                            @click="()=>{getPlanList();planDialog = true;}"><v-icon>mdi-application-variable-outline</v-icon></v-btn>
                                                     </div>
                                                 </v-expansion-panel-header>
 
@@ -3588,11 +3588,14 @@
                             :input-value="planConfigDetail.value.includes(item.value)">{{ item }}</v-chip>
                     </div>
                     <!-- select -->
-                    <div v-else-if="this.planConfigDetail.type=='select'">   
-                        <v-select class="my-4" :items="[]" label="選項清單" no-data-text="查無資料" solo></v-select>
+                    <div v-else-if="this.planConfigDetail.type=='select'">
+                       {{ this.planConfigDetail }}
+                        <v-select class="my-4" v-model="planConfigDetail.value"
+                            :items="this.planConfigDetail.options" item-text="name" item-value="id" label="選項清單"
+                            no-data-text="查無資料" solo></v-select>
                         <!-- <v-select v-model="planConfigDetail.value" :items="planConfigDetail.options" item-text="name_ch" item-value="value" label="選項" dense></v-select> -->
                     </div>
-                    <div v-else>other</div>
+                    <div v-else>請聯絡技術人員</div>
 
                 </v-card-text>
                 <v-card-text class="mt-2">
@@ -4978,7 +4981,7 @@ export default {
                     break;
                 case 'edit':
                     var myplan = _.cloneDeep(item);
-                    this.planFormData = { name: myplan.name, config_values: myplan.config_values, is_active: myplan.is_active, remark: myplan.remark};
+                    this.planFormData = { id:myplan.id, name: myplan.name, config_values: myplan.config_values, is_active: myplan.is_active, remark: myplan.remark};
                     this.planConfigItems = _.cloneDeep(item.configs);
                     break;
                 default:
@@ -5010,8 +5013,35 @@ export default {
                     })
                     break;
                 case 'edit':
-                    this.planFormData.updated_user = this.$auth.$state.user.email;
-                    console.log('edit',this.planFormData);
+                    // this.planFormData.updated_user = this.$auth.$state.user.email;
+                    // console.log('edit',this.planFormData);
+                    var parameter = {
+                        name: this.planFormData.name,
+                        config_values: this.planFormData.config_values,
+                        is_active: this.planFormData.is_active,
+                        remark: this.planFormData.remark,
+                        config_values: Object.fromEntries(
+                            this.planConfigItems.map(item => [item.name_en, item.value])
+                        ),
+                        updated_user: this.$auth.$state.user.email
+                    };
+                    console.log('parameter',parameter);
+                    var id = this.planFormData.id;
+                    this.$axios.patch(url+`/${id}/`,parameter).then(res=>{
+                        console.log('res',res);
+                        if(res.data.detail=="Success"){
+                            this.$toast.success("修改方案-成功", { duration: 2000 });
+                            this.planFormData = { name: '', config_values: {}, is_active: true, remark: '', created_user: '' };//送出後重置表單
+                            this.planFormDialog = false;
+                            this.getPlanList();//重新取得方案清單
+                        }else{
+                            this.$toast.error(`修改方案-失敗:${res.data.messages.toString()}`, { duration: 2000 });
+                        }
+                        console.log("修改方案-API:" + res.request.responseURL);
+                        
+                    }).catch(error=>{
+                        this.$toast.error(`修改方案-error:${error}`, { duration: 2000 });
+                    })
                     break;
                 default:
                     break;
