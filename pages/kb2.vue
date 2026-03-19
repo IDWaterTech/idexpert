@@ -660,11 +660,12 @@
                                                                                 <span class="pa-0 ma-0"
                                                                                     :style="{'color':`${FeedParm['LastFeedDatetime']&&FeedParm['LastFeedDatetime']!==''&&FeedParm['LastFeedDatetime']!==null?'#00324E':'rgba(0,0,0,0.5)'}`}"
                                                                                     slot="prepend"
-                                                                                    title="過去四天的資料找過去每天的最後一餐投餵資料">過去四天單餐投餌量：</span>
+                                                                                    title="過去n天的資料找過去每天的最後一餐投餵資料">歷史-單餐投餌量：</span>
                                                                                 <!-- <span class="pa-0 ma-0" slot="prepend">下一餐飼料增加百分比</span> -->
                                                                             </v-col>
                                                                             <v-col cols="12" md="8" sm="8">
-                                                                                <span>{{(FeedRecordData.FeedAmountForFourMeals!=undefined)?Object.values(FeedRecordData.FeedAmountForFourMeals).join(','):''}}</span>
+                                                                                <!-- <span>{{(FeedRecordData.FeedAmountForFourMeals!=undefined)?Object.values(FeedRecordData.FeedAmountForFourMeals).join(','):''}}</span> -->
+                                                                                <v-btn @click="showHistoricalFeeds()">顯示</v-btn>
                                                                             </v-col>
                                                                         </v-row>
                                                                     </v-col>
@@ -3629,6 +3630,7 @@ export default {
         return {
             sugerdlg:false,
             FeedRecordData:{FeedAmountForFourMeals:{}},//過去四天單餐投餌量，從required-data api獲得，請附加在suggestion api
+            HistoricalFeeds:[],//過去四天單餐投餌量，從feeding-record api獲得，顯示在參數設定的提示文字
             UserData:{Username:'',IsSaved:false},//使用者相關資訊
             field:undefined,//選擇的場區
             BaseParm:{InspectedTime:'',InspectedDate:''},//養殖基本參數
@@ -4240,6 +4242,7 @@ export default {
                 this.BreedingParm = input_data.BreedingParm;
                 this.FeedParm = _.cloneDeep(input_data.FeedParm);
                 this.FeedRecordData = _.cloneDeep(input_data.FeedRecordData?input_data.FeedRecordData:{});//用來附加到suggestion api
+                this.HistoricalFeeds = _.cloneDeep(input_data.HistoricalFeeds?input_data.HistoricalFeeds:[]);//用來附加到suggestion api
                 if(input_data.remark) {
                     this.inputRemark = _.cloneDeep(input_data.remark);
                 }else {
@@ -5085,6 +5088,12 @@ export default {
             console.log('remove',item,index);
             this.planConfigDetail.value.splice(index,1);
             console.log('remove2',this.planConfigDetail);
+        },
+        showHistoricalFeeds(){
+            const result = this.HistoricalFeeds
+                .map(item => `時間：${item.FeedDateTime}，投餵量：${item.FeedAmount}，餐數：${item.FeedingCount}`)
+                .join('\n')
+            alert(result);
         }
     },
     async created() {
