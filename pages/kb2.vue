@@ -4540,7 +4540,8 @@ export default {
                 'BacteriaData':this.BacteriaData,
                 'UserData':this.UserData,
                 'remark': _.cloneDeep(this.inputRemark),
-                'FeedRecordData':this.FeedRecordData,//從required-data api獲得，請附加在suggestion api
+                // 'FeedRecordData':this.FeedRecordData,//從required-data api獲得，請附加在suggestion api
+                'HistoricalFeeds':this.HistoricalFeeds,//從required-data api獲得，請附加在suggestion api
             };
             // console.log('bacteriaDataObject',this.bacteriaDataObject)
             allParm.BacteriaData['DiseaseInfection'] = this.bacteriaDataObject;
