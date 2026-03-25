@@ -649,7 +649,7 @@
                                                                                     type="string" chips clearable
                                                                                     :items="optData.FeedingPlan" filled
                                                                                     dense hide-details class="mt-0"
-                                                                                    item-value="name_en"
+                                                                                    item-value="name_ch"
                                                                                     item-text="name_ch"></v-select>
                                                                             </v-col>
                                                                         </v-row>
@@ -3525,6 +3525,10 @@
                             label="是否啟用"
                             class="mt-4"
                         ></v-switch>
+                        
+                        <v-alert dense outlined type="warning" elevation="2">
+                        若有異動"啟用狀態"，網頁需"重新整理"才會更新清單
+                    </v-alert>
                     </v-card-text>
                    <v-card-text v-if="planFormMode!='add'">
                     <v-data-table :headers="planConfigHeaders" hide-default-footer disable-pagination
@@ -3533,6 +3537,14 @@
                         <template v-slot:[`item.name_ch`]="{ item }">
                             <span>{{ item.name_ch }}</span><br/>
                             <span>{{ item.name_en }}</span><br/>
+                        </template>
+                        <template v-slot:[`item.value`]="{ item }">
+                            <span v-if="item.type == 'bool'">{{ item.value ? '是' : '否' }}</span>
+                            <span v-else>{{ item.value }}</span>
+                        </template>
+                        <template v-slot:[`item.default`]="{ item }">
+                            <span v-if="item.type == 'bool'">{{ item.defalut ? '是' : '否' }}</span>
+                            <span v-else>{{ item.default }}</span>
                         </template>
                         <template v-slot:[`item.udactions`]="{ item }">
                             <v-tooltip bottom>
@@ -3590,13 +3602,19 @@
                     </div>
                     <!-- select -->
                     <div v-else-if="this.planConfigDetail.type=='select'">
-                       {{ this.planConfigDetail }}
                         <v-select class="my-4" v-model="planConfigDetail.value"
                             :items="this.planConfigDetail.options" item-text="name" item-value="id" label="選項清單"
                             no-data-text="查無資料" solo></v-select>
+                            <span>目前選到的值：{{planConfigDetail.value}}</span>
                         <!-- <v-select v-model="planConfigDetail.value" :items="planConfigDetail.options" item-text="name_ch" item-value="value" label="選項" dense></v-select> -->
                     </div>
-                    <div v-else>請聯絡技術人員</div>
+                    <!-- float -->
+                    <div v-else-if="this.planConfigDetail.type=='float'">
+                        <el-input-number v-model="planConfigDetail.value" :step="0.01" :min="0" prop="number" style="width: 100%;" class="my-4" />
+                    </div>
+                    <div v-else>
+                        資料：{{ this.planConfigDetail }}<br/>
+                        <span style="color:red">請聯絡技術人員</span></div>
 
                 </v-card-text>
                 <v-card-text class="mt-2">
