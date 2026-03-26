@@ -5098,7 +5098,9 @@ export default {
             // console.log('planConfigDetail',this.planConfigDetail);
             // console.log('planConfigItems',this.planConfigItems);
             this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].value = this.planConfigDetail.value;
-            this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].display_name=this.planConfigDetail.options.filter(o=>o.id==this.planConfigDetail.value)[0].name;
+            if(this.planConfigDetail.type=='select'){
+                this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].display_name=this.planConfigDetail.options.filter(o=>o.id==this.planConfigDetail.value)[0].name;
+            }
             this.planConfigDetail = {};
             this.planConfigDetailDialog = false;
         },
