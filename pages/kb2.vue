@@ -3540,7 +3540,8 @@
                         </template>
                         <template v-slot:[`item.value`]="{ item }">
                             <span v-if="item.type == 'bool'">{{ item.value ? '是' : '否' }}</span>
-                            <span v-else>{{ item.value }}</span>
+                            <!-- <span v-else>{{ item.value }}</span> -->
+                            <span v-else>{{item.display_name?item.display_name:item.value}}</span>
                         </template>
                         <template v-slot:[`item.default`]="{ item }">
                             <span v-if="item.type == 'bool'">{{ item.defalut ? '是' : '否' }}</span>
@@ -3762,7 +3763,7 @@ export default {
                 // { text: '名稱(英)', value: 'name_en', sortable: true,},
                 // { text: '型態', value: 'type', sortable: true,},
                 { text: '參數值', value: 'value', sortable: false,},
-                { text: '預設值', value: 'default', sortable: false,},
+                // { text: '預設值', value: 'default', sortable: false,},
                 // { text: '排序', value: 'sort', sortable: false,},
                 { text: '操作', value: 'udactions', sortable: false},
             ],
@@ -5097,6 +5098,7 @@ export default {
             // console.log('planConfigDetail',this.planConfigDetail);
             // console.log('planConfigItems',this.planConfigItems);
             this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].value = this.planConfigDetail.value;
+            this.planConfigItems.filter(x=>x.id==this.planConfigDetail.id)[0].display_name=this.planConfigDetail.options.filter(o=>o.id==this.planConfigDetail.value)[0].name;
             this.planConfigDetail = {};
             this.planConfigDetailDialog = false;
         },
