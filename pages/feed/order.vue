@@ -110,7 +110,7 @@
                           dense
                           filled
                           hide-details
-                          inputmode="numeric"
+                          inputmode="decimal"
                           placeholder="數值"
                           v-model.number="item.initial_val"
                           type="number"
