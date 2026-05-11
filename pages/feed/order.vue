@@ -64,10 +64,13 @@
                   </template>
                   <!-- meals_per_day餐數 -->
                    <template v-slot:[`item.meals_per_day`]="{ item }">
-                    <v-autocomplete v-model="item.meals_per_day"
-                    :items="[1, 2, 3, 4, 5, 6,7,8]" dense hide-details
+                    <!-- 
+                    <v-autocomplete v-model="item.meals_per_day" :items="[1, 2, 3, 4, 5, 6, 7, 8]" dense hide-details
                       clearable placeholder="選擇餐數">
                     </v-autocomplete>
+                    -->
+                    <v-select v-model="item.meals_per_day" :items="[1, 2, 3, 4, 5, 6, 7, 8]" dense hide-details clearable
+                      placeholder="選擇餐數" />
 
                   </template>
                   <!-- initial_val投餵量 -->
