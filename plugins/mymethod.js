@@ -19,20 +19,10 @@ import https from "https";
           _pageCheck:async function(){
             if (this.$auth.$state.loggedIn) {
               let acclist = [];
-              // const agent = new https.Agent({
-              //   rejectUnauthorized: false
-              // });
+
               let getuserData = await this.getUserList();
               acclist = typeof (getuserData)=='string'?[]:getuserData;
-              // await this.$axios
-              //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/user-access/account/`, { httpsAgent: agent }) //所有使用者的清單
-              //   .then(res => {
-              //     acclist = res.data;
-              //     console.log("accList api：" + res.request.responseURL);
-              //   })
-              //   .catch(error => {
-              //     this.$toast.error("錯誤：" + error, { duration: 2000 });
-              //   });
+
               if(!acclist) { acclist = []}else {
                 var acc = acclist.filter(
                   x => x.username.toLowerCase() == this.$auth.$state.user.email.toLowerCase() && x.is_active == true
@@ -195,22 +185,88 @@ import https from "https";
           },
           // 取得授權清單
           getMenuAuthorization:async function(bool){
+            //bool=true 代表取得全部授權清單(包含disabled的)，bool=false 代表只取得啟用的授權清單
             let menu = [];
             const agent = new https.Agent({
               rejectUnauthorized: false
             });
             const accheader = { account: this.$auth.$state.user.email };
+            console.log('getMenuAuthorization 取得的帳號：',accheader);
             const url = bool?`/user-access/authorization-items/?is_all=true`:`/user-access/authorization-items/`;
-            if(this.isUser) {
-              return await this.$axios
-              .get(`${this.$store.state.mydata.gobal_api.apiUrl+url}`, { httpsAgent: agent,headers:accheader })
-              // .then(res => {
-              //   console.log("authorization-items api：" + res.request.responseURL);
-              //   console.log('getMenuAuthorization',menu,accheader);
-              // })
-              // .catch(error => {
-              //   this.$toast.error("錯誤：" + error, { duration: 2000 });
-              // });
+            console.log("getMenuAuthorization isUser:",this.isUser);
+            //每個頁面都判斷一次使用者是否有權限，確保安全性，暫時移除
+            //if(this.isUser) {
+            if(true) {
+              const apiUrl = this.$store.state.mydata.gobal_api.apiUrl + url;
+              return this.$axios
+                .get(`${apiUrl}`, {
+                  httpsAgent: agent,
+                  headers: accheader,
+                })
+                .then((res) => {
+                  console.log("取得的res:", JSON.stringify(res));
+                  console.log("getMenuAuthorization", menu, accheader);
+                  return res;
+                })
+                .catch((error) => {
+                  this.$toast.error(
+                    "錯誤：" +
+                      (error.response?.data?.message ||
+                        error.response?.status ||
+                        error.message),
+                    { duration: 2000 }
+                  );
+                });
+            }
+            
+          },
+          // 取得授權清單_NEW
+          getMenuAuthorizationV2:async function(bool){
+            // return this.getMenuAuthorization(bool);//測試舊版用
+            //bool=true 代表取得全部授權清單(包含disabled的)，bool=false 代表只取得啟用的授權清單
+            //V2不分is_ALL 要用資料內容來判斷
+            let menu = [];
+            const agent = new https.Agent({
+              rejectUnauthorized: false
+            });
+            const accheader = { account: this.$auth.$state.user.email };
+            // const url = `/user-access/v3/authorization-items/`;
+            const url = bool?`/user-access/v3/authorization-items/?is_all=true`:`/user-access/v3/authorization-items/`;
+            
+            //每個頁面都判斷一次使用者是否有權限，確保安全性，暫時移除
+            //if(this.isUser) {
+            if(true) {
+              const apiUrl = this.$store.state.mydata.gobal_api.apiUrl + url;
+              return this.$axios
+                .get(`${apiUrl}`, {
+                  httpsAgent: agent,
+                  headers: accheader,
+                })
+                .then((res) => {
+                  return res;
+                  //res.data資料結構
+                  // [
+                  //   {
+                  //   "id": 2,
+                  //   "name": "即時數據",
+                  //   "url": "/basic",
+                  //   "icon": "mdi-monitor-dashboard",
+                  //   "type": "Menu",
+                  //   "is_client_accessible": false,
+                  //   "is_drop_down": false,
+                  //   "is_show": true
+                  // }
+                  //]
+                })
+                .catch((error) => {
+                  this.$toast.error(
+                    "錯誤：" +
+                      (error.response?.data?.message ||
+                        error.response?.status ||
+                        error.message),
+                    { duration: 2000 }
+                  );
+                });
             }
             
           },

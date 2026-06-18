@@ -7,13 +7,13 @@
           <div v-for="(b,bid) in pond.pond" :key="bid"
             :class="{'block':(b.name=='tank'||b.state!=='')&& b.rows.length==0 && b.isSetting,'text-center my-1':windowWidth>=700 && b.name!=='road','road':b.id==''&&b.name=='road','rows-display':b.rows.length>0,'edit-block':showedit,'danger-water':b.level=='danger','warning-water':b.level=='warning',}"
             :style="{
-              background: `${b.level=='danger'?'#A60017':b.level=='warning'?'#FBBC05':b.isSetting==false?'transparent':((b.id==''&& b.state==''&&b.name!=='tank')||b.rows.length>0||(b.id==''&&b.name=='road'))?'transparent':(b.id==''&&b.name=='tank')?'#C7D380':getItemColor(b.state)}`,
+              background: `${b.level == 'danger' ? '#A60017' : b.level == 'warning' ? '#FBBC05' : b.isSetting == false ? 'transparent' : ((b.id == '' && b.state == '' && b.name !== 'tank') || b.rows.length > 0 || (b.id == '' && b.name == 'road')) ? 'transparent' : (b.id == '' && b.name == 'tank') ? '#C7D380' : getItemColor(b.state)}`,
               minWidth: `${getWidth(b)}`,
-              minHeight: `${b.id==''&& b.state==''&& b.rows.length==0&&b.isSetting?'48px':'0'}`,
-              paddingTop: `${($route.path=='/basic'&& b.rows.length>0)? '0':'12px'}`,
-              paddingBottom: `${($route.path=='/basic'&& b.rows.length>0) ? '0':'12px'}`,
-              cursor:`${$route.path=='/basic'&& b.rows.length==0?'pointer':'default'}`,
-              display: `${b.isSetting?'block':'none'}`
+              minHeight: `${b.id == '' && b.state == '' && b.rows.length == 0 && b.isSetting ? '48px' : '0'}`,
+              paddingTop: `${(['/dashboard','/basic'].includes($route.path) && b.rows.length > 0) ? '0' : '12px'}`,
+              paddingBottom: `${(['/dashboard','/basic'].includes($route.path) && b.rows.length > 0) ? '0' : '12px'}`,
+              cursor: `${['/dashboard','/basic'].includes($route.path) && b.rows.length == 0 ? 'pointer' : 'default'}`,
+              display: `${b.isSetting ? 'block' : 'none'}`
             }"
             style="flex-shrink: 0;"
             class="mx-3"
@@ -38,7 +38,7 @@
             <div v-else-if="b.rows.length>0 && b.name !== 'road'&& b.isSetting" class="sub-row" :class="{'mx-3':$route.path=='/map'}">
               <v-row v-for="(row,sid) in b.rows" :key="sid" style="margin-bottom: 0;">
                   <div
-                      :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning','cursor-pointer':$route.path=='/basic'&& row.rows.length==0}"
+                      :class="{'block':row.state!==''||row.name=='tank','text-center my-1':windowWidth>=700 && row.name!=='road','road':row.id==''&&row.name=='road','edit-block':showedit,'danger-water':row.level=='danger','warning-water':row.level=='warning','cursor-pointer':['/dashboard','/basic'].includes($route.path)&& row.rows.length==0}"
                       :style="
                         row.name=='tank'?`background:#C7D380;width:120px`:row.state == '無'? b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: row.state.length == 0 ? `background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`: b.rowMaxCols==1?`background:${getItemColor(row.state)};width:120px`:`background:${getItemColor(row.state)};width: calc(100% / ${b.rowMaxCols} * ${row.cols})`
                       "
@@ -58,6 +58,7 @@
                           @saveSuccess="saveDelete($event)"
                           v-if="row.name!=='tank'&&row.name!=='road'&& row.isSetting"
                       ></map-pool-element>
+                      <!-- 生化槽 -->
                       <div v-else-if="row.name=='tank'">生化槽</div>
                       <div v-else>
 
@@ -96,7 +97,7 @@
             <!-- <div v-else-if="b.name == 'tank'">生化槽</div> -->
           </div>
         </v-row>
-        <v-row v-if="MaxDate && $route.path!=='/basic'" class="mx-0 parent-row mb-3">
+        <v-row v-if="MaxDate && !['/dashboard','/basic'].includes($route.path)" class="mx-0 parent-row mb-3">
           <div class="mx-3 my-1 update-time">
             <span>最後更新時間：{{ MaxDate }}</span>
           </div>
@@ -136,10 +137,10 @@
           <settinglayout v-if="setting=='layout'" style="width: calc(100% - 24px);" :areas="areas1"></settinglayout>
         </v-row>
       </div>
-      <div v-else-if="ponds.length==0 && !$route.query.field || ponds.length==0 && $route.path=='/basic'" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
+      <div v-else-if="ponds.length==0 && !$route.query.field || ponds.length==0 && ['/dashboard','/basic'].includes($route.path)" class="nodata">無資料!請先至<router-link to="/factory"> 資料設定頁 </router-link>進行池的設定</div>
       <div v-else-if="$route.query.field" class="nodata">無資料!</div>
-      <div v-else-if="!isSetting && !$route.query.field && $route.path!=='/basic'" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
-      <div v-else-if="!isSetting && $route.path=='/basic'" class="nodata">尚未設置地圖，請先至場域設定，選擇 場區 > 點選配置，進行地圖設定(限技術人員)</div>
+      <div v-else-if="!isSetting && !$route.query.field && !['/dashboard','/basic'].includes($route.path)" class="nodata">尚未設置地圖，請點選 設定 > 配置設定，選擇此區進行設定</div>
+      <div v-else-if="!isSetting && ['/dashboard','/basic'].includes($route.path)" class="nodata">尚未設置地圖，請先至場域設定，選擇 場區 > 點選配置，進行地圖設定(限技術人員)</div>
     </div>
   </div>
 </template>
@@ -540,7 +541,7 @@ export default {
     this.stateColor = this.statcolor;
     this.getPondData();
     // await this.getStateColor();
-    if(this.$route.path == '/basic') {
+    if(['/dashboard','/basic'].includes(this.$route.path)) {
       // await this.getStateColor();
       this.isLoad = this.waterloading;
     }
@@ -556,8 +557,8 @@ export default {
   },
   methods: {
     getItemColor: function(data) {
-      console.log('getItemColor',data,this.stateColor);
       if (data == ""||data==undefined||data == []) {
+        console.log('getItemColor data is empty!!!!');
         return "white";
       }
       let data2 = this.stateColor.filter(x => x.name_ch == data);
@@ -597,38 +598,18 @@ export default {
       }
       // this.isLoad = false;
       if(this.nowAreaId.factory_id!==null) {
-        if(this.$route.path!==('/basic') || (this.$route.path==('/basic') && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
+        if(!['/dashboard','/basic'].includes(this.$route.path) || (['/dashboard','/basic'].includes(this.$route.path) && this.nowAreaId.factory_id!==this.oldAreaId.factory_id)) {
           this.allData = [];
           let getMapList = await this.getMapList(parm);
           let data = typeof (getMapList)=='string'?[]:getMapList;
           this.allData = data;  
           this.dataPrepare();
           this.getLayoutData();
-          if(this.$route.path!==('/basic')) {
+          if(!['/dashboard','/basic'].includes(this.$route.path)) {
             this.isLoad = true;
           }
           this.oldAreaId = _.cloneDeep(this.nowAreaId);
-          // await this.$axios
-          //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/map/`,{params:parm}, { httpsAgent: agent })
-          //   .then(res => {
-          //     // this.ponds = res.data;
-          //     console.log('getData',res.data);
-          //     this.allData = res.data;
-              
-          //     this.dataPrepare();
-          //     this.getLayoutData();
-          //     if(this.$route.path!==('/basic')) {
-          //       this.isLoad = true;
-          //     }
-          //     this.oldAreaId = _.cloneDeep(this.nowAreaId);
-              
-          //   })
-          //   .catch(error => {
-          //     // alert("error:" + error.message);
-          //   });
-        // }else {
-        //   this.dataPrepare();
-        //   this.getLayoutData();
+
         }
         
       }
@@ -879,7 +860,7 @@ export default {
     },
     
     goIndicator(item) {
-      if(item.id!==''&&item.rows.length==0&&this.$route.path=='/basic'&&item.isSetting) {
+      if(item.id!==''&&item.rows.length==0&& ['/dashboard','/basic'].includes(this.$route.path)&&item.isSetting) {
         this.$emit('goIndicator',item);
       }
       // this.$emit('goIndicator',item)
@@ -1053,32 +1034,11 @@ export default {
   watch: {
     successData() {
       // 全部儲存後，需更改原本的資料以及池況還原
-      if(this.$route.path!==('/basic')) {
+      if(!['/dashboard','/basic'].includes(this.$route.path)) {
         console.log('success',this.successData);
         console.log('edit',this.editData);
         this.getPondData();
       }
-      
-      // if(this.successData.length>0) {
-      //   let ids = []
-      //   this.successData.forEach(data=>{ids.push(data.id);});
-      //   this.successDataID = ids;
-      //   // console.log('success ids',ids);
-      //   for(let x=0;x<this.ponds.length;x++) {
-      //     for(let i=0;i<this.ponds[x].pond.length;i++) {
-      //       if(this.ponds[x].pond[i].rows.length>0) {
-      //         for(let z=0;z<this.ponds[x].pond[i].rows.length;z++) {
-      //           this.editDataChange(this.ponds[x].pond[i].rows[z],this.successData,'muti');
-      //         }
-      //       }else {
-      //         this.editDataChange(this.ponds[x].pond[i],this.successData,'muti');
-      //       }
-      //     }
-      //   }
-      //   if(this.$route.path!=='/basic') {
-      //     this.getPondData();
-      //   }
-      // }
     },
     showedit() {
       // 非編輯狀態，清除原本要更改的池況狀態
@@ -1092,7 +1052,7 @@ export default {
       // 如果前一個是點選setting後，點選池，需重新撈取資料，避免設定修改未即時呈現
       if(this.oldAreaTag=='setting' && this.oldAreaTag!==this.nowAreaTag) {
         this.isLoad = false;
-        if(this.$route.path!=='/basic') {
+        if(!['/dashboard','/basic'].includes(this.$route.path)) {
           this.getPondData();
         }
         
@@ -1103,7 +1063,7 @@ export default {
     },
     areas() {
       this.setting = 'color';
-      if(this.$route.path!=='/basic') {
+      if(!['/dashboard','/basic'].includes(this.$route.path)) {
         this.getPondData();
       }
     },

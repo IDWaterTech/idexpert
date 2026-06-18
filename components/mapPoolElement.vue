@@ -1,5 +1,5 @@
 <template>
-  <div class="input-pool" :class="{'text-center':!showSelect,'basic-block':$route.path=='/basic'}">
+  <div class="input-pool" :class="{'text-center':!showSelect,'basic-block':['/dashboard','/basic'].includes($route.path)}">
     <button class="confirm" v-show="showSelect && item.state != '' && selectedItem !== '' && selectedItem !== item.state" @click="selectchecked">
       <v-icon>mdi-check</v-icon>
     </button>
@@ -8,14 +8,14 @@
       v-show="item.state != '' || showSelect"
       style="z-index: 2;"
       :style="{
-        'color':`${$route.path=='/basic'&& 
+        'color':`${['/dashboard','/basic'].includes($route.path) && 
                   item.state != ''&& 
                   item.water != ''&&
                   item.level=='danger'?'#fefefe':'#00324E'}`
       }">
       <!-- basic warning/danger icon -->
       <v-btn 
-        v-if="$route.path=='/basic'&& item.state != ''&& item.water != ''&& (item.level=='warning'||item.level=='danger')" 
+        v-if="['/dashboard','/basic'].includes($route.path) && item.state != ''&& item.water != ''&& ['danger','warning'].includes(item.level)" 
         class="btn-icon just-icon"
         :class="{'danger-water-icon':item.level=='danger',
                  'warning-water-icon':item.level=='warning'}"
@@ -28,18 +28,32 @@
       
     </span>
     <span v-if="item.name=='tank'" style="z-index: 2;">生化槽</span>
-    <span v-if="$route.path=='/basic'&& item.state != ''&& item.water != ''"
-        class="flex-all-center"
+    <!-- 數值 -->
+     <!-- 這邊限制在basic??? 改dashboard先保留原設定 -->
+     <!-- <span v-if="$route.path == '/basic' && item.state != '' && item.water != ''" class="flex-all-center" -->
+   <span v-if="['/dashboard','/basic'].includes($route.path) && item.state != '' && item.water != ''" class="flex-all-center"
         style="z-index: 2;"
-        :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}"
-      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span> <span class="ml-1">{{ item.parm_name=='DO'||item.parm_name=='NO2'||item.parm_name=='NH4'?'ppm':item.parm_name=='Temperature'?'°C':item.parm_name=='water_level_percentage'?'%':'' }}</span></span>
+        :class="{'danger-water':item.level==='danger','warning-water':item.level==='warning'}"
+      ><span style="font-size: 1.25rem;font-weight: bold;">{{ item.water }} </span>
+      <!-- 單位 -->
+        <span class="ml-1">
+        {{
+          ['DO', 'NO2', 'NH4'].includes(item.parm_name)
+            ? 'ppm'
+            : {
+              Temperature: '°C',
+              water_level_percentage: '%'
+            }[item.parm_name] || ''
+        }}
+      </span>
+      </span>
       <span v-if="item.inspected_time" style="font-size: 12px;" :style="{'color':item.level=='danger'?'#fff':'#00324E'}">
         <div class="mr-1 d-inline-block" style="padding: 1px 4px;border: 1px solid #fff;border-radius: 50%;" :style="{'borderColor':item.level=='danger'?'#fff':'#00324E'}">{{ item.inspected_time.slice(8,10) }}</div>
         {{ item.inspected_time.slice(-5) }}</span>
       <!-- <span v-if="item.inspected_time">{{ item.inspected_time.slice(-5) }}</span> -->
 
       <!-- :class="{'danger-water':item.level=='danger','warning-water':item.level=='warning'}" -->
-    <span v-if="$route.path=='/basic' && !item.water && item.state !== ''" class="flex-all-center" style="z-index: 2;font-size: 1.25rem;">-</span>
+    <span v-if="['/dashboard','/basic'].includes($route.path) && !item.water && item.state !== ''" class="flex-all-center" style="z-index: 2;font-size: 1.25rem;">-</span>
     
     <span class="update-time" v-if="item.state.length > 0" v-show="showSelect && item.state != ''"><br>{{item.updated_time}}</span>
     <!-- {{ selitem }} -->
@@ -242,7 +256,7 @@ export default {
   flex-direction: column;
   & .danger-water {
     span {
-      color: #fefefe;
+      color: #fefefe !important;
     }
   }
   & .danger-water-icon.btn-icon.just-icon.v-btn {

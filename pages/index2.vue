@@ -3,6 +3,7 @@
     <v-overlay :value="!isLoading" :absolute="true">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
+    <!-- <v-card class="bg-card" style="min-height: 85vh;"> -->
     <!-- 底圖裝飾 -->
     <video src="~/static/video.mp4" autoplay loop playsinline muted></video>
     <div class="overlay"></div>
@@ -10,20 +11,18 @@
     <div class="wrapper">
       <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;" justify="center">
         <!-- 主標 -->
-        <v-col cols="12" md="12">
-          <v-btn to="/index2">前往主頁2(NEW)</v-btn>
-
+        <v-col cols="12">
+          <v-btn to="/">回主頁(舊)</v-btn>
+          <!-- <div class="welcome" style="padding: 24px;">
+            <h2 class="text-center" style="color: #eee;">歡迎使用 IDWater 專家系統</h2>
+          </div> -->
         </v-col>
         <!-- Menu -->
-        <v-col cols="12" lg="2" md="4" sm="6" xs="12" v-for="menu in menuList" :key="menu.id">
-          <!-- 彩色版 v-for menu要增加mid -->
-          <!-- <v-card class="menu-card" 
-            @click="openChild(menu.id,'',true)"
-            :style="{'backgroundColor':`${bgc[mid]}`}"
-            :ripple="{ class: `ripple-color` }"> -->
-
-          <!-- 主色版 -->
-          <v-card class="menu-card" 
+         <!-- 主色版 -->
+        <v-col cols="12">
+          <v-row>
+            <v-col cols="6" lg="2" md="4" sm="4" v-for="menu in menuList" :key="menu.id">
+              <v-card class="menu-card" 
             @click="openChild(menu.id,'',true)"
             :class="{'disabled':menu.disabled}">
             <div class="menu-content"
@@ -57,6 +56,11 @@
               </div>
             </div>
           </v-card>
+            </v-col>
+          </v-row>
+          
+          
+
         </v-col>
       </v-row>
     </div>
@@ -80,6 +84,9 @@ export default {
     }
   },
   async created() {
+    await this.getUserData();//測試用，正式環境請刪除
+    await this.getAllMenu();//測試用，正式環境請刪除
+    return;//測試用，正式環境請刪除
     if(this.$auth.$state.loggedIn) {
       await this._pageCheck();
       await this.getUserData();
@@ -127,17 +134,20 @@ export default {
           }
           ]
         };
-        //datalst = this.isfranchise?franchiselst:await this.getMenuAuthorization(true);
-        dataLst = await this.getMenuAuthorization(true);
-        
+        dataLst = await this.getMenuAuthorizationV2(true);
+        console.log('dataLst!!!!!!!!!!!',dataLst);
         if(this.UserData.is_customer==true){//加盟者身份
           //var newData = _.cloneDeep(dataLst.data.filter(x=>['近況更新','歷史數據'].includes(x.name)));//篩選出disabled=false的資料
           var newData = _.cloneDeep(dataLst.data.filter(x=>x.is_client_accessible==true));//篩選出disabled=false的資料
           console.log('dataLst 原始：',dataLst.data);
           dataLst.data = newData;
+        }else{
+          this.isLoading = true;
+          console.log("非加盟者身份，dataLst不過濾：",this.UserData.is_customer);
         }
-        console.log('dataLst!!!!!!!!!!!',dataLst);
+        
       }catch {
+        this.isLoading = false;
         console.log(error);
       }
       if(dataLst) {
@@ -190,37 +200,19 @@ export default {
         // console.log("api：" + datalst.request.responseURL);
         this.isLoading = true;
       }
-      // let accheader = { account: this.$auth.$state.user.email };
-      // const url = `${this.$store.state.mydata.gobal_api.apiUrl}/user-access/authorization-menu/?is_all=true`;
-      // await this.$axios
-      //   .get(url, {
-      //     headers: accheader
-      //   })
-      //   .then(async res => {
-      //     console.log(res);
-      //     if(res.status==200) {
-      //       this.menuList = res.data;
-      //       // 父層/子層增加disabled參數，用來跟自身帳號menu比對判斷是否可以點選
-      //       // 有子層的父層增加isOpen參數，用來開合子層
-      //       this.menuList.forEach(m=>{
-      //         m.disabled = false;
-      //         if(m.children) {
-      //           m.isOpen = false;
-      //           m.children.forEach(child=>{
-      //             child.disabled = false;
-      //           })
-      //         }
-      //       })
-      //       await this.getOwnMenu();
-      //     }
-      //     console.log("api：" + res.request.responseURL);
-      //   });
     },
     // 自身帳號menu，用來比對所有menu，自身沒有的要加上disabled
     async getOwnMenu() {
+      // 把 is_authorized === false 的項目增加 disabled: true，並保留原陣列不變
+      const result = this.menuList.map(item => ({
+        ...item,
+        disabled: !item.is_authorized
+      }));
+      this.menuList = result;
+      return;//下面是原本的程式碼，測試用，正式環境請刪除
       let datalst;
       try{
-        datalst = await this.getMenuAuthorization(false);
+        datalst = await this.getMenuAuthorizationV2(false);
       }catch {
         console.log(error);
       }
@@ -231,6 +223,7 @@ export default {
           this.menuList = [];
           // 測試子層disabled用(飼料表->料量設定)
           // res.data[2].children.splice(1,1);
+          console.log('own menuList before:',datalst.data);
           datalst.data.forEach(own => {
             ownId.push(own.id);
             if(own.children) {
@@ -239,6 +232,7 @@ export default {
               })
             }
           });
+          
           data.forEach(m=>{
             if(!ownId.includes(m.id)){
               m.disabled = true;
@@ -270,7 +264,7 @@ export default {
           // },
           // )
         }
-        console.log('menuList',this.menuList)
+        console.log('own menuList',this.menuList)
       }
       // let accheader = { account: this.$auth.$state.user.email };
       // await this.$axios

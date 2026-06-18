@@ -120,96 +120,13 @@
         </div>
         <div class="result">
           <div class="result-card">
-            <!-- 統整小卡 整列式 -->
+            <!-- 按鈕列 -->
             <v-row class="mb-1">
-              <v-col cols="12" lg="3" sm="6" class="pt-0 pb-0">
-                <v-card class="dashboard warning-alert">
-                  <div class="icon">
-                    <v-icon>mdi-alert-outline</v-icon>
-                    <div class="total-text ml-2">
-                      <div class="title" style="font-weight: bold;">
-                        警示
-                      </div>
-                    </div>
-
-                  </div>
-                  <div class="total-text number-text">
-                    <div class="content">
-                      <number-count-up v-if="showAlert" :id="'num4'" :endVal="total.warning" suffix=""
-                        :myReady="onReady"></number-count-up>
-                      <span class="ml-2"> 個</span>
-                    </div>
-                  </div>
-                </v-card>
+              <v-col v-for="(btn,index) in btns" :key="btn.text" cols="6" sm="4" md="2" class="py-1">
+                <v-btn outlined color="indigo" block @click="handleClick(btn.type)">
+                  {{ index + 1 }}. {{ btn.text }}
+                </v-btn>
               </v-col>
-              <v-col cols="12" lg="3" md="6" sm="6"  class="pt-0 pb-0">
-                <v-card class="dashboard">
-                  <div class="icon">
-                    <v-icon>mdi-focus-field</v-icon>
-                    <div class="total-text ml-2">
-                      <div class="title" style="font-weight: bold;">
-                        養殖池
-                      </div>
-                    </div>
-                  </div>
-                  <div class="total-text number-text">
-                    <div class="content">
-                      <number-count-up v-if="showPredict" :id="'num1'" :endVal="total.pool" suffix=""
-                        :myReady="onReady"></number-count-up>
-                      <span class="ml-2"> 池</span>
-                    </div>
-                  </div>
-                </v-card>
-              </v-col>
-              <v-col cols="12" lg="3" md="6" sm="6"  class="pt-0 pb-0">
-                <v-card class="dashboard pond">
-                  <div class="icon">
-                    <v-icon>mdi-dots-grid</v-icon>
-                    <div class="total-text ml-2">
-                      <div class="title" style="font-weight: bold;">
-                        小池數
-                      </div>
-                    </div>
-                  </div>
-                  <div class="total-text number-text">
-                    <div class="content">
-                      <number-count-up v-if="showPredict" :id="'num2'" :endVal="total.pond" suffix=""
-                        :myReady="onReady"></number-count-up>
-                      <span class="ml-2"> 個</span>
-                    </div>
-                  </div>
-                </v-card>
-              </v-col>
-              <v-col cols="12" lg="3" md="6" sm="6"  class="pt-0 pb-0">
-                <v-card class="dashboard predict">
-                  <div class="icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M6.468 8.18c-.484-.547-.04-1.404.686-1.325l6.166.675c2.095.23 3.307 2.49 2.338 4.362l-.169.326c-.969 1.871-3.514 2.187-4.91.608L6.468 8.18Zm6.984-5.654a.231.231 0 0 1-.126-.042 3.796 3.796 0 0 0-5.918 3.82.197.197 0 0 1 0 .079c-.044.206-.36.263-.403.056A4.217 4.217 0 0 1 13.6 2.162c.17.122.06.37-.148.364Z"
-                        fill="#E8956F" />
-                      <path
-                        d="M15.375 5.8a.234.234 0 0 1-.113-.067 3.794 3.794 0 0 0-6.017.618.233.233 0 0 1-.089.084c-.188.1-.402-.085-.292-.268a4.216 4.216 0 0 1 6.732-.694c.143.156-.017.379-.221.327Z"
-                        fill="#E8956F" />
-                      <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="m14.739 17.26-.342.081a.306.306 0 0 0-.112.052l-.779.574a.2.2 0 0 1-.273-.034.178.178 0 0 1 .032-.257l.877-.646a.006.006 0 0 0 .003-.007l.572-.135a4.4 4.4 0 0 0-.144-.75l-.65.092a.314.314 0 0 0-.118.042l-.847.505a.204.204 0 0 1-.271-.058.177.177 0 0 1 .054-.253l.953-.569a.006.006 0 0 0 .003-.006l.76-.108a4.834 4.834 0 0 0-1.083-1.678 3.108 3.108 0 0 0 2.592-1.684 3.11 3.11 0 0 0 .353-1.372c1.555 1.018 2.59 2.62 2.675 4.461.134 2.883-2.104 5.394-5.194 6.075l-.557 1.315a.94.94 0 1 1-1.528-1.034l-.022.004a.94.94 0 1 1 .24-1.767l1.297.638-.001.01c.961-.935 1.534-2.164 1.51-3.49Zm.919-1.37a.134.134 0 0 0-.05.013c-.12.054-.099.22.033.216a2.272 2.272 0 0 0 2.155-1.82c.026-.127-.143-.17-.212-.058a.132.132 0 0 0-.016.04 2.044 2.044 0 0 1-1.91 1.61Zm.194 1.89c.083 0 .165.008.246.022a2.044 2.044 0 0 0 1.56-.386.142.142 0 0 1 .026-.017c.137-.062.26.081.142.174a2.27 2.27 0 0 1-.843.412c-.402.102-.807.09-1.18-.016-.123-.035-.083-.19.046-.19h.003Zm-3.956 3.124c-.178-.023-.24.128-.063.157.144.023.292.032.442.025.132-.006.102-.146-.03-.152a4.04 4.04 0 0 1-.349-.03Zm.596 1.569c-.13.125-.214-.016-.087-.145.083-.085.16-.172.234-.26.084-.103.213-.043.14.066a2.115 2.115 0 0 1-.287.339Z"
-                        fill="#E8956F" />
-                    </svg>
-                    <div class="total-text ml-2">
-                      <div class="title" style="font-weight: bold;">
-                        預估放養
-                      </div>
-                    </div>
-                  </div>
-                  <div class="total-text number-text">
-                    <div class="content">
-                      <number-count-up v-if="showPredict" :id="'num3'" :endVal="total.predict" suffix=""
-                        :myReady="onReady"></number-count-up>
-                      <span class="ml-2"> 隻</span>
-                    </div>
-                  </div>
-                </v-card>
-              </v-col>
-
             </v-row>
             <!-- 養殖池 -->
             <v-row class="mb-3 align-stretch" style="height: 100%;" id="chart">
@@ -370,7 +287,7 @@ export default {
   },
   head(){
     return{
-      title:'即時數據'
+      title:'操作面板'
     }
   },
   data() {
@@ -583,6 +500,15 @@ export default {
       originData:[],
       newest:'',
       colData:[],
+      //----------------------
+      btns: [
+      { text: '重要記事 +', type: 'important' },
+      { text: '料量設定 +', type: 'quantity' },
+      { text: '添加物設定 +', type: 'additive' },
+      { text: '檢驗檢測 +', type: 'inspect' },
+      { text: '觀察網 +', type: 'observe' },
+      { text: '收成資料 +', type: 'harvest' }
+    ]
     };
   },
   methods: {
@@ -604,22 +530,10 @@ export default {
     },
     // 池況顏色
     async getStateColor() {
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
       //取得池況顏色設定
       let getPondStateList = await this.getPondStateList();
       let data = typeof (getPondStateList)=='string'?[]:getPondStateList;
       this.statcolor = data;
-      // await this.$axios
-      //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/pond-state/`, { httpsAgent: agent })
-      //   .then(res => {
-      //     console.log('getColor',res.data);
-      //     this.statcolor = res.data;
-      //   })
-      //   .catch(error => {
-      //     alert("error:" + error.message);
-      //   });
     },
     get_scopeData:async function(evt){
       console.log('trigger get_scopeData.');
@@ -1596,33 +1510,12 @@ export default {
     }
   },
   async created() {
-    await this.getStateColor();
-    
     // await this.getAlertData();
+    await this.getStateColor();
+
     this.showAlert = false;
     this.timeSelect = this.timekb[0].id
-    await this._pageCheck(); //驗證頁面是否可檢視
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
-    // await this.$axios
-    //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/architecture/`, { httpsAgent: agent })
-    //   .then(res => {
-    //     this.maindata = res.data;
-    //     this.sel_main = undefined;
-    //     this.defaultPool = '';
-    //     if(this.maindata.length>0) {
-    //       this.defaultPool = this.maindata[0].node[0].name+'_'+this.maindata[0].node[0].id;
-    //       this.nowAreaId.factory_id = this.maindata[0].id;
-    //       this.nowAreaId.pond_area_id = this.maindata[0].node[0].id;
-    //     }else {
-    //       this.defaultPool = '';
-    //     }
-        
-    //     console.log(this.defaultPool);
-    //   });
-    // let architectureData = await this.getArchitecture();
-    // this.maindata = typeof (architectureData)=='string'?[]:architectureData;
+    //await this._pageCheck(); //驗證頁面是否可檢視
     
     this.maindata = JSON.parse(localStorage.getItem('architecture'))?JSON.parse(localStorage.getItem('architecture')):await this.getArchitecture();
     this.sel_main = undefined;
@@ -1821,6 +1714,7 @@ export default {
     window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth;
     });
+    //await this.getStateColor();
     // this.rndKey = Math.round( (Math.random()*100) );
   },
   watch: {

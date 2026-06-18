@@ -92,17 +92,19 @@ export default {
                 this.dataid = undefined;
                 return;
             }else{
-                // console.log('default select',this.defaultSelect);
+                //console.log('locate-select  設定項目',this.defaultSelect);
                 this.dataid = this.defaultSelect;
                 //預設項目需回傳EMIT事件會造成無限迴圈
-                // this.$emit('scopeSel_data',this.dataid);
+                this.$emit('scopeSel_data',this.dataid);
             }
         },
         // 資料改變時，傳出數值
         changeEvent:function(){
+            console.log('locate-select scopeSel_data emit!');
             this.$emit('scopeSel_data',this.dataid);
         },
         getMainData: async function () {
+            console.log('trigger locate-select getMainData');
             // let reqid = this.dataid;
             // let getedItem = {};
             //取得整場架構資料
@@ -119,6 +121,7 @@ export default {
             localStorage.setItem('architecture',JSON.stringify(this.maindata));
             var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
             this.maindata = data;
+            console.log('trigger getMainData:',this.maindata);
         },
         setNestedDisabled: function (obj, name, onlyshowlevel = 1) {
             //全部都設成disabled
