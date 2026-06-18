@@ -1507,6 +1507,17 @@ export default {
         console.log(routeData);
         window.open(routeData.href, "_blank");
       
+    },
+    handleClick(type) {//點擊上方按鈕建議後的處理
+      this.$toast.info('type:'+type, { duration: 2500 });
+    // switch (type) {
+    //     case 'important':
+    //       break
+    //     case 'quantity':
+    //       break
+    //     case 'additive':
+    //       break
+    //   }
     }
   },
   async created() {
