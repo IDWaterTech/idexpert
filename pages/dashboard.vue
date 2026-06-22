@@ -253,7 +253,14 @@
                 </v-card>
               </v-col>
             </v-row>
-
+            <!-- dialog -->
+            <v-dialog v-model="dialog.show" width="500px">
+              <!-- 根據 is 屬性的值，動態決定要渲染哪個元件 -->
+               <v-card>
+                 <component :is="dialog.component" v-if="dialog.component" @closeDialog="handleEmit('closeDialog',$event)" />
+                 <div v-else>some error</div>
+               </v-card>
+            </v-dialog>
           </div>
         </div>
       </div>
@@ -399,8 +406,6 @@ export default {
       //---
       tableloading: false,
       waterdata: [],
-      // waterdatacols: {},
-      waterloading: false,
       //---日曆
       menu_startdate: false,
       menu_enddate: false,
@@ -488,11 +493,6 @@ export default {
         {id:0,name_ch:'5分鐘內最新數據',value:5},
         {id:1,name_ch:'30分鐘內最新數據',value:30},
         {id:2,name_ch:'8小時內最新數據',value:480},
-        // {id:4,name_ch:'8小時內最新數據',value:1000000},
-        
-        // {id:4,name_ch:'30000',value:800000},
-        // {id:5,name_ch:'40000',value:1000000}
-        
       ],
       timeSelect:0,
       alertAllData:[],
@@ -502,13 +502,16 @@ export default {
       colData:[],
       //----------------------
       btns: [
-      { text: '重要記事 +', type: 'important' },
-      { text: '料量設定 +', type: 'quantity' },
+      { text: '重要記事 +', type: 'calendarForm' },
+      { text: '料量設定 +', type: 'feedOrder' },
       { text: '添加物設定 +', type: 'additive' },
       { text: '檢驗檢測 +', type: 'inspect' },
       { text: '觀察網 +', type: 'observe' },
       { text: '收成資料 +', type: 'harvest' }
-    ]
+    ],
+    dialog:{show:false,component:'calendar'},
+    //----------------------重要紀事
+    
     };
   },
   methods: {
@@ -679,123 +682,6 @@ export default {
         this.mainpool.items = [];
       }
     },
-    //所有資料
-    // getAll: async function (
-    //   start_date,
-    //   end_date,
-    //   sel_main,
-    //   sel_area,
-    //   data_group
-    // ) {
-    //   const agent = new https.Agent({
-    //     rejectUnauthorized: false
-    //   });
-
-    //   let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/all-data/`;
-    //   let parm = {
-    //     started_date: start_date,
-    //     ended_date: end_date,
-    //     factory_id: sel_main,
-    //     pond_area_id: sel_area,
-    //     data_group: data_group
-    //   };
-    //   switch (data_group) {
-    //     case "water": //水質
-    //       this.waterloading = true;
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.waterdata = res.data;
-    //           // this.goAnchor('#chart');
-    //         })
-    //         .catch(err => {
-    //           alert("失敗：" + err.message);
-    //         });
-    //       this.waterloading = false;
-    //       break;
-    //     case "feed": //飼料
-    //       this.feedloading = true;
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.feeddata = res.data;
-    //           // this.goAnchor('#chart');
-    //         })
-    //         .catch(err => {
-    //           alert("失敗：" + err.message);
-    //         });
-    //       this.feedloading = false;
-    //       break;
-    //     case "env": //環境
-    //       this.envloading = true;
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.envdata = res.data;
-    //           // this.goAnchor('#chart');
-    //         })
-    //         .catch(err => {
-    //           alert("失敗：" + err.message);
-    //         });
-    //       this.envloading = false;
-    //       break;
-    //     case "obs": //觀察網
-    //       this.obsloading = true;
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.obsdata = res.data;
-    //           // this.goAnchor('#chart');
-    //         })
-    //         .catch(err => {
-    //           alert("失敗：" + err.message);
-    //         });
-    //       this.obsloading = false;
-    //       break;
-    //     case "adv": //進階值
-    //       this.advloading = true;
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.advdata = res.data;
-    //           // this.goAnchor('#chart');
-    //         })
-    //         .catch(err => {
-    //           alert("失敗：" + err.message);
-    //         });
-    //       this.advloading = false;
-    //       break;
-    //     case "pbio": //益生菌
-    //       this.pbioloading = true;
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.pbiodata = res.data;
-    //           // this.goAnchor('#chart');
-    //         });
-    //       this.pbioloading = false;
-    //       break;
-    //     case "material"://養殖用料
-    //       this.materialloading = true;
-    //       parm.data_group = 'breeding_material';
-    //       await this.$axios
-    //         .get(apiURL, { params: parm }, { httpsAgent: agent })
-    //         .then(res => {
-    //           console.log("select:", res.request.responseURL);
-    //           this.materialdata = res.data;
-    //           // this.goAnchor('#chart');
-    //         });
-    //       this.materialloading = false;
-    //     default:
-    //       break;
-    //   }
-    // },
     showmpFun: function () {
       this.showmp = !this.showmp;
     },
@@ -1509,15 +1395,20 @@ export default {
       
     },
     handleClick(type) {//點擊上方按鈕建議後的處理
+      this.dialog.show = true;
+      this.dialog.component = type;
       this.$toast.info('type:'+type, { duration: 2500 });
-    // switch (type) {
-    //     case 'important':
-    //       break
-    //     case 'quantity':
-    //       break
-    //     case 'additive':
-    //       break
-    //   }
+    },
+    handleEmit(type,event){
+      switch (type) {
+        case 'closeDialog':
+          this.dialog.show = false;
+          break;
+        default:
+          //找不到任何事件對應，先跳錯誤訊息
+          this.$toast.error(`handleEmit Error=> type: ${type},event: ${JSON.stringify(event)}`, { duration: 2500 });
+          break;
+      }
     }
   },
   async created() {

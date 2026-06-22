@@ -712,7 +712,7 @@ export default {
   },
   async mounted() {
     this.isLoading = false;
-    this.$refs.calendar.checkChange();
+    this.$refs.calendar.checkChange();//強制檢查目前顯示的日期範圍是否有變化，並觸發 change 事件
     //取得整場架構資料
     await this.getMainData();
     //取得警戒等級
