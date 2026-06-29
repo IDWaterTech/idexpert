@@ -123,7 +123,7 @@
             <!-- 按鈕列 -->
             <v-row class="mb-1">
               <v-col v-for="(btn,index) in btns" :key="btn.text" cols="6" sm="4" md="2" class="py-1">
-                <v-btn outlined color="indigo" block @click="handleClick(btn.type)">
+                <v-btn outlined color="indigo" block @click="handleClick(btn)">
                   {{ index + 1 }}. {{ btn.text }}
                 </v-btn>
               </v-col>
@@ -254,7 +254,7 @@
               </v-col>
             </v-row>
             <!-- dialog -->
-            <v-dialog v-model="dialog.show" width="500px">
+            <v-dialog v-model="dialog.show" :width="dialog.width" v-if="dialog.show">
               <!-- 根據 is 屬性的值，動態決定要渲染哪個元件 -->
                <v-card>
                  <component :is="dialog.component" v-if="dialog.component" @closeDialog="handleEmit('closeDialog',$event)" />
@@ -502,14 +502,14 @@ export default {
       colData:[],
       //----------------------
       btns: [
-      { text: '重要記事 +', type: 'calendarForm' },
-      { text: '料量設定 +', type: 'feedOrder' },
-      { text: '添加物設定 +', type: 'additive' },
-      { text: '檢驗檢測 +', type: 'inspect' },
+      { text: '重要記事 +', type: 'calendarForm',width:"500px" },
+      { text: '飼料設定 +', type: 'feedOrder',width:'' },
+      { text: '添加物設定 +', type: 'indicatorForm',width:'500px' },
+      { text: '檢驗檢測 +', type: 'inspectReport',width:'500px' },
       { text: '觀察網 +', type: 'observe' },
       { text: '收成資料 +', type: 'harvest' }
     ],
-    dialog:{show:false,component:'calendar'},
+    dialog:{show:false,component:'calendar',width:"500px"},
     //----------------------重要紀事
     
     };
@@ -1394,15 +1394,17 @@ export default {
         window.open(routeData.href, "_blank");
       
     },
-    handleClick(type) {//點擊上方按鈕建議後的處理
-      this.dialog.show = true;
-      this.dialog.component = type;
-      this.$toast.info('type:'+type, { duration: 2500 });
+    handleClick(myBtn) {//點擊上方按鈕建議後的處理
+      this.dialog.show = true;//顯示 按鈕對話框
+      this.dialog.width = myBtn.width;//設定對話框的寬
+      this.dialog.component = myBtn.type;//設定對話框要顯示什麼元件
+      this.$toast.info('type:'+myBtn.type, { duration: 2500 });
     },
     handleEmit(type,event){
       switch (type) {
         case 'closeDialog':
           this.dialog.show = false;
+          // this.dialog={show:false,component:'',width:"500px"};
           break;
         default:
           //找不到任何事件對應，先跳錯誤訊息

@@ -1055,7 +1055,7 @@
                   <div class="textfield flex-align-start flex-column">
                     <div class="select-type" style="width: 50%;">
                       <v-select v-model="add.type" dense filled :items="addOtherType" item-text="name_ch"
-                        item-value="id" label="項目類型" style="padding-top: 8px;margin-right: 16px;" @change="selectadd($event,id)"></v-select>
+                        item-value="id" label="檢驗類型" style="padding-top: 8px;margin-right: 16px;" @change="selectadd($event,id)"></v-select>
                     </div>
                     <div class="select-item full-width">
                         <div class="select-bacteria flex-align-end full-width">

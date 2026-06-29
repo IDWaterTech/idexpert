@@ -224,7 +224,14 @@ Vue.mixin({
         getAllColForSearchList:async function() {
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-for-search/`)
-                console.log("水質欄位清單:" + data.request.responseURL);
+                // console.log("水質欄位清單:" + data.request.responseURL);
+                //資料樣子
+                // [ {
+                //    "group": "env",
+                //    "id": "env_19",
+                //    "name_ch": "進水量",
+                //    "name_en": "inflow"
+                // } ]
                 if(data.status==200) {
                     return data.data;
                 }else {
@@ -286,8 +293,9 @@ Vue.mixin({
                     });
                     return true;
                 }else {
+                    console.error("新增失敗:",data.data);
                     this.$toast.error("新增失敗：" + data.data, {
-                        duration: 2000
+                        duration: 3000
                     });
                 }
     

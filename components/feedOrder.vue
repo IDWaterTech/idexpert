@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import feedSetting from '@/pages/feed/order.vue'
+import feedSetting from '@/pages/feed/orderV2.vue'
 
 export default {
     components: {
@@ -72,16 +72,15 @@ export default {
     data() {
         return {
             activeTab: 0,
-
             tabs: [
                 {
                     value: 'A',
-                    label: 'A',
+                    label: '單池設定',
                     component: null, // 靜態頁
                 },
                 {
                     value: 'B',
-                    label: 'B',
+                    label: '多池設定',
                     component: 'feedSetting', // 對應 components key
                 },
             ],

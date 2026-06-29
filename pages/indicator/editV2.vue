@@ -1499,8 +1499,7 @@ export default {
       // ) {
       //   filtermain = filtermain.filter(main => main.id == this.sel_main);
       // }
-      console.log('filtermain',filtermain);
-      console.log('area',this.sel_main,this.sel_area )
+      console.log('area',this.sel_main,this.sel_area );
       if (
         //看有沒有選場
         this.sel_main != undefined &&
