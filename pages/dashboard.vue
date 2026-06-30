@@ -506,7 +506,7 @@ export default {
       { text: '飼料設定 +', type: 'feedOrder',width:'' },
       { text: '添加物設定 +', type: 'indicatorForm',width:'500px' },
       { text: '檢驗檢測 +', type: 'inspectReport',width:'500px' },
-      { text: '觀察網 +', type: 'observe' },
+      { text: '觀察網 +', type: 'observeForm',width:'500px' },
       { text: '收成資料 +', type: 'harvest' }
     ],
     dialog:{show:false,component:'calendar',width:"500px"},

@@ -100,7 +100,7 @@ export default {
         },
         // 資料改變時，傳出數值
         changeEvent:function(){
-            console.log('locate-select scopeSel_data emit!');
+            // console.log('locate-select scopeSel_data emit!');
             this.$emit('scopeSel_data',this.dataid);
         },
         getMainData: async function () {

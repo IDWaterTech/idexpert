@@ -2337,33 +2337,6 @@ export default {
           this.isLoading = true;
         }
         this.isSearch = true;
-        // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/field-option/`;
-        // await this.$axios.get(url).then(res => {
-        //     if(res.status==200){
-        //         this.optData = res.data;
-        //         // console.log(this.optData);
-
-        //         let datas = _.cloneDeep(this.observableData);
-        //         this.observableData = [];
-        //         datas.forEach(odata=>{
-        //           this.getFilter(odata);
-        //         })
-
-        //         this.observableData = _.cloneDeep(datas);
-        //         if(this.observableData.length>0) {
-        //           this.getChartData();
-        //         }
-        //         this.isSearch = true;
-                
-        //       }else{
-        //           this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-        //       }
-        //     })
-        //     .catch(error=>{
-        //         this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-        //     })
-        //     .finally(() => {
-        //         });
       }else {
         let datas = _.cloneDeep(this.observableData);
         this.observableData = [];
@@ -2743,17 +2716,22 @@ export default {
         this.observeEdit.shrimps = [];
         this.shell_qty = 0;
         this.dead_shrimp_qty = 0;
-        var keyLst = Object.keys(this.optData);
-        keyLst.forEach(k=>{
-          if(k=='BodyColor'||k=='BodyShape'||k=='HepatopancreasColor'||k=='IntestinalColor'||k=='MuscleColor') {
-            this.observeEdit[k].forEach(o=>{
-              o.value = 0;
-            })
-          }
-        })
+        const resetKeys = [
+                    'BodyColor',
+                    'BodyShape',
+                    'HepatopancreasColor',
+                    'IntestinalColor',
+                    'MuscleColor'
+                ];
+
+                Object.keys(this.optData).forEach(key => {
+                    if (resetKeys.includes(key)) {
+                        this.observeEdit[key].forEach(item => {
+                            item.value = 0;
+                        });
+                    }
+                });
       }
-      
-      
     },
     changeChips() {
       // 蝦隻狀態隻數更改要清空重新給定，避免資料未刷新
