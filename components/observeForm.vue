@@ -290,6 +290,7 @@
     </div>
 </template>
 <script>
+import dayjs from "dayjs";
 export default {
     data() {
         return {
@@ -343,7 +344,6 @@ export default {
             this.observeEdit.pond_id = evt;
         },
         changeQty() {
-            console.log("changeQty");
             // 觀察網隻數>0
             if (this.observeEdit.observation_qty > 0) {
                 if (this.observeEdit.shrimps && this.observeEdit.shrimps.length > 0) {
@@ -513,8 +513,7 @@ export default {
         },
         // 蝦隻狀態新增/編輯
         async observeSubmit() {
-            this.$toast.info("observeSubmit!!!", { duration: 2000 });
-            return;
+            
             let isError = false;
             if (!this.observeEdit.pond_id || this.observeEdit.pond_id == null) {
                 this.isPondId = true;
@@ -550,8 +549,7 @@ export default {
                             num.mc += parseInt(o.value);
                         }
                     })
-                    console.log('num', num, parm.observation_qty)
-
+                    // console.log('num', num, parm.observation_qty)
                 }
             })
             if (!parm.is_sample && num.bc !== parm.observation_qty) {
@@ -612,11 +610,12 @@ export default {
                     if (res) {
                         if (this.nowObserve == 'add') {
                             if (this.observeEdit.feed_amount !== null && this.observeEdit.feed_amount !== '') {
-                                this.postObservable(this.observeEdit);
+                                this.postObservable(this.observeEdit);//裡面會設定關閉??why
                             } else {
-                                this.observeDialog = false;
-                                this.getObservationData();
+                                // this.observeDialog = false;
+                                // this.getObservationData();
                                 this.$toast.success("成功", { duration: 2000 });
+                                this.closeDialog();
                             }
                         } else {
                             let observe = this.observableData.filter(x => x.shrimp_id == this.observeEdit.shrimp_id)[0];
@@ -636,8 +635,9 @@ export default {
                                 }
 
                             } else {
-                                this.observeDialog = false;
-                                this.getObservationData();
+                                // this.observeDialog = false;
+                                // this.getObservationData();
+                                this.closeDialog();
                             }
                         }
                     }
@@ -647,6 +647,29 @@ export default {
                 alert('請再次檢查是否有數值輸入錯誤')
             }
 
+        },
+        // 殘餌量新增/編輯
+        async postObservable(observeItem) {
+            console.log('nowObserve', this.nowObserve);
+            let parm = {
+                feed_amount: parseFloat(observeItem.feed_amount),
+                inspected_time: dayjs(observeItem.inspected_time).format("YYYY-MM-DD HH:mm:ss"),
+                pond_id: parseInt(observeItem.pond_id),
+            }
+            if (this.nowObserve == 'add') {
+                parm.created_user = this.$auth.$state.user.email;
+            } else {
+                parm.updated_user = this.$auth.$state.user.email
+            }
+            let url = `${this.nowObserve == 'add' ? this.$store.state.mydata.gobal_api.apiUrl + '/leftover-record/'
+                : this.$store.state.mydata.gobal_api.apiUrl + '/leftover-record/' + this.observeEdit.leftover_id + '/'}`;
+            var res = false;
+            res = this.nowObserve == 'add' ? await this.postLeftoverRecordList(parm) : await this.patchLeftoverRecordList(parm, this.observeEdit.leftover_id);
+            setTimeout(() => {
+                // this.observeDialog = false;
+                // this.getObservationData();
+                this.closeDialog();
+            }, 50)
         },
         // 觀察網
         // 取得顏色的項目
