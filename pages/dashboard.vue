@@ -1398,7 +1398,7 @@ export default {
       this.dialog.show = true;//顯示 按鈕對話框
       this.dialog.width = myBtn.width;//設定對話框的寬
       this.dialog.component = myBtn.type;//設定對話框要顯示什麼元件
-      this.$toast.info('type:'+myBtn.type, { duration: 2500 });
+      console.log('type:'+myBtn.type);
     },
     handleEmit(type,event){
       switch (type) {
