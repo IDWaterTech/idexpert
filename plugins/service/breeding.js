@@ -689,9 +689,26 @@ Vue.mixin({
         //     }
         // },
         // 取得循環資料清單
-        getBreedingRecordList2:async function(parm_url) {
+        // getBreedingRecordList2:async function(parm_url) {
+        //     try {
+        //         let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record2/?${parm_url}`)
+        //         console.log("循環資料清單:" + data.request.responseURL);
+        //         if(data.status==200) {
+        //             return data.data;
+        //         }else {
+        //             return [];
+        //         }
+
+        //     }catch(error) {
+        //         this.$toast.error("錯誤：" + error, { duration: 2000 });
+        //         console.log(error);
+        //         return [];
+        //     }
+        // },
+        // 取得循環資料清單
+        getBreedingRecordListV3:async function(parm_url) {
             try {
-                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record2/?${parm_url}`)
+                let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/v3/record2/?${parm_url}`)
                 console.log("循環資料清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
@@ -731,20 +748,22 @@ Vue.mixin({
         postBreedingRecordList2:async function(addform) {
             try {
                 let data = await this.$axios
-                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record2/`,addform,)
-                console.log("新增循環:" + data.request.responseURL);
-                if(data.data == "新增成功") {
-                    this.$toast.success("新增成功，自動調整池狀態", { duration: 2000 });
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/v3/record2/`,addform,)
+                // console.log("新增循環:" + data.request.responseURL);
+                if(data.status == "201") {
+                    let msg = Array.isArray(data.data.messages) ? data.data.messages.join(", ") : data.data.messages;
+                    this.$toast.success(`新增成功:${msg}`, { duration: 2000 });
                     return true;
                 }else {
                     this.$toast.error("新增失敗：" + data.data, {
                         duration: 2000
                     });
+                    console.error("error",data);
                 }
     
             }catch(error) {
                 this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                console.error("error",error);
             }
         },
         // 修改循環資料
@@ -769,18 +788,19 @@ Vue.mixin({
         patchBreedingRecordList2:async function(parm,id) {
             try {
                 let data = await this.$axios
-                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record2/${id}/`,parm,)
+                .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/v3/record2/${id}/`,parm,)
                 console.log("修改循環資料:" + data.request.responseURL);
-                if(data.data == "修改成功") {
+                if(data.data.detail == "Success") {
                     this.$toast.success("修改成功", { duration: 2000 });
                     return true;
                 }else {
-                    this.$toast.success("修改失敗：" + data.data, { duration: 2000 });
+                    this.$toast.error("修改失敗：" + data.data.messages, { duration: 2000 });
+                    console.error("error:",data);
                 }
     
             }catch(error) {
                 this.$toast.error("修改失敗ERR：" + error, { duration: 2000 });
-                console.log(error);
+                console.error("error:",data);
             }
         },
         // 刪除循環資料

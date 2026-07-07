@@ -2,6 +2,49 @@ import Vue from "vue";
 import https from "https";
 Vue.mixin({
 	methods: {
+        //取得單池基本的場設定
+        getPoolBasic:async function(type,id) {
+            // type 會有pool_id 或 pond_area_id 或 factory_id
+            let queryStr =  `?${type}=${id}`;
+            try {
+                let url = `${this.$store.state.mydata.gobal_api.apiUrl}/v3/ponds/${queryStr}`;
+                let data =  await this.$axios.get(url)
+                if(data.status==200) {
+                    return data.data;
+                }else { 
+                    this.$toast.error("取得資料失敗：" + data.data, { duration: 2000 });
+                    console.error("取得單池基本資料失敗：" + data.data);
+                }
+
+            }catch(error) {
+                this.$toast.error("錯誤：" + error, { duration: 2000 });
+                console.error(error);
+            }
+        },
+        // 新增單池投餵
+        postFeedOrder:async function(param) {
+            try {
+                let data = await this.$axios
+                .post(`${this.$store.state.mydata.gobal_api.apiUrl}/v3/feed-records/`,param,)
+                // console.log("新增單池投餵:" + data.request.responseURL);
+                 if (data.data.detail == "Success") {
+                    this.$toast.success("新增成功", {
+                        duration: 2000
+                    });
+                    return true;
+                }   else {
+                    this.$toast.error("新增失敗：" + data.data, {
+                        duration: 2000
+                    });
+                    console.error("新增單池投餵失敗：" + data.data);
+                    return false;
+                }
+            }catch(error) {
+                this.$toast.error("新增失敗ERR：" + error, { duration: 2000 });
+                console.log(error);
+                return false;
+            }
+        },
         /* 料量設定 */
         // 取得所有池況清單
         getAllPoolStateList:async function() {
@@ -446,7 +489,7 @@ Vue.mixin({
         getFeedSettingList:async function() {
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-settings/`)
-                console.log("套餐清單:" + data.request.responseURL);
+                // console.log("套餐清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
                 }

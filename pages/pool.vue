@@ -525,6 +525,17 @@
               <!-- <v-text-field filled dense type="number" v-model.number="addparm.initial_length" label="放養初始長度(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>       -->
+            <!-- ADG預測校正 -->
+            <v-card-text class="flex-align-center">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.adg_adj_factor"  label="ADG預測校正(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <!-- 飼料水溫下修百分比 -->
+            <v-card-text class="flex-align-center">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.temp_based_feed_reduction_rate"  label="飼料水溫下修百分比(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <!-- 放養初始重量 -->
             <v-card-text class="flex-align-center">
               <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight"  label="放養初始重量(g/單隻)(選)" @keyup="limitCharacter">
               </v-text-field>
@@ -545,8 +556,8 @@
           <!-- 輸入池密度 -->
           <div v-if="dataid.length>0" class="card-title">
             <div class="title">
-                <v-card-title>3. 輸入各池密度</v-card-title>
-                <div v-if="volumeError" class="error-text">*請確實輸入養殖池密度</div>
+                <v-card-title>3. 輸入各池苗袋及數量</v-card-title>
+                <div v-if="volumeError" class="error-text">*請確實輸入苗袋及數量</div>
             </div>
             <!-- <div class="chevron" >
               <v-icon v-if="addChooseOpen">mdi-triangle-small-up</v-icon>
@@ -554,7 +565,7 @@
             </div> -->
           </div>
           <div v-if="dataid.length>0" class="basic pl-2">
-            <v-card-text class="flex-align-center pt-0">
+            <v-card-text v-if="false" class="flex-align-center pt-0">
               <v-row class="border-bottom mb-3 align-center" style="padding: 0 8px 8px;">
                 <v-col cols="3" class="pa-0">
                   <span class="d-inline-block" style="color:#40657A;font-weight: bold;">
@@ -585,13 +596,44 @@
             </v-card-text>
             <v-card-text class="pt-0">
               <v-row>
-                <!-- <div class="pond" style="padding: 8px 0;width: 100%;border-bottom: 1px solid rgba(0,0,0,0.1);display: inline-block;"> -->
+                <!-- 自動LOOP生成各池 -->
                   <v-col cols="12" md="6" sm="6" class="pa-0 pb-2" v-for="pond in dataVolumn" :key="'volume'+pond.id">
                     <span class="ml-2" style="color:#40657A;font-weight: bold;">
                       {{ pond.name }}
                     </span>
-                    
                     <div class="volume flex-align-start flex-column">
+                      放苗袋數：
+                      <el-input-number
+                        type="number"
+                        :id="pond.name"
+                        :ref="pond.name"
+                        class="ml-2"
+                        v-model="pond.seedling_bags"
+                        size="mini"
+                        :precision="2"
+                        :step="1"
+                        :min="0"
+                        prop="number"
+                        required="true"
+                      ></el-input-number>
+                      每袋數量：
+                      <el-input-number
+                        type="number"
+                        :id="pond.name"
+                        :ref="pond.name"
+                        class="ml-2"
+                        v-model="pond.num_per_bag"
+                        size="mini"
+                        :precision="2"
+                        :step="1"
+                        :min="0"
+                        prop="number"
+                        required="true"
+                      ></el-input-number>
+                    </div>
+
+                    <!-- 2026/7/1捨棄改苗袋數 -->
+                    <div v-if="false" class="volume flex-align-start flex-column">
                       <el-input-number
                         type="number"
                         :id="pond.name"
@@ -795,6 +837,17 @@
               <v-text-field filled dense type="number" v-model.number="editparm.initial_length" label="放養初始重量(選)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>   -->
+            <!-- ADG預測校正 -->
+            <v-card-text class="flex-align-center">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.adg_adj_factor" label="ADG預測校正(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <!-- 飼料水溫下修百分比 -->
+            <v-card-text class="flex-align-center">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.temp_based_feed_reduction_rate" label="飼料水溫下修百分比(%)(選)">
+              </v-text-field>
+            </v-card-text>
+            <!-- 放養初始重量 -->
             <v-card-text class="flex-align-center">
               <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" @keyup="limitCharacter">
               </v-text-field>
@@ -839,6 +892,18 @@
                 <v-col cols="3">
                   <v-text-field v-model.number="editparm.current_stock_num" label="當前養殖數量" type="number" :rules="rules.require"
                     autocomplete="off" dense>
+                  </v-text-field>
+                </v-col>
+                <!-- 放苗袋數 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.seedling_bags" label="放苗袋數" type="number" :rules="rules.require"
+                    disabled autocomplete="off" dense>
+                  </v-text-field>
+                </v-col>
+                <!-- 每袋數量 -->
+                <v-col cols="3">
+                  <v-text-field v-model.number="editparm.num_per_bag" label="每袋數量" type="number" :rules="rules.require"
+                    disabled autocomplete="off" dense>
                   </v-text-field>
                 </v-col>
                 <v-col cols="12">
@@ -2068,7 +2133,7 @@ export default {
       var parm_url = Object.keys(parm)
         .map(key => key + "=" + parm[key])
         .join("&");
-      let getBreedingRecordList = await this.getBreedingRecordList2(parm_url);
+      let getBreedingRecordList = await this.getBreedingRecordListV3(parm_url);
       let data = typeof (getBreedingRecordList)=='string'?[]:getBreedingRecordList;
       this.circleData = data;
       // console.log(data);
@@ -2186,6 +2251,7 @@ export default {
     //     });
     //   this.warnLoading = false;
     // },
+    //新增循環 畫面開啟
     showadd: async function(bool=false) {
       this.addparm.started_date = undefined;
       this.addparm.name = undefined;
@@ -2565,12 +2631,15 @@ export default {
 
       param = _.cloneDeep(this.addparm);
       param.created_user = updUser;
-      // console.log("dataVolumn",this.dataVolumn);
+      // console.log("add param:",param);
+      // return;
       
       this.dataVolumn.forEach(d=>{
         param.multi_data.push({
           pond_id: d.id,
-          num_per_unit: d.num_per_unit,
+          // num_per_unit: d.num_per_unit,
+          seedling_bags:d.seedling_bags,//放苗袋數
+          num_per_bag:d.num_per_bag,//每袋放苗數
           current_stock_num:d.initial_stocking_num,//當前養殖數量
           name: param.name.replace('pool',d.name)
         })
@@ -2581,55 +2650,25 @@ export default {
       delete param.name;
       delete param.num_per_unit;
 
-      
-      // let param = _.cloneDeep(this.addparm);
-      // param.created_user = updUser;
-      // param.pond_id = parseInt(this.dataid[0]); //需要int
-        
-      // //樣板資料
-      // var tempMain = {};
-      // var tempContent = [];
-      // if(this.tempSelect!=undefined){
-      //   var id = this.tempSelect;
-      //   var temp = this.template_all.filter(x=>x.tempMain.id==id)[0];
-      //   tempMain = temp.tempMain;
-      //   tempContent = temp.tempContent;
-      // }
-      // param['tempMain'] = tempMain;
-      // param['tempContent'] = tempContent;
-      // delete param.initial_stocking_num;//刪除初始放苗量
-      // this.dataVolumn.forEach(d=>{
-      //   if(d.id==this.dataid[0]) {
-      //     param.num_per_unit = d.num_per_unit;
-      //     param.name = param.name.replace('pool',d.name);
-      //   }
-      //   if(!d.num_per_unit||d.num_per_unit==null) {
-      //     this.volumeError = true;
-      //   }
-      // })
-
-      
-      // let parm = Object.assign({},this.addparm);
-      // return;
-      
-      //console.log('>>>>>Submit Data',param);
-      // debugger;
-      //return;
-
       var valid = this.$refs.cycleform.validate();
       
       if(this.dataid.length>0) {
         this.isDataidError = false;
-        this.dataVolumn.forEach(d=>{
-          if(!d.num_per_unit || d.num_per_unit==null ||d.num_per_unit=='') {
-            this.volumeError = true;
-          }
+        // 一個以上符合條件就會回傳 true
+        // 不允許null、undefined、''、0、false、NaN
+        this.volumeError = this.dataVolumn.some(
+          d => !d.seedling_bags || !d.num_per_bag
+        );
+        // this.dataVolumn.forEach(d=>{
+        //   if(!d.num_per_unit || d.num_per_unit==null ||d.num_per_unit=='') {
+        //     this.volumeError = true;
+        //   }
           
-        })
+        // })
       }else {
         this.isDataidError = true;
       }
-      console.log('valid',valid,this.isDataidError,this.volumeError);
+      //console.log('valid',valid,this.isDataidError,this.volumeError);
       if(valid && !this.isDataidError && !this.volumeError) {
         this.dialogLoading = false;
         // alert('submit data：'+ JSON.stringify(param));
@@ -2637,6 +2676,7 @@ export default {
         res = await this.postBreedingRecordList2(param);
         setTimeout(()=>{
             if(res) {
+              console.log('新增循環成功!!!',res);
               this.addDialog = false;
               this.$refs.cycleform.reset();
               this.statusId = [];
@@ -2653,35 +2693,6 @@ export default {
             this.addDialog = false;
             this.getCircleData();
         },50)
-        // await this.$axios
-        //   .post(
-        //     `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/`,
-        //     param
-        //   )
-        //   .then(res=>{
-        //     if (res.data == "新增成功") {
-        //       this.addDialog = false;
-        //       this.$refs.cycleform.reset();
-        //       this.statusId = [];
-        //       param.multi_data.forEach(x=>{
-        //         this.statusId.push(x.pond_id);
-        //       })
-        //       let status = {
-        //         id: this.statusId,
-        //         status: '養殖審核'
-        //       }
-        //       this.compareStatus(status);
-        //       this.getCircleData();
-        //       this.$toast.success("新增成功，自動調整池狀態：「養殖審核」", { duration: 2000 });
-        //     }else{
-        //       this.$toast.error("新增失敗:" + res.data, { duration: 2000 });
-        //       console.log(res.data);
-        //     }
-        //   })
-        //   .catch(error=>{
-        //     this.$toast.error("新增失敗:" +error, { duration: 2000 });
-        //     console.log(error);
-        //   })
       }else {
         if(!this.addbasicDataOpen) {
           this.addbasicDataOpen = true;
@@ -3692,13 +3703,15 @@ export default {
         getData.initial_stocking_num = Number(getData.initial_stocking_num.toFixed(2));
         // 預估存活要為數值
         getData.estimated_survival_rate = parseFloat(getData.estimated_survival_rate.split('%')[0]);
-        this.editDialog = true;
-        console.log('>>>>edit',getData);
+        
+        this.editparm = getData;
+        // console.log('>>>>edit',this.editparm);
         setTimeout(()=>{
           this.resultListOpen = true;
           // this.resultCycleOpen = false;
           // this.currentDataId = null;
-          this.editparm = getData;
+          // this.editparm = getData;
+          // console.log('>>>>editparm',this.editparm);
           // if(this.editparm.initial_weight==null||this.editparm.initial_weight=='') {
           //   this.editparm.initial_weight = 0.1;
           // }
@@ -3724,7 +3737,8 @@ export default {
             document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0;
           }
         },200)
-        
+        this.editDialog = true;
+        console.log("打開編輯");
         // console.log(this.accdata.filter(x=>{let name = (x.position)+'-'+(x.account_name);return name == this.editparm.person_in_charge}));
       }else {
         alert('請先至 管理 > 養殖設定 > 樣板設定 中新增您的循環樣板!')
@@ -3760,41 +3774,13 @@ export default {
               this.getCircleData();
             }
         },50)
-        // await this.$axios
-        //     .patch(`${this.$store.state.mydata.gobal_api.apiUrl}/breeding/record/${this.editparm.id}/`, parm)
-        //     .then(res => {
-        //         if(res.data=='修改成功'){
-        //             this.$toast.success("修改成功", { duration: 2000 });
-        //             // 結束循環要將池更改為空池
-        //             if(bool == true) {
-        //               console.log('bool',bool);
-        //               let status={
-        //                 id:new Array(),
-        //                 status: '空池'
-        //               }
-        //               status.id.push(this.poolid);
-        //               this.compareStatus(status);
-        //             }
-        //             this.editDialog = false;
-        //             this.getCircleData();
-                    
-        //             // this.updateouterAction('done');
-        //         }else{
-        //             this.$toast.error("修改失敗:" + res.data, { duration: 2000 });
-        //         }
-
-        //         console.log("修改API:" + res.request.responseURL);
-        //     })
-        //     .catch(error => {
-        //         this.$toast.error("error:" + error, { duration: 2000 });
-        //     })
-        //     .finally(() => {
-        //     });
 
       }
     },
+    //統一密度計算
     calcutorPerUnit(bool) {
-      
+      this.$toast.success("統一密度計算，作廢", { duration: 2000 });
+      return;
       if(this.dataVolumn.length>0) {
         if(bool) {
           if(this.changeAllNum(this.all_num_per_unit)) {

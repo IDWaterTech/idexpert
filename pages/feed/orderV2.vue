@@ -357,7 +357,7 @@
                   v-model="sdate" locale="zh-tw"
                   no-title
                   hide-details
-                  @input="menu_sdate = false"
+                  @input="menu_date = false"
                 ></v-date-picker>
               </v-menu>
             </v-col>

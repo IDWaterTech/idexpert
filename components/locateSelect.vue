@@ -104,7 +104,7 @@ export default {
             this.$emit('scopeSel_data',this.dataid);
         },
         getMainData: async function () {
-            console.log('trigger locate-select getMainData');
+            // console.log('trigger locate-select getMainData');
             // let reqid = this.dataid;
             // let getedItem = {};
             //取得整場架構資料
@@ -121,7 +121,7 @@ export default {
             localStorage.setItem('architecture',JSON.stringify(this.maindata));
             var data = this.setNestedDisabled(_.cloneDeep(this.maindata), "");
             this.maindata = data;
-            console.log('trigger getMainData:',this.maindata);
+            // console.log('trigger getMainData:',this.maindata);
         },
         setNestedDisabled: function (obj, name, onlyshowlevel = 1) {
             //全部都設成disabled

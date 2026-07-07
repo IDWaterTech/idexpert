@@ -527,7 +527,7 @@ Vue.mixin({
         getFeedEventList:async function() {
             try {
                 let data =  await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/feed-event-settings/`)
-                console.log("事件清單:" + data.request.responseURL);
+                // console.log("事件清單:" + data.request.responseURL);
                 if(data.status==200) {
                     return data.data;
                 }else {

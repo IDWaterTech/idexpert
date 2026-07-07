@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card style="min-height: 800px;">
 
         <!-- Header -->
         <v-card-title class="d-flex justify-space-between align-center">
@@ -45,6 +45,7 @@
                         <component
                             v-if="tab.component"
                             :is="tab.component"
+                            @closeDialog="handleEmit('closeDialog',$event)" 
                         />
 
                         <!-- 沒 component 就顯示靜態內容 -->
@@ -62,11 +63,11 @@
 </template>
 
 <script>
-import feedSetting from '@/pages/feed/orderV2.vue'
+import orderV2 from '@/pages/feed/orderV2.vue'
 
 export default {
     components: {
-        feedSetting,
+        orderV2,
     },
 
     data() {
@@ -76,18 +77,30 @@ export default {
                 {
                     value: 'A',
                     label: '單池設定',
-                    component: null, // 靜態頁
+                    component: 'feedOrderOnePool', // 靜態頁
                 },
                 {
                     value: 'B',
                     label: '多池設定',
-                    component: 'feedSetting', // 對應 components key
+                    component: 'orderV2', // 對應 components key
                 },
             ],
         }
     },
 
     methods: {
+        handleEmit(type, event) {
+            switch (type) {
+                case 'closeDialog':
+                    this.closeDialog();//繼續往外傳
+                    // this.dialog={show:false,component:'',width:"500px"};
+                    break;
+                default:
+                    //找不到任何事件對應，先跳錯誤訊息
+                    this.$toast.error(`handleEmit Error=> type: ${type},event: ${JSON.stringify(event)}`, { duration: 2500 });
+                    break;
+            }
+        },
         closeDialog() {
             this.$emit('closeDialog', true)
         },
