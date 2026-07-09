@@ -91,6 +91,12 @@
 import dayjs from "dayjs";
 import _ from "lodash";
 export default {
+  props: {
+    passArea: {
+      type: String,
+      default: ''//資料格式：紫微_10026
+    }
+  },
   data() {
     return {
       //日期menu
@@ -110,7 +116,7 @@ export default {
       defitem: '',
       waterdatacols: [],
       coldata:[],//{ "group": "env", "id": 19, "name_ch": "進水量", "name_en": "inflow", "unit": "L", "max": 999, "min": 0, "warning_min": null, 
-      nowArea:'',
+      nowArea:this.passArea,
       maindata: [],//架構資料
       sel_area: "",
       sel_pool: "",
@@ -301,6 +307,9 @@ export default {
     await this.getWaterList();//取得指標清單
     await this.getMainData();
   },
+  mounted() {
+    console.log('indicatorForm mounted, passArea:', this.passArea);
+  }
 }
 </script>
 

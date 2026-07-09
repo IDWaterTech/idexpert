@@ -94,22 +94,20 @@
                 <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
                   class="mx-1" dense hide-details></v-text-field>
               </v-col> -->
-            <!-- 查詢/小螢幕布局圖 -->
-            <v-col v-if="sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center">
-              <!-- <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
-                  class="mx-1" dense hide-details style="max-width: 120px;"></v-text-field> -->
-              <button class="flex-align-center mt-n1 text-left" icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
+            <!-- 查詢/小螢幕布局圖 暫時用不上布局圖 先隱藏 --->
+            <v-col v-if="false && sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center">
+              <button
+               class="flex-align-center mt-n1 text-left" icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
                 style="font-size: 0.85rem;color: #6c9bcd;">
                 <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
               </button>
-
               <!-- 可能同池名，在不同場，所以value= name -->
               <!-- <v-btn tile class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel();resultListOpen = false">查詢</v-btn> -->
 
             </v-col>
           </v-row>
-          <!-- 大螢幕布局圖 -->
-          <v-row v-if="sel_main&&windowWidth>959.98 " class="mb-0">
+          <!-- 大螢幕布局圖 暫時用不上布局圖 先隱藏-->
+          <v-row v-if="false && sel_main&&windowWidth>959.98 " class="mb-0">
             <v-col cols="12" sm="12" class="pt-0">
               <button class="flex-align-center mt-n1" icon @click="showmpFun" v-if="sel_main" slot="prepend"
                 style="font-size: 0.85rem;color: #6c9bcd;">
@@ -123,7 +121,7 @@
             <!-- 按鈕列 -->
             <v-row class="mb-1">
               <v-col v-for="(btn,index) in btns" :key="btn.text" cols="6" sm="4" md="2" class="py-1">
-                <v-btn outlined color="indigo" block @click="handleClick(btn)">
+                <v-btn outlined :color="btn.param?.color || 'indigo'" block @click="handleClick(btn)">
                   {{ index + 1 }}. {{ btn.text }}
                 </v-btn>
               </v-col>
@@ -257,8 +255,8 @@
             <v-dialog v-model="dialog.show" :width="dialog.width" v-if="dialog.show">
               <!-- 根據 is 屬性的值，動態決定要渲染哪個元件 -->
                <v-card>
-                 <component :is="dialog.component" v-if="dialog.component" @closeDialog="handleEmit('closeDialog',$event)" />
-                 <div v-else>some error</div>
+                 <component :is="dialog.component" v-if="dialog.component" :passArea="dialog.param?.passArea" @closeDialog="handleEmit('closeDialog',$event)" />
+                 <v-card-text v-else class="text-center text-h5 pt-6">系統開發中</v-card-text>
                </v-card>
             </v-dialog>
           </div>
@@ -507,7 +505,8 @@ export default {
       { text: '添加物設定 +', type: 'indicatorForm',width:'500px' },
       { text: '檢驗檢測 +', type: 'inspectReport',width:'500px' },
       { text: '觀察網 +', type: 'observeForm',width:'500px' },
-      { text: '收成資料 +', type: 'harvest' }
+      { text: '收成資料 +', type: '',width:'500px' ,param:{passArea:''}},//harvest
+      {text: '警告訊息', type: '',width:'500px' ,param:{passArea:'',color:'red'}},
     ],
     dialog:{show:false,component:'calendar',width:"500px"},
     //----------------------重要紀事
@@ -539,12 +538,12 @@ export default {
       this.statcolor = data;
     },
     get_scopeData:async function(evt){
-      console.log('trigger get_scopeData.');
       console.log('get_scopeData-evt:',evt);//紫微_10026
       console.log('get_scopeData-maindata:',this.maindata);
       if(evt) {
         let areaName='';
         this.sel_area = evt.split('_')[evt.split('_').length-1];//10026
+        this.dialog.param = {passArea:evt};//紫微_10026
         if(evt.split('_').length>2) {
           for(let i=0;i<evt.split('_').length-1;i++) {
             areaName += evt.split('_')[i];
