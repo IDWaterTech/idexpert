@@ -162,7 +162,12 @@
                   <div class="card-title px-3 py-2">
                     <div class="title">
                       <v-card-title class="px-0 py-0"><span class="mr-1">養殖池資訊</span>
-                        <v-checkbox v-model="isHideEmpty" color="green" value="空池" hide-details><span style="color:green;" slot="label">隱藏空池</span></v-checkbox>
+                       <v-checkbox v-model="isHideEmpty" class="mr-2" color="green" value="空池" hide-details><span
+                            style="color:green;" slot="label">隱藏空池</span></v-checkbox>
+                        <!-- 下拉headers -->
+                        <v-autocomplete :items="['1', '2', '3', '4', '5', '6']" label="選擇欄位" multiple chips clearable dense
+                          outlined class="mx-0 my-0" color="primary"></v-autocomplete>
+                        
                       </v-card-title>
                     </div>
                     <!-- <div class="chevron" >
