@@ -95,7 +95,7 @@ export default {
                 //console.log('locate-select  設定項目',this.defaultSelect);
                 this.dataid = this.defaultSelect;
                 //預設項目需回傳EMIT事件會造成無限迴圈
-                this.$emit('scopeSel_data',this.dataid);
+                //this.$emit('scopeSel_data',this.dataid);
             }
         },
         // 資料改變時，傳出數值
