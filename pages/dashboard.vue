@@ -511,7 +511,7 @@ export default {
       { text: '檢驗檢測 +', type: 'inspectReport',width:'500px' },
       { text: '觀察網 +', type: 'observeForm',width:'500px' },
       { text: '收成資料 +', type: 'harvestForm',width:'500px' ,param:{passArea:''}},//harvest
-      {text: '警告訊息', type: '',width:'500px' ,param:{passArea:'',color:'red'}},
+      {text: '警告訊息', type: 'alertForm',width:'500px' ,param:{passArea:'',color:'red'}},
     ],
     dialog:{show:false,component:'calendar',width:"500px"},
     //----------------------重要紀事
