@@ -514,30 +514,30 @@
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.cn" label="目標CN比(選)">
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="addparm.cn" :rules="rules.require"  label="目標CN比(*)">
               </v-text-field>
-              <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" label="預估FCR(選)">
+              <v-text-field filled dense type="number" v-model.number="addparm.estimated_fcr" :rules="rules.require"  label="預估FCR(*)">
               </v-text-field>
             </v-card-text>
             <!-- <v-card-text style="display: flex;align-items: center;"> -->
                <!-- 放養初始長度 -->
                <!-- <el-table-column label="放養初始長度" prop="initial_length" align="center"></el-table-column> -->
-              <!-- <v-text-field filled dense type="number" v-model.number="addparm.initial_length" label="放養初始長度(選)" style="margin-right: 4px;">
+              <!-- <v-text-field filled dense type="number" v-model.number="addparm.initial_length" label="放養初始長度(*)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>       -->
             <!-- ADG預測校正 -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.adg_adj_factor"  label="ADG預測校正(%)(選)">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" :rules="rules.require"  v-model.number="addparm.adg_adj_factor"  label="ADG預測校正(%)(*)">
               </v-text-field>
             </v-card-text>
             <!-- 飼料水溫下修百分比 -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.temp_based_feed_reduction_rate"  label="飼料水溫下修百分比(%)(選)">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" :rules="rules.require"  v-model.number="addparm.temp_based_feed_reduction_rate"  label="飼料水溫下修百分比(%)(*)">
               </v-text-field>
             </v-card-text>
             <!-- 放養初始重量 -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="addparm.initial_weight"  label="放養初始重量(g/單隻)(選)" @keyup="limitCharacter">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" :rules="rules.require" v-model.number="addparm.initial_weight"  label="放養初始重量(g/單隻)(*)" @keyup="limitCharacter">
               </v-text-field>
             </v-card-text>
             
@@ -549,7 +549,7 @@
             <!-- <v-col cols="12"> -->
               <!-- 樣板 先暫時拿掉-->
               <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
-                clearable @change="tempChange" label="選擇樣板(選)">
+                clearable @change="tempChange" label="選擇樣板(*)">
               </v-autocomplete> -->
             <!-- </v-col> -->
           </div>
@@ -828,28 +828,28 @@
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.cn" label="目標CN比(選)">
+              <v-text-field filled dense type="number" :rules="rules.require"  class="mr-1" v-model.number="editparm.cn" label="目標CN比(*)">
               </v-text-field>
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)">
+              <v-text-field filled dense type="number" :rules="rules.require"  v-model.number="editparm.estimated_fcr" label="預估FCR(*)">
               </v-text-field>
             </v-card-text>    
             <!-- <v-card-text style="display: flex;align-items: center;">
-              <v-text-field filled dense type="number" v-model.number="editparm.initial_length" label="放養初始重量(選)" style="margin-right: 4px;">
+              <v-text-field filled dense type="number" v-model.number="editparm.initial_length" label="放養初始重量(*)" style="margin-right: 4px;">
               </v-text-field>
             </v-card-text>   -->
             <!-- ADG預測校正 -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.adg_adj_factor" label="ADG預測校正(%)(選)">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" :rules="rules.require"  placeholder="請輸入 > 0 的數字" v-model.number="editparm.adg_adj_factor" label="ADG預測校正(%)(*)">
               </v-text-field>
             </v-card-text>
             <!-- 飼料水溫下修百分比 -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.temp_based_feed_reduction_rate" label="飼料水溫下修百分比(%)(選)">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" :rules="rules.require"  v-model.number="editparm.temp_based_feed_reduction_rate" label="飼料水溫下修百分比(%)(*)">
               </v-text-field>
             </v-card-text>
             <!-- 放養初始重量 -->
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" @keyup="limitCharacter">
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" :rules="rules.require"  v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(*)" @keyup="limitCharacter">
               </v-text-field>
             </v-card-text>
             
@@ -918,7 +918,7 @@
             <!-- <v-col cols="12"> -->
               <!-- 樣板 先暫時拿掉-->
               <!-- <v-autocomplete v-model="tempSelect" dense filled :items="template_items" item-text="name_ch" item-value="id" hide-details
-                clearable @change="tempChange" label="選擇樣板(選)">
+                clearable @change="tempChange" label="選擇樣板(*)">
               </v-autocomplete> -->
             <!-- </v-col> -->
           </div>
@@ -1036,13 +1036,13 @@
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.cn" label="目標CN比(選)" disabled>
+              <v-text-field filled dense type="number" class="mr-1" v-model.number="editparm.cn" :rules="rules.require" label="目標CN比(*)" disabled>
               </v-text-field>
-              <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" label="預估FCR(選)" disabled>
+              <v-text-field filled dense type="number" v-model.number="editparm.estimated_fcr" :rules="rules.require"  label="預估FCR(*)" disabled>
               </v-text-field>
             </v-card-text>
             <v-card-text class="flex-align-center">
-              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(選)" disabled>
+              <v-text-field filled dense type="number" class="mr-1" step="0.1" min="0.1" placeholder="請輸入 > 0 的數字" :rules="rules.require"  v-model.number="editparm.initial_weight" label="放養初始重量(g/單隻)(*)" disabled>
               </v-text-field>
             </v-card-text>
             
