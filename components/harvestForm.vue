@@ -45,22 +45,58 @@
                             </v-menu>
                         </v-col>
                         <v-col cols="12" class="d-flex justify-end">
-                            <v-btn color="primary">查詢養殖循環</v-btn>
+                            <v-btn color="primary" @click="get_harvestLst()">查詢養殖收成</v-btn>
                         </v-col>
                     </v-row>
                 </v-form>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-text>
-                <v-data-table dense
-                    :headers="[{ text: '養殖循環', value: 'cycle' }, { text: '起日', value: 'start_date' }, { text: '結束日', value: 'end_date' }, { text: '操作', value: 'action' }]"
-                    :items="[{ cycle: '循環1', start_date: '2024-01-01', end_date: '2024-02-01' }, { cycle: '循環2', start_date: '2024-02-02', end_date: '2024-03-01' }]"
-                    class="elevation-1">
+                <v-data-table dense show-expand item-key="id" :headers="headers" :items="harvestList"
+                    class="elevation-1" no-data-text="無養殖循環" :loading="harvestLoading">
+                    <!-- 養殖循環名稱 -->
+                    <template v-slot:[`item.seedling_name`]="{item}">
+                                    <span>{{ item.seedling_name }}</span><br/>
+                                    <span>批號：{{ item.name }}</span>
+                                </template>
+                    <!-- 操作欄位 -->
                     <template v-slot:[`item.action`]="{ item }">
                         <v-btn color="primary" icon @click="showAddDlg(item)">
                             <v-icon>mdi-plus</v-icon>
                         </v-btn>
                     </template>
+                    <!-- 展開內容 -->
+                    <template v-slot:expanded-item="{ headers, item }">
+                        <td :colspan="headers.length">
+
+                            <v-data-table dense :headers="harvestRecordHeaders" :items="item.harvest_records"
+                                hide-default-footer disable-pagination class="elevation-0">
+                                <!-- 無資料 -->
+                                <template v-slot:no-data>
+                                    <div class="text-center grey--text py-3">
+                                        尚無收成紀錄
+                                    </div>
+                                </template>
+                                <!-- 收成操作(先不要) -->
+                                <template v-slot:[`item.action`]="{ item: record }">
+                                    <v-btn icon small color="primary" @click="editHarvest(record)">
+                                        <v-icon small>
+                                            mdi-pencil
+                                        </v-icon>
+                                    </v-btn>
+
+                                    <v-btn icon small color="error" @click="deleteHarvest(record)">
+                                        <v-icon small>
+                                            mdi-delete
+                                        </v-icon>
+                                    </v-btn>
+                                </template>
+                            </v-data-table>
+
+                        </td>
+                    </template>
+
+
                 </v-data-table>
             </v-card-text>
         </v-card>
@@ -77,7 +113,7 @@
                                 <v-menu v-model="menu_aDate" :close-on-content-click="false" :nudge-right="40"
                                     transition="scale-transition" offset-y min-width="auto">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field v-model="addItem.收成日" :label="`選擇收成日(${addItem.min}~${addItem.max})`" prepend-icon="mdi-calendar"
+                                        <v-text-field v-model="addItem.收成日" :label="`選擇收成日(${addItem.min}~${(addItem.max)?addItem.max:''})`" prepend-icon="mdi-calendar"
                                             dense filled v-bind="attrs" v-on="on" :rules="rules.require" @click:prepend="
                                                 () => {
                                                     addItem.收成日 = getNowDate();
@@ -116,7 +152,7 @@ export default {
             valid: false,
             menu_sDate: false,
             menu_eDate: false,
-            search: { started_date: '', ended_date: '' },
+            search: { pond_id:'',started_date: '', ended_date: '' },
             rules: { require: [v => !!v || "*必要項目"] },
             addDlg: false,
             menu_aDate: false,
@@ -127,20 +163,114 @@ export default {
                 收成重量: '',
                 平均個重量:'',
                 remark:'',
-            }
+            },
+            headers: [
+                {
+                    text: '養殖循環',
+                    value: 'seedling_name',
+                     width: '200px'
+                },
+                {
+                    text: '起日',
+                    value: 'started_date'
+                },
+                {
+                    text: '結束日',
+                    value: 'ended_date'
+                },
+                {
+                    text: '操作',
+                    value: 'action',
+                    sortable: false
+                },
+                {
+                    text: '',
+                    value: 'data-table-expand'
+                }
+            ],
+            harvestRecordHeaders: [
+                {
+                    text: '收成日期',
+                    value: 'harvest_date'
+                },
+                {
+                    text: '個體重(g)',
+                    value: 'single_weight'
+                },
+                {
+                    text: '收成總量(kg)',
+                    value: 'harvest_yield'
+                },
+                //先不給細項操作
+                // {
+                //     text: '操作',
+                //     value: 'action',
+                //     sortable: false
+                // }
+            ],
+            harvestList:[
+                // {
+                //     ended_date: null
+                //     harvest_records: (2) [{…}, {…}]
+                //     id: 198
+                //     name: "20260707200536"
+                //     pond_id: 146
+                //     seedling_name: "SPF_白蝦_快大_王順永"
+                //     started_date: "2026-06-01"
+                // }
+            ],
+            harvestLoading:false,
         };
     },
     methods: {
+        //取得養殖收成詳細資料
+        get_harvestLst:async function(){
+            let valid = this.$refs.form.validate();
+            if(!valid){
+                return;
+            }
+
+            if(!this.search.pond_id){
+                this.$toast.error("請選擇養殖池",{duration:2000});
+                return;
+            }
+            this.harvestLoading = true;
+            this.harvestList = [];
+            let params = {
+                pond_id:this.search.pond_id,
+                started_date:this.search.started_date,
+                ended_date:this.search.ended_date
+            };
+             let url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/v3/harvest-records/`;
+            await this.$axios.get(url, { params: params })
+                .then((res) => {
+                    if (res.status == 200) {
+                        this.harvestList = res.data;
+                        // console.log("harvestList:",harvestList);
+                        
+                    } else {
+                        this.$toast.error({ message: '取得養殖收成資料失敗：' + res, duration: 2000 });
+                    }
+                })
+                .catch((error) => {
+                    this.$toast.error('取得養殖收成資料錯誤：'+res.data, { duration: 2000 });
+                    console.error('取得養殖收成資料錯誤：',res.data);
+                });
+
+            // console.log('get harvest params:',params);
+            this.harvestLoading = false;
+        },
         get_scopeData(data) {
-            console.log('get_scopeData', data);
+            this.search.pond_id = data;
+            // console.log('get_scopeData', data);
         },
         getNowDate: function () {
             return dayjs().format("YYYY-MM-DD");
         },
         //顯示新增對話框
         showAddDlg(item) {
-            this.addItem.min = item.start_date;
-            this.addItem.max =item.end_date;
+            this.addItem.min = item.started_date;
+            this.addItem.max =item.ended_date;
             this.addDlg = true;
         },
         submitAdd:async function() {
