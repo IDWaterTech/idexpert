@@ -61,7 +61,7 @@
                                 </template>
                     <!-- 操作欄位 -->
                     <template v-slot:[`item.action`]="{ item }">
-                        <v-btn color="primary" icon @click="showAddDlg(item)">
+                        <v-btn color="success" icon @click="showAddDlg(item)">
                             <v-icon>mdi-plus</v-icon>
                         </v-btn>
                     </template>
@@ -106,28 +106,28 @@
                     <span class="headline">新增收成紀錄</span>
                 </v-card-title>
                 <v-card-text>
-                    <v-form>
+                    <v-form ref="addDlgForm" v-model="addValid" lazy-validation>
                         <v-row dense>
                             <!-- 收成日日期 -->
                             <v-col cols="12" md="12">
                                 <v-menu v-model="menu_aDate" :close-on-content-click="false" :nudge-right="40"
                                     transition="scale-transition" offset-y min-width="auto">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field v-model="addItem.收成日" :label="`選擇收成日(${addItem.min}~${(addItem.max)?addItem.max:''})`" prepend-icon="mdi-calendar"
+                                        <v-text-field v-model="addItem.harvest_date" :label="`選擇收成日(${addItem.min}~${(addItem.max)?addItem.max:''})`" prepend-icon="mdi-calendar"
                                             dense filled v-bind="attrs" v-on="on" :rules="rules.require" @click:prepend="
                                                 () => {
-                                                    addItem.收成日 = getNowDate();
+                                                    addItem.harvest_date = getNowDate();
                                                 }
                                             "></v-text-field>
                                     </template>
-                                    <v-date-picker v-model="addItem.收成日" @input="menu_aDate = false" :min="addItem.min" :max="addItem.max"></v-date-picker>
+                                    <v-date-picker v-model="addItem.harvest_date" @input="menu_aDate = false" :min="addItem.min" :max="addItem.max"></v-date-picker>
                                 </v-menu>
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-text-field v-model.number="addItem.收成重量" type="number" label="收成總重量" :rules="rules.require" dense><span class="pa-0 ma-0" slot="append">Kg</span></v-text-field>
+                                <v-text-field v-model.number="addItem.harvest_yield" type="number" label="收成總量" :rules="rules.require" dense><span class="pa-0 ma-0" slot="append">Kg</span></v-text-field>
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-text-field v-model.number="addItem.平均個重量" type="number" label="平均個重量" :rules="rules.require" dense><span class="pa-0 ma-0" slot="append">Kg</span></v-text-field>
+                                <v-text-field v-model.number="addItem.single_weight" type="number" label="個體重" :rules="rules.require" dense><span class="pa-0 ma-0" slot="append">g</span></v-text-field>
                             </v-col>
                             <v-col cols="12" md="12">
                                 <v-textarea v-model="addItem.remark" label="說明" class="full-width" hide-details filled clearable placeholder="說明..."></v-textarea>
@@ -150,6 +150,7 @@ export default {
     data() {
         return {
             valid: false,
+            addValid:false,
             menu_sDate: false,
             menu_eDate: false,
             search: { pond_id:'',started_date: '', ended_date: '' },
@@ -159,10 +160,11 @@ export default {
             addItem: {
                 min:'',//日期限縮上下限
                 max:'',
-                收成日: '',
-                收成重量: '',
-                平均個重量:'',
+                harvest_date: '',//收成日
+                harvest_yield: '',//收成量(kg)
+                single_weight:'',//平均個重量
                 remark:'',
+                breeding_record_id: undefined,//養殖循環id
             },
             headers: [
                 {
@@ -269,12 +271,49 @@ export default {
         },
         //顯示新增對話框
         showAddDlg(item) {
-            this.addItem.min = item.started_date;
-            this.addItem.max =item.ended_date;
+            if (this.$refs.addDlgForm) {
+                this.$refs.addDlgForm.reset();
+            }
+            this.addItem.min = item.started_date?? "";
+            this.addItem.max =item.ended_date?? "";
+            this.addItem.breeding_record_id = item.id;
             this.addDlg = true;
         },
         submitAdd:async function() {
-            console.log("送出新增!");
+            let valid = this.$refs.addDlgForm.validate();
+            if(!valid){
+                return;
+            }
+            let params = {
+                harvest_date:this.addItem.harvest_date,
+                harvest_yield:this.addItem.harvest_yield,
+                single_weight:this.addItem.single_weight,
+                remark:this.addItem.remark,
+                breeding_record_id:Number(this.addItem.breeding_record_id),
+            }
+            const url = `${this.$store.state.mydata.gobal_api.apiUrl}/breeding/v3/harvest-records/`;
+
+            try {
+                const res = await this.$axios.post(url, params);
+                if (res.status === 200 || res.status === 201) {
+                    this.$toast.success("收成新增成功", {duration: 2000,});
+                    this.get_harvestLst();// 重新查詢
+                    this.addDlg = false; // 關閉 Dialog
+                } else {
+                    const msg = res.data?.messages?.join("、") || "未知錯誤";
+                    this.$toast.error(`收成新增失敗：${msg}`, {duration: 2000,});
+                    console.error("收成新增失敗", res);
+                }
+            } catch (error) {
+                const msg =
+                    error.response?.data?.messages?.join("、") ||
+                    error.response?.data?.message ||
+                    error.message;
+
+                this.$toast.error(`收成新增錯誤：${msg}`, {duration: 2000,});
+                console.error("收成新增錯誤", error);
+            }
+
         }
     }
 };
