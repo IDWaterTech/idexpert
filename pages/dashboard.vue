@@ -4,14 +4,6 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
     <v-card class="bg-card mb-4">
-      <!-- <div class="card-title">
-            <v-row style="margin-bottom: 0;">
-                <div class="title">
-                    <v-icon>mdi-chart-bell-curve</v-icon>
-                    <v-card-title>監測數據</v-card-title>
-                </div>
-            </v-row>
-        </div> -->
       <div class="content pl-0 pt-3 pb-0">
         <!-- 搜尋 -->
         <div class="search">
@@ -22,18 +14,6 @@
                 @scopeSel_data="get_scopeData($event);resultListOpen=true;"></locate-select>
             </v-col>
             <v-col cols="12" md="2" sm="2" style="position: relative;">
-              <!-- <v-select 
-                  v-model="timeSelect" 
-                  @change="getWaterData()" 
-                  dense 
-                  filled 
-                  hide-details 
-                  :items="timekb" 
-                  item-text="name_ch"
-                  item-value="id"
-                  label="時間範圍內的數據"
-                  class="time-select"
-                  ></v-select> -->
               <v-select v-model="timeSelect" @change="getWaterData()" dense filled hide-details :items="timekb"
                 item-text="name_ch" item-value="id" class="time-select"></v-select>
             </v-col>
@@ -48,68 +28,9 @@
                 <span>重新整理</span>
               </v-tooltip>
             </v-col>
-            <!-- 選擇起始日 -->
-            <!-- <v-col cols="12" md="3" sm="12">
-                <v-menu v-model="menu_startdate" :close-on-content-click="false" :nudge-right="40"
-                  transition="scale-transition" offset-y min-width="auto">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="sdate" label="選擇起日" prepend-icon="mdi-calendar" readonly dense hide-details style="height: 20px;"
-                      v-bind="attrs" v-on="on" @click:prepend="
-                        () => {
-                          sdate = getNowDate();
-                          daysSet();
-                          closepanel();
-                        }
-                      "></v-text-field>
-                  </template>
-                  <v-date-picker v-model="sdate" locale="zh-tw" no-title @input="
-                    menu_startdate = false;
-                  daysSet();
-                  closepanel();
-                  "></v-date-picker>
-                </v-menu>
-              </v-col> -->
-            <!-- 選擇迄日 -->
-            <!-- <v-col cols="12" md="3" sm="12">
-                <v-menu v-model="menu_enddate" :close-on-content-click="false" :nudge-right="40"
-                  transition="scale-transition" offset-y min-width="auto">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="edate" label="選擇訖日" prepend-icon="mdi-calendar" readonly dense hide-details style="height: 20px;"
-                      v-bind="attrs" v-on="on" @click:prepend="
-                        () => {
-                          edate = getNowDate();
-                          daysSet();
-                          closepanel();
-                        }
-                      "></v-text-field>
-                  </template>
-                  <v-date-picker v-model="edate" locale="zh-tw" no-title @input="
-                    menu_enddate = false;
-                  daysSet();
-                  closepanel();
-                  "></v-date-picker>
-                </v-menu>
-              </v-col>
-              <v-col v-if="sel_main&&windowWidth>959.98 " cols="12" sm="1">
-                <v-text-field label="天數" step="1" min="0" type="number" v-model.number="days" @input="daychange();closepanel();"
-                  class="mx-1" dense hide-details></v-text-field>
-              </v-col> -->
-            <!-- 查詢/小螢幕布局圖 暫時用不上布局圖 先隱藏 --->
             <v-col v-if="false && sel_main&&windowWidth<959.98" cols="12" md="3" align-self="center">
               <button
                class="flex-align-center mt-n1 text-left" icon @click="showmpFun" v-if="sel_main&&windowWidth<959.98" slot="prepend"
-                style="font-size: 0.85rem;color: #6c9bcd;">
-                <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
-              </button>
-              <!-- 可能同池名，在不同場，所以value= name -->
-              <!-- <v-btn tile class="btn-primary" :disabled="!(sel_main && sel_area)" @click="closepanel();resultListOpen = false">查詢</v-btn> -->
-
-            </v-col>
-          </v-row>
-          <!-- 大螢幕布局圖 暫時用不上布局圖 先隱藏-->
-          <v-row v-if="false && sel_main&&windowWidth>959.98 " class="mb-0">
-            <v-col cols="12" sm="12" class="pt-0">
-              <button class="flex-align-center mt-n1" icon @click="showmpFun" v-if="sel_main" slot="prepend"
                 style="font-size: 0.85rem;color: #6c9bcd;">
                 <v-icon size="1rem" style="color: #6c9bcd;">mdi-image</v-icon>查看場布局圖
               </button>
@@ -128,46 +49,17 @@
             </v-row>
             <!-- 養殖池 -->
             <v-row class="mb-3 align-stretch" style="height: 100%;" id="chart">
-              <!-- AI建議 -->
-              <!-- <v-col cols="12" md="3" style="margin-bottom: 4px;padding-top: 0;padding-bottom: 0;">
-                  <v-card class="result-card pool-detail" style="height: calc(100% - 14px);overflow: hidden;">
-                    <div class="card-title" style="padding: 8px 12px;padding-bottom: 8px;">
-                      <div class="title">
-                          <v-card-title style="padding: 0;">警示內容</v-card-title>
-                      </div>
-                    </div>
-                    <div class="content" style="padding:4px 12px;max-height:240px;overflow-y:scroll">
-                      <v-row v-if="alertAllData.length>0" style="margin-bottom: 0;">
-                        <v-col cols="12">
-                          <div class="suggestion" v-for="(sug,id) in alertAllData" :key="'sug-'+id" style="padding: 8px 0;">
-                            <div class="title" style="width: 100%;background-color: #BFD9E8;">
-                              <span style="padding: 0 8px;font-size: 1rem;"> {{ sug.name }} </span><br>
-                            </div>
-                            <div class="sug" v-for="(status,id) in sug.suggestion['WaterQuality']" :key="'status-'+id" style="padding: 8px;border-bottom: 1px solid rgba(0,0,0,0.1);">
-                              <span>{{ status.status }}</span>
-                            </div>
-                              
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row v-else>
-                        無
-                      </v-row>
-                    </div>
-                  </v-card>
-                </v-col> -->
               <!-- 養殖池 -->
               <v-col cols="12" class="mb-1 pt-0 pb-0">
                 <v-card class="result-card pool-detail" style="height: calc(100% - 14px);">
                   <div class="card-title px-3 py-2">
                     <div class="title">
                       <v-card-title class="px-0 py-0"><span class="mr-1">養殖池資訊</span>
-                       <v-checkbox v-model="isHideEmpty" class="mr-2" color="green" value="空池" hide-details><span
-                            style="color:green;" slot="label">隱藏空池</span></v-checkbox>
-                        <!-- 下拉headers -->
-                        <v-autocomplete :items="['1', '2', '3', '4', '5', '6']" label="選擇欄位" multiple chips clearable dense
-                          outlined class="mx-0 my-0" color="primary"></v-autocomplete>
-                        
+                        <!-- 隱藏空池 -->
+                        <v-checkbox v-if="false" v-model="isHideEmpty" class="mr-2" color="green" value="空池"
+                          hide-details><span style="color:green;" slot="label">隱藏空池</span></v-checkbox>
+                        <!-- 欄位顯示設定 -->
+                        <v-btn color="primary" @click="ColumnDialog = true">欄位</v-btn>
                       </v-card-title>
                     </div>
                     <!-- <div class="chevron" >
@@ -178,34 +70,17 @@
                   <div v-if="resultListOpen" class="content">
                     <v-row class="mb-4">
                       <v-col cols="12">
-                        <el-table v-if="showAlert" class="full-width" :data="mainpool.items.filter(x=>x.state!=isHideEmpty)" max-height="240" show-summary size="mini"
-                          :summary-method="getSummaries" :row-style="isTagColor">
-                          <!-- headers{ text: "name", value: "name", groupable: false }, -->
-                          <el-table-column prop="labelname" label="養殖池" width="70" :fixed="true" align="center">
-                            <template slot-scope="scope">
-                              <!-- <a v-if="$store.state.mydata.gobal_api.apiUrl.includes(':8011')" :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
-                                    scope.row.name
-                                }}</a>
-                                <div v-else>{{
-                                    scope.row.name
-                                }}</div> -->
-                              <a :href="`/pool/?id=${scope.row.id}`" target="_blank">{{
-                                scope.row.name
-                                }}</a>
-                            </template>
-                          </el-table-column>
-                          <el-table-column v-for="(item, key) in headers.filter(
-                              x => x.text != fixedname
-                            )" :fixed="item.text == fixedname" :prop="item.value" :label="item.text" :key="key"
-                            align="center">
-                          </el-table-column>
+                        <!-- 主要中央顯示 -->
+                        <el-table :data="DashboardData" v-loading="tableloading" border stripe size="mini" class="dashboard-table">
+                          <template v-for="header in headersDashboard">
+
+                            <el-table-column v-if="header.show" :key="header.value" :prop="header.value"
+                              :label="header.text" :fixed="header.fixed" :width="header.width" :align="header.align" />
+
+                          </template>
 
                         </el-table>
-                        <v-data-table :headers="headers" :items="mainpool.items" item-key="unit"
-                          :footer-props="footerProps" no-data-text="查無資料" disable-sort :loading="tableloading"
-                          class="full-width"
-                          style="height: 100%;" v-if="false">
-                        </v-data-table>
+                        
                       </v-col>
                     </v-row>
                   </div>
@@ -220,32 +95,11 @@
                   <div class="content">
                     <div class="header-bar water-bar px-0 py-3 pt-1">
                       <v-tabs v-model="currenttab" show-arrows>
-                        <!-- 上方tab -->
                         <v-tab v-for="(tab, idx) in tabsMap" :key="'tabs-'+idx" :href="`#` + tab.name">
                           {{ tab.name }}
                         </v-tab>
-
                       </v-tabs>
-                      <v-select v-if="false" v-model="timeSelect" @change="getWaterData()" dense filled hide-details
-                        :items="timekb" item-text="name_ch" item-value="id" class="time-select"></v-select>
                     </div>
-                    <!-- <div class="search" >
-                        <v-select 
-                          v-model="timeSelect" 
-                          @change="getWaterData()" 
-                          dense 
-                          filled 
-                          hide-details 
-                          :items="timekb" 
-                          item-text="name_ch"
-                          item-value="id"
-                          label="時間範圍內的數據"
-                          class="time-select"
-                          ></v-select>
-                      </div> -->
-                    <!-- <div v-if="newest!==''" class="newest-date">
-                      <span style="margin-left: 16px;">最新數據日期：{{ newest }}</span>
-                    </div> -->
                     <poollayout v-if="sel_main!==''&&sel_area!==''" class="poollayout" :water="water"
                       :waterloading="waterloading" :areas="[]" :layout="[]" :nowAreaTag="nowAreaTag" :successData="[]"
                       :setting="''" :nowAreaId="nowAreaId" :showedit="false" :statcolor="statcolor"
@@ -264,6 +118,25 @@
                  <v-card-text v-else class="text-center text-h5 pt-6">系統開發中</v-card-text>
                </v-card>
             </v-dialog>
+            <!-- 欄位顯示設定 -->
+            <v-dialog v-model="ColumnDialog" :width="500">
+              <v-card dense>
+                <v-card-title>
+                  欄位顯示設定
+                </v-card-title>
+                <v-divider></v-divider>
+
+                <v-card-text class="pt-4">
+                  <v-row dense>
+                    <v-col v-for="header in headersDashboard" :key="header.value" cols="6">
+                      <v-checkbox v-model="header.show" :label="header.text" dense hide-details
+                        :disabled="header.value === 'pond_id'"></v-checkbox>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+
+            </v-dialog>
           </div>
         </div>
       </div>
@@ -277,21 +150,17 @@
 </template>
 
 <script>
-import treelst from "~/components/treeList.vue";
 import _ from "lodash";
 // import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
 import dayjs from "dayjs";
-import https from "https";
 import poollayout from "@/pages/map/poolslayout.vue";
-import nerdamer, { factor } from 'nerdamer';
+import nerdamer from 'nerdamer';
 //-----
 import "element-ui/lib/theme-chalk/index.css";
-import { create } from 'domain';
 export default {
   layout: "emptynologin2",
   middleware: "auth",
   components: {
-    treelst,
     // WaterQuality_Vcharts2,
     poollayout
   },
@@ -302,24 +171,10 @@ export default {
   },
   data() {
     return {
+      ColumnDialog:false,
       isHideEmpty:"空池",//養殖池資訊 是否隱藏空池，直接用文字判斷狀態(因為資料是用空池)
-      chartToggle:true,
-      mypanel: 0,
       sel_main: "",
       sel_area: "",
-      clickeditem: "",
-      defitem: ["亞硝酸鹽濃度", "氨氮濃度", "水溫", "溶氧濃度", "酸鹼值"],
-      defPool: { 水質: [], 環境: [], 飼料: [], 觀察: [], 進階: [], 益生菌: [],用料:[] },
-      //items: ["A1", "A2"],
-      tabs: [
-        { name: "水質監測" },
-        { name: "環境監測" },
-        { name: "投餵飼料" },
-        { name: "飼料觀察網" },
-        { name: "進階值" },
-        { name: "養殖用料" }
-        // { name: "投餵益生菌" }  pbio目前沒有先拿掉
-      ],
       tabsMap: [
         { name: "溶氧濃度" },
         { name: "酸鹼值" },
@@ -330,44 +185,6 @@ export default {
         // { name: "投餵益生菌" }  pbio目前沒有先拿掉
       ],
       currenttab: "",
-      tree: [],
-      initiallyOpen: ["研發一場"],
-      files: {
-        html: "mdi-language-html5",
-        js: "mdi-nodejs",
-        json: "mdi-code-json",
-        md: "mdi-language-markdown",
-        pdf: "mdi-file-pdf",
-        png: "mdi-file-image",
-        txt: "mdi-file-document-outline",
-        xls: "mdi-file-excel",
-        group: "select-group",
-        openedgroup: "select-inverse",
-        pool: "mdi-pool"
-      },
-      items2: [
-        {
-          name: "研發 0 場"
-        },
-        {
-          name: "研發 1 場",
-          pond_area: [
-            {
-              name: "武曲",
-              pond_area: [
-                {
-                  name: "A1",
-                  type: "pool"
-                },
-                {
-                  name: "A2",
-                  type: "pool"
-                }
-              ]
-            }
-          ]
-        }
-      ],
       maindata: [],
       mainpool: {
         id: 1,
@@ -376,82 +193,221 @@ export default {
           // { name: "體積", item: "volume", value: 140.0, unit: "噸" },
         ]
       },
-      footerProps: {
-        "items-per-page-text": "每頁",
-        "items-per-page-options": [25, 50, 75, 100]
-      },
-      fixedname: "養殖池",
-      headers: [
-        //  { text: "id", value: "id", groupable: false },
-        // { text: "level", value: "level", groupable: false },
-        { text: "養殖池", value: "name", groupable: false },
-        { text: "體積/水量(噸)", value: "volume", groupable: false },
-        // { text: "密度", value: "density", groupable: false },
-        { text: "深度(m)", value: "depth", groupable: false },
-        { text: "小池數(個)", value: "num", groupable: false },
-        { text: "曝氣盤數(個)", value: "aeration_tray_num", groupable: false },
-        { text: "狀態", value: "state", groupable: false },
-        //{ text: "預估放養隻數", value: "estimated_num", groupable: false },
-        { text: "預估放養隻數2", value: "current_stock_num", groupable: false },
-        { text: "養殖密度", value: "num_per_unit", groupable: false }
-        // { text: "放養日期", value: "started_date", groupable: false },
-        // {
-        //   text: "預估收成日期",
-        //   value: "eliminated_ended_date",
-        //   groupable: false
-        // },
-        // { text: "初始放養隻數", value: "init_num", groupable: false },
-        // { text: "累積飼料量", value: "feed_accumulation", groupable: false }
+      headersDashboard: [
+        {
+          text: "養殖池",
+          value: "pond_id",
+          show: false,
+          fixed: "left",
+          width: 90,
+          align: "center"
+        },
+        {
+          text: "養殖池名稱",
+          value: "pond_name",
+          show: true,
+          fixed: "left",
+          width: 100,
+          align: "left"
+        },
+        {
+          text: "最近測得水位(%)",
+          value: "water_level_pct",
+          show: true,
+          fixed: false,
+          width: 140,
+          align: "right"
+        },
+        {
+          text: "實際水深(m)",
+          value: "actual_water_depth",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "right"
+        },
+        {
+          text: "實際水體(ton)",
+          value: "actual_water_body",
+          show: true,
+          fixed: false,
+          width: 130,
+          align: "right"
+        },
+        {
+          text: "放苗日",
+          value: "stocked_date",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "center"
+        },
+        {
+          text: "最近收成日",
+          value: "harvest_date",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "center"
+        },
+        {
+          text: "放苗袋數",
+          value: "seedling_bags",
+          show: true,
+          fixed: false,
+          width: 100,
+          align: "right"
+        },
+        {
+          text: "每袋苗數",
+          value: "num_per_bag",
+          show: true,
+          fixed: false,
+          width: 100,
+          align: "right"
+        },
+        {
+          text: "放苗總量",
+          value: "stocking_qty",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "right"
+        },
+        {
+          text: "最近打樣平均蝦重(g)",
+          value: "last_shrimp_weight_avg",
+          show: true,
+          fixed: false,
+          width: 160,
+          align: "right"
+        },
+        {
+          text: "每日增重量(g/day)",
+          value: "adg",
+          show: true,
+          fixed: false,
+          width: 150,
+          align: "right"
+        },
+        {
+          text: "預估今日蝦重(g)",
+          value: "shrimp_weight",
+          show: true,
+          fixed: false,
+          width: 140,
+          align: "right"
+        },
+        {
+          text: "校正投餵水溫(%)",
+          value: "temp_based_feed_reduction_rate",
+          show: true,
+          fixed: false,
+          width: 150,
+          align: "right"
+        },
+        {
+          text: "內存量(kg)",
+          value: "biomass",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "right"
+        },
+        {
+          text: "育成率(%)",
+          value: "survival_rate",
+          show: true,
+          fixed: false,
+          width: 100,
+          align: "right"
+        },
+        {
+          text: "乘載量",
+          value: "carrying_capacity",
+          show: true,
+          fixed: false,
+          width: 100,
+          align: "right"
+        },
+        {
+          text: "換肉率",
+          value: "fcr",
+          show: true,
+          fixed: false,
+          width: 100,
+          align: "right"
+        },
+        {
+          text: "總投餵飼料量(g)",
+          value: "cumulative_feed_amount",
+          show: true,
+          fixed: false,
+          width: 160,
+          align: "right"
+        },
+        {
+          text: "收成量(kg)",
+          value: "harvest_yield_kg",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "right"
+        },
+        {
+          text: "收成量(tkg)",
+          value: "harvest_yield_tkg",
+          show: true,
+          fixed: false,
+          width: 120,
+          align: "right"
+        },
+        {
+          text: "收成尾斤數(p/tkg)",
+          value: "harvest_yield_ptkg",
+          show: true,
+          fixed: false,
+          width: 150,
+          align: "right"
+        },
+        {
+          text: "收成平均蝦重(g)",
+          value: "harvest_shrimp_weight_avg",
+          show: true,
+          fixed: false,
+          width: 160,
+          align: "right"
+        }
       ],
-      //---
-      allcols: [],
-      colstyle: 1, //0→4 or 1→6 or 2→12
+      selectedDashboardColumns:[],
+      DashboardData:[],
       //---
       tableloading: false,
-      waterdata: [],
-      //---日曆
-      menu_startdate: false,
-      menu_enddate: false,
-      sdate: dayjs(new Date())
-        .add(-10, "day")
-        .format("YYYY-MM-DD"),
-      // sdate: dayjs(new Date(2021, 0, 11))
-      //   .add(-10, "day")
-      //   .format("YYYY-MM-DD"),
-      edate: new Date().toISOString().substr(0, 10),
-      // edate: new Date(2021, 0, 5).toISOString().substr(0, 10),
-      days: 10, //起訖天數
       //---圖片(地圖)
       showmp: false,
       //投餵
       // feeddatacols: {}, //欄位
       feedloading: false, //是否載入中
       feeddata: [], //資料
-      defitem_feed: "", //預設項目[哪些被勾選]
       //環境
       // envdatacols: {}, //欄位
       envloading: false, //是否載入中
       envdata: [], //資料
-      defitem_env: "", //預設項目[哪些被勾選]
       //飼料觀察網
       // obsdatacols: {}, //欄位
       obsloading: false, //是否載入中
       obsdata: [], //資料
-      defitem_obs: "", //預設項目[哪些被勾選]
       //進階值
       // advdatacols: {}, //欄位
       advloading: false, //是否載入中
       advdata: [], //資料
-      defitem_adv: "", //預設項目[哪些被勾選]
       //益生菌
       // pbiodatacols: {}, //欄位
       pbioloading: false, //是否載入中
       pbiodata: [], //資料
-      defitem_pbio: "", //預設項目[哪些被勾選]
       //養殖用料
       materialloading: false,
       materialdata: [],
-      defitem_material: "",
       // 3張card
       total: {
         pool: 0, // 養殖池
@@ -462,7 +418,6 @@ export default {
       resultListOpen: true,
       windowWidth: window.innerWidth,
       defaultPool: undefined,
-      showPredict: true,
       showAlert: true,
       // 水質地圖
       statcolor: [
@@ -498,10 +453,8 @@ export default {
         {id:2,name_ch:'8小時內最新數據',value:480},
       ],
       timeSelect:0,
-      alertAllData:[],
       nowClickRow:'',
       originData:[],
-      newest:'',
       colData:[],
       //----------------------
       btns: [
@@ -568,11 +521,29 @@ export default {
           factory_id: this.sel_main,
           pond_area_id: this.sel_area
         }
-        this.showPredict = false;
         this.showAlert = false;
         await this.getWaterWarn();//取得警戒範圍 與下方areachage有前後關係 一定要先取得警戒範圍再去設定顯示文字
         this.areachange();
       }
+    },
+    //取得養殖池資料
+    getPondDashboard:async function(pond_area_id){
+      this.DashboardData = [];
+      let params = {
+        pond_area_id:pond_area_id
+      }
+      let url = `${this.$store.state.mydata.gobal_api.apiUrl}/v3/pond-dashboard/`;
+      await this.$axios.get(url, { params }).then((res) => {
+        if (res.status == 200) {
+          this.DashboardData = res.data;
+        } else {
+          this.$toast.error(`取得總失敗:${res.data.messages.join()}`);
+          console.error(`取得總表失敗:`, error);
+        }
+      }).catch((error) => {
+        this.$toast.error(`取得總失敗:${error}`);
+        console.error(`取得總表失敗:`, error);
+      });
     },
     areachange: async function () {
       console.log('trigger areachange.');
@@ -581,10 +552,12 @@ export default {
       };
       if (this.sel_area) {
         this.tableloading = true;
+        
+        this.getPondDashboard(this.sel_area);
+
         let getPondDataList = await this.getPondDataList(para);// plugins\service\basic.js
         let data = typeof (getPondDataList)=='string'?[]:getPondDataList;
         this.mainpool.items = _.cloneDeep(data);
-        console.log(this.mainpool.items);
         this.mainpool.items.forEach(x=>{
           x.current_stock_num = x.current_stock_num==null?x.current_stock_num:(parseFloat(x.current_stock_num).toFixed(2));
         })
@@ -613,14 +586,6 @@ export default {
           default:
             break;
         }
-        // if(nowTab=='NH4') {
-        //   this.nowAreaId.range = this.lightData['AmmoniaN'];
-        // }else if(nowTab=='Temperature') {
-        //   this.nowAreaId.range = this.lightData['Temp'];
-        // }else {
-        //     this.nowAreaId.range = this.lightData[nowTab];
-        // }
-        
         this.nowAreaId.range = this.lightData[nowTab];
         console.log('range',this.nowAreaId.range,this.lightData)
         this.getWaterData();
@@ -631,57 +596,7 @@ export default {
           }
         },100)
         this.tableloading = false;
-        // await this.$axios
-        //   .get(
-        //     `${this.$store.state.mydata.gobal_api.apiUrl}/ponds-data/`,
-        //     { params: para },
-        //     { httpsAgent: agent }
-        //   )
-        //   .then(async res => {
-        //     this.mainpool.items = _.cloneDeep(res.data);
-        //     console.log(this.mainpool.items);
-        //     this.mainpool.items.forEach(x=>{
-        //       x.estimated_num = x.estimated_num==null?x.estimated_num:(parseFloat(x.estimated_num).toFixed(2))
-        //     })
-        //     this.originData = _.cloneDeep(this.mainpool.items);
-        //     // await this.getWaterData();
-        //     let nowTab = ''
-        //     switch (this.currenttab) {
-        //       case "亞硝酸鹽濃度":
-        //         nowTab = 'NO2';
-        //         break;
-        //       case "氨氮濃度":
-        //         nowTab = 'NH4';
-        //         break;
-        //       case "溶氧濃度":
-        //         nowTab = 'Do';
-        //         break;
-        //       case "酸鹼值":
-        //         nowTab = 'pH';
-        //         break;
-        //       case "水溫":
-        //         nowTab = 'Temperature';
-        //         break;
-        //       default:
-        //         break;
-        //     }
-        //     if(nowTab=='NH4') {
-        //       this.nowAreaId.range = this.lightData['AmmoniaN'];
-        //     }else if(nowTab=='Temperature') {
-        //       this.nowAreaId.range = this.lightData['Temp'];
-        //     }else {
-        //         this.nowAreaId.range = this.lightData[nowTab];
-        //     }
-        //     this.getAlertNum();
-        //     setTimeout(()=>{
-        //       if(document.getElementsByClassName('el-table__body-wrapper')) {
-        //         document.getElementsByClassName('el-table__body-wrapper')[0].scrollTop = 0;
-        //       }
-        //     },100)
-        //   })
-        //   .finally(() => {
-        //     /* 不論失敗成功皆會執行 */ this.tableloading = false;
-        //   });
+       
       } else {
         this.mainpool.items = [];
       }
@@ -691,112 +606,6 @@ export default {
     },
     showpool: function (data) {
       console.log(data.name);
-    },
-    getNowDate: function () {
-      let mydate = dayjs().format("YYYY-MM-DD");
-      return mydate;
-    },
-    daychange: function () {
-      let nd = dayjs(this.edate)
-        .add(-this.days, "day")
-        .format("YYYY-MM-DD");
-      this.sdate = nd;
-    },
-    daysSet: function () {
-      this.days = dayjs(this.edate).diff(this.sdate, "day");
-    },
-    getSummaries: function (param) {
-      // console.log('param',param);
-      const { columns, data } = param;
-      const sums = [];
-      // 需判斷data資料，否則卡片總計數會無數字
-      if(data.length>0) {
-        columns.forEach((column, index) => {
-          if (index === 0) {
-            sums[index] = `共${data.length}池`;
-            return;
-          }
-          const values = data.map(item => Number(item[column.property]));
-          var hiddenlist = ["體積(頓)", "狀態"];
-          if (hiddenlist.filter(x => x == column.label).length > 0) {
-            sums[index] = "";
-            return;
-          }
-          if (!values.every(value => isNaN(value))) {
-            sums[index] = values.reduce((prev, curr) => {
-              const value = Number(curr);
-              if (!isNaN(value)) {
-                if(column.label == '體積/水量(噸)') {
-                  return (parseFloat(prev) + parseFloat(curr)).toFixed(2);
-                }else {
-                  return prev + curr;
-                }
-              } else {
-                if(column.label == '體積/水量(噸)') {
-                  return prev.toFixed(2);
-                }else {
-                  return prev;
-                }
-                
-              }
-            }, 0);
-            var itemunit = [
-              { name: "深度(m)", unit: "m" },
-              { name: "小池數(個)", unit: "個" },
-              { name: "曝氣盤數(個)", unit: "個" },
-              { name: "預估放養隻數", unit: "隻" }
-            ];
-            if (itemunit.filter(x => x.name == column.label).length > 0) {
-              if(column.label == '小池數(個)') {
-                this.total.pond = sums[index];
-              }
-              if(column.label == '預估放養隻數') {
-                sums[index] = sums[index].toFixed(2)
-                this.total.predict = sums[index];
-                this.showPredict = true;
-              }
-              if(column.label == '深度(m)') {
-                sums[index] = sums[index].toFixed(2);
-              }
-              sums[index] +=
-                " " + itemunit.filter(x => x.name == column.label)[0].unit;
-            } else {
-              sums[index] += "";
-            }
-            
-          } else {
-            sums[index] = "N/A";
-          }
-          this.total.pool = data.length;
-        });
-      }else {
-        this.total.pond = 0;
-        this.total.pool = 0;
-        this.total.predict = 0;
-        this.showPredict = true;
-      }
-      
-      return sums;
-    },
-    totalSum(values,bool) {
-      if(bool) {
-        values.forEach(v=>{this.total.pond+=parseInt(v)});
-      }else {
-        values.forEach(v=>this.total.predict+=parseInt(v));
-      }
-    },
-    goAnchor(selector) {
-      setTimeout(()=>{
-        console.log('>>>>>>>>>>gogo')
-        let ele = document.querySelector(selector);
-              let eTop = ele.offsetTop;
-              ele.scrollIntoView({
-                  behavior: "smooth",
-                  top: eTop,
-              });
-      },500)
-      
-      
     },
     // 取得時間範圍內最新的資料 
     async getWaterData() {
@@ -826,10 +635,6 @@ export default {
           default:
             break;
         }
-        const agent = new https.Agent({
-          rejectUnauthorized: false
-        });
-
         let apiURL = `${this.$store.state.mydata.gobal_api.apiUrl}/last-data-in-current-time-range/`;
         let keys = ['NO2','NH4','DO','pH','Temperature','water_level_percentage'];
         let num=0;
@@ -872,11 +677,6 @@ export default {
           //       "value": 0.34,
           //       "inspected_time": "2024-09-23 08:59"
           //   },
-          //   {
-          //       "id": 181,
-          //       "value": 6.12,
-          //       "inspected_time": "2024-09-23 08:59"
-          //   }
           // ]
           if(Array.isArray(data)) {
             this.waterParm[parm.col_name] = _.cloneDeep(data);
@@ -886,7 +686,6 @@ export default {
             })
             if(parm.col_name == nowTab) {
               this.water = _.cloneDeep(this.waterParm[nowTab]);
-              this.newest = '';
               this.waterloading = true;
             }
             num++;
@@ -896,120 +695,8 @@ export default {
             }
             
           }
-              
-          // await this.$axios
-          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
-          //   .then(res => {
-          //     // console.log("water:", res);
-          //     if(Array.isArray(res.data)) {
-          //       // this.water = res.data;
-          //       this.waterParm[parm.col_name] = _.cloneDeep(res.data);
-          //       // 測試用
-          //       // this.water.forEach(w=>{
-          //       //     w.value= 25
-          //       //     w.inspected_time = '2024-03-25 23:00:00'
-          //       // })
-          //       // this.water.forEach(w=>{
-          //       //   if(w.id==50) {
-          //       //     w.value= 20
-          //       //     w.inspected_time = '2024-03-25 23:00:00'
-          //       //   }  
-          //       // })
-          //       this.waterParm[parm.col_name].forEach(w=>{
-          //         w.level = this.checkValue(parm.col_name,w.value);
-          //         w.parm_name = parm.col_name;
-          //       })
-          //       if(parm.col_name == nowTab) {
-          //         this.water = _.cloneDeep(this.waterParm[nowTab]);
-          //         this.newest = '';
-          //         // if(this.water && this.water.length>0) {
-          //         //   this.water.forEach(w=>{
-          //         //     if(this.newest=='') {
-          //         //       this.newest = w.inspected_time.slice(0,10);
-          //         //     }else {
-          //         //       if(new Date(this.newest).getTime()<new Date(w.inspected_time.slice(0,10)).getTime()) {
-          //         //         this.newest = w.inspected_time.slice(0,10);
-          //         //       }
-          //         //     }
-          //         //   })
-          //         // }
-          //         this.waterloading = true;
-          //       }
-          //       num++;
-          //       if(num==keys.length) {
-          //         this.getAlertNum();
-                  
-          //       }
-                
-          //     }
-              
-          //     // this.goAnchor('#chart');
-          //   })
-          //   .catch(err => {
-          //     alert("失敗：" + err.message);
-          //     this.waterloading = true;
-          //   });
+          
         })
-        // let parm = {
-        //   factoryid: this.sel_main,
-        //   areaid: this.sel_area,
-        //   time_range: this.timekb.filter(x=>x.id==this.timeSelect)[0].value,
-        //   col_name: ''
-        // };
-        // switch (this.currenttab) {
-        //   case "亞硝酸鹽濃度":
-        //     parm.col_name = 'NO2';
-        //     break;
-        //   case "氨氮濃度":
-        //     parm.col_name = 'NH4';
-        //     break;
-        //   case "溶氧濃度":
-        //     parm.col_name = 'Do';
-        //     break;
-        //   case "酸鹼值":
-        //     parm.col_name = 'pH';
-        //     break;
-        //   case "水溫":
-        //     parm.col_name = 'Temperature';
-        //     break;
-        //   default:
-        //     break;
-        // }
-        // if(parm.col_name!=='') {
-          // this.water = [];
-          // this.waterParm[parm.col_name] = [];
-          // this.waterloading = false;
-          // console.log('water parm',parm);
-          // await this.$axios
-          //   .get(apiURL, { params: parm }, { httpsAgent: agent })
-          //   .then(res => {
-          //     console.log("water:", res);
-          //     if(Array.isArray(res.data)) {
-          //       this.water = res.data;
-          //       this.waterParm[parm.col_name] = _.cloneDeep(res.data);
-          //       // 測試用
-          //       // this.water.forEach(w=>{
-          //       //     w.value= 50
-          //       // })
-          //       // this.water.forEach(w=>{
-          //       //   if(w.id==50) {
-          //       //     w.value= 20
-          //       //   }  
-          //       // })
-          //       this.water.forEach(w=>{
-          //         w.level = this.checkValue(parm.col_name,w.value);
-          //       })
-          //       this.getAlertNum();
-          //     }
-              
-          //     this.waterloading = true;
-          //     // this.goAnchor('#chart');
-          //   })
-          //   .catch(err => {
-          //     alert("失敗：" + err.message);
-          //     this.waterloading = true;
-          //   });
-        // }
       }  
     },
     // 檢查值範圍
@@ -1152,34 +839,24 @@ export default {
       let num = 0;
       this.maindata.forEach(m=>{
         if(m.id==this.sel_main) {
-          // console.log('maindata node',m)
           m.node.forEach(p=>{
             if(p.id==this.sel_area) {
-              // console.log('pond node',p);
               p.node.forEach(pool=>{
                 for(let i=0;i<item.length;i++) {
                   this.waterParm[item[i]].forEach(water=>{
-                    if(water.id==pool.id) {
-                      // console.log('pool',pool,water);
-                      if(water.level=='danger' || water.level=='warning') {
-                        num++;
-                      }
-                      
+                    if(water.id==pool.id && (water.level=='danger' || water.level=='warning')) {
+                      num++;
                     }
                   })
-              }
-            })
-              
+                }
+              })
             }
           })
         }
       })
       this.total.warning = num;
-      // console.log('total',this.total);
       this.showAlert = true;
       this.checkColor();
-      this.getAllRow();
-     
     },
     checkColor() {
       let item = Object.keys(this.waterParm);
@@ -1223,112 +900,6 @@ export default {
       }
 
       return style;
-    },
-    async getAlertData(data) {
-      var allParm = {
-        'BaseParm':{},
-        'BreedingParm':{},
-        'FeedParm':{},
-        'MakeWaterParm':{},
-        'WaterQualityData': data.value,
-        'ObservationData': {},
-        'BacteriaData':{},
-        'UserData':{}
-      };
-      
-      console.log("all參數：",allParm);
-      // let getSuggestionList = await this.getSuggestionList(allParm);
-      // let suggestionData = typeof (getSuggestionList)=='string'?[]:getSuggestionList;
-      // console.log('suggestion',suggestionData);
-      // // console.log("suggData:",this.suggData);
-      // this.alertAllData.push({
-      //   name: data.name,
-      //   suggestion: suggestionData
-      // });
-
-      // let url =`${this.$store.state.mydata.gobal_api.apiKbUrl}/suggestion/`;
-      // await this.$axios.post(url, allParm).then(res => {
-      //     if(res.status==200){
-      //         console.log('suggestion',res.data);
-      //         // console.log("suggData:",this.suggData);
-      //         this.alertAllData.push({
-      //           name: data.name,
-      //           suggestion: res.data
-      //         });
-      //     } else {
-      //         this.$toast.error(`發生錯誤:${res.data}`, { duration: 2000 });
-      //     }
-      //     console.log("新增API:" + res.request.responseURL);
-      // }).catch(error => {
-      //     this.$toast.error(`資料Fail:${error}`, { duration: 2000 });
-      // })
-      // .finally(() => {
-      //         //this.getdata();
-      // });
-    },
-    clickRow(row) {
-      console.log(row,this.waterParm);
-      this.nowClickRow = row.name;
-      this.alertAllData = [];
-      this.alertDataPrepare(this.nowClickRow,row.id);
-      
-      // console.log('alertAllData',this.alertAllData);
-    },
-    async alertDataPrepare(name,id) {
-      let data = {name:name,value:{}};
-      let item = Object.keys(this.waterParm);
-      for(let i=0;i<item.length;i++) {
-        let col_name = '';
-        switch (item[i]) {
-          case "NO2":
-            col_name = 'NO2';
-            break;
-          case "NH4":
-            col_name = 'AmmoniaN';
-            break;
-          case "DO":
-            col_name = 'DO';
-            break;
-          case "pH":
-            col_name = 'pH';
-            break;
-          case "Temperature":
-            col_name = 'Temp';
-            break;
-          case "water_level_percentage":
-            col_name = 'water_level_percentage';
-            break;
-        }
-        if(this.waterParm[item[i]] && this.waterParm[item[i]].length>0) {
-          this.waterParm[item[i]].forEach(water=>{
-            if(water.id == id) {
-              data.value[col_name] = water.value;
-            }
-          })
-        }
-        
-      }
-      await this.getAlertData(data);
-    },
-    getAllRow() {
-      // console.log(this.mainpool.items);
-      let item = Object.keys(this.waterParm);
-      let id = [];
-      this.alertAllData = [];
-      this.nowClickRow = '';
-      this.mainpool.items.forEach(pool=>{
-        for(let i=0;i<item.length;i++) {
-          this.waterParm[item[i]].forEach(water=>{
-            if(water.id==pool.id && (water.level=='warning'||water.level=='danger')) {
-              if(!id.includes(pool.id)) {
-                id.push(pool.id);
-                this.alertDataPrepare(pool.name,pool.id);
-              }
-              
-            } 
-          })
-        }
-      })
     },
     goIndicator(item) {
       console.log('goIndicator',item);
@@ -1437,14 +1008,8 @@ export default {
       this.defaultPool = '';
     }
     
-    console.log(this.defaultPool);
+    // console.log(this.defaultPool);
 
-    //get all cols
-    // await this.$axios
-    //   .get(`${this.$store.state.mydata.gobal_api.apiUrl}/all-col-name/`, { httpsAgent: agent })
-    //   .then(res => {
-    //     this.allcols = res.data;
-    //   });
     this.currenttab = this.tabsMap[0].name;
     // await this.getWaterData();
     //await this.getWaterWarn();
@@ -1528,100 +1093,16 @@ export default {
       return filterarea;
       //return obj;
     },
-    defalutItemList: function () {
-      var item = _.cloneDeep(this.allcols.water);
-      if(!item) {
-        return {};
-      }
-      console.log('defaultItemList',item)
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem && this.defitem.length > 0) {
-          // item[key] = this.defitem == key ? true : false;
-          item[key] = this.defitem.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
-    defalutItemList_feed: function () {
-      //多選欄位，哪些要被預設顯示
-      var item = _.cloneDeep(this.allcols.feed);
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem_feed && this.defitem_feed.length > 0) {
-          item[key] = this.defitem_feed.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
-    defalutItemList_env: function () {
-      //多選欄位，哪些要被預設顯示
-      var item = _.cloneDeep(this.allcols.env);
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem_env && this.defitem_env.length > 0) {
-          item[key] = this.defitem_env.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
-    defalutItemList_obs: function () {
-      //多選欄位，哪些要被預設顯示
-      var item = _.cloneDeep(this.allcols.obs);
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem_obs && this.defitem_obs.length > 0) {
-          item[key] = this.defitem_obs.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
-    defalutItemList_adv: function () {
-      //多選欄位，哪些要被預設顯示
-      var item = _.cloneDeep(this.allcols.adv);
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem_adv && this.defitem_adv.length > 0) {
-          item[key] = this.defitem_adv.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
-    defalutItemList_pbio: function () {
-      //多選欄位，哪些要被預設顯示
-      var item = _.cloneDeep(this.allcols.pbio);
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem_pbio && this.defitem_pbio.length > 0) {
-          item[key] = this.defitem_pbio.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
-    defalutItemList_material:function(){
-      //多選欄位，哪些要被預設顯示
-      var item = _.cloneDeep(this.allcols.breeding_material);
-      for (const [key, value] of Object.entries(item)) {
-        if (this.defitem_material && this.defitem_material.length > 0) {
-          item[key] = this.defitem_material.includes(key) ? true : false;
-        } else {
-          item[key] = true;
-        }
-      }
-      return item;
-    },
   },
   async mounted() {
     //監控視窗
     window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth;
     });
+    this.selectedDashboardColumns = this.headersDashboard
+        .filter(item => item.show)
+        .map(item => item.value);
+
     //await this.getStateColor();
     // this.rndKey = Math.round( (Math.random()*100) );
   },
@@ -1654,7 +1135,6 @@ export default {
         default:
           break;
       }
-      this.newest = '';
       this.water = this.waterParm[nowTab];
       // if(this.water && this.water.length>0) {
       //   this.water.forEach(w=>{
@@ -1680,10 +1160,6 @@ export default {
     },
     isHideEmpty() {
       console.log('isHideEmpty');
-      this.showPredict = false;
-      setTimeout(()=>{
-        this.showPredict = true;
-      },500)
     }
   }
 };
@@ -1869,5 +1345,13 @@ export default {
     }
   }
  
+}
+// 穿透 scoped 限制，設定水平捲軸高度
+::v-deep .dashboard-table .el-table__body-wrapper::-webkit-scrollbar {
+    height: 12px;
+}
+
+::v-deep .dashboard-table .el-table__body-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 7px;
 }
 </style>
