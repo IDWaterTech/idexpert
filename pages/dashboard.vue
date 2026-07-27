@@ -118,7 +118,7 @@
                  <v-card-text v-else class="text-center text-h5 pt-6">系統開發中</v-card-text>
                </v-card>
             </v-dialog>
-            <!-- 欄位顯示設定 -->
+            <!-- 欄位顯示設定dialog -->
             <v-dialog v-model="ColumnDialog" :width="500">
               <v-card dense>
                 <v-card-title>
@@ -130,7 +130,7 @@
                   <v-row dense>
                     <v-col v-for="header in headersDashboard" :key="header.value" cols="6">
                       <v-checkbox v-model="header.show" :label="header.text" dense hide-details
-                        :disabled="header.value === 'pond_id'"></v-checkbox>
+                        :disabled="header.value === 'pond_id'" @click="setStorageColumns(headersDashboard)"></v-checkbox>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -377,9 +377,16 @@ export default {
           fixed: false,
           width: 160,
           align: "right"
+        },
+        {
+          text: "預測蝦重(g)",
+          value: "estimated_shrimp_weight",
+          show: true,
+          fixed: false,
+          width: 160,
+          align: "right"
         }
       ],
-      selectedDashboardColumns:[],
       DashboardData:[],
       //---
       tableloading: false,
@@ -464,7 +471,7 @@ export default {
       { text: '檢驗檢測 +', type: 'inspectReport',width:'500px' },
       { text: '觀察網 +', type: 'observeForm',width:'500px' },
       { text: '收成資料 +', type: 'harvestForm',width:'500px' ,param:{passArea:''}},//harvest
-      {text: '警告訊息', type: 'alertForm',width:'500px' ,param:{passArea:'',color:'red'}},
+      // {text: '警告訊息', type: 'alertForm',width:'500px' ,param:{passArea:'',color:'red'}},
     ],
     dialog:{show:false,component:'calendar',width:"500px"},
     //----------------------重要紀事
@@ -496,8 +503,8 @@ export default {
       this.statcolor = data;
     },
     get_scopeData:async function(evt){
-      console.log('get_scopeData-evt:',evt);//紫微_10026
-      console.log('get_scopeData-maindata:',this.maindata);
+      // console.log('get_scopeData-evt:',evt);//紫微_10026
+      // console.log('get_scopeData-maindata:',this.maindata);
       if(evt) {
         let areaName='';
         this.sel_area = evt.split('_')[evt.split('_').length-1];//10026
@@ -523,7 +530,7 @@ export default {
         }
         this.showAlert = false;
         await this.getWaterWarn();//取得警戒範圍 與下方areachage有前後關係 一定要先取得警戒範圍再去設定顯示文字
-        this.areachange();
+        await this.areachange();
       }
     },
     //取得養殖池資料
@@ -537,13 +544,85 @@ export default {
         if (res.status == 200) {
           this.DashboardData = res.data;
         } else {
-          this.$toast.error(`取得總失敗:${res.data.messages.join()}`);
+          this.$toast.error(`取得總表失敗:${res.data.messages.join()}`);
           console.error(`取得總表失敗:`, error);
         }
       }).catch((error) => {
         this.$toast.error(`取得總失敗:${error}`);
         console.error(`取得總表失敗:`, error);
       });
+      
+      // 存取本地設定的欄位顯示==================
+      // localStorage.removeItem("DashboardColumnsShow");
+      if (this.DashboardData.length === 0) return;
+      const dashboardKeys = Object.keys(this.DashboardData[0]).sort();
+      const columnKeys = JSON.parse(
+        localStorage.getItem("DashboardColumnsShow") || "[]"
+      ).map(item => item.value).sort();//依value排序
+     
+      const isSame =
+        dashboardKeys.length === columnKeys.length &&
+        dashboardKeys.every((key, index) => key === columnKeys[index]);
+
+        //欄位不相同
+      if (!isSame) {
+        // 先建立舊 headersDashboard 的對照表
+        const oldHeaderMap = Object.fromEntries(
+          this.headersDashboard.map(item => [item.value, item])
+        );
+        // 再產生新的 headersDashboardNew
+        const headersDashboardNew = dashboardKeys.map(key => ({
+          text: oldHeaderMap[key]?.text || key,
+          value: key,
+          show: oldHeaderMap[key]?.show ?? true,
+          fixed: oldHeaderMap[key]?.fixed ?? false,
+          width: oldHeaderMap[key]?.width ?? 160,
+          align: oldHeaderMap[key]?.align ?? "right"
+        }));
+        const fixedFirst = [
+          "pond_id",
+          "pond_name"
+        ];
+        // 依固定欄位排序
+        headersDashboardNew.sort((a, b) => {
+          const aIndex = fixedFirst.indexOf(a.value);
+          const bIndex = fixedFirst.indexOf(b.value);
+
+          // 兩個都是固定欄位
+          if (aIndex !== -1 && bIndex !== -1) {
+            return aIndex - bIndex;
+          }
+
+          // a 是固定欄位，往前
+          if (aIndex !== -1) {
+            return -1;
+          }
+          // b 是固定欄位，往前
+          if (bIndex !== -1) {
+            return 1;
+          }
+          return 0;
+        });
+
+        console.log("重新調整header!!!!",headersDashboardNew)
+        localStorage.setItem("DashboardColumnsShow",JSON.stringify(headersDashboardNew));
+        this.headersDashboard = _.cloneDeep(headersDashboardNew);
+        
+      }else{
+        //欄位相同
+        const oldHeader = _.cloneDeep( this.headersDashboard);
+        // 建立舊 header 對照表
+        const oldHeaderMap = Object.fromEntries(
+          oldHeader.map(item => [item.value, item])
+        );
+        let newHeader = JSON.parse(localStorage.getItem("DashboardColumnsShow") || "[]");
+        // 更新 newHeader text
+        newHeader = newHeader.map(item => ({
+          ...item,
+          text: oldHeaderMap[item.value]?.text || item.text
+        }));
+        this.headersDashboard = newHeader;
+      }
     },
     areachange: async function () {
       console.log('trigger areachange.');
@@ -986,6 +1065,10 @@ export default {
           this.$toast.error(`handleEmit Error=> type: ${type},event: ${JSON.stringify(event)}`, { duration: 2500 });
           break;
       }
+    },
+    //設定本機顯不顯示的項目
+    setStorageColumns(item){
+      localStorage.setItem("DashboardColumnsShow",JSON.stringify(item));
     }
   },
   async created() {
@@ -1099,12 +1182,7 @@ export default {
     window.addEventListener('resize', () => {
         this.windowWidth = window.innerWidth;
     });
-    this.selectedDashboardColumns = this.headersDashboard
-        .filter(item => item.show)
-        .map(item => item.value);
-
-    //await this.getStateColor();
-    // this.rndKey = Math.round( (Math.random()*100) );
+        
   },
   watch: {
     windowWidth:function(){
