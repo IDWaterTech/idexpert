@@ -10,9 +10,8 @@
     <div class="wrapper">
       <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;" justify="center">
         <!-- 主標 -->
-        <v-col cols="12" md="12">
+        <v-col cols="12" md="12" v-if="UserData.is_customer==false">
           <v-btn to="/index2">前往主頁2(NEW)</v-btn>
-
         </v-col>
         <!-- Menu -->
         <v-col cols="12" lg="2" md="4" sm="6" xs="12" v-for="menu in menuList" :key="menu.id">
@@ -129,7 +128,7 @@ export default {
         };
         //datalst = this.isfranchise?franchiselst:await this.getMenuAuthorization(true);
         dataLst = await this.getMenuAuthorization(true);
-        
+        //加盟者==================================================================
         if(this.UserData.is_customer==true){//加盟者身份
           //var newData = _.cloneDeep(dataLst.data.filter(x=>['近況更新','歷史數據'].includes(x.name)));//篩選出disabled=false的資料
           var newData = _.cloneDeep(dataLst.data.filter(x=>x.is_client_accessible==true));//篩選出disabled=false的資料
