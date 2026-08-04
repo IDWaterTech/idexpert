@@ -1,0 +1,1 @@
+之後新版上線確認後要刪除factory.vue /factory 一樣 改 set/factory/

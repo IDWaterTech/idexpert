@@ -1,0 +1,1 @@
+之後新版上線確認後要刪除setting.vue "/breeding/setting" 改 /set/breeding/

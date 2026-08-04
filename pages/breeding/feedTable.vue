@@ -317,7 +317,7 @@ export default {
     },
     methods:{
         cataChange() {
-            console.log(`cataChange > 目前分類:${this.nowCata}`);
+            // console.log(`cataChange > 目前分類:${this.nowCata}`);
             switch(this.nowCata) {
                 case '體重投餌率':
                     this.getFeedRate();
@@ -331,12 +331,13 @@ export default {
         async getObConstants() {
             this.nowData = [];
             this.loading = true;
-            await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/observation-constant-versions/`)
+            let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+            await this.$axios.get(`${apiUrl}/v3/observation-constant-versions/`)
             .then(res => {
                 let data = typeof (res.data)=='string'?[]:res.data;
                 this.nowData = _.cloneDeep(data);
-                console.log("觀察網常數URL:", res.request.responseURL);
-                console.log("觀察網常數資料:", this.nowData);
+                // console.log("觀察網常數URL:", res.request.responseURL);
+                // console.log("觀察網常數資料:", this.nowData);
             })
             .catch(err => {
                 this.$toast.error(`取得觀察網常數資料失敗，${err.message}`, { duration: 2000 });
@@ -348,12 +349,13 @@ export default {
         async getFeedRate() {
             this.nowData = [];
             this.loading = true;
-            await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiKbUrl}/weight-feeding-rate-versions/`)
+            let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+            await this.$axios.get(`${apiUrl}/v3/weight-feeding-rate-versions/`)
             .then(res => {
                 let data = typeof (res.data)=='string'?[]:res.data;
                 this.nowData = _.cloneDeep(data);
-                console.log("體重投餌率URL:", res.request.responseURL);
-                console.log("體重投餌率資料:", this.nowData);
+                // console.log("體重投餌率URL:", res.request.responseURL);
+                // console.log("體重投餌率資料:", this.nowData);
             })
             .catch(err => {
                 this.$toast.error(`取得體重投餌率資料失敗，${err.message}`, { duration: 2000 });
@@ -383,6 +385,7 @@ export default {
                     value: null,
                 };
         },
+        //儲存明細-體重投餌率細項
         async saveDetail(item) {
             //儲存體重投餌率細項
             // console.log('儲存體重投餌率細項ID:',this.feedRateConfigItemsID);
@@ -396,7 +399,7 @@ export default {
                 updated_user: this.$auth.$state.user.email,
                 configs: _.cloneDeep(this.feedRateConfigItems)
             }
-            console.log(`儲存-${this.nowCata}細項(updateData):`, updateData);
+            // console.log(`儲存-${this.nowCata}細項(updateData):`, updateData);
             // return;
             var url = "";
             switch (this.nowCata) {
@@ -410,8 +413,9 @@ export default {
                     url = `weight-feeding-rate-versions`;
                     break;
             }
-            await this.$axios.patch(`${this.$store.state.mydata.gobal_api.apiKbUrl}/${url}/${this.feedRateConfigItemsID}/`, updateData).then(res => {
-                console.log(`修改-${this.nowCata}細項API回傳:`, res.data);
+            let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+            await this.$axios.patch(`${apiUrl}/v3/${url}/${this.feedRateConfigItemsID}/`, updateData).then(res => {
+                // console.log(`修改-${this.nowCata}細項API回傳:`, res.data);
                 if (res.data.detail == 'Success') {
                     this.$toast.success(`修改成功`, {
                         duration: 2000
@@ -422,7 +426,7 @@ export default {
                     this.$toast.error(`修改失敗:${res.data.messages.join()}`, { duration: 2000 });
                     console.error(`修改失敗:${res.data.messages.join()}`, res);
                 }
-                console.log(`修改-${this.nowCata}細項API:${res.request.responseURL}`);
+                // console.log(`修改-${this.nowCata}細項API:${res.request.responseURL}`);
             }).catch(error => {
                 this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
             });
@@ -533,7 +537,7 @@ export default {
                     this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
                     break;
             }
-            console.log(`'${this.nowCata} item:'`, this.feedRateConfigItems);
+            // console.log(`'${this.nowCata} item:'`, this.feedRateConfigItems);
         },
         select(evt,bool) {
             console.log(evt)
@@ -570,8 +574,9 @@ export default {
                         break;
 
                 }
-                await this.$axios.delete(`${this.$store.state.mydata.gobal_api.apiKbUrl}/${url}/${item.id}/`).then(res => {
-                    console.log(`刪除-${this.nowCata}API:` + res.request.responseURL);
+                let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+                await this.$axios.delete(`${apiUrl}/v3/${url}/${item.id}/`).then(res => {
+                    // console.log(`刪除-${this.nowCata}API:` + res.request.responseURL);
                     if (res.data.detail == 'Success') {
                         res = true;
                         this.$toast.success(`刪除成功`, {
@@ -619,6 +624,7 @@ export default {
                 }
             },50)
         },
+        // 新增資料
         async added() {
             var res = false;
             if(!this.edititem.remark) {
@@ -626,7 +632,7 @@ export default {
             }
             let parm = _.cloneDeep(this.edititem);
             parm.created_user = this.$auth.$state.user.email;
-            console.log("新增參數:", parm);
+            // console.log("新增參數:", parm);
             var url = "";
             switch (this.nowCata) {
                 case '體重投餌率':
@@ -639,8 +645,9 @@ export default {
                     url = `weight-feeding-rate-versions`;
                     break;
             }
-            await this.$axios.post(`${this.$store.state.mydata.gobal_api.apiKbUrl}/${url}/`, parm).then(res => {
-                console.log(`新增-${this.nowCata}API:` + res.request.responseURL);
+            let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+            await this.$axios.post(`${apiUrl}/v3/${url}/`, parm).then(res => {
+                // console.log(`新增-${this.nowCata}API:` + res.request.responseURL);
                 if (res.data.detail == 'Success') {
                     res = true;
                     this.$toast.success(`新增 ${this.nowCata} 成功`, {
