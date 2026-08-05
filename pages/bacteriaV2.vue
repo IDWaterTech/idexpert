@@ -265,7 +265,7 @@
                       <v-row class="align-center pt-4">
                         <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">溶藻弧菌(白菌)</span>
+                            <span style="font-size: 16px;margin-right: 9px;">溶藻弧菌(<span style="background-color: black; color: white;">白菌</span>)</span>
                           </div>
                           <v-text-field
                             type="number"
@@ -278,7 +278,25 @@
                         </v-col>
                         <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">霍亂弧菌(靛菌)</span>
+                            <span style="font-size: 16px;margin-right: 9px;">創傷弧菌(<span style="background-color: blue; color: white;">藍菌</span>)</span>
+                          </div>
+                          <v-text-field
+                            type="number"
+                            min="0"
+                            v-model="editItem.class4"
+                            placeholder="創傷弧菌(藍菌)"
+                            autocompleted="false"
+                            class="mr-2 mt-0 pt-0"
+                          ></v-text-field>
+                        </v-col>
+                        
+                      </v-row>
+                    </v-card-text>
+                    <v-card-text v-if="nowAdd=='chormager'" class="d-flex flex-column pt-0 mb-4">
+                      <v-row class="align-center pt-4">
+                        <v-col cols="6" class="pa-0 pl-2">
+                          <div class="date-time-picker">
+                            <span style="font-size: 16px;margin-right: 9px;">霍亂弧菌(<span style="background-color: Indigo; color: white;">靛菌</span>)</span>
                           </div>
                           <v-text-field
                             type="number"
@@ -289,32 +307,15 @@
                             class="mr-2 mt-0 pt-0"
                           ></v-text-field>
                         </v-col>
-                      </v-row>
-                    </v-card-text>
-                    <v-card-text v-if="nowAdd=='chormager'" class="d-flex flex-column pt-0 mb-4">
-                      <v-row class="align-center pt-4">
                         <v-col cols="6" class="pa-0 pl-2">
                           <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">腸炎弧菌(紫菌)</span>
+                            <span style="font-size: 16px;margin-right: 9px;">腸炎弧菌(<span style="background-color: purple; color: white;">紫菌</span>)</span>
                           </div>
                           <v-text-field
                             type="number"
                             min="0"
                             v-model="editItem.class3"
                             placeholder="腸炎弧菌(紫菌)"
-                            autocompleted="false"
-                            class="mr-2 mt-0 pt-0"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="6" class="pa-0 pl-2">
-                          <div class="date-time-picker">
-                            <span style="font-size: 16px;margin-right: 9px;">創傷弧菌(藍菌)</span>
-                          </div>
-                          <v-text-field
-                            type="number"
-                            min="0"
-                            v-model="editItem.class4"
-                            placeholder="創傷弧菌(藍菌)"
                             autocompleted="false"
                             class="mr-2 mt-0 pt-0"
                           ></v-text-field>
