@@ -1,1 +1,7 @@
 之後新版上線確認後要刪除factory.vue /factory 一樣 改 set/factory/
+/pool 一樣 改 set/breeding-record/
+feed/setting 改 set/feed/
+/recent 近況更新 /franchisee/recent
+/history 歷史數據 /franchisee/history
+
+/kb2 >>> /kb

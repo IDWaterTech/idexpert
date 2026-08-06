@@ -793,7 +793,7 @@ export default {
   },
   async created() {
     this.isLoading = false;
-    await this._pageCheck(); //驗證頁面是否可檢視
+    //await this._pageCheck(); //驗證頁面是否可檢視
     await this.getmain();
     await this.getpoolstat(); //取得池狀態清單
     //await this.getipdata();//取得ip設定
