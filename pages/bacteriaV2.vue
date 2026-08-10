@@ -261,6 +261,7 @@
                         </v-col>
                       </v-row>
                     </v-card-text>
+                    <!-- 白藍 -->
                     <v-card-text v-if="nowAdd=='chormager'" class="d-flex flex-column pt-0 mb-4">
                       <v-row class="align-center pt-4">
                         <v-col cols="6" class="pa-0 pl-2">
@@ -292,6 +293,7 @@
                         
                       </v-row>
                     </v-card-text>
+                    <!-- 靛紫 -->
                     <v-card-text v-if="nowAdd=='chormager'" class="d-flex flex-column pt-0 mb-4">
                       <v-row class="align-center pt-4">
                         <v-col cols="6" class="pa-0 pl-2">

@@ -71,7 +71,7 @@
                     <v-row class="mb-4">
                       <v-col cols="12">
                         <!-- 主要中央顯示 -->
-                        <el-table :data="DashboardData" v-loading="tableloading" border stripe size="mini" class="dashboard-table">
+                        <el-table :data="DashboardData" v-loading="tableloading" border stripe size="default" class="dashboard-table">
                           <template v-for="header in headersDashboard">
 
                             <el-table-column v-if="header.show" :key="header.value" :prop="header.value"
@@ -468,7 +468,7 @@ export default {
       { text: '重要記事 +', type: 'calendarForm',width:"500px" },
       { text: '飼料設定 +', type: 'feedOrder',width:'' },
       { text: '添加物設定 +', type: 'indicatorForm',width:'500px' },
-      { text: '檢驗檢測 +', type: 'inspectReport',width:'500px' },
+      { text: '檢驗檢測/菌相 +', type: 'inspectForm',width:'500px' },
       { text: '觀察網 +', type: 'observeForm',width:'500px' },
       { text: '收成資料 +', type: 'harvestForm',width:'500px' ,param:{passArea:''}},//harvest
       // {text: '警告訊息', type: 'alertForm',width:'500px' ,param:{passArea:'',color:'red'}},
@@ -481,7 +481,6 @@ export default {
   methods: {
     onReady: function (instance,CountUp) {
       const that = this;
-      // console.log(instance.el,CountUp);
       if(instance.el == document.getElementById('num3')) {
         that.endVal = this.total.predict;
       }else if(instance.el == document.getElementById('num2')) {
@@ -491,9 +490,7 @@ export default {
       }else if(instance.el == document.getElementById('num4')) {
         that.endVal = this.total.warning;
       }
-      // that.endVal = this.total.predict;
       instance.update(that.endVal);
-      // instance.update(that.endVal);
     },
     // 池況顏色
     async getStateColor() {
@@ -1068,6 +1065,11 @@ export default {
     },
     //設定本機顯不顯示的項目
     setStorageColumns(item){
+      item.forEach(x=>{
+        if(x.value=='pond_name') {
+          x.show = true;
+        }
+      })
       localStorage.setItem("DashboardColumnsShow",JSON.stringify(item));
     }
   },
@@ -1241,27 +1243,6 @@ export default {
     }
   }
 };
-//                            _ooOoo_
-//                           o8888888o
-//                           88" . "88
-//                           (| -_- |)
-//                            O\ = /O
-//                        ____/`---'\____
-//                      .   ' \\| |// `.
-//                       / \\||| : |||// \
-//                     / _||||| -:- |||||- \
-//                       | | \\\ - /// | |
-//                     | \_| ''\---/'' | |
-//                      \ .-\__ `-` ___/-. /
-//                   ___`. .' /--.--\ `. . __
-//                ."" '< `.___\_<|>_/___.' >'"".
-//               | | : `- \`.;`\ _ /`;.`/ - ` : | |
-//                 \ \ `-. \_ __\ /__ _/ .-` / /
-//         ======`-.____`-.___\_____/___.-`____.-'======
-//                            `=---='
-//
-//         .............................................
-//                  佛祖保佑             永無BUG
 </script>
 
 <style lang="scss" scoped>

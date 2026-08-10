@@ -4,8 +4,8 @@
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
         <v-form v-model="reportvalid" ref="addform">
-            <v-card class="custom-dialog">
-                <v-card-title class="add-title">
+            <v-card class="custom-dialog" elevation="0">
+                <v-card-title class="add-title" v-if="false">
                     <div class="d-inline-block">
                         <span>{{ addReport[0].pond_ids ? '修改' : '新增' }}檢驗報告</span>
                     </div>
