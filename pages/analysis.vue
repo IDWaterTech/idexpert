@@ -831,6 +831,15 @@
                               </v-card-text>
                             </v-card>
                           </v-tab-item>
+                          <!-- 菌相 -->
+                           <v-tab-item :value="'菌相'">
+                             <v-overlay :value="bacloading" :absolute="true">
+                              <v-progress-circular indeterminate size="64"></v-progress-circular>
+                            </v-overlay>
+                            <v-card elevation="0">
+                              <component :is="currentChart" :pond_area_id="sel_area" :startDate="sdate" :endDate="edate" :loading="bacloading"></component>
+                            </v-card>
+                           </v-tab-item>
                         </v-tabs>
                       </div>
                     </div>
@@ -848,6 +857,7 @@
 // import treelst from "~/components/treeList.vue";
 import _ from "lodash";
 import WaterQuality_Vcharts2 from "@/components/sheet/waterQuality_vcharts2";
+import bacteriaCharts from "@/pages/bacteriaCharts.vue";
 import dayjs from "dayjs";
 import https from "https";
 //-----
@@ -856,8 +866,7 @@ export default {
   layout: "emptynologin2",
   // middleware: "auth",
   components: {
-    // treelst,
-    WaterQuality_Vcharts2
+    WaterQuality_Vcharts2,
   },
   head(){
     return{
@@ -866,6 +875,7 @@ export default {
   },
   data() {
     return {
+      currentChart: bacteriaCharts,
       chartToggle:true,
       mypanel: 0,
       sel_main: "",
@@ -880,7 +890,8 @@ export default {
         { name: "投餵飼料" },
         //{ name: "飼料觀察網" },
         { name: "進階值" },
-        { name: "養殖用料" }
+        { name: "養殖用料" },
+        { name: "菌相" }
         // { name: "投餵益生菌" }  pbio目前沒有先拿掉
       ],
       currenttab: "水質監測",
@@ -997,6 +1008,8 @@ export default {
       materialloading: false,
       materialdata: [],
       defitem_material: "",
+      //bac
+      bacloading: false,
       // 3張card
       total: {
         pool: 0, // 養殖池

@@ -59,6 +59,9 @@ export default {
       // }]}],
       //#91c7ae default ffa1aa 淺紅  #ff9900 橘 FFAB91 淺橘 fff8b8 淺黃 BCAAA4 淺咖 cyan 亮藍綠 8BC34A 亮綠 #B388FF 淺紫
       chartExtend: {
+        series: {
+          connectNulls: true,
+        },
         legend: {
           selected: this.defaultitem,
           itemWidth: 12,
