@@ -7,7 +7,7 @@
           </v-col>
           
           <v-col cols="12" md="6" v-for="item in chartDatas" :key="item.id">
-            <div><h1>{{ item.name }}池</h1></div>
+            <div><h1>{{ item.name }}</h1></div>
             <ve-line :data="item" :extend="chartExtend"></ve-line>
           </v-col>
           <v-col v-if="chartDatas.length==0" class="my-4 pa-4">

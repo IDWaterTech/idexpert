@@ -10,7 +10,7 @@
     <div class="wrapper">
       <v-row style="margin: 24px auto;transition: all 0.3s;max-width: 1340px;" justify="center">
         <!-- 主標 -->
-        <v-col cols="12" md="12" v-if="UserData.is_customer==false">
+        <v-col cols="12" md="12" v-if="UserData.is_customer==false && hostname!='cloud.idwatertech.com'">
           <v-btn to="/index2">前往主頁2(NEW)</v-btn>
         </v-col>
         <!-- Menu -->
@@ -69,6 +69,7 @@ export default {
   layout: "emptynologin2",
   data() {
     return {
+      hostname: window.location.hostname,
       isfranchise:true,//是否加盟者
       menuList: [],
       bgc:['#E6F1F7','#E6F7F2','#FCFAED','#F7EDE6','#F7E6E6','#F7E6F4','#E6E7F7','#F0E6F7',],
