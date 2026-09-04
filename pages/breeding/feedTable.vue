@@ -3,9 +3,9 @@
     <v-row class="mb-0">
         <v-col cols="12" md="4" sm="6" class="pa-0">
             <div class="search flex-align-center ml-4 mt-2">
-                <v-autocomplete v-model="nowCata" hide-details :items="cataSelect" @change="cataChange" style="min-width: 200px;">
-                
-                </v-autocomplete>
+                   <v-autocomplete v-model="nowCata" hide-details :items="cataSelect" item-text="label"
+                        item-value="value" @change="cataChange" style="min-width: 200px;">
+                    </v-autocomplete>
                 
             </div>
         </v-col>
@@ -16,17 +16,17 @@
                 <v-card class="result-card">
                     <div class="card-title px-4 py-3">
                         <div class="title">
-                            <v-card-title @click="cataChange">{{nowCata}}-清單</v-card-title>
+                            <v-card-title @click="cataChange">{{cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata}}-清單</v-card-title>
                             <!-- <v-btn @click="cataChange">get!!</v-btn> -->
                         </div>
                         <div class="chevon">
-                            <v-btn class="btn-secondary green" @click="openAdd">新增{{nowCata}}</v-btn>
+                            <v-btn class="btn-secondary green" @click="openAdd">新增-{{cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata}}</v-btn>
                         </div>
                     </div>
                     <div class="content">
                         <v-data-table light 
                             :loading="loading"
-                            :headers="headers.filter(x => x.showmode.includes(nowCata))"
+                            :headers="headers.filter(x => x.showmode.includes(cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata))"
                             :items="nowData"
                             :no-data-text="'無資料'"
                             hide-default-footer
@@ -92,7 +92,7 @@
         <v-card class="custom-dialog">
             <v-card-title class="add-title">
                 <div class="d-inline-block">
-                    <span>{{ nowCata }}-編輯</span> 
+                    <span>{{ cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata }}-編輯</span> 
                 </div>
                 <div class="add">
                     <v-btn class="btn-secondary close"
@@ -116,19 +116,26 @@
                     </v-card-text> 
                 <v-card-text class="d-flex pt-0">
                        <v-row align="center">
-                            <v-col cols="12" md="3" sm="3">
-                                <v-text-field v-model="feedRateConfigADD.min_weight" label="起始個體重(g)" dense></v-text-field>
-                            </v-col>
-                            <v-col cols="12" md="3" sm="3">
-                                <v-text-field v-model="feedRateConfigADD.max_weight" label="最終個體重(g)" dense></v-text-field>
-                            </v-col>
+                                <v-col cols="12" md="3" sm="3" v-if="checkTable==true">
+                                    <v-text-field v-model="feedRateConfigADD.consecutive_days" label="連續天數"
+                                        dense></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="3" sm="3" v-if="checkTable==false">
+                                    <v-text-field v-model="feedRateConfigADD.min" label="起始值"
+                                        dense></v-text-field>
+                                </v-col>
+                                <v-col cols="12" md="3" sm="3" v-if="checkTable==false">
+                                    <v-text-field v-model="feedRateConfigADD.max" label="最終值"
+                                        dense></v-text-field>
+                                </v-col>
                             <v-col cols="12" md="3" sm="3">
                                 <v-text-field v-model="feedRateConfigADD.value" label="數值/比率" dense></v-text-field>
                             </v-col>
                             <v-col cols="12" md="3" sm="3" align="center">
                                 <v-icon color="primary" @click="feedRateConfigADD = {
-                                    min_weight: null,
-                                    max_weight: null,
+                                    consecutive_days: null,
+                                    min: null,
+                                    max: null,
                                     value: null
                                 }">mdi-broom</v-icon>
                                 <v-icon color="success" @click="feedRateConfigItemsAdd">mdi-plus-circle</v-icon>
@@ -137,8 +144,9 @@
   
                 </v-card-text>
                 <v-card-text>
+                    {{ cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata }}<hr/>
                     <v-data-table light 
-                        :headers="feedRateConfigHeaders"
+                        :headers="feedRateConfigHeaders.filter(x => x.showmode.includes(cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata))"
                         :items="feedRateConfigItems"
                         :no-data-text="'無資料'"
                         hide-default-footer
@@ -168,7 +176,7 @@
             <v-card class="custom-dialog">
                 <v-card-title class="add-title">
                     <div class="d-inline-block">
-                        <span>{{ nowCata }}-{{ editDialogMode === 'add' ? '新增' : '編輯' }}</span> 
+                        <span>{{ cataSelect.filter(x=>x.value==nowCata)[0]?.label || nowCata }}-{{ editDialogMode === 'add' ? '新增' : '編輯' }}</span> 
                     </div>
                     <div class="add">
                         <v-btn class="btn-secondary close"
@@ -267,18 +275,18 @@
 export default {
     data() {
         return {
-            cataSelect:['體重投餌率','觀察網常數'],
+            cataSelect:[{value: 'WEIGHT_FEED_RATIO', label: '體重投餌率'}],
             nowCata: '體重投餌率',
             loading: false,
             headers: [
-                {text: 'ID', value: 'id', sortable: false,width:"10%", showmode: ['體重投餌率','觀察網常數']},
-                {text: 'name', value: 'name', sortable: false,width:"10%", showmode: ['體重投餌率','觀察網常數']},
-                {text: '版本號', value: 'version_number', sortable: false, showmode: ['體重投餌率','觀察網常數']},
-                {text: '是否啟用', value: 'is_active', sortable: false, showmode: ['體重投餌率','觀察網常數']},
-                {text: '備註', value: 'remark', sortable: false, showmode: ['體重投餌率','觀察網常數']},
-                {text: '更新資訊', value: 'updated_user', sortable: false, showmode: ['體重投餌率','觀察網常數']},
+                {text: 'ID', value: 'id', sortable: false,width:"10%", showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天數係數表']},
+                {text: 'name', value: 'name', sortable: false,width:"10%", showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天數係數表']},
+                {text: '版本號', value: 'version_number', sortable: false, showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天數係數表']},
+                {text: '是否啟用', value: 'is_active', sortable: false, showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天數係數表']},
+                {text: '備註', value: 'remark', sortable: false, showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天數係數表']},
+                {text: '更新資訊', value: 'updated_user', sortable: false, showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天数係数表']},
                 // {text: '更新時間', value: 'updated_time', sortable: false, showmode: ['體重投餌率']},
-                { text: '操作', value: 'udactions', sortable: false,showmode: ['體重投餌率','觀察網常數']},
+                { text: '操作', value: 'udactions', sortable: false,showmode: ['體重投餌率','縮放參數表','追料梯度和連續天數對照表','減料梯度和剩餘飼料量對照表','石灰和連續天數係數表'] },
                 // {id: 'id', name: 'ID', version_number: 'id', is_active: false,updated_user: 'updated_user', updated_time: 'updated_time',showmode: ['體重投餌率']},
                 
             ],
@@ -287,19 +295,21 @@ export default {
             feedRateConfigItemsID: null,//體重投餌率細項ID
 
             feedRateConfigADD: {
-                min_weight: null,
-                max_weight: null,
+                consecutive_days: null,
+                min: null,
+                max: null,
                 value: null,
             },//體重投餌率細項新增資料
             feedRateConfigItems: [],//體重投餌率設定細項
             feedRateConfigItemsIsActive:false,//體重投餌率細項是否啟用
             feedRateConfigItemsRemark:null,//體重投餌率細項備註
             feedRateConfigHeaders: [
-                { text: 'ID', value: 'id', sortable: true , align: 'center' },
-                { text: '起始個體重(g)', value: 'min_weight', sortable: false , align: 'center' },
-                { text: '最終個體重(g)', value: 'max_weight', sortable: false , align: 'center' },
-                { text: '數值/比率', value: 'value', sortable: false , align: 'center' },
-                { text: '操作', value: 'actions', sortable: false },
+                { text: 'ID', value: 'id', sortable: true , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
+                { text: '連續天數', value: 'consecutive_days', sortable: false , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表']},
+                { text: '起始值', value: 'min', sortable: false , align: 'center',showmode: ['體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
+                { text: '最終值', value: 'max', sortable: false , align: 'center',showmode: ['體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
+                { text: '數值/比率', value: 'value', sortable: false , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表'] },
+                { text: '操作', value: 'actions', sortable: false,showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表'] },
             ],
             editDialog: false,
             editDialogMode: 'add',//add新增 edit編輯
@@ -315,33 +325,96 @@ export default {
     mounted() {
         this.getFeedRate();//預設先取得體重投餌率資料
     },
+    computed: {
+        checkTable: function() {
+            var x =['追料梯度和連續天數對照表', '石灰和連續天數係數表'].includes(this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata);
+
+            return x;
+        }
+    },
     methods:{
+        getCataSelectData:async function() {
+            await this.$axios.get(`${this.$store.state.mydata.gobal_api.apiUrl}/v3/strategy-matrices/types/`)
+            .then(res => {
+                let data = typeof (res.data)=='string'?[]:res.data;
+                this.cataSelect = _.cloneDeep(data);
+                this.nowCata = this.cataSelect[0]?.value || '體重投餌率';
+                // console.log("取得分類資料:", this.cataSelect);
+                //[{value: 'WEIGHT_FEED_RATIO', label: '體重投餌率'}]
+            })
+            .catch(err => {
+                this.$toast.error(`取得分類資料失敗，${err.message}`, { duration: 2000 });
+                alert("取得分類資料失敗：" + err.message);
+            });
+        },
         cataChange() {
             // console.log(`cataChange > 目前分類:${this.nowCata}`);
-            switch(this.nowCata) {
+            var x = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            switch(x) {
                 case '體重投餌率':
                     this.getFeedRate();
                     break;
-                case '觀察網常數':
-                    this.getObConstants();
+                case '縮放參數表':
+                    this.getObConstants();//原觀察網常數
+                    break;
+                case '追料梯度和連續天數對照表':
+                    this.getV3TableData();
+                    break;
+                default:
+                    this.getV3TableData();
                     break;
             }
         },
-        // 觀察網常數資料-清單
+        getV3TableData:async function() {
+            var x = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            let url="";
+            switch(x) {
+                case '體重投餌率':
+                    this.getFeedRate();
+                    break;
+                case '縮放參數表':
+                    this.getObConstants();//原觀察網常數
+                    break;
+                case '追料梯度和連續天數對照表':
+                    url= `feed-increases`;
+                    break;
+                case '減料梯度和剩餘飼料量對照表':
+                    url= `feed-decreases`;
+                    break;
+                case '石灰和連續天數係數表':
+                    url= `lime-multipliers`;
+                    break;
+            }
+            this.nowData = [];
+            this.loading = true;
+            let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+            await this.$axios.get(`${apiUrl}/v3/strategy-matrices/${url}/`)
+            .then(res => {
+                let data = typeof (res.data)=='string'?[]:res.data;
+                this.nowData = _.cloneDeep(data);
+                // console.log(`${x} nowData:`, this.nowData);  
+            })
+            .catch(err => {
+                this.$toast.error(`取得 ${x} 失敗，${err.response.data.messages.join()}`, { duration: 2000 });
+                console.error(`取得 ${x} 資料失敗，${err.response.data.messages.join()}`, err);
+            });
+            this.loading = false;
+        },
+        // 縮放參數表 資料-清單
         async getObConstants() {
             this.nowData = [];
             this.loading = true;
             let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
-            await this.$axios.get(`${apiUrl}/v3/observation-constant-versions/`)
+            await this.$axios.get(`${apiUrl}/v3/strategy-matrices/scaling-factors/`)
             .then(res => {
                 let data = typeof (res.data)=='string'?[]:res.data;
                 this.nowData = _.cloneDeep(data);
-                // console.log("觀察網常數URL:", res.request.responseURL);
-                // console.log("觀察網常數資料:", this.nowData);
+                // console.log("縮放參數表URL:", res.request.responseURL);
+                // console.log("縮放參數表資料:", this.nowData);
             })
             .catch(err => {
-                this.$toast.error(`取得觀察網常數資料失敗，${err.message}`, { duration: 2000 });
-                alert("取得觀察網常數資料失敗：" + err.message);
+                this.$toast.error(`取得縮放參數表資料失敗，${err.response.data.messages.join()}`, { duration: 2000 });
+                console.error(`取得縮放參數表資料失敗，${err.response.data.messages.join()}`, err);
             });
             this.loading = false;
         },
@@ -350,7 +423,7 @@ export default {
             this.nowData = [];
             this.loading = true;
             let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
-            await this.$axios.get(`${apiUrl}/v3/weight-feeding-rate-versions/`)
+            await this.$axios.get(`${apiUrl}/v3/strategy-matrices/weight-feed-ratios/`)
             .then(res => {
                 let data = typeof (res.data)=='string'?[]:res.data;
                 this.nowData = _.cloneDeep(data);
@@ -358,8 +431,8 @@ export default {
                 // console.log("體重投餌率資料:", this.nowData);
             })
             .catch(err => {
-                this.$toast.error(`取得體重投餌率資料失敗，${err.message}`, { duration: 2000 });
-                alert("取得體重投餌率資料失敗：" + err.message);
+                this.$toast.error(`取得體重投餌率資料失敗，${err.response.data.messages.join()}`, { duration: 2000 });
+                console.error(`取得體重投餌率資料失敗，${err.response.data.messages.join()}`, err);
             });
             this.loading = false;
             
@@ -374,14 +447,16 @@ export default {
         //將資料加入投餌率細項
         feedRateConfigItemsAdd() {
             this.feedRateConfigItems.push({
-                min_weight: this.feedRateConfigADD.min_weight,
-                max_weight: this.feedRateConfigADD.max_weight,
+                consecutive_days: this.feedRateConfigADD.consecutive_days,
+                min: this.feedRateConfigADD.min,
+                max: this.feedRateConfigADD.max,
                 value: this.feedRateConfigADD.value,
             });
                 //清空新增欄位
                 this.feedRateConfigADD = {
-                    min_weight: null,
-                    max_weight: null,
+                    consecutive_days: null,
+                    min: null,
+                    max: null,
                     value: null,
                 };
         },
@@ -390,7 +465,8 @@ export default {
             //儲存體重投餌率細項
             // console.log('儲存體重投餌率細項ID:',this.feedRateConfigItemsID);
             // console.log('儲存體重投餌率細項(應該要被改的config):',this.feedRateConfigItems);
-            if (confirm(`確定儲存 ${this.nowCata} id: ${this.feedRateConfigItemsID} 細項: ${this.feedRateConfigItems.length} 筆 ?`) == false) {
+            var itemName = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            if (confirm(`確定儲存 ${itemName} id: ${this.feedRateConfigItemsID} 細項: ${this.feedRateConfigItems.length} 筆 ?`) == false) {
                 return;
             }
             var updateData = {
@@ -399,23 +475,20 @@ export default {
                 updated_user: this.$auth.$state.user.email,
                 configs: _.cloneDeep(this.feedRateConfigItems)
             }
-            // console.log(`儲存-${this.nowCata}細項(updateData):`, updateData);
-            // return;
             var url = "";
-            switch (this.nowCata) {
+            switch (itemName) {
                 case '體重投餌率':
-                    url = `weight-feeding-rate-versions`;
+                    url = `strategy-matrices`;
                     break;
-                case '觀察網常數':
-                    url = `observation-constant-versions`;
+                case '縮放參數表':
+                    url = `strategy-matrices`;
                     break;
                 default:
-                    url = `weight-feeding-rate-versions`;
+                    url = `strategy-matrices`;
                     break;
             }
             let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
             await this.$axios.patch(`${apiUrl}/v3/${url}/${this.feedRateConfigItemsID}/`, updateData).then(res => {
-                // console.log(`修改-${this.nowCata}細項API回傳:`, res.data);
                 if (res.data.detail == 'Success') {
                     this.$toast.success(`修改成功`, {
                         duration: 2000
@@ -426,9 +499,10 @@ export default {
                     this.$toast.error(`修改失敗:${res.data.messages.join()}`, { duration: 2000 });
                     console.error(`修改失敗:${res.data.messages.join()}`, res);
                 }
-                // console.log(`修改-${this.nowCata}細項API:${res.request.responseURL}`);
+                // console.log(`修改-${itemName}細項API:${res.request.responseURL}`);
             }).catch(error => {
-                this.$toast.error(`修改失敗:${error}`, { duration: 2000 });
+                this.$toast.error(`修改失敗:${error.response.data.messages.join()}`, { duration: 2000 });
+                console.error(`修改失敗:${error.response.data.messages.join()}`, error);
             });
             
         },
@@ -499,8 +573,17 @@ export default {
 
         },
         openAdd() {
-            switch(this.nowCata){
+            var itemName = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            switch(itemName){
                     case '體重投餌率':
+                        this.editDialogMode = 'add';
+                        if(this.$refs.addform) {
+                            this.edititem = {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''};
+                        }
+                        // this.edititem.is_active = true;//強迫新資料預設為啟用
+                        this.editDialog = true;
+                        break;
+                    case '縮放參數表':
                         this.editDialogMode = 'add';
                         if(this.$refs.addform) {
                             // this.$refs.addform.reset();
@@ -509,19 +592,18 @@ export default {
                         // this.edititem.is_active = true;//強迫新資料預設為啟用
                         this.editDialog = true;
                         break;
-                    case '觀察網常數':
+                    default:
                         this.editDialogMode = 'add';
                         if(this.$refs.addform) {
-                            // this.$refs.addform.reset();
                             this.edititem = {name:'',configs:[],version_number:'',is_active:true,remark:'',created_user:''};
                         }
-                        // this.edititem.is_active = true;//強迫新資料預設為啟用
                         this.editDialog = true;
                         break;
             }
         },
         openEdit(item) {
-            switch(this.nowCata) {
+            var x = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            switch(x) {
                 case '體重投餌率':
                     this.feedRateDialog = true;
                     this.feedRateConfigItemsID = _.cloneDeep(item.id);
@@ -529,7 +611,21 @@ export default {
                     this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
                     this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
                     break;
-                case '觀察網常數':
+                case '縮放參數表':
+                    this.feedRateDialog = true;
+                    this.feedRateConfigItemsID = _.cloneDeep(item.id);
+                    this.feedRateConfigItems = _.cloneDeep(item.configs);
+                    this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
+                    this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
+                    break;
+                case '追料梯度和連續天數對照表':
+                    this.feedRateDialog = true;
+                    this.feedRateConfigItemsID = _.cloneDeep(item.id);
+                    this.feedRateConfigItems = _.cloneDeep(item.configs);
+                    this.feedRateConfigItemsRemark = _.cloneDeep(item.remark);
+                    this.feedRateConfigItemsIsActive = _.cloneDeep(item.is_active);
+                    break;
+                default:
                     this.feedRateDialog = true;
                     this.feedRateConfigItemsID = _.cloneDeep(item.id);
                     this.feedRateConfigItems = _.cloneDeep(item.configs);
@@ -560,34 +656,35 @@ export default {
         async deleteItem(item) {
             var res = false;
             var title = item.name;
-            if (confirm(`確定刪除 ${this.nowCata} name: ${title} , ID:${item.id} ?`)) {
+            var itemName = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            if (confirm(`確定刪除 ${itemName} name: ${title} , ID:${item.id} ?`)) {
                 let url = "";
-                switch (this.nowCata) {
+                switch (itemName) {
                     case '體重投餌率':
-                        url = 'weight-feeding-rate-versions';
+                        url = 'strategy-matrices';
                         break;
-                    case '觀察網常數':
-                        url = 'observation-constant-versions';
+                    case '縮放參數表':
+                        url = 'strategy-matrices';
                         break;
                     default:
-                        url = 'weight-feeding-rate-versions';
+                         url = 'strategy-matrices';
+                        // this.$toast.error(`刪除失敗:分類 ${itemName} 無法刪除`, { duration: 2000 });
                         break;
-
                 }
+                console.log(`刪除 ${itemName} name: ${title} , ID:${item.id} API:${url}`);
                 let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
                 await this.$axios.delete(`${apiUrl}/v3/${url}/${item.id}/`).then(res => {
-                    // console.log(`刪除-${this.nowCata}API:` + res.request.responseURL);
                     if (res.data.detail == 'Success') {
                         res = true;
                         this.$toast.success(`刪除成功`, {
                             duration: 2000
                         });
                     } else {
-                        // console.log(`刪除-${this.nowCata}API回傳:`, res);
                         this.$toast.error(`刪除失敗:${res.data}`, { duration: 2000 });
                     }
                 }).catch(error => {
-                    this.$toast.error(`刪除失敗:${error}`, { duration: 2000 });
+                    this.$toast.error(`刪除失敗:${error.response.data.messages.join()}`, { duration: 3000 });
+                    console.error(`刪除失敗:${error.response.data.messages.join()}`, error);
                 }).finally(() => {
                     this.cataChange();
                 });
@@ -634,23 +731,33 @@ export default {
             parm.created_user = this.$auth.$state.user.email;
             // console.log("新增參數:", parm);
             var url = "";
-            switch (this.nowCata) {
+            var itemName = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
+            switch (itemName) {
                 case '體重投餌率':
-                    url = `weight-feeding-rate-versions`;
+                    url = `weight-feed-ratios`;
                     break;
-                case '觀察網常數':
-                    url = `observation-constant-versions`;
+                case '縮放參數表':
+                    url = `scaling-factors`;
+                    break;
+                case '追料梯度和連續天數對照表':
+                    url = `feed-increases`;
+                    break;
+                case '減料梯度和剩餘飼料量對照表':
+                    url = `feed-decreases`;
+                    break;
+                case '石灰和連續天數係數表':
+                    url = `lime-multipliers`;
                     break;
                 default:
-                    url = `weight-feeding-rate-versions`;
-                    break;
+                    this.$toast.error(`新增失敗:分類 ${itemName} 無法新增`, { duration: 2000 });
+                    return;
             }
             let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
-            await this.$axios.post(`${apiUrl}/v3/${url}/`, parm).then(res => {
+            await this.$axios.post(`${apiUrl}/v3/strategy-matrices/${url}/`, parm).then(res => {
                 // console.log(`新增-${this.nowCata}API:` + res.request.responseURL);
                 if (res.data.detail == 'Success') {
                     res = true;
-                    this.$toast.success(`新增 ${this.nowCata} 成功`, {
+                    this.$toast.success(`新增 ${itemName} 成功`, {
                         duration: 2000
                     });
                     this.editDialog = false;
@@ -659,11 +766,15 @@ export default {
                     this.$toast.error(`新增失敗:${res.data.messages.join()}`, { duration: 2000 });
                 }
             }).catch(error => {
-                this.$toast.error(`新增失敗:${error}`, { duration: 2000 });
+                this.$toast.error(`新增失敗:${error.response.data.messages.join()}`, { duration: 3000 });
+                console.error(`新增失敗:${error.response.data.messages.join()}`, error);
             });
 
 
         }
+    },
+    mounted() {
+        this.getCataSelectData();
     }
 }
 </script>
