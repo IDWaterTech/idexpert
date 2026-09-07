@@ -88,7 +88,7 @@
         </div>
     </v-row>
     <!-- 新增/編輯 feedRateDialog 體重投餌率/觀察網常數 明細 -->
-     <v-dialog v-model="feedRateDialog" max-width="500px" max-height="90vh">
+     <v-dialog v-model="feedRateDialog" max-width="550px" max-height="90vh">
         <v-card class="custom-dialog">
             <v-card-title class="add-title">
                 <div class="d-inline-block">
@@ -105,31 +105,31 @@
             <div class="basic">
                 <v-card-text>
                     <div class="d-flex align-center">
-                        <v-switch v-model="feedRateConfigItemsIsActive" label="是否啟用" filled dense class="my-1 mx-4"></v-switch>
+                        <v-switch v-model="feedRateConfigItemsIsActive" label="是否啟用" filled dense class="my-0 mx-4"></v-switch>
                     </div>
                 </v-card-text>
                 <v-card-text>
                     <div class="d-flex align-center">
-                        <v-text-field v-model="feedRateConfigItemsRemark" label="備註" filled dense class="my-1 mx-4"></v-text-field>
+                        <v-text-field v-model="feedRateConfigItemsRemark" label="備註" filled dense class="my-0 mx-4"></v-text-field>
                         <!-- <v-text-field v-model="edititem.name" label="名稱" dense></v-text-field> -->
                     </div>
                     </v-card-text> 
                 <v-card-text class="d-flex pt-0">
                        <v-row align="center">
-                                <v-col cols="12" md="3" sm="3" v-if="checkTable==true">
-                                    <v-text-field v-model="feedRateConfigADD.consecutive_days" label="連續天數"
+                                <v-col cols="12" md="4" sm="4" v-if="checkTable==true">
+                                    <v-text-field v-model="feedRateConfigADD.consecutive_days" :label="`${UISchema?.[nowCata]?.consecutive_days?.name || '連續天數.'}${UISchema?.[nowCata]?.consecutive_days?.unit ? `(${UISchema?.[nowCata]?.consecutive_days?.unit})` : ''}`"
                                         dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="3" sm="3" v-if="checkTable==false">
-                                    <v-text-field v-model="feedRateConfigADD.min" label="起始值"
+                                    <v-text-field v-model="feedRateConfigADD.min" :label="`${UISchema?.[nowCata]?.min?.name || '起始值.'}${UISchema?.[nowCata]?.min?.unit ? `(${UISchema?.[nowCata]?.min?.unit})` : ''}`"
                                         dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="3" sm="3" v-if="checkTable==false">
-                                    <v-text-field v-model="feedRateConfigADD.max" label="最終值"
+                                    <v-text-field v-model="feedRateConfigADD.max" :label="`${UISchema?.[nowCata]?.max?.name || '最終值.'}${UISchema?.[nowCata]?.max?.unit ? `(${UISchema?.[nowCata]?.max?.unit})` : ''}`"
                                         dense></v-text-field>
                                 </v-col>
                             <v-col cols="12" md="3" sm="3">
-                                <v-text-field v-model="feedRateConfigADD.value" label="數值/比率" dense></v-text-field>
+                                <v-text-field v-model="feedRateConfigADD.value" dense :label="`${UISchema?.[nowCata]?.value?.name || '數值/比率.'}${UISchema?.[nowCata]?.value?.unit ? `(${UISchema?.[nowCata]?.value?.unit})` : ''}`"></v-text-field>
                             </v-col>
                             <v-col cols="12" md="3" sm="3" align="center">
                                 <v-icon color="primary" @click="feedRateConfigADD = {
@@ -143,15 +143,16 @@
                         </v-row>
   
                 </v-card-text>
+                <hr/>
                 <v-card-text>
-                    {{ cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata }}<hr/>
+                    <!-- {{ cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata }}<hr/> -->
                     <v-data-table light 
                         :headers="feedRateConfigHeaders.filter(x => x.showmode.includes(cataSelect.filter(x => x.value === nowCata)[0]?.label || nowCata))"
                         :items="feedRateConfigItems"
                         :no-data-text="'無資料'"
                         hide-default-footer
                         disable-pagination
-                        style="overflow-y: scroll;height: 57vh;"
+                        style="overflow-y: scroll;height: 30vh;"
                         class="data-table bg-transparent">
                            <template v-slot:[`item.actions`]="{ item }">
                                 <v-icon color="red" class="delete-icon" title="刪除"
@@ -304,11 +305,11 @@ export default {
             feedRateConfigItemsIsActive:false,//體重投餌率細項是否啟用
             feedRateConfigItemsRemark:null,//體重投餌率細項備註
             feedRateConfigHeaders: [
-                { text: 'ID', value: 'id', sortable: true , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
-                { text: '連續天數', value: 'consecutive_days', sortable: false , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表']},
-                { text: '起始值', value: 'min', sortable: false , align: 'center',showmode: ['體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
-                { text: '最終值', value: 'max', sortable: false , align: 'center',showmode: ['體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
-                { text: '數值/比率', value: 'value', sortable: false , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表'] },
+                { text: 'ID.', value: 'id', sortable: true , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
+                { text: '連續天數.', value: 'consecutive_days', sortable: false , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表']},
+                { text: '起始值.', value: 'min', sortable: false , align: 'center',showmode: ['體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
+                { text: '最終值.', value: 'max', sortable: false , align: 'center',showmode: ['體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表']},
+                { text: '數值/比率.', value: 'value', sortable: false , align: 'center',showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表'] },
                 { text: '操作', value: 'actions', sortable: false,showmode: ['追料梯度和連續天數對照表','石灰和連續天數係數表','體重投餌率','縮放參數表','減料梯度和剩餘飼料量對照表'] },
             ],
             editDialog: false,
@@ -319,7 +320,8 @@ export default {
                 require: [v => !!v || "*必要項目"],
                 requireSelect: [v =>  !!v.length || "*必要項目"],
             },
-            species:[]
+            species:[],
+            UISchema:{},
         }
     },
     mounted() {
@@ -349,6 +351,19 @@ export default {
         },
         cataChange() {
             // console.log(`cataChange > 目前分類:${this.nowCata}`);
+            var keys = Object.keys(this.UISchema);
+            if (keys.length > 0) {
+                
+                this.feedRateConfigHeaders.filter(x => x.value == 'consecutive_days')[0].text =
+                    `${this.UISchema?.[this.nowCata]?.consecutive_days?.name || '連續天數.'}${this.UISchema?.[this.nowCata]?.consecutive_days?.unit ? `(${this.UISchema?.[this.nowCata]?.consecutive_days?.unit})` : ''}`;
+                this.feedRateConfigHeaders.filter(x => x.value == 'min')[0].text =
+                    `${this.UISchema?.[this.nowCata]?.min?.name || '起始值.'}${this.UISchema?.[this.nowCata]?.min?.unit ? `(${this.UISchema?.[this.nowCata]?.min?.unit})` : ''}`;
+                this.feedRateConfigHeaders.filter(x => x.value == 'max')[0].text =
+                    `${this.UISchema?.[this.nowCata]?.max?.name || '最終值.'}${this.UISchema?.[this.nowCata]?.max?.unit ? `(${this.UISchema?.[this.nowCata]?.max?.unit})` : ''}`;
+                this.feedRateConfigHeaders.filter(x => x.value == 'value')[0].text =
+                    `${this.UISchema?.[this.nowCata]?.value?.name || '數值/比率.'}${this.UISchema?.[this.nowCata]?.value?.unit ? `(${this.UISchema?.[this.nowCata]?.value?.unit})` : ''}`;
+            }
+
             var x = this.cataSelect.filter(x => x.value === this.nowCata)[0]?.label || this.nowCata;
             switch(x) {
                 case '體重投餌率':
@@ -771,9 +786,23 @@ export default {
             });
 
 
+        },
+         getUISchema:async function() {
+            let apiUrl = this.$store.state.mydata.gobal_api.apiUrl;
+            await this.$axios.get(`${apiUrl}/v3/strategy-matrices/ui-schema/`)
+            .then(res => {
+                let data = typeof (res.data)=='string'?[]:res.data;
+                console.log("取得UI Schema資料:", data);
+                this.UISchema = _.cloneDeep(data);
+            })
+            .catch(err => {
+                this.$toast.error(`取得UI Schema資料失敗，${err.message}`, { duration: 2000 });
+                alert("取得UI Schema資料失敗：" + err.message);
+            });
         }
     },
-    mounted() {
+    async mounted() {
+        await this.getUISchema();
         this.getCataSelectData();
     }
 }
