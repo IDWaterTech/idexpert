@@ -17,7 +17,7 @@
           </div>
       </div>
       <v-divider></v-divider>
-      <div class="content notify pt-4 mb-10 flex-column" v-if="!UserData.is_customer">
+      <div class="content notify pt-4 mb-10 flex-column" v-if="!UserData.is_customer && false">
         <v-subheader class="title pa-0">
           <v-icon class="mx-2">mdi-bell-circle-outline</v-icon>接收通知
         </v-subheader>
