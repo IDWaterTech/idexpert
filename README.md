@@ -7,6 +7,23 @@
 - Vuetify.js：主要 UI 使用
 - Element UI：部分 UI 使用
 
+### 頁面功能路徑
+| 功能名稱 | 前端路徑 | API/元件 |
+|---|---|---|
+| 首頁 | / | /api/user-access/authorization-items/、/pond-state、/ponds-data |
+| 知識庫 | /kb | /api/suggestion/、/last-sampling-data、/breeding-configs |
+| 操作面板 | /dashboard | v3/pond-dashboard |
+| 歷史資料 | /historical-data | IndicatorEdit.vue、Calendar.vue、OberverV2.vue、bacteriaV2.vue、Report.vue |
+| 近況更新 | /franchisee/recent | /client/recent-data |
+| 歷史數據 | /franchisee/history | /client/historical-total-data、/client/historical-daily-data、/client/historical-fields |
+| 養殖設定 | /set/breeding | seedlings.vue、feedTempSetting2.vue、species.vue、feedTable.vue |
+| 帳號管理 | set/account | /user-access/account、/user-access/organization、/architecture、/user-access/personal-settings |
+| 授權管理 | set/authorization | /user-access/role、/user-access/authorization-items、/user-access/role |
+| 監測管理 | set/monitor | /data-col、/data-col-group、/col-data |
+| 場域設定 | /set/factory | /user-access/account、/architecture、/pond-state、/map、/factory、/pond-area |
+| 飼料設定 | set/feed | /manufacturer、/feed-category-and-items、/feed-ingredient-category、/feed-settings、/feed-ingredient、/parameter |
+| 養殖循環 | /set/breeding-record | /breeding/v3/record2、/breeding/record-template2、/breeding/seedling、/manufacturer、/breeding/water-quality-record2、/reports/feed-report、/breeding/harvest-record2、/breeding/disease-testing-record、/breeding/water-quality-testing-record、/event、/breeding/template2、/pond-state、/breeding/species、/breeding/disease-testing-method、/breeding/disease、/user-access/authorization-items、/ponds-data |
+
 ### Plugin / 套件
 | 套件 | 用途 |
 | --- | --- |
